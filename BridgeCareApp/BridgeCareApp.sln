@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspWebApi", "AspWebApi\AspWebApi.csproj", "{0EB8B7D9-6B62-4E43-B21D-F48B70541296}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VuejsApp", "VuejsApp\VuejsApp.njsproj", "{1F55AF77-CE22-45A8-9188-793D16E07ABE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E40427E5-3F1C-41E4-90DE-5BEF926BCEDD}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0EB8B7D9-6B62-4E43-B21D-F48B70541296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EB8B7D9-6B62-4E43-B21D-F48B70541296}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EB8B7D9-6B62-4E43-B21D-F48B70541296}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EB8B7D9-6B62-4E43-B21D-F48B70541296}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {21B5BDB3-406A-4392-A69B-4548E8238A33}
+	EndGlobalSection
+EndGlobal
