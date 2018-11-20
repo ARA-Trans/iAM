@@ -8,9 +8,6 @@ EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VuejsApp", "VuejsApp\VuejsApp.njsproj", "{1F55AF77-CE22-45A8-9188-793D16E07ABE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E40427E5-3F1C-41E4-90DE-5BEF926BCEDD}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
