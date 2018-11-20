@@ -39,6 +39,7 @@
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
+    <Content Include="src\assets\logo.svg" />
     <Content Include="src\components\HelloWorld.vue" />
     <Content Include="src\components\Home.vue" />
     <Content Include="src\components\todo.vue">
