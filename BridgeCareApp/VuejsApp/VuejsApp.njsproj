@@ -7,6 +7,7 @@
     <RootNamespace>VuejsApp</RootNamespace>
     <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
     <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
+    <NameOfLastUsedPublishProfile>VuejsAppPublish</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -49,6 +50,13 @@
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="Web.config">
+      <SubType>Code</SubType>
+    </Content>
+    <None Include="Web.Debug.config">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="VuejsAppPublish.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="dist\" />
