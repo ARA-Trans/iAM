@@ -80,7 +80,7 @@
             }
             axios
                 .post('api/todos', {
-                description: this.newItemDescription,
+                    description: this.newItemDescription,
                 headers: new Headers({
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

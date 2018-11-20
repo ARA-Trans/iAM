@@ -79,7 +79,7 @@ namespace AspWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            todo.Id = Guid.NewGuid();
             db.Todos.Add(todo);
 
             try
