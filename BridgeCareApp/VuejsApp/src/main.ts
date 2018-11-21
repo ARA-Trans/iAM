@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import 'vuetify/dist/vuetify.min.css'
-import 'bootstrap';
+//import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Vuetify from 'vuetify'
 

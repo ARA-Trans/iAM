@@ -37,7 +37,6 @@
     </div>
 </template>
 <script lang="ts">
-    import HelloWorld from './components/HelloWorld.vue'
 
     import Vue from 'vue';
     import { Component } from 'vue-property-decorator';

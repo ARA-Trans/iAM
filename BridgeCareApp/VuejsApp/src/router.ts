@@ -1,7 +1,6 @@
 ﻿import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from './components/Home.vue'
 import Todo from './components/todo.vue'
 import HelloWorld from './components/HelloWorld.vue';
 
