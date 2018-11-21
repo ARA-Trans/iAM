@@ -46,7 +46,6 @@
     <Content Include="src\components\todo.vue">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\views\navmenu.vue" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -64,7 +63,6 @@
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
     <Folder Include="src\components\" />
-    <Folder Include="src\views\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\main.ts" />
