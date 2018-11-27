@@ -30,7 +30,7 @@
     import { Component } from 'vue-property-decorator';
     import axios from 'axios'
 
-    axios.defaults.baseURL = 'http://localhost:52988'
+    axios.defaults.baseURL = process.env.VUE_APP_URL
 
     interface TodoItem {
         description: string;

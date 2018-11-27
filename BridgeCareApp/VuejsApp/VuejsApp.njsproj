@@ -37,6 +37,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include=".env.development">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include=".env.production">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />

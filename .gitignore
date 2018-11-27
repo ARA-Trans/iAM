@@ -336,3 +336,4 @@ ASALocalRun/
 node_modules
 build
 *.log
+dist
