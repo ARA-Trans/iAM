@@ -9,23 +9,24 @@
     <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
   </configSections>
   <connectionStrings>
-    <add name="SimpleTestEntities" connectionString="metadata=res://*/SimpleTest.csdl|res://*/SimpleTest.ssdl|res://*/SimpleTest.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=dbserver;initial catalog=database;persist security info=True;user id=dbuser;password=dbpassword;MultipleActiveResultSets=True;App=EntityFramework&quot;" providerName="System.Data.EntityClient" />
+    <add name="TodoContext" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=AspWebApi1;Integrated Security=SSPI;" providerName="System.Data.SqlClient" />
   </connectionStrings>
   <appSettings>
     <add key="webpages:Version" value="3.0.0.0" />
     <add key="webpages:Enabled" value="false" />
     <add key="ClientValidationEnabled" value="true" />
     <add key="UnobtrusiveJavaScriptEnabled" value="true" />
-    <add key="owin:AutomaticAppStartup" value="false" />
+    <add key="owin:AutomaticAppStartup" value="false"/>
   </appSettings>
   <system.web>
-    <compilation targetFramework="4.7.1" debug="true" />
+    <compilation debug="true" targetFramework="4.7.1" />
     <httpRuntime targetFramework="4.7.1" />
     <httpModules>
       <add name="ApplicationInsightsWebTracking" type="Microsoft.ApplicationInsights.Web.ApplicationInsightsHttpModule, Microsoft.AI.Web" />
     </httpModules>
   </system.web>
   <system.webServer>
+    
     <modules>
       <remove name="TelemetryCorrelationHttpModule" />
       <add name="TelemetryCorrelationHttpModule" type="Microsoft.AspNet.TelemetryCorrelation.TelemetryCorrelationHttpModule, Microsoft.AspNet.TelemetryCorrelation" preCondition="integratedMode,managedHandler" />
@@ -33,13 +34,12 @@
       <add name="ApplicationInsightsWebTracking" type="Microsoft.ApplicationInsights.Web.ApplicationInsightsHttpModule, Microsoft.AI.Web" preCondition="managedHandler" />
     </modules>
     <validation validateIntegratedModeConfiguration="false" />
-    <handlers>
+  <handlers>
       <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
       <remove name="OPTIONSVerbHandler" />
       <remove name="TRACEVerbHandler" />
       <add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="*" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-    </handlers>
-  </system.webServer>
+    </handlers></system.webServer>
   <runtime>
     <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
       <dependentAssembly>
@@ -110,5 +110,19 @@
       <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" warningLevel="4" compilerOptions="/langversion:default /nowarn:41008 /define:_MYTYPE=\&quot;Web\&quot; /optionInfer+" />
     </compilers>
   </system.codedom>
+  <entityFramework>
+    <contexts>
+      <context type="AspWebApi.Data.TodoContext, AspWebApi">
+        <databaseInitializer type="AspWebApi.Data.TodoInitializer, AspWebApi" />
+      </context>
+    </contexts>
+    <defaultConnectionFactory type="System.Data.Entity.Infrastructure.LocalDbConnectionFactory, EntityFramework">
+      <parameters>
+        <parameter value="mssqllocaldb" />
+      </parameters>
+    </defaultConnectionFactory>
+    <providers>
+      <provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
+    </providers>
+  </entityFramework>
 </configuration>
-<!--ProjectGuid: 0EB8B7D9-6B62-4E43-B21D-F48B70541296-->
