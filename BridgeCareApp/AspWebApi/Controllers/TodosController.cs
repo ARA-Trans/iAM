@@ -8,8 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using AspWebApi.Data;
-using AspWebApi.Models;
 
 namespace AspWebApi.Controllers
 {
