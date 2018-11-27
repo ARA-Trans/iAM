@@ -6,18 +6,20 @@ using System.Web;
 
 namespace AspWebApi.Data
 {
-    public class TodoInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<TodoContext>
-    {
-        protected override void Seed(TodoContext context)
-        {
-            var todoList = new List<Todo>
-            {
-                new Todo {Id = Guid.NewGuid(), Description = "Data from Controller to Vue"},
-                new Todo {Id = Guid.NewGuid(), Description = "Data from Controller to Vue item 2"}
-            };
+    // Removed because of EDMX
 
-            todoList.ForEach(s => context.Todos.Add(s));
-            context.SaveChanges();
-        }
-    }
+    //public class TodoInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<TodoContext>
+    //{
+    //    protected override void Seed(TodoContext context)
+    //    {
+    //        var todoList = new List<Todo>
+    //        {
+    //            new Todo {Id = Guid.NewGuid(), Description = "Data from Controller to Vue"},
+    //            new Todo {Id = Guid.NewGuid(), Description = "Data from Controller to Vue item 2"}
+    //        };
+
+    //        todoList.ForEach(s => context.Todos.Add(s));
+    //        context.SaveChanges();
+    //    }
+    //}
 }

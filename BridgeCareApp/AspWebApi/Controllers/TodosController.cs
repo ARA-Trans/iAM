@@ -15,19 +15,19 @@ namespace AspWebApi.Controllers
 {
     public class TodosController : ApiController
     {
-        private TodoContext db = new TodoContext();
+        private SimpleTestEntities db = new SimpleTestEntities();
 
         // GET: api/Todos
         public IQueryable<Todo> GetTodos()
         {
-            return db.Todos;
+            return db.Todoes;
         }
 
         // GET: api/Todos/5
         [ResponseType(typeof(Todo))]
         public IHttpActionResult GetTodo(Guid id)
         {
-            Todo todo = db.Todos.Find(id);
+            Todo todo = db.Todoes.Find(id);
             if (todo == null)
             {
                 return NotFound();
@@ -80,7 +80,7 @@ namespace AspWebApi.Controllers
                 return BadRequest(ModelState);
             }
             todo.Id = Guid.NewGuid();
-            db.Todos.Add(todo);
+            db.Todoes.Add(todo);
 
             try
             {
@@ -105,13 +105,13 @@ namespace AspWebApi.Controllers
         [ResponseType(typeof(Todo))]
         public IHttpActionResult DeleteTodo(Guid id)
         {
-            Todo todo = db.Todos.Find(id);
+            Todo todo = db.Todoes.Find(id);
             if (todo == null)
             {
                 return NotFound();
             }
 
-            db.Todos.Remove(todo);
+            db.Todoes.Remove(todo);
             db.SaveChanges();
 
             return Ok(todo);
@@ -128,7 +128,7 @@ namespace AspWebApi.Controllers
 
         private bool TodoExists(Guid id)
         {
-            return db.Todos.Count(e => e.Id == id) > 0;
+            return db.Todoes.Count(e => e.Id == id) > 0;
         }
     }
 }

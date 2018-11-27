@@ -8,17 +8,19 @@ using System.Web;
 
 namespace AspWebApi.Data
 {
-    public class TodoContext : DbContext
-    {
-        public TodoContext() : base("TodoContext")
-        {
-        }
+    // Replaced by code in the EDMX
 
-        public DbSet<Todo> Todos { get; set; }
+    //public class TodoContext : DbContext
+    //{
+    //    public TodoContext() : base("TodoContext")
+    //    {
+    //    }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-        }
-    }
+    //    public DbSet<Todo> Todos { get; set; }
+
+    //    protected override void OnModelCreating(DbModelBuilder modelBuilder)
+    //    {
+    //        modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+    //    }
+    //}
 }
