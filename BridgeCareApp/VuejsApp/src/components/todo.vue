@@ -53,7 +53,7 @@
 
         mounted() {
             axios
-                .get('/api/todos', { headers: { 'Access-Control-Allow-Origin': '*'} } )
+                .get('/api/todos' )
                 .then(response => (response.data as Promise<TodoItem[]>))
                 .then(data => {
                     this.todos = data

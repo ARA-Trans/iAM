@@ -56,9 +56,7 @@
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="Web.config">
-      <SubType>Code</SubType>
-    </Content>
+    <Content Include="Web.config" />
     <None Include="Web.Debug.config">
       <SubType>Code</SubType>
     </None>
