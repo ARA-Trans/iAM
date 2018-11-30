@@ -1,3 +1,4 @@
+import '@babel/polyfill'
 import Vue, { VNode } from 'vue'
 
 declare global {

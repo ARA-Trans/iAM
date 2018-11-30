@@ -63,11 +63,6 @@
         completeItem(item: TodoItem) {
             axios
                 .delete(`/api/todos/${item.id}`, {
-                method: 'delete',
-                headers: new Headers({
-                    'Accept': 'application/json',
-                    'content-Type': 'application/json'
-                })
             })
                 .then(() => {
                     this.todos = this.todos.filter(t => t.id != item.id);
@@ -80,11 +75,7 @@
             }
             axios
                 .post('api/todos', {
-                    description: this.newItemDescription,
-                headers: new Headers({
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                })
+                    description: this.newItemDescription
                 })
                 .then(response => response.data as Promise<TodoItem>)
                 .then((newItem) => {
