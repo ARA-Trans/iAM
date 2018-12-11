@@ -81,17 +81,26 @@
         }
         constructor() {
             super();
-            let PROD_REDIRECT_URI = 'http://localhost:1337/';
+            let PROD_REDIRECT_URI = process.env.VUE_APP_CLIENT_APP_URL;
             let redirectUri = window.location.origin;
             if (window.location.hostname !== '127.0.0.1') {
                 redirectUri = PROD_REDIRECT_URI;
             }
 
-            this.applicationConfig = {
-                clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
-                graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
-                authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol'
-            };
+            if (process.env.VUE_APP_IS_PRODUCTION == false) {
+                this.applicationConfig = {
+                    clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
+                    graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
+                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol'
+                };
+            }
+            else {
+                this.applicationConfig = {
+                    clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
+                    graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
+                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol'
+                };
+            }
             this.app = new Msal.UserAgentApplication(
                 this.applicationConfig.clientID, this.applicationConfig.authority,
                 (errorDesc, token, error, tokenType) => {
