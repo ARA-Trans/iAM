@@ -1,6 +1,17 @@
 <template>
     <div id="app" class="container-fluid">
         <div class="row">
+            <v-toolbar>
+
+                <v-spacer></v-spacer>
+                <v-toolbar-title v-if="loginFailed==false" id="label">Hello {{userName}}</v-toolbar-title>
+                <v-toolbar-items>
+                    <v-btn id="auth" v-if="loginFailed==true" flat @click="login">Login</v-btn>
+                    <v-btn flat v-if="loginFailed==false" @click="logout">Logout</v-btn>
+                </v-toolbar-items>
+            </v-toolbar>
+        </div>
+        <div class="row" v-if="loginFailed==false">
             <div class="col-sm-3">
                 <v-navigation-drawer permanent>
                     <v-toolbar flat>
@@ -40,20 +51,58 @@
 
     import Vue from 'vue';
     import { Component } from 'vue-property-decorator';
+    import * as Msal from 'msal';
+
+    //import AuthService from './services/auth.service';
+    //import GraphService from './services/graph.service';
+    //const GraphService = require('./services/graph.service')
 
     @Component({
-        components: {
-            //MenuComponent: require('./views/navmenu.vue')
-        }
     })
     export default class AppComponent extends Vue {
+
+        applicationConfig: { clientID: string; graphScopes: string[]; authority: string; };
+        app: Msal.UserAgentApplication;
+        logMessage(s: string) {
+            console.log(s);
+        }
+        constructor() {
+            super();
+            let PROD_REDIRECT_URI = 'http://localhost:1337/';
+            let redirectUri = window.location.origin;
+            if (window.location.hostname !== '127.0.0.1') {
+                redirectUri = PROD_REDIRECT_URI;
+            }
+
+            this.applicationConfig = {
+                clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
+                graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
+                authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol'
+            };
+            this.app = new Msal.UserAgentApplication(
+                this.applicationConfig.clientID, this.applicationConfig.authority,
+                (errorDesc, token, error, tokenType) => {
+                    // callback for login redirect
+                },
+                {
+                    redirectUri
+                }
+            );
+        }
+        authService: any;
+        graphService: any;
+        userName: string = '';
+        user: any = null
+        userInfo: any = null
+        apiCallFailed: boolean = false
+        loginFailed: boolean = true
         data() {
             return {
                 items: [
                     { title: 'Home', icon: 'dashboard' },
                     { title: 'TODO', icon: 'question_answer' }
                 ],
-                right: null
+                right: null,
             }
         }
 
@@ -61,7 +110,64 @@
             this.$router.push(routeName);
         }
 
-    }
+        //created() {
+        //    this.authService = new AuthService();
+        //    this.graphService = new GraphService();
+        //}
+
+        //callAPI() {
+        //    this.apiCallFailed = false;
+        //    this.authService.getToken().then(
+        //        (token: any) => {
+        //            this.graphService.getUserInfo(token).then(
+        //                (data: any) => {
+        //                    this.userInfo = data;
+        //                },
+        //                (error: any) => {
+        //                    console.error(error);
+        //                    this.apiCallFailed = true;
+        //                }
+        //            );
+        //        },
+        //        (error: any) => {
+        //            console.error(error);
+        //            this.apiCallFailed = true;
+        //        }
+        //    );
+        //}
+
+
+        login() {
+            this.loginFailed = true;
+            this.app.loginPopup(this.applicationConfig.graphScopes).then(
+                idToken => {
+                    this.app.acquireTokenSilent(this.applicationConfig.graphScopes).then(
+                        accessToken => {
+                            this.loginFailed = false;
+                            this.updateUI();
+                        }, error => {
+                            this.app.acquireTokenPopup(this.applicationConfig.graphScopes).then(accessToken => {
+                                this.updateUI();
+                            }, error => {
+                                this.logMessage("Error acquiring the popup:\n" + error);
+                            });
+                        })
+                },
+                (error) => {
+                    this.logMessage("Error during login:\n" + error);
+                }
+            );
+        }
+
+        logout() {
+            this.app.logout();
+        }
+
+        updateUI() {
+            this.userName = this.app.getUser().name;
+            this.logMessage("User '" + this.userName + "' logged-in");
+            }
+        }
 </script>
 
 <style>
