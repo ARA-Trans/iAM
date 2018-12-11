@@ -336,7 +336,7 @@ ASALocalRun/
 node_modules
 build
 *.log
-dist
+.dist/
 
 # Database connection specification
 connection.config
