@@ -337,6 +337,8 @@ node_modules
 build
 *.log
 .dist/
+./BridgeCareApp/VuejsApp/dist
 
 # Database connection specification
 connection.config
+/BridgeCareApp/VuejsApp/dist

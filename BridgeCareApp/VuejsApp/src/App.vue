@@ -63,6 +63,7 @@
     import { Component } from 'vue-property-decorator';
     import * as Msal from 'msal';
 
+    //@ts-ignore
     import TopNavbar from './components/TopNavbar'
     //import AuthService from './services/auth.service';
     //import GraphService from './services/graph.service';
