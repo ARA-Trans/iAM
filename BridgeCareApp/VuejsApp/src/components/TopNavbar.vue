@@ -3,10 +3,12 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
+    import { Component, Mixins } from 'vue-property-decorator';
 
 
-    @Component({
-    })
-    export default class TopNavbar extends Vue { }
+    @Mixins
+    
+    export default class TopNavbar extends Vue {
+        testData:any = 'mixin data'
+    }
 </script>
