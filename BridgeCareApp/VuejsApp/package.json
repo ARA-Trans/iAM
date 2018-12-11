@@ -17,7 +17,6 @@
     "msal": "^0.2.3",
     "popper.js": "^1.14.5",
     "vue": "2.5.17",
-    "vue-adal": "^1.3.1",
     "vue-class-component": "6.0.0",
     "vue-property-decorator": "7.0.0",
     "vue-router": "^3.0.1",

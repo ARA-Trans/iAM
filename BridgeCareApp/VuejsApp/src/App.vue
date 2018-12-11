@@ -1,16 +1,26 @@
 <template>
     <div id="app" class="container-fluid">
         <div class="row">
+            <TopNavbar />
             <v-toolbar>
 
                 <v-spacer></v-spacer>
                 <v-toolbar-title v-if="loginFailed==false" id="label">Hello {{userName}}</v-toolbar-title>
                 <v-toolbar-items>
-                    <v-btn id="auth" v-if="loginFailed==true" flat @click="login">Login</v-btn>
+                    <v-btn id="auth" v-if="loginFailed==true" flat @click="login">Login or Sign-up</v-btn>
                     <v-btn flat v-if="loginFailed==false" @click="logout">Logout</v-btn>
                 </v-toolbar-items>
             </v-toolbar>
         </div>
+        <v-parallax dark style="height:720px" v-if="loginFailed==true"
+                    src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg">
+            <v-layout align-center
+                      column
+                      justify-center>
+                <h1 class="display-2 font-weight-thin mb-3">Bridge Care application</h1>
+                <h4 class="subheading">Build your projects today!</h4>
+            </v-layout>
+        </v-parallax>
         <div class="row" v-if="loginFailed==false">
             <div class="col-sm-3">
                 <v-navigation-drawer permanent>
@@ -53,15 +63,17 @@
     import { Component } from 'vue-property-decorator';
     import * as Msal from 'msal';
 
+    import TopNavbar from './components/TopNavbar'
     //import AuthService from './services/auth.service';
     //import GraphService from './services/graph.service';
     //const GraphService = require('./services/graph.service')
 
     @Component({
+        components: { TopNavbar }
     })
     export default class AppComponent extends Vue {
 
-        applicationConfig: { clientID: string; graphScopes: string[]; authority: string; };
+        applicationConfig: { clientID: string; graphScopes: string[]; authority: string;};
         app: Msal.UserAgentApplication;
         logMessage(s: string) {
             console.log(s);

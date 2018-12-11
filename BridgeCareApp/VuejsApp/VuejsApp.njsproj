@@ -53,6 +53,9 @@
     <Content Include="src\components\todo.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\TopNavbar.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
