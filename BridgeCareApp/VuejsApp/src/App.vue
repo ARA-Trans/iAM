@@ -1,5 +1,4 @@
 <template>
-    <div id="app">
         <v-app class="grey lighten-4">
             <nav>
                 <v-toolbar flat app>
@@ -56,7 +55,6 @@
                 <router-view></router-view>
             </v-content>
         </v-app>
-    </div>
 </template>
 <script lang="ts">
 
