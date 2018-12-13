@@ -70,13 +70,18 @@
     })
     export default class AppComponent extends Vue {
 
+        userName: string = '';
+        loginFailed: boolean = true
+
         applicationConfig: {
             clientID: string; graphScopes: string[]; authority: string;
-            authorityPR: string; };
+            authorityPR: string;
+        };
+
         clientApp: Msal.UserAgentApplication;
-        logMessage(s: string) {
-            console.log(s);
-        }
+        
+        signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol';
+        passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_pr-pol';
         constructor() {
             super();
             let PROD_REDIRECT_URI = process.env.VUE_APP_CLIENT_APP_URL;
@@ -89,16 +94,16 @@
                 this.applicationConfig = {
                     clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
                     graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
-                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol',
-                    authorityPR: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_pr-pol'
+                    authority: this.signupSignInPolicy,
+                    authorityPR: this.passwordResetPolicy
                 };
             }
             else {
                 this.applicationConfig = {
                     clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
                     graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
-                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol',
-                    authorityPR: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_pr-pol'
+                    authority: this.signupSignInPolicy,
+                    authorityPR: this.passwordResetPolicy
                 };
             }
             this.clientApp = new Msal.UserAgentApplication(
@@ -111,9 +116,6 @@
             );
         }
 
-        userName: string = '';
-        loginFailed: boolean = true
-        accessToken: string = '';
         data() {
             return {
                 items: [
@@ -218,6 +220,9 @@
         updateUI() {
             this.userName = this.clientApp.getUser().name;
             this.logMessage("User '" + this.userName + "' logged-in");
+        }
+        logMessage(s: string) {
+            console.log(s);
         }
     }
 </script>
