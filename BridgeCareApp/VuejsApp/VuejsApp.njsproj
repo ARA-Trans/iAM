@@ -69,7 +69,6 @@
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
     <Folder Include="src\components\" />
-    <Folder Include="src\services\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\main.ts" />

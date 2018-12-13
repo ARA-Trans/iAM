@@ -70,8 +70,10 @@
     })
     export default class AppComponent extends Vue {
 
-        applicationConfig: { clientID: string; graphScopes: string[]; authority: string; };
-        app: Msal.UserAgentApplication;
+        applicationConfig: {
+            clientID: string; graphScopes: string[]; authority: string;
+            authorityPR: string; };
+        clientApp: Msal.UserAgentApplication;
         logMessage(s: string) {
             console.log(s);
         }
@@ -87,29 +89,31 @@
                 this.applicationConfig = {
                     clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
                     graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
-                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol'
+                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol',
+                    authorityPR: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_pr-pol'
                 };
             }
             else {
                 this.applicationConfig = {
                     clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
                     graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
-                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol'
+                    authority: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol',
+                    authorityPR: 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_pr-pol'
                 };
             }
-            this.app = new Msal.UserAgentApplication(
+            this.clientApp = new Msal.UserAgentApplication(
                 this.applicationConfig.clientID, this.applicationConfig.authority,
                 (errorDesc, token, error, tokenType) => {
                     // callback for login redirect
+                    console.log(token);
                 },
-                {
-                    redirectUri
-                }
+                { cacheLocation: 'localStorage'}
             );
         }
 
         userName: string = '';
         loginFailed: boolean = true
+        accessToken: string = '';
         data() {
             return {
                 items: [
@@ -124,37 +128,95 @@
             this.$router.push(routeName);
         }
 
-        //created() {
+        created() {
+            let user = this.clientApp.getUser();
+            if (!user) {
+                //this.login();
+            }
+            else {
+                this.getSilentToken();
+            }
+        }
+
+        //login1() {
+        //    this.app.loginRedirect(this.applicationConfig.graphScopes)
+        //}
+
+        //onTokenCallback(errorDesc: any, token: any, error: any, tokenType: any) {
+        //    if (token) {
+        //        this.accessToken = token;
+        //        this.loginFailed = false;
+        //        this.updateUI();
+        //    }
+        //    if (errorDesc) {
+        //        if (errorDesc.indexOf('AADB2C90118') > -1) {
+        //            console.log(errorDesc);
+        //            this.app = new Msal.UserAgentApplication(
+        //                this.applicationConfig.clientID, this.applicationConfig.authorityPR,
+        //                this.onTokenCallback);
+
+        //            this.login1();
+        //        }
+        //    }
         //}
 
         login() {
             this.loginFailed = true;
-            this.app.loginPopup(this.applicationConfig.graphScopes).then(
+            this.clientApp.loginPopup(this.applicationConfig.graphScopes).then(
                 idToken => {
-                    this.app.acquireTokenSilent(this.applicationConfig.graphScopes).then(
-                        accessToken => {
-                            this.loginFailed = false;
-                            this.updateUI();
-                        }, error => {
-                            this.app.acquireTokenPopup(this.applicationConfig.graphScopes).then(accessToken => {
-                                this.updateUI();
-                            }, error => {
-                                this.logMessage("Error acquiring the popup:\n" + error);
-                            });
-                        })
+                    this.getSilentToken();
                 },
                 (error) => {
-                    this.logMessage("Error during login:\n" + error);
+                    this.redirectOnErrors(error)
                 }
             );
         }
 
+        getSilentToken() {
+            this.clientApp.acquireTokenSilent(this.applicationConfig.graphScopes).then(
+                accessToken => {
+                    this.loginFailed = false;
+                    this.updateUI();
+                }, error => {
+                    this.clientApp.acquireTokenPopup(this.applicationConfig.graphScopes).then(accessToken => {
+                        this.updateUI();
+                    }, error => {
+                        this.logMessage("Error acquiring the token:\n" + error);
+                    });
+                }
+            )
+        }
+
+        redirectOnErrors(error: any) {
+            if (error.indexOf('AADB2C90118') > -1) {
+                this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
+                    this.applicationConfig.authorityPR,
+                    (errorDesc, token, error, tokenType) => {
+                        // callback for login redirect
+                    },
+                    { cacheLocation: 'localStorage' });
+                this.login();
+            }
+            else if (error.indexOf('AADB2C90091') > -1) {
+                this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
+                    this.applicationConfig.authority,
+                    (errorDesc, token, error, tokenType) => {
+                        // callback for login redirect
+                    },
+                    { cacheLocation: 'localStorage' });
+                this.login();
+            }
+            else {
+                this.logMessage("Error during login:\n" + error);
+            }
+        }
+
         logout() {
-            this.app.logout();
+            this.clientApp.logout();
         }
 
         updateUI() {
-            this.userName = this.app.getUser().name;
+            this.userName = this.clientApp.getUser().name;
             this.logMessage("User '" + this.userName + "' logged-in");
         }
     }
