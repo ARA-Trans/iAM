@@ -33,9 +33,9 @@
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
     interface TodoItem {
-        description: string;
-        done: boolean;
-        id: string;
+        Description: string;
+        Done: boolean;
+        Id: string;
     }
 
     @Component({
@@ -44,12 +44,12 @@
         todos: TodoItem[] = [];
         newItemDescription: string = "";
 
-        data() {
-            return {
-                todos: [],
-                newItemDescription: null
-            };
-        }
+        //data() {
+        //    return {
+        //        todos: [],
+        //        newItemDescription: null
+        //    };
+        //}
 
         mounted() {
             axios
@@ -57,15 +57,17 @@
                 .then(response => (response.data as Promise<TodoItem[]>))
                 .then(data => {
                     this.todos = data
+                }, error => {
+                    console.log(error);
                 });
         }
 
         completeItem(item: TodoItem) {
             axios
-                .delete(`/api/todos/${item.id}`, {
+                .delete(`/api/todos/${item.Id}`, {
             })
                 .then(() => {
-                    this.todos = this.todos.filter(t => t.id != item.id);
+                    this.todos = this.todos.filter(t => t.Id != item.Id);
                 })
         }
 

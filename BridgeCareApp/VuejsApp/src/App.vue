@@ -80,8 +80,8 @@
 
         clientApp: Msal.UserAgentApplication;
         
-        signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_su-si-pol';
-        passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aradomain.onmicrosoft.com/b2c_1_pr-pol';
+        signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_su-si-pol';
+        passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_pr-pol';
         constructor() {
             super();
             let PROD_REDIRECT_URI = process.env.VUE_APP_CLIENT_APP_URL;
@@ -90,18 +90,18 @@
                 redirectUri = PROD_REDIRECT_URI;
             }
 
-            if (process.env.VUE_APP_IS_PRODUCTION == false) {
+            if (process.env.VUE_APP_IS_PRODUCTION == "false") {
                 this.applicationConfig = {
-                    clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
-                    graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
+                    clientID: '6abd6916-ce43-4cb1-9189-5749fc544e78',
+                    graphScopes: ['https://aratranstest.onmicrosoft.com/user/user_impersonation'],
                     authority: this.signupSignInPolicy,
                     authorityPR: this.passwordResetPolicy
                 };
             }
             else {
                 this.applicationConfig = {
-                    clientID: '6b4fef89-350c-4dfe-8aa2-5ed5fddb9c5b',
-                    graphScopes: ['https://aradomain.onmicrosoft.com/user/user_impersonation'],
+                    clientID: 'c4132c6f-fbb2-489c-bdf5-dda2ce009af8',
+                    graphScopes: ['https://aratranstest.onmicrosoft.com/userStage/user_impersonation'],
                     authority: this.signupSignInPolicy,
                     authorityPR: this.passwordResetPolicy
                 };
