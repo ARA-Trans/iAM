@@ -33,9 +33,9 @@
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
     interface TodoItem {
-        Description: string;
-        Done: boolean;
-        Id: string;
+        description: string;
+        done: boolean;
+        id: string;
     }
 
     @Component({
@@ -64,10 +64,10 @@
 
         completeItem(item: TodoItem) {
             axios
-                .delete(`/api/todos/${item.Id}`, {
+                .delete(`/api/todos/${item.id}`, {
             })
                 .then(() => {
-                    this.todos = this.todos.filter(t => t.Id != item.Id);
+                    this.todos = this.todos.filter(t => t.id != item.id);
                 })
         }
 
