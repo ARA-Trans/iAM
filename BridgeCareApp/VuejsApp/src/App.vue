@@ -29,13 +29,14 @@
                     <v-list dense class="pt-0">
                         <v-list-tile v-for="item in items"
                                      :key="item.title"
-                                     @click="routing(item.title)">
+                                     @click="routing(item.navigation)">
                             <v-list-tile-action>
                                 <v-icon>{{ item.icon }}</v-icon>
                             </v-list-tile-action>
 
                             <v-list-tile-content>
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                                <v-list-tile-title hidden>{{ item.navigation }}</v-list-tile-title>
                             </v-list-tile-content>
                         </v-list-tile>
                     </v-list>
@@ -109,18 +110,22 @@
             this.clientApp = new Msal.UserAgentApplication(
                 this.applicationConfig.clientID, this.applicationConfig.authority,
                 (errorDesc, token, error, tokenType) => {
-                    // callback for login redirect
+                    //this.getSilentTokenForLogin1(errorDesc, token, error, tokenType);
                     console.log(token);
                 },
-                { cacheLocation: 'localStorage'}
+                {
+                    cacheLocation: 'localStorage',
+                    redirectUri: redirectUri
+                }
             );
         }
 
         data() {
             return {
                 items: [
-                    { title: 'Home', icon: 'dashboard' },
-                    { title: 'TODO', icon: 'question_answer' }
+                    { navigation: 'Home', icon: 'dashboard', name: 'Home' },
+                    { navigation: 'TODO', icon: 'question_answer', name: 'TODO' },
+                    { navigation: 'ReportData', icon: 'receipt', name: 'Report data'}
                 ],
                 drawer: true
             }
@@ -136,37 +141,19 @@
                 //this.login();
             }
             else {
-                this.getSilentToken();
+                //this.getSilentToken();
+                this.loginFailed = false;
+                this.updateUI();
             }
         }
 
-        //login1() {
-        //    this.app.loginRedirect(this.applicationConfig.graphScopes)
-        //}
-
-        //onTokenCallback(errorDesc: any, token: any, error: any, tokenType: any) {
-        //    if (token) {
-        //        this.accessToken = token;
-        //        this.loginFailed = false;
-        //        this.updateUI();
-        //    }
-        //    if (errorDesc) {
-        //        if (errorDesc.indexOf('AADB2C90118') > -1) {
-        //            console.log(errorDesc);
-        //            this.app = new Msal.UserAgentApplication(
-        //                this.applicationConfig.clientID, this.applicationConfig.authorityPR,
-        //                this.onTokenCallback);
-
-        //            this.login1();
-        //        }
-        //    }
-        //}
-
         login() {
             this.loginFailed = true;
-            this.clientApp.loginPopup(this.applicationConfig.graphScopes).then(
-                idToken => {
-                    this.getSilentToken();
+                this.clientApp.loginPopup(this.applicationConfig.graphScopes).then(
+                    idToken => {
+                        this.loginFailed = false;
+                        this.updateUI();
+                    //this.getSilentToken();
                 },
                 (error) => {
                     this.redirectOnErrors(error)
@@ -181,6 +168,7 @@
                     this.updateUI();
                 }, error => {
                     this.clientApp.acquireTokenPopup(this.applicationConfig.graphScopes).then(accessToken => {
+                        this.loginFailed = false;
                         this.updateUI();
                     }, error => {
                         this.logMessage("Error acquiring the token:\n" + error);
@@ -190,28 +178,28 @@
         }
 
         redirectOnErrors(error: any) {
-            if (error.indexOf('AADB2C90118') > -1) {
-                this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
-                    this.applicationConfig.authorityPR,
-                    (errorDesc, token, error, tokenType) => {
-                        // callback for login redirect
-                    },
-                    { cacheLocation: 'localStorage' });
-                this.login();
-            }
-            else if (error.indexOf('AADB2C90091') > -1) {
-                this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
-                    this.applicationConfig.authority,
-                    (errorDesc, token, error, tokenType) => {
-                        // callback for login redirect
-                    },
-                    { cacheLocation: 'localStorage' });
-                this.login();
-            }
-            else {
-                this.logMessage("Error during login:\n" + error);
-            }
+        if (error.indexOf('AADB2C90118') > -1) {
+            this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
+                this.applicationConfig.authorityPR,
+                (errorDesc, token, error, tokenType) => {
+                    // callback for login redirect
+                },
+                { cacheLocation: 'localStorage' });
+            this.login();
         }
+        else if (error.indexOf('AADB2C90091') > -1) {
+            this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
+                this.applicationConfig.authority,
+                (errorDesc, token, error, tokenType) => {
+                    // callback for login redirect
+                },
+                { cacheLocation: 'localStorage' });
+            this.login();
+        }
+        else {
+            this.logMessage("Error during login:\n" + error);
+        }
+    }
 
         logout() {
             this.clientApp.logout();

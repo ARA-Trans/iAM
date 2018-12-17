@@ -49,6 +49,9 @@
     <Content Include="src\App.vue" />
     <Content Include="src\assets\logo.svg" />
     <Content Include="src\components\HelloWorld.vue" />
+    <Content Include="src\components\ReportData.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\todo.vue">
       <SubType>Code</SubType>
     </Content>

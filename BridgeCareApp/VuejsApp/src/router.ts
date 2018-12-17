@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Todo from './components/todo.vue'
 import HelloWorld from './components/HelloWorld.vue';
+import ReportData from './components/ReportData.vue'
 
 Vue.use(Router)
 
@@ -18,6 +19,11 @@ export default new Router({
             path: '/todo',
             name: 'TODO',
             component: Todo
+        },
+        {
+            path: '/ReportData',
+            name: 'ReportData',
+            component: ReportData
         },
         { path: '*', redirect: '/' }
         //{
