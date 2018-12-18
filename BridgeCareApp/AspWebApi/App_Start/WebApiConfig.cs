@@ -24,7 +24,6 @@ namespace AspWebApi
             // Enable CORS for the Vue App
             var cors = new EnableCorsAttribute("*", "*", "*");
             config.EnableCors(cors);
-            //config.EnableCors();
 
             // Set JSON formatter as default one and remove XmlFormatter
 

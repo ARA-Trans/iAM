@@ -44,13 +44,6 @@
         todos: TodoItem[] = [];
         newItemDescription: string = "";
 
-        //data() {
-        //    return {
-        //        todos: [],
-        //        newItemDescription: null
-        //    };
-        //}
-
         mounted() {
             axios
                 .get('/api/todos' )
