@@ -115,7 +115,7 @@
                 },
                 {
                     cacheLocation: 'localStorage',
-                    redirectUri: redirectUri
+                    //redirectUri: redirectUri
                 }
             );
         }
