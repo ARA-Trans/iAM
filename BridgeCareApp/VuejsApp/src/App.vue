@@ -178,6 +178,10 @@
         }
 
         redirectOnErrors(error: any) {
+            // [HACK] : Msal.js has not provided a feature to add multiple policies from Azure AD B2C.
+            // To add Forget Password policy, when a user clicks on `forget password` link.
+            // We are catching the error thrown by Azure AD B2C and repopulating the `clientApp` object with new policy
+            // and calling the `login()` method again.
         if (error.indexOf('AADB2C90118') > -1) {
             this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
                 this.applicationConfig.authorityPR,
