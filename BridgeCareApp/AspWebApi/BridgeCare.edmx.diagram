@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6fc6dedd1c4b4a8d9d97ac87f58f9b80" Name="Diagram1">
+        <EntityTypeShape EntityType="BridgeCareModel.AGE" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ASSET" Width="1.5" PointX="8.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ATTRIBUTES_" Width="1.5" PointX="3" PointY="13.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ATTRIBUTES_CALCULATED" Width="1.5" PointX="5.25" PointY="16.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CALCULATEFIELD" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.COLUMNHEADER" Width="1.5" PointX="10.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.COMMIT_CONSEQUENCES" Width="1.5" PointX="9.75" PointY="20.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.COMMITTED_" Width="1.5" PointX="7.5" PointY="25.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CONNECTION_PARAMETERS" Width="1.5" PointX="7.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CONSEQUENCE" Width="1.5" PointX="9.75" PointY="28" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CONSTRUCTION_HISTORY" Width="1.5" PointX="10.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.COST" Width="1.5" PointX="9.75" PointY="39.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CR" Width="1.5" PointX="12.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CRS_COEFFICIENT" Width="1.5" PointX="12.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.DYNAMIC_SEGMENTATION" Width="1.5" PointX="5.25" PointY="22.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.FEASIBILITY" Width="1.5" PointX="9.75" PointY="42.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.FUNCTIONAL_CLASSFICATION" Width="1.5" PointX="12.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.GROUPHEADER" Width="1.5" PointX="9.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.INVESTMENT" Width="1.5" PointX="7.5" PointY="30.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.IRI" Width="1.5" PointX="13.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.MATERIAL" Width="1.5" PointX="14.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.MULTILINE_GEOMETRIES" Width="1.5" PointX="11" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.MULTILINE_GEOMETRIES_DEF" Width="1.5" PointX="14.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.MULTILINE_GEOMETRIES_JOIN" Width="1.5" PointX="14.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.MULTIUSER_LOCK" Width="1.5" PointX="14.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.NETWORK_DEFINITION" Width="1.5" PointX="8.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.NETWORK_DEFINITIONS" Width="1.5" PointX="0.75" PointY="36.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.NETWORK" Width="1.5" PointX="3" PointY="40" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PAGEHEADER" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PCI_DISTRESS" Width="1.5" PointX="11.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PERFORMANCE" Width="1.5" PointX="10.5" PointY="23.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PRIORITIZEDNEED" Width="1.5" PointX="7.5" PointY="33.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PRIORITY" Width="1.5" PointX="7.5" PointY="36" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PRIORITYFUND" Width="1.5" PointX="9.75" PointY="36.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.REPORT" Width="1.5" PointX="16.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ROADNAME" Width="1.5" PointX="16.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ROWDATA" Width="1.5" PointX="16.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SCHEDULED" Width="1.5" PointX="9.75" PointY="45.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_ACTIONGROUPS" Width="1.5" PointX="1.5" PointY="23.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_ACTIONS" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_USER_ACTION_PER" Width="1.5" PointX="5.25" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_USER_ACTIONGROUP_PER" Width="1.5" PointX="5.25" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_USERGROUP_ACTION_PER" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_USERGROUP_ACTIONGROUP_PER" Width="1.5" PointX="6" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_USERGROUPS" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEC_USERS" Width="1.5" PointX="3" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SIMULATION" Width="1.5" PointX="5.25" PointY="36.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.TARGET_DEFICIENT" Width="1.5" PointX="7.5" PointY="21.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.TARGET" Width="1.5" PointX="10.5" PointY="32" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.TREATMENT_CONSEQUENCES" Width="1.5" PointX="12.75" PointY="28.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.TREATMENT" Width="1.5" PointX="7.5" PointY="41.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.X" Width="1.5" PointX="17.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.YEARLYINVESTMENT" Width="1.5" PointX="7.5" PointY="48.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ASSETS_CALCULATED" Width="1.5" PointX="13.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.BENEFITCOST_13_9" Width="1.5" PointX="18.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CONDITIONAL_RSL" Width="1.5" PointX="18.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CRITERIA_SEGMENT" Width="1.5" PointX="18.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.CRS_HIST" Width="1.5" PointX="18.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.DEFICIENT" Width="1.5" PointX="7.5" PointY="51.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.DYNAMIC_SEGMENTATION_RESULT" Width="1.5" PointX="5.25" PointY="54.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.NETWORK_TREE" Width="1.5" PointX="5.25" PointY="57.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PCI" Width="1.5" PointX="15.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PCI_DETAIL" Width="1.5" PointX="19.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PCI_VALIDATION" Width="1.5" PointX="17.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PCI_VALIDATION_LINEAR" Width="1.5" PointX="19.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.PENNDOT_DURATION" Width="1.5" PointX="20.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.REPORT_13_9" Width="1.5" PointX="20.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.ROLLUP_CONTROL" Width="1.5" PointX="5.25" PointY="28.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SECTION_13" Width="1.5" PointX="12.75" PointY="21.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEGMENT_13_NS0" Width="1.5" PointX="21.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEGMENT_CONTROL" Width="1.5" PointX="5.25" PointY="60.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SIMULATION_13_9" Width="1.5" PointX="23.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.TARGET_13_9" Width="1.5" PointX="14.75" PointY="24.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.BRIDGE_TYPE" Width="1.5" PointX="16.75" PointY="24.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.BRIDGE_TYPE_ALT" Width="1.5" PointX="18.75" PointY="24.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.dbo_SEED_DECK_RAW" Width="1.5" PointX="25.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEED_CULV_RAW" Width="1.5" PointX="25.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEED_DECK_RAW" Width="1.5" PointX="25.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEED_SUB_RAW" Width="1.5" PointX="25.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BridgeCareModel.SEED_SUP_RAW" Width="1.5" PointX="25.75" PointY="12.75" IsExpanded="true" />
+        <AssociationConnector Association="BridgeCareModel.FK_ATTRIBUTES__NETWORK_DEFINITIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_ATTRIBUTES_CALCULATED_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_COMMIT_CONSEQUENCES_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_CONSEQUENCES_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_PERFORMANCE_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_ROLLUP_CONTROL_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TARGET_DEFICIENT_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TARGETS_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TREATMENT_CONSEQUENCES_ATTRIBUTES" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_COMMIT_CONSEQUENCES_COMMITTED" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_COMMITTED_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_CONSEQUENCES_TREATMENTS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_COSTS_TREATMENTS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_DYNAMIC_SEGMENTATION_NETWORKS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_FEASIBILITY_TREATMENTS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_INVESTMENTS_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_MULTILINE_GEOMETRIES_NETWORK_DEFINITION" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_NETWORKS_NETWORK_DEFINITIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_DYNAMIC_SEGMENTATION_RESULT_NETWORKS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_NETWORK_TREE_NETWORK_TREE" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_ROLLUP_CONTROL_NETWORKS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_SEGMENT_CONTROL_NETWORKS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_SIMULATIONS_NETWORKS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_PERFORMANCE_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_PRIORITIZEDNEED_PRIORITIZEDNEED" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_PRIORITY_SIMULATION" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_PRIORITYFUND_PRIORITY" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_SCHEDULED_TREATMENTS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USER_OBJECTGROUP_PERMISSIONS_OBJECTGROUPS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USERGROUP_OBJECTGROUP_PERMISSIONS_OBJECTGROUPS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USER_OBJECT_PERMISSIONS_SECURITY_OBJECT" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USERGROUP_OBJECT_PERMISSIONS_SECURITY_OBJECT" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USER_OBJECT_PERMISSIONS_USERS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USER_OBJECTGROUP_PERMISSIONS_USERS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_USERGROUP_OBJECT_PERMISSIONS_USERGROUPS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_SECURITY_USERGROUP_ACTIONGROUP_PERMISSIONS_SECURITY_USERGROUPS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_DEFICIENT_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TARGET_DEFICIENT_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TARGETS_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TREATMENTS_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_YEARLYINVESTMENT_SIMULATIONS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.FK_TREATMENT_CONSEQUENCES_TREATMENTS" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.SEC_ACTIONGROUP_MEM" ManuallyRouted="false" />
+        <AssociationConnector Association="BridgeCareModel.SEC_USERGROUP_MEM" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

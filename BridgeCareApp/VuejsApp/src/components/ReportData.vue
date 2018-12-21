@@ -4,11 +4,9 @@
             <v-flex xs4></v-flex>
             <v-flex xs4>
                 <v-card>
-                    <v-btn :loading="loading3"
-                           :disabled="loading3"
+                    <v-btn
                            color="blue-grey"
-                           class="white--text"
-                           @click="loader = 'loading3'">
+                           class="white--text">
                         Download
                         <v-icon right dark>cloud_download</v-icon>
                     </v-btn>
@@ -27,15 +25,15 @@
                               hide-details></v-text-field>
             </v-card-title>
             <v-data-table :headers="headers"
-                          :items="desserts"
+                          :items="reportData"
                           :search="search">
                 <template slot="items" slot-scope="props" class="align: left">
-                    <td>{{ props.item.name }}</td>
-                    <td class="text-xs-left">{{ props.item.reportType }}</td>
-                    <td class="text-xs-left">{{ props.item.validity }}</td>
-                    <td class="text-xs-left">{{ props.item.purpose }}</td>
-                    <td class="text-xs-left">{{ props.item.from }}</td>
-                    <td class="text-xs-left">{{ props.item.to }}</td>
+                    <td>{{ props.item.treatment }}</td>
+                    <td class="text-xs-left">{{ props.item.budget }}</td>
+                    <td class="text-xs-left">{{ props.item.cosT_ }}</td>
+                    <td class="text-xs-left">{{ props.item.remaininG_LIFE }}</td>
+                    <td class="text-xs-left">{{ props.item.benefit }}</td>
+                    <td class="text-xs-left">{{ props.item.area }}</td>
                 </template>
                 <v-alert slot="no-results" :value="true" color="error" icon="warning">
                     Your search for "{{ search }}" found no results.
@@ -49,119 +47,51 @@
     import Vue from 'vue';
     import { Component } from 'vue-property-decorator';
 
+    import axios from 'axios'
+
+    axios.defaults.baseURL = process.env.VUE_APP_URL
+
+    interface Data {
+        treatment: string;
+        budget: string;
+        cosT_: string;
+        remaininG_LIFE: string;
+        benefit: string;
+        area: string;
+    }
+
     @Component
     export default class ReportData extends Vue {
 
-        loader: any = null;
+        reportData: any[] = [];
 
         data() {
             return {
                 search: '',
                 headers: [{
-                    text: 'Report name',
+                    text: 'Treatment',
                     align: 'left',
                     sortable: false,
-                    value: 'name'
+                    value: 'treatment'
                 },
-                    { text: 'Report type', align: 'left', value: 'type' },
-                    { text: 'Validity', align: 'left', value: 'valid' },
-                    { text: 'Purpose', align: 'left', value: 'purpose' },
-                    { text: 'From', align: 'left', value: 'from' },
-                    { text: 'To', align: 'left', value: 'to' }
-                ],
-                desserts: [
-                    {
-                        value: false,
-                        name: 'First report',
-                        reportType: 159,
-                        validity: 'true',
-                        purpose: 30,
-                        from: 'Saransh',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Second report',
-                        reportType: 237,
-                        validity: 'true',
-                        purpose: 37,
-                        from: 'Brendon',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Third report',
-                        reportType: 262,
-                        validity: 'true',
-                        purpose: 23,
-                        from: 'Chad',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Fourth report',
-                        reportType: 305,
-                        validity: 'true',
-                        purpose: 67,
-                        from: 'William',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Fifth report',
-                        reportType: 356,
-                        validity: 'true',
-                        purpose: 49,
-                        from: 'Jake',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'First report',
-                        reportType: 375,
-                        validity: 'true',
-                        purpose: 94,
-                        from: 'ARA',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Seventh report',
-                        reportType: 392,
-                        validity: 'true',
-                        purpose: 98,
-                        from: 'Some person',
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Eighth report',
-                        reportType: 408,
-                        validity: 'true',
-                        purpose: 87,
-                        from: 6.5,
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Ninth report',
-                        reportType: 452,
-                        validity: 'true',
-                        purpose: 51,
-                        from: 4.9,
-                        to: 'Some person'
-                    },
-                    {
-                        value: false,
-                        name: 'Tenth report',
-                        reportType: 518,
-                        validity: 'true',
-                        purpose: 65,
-                        from: 7,
-                        to: 'Some person'
-                    }
+                    { text: 'Budget', align: 'left', value: 'budget' },
+                    { text: 'Cost', align: 'left', value: 'cosT_' },
+                    { text: 'Remaining Life', align: 'left', value: 'remaininG_LIFE' },
+                    { text: 'Benefit', align: 'left', value: 'benefit' },
+                    { text: 'Area', align: 'left', value: 'area' }
                 ]
             }
+        }
+
+        mounted() {
+            axios
+                .get('/api/REPORT_13_9')
+                .then(response => (response.data as Promise<any[]>))
+                .then(data => {
+                    this.reportData = data
+                }, error => {
+                    console.log(error);
+                });
         }
 
     }

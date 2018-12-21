@@ -176,15 +176,244 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AGE.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="ASSET.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ASSETS_CALCULATED.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ATTRIBUTES_.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ATTRIBUTES_CALCULATED.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BENEFITCOST_13_9.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BridgeCare.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BridgeCare.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BridgeCare.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BridgeCare.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BridgeCare.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="BRIDGE_TYPE.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BRIDGE_TYPE_ALT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CALCULATEFIELD.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="COLUMNHEADER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="COMMITTED_.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="COMMIT_CONSEQUENCES.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CONDITIONAL_RSL.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CONNECTION_PARAMETERS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CONSEQUENCE.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CONSTRUCTION_HISTORY.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\REPORT_13_9Controller.cs" />
     <Compile Include="Controllers\TodosController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="COST.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CR.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CRITERIA_SEGMENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CRS_COEFFICIENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CRS_HIST.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="dbo_SEED_DECK_RAW.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DEFICIENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DYNAMIC_SEGMENTATION.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DYNAMIC_SEGMENTATION_RESULT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FEASIBILITY.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FUNCTIONAL_CLASSFICATION.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="GROUPHEADER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="INVESTMENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IRI.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MATERIAL.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MULTILINE_GEOMETRIES.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MULTILINE_GEOMETRIES_DEF.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MULTILINE_GEOMETRIES_JOIN.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MULTIUSER_LOCK.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NETWORK.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NETWORK_DEFINITION.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NETWORK_DEFINITIONS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NETWORK_TREE.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PAGEHEADER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PCI.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PCI_DETAIL.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PCI_DISTRESS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PCI_VALIDATION.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PCI_VALIDATION_LINEAR.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PENNDOT_DURATION.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PERFORMANCE.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PRIORITIZEDNEED.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PRIORITY.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PRIORITYFUND.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="REPORT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="REPORT_13_9.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ROADNAME.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ROLLUP_CONTROL.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ROWDATA.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SCHEDULED.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SECTION_13.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_ACTIONGROUPS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_ACTIONS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_USERGROUPS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_USERGROUP_ACTIONGROUP_PER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_USERGROUP_ACTION_PER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_USERS.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_USER_ACTIONGROUP_PER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEC_USER_ACTION_PER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEED_CULV_RAW.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEED_DECK_RAW.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEED_SUB_RAW.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEED_SUP_RAW.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEGMENT_13_NS0.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SEGMENT_CONTROL.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
     <Compile Include="SimpleTest.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -200,14 +429,58 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SimpleTest.edmx</DependentUpon>
     </Compile>
+    <Compile Include="SIMULATION.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SIMULATION_13_9.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TARGET.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TARGET_13_9.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TARGET_DEFICIENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
     <Compile Include="Todo.cs">
       <DependentUpon>SimpleTest.tt</DependentUpon>
     </Compile>
+    <Compile Include="TREATMENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TREATMENT_CONSEQUENCES.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="X.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="YEARLYINVESTMENT.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BridgeCare.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>BridgeCare.edmx</DependentUpon>
+      <LastGenOutput>BridgeCare.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="BridgeCare.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>BridgeCare.edmx</DependentUpon>
+      <LastGenOutput>BridgeCare.cs</LastGenOutput>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="connection.config" />
+    <EntityDeploy Include="BridgeCare.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>BridgeCare.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="BridgeCare.edmx.diagram">
+      <DependentUpon>BridgeCare.edmx</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\DebugProfile.pubxml" />
     <None Include="Properties\PublishProfiles\ReleaseProfile.pubxml" />
     <Content Include="SimpleTest.Context.tt">
