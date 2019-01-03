@@ -26,9 +26,9 @@ namespace AspWebApi.Services
 
             var yearsForBudget = db.YEARLYINVESTMENTs.Where(_ => _.SIMULATIONID == data.SimulationId)
                                                      .OrderBy(year => year.YEAR_)
-                                                     .Select(p => p.YEAR_);
+                                                     .Select(p => p.YEAR_).Distinct();
+
             var totalYears = yearsForBudget.Count();
-            var arrayColumns = totalYears + 2;
 
             using (var bc = new BridgeCareEntities())
             {
@@ -36,14 +36,14 @@ namespace AspWebApi.Services
                 dataForExcel = reportData.ToList();
             }
 
-            using (ExcelPackage excelPackage = new ExcelPackage())
-            {
-                //create a WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                worksheet.Cells["A1:F1"].LoadFromText("Facility, Section, Treatment, NumberTreatment, IsCommitted, Years");
-                worksheet.Cells["A2"].LoadFromCollection(dataForExcel);
-                excelPackage.SaveAs(new System.IO.FileInfo(@"C:\Users\sbhardwaj\Downloads\New.xlsx"));
-            }
+            //using (ExcelPackage excelPackage = new ExcelPackage())
+            //{
+            //    //create a WorkSheet
+            //    ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+            //    worksheet.Cells["A1:F1"].LoadFromText("Facility, Section, Treatment, NumberTreatment, IsCommitted, Years");
+            //    worksheet.Cells["A2"].LoadFromCollection(dataForExcel);
+            //    excelPackage.SaveAs(new System.IO.FileInfo(@"C:\Users\sbhardwaj\Downloads\New.xlsx"));
+            //}
         }
     }
 }
