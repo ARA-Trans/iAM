@@ -48,6 +48,9 @@
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
     <Content Include="src\assets\logo.svg" />
+    <Content Include="src\components\DetailedReport.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\HelloWorld.vue" />
     <Content Include="src\components\ReportData.vue">
       <SubType>Code</SubType>
@@ -65,7 +68,6 @@
     <None Include="Web.Debug.config">
       <SubType>Code</SubType>
     </None>
-    <None Include="VuejsAppPublish.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />

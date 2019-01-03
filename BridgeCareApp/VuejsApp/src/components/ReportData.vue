@@ -2,16 +2,6 @@
     <v-container class="grey lighten-4">
         <v-layout row wrap>
             <v-flex xs4></v-flex>
-            <v-flex xs4>
-                <v-card>
-                    <v-btn
-                           color="blue-grey"
-                           class="white--text">
-                        Download
-                        <v-icon right dark>cloud_download</v-icon>
-                    </v-btn>
-                </v-card>
-            </v-flex>
             <v-flex xs4></v-flex>
         </v-layout>
         <v-card>

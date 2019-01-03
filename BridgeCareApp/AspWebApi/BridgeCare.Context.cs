@@ -18,6 +18,7 @@ namespace AspWebApi
         public BridgeCareEntities()
             : base("name=BridgeCareEntities")
         {
+            this.Configuration.LazyLoadingEnabled = false;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -91,7 +92,7 @@ namespace AspWebApi
         public virtual DbSet<PCI_VALIDATION> PCI_VALIDATION { get; set; }
         public virtual DbSet<PCI_VALIDATION_LINEAR> PCI_VALIDATION_LINEAR { get; set; }
         public virtual DbSet<PENNDOT_DURATION> PENNDOT_DURATION { get; set; }
-        public virtual DbSet<REPORT_13_9> REPORT_13_9 { get; set; }
+        //public virtual DbSet<REPORT_13_9> REPORT_13_9 { get; set; }
         public virtual DbSet<ROLLUP_CONTROL> ROLLUP_CONTROL { get; set; }
         public virtual DbSet<SECTION_13> SECTION_13 { get; set; }
         public virtual DbSet<SEGMENT_13_NS0> SEGMENT_13_NS0 { get; set; }

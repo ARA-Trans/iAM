@@ -51,6 +51,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -94,6 +97,7 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -242,9 +246,10 @@
     <Compile Include="CONSTRUCTION_HISTORY.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\REPORT_13_9Controller.cs" />
+    <Compile Include="Controllers\DetailedReportController.cs" />
+    <Compile Include="Controllers\NetworksController.cs" />
+    <Compile Include="Controllers\SimulationsController.cs" />
     <Compile Include="Controllers\TodosController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="COST.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
@@ -293,6 +298,10 @@
     <Compile Include="MATERIAL.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BridgeCareEntities.cs" />
+    <Compile Include="Models\DetailedReportModel.cs" />
+    <Compile Include="Models\NetworkModel.cs" />
+    <Compile Include="Models\SimulationModel.cs" />
     <Compile Include="MULTILINE_GEOMETRIES.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
@@ -354,9 +363,6 @@
     <Compile Include="REPORT.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
-    <Compile Include="REPORT_13_9.cs">
-      <DependentUpon>BridgeCare.tt</DependentUpon>
-    </Compile>
     <Compile Include="ROADNAME.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
@@ -414,6 +420,9 @@
     <Compile Include="SEGMENT_CONTROL.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\DetailedReportRepository.cs" />
+    <Compile Include="Services\NetworkRepository.cs" />
+    <Compile Include="Services\SimulationRepository.cs" />
     <Compile Include="SimpleTest.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -512,7 +521,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

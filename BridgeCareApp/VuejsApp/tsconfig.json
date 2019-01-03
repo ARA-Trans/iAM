@@ -33,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx", "../AspWebApi/Entities/BridgeCareEntities.cs", "../AspWebApi/Models/SimulationModel.cs"
   ],
   "exclude": [
     "node_modules"
