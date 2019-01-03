@@ -22,11 +22,6 @@ export default new Router({
             component: Todo
         },
         {
-            path: '/ReportData',
-            name: 'ReportData',
-            component: ReportData
-        },
-        {
             path: '/DetailedReport',
             name: 'DetailedReport',
             component: DetailedReport
