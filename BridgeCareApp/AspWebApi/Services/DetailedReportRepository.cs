@@ -60,6 +60,10 @@ namespace AspWebApi.Services
                 var yearsForBudget = detailedReportModel.GetYearsData(data);
                 totalYears = yearsForBudget.ToArray();
             }
+            catch(TimeoutException ex)
+            {
+                throw new TimeoutException("The server has timed out. Please try after some time");
+            }
             catch(Exception ex)
             {
                 throw new InvalidOperationException("Years data is not present in the database");
@@ -69,7 +73,11 @@ namespace AspWebApi.Services
             {
                 dataForExcel = detailedReportModel.GetDetailedReportData(data);
             }
-            catch(Exception ex)
+            catch (TimeoutException ex)
+            {
+                throw new TimeoutException("The server has timed out. Please try after some time");
+            }
+            catch (Exception ex)
             {
                 throw new InvalidOperationException("Network and/or simulation tables are not present in the database");
             }

@@ -41,9 +41,13 @@ namespace AspWebApi.Controllers
             {
                 response.Content = new ByteArrayContent(detailedReportRepository.GetDetailedReportData(data));
             }
+            catch (TimeoutException ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try after some time");
+            }
             catch
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Network and/or simulation tables are not present in the database");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Network and/or simulation tables are not present in the database");
 
             }
             response.Content.Headers.ContentType = mediaType;
