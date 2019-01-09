@@ -1,10 +1,12 @@
-﻿using AspWebApi.Services;
+﻿using AspWebApi.Models;
+using AspWebApi.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace AspWebApi.Controllers
@@ -27,14 +29,27 @@ namespace AspWebApi.Controllers
 
         // POST: api/DetailedReport
         [HttpPost]
-        public IHttpActionResult Post([FromBody] ReportData data)
+        public HttpResponseMessage Post([FromBody] ReportData data)
         {
             if(!ModelState.IsValid)
             {
-                return BadRequest("Invalid data");
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Given Network Id and/or Simulation Id are not valid");
             }
-            detailedReportRepository.GetDetailedReportData(data);
-            return Ok();
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
+            try
+            {
+                response.Content = new ByteArrayContent(detailedReportRepository.GetDetailedReportData(data));
+            }
+            catch
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Network and/or simulation tables are not present in the database");
+
+            }
+            response.Content.Headers.ContentType = mediaType;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            response.Content.Headers.ContentDisposition.FileName = "DetailedReport.xlsx";
+            return response;
         }
 
         // PUT: api/DetailedReport/5
@@ -46,10 +61,5 @@ namespace AspWebApi.Controllers
         public void Delete(int id)
         {
         }
-    }
-    public class ReportData
-    {
-        public int NetworkId;
-        public int SimulationId;
     }
 }

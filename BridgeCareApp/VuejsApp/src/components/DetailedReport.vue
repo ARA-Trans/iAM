@@ -6,7 +6,7 @@
                           label="Select a Network"
                           item-text="networkName"
                           item-value="networkId"
-                          v-on:change="getNetwork"
+                          v-on:change="getNetworkId"
                           outline></v-select>
             </v-flex>
             <v-flex xs12 sm6 d-flex>
@@ -15,17 +15,20 @@
                           :disabled="noNetwork"
                           item-text="simulationName"
                           item-value="simulationId"
-                          v-on:change="getSimulation"
+                          v-on:change="getSimulationId"
                           outline></v-select>
             </v-flex>
             <v-flex xs4>
-                    <v-btn color="blue-grey"
-                           class="white--text"
-                           :disabled="notAllSelected"
-                           v-on:click="downloadReport">
-                        Download
-                        <v-icon right dark>cloud_download</v-icon>
-                    </v-btn>
+                <v-btn color="blue-grey"
+                       class="white--text"
+                       :disabled="notAllSelected"
+                       v-on:click="downloadReport">
+                    Download
+                    <v-icon right dark>cloud_download</v-icon>
+                </v-btn>
+            </v-flex>
+            <v-flex xs12 v-if="downloadProgress" v-model="loading">
+                <ShowProgress />
             </v-flex>
         </v-layout>
     </v-container>
@@ -36,9 +39,14 @@
     import { Component } from 'vue-property-decorator';
     import axios from 'axios'
 
+    //@ts-ignore
+    import ShowProgress from './ShowProgress'
+
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
-    @Component
+    @Component({
+        components: { ShowProgress }
+    })
     export default class DetailedReport extends Vue {
 
         networks: any[] = []
@@ -47,8 +55,12 @@
         simulationId: number = 0
         notAllSelected: boolean = true
         noNetwork: boolean = true
+        downloadProgress: boolean = false
+        loading: boolean = false
 
         created() {
+            this.downloadProgress = true
+            this.loading = true
             axios
                 .get('/api/Networks')
                 .then(response => (response.data as Promise<any[]>))
@@ -56,12 +68,16 @@
                     for (let i = 0; i < data.length; i++) {
                         this.networks.push(data[i])
                     }
+                    this.downloadProgress = false
+                    this.loading = false
                 }, error => {
+                    this.downloadProgress = false
+                    this.loading = false
                     console.log(error)
                 });
         }
 
-        getNetwork(id: any) {
+        getNetworkId(id: any) {
             this.networkId = id
             axios
                 .get(`/api/Simulations/${id}`)
@@ -76,13 +92,38 @@
                 });
         }
 
-        getSimulation(a: any) {
-            this.simulationId = a
+        getSimulationId(id: any) {
+            this.simulationId = id
             this.notAllSelected = false
         }
 
         downloadReport() {
-            console.log("Network Id" + " " + this.networkId)
+            this.downloadProgress = true
+            this.loading = true
+
+            axios({
+                method: 'post',
+                url: '/api/DetailedReport',
+                responseType: 'blob',
+                data: {
+                    NetworkId: this.networkId,
+                    SimulationId: this.simulationId
+                }
+            })
+            .then(response => {
+                this.downloadProgress = false
+                this.loading = false
+                const url = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', 'DetailedReport.xlsx')
+                link.click()
+            })
+            .catch(error => {
+                this.downloadProgress = false
+                this.loading = false
+                console.log(error)
+            })
         }
     }
 </script>
