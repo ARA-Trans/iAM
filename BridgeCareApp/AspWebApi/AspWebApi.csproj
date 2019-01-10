@@ -421,6 +421,7 @@
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
     <Compile Include="Services\DetailedReportRepository.cs" />
+    <Compile Include="ApplicationLogs\Logger.cs" />
     <Compile Include="Services\NetworkRepository.cs" />
     <Compile Include="Services\SimulationRepository.cs" />
     <Compile Include="SimpleTest.Context.cs">

@@ -1,6 +1,9 @@
-﻿using AspWebApi.Controllers;
+﻿using AspWebApi.ApplicationLogs;
+using AspWebApi.Controllers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace AspWebApi.Models
@@ -21,6 +24,7 @@ namespace AspWebApi.Models
         public int Years { get; set; }
 
         private List<DetailedReportModel> dataForExcel = new List<DetailedReportModel>();
+        private IQueryable<int> yearsForBudget;
         private BridgeCareEntities db = new BridgeCareEntities();
 
         public List<DetailedReportModel> GetDetailedReportData(ReportData data)
@@ -34,18 +38,49 @@ namespace AspWebApi.Models
 
             using (var bc = new BridgeCareEntities())
             {
-                var reportData = bc.Database.SqlQuery<DetailedReportModel>(getReport);
-                dataForExcel = reportData.ToList();
+                try
+                {
+                    var reportData = bc.Database.SqlQuery<DetailedReportModel>(getReport);
+                    dataForExcel = reportData.ToList();
+                }
+                catch(SqlException ex)
+                {
+                    if (ex.Number == -2 || ex.Number == 11)
+                    {
+                        Logger.Error("The server has timed out. Please try after some time", "GetDetailedReportData(ReportData data)");
+                        throw new TimeoutException("The server has timed out. Please try after some time");
+                    }
+                    if(ex.Number == 208)
+                    {
+                        Logger.Error("Network or simulation table does not exist in the database", "GetDetailedReportData(ReportData data)");
+                        throw new InvalidOperationException("Network or simulation table does not exist in the database");
+                    }
+                }
             }
             return dataForExcel;
         }
 
         public IQueryable<int> GetYearsData(ReportData data)
         {
-            var yearsForBudget = db.YEARLYINVESTMENTs.Where(_ => _.SIMULATIONID == data.SimulationId)
+            try
+            {
+                yearsForBudget = db.YEARLYINVESTMENTs.Where(_ => _.SIMULATIONID == data.SimulationId)
                                                      .OrderBy(year => year.YEAR_)
                                                      .Select(p => p.YEAR_).Distinct();
-
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == -2 || ex.Number == 11)
+                {
+                    Logger.Error("The server has timed out. Please try after some time", "CreateExcelReport(ReportData data)");
+                    throw new TimeoutException("The server has timed out. Please try after some time");
+                }
+                if (ex.Number == 208)
+                {
+                    Logger.Error("Years data does not exist in the database", "CreateExcelReport(ReportData data)");
+                    throw new InvalidOperationException("Years data does not exist in the database");
+                }
+            }
             return yearsForBudget;
         }
     }

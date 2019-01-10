@@ -48,41 +48,18 @@ namespace AspWebApi.Services
             ExcelValues.Add(false, OnCommittedFalse);
         }
 
-        public byte[] GetDetailedReportData(ReportData data)
+        public byte[] CreateExcelReport(ReportData data)
         {
             DetailedReportModel detailedReportModel = new DetailedReportModel();
             int[] totalYears = { };
             List<DetailedReportModel> dataForExcel = new List<DetailedReportModel>();
 
             // Getting data from the database
-            try
-            {
-                var yearsForBudget = detailedReportModel.GetYearsData(data);
-                totalYears = yearsForBudget.ToArray();
-            }
-            catch(TimeoutException ex)
-            {
-                throw new TimeoutException("The server has timed out. Please try after some time");
-            }
-            catch(Exception ex)
-            {
-                throw new InvalidOperationException("Years data is not present in the database");
-            }
-            
-            try
-            {
-                dataForExcel = detailedReportModel.GetDetailedReportData(data);
-            }
-            catch (TimeoutException ex)
-            {
-                throw new TimeoutException("The server has timed out. Please try after some time");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Network and/or simulation tables are not present in the database");
-            }
+            var yearsForBudget = detailedReportModel.GetYearsData(data);
+            totalYears = yearsForBudget.ToArray();
 
-            
+            dataForExcel = detailedReportModel.GetDetailedReportData(data);
+
             var totalYearsCount = totalYears.Count();
 
             List<string> headers = new List<string>();
@@ -133,10 +110,10 @@ namespace AspWebApi.Services
                     }
                 }
                 worksheet.Cells.AutoFitColumns();
-                excelPackage.Workbook.Properties.Title = "Attempts";
                 return excelPackage.GetAsByteArray();
             }
         }
+
         public class ConditionalData
         {
             public string Treatment { get; set; }

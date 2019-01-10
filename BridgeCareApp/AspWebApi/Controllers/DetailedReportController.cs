@@ -1,8 +1,10 @@
-﻿using AspWebApi.Models;
+﻿using AspWebApi.ApplicationLogs;
+using AspWebApi.Models;
 using AspWebApi.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -39,16 +41,16 @@ namespace AspWebApi.Controllers
             MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
             try
             {
-                response.Content = new ByteArrayContent(detailedReportRepository.GetDetailedReportData(data));
+                response.Content = new ByteArrayContent(detailedReportRepository.CreateExcelReport(data));
             }
-            catch (TimeoutException ex)
+            catch (TimeoutException)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try after some time");
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try after some time");
             }
-            catch
+            catch(InvalidOperationException)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Network and/or simulation tables are not present in the database");
-
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, 
+                    "Selected Network table and/or simulation table are not present in the database");
             }
             response.Content.Headers.ContentType = mediaType;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");

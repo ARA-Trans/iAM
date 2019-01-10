@@ -31,11 +31,6 @@ namespace AspWebApi.Controllers
         public IHttpActionResult GetSIMULATION(int id)
         {
             // this `id` is network id
-            //SIMULATION sIMULATION = simulationRepository.FindWithKey(id);
-            //if (sIMULATION == null)
-            //{
-            //    return NotFound();
-            //}
             var getResults = simulationRepository.GetSelectedSimulation(id);
             if(getResults == null)
             {
