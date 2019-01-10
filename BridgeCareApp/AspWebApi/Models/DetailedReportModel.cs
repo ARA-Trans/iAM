@@ -56,6 +56,11 @@ namespace AspWebApi.Models
                         throw new InvalidOperationException("Network or simulation table does not exist in the database");
                     }
                 }
+                catch(OutOfMemoryException)
+                {
+                    Logger.Error("The server is out of memory. Please try after some time", "GetDetailedReportData(ReportData data)");
+                    throw new OutOfMemoryException("The server is out of memory. Please try after some time");
+                }
             }
             return dataForExcel;
         }

@@ -52,6 +52,10 @@ namespace AspWebApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, 
                     "Selected Network table and/or simulation table are not present in the database");
             }
+            catch (OutOfMemoryException)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server is out of Memory. Please try after some time");
+            }
             response.Content.Headers.ContentType = mediaType;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
             response.Content.Headers.ContentDisposition.FileName = "DetailedReport.xlsx";
