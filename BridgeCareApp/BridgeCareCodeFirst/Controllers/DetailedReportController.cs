@@ -1,17 +1,14 @@
-﻿using AspWebApi.ApplicationLogs;
-using AspWebApi.Models;
-using AspWebApi.Services;
+﻿using BridgeCareCodeFirst.Models;
+using BridgeCareCodeFirst.Services;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 
-namespace AspWebApi.Controllers
+namespace BridgeCareCodeFirst.Controllers
 {
     public class DetailedReportController : ApiController
     {
@@ -33,7 +30,7 @@ namespace AspWebApi.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody] ReportData data)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Given Network Id and/or Simulation Id are not valid");
             }
@@ -45,11 +42,11 @@ namespace AspWebApi.Controllers
             }
             catch (TimeoutException)
             {
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try after some time");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try after some time");
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, 
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Selected Network table and/or simulation table are not present in the database");
             }
             catch (OutOfMemoryException)
@@ -61,20 +58,5 @@ namespace AspWebApi.Controllers
             response.Content.Headers.ContentDisposition.FileName = "DetailedReport.xlsx";
             return response;
         }
-
-        // PUT: api/DetailedReport/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE: api/DetailedReport/5
-        public void Delete(int id)
-        {
-        }
-    }
-    public class ReportData
-    {
-        public int NetworkId;
-        public int SimulationId;
     }
 }

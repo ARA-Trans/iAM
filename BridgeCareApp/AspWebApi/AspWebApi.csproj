@@ -202,19 +202,19 @@
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
     <Compile Include="BridgeCare.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>BridgeCare.Context.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="BridgeCare.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>BridgeCare.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="BridgeCare.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>BridgeCare.edmx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="BRIDGE_TYPE.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
@@ -249,7 +249,6 @@
     <Compile Include="Controllers\DetailedReportController.cs" />
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
-    <Compile Include="Controllers\TodosController.cs" />
     <Compile Include="COST.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
@@ -286,7 +285,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Entities\BridgeCareEntities.cs" />
     <Compile Include="GROUPHEADER.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
+    <Compile Include="iam_GetReportData_Result.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
     <Compile Include="INVESTMENT.cs">
@@ -298,7 +301,6 @@
     <Compile Include="MATERIAL.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\BridgeCareEntities.cs" />
     <Compile Include="Models\DetailedReportModel.cs" />
     <Compile Include="Models\NetworkModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
@@ -363,6 +365,9 @@
     <Compile Include="REPORT.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
+    <Compile Include="REPORT_13_9.cs">
+      <DependentUpon>BridgeCare.tt</DependentUpon>
+    </Compile>
     <Compile Include="ROADNAME.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
@@ -424,21 +429,6 @@
     <Compile Include="ApplicationLogs\Logger.cs" />
     <Compile Include="Services\NetworkRepository.cs" />
     <Compile Include="Services\SimulationRepository.cs" />
-    <Compile Include="SimpleTest.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SimpleTest.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SimpleTest.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SimpleTest.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SimpleTest.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SimpleTest.edmx</DependentUpon>
-    </Compile>
     <Compile Include="SIMULATION.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
     </Compile>
@@ -453,9 +443,6 @@
     </Compile>
     <Compile Include="TARGET_DEFICIENT.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Todo.cs">
-      <DependentUpon>SimpleTest.tt</DependentUpon>
     </Compile>
     <Compile Include="TREATMENT.cs">
       <DependentUpon>BridgeCare.tt</DependentUpon>
@@ -472,37 +459,23 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BridgeCare.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>BridgeCare.edmx</DependentUpon>
+      <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BridgeCare.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="BridgeCare.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
+    <Content Include="BridgeCare.edmx.diagram">
       <DependentUpon>BridgeCare.edmx</DependentUpon>
+    </Content>
+    <Content Include="BridgeCare.tt">
+      <DependentUpon>BridgeCare.edmx</DependentUpon>
+      <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BridgeCare.cs</LastGenOutput>
     </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="connection.config" />
-    <EntityDeploy Include="BridgeCare.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>BridgeCare.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="BridgeCare.edmx.diagram">
-      <DependentUpon>BridgeCare.edmx</DependentUpon>
-    </Content>
     <None Include="Properties\PublishProfiles\DebugProfile.pubxml" />
     <None Include="Properties\PublishProfiles\ReleaseProfile.pubxml" />
-    <Content Include="SimpleTest.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>SimpleTest.edmx</DependentUpon>
-      <LastGenOutput>SimpleTest.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="SimpleTest.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>SimpleTest.edmx</DependentUpon>
-      <LastGenOutput>SimpleTest.cs</LastGenOutput>
-    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -512,13 +485,10 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <EntityDeploy Include="SimpleTest.edmx">
+    <EntityDeploy Include="BridgeCare.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>SimpleTest.Designer.cs</LastGenOutput>
+      <LastGenOutput>BridgeCare.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="SimpleTest.edmx.diagram">
-      <DependentUpon>SimpleTest.edmx</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

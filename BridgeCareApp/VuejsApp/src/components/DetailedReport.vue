@@ -7,7 +7,8 @@
                           item-text="networkName"
                           item-value="networkId"
                           v-on:change="getNetworkId"
-                          outline></v-select>
+                          outline>
+                </v-select>
             </v-flex>
             <v-flex xs12 sm6 d-flex>
                 <v-select :items="simulations"
@@ -23,9 +24,16 @@
                        class="white--text"
                        :disabled="notAllSelected"
                        v-on:click="downloadReport">
-                    Download
+                    Download Report
                     <v-icon right dark>cloud_download</v-icon>
                 </v-btn>
+                <!--<v-btn color="blue-grey"
+                       class="white--text"
+                       :disabled="notAllSelected"
+                       v-on:click="runSimulation">
+                    Run Simulation
+                    <v-icon right dark>cloud_download</v-icon>
+                </v-btn>-->
             </v-flex>
             <v-flex xs12 v-if="downloadProgress" v-model="loading">
                 <ShowProgress />
@@ -52,6 +60,8 @@
         networks: any[] = []
         simulations: any[] = []
         networkId: number = 0
+        networkName: string = ""
+        simulationName: string = ""
         simulationId: number = 0
         notAllSelected: boolean = true
         noNetwork: boolean = true
@@ -79,6 +89,7 @@
 
         getNetworkId(id: any) {
             this.networkId = id
+            this.networkName = this.networks.find(_ => _.networkId == id).networkName
             axios
                 .get(`/api/Simulations/${id}`)
                 .then(response => (response.data as Promise<any[]>))
@@ -94,6 +105,7 @@
 
         getSimulationId(id: any) {
             this.simulationId = id
+            this.simulationName = this.simulations.find(_ => _.simulationId == id).simulationName
             this.notAllSelected = false
         }
 
@@ -131,6 +143,24 @@
                 this.loading = false
                 console.log(error)
             })
+        }
+
+        runSimulation() {
+            axios({
+                method: 'post',
+                url: '/api/RunSimulation',
+                data: {
+                    NetworkId: this.networkId,
+                    SimulationId: this.simulationId,
+                    NetworkName: this.networkName,
+                    SimulationName: this.simulationName
+                }
+            }).then(response => {
+                console.log(response.data)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
         }
     }
 </script>

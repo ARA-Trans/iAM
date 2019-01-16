@@ -33,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "../AspWebApi/Entities/BridgeCareEntities.cs", "../AspWebApi/Models/SimulationModel.cs"
+    "tests/**/*.tsx", "../AspWebApi/Entities/BridgeCareEntities.cs", "../AspWebApi/Models/SimulationModel.cs", "../BridgeCareCodeFirst/EntityClasses/SECTION_13.cs"
   ],
   "exclude": [
     "node_modules"

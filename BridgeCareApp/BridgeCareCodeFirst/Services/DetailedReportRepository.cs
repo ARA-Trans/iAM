@@ -1,19 +1,14 @@
-﻿using AspWebApi.ApplicationLogs;
-using AspWebApi.Controllers;
-using AspWebApi.Models;
+﻿using BridgeCareCodeFirst.Controllers;
+using BridgeCareCodeFirst.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Web;
 
-namespace AspWebApi.Services
+namespace BridgeCareCodeFirst.Services
 {
     public class DetailedReportRepository
     {
@@ -57,12 +52,12 @@ namespace AspWebApi.Services
 
         public byte[] CreateExcelReport(ReportData data)
         {
-            var bc = new BridgeCareEntities();
             DetailedReportModel detailedReportModel = new DetailedReportModel();
             int[] totalYears = { };
             // Getting data from the database
-            var yearsForBudget = detailedReportModel.GetYearsData(data);
-            var RawQueryForData = detailedReportModel.GetDataForReport(data);
+            BridgeCareContext db = new BridgeCareContext();
+            var yearsForBudget = detailedReportModel.GetYearsData(data, db);
+            var RawQueryForData = detailedReportModel.GetDataForReport(data, db);
 
             totalYears = yearsForBudget.ToArray();
             var totalYearsCount = totalYears.Count();
@@ -114,7 +109,7 @@ namespace AspWebApi.Services
                     }
                 }
                 worksheet.Cells.AutoFitColumns();
-                bc.Dispose();
+                db.Dispose();
                 return excelPackage.GetAsByteArray();
             }
         }

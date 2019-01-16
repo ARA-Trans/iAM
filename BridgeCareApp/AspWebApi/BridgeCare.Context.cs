@@ -12,13 +12,14 @@ namespace AspWebApi
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class BridgeCareEntities : DbContext
     {
         public BridgeCareEntities()
             : base("name=BridgeCareEntities")
         {
-            this.Configuration.LazyLoadingEnabled = false;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -92,7 +93,7 @@ namespace AspWebApi
         public virtual DbSet<PCI_VALIDATION> PCI_VALIDATION { get; set; }
         public virtual DbSet<PCI_VALIDATION_LINEAR> PCI_VALIDATION_LINEAR { get; set; }
         public virtual DbSet<PENNDOT_DURATION> PENNDOT_DURATION { get; set; }
-        //public virtual DbSet<REPORT_13_9> REPORT_13_9 { get; set; }
+        public virtual DbSet<REPORT_13_9> REPORT_13_9 { get; set; }
         public virtual DbSet<ROLLUP_CONTROL> ROLLUP_CONTROL { get; set; }
         public virtual DbSet<SECTION_13> SECTION_13 { get; set; }
         public virtual DbSet<SEGMENT_13_NS0> SEGMENT_13_NS0 { get; set; }
@@ -106,5 +107,18 @@ namespace AspWebApi
         public virtual DbSet<SEED_DECK_RAW> SEED_DECK_RAW { get; set; }
         public virtual DbSet<SEED_SUB_RAW> SEED_SUB_RAW { get; set; }
         public virtual DbSet<SEED_SUP_RAW> SEED_SUP_RAW { get; set; }
+    
+        public virtual ObjectResult<iam_GetReportData_Result> iam_GetReportData(string reportTableName, string reportSection)
+        {
+            var reportTableNameParameter = reportTableName != null ?
+                new ObjectParameter("ReportTableName", reportTableName) :
+                new ObjectParameter("ReportTableName", typeof(string));
+    
+            var reportSectionParameter = reportSection != null ?
+                new ObjectParameter("ReportSection", reportSection) :
+                new ObjectParameter("ReportSection", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<iam_GetReportData_Result>("iam_GetReportData", reportTableNameParameter, reportSectionParameter);
+        }
     }
 }
