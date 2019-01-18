@@ -52,12 +52,12 @@ namespace BridgeCareCodeFirst.Services
 
         public byte[] CreateExcelReport(ReportData data)
         {
-            DetailedReportModel detailedReportModel = new DetailedReportModel();
+            DetailedReportData detailedReportData = new DetailedReportData();
             int[] totalYears = { };
             // Getting data from the database
             BridgeCareContext db = new BridgeCareContext();
-            var yearsForBudget = detailedReportModel.GetYearsData(data, db);
-            var RawQueryForData = detailedReportModel.GetDataForReport(data, db);
+            var yearsForBudget = detailedReportData.GetYearsData(data, db);
+            var RawQueryForData = detailedReportData.GetDataForReport(data, db);
 
             totalYears = yearsForBudget.ToArray();
             var totalYearsCount = totalYears.Count();

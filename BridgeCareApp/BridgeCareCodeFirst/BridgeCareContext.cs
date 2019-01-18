@@ -13,16 +13,27 @@ namespace BridgeCareCodeFirst
         {
         }
 
+        public virtual DbSet<DetailedReportModel> DetailedReportModels { get; set; }
         public virtual DbSet<NETWORK> NETWORKS { get; set; }
         public virtual DbSet<SIMULATION> SIMULATIONS { get; set; }
         public virtual DbSet<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
         public virtual DbSet<REPORT_13_9> REPORT_13_9 { get; set; }
         public virtual DbSet<SECTION_13> SECTION_13 { get; set; }
 
-        //public virtual DbSet<DetailedReportModel> DetailedReportModels { get; set; }
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<DetailedReportModel>()
+                .Property(e => e.FACILITY)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<DetailedReportModel>()
+                .Property(e => e.SECTION)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<DetailedReportModel>()
+                .Property(e => e.TREATMENT)
+                .IsUnicode(false);
+
             modelBuilder.Entity<NETWORK>()
                 .Property(e => e.NETWORK_NAME)
                 .IsUnicode(false);
@@ -100,17 +111,41 @@ namespace BridgeCareCodeFirst
                 .Property(e => e.BUDGETNAME)
                 .IsUnicode(false);
 
-            //modelBuilder.Entity<DetailedReportModel>()
-            //    .Property(e => e.Facility)
-            //    .IsUnicode(false);
+            modelBuilder.Entity<REPORT_13_9>()
+                .Property(e => e.TREATMENT)
+                .IsUnicode(false);
 
-            //modelBuilder.Entity<DetailedReportModel>()
-            //    .Property(e => e.Section)
-            //    .IsUnicode(false);
+            modelBuilder.Entity<REPORT_13_9>()
+                .Property(e => e.BUDGET)
+                .IsUnicode(false);
 
-            //modelBuilder.Entity<DetailedReportModel>()
-            //    .Property(e => e.Treatment)
-            //    .IsUnicode(false);
+            modelBuilder.Entity<REPORT_13_9>()
+                .Property(e => e.RLHASH)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<REPORT_13_9>()
+                .Property(e => e.CHANGEHASH)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SECTION_13>()
+                .Property(e => e.FACILITY)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SECTION_13>()
+                .Property(e => e.DIRECTION)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SECTION_13>()
+                .Property(e => e.SECTION)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SECTION_13>()
+                .Property(e => e.UNITS)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SECTION_13>()
+                .Property(e => e.GEOMETRY)
+                .IsUnicode(false);
         }
     }
 }

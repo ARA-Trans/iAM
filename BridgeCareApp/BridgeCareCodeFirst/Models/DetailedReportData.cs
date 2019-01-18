@@ -1,13 +1,15 @@
-﻿using BridgeCareCodeFirst.Controllers;
+﻿using BridgeCareCodeFirst.EntityClasses;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
 
 namespace BridgeCareCodeFirst.Models
 {
-    public class DetailedReportModel
+    public class DetailedReportData
     {
         [Column(TypeName = "VARCHAR")]
         public string Facility { get; set; }
@@ -23,7 +25,7 @@ namespace BridgeCareCodeFirst.Models
         public int Years { get; set; }
 
         private IQueryable<int> yearsForBudget;
-        private DbRawSqlQuery<DetailedReportModel> RawQueryForData = null;
+        private IQueryable<DetailedReportData> RawQueryForData = null;
 
         public IQueryable<int> GetYearsData(ReportData data, BridgeCareContext db)
         {
@@ -48,7 +50,7 @@ namespace BridgeCareCodeFirst.Models
             return yearsForBudget;
         }
 
-        public DbRawSqlQuery<DetailedReportModel> GetDataForReport(ReportData data, BridgeCareContext db)
+        public IQueryable<DetailedReportData> GetDataForReport(ReportData data, BridgeCareContext db)
         {
             string getReport =
                 "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
@@ -59,7 +61,14 @@ namespace BridgeCareCodeFirst.Models
 
             try
             {
-                RawQueryForData = db.Database.SqlQuery<DetailedReportModel>(getReport);
+                //BridgeCareContext bc = new BridgeCareContext();
+                //SqlParameter param1 = new SqlParameter("@ReportTableName", "Report_" + data.NetworkId + "_" + data.SimulationId);
+                //SqlParameter param2 = new SqlParameter("@ReportSection", "Section_" + data.NetworkId);
+                //var commandExecutionStatus = bc.Database.ExecuteSqlCommand("iam_GetReportData @ReportTableName, @ReportSection", param1, param2);
+                //bc.Dispose();
+                //RawQueryForData = db.DetailedReportModels.AsNoTracking().AsQueryable();
+                //var test = DetailedReportModels1.ToList();
+               RawQueryForData = db.Database.SqlQuery<DetailedReportData>(getReport).AsQueryable();
             }
             catch (SqlException ex)
             {
