@@ -28,7 +28,7 @@ namespace BridgeCareCodeFirst.Controllers
 
         // POST: api/DetailedReport
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] ReportData data)
+        public HttpResponseMessage Post([FromBody] ReportDataModel data)
         {
             if (!ModelState.IsValid)
             {

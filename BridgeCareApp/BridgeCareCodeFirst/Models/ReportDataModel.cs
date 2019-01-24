@@ -5,7 +5,7 @@ using System.Web;
 
 namespace BridgeCareCodeFirst.Models
 {
-    public class ReportData
+    public class ReportDataModel
     {
         public int NetworkId;
         public int SimulationId;

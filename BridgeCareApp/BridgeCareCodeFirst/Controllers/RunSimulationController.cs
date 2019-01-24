@@ -26,7 +26,7 @@ namespace BridgeCareCodeFirst.Controllers
         }
 
         // POST: api/RunSimulation
-        public void Post([FromBody]ReportData data)
+        public void Post([FromBody]ReportDataModel data)
         {
             try
             {

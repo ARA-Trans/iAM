@@ -212,18 +212,24 @@
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
+    <Compile Include="EntityClasses\Attributes.cs" />
+    <Compile Include="EntityClasses\Deficients.cs" />
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
+    <Compile Include="EntityClasses\INVESTMENTS.cs" />
+    <Compile Include="EntityClasses\Targets.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BudgetReportData.cs" />
+    <Compile Include="Models\BudgetReportModel.cs" />
+    <Compile Include="Models\DeficientResultModel.cs" />
+    <Compile Include="Models\DeficientOrTargetData.cs" />
     <Compile Include="Models\DetailedReportData.cs" />
     <Compile Include="Models\NetworkModel.cs" />
-    <Compile Include="Models\ReportData.cs" />
+    <Compile Include="Models\ReportDataModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EntityClasses\REPORT_13_9.cs" />
-    <Compile Include="EntityClasses\SECTION_13.cs" />
     <Compile Include="Services\DetailedReportRepository.cs" />
     <Compile Include="Services\NetworkRepository.cs" />
     <Compile Include="Services\SimulationRepository.cs" />

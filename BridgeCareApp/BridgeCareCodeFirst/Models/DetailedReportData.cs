@@ -1,5 +1,6 @@
 ﻿using BridgeCareCodeFirst.EntityClasses;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
@@ -24,16 +25,22 @@ namespace BridgeCareCodeFirst.Models
         public bool IsCommitted { get; set; }
         public int Years { get; set; }
 
-        private IQueryable<int> yearsForBudget;
         private IQueryable<DetailedReportData> RawQueryForData = null;
 
-        public IQueryable<int> GetYearsData(ReportData data, BridgeCareContext db)
+        public List<YearlyData> GetYearsData(ReportDataModel data)
         {
+            BridgeCareContext db = new BridgeCareContext();
+            List<YearlyData> yearsForBudget = new List<YearlyData>();
             try
             {
                 yearsForBudget = db.YEARLYINVESTMENTs.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId)
-                                                             .OrderBy(year => year.YEAR_)
-                                                             .Select(p => p.YEAR_).Distinct();
+                                                              .OrderBy(year => year.YEAR_)
+                                                              .Select(p => new YearlyData
+                                                              {
+                                                                  Year = p.YEAR_,
+                                                                  Amount = p.AMOUNT,
+                                                                  BudgetName = p.BUDGETNAME
+                                                              }).ToList();
             }
             catch (SqlException ex)
             {
@@ -47,10 +54,11 @@ namespace BridgeCareCodeFirst.Models
                     throw new InvalidOperationException("Years data does not exist in the database");
                 }
             }
+            db.Dispose();
             return yearsForBudget;
         }
 
-        public IQueryable<DetailedReportData> GetDataForReport(ReportData data, BridgeCareContext db)
+        public IQueryable<DetailedReportData> GetDataForReport(ReportDataModel data, BridgeCareContext db)
         {
             string getReport =
                 "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
@@ -61,13 +69,6 @@ namespace BridgeCareCodeFirst.Models
 
             try
             {
-                //BridgeCareContext bc = new BridgeCareContext();
-                //SqlParameter param1 = new SqlParameter("@ReportTableName", "Report_" + data.NetworkId + "_" + data.SimulationId);
-                //SqlParameter param2 = new SqlParameter("@ReportSection", "Section_" + data.NetworkId);
-                //var commandExecutionStatus = bc.Database.ExecuteSqlCommand("iam_GetReportData @ReportTableName, @ReportSection", param1, param2);
-                //bc.Dispose();
-                //RawQueryForData = db.DetailedReportModels.AsNoTracking().AsQueryable();
-                //var test = DetailedReportModels1.ToList();
                RawQueryForData = db.Database.SqlQuery<DetailedReportData>(getReport).AsQueryable();
             }
             catch (SqlException ex)
@@ -88,6 +89,13 @@ namespace BridgeCareCodeFirst.Models
                 throw new OutOfMemoryException("The server is out of memory. Please try after some time");
             }
             return RawQueryForData;
+        }
+
+        public class YearlyData
+        {
+            public int Year { get; set; }
+            public double? Amount { get; set; }
+            public string BudgetName { get; set; }
         }
     }
 }
