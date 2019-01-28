@@ -1,11 +1,17 @@
-﻿using Newtonsoft.Json.Serialization;
+﻿using BridgeCare.App_Start;
+using BridgeCare.Models;
+using BridgeCare.Services;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using Unity;
+using Unity.Lifetime;
+using static BridgeCare.Models.BudgetReportData;
 
-namespace BridgeCareCodeFirst
+namespace BridgeCare
 {
     public static class WebApiConfig
     {
@@ -25,6 +31,14 @@ namespace BridgeCareCodeFirst
             // Enable CORS for the Vue App
             var cors = new EnableCorsAttribute("*", "*", "*");
             config.EnableCors(cors);
+
+            var container = new UnityContainer();
+            container.RegisterType<INetwork, NetworkRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<ISimulation, SimulationRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<IBudgetReportData, BudgetReportData>(new HierarchicalLifetimeManager());
+            container.RegisterType<ICostDetails, CostDetails>(new HierarchicalLifetimeManager());
+            container.RegisterType<IDetailedReport, DetailedReportRepository>(new HierarchicalLifetimeManager());
+            config.DependencyResolver = new UnityResolver(container);
 
             // Set JSON formatter as default one and remove XmlFormatter
 

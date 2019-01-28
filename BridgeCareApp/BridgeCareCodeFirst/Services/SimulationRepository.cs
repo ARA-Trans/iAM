@@ -1,23 +1,23 @@
-﻿using BridgeCareCodeFirst.Models;
+﻿using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
-using BridgeCareCodeFirst.EntityClasses;
+using BridgeCare.EntityClasses;
 
-namespace BridgeCareCodeFirst.Services
+namespace BridgeCare.Services
 {
-    public class SimulationRepository
+    public class SimulationRepository : ISimulation
     {
         private BridgeCareContext db = new BridgeCareContext();
 
-        private IQueryable<SimulationModel> filterSimulation;
+        private IQueryable<SimulationResult> filterSimulation;
 
-        public IQueryable<SimulationModel> GetAllSimulations()
+        public IQueryable<SimulationResult> GetAllSimulations()
         {
             var filteredColumns = from contextTable in db.SIMULATIONS
-                                  select new SimulationModel
+                                  select new SimulationResult
                                   {
                                       SimulationId = contextTable.SIMULATIONID,
                                       SimulationName = contextTable.SIMULATION1,
@@ -26,12 +26,12 @@ namespace BridgeCareCodeFirst.Services
             return filteredColumns;
         }
 
-        public IEnumerable<SimulationModel> GetSelectedSimulation(int id)
+        public IEnumerable<SimulationResult> GetSelectedSimulation(int id)
         {
             try
             {
                 filterSimulation = db.SIMULATIONS.Where(_ => _.NETWORKID == id)
-                .Select(p => new SimulationModel
+                .Select(p => new SimulationResult
                 {
                     SimulationId = p.SIMULATIONID,
                     SimulationName = p.SIMULATION1,

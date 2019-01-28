@@ -1,34 +1,29 @@
-﻿using BridgeCareCodeFirst.Models;
-using BridgeCareCodeFirst.Services;
+﻿using BridgeCare.Models;
+using BridgeCare.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 
-namespace BridgeCareCodeFirst.Controllers
+namespace BridgeCare.Controllers
 {
     public class DetailedReportController : ApiController
     {
-        DetailedReportRepository detailedReportRepository = new DetailedReportRepository();
+        private readonly IDetailedReport detailedReport;
 
-        // GET: api/DetailedReport
-        public IEnumerable<string> Get()
+        public DetailedReportController()
         {
-            return new string[] { "value1", "value2" };
         }
-
-        // GET: api/DetailedReport/5
-        public string Get(int id)
+        public DetailedReportController(IDetailedReport detailedReport)
         {
-            return "value";
+            this.detailedReport = detailedReport ?? throw new ArgumentNullException(nameof(detailedReport));
         }
 
         // POST: api/DetailedReport
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] ReportDataModel data)
+        public HttpResponseMessage Post([FromBody] SimulationResult data)
         {
             if (!ModelState.IsValid)
             {
@@ -38,7 +33,7 @@ namespace BridgeCareCodeFirst.Controllers
             MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
             try
             {
-                response.Content = new ByteArrayContent(detailedReportRepository.CreateExcelReport(data));
+                response.Content = new ByteArrayContent(detailedReport.CreateExcelReport(data));
             }
             catch (TimeoutException)
             {

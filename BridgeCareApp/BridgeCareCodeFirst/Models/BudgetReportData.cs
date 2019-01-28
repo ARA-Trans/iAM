@@ -3,24 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using static BridgeCare.Models.BudgetReportData;
 
-namespace BridgeCareCodeFirst.Models
+namespace BridgeCare.Models
 {
-    public class BudgetReportData
+    public class BudgetReportData : IBudgetReportData
     {
-        private IQueryable<BudgetReportModel> RawQueryForData = null;
-        private Hashtable BudgetYearView = new Hashtable();
-        public BudgetReportDetails GetBudgetReportData(ReportDataModel data, string[] budgetTypes)
+        private readonly List<ICostDetails> costList;
+
+        public BudgetReportData()
         {
-            BridgeCareContext db = new BridgeCareContext();
-            List<CostDetails> costList = new List<CostDetails>();
+        }
+        public BudgetReportData(List<ICostDetails> costList)
+        {
+            this.costList = costList ?? throw new ArgumentNullException(nameof(costList));
+        }
+        public BudgetReportDetails GetBudgetReportData(SimulationResult data, string[] budgetTypes)
+        {
+            var BudgetYearView = new Hashtable();
+            var db = new BridgeCareContext();
             string getReport =
                 "SELECT Years, Budget, Cost_ " +
                     " FROM Report_" + data.NetworkId
                     + "_" + data.SimulationId + " WHERE BUDGET is not null";
             try
             {
-                RawQueryForData = db.Database.SqlQuery<BudgetReportModel>(getReport).AsQueryable();
+                var RawQueryForData = db.Database.SqlQuery<BudgetReport>(getReport).AsQueryable();
 
                 double sum = 0;
                 foreach (var report in RawQueryForData)
@@ -44,7 +52,8 @@ namespace BridgeCareCodeFirst.Models
                     }
                     sum += cost;
                     yearView.Add(report.Years, sum);
-                    costList.Add(new CostDetails {
+                    costList.Add(new CostDetails
+                    {
                         Cost = report.Cost_.Value,
                         Years = report.Years,
                         Budget = report.Budget
@@ -76,19 +85,21 @@ namespace BridgeCareCodeFirst.Models
                 throw new OutOfMemoryException("The server is out of memory. Please try after some time");
             }
             db.Dispose();
-            BudgetReportDetails budgetReportDetails = new BudgetReportDetails();
-            budgetReportDetails.BudgetForYear = BudgetYearView;
-            budgetReportDetails.CostDetails = costList;
+            var budgetReportDetails = new BudgetReportDetails
+            {
+                BudgetForYear = BudgetYearView,
+                CostDetails = costList
+            };
             return budgetReportDetails;
         }
 
-        public string[] InvestmentData (ReportDataModel data)
+        public string[] InvestmentData(SimulationResult data)
         {
-            BridgeCareContext db = new BridgeCareContext();
-           var budgetOrder = db.INVESTMENTs.Where(_ => _.SIMULATIONID == data.SimulationId)
-                .Select(_ => _.BUDGETORDER)
-                .First();
-            if(budgetOrder == "" || budgetOrder == null)
+            var db = new BridgeCareContext();
+            var budgetOrder = db.INVESTMENTs.Where(_ => _.SIMULATIONID == data.SimulationId)
+                 .Select(_ => _.BUDGETORDER)
+                 .First();
+            if (budgetOrder == "" || budgetOrder == null)
             {
                 db.Dispose();
                 throw new Exception("Budget types not found in Investments table for the id : " + data.SimulationId);
@@ -97,16 +108,30 @@ namespace BridgeCareCodeFirst.Models
             db.Dispose();
             return budgetTypes;
         }
-        public class CostDetails
+
+        public class CostDetails : ICostDetails
         {
             public double Cost { get; set; }
             public int Years { get; set; }
             public string Budget { get; set; }
         }
+
         public class BudgetReportDetails
         {
             public Hashtable BudgetForYear;
-            public List<CostDetails> CostDetails;
+            public List<ICostDetails> CostDetails;
+        }
+        public interface ICostDetails
+        {
+            double Cost { get; set; }
+            int Years { get; set; }
+            string Budget { get; set; }
+        }
+        public interface IBudgetReportData
+        {
+            BudgetReportDetails GetBudgetReportData(SimulationResult data, string[] budgetTypes);
+            string[] InvestmentData(SimulationResult data);
+
         }
     }
 }

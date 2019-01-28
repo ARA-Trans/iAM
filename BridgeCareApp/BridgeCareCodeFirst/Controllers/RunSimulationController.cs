@@ -1,4 +1,4 @@
-﻿using BridgeCareCodeFirst.Models;
+﻿using BridgeCare.Models;
 using DatabaseManager;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading;
 using System.Web.Http;
 using System.Windows.Input;
 
-namespace BridgeCareCodeFirst.Controllers
+namespace BridgeCare.Controllers
 {
     public class RunSimulationController : ApiController
     {
@@ -26,7 +26,7 @@ namespace BridgeCareCodeFirst.Controllers
         }
 
         // POST: api/RunSimulation
-        public void Post([FromBody]ReportDataModel data)
+        public void Post([FromBody]SimulationResult data)
         {
             try
             {

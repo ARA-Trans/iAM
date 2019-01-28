@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
-namespace BridgeCareCodeFirst.EntityClasses
+namespace BridgeCare.EntityClasses
 {
     [Table("INVESTMENTS")]
     public class INVESTMENTS

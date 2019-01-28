@@ -1,4 +1,4 @@
-namespace BridgeCareCodeFirst.EntityClasses
+namespace BridgeCare.EntityClasses
 {
     using System;
     using System.Collections.Generic;

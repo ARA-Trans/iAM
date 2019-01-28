@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
-using BridgeCareCodeFirst.Models;
+using BridgeCare.Models;
 
-namespace BridgeCareCodeFirst.Services
+namespace BridgeCare.Services
 {
-    public class NetworkRepository
+    public class NetworkRepository : INetwork
     {
         private BridgeCareContext db = new BridgeCareContext();
 
-        private IQueryable<NetworkModel> filteredColumns;
+        private IQueryable<Network> filteredColumns;
 
         public object Logger { get; private set; }
 
-        public IQueryable<NetworkModel> GetAllNetworks()
+        public IQueryable<Network> GetAllNetworks()
         {
             try
             {
                 filteredColumns = from contextTable in db.NETWORKS
-                                  select new NetworkModel
+                                  select new Network
                                   {
                                       NetworkId = contextTable.NETWORKID,
                                       NetworkName = contextTable.NETWORK_NAME
@@ -43,18 +43,6 @@ namespace BridgeCareCodeFirst.Services
             }
 
             return filteredColumns;
-        }
-
-        public NetworkModel GetSelectedNetwork(int id)
-        {
-            var filterNetwork = db.NETWORKS.Where(_ => _.NETWORKID == id)
-                .Select(p => new NetworkModel
-                {
-                    NetworkId = p.NETWORKID,
-                    NetworkName = p.NETWORK_NAME
-                }).First();
-
-            return filterNetwork;
         }
     }
 }

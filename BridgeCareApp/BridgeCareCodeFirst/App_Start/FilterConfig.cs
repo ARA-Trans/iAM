@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace BridgeCareCodeFirst
+namespace BridgeCare
 {
     public class FilterConfig
     {

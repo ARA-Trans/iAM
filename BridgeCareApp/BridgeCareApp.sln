@@ -9,7 +9,7 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VuejsApp", "VuejsApp\VuejsA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E40427E5-3F1C-41E4-90DE-5BEF926BCEDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCareCodeFirst", "BridgeCareCodeFirst\BridgeCareCodeFirst.csproj", "{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCare", "BridgeCareCodeFirst\BridgeCare.csproj", "{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

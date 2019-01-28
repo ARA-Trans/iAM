@@ -1,4 +1,4 @@
-﻿using BridgeCareCodeFirst.Models;
+﻿using BridgeCare.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
@@ -7,12 +7,22 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using static BridgeCare.Models.BudgetReportData;
 
-namespace BridgeCareCodeFirst.Services
+namespace BridgeCare.Services
 {
-    public class DetailedReportRepository
+    public class DetailedReportRepository : IDetailedReport
     {
         private Dictionary<bool, Action<ConditionalData, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<ConditionalData, ExcelWorksheet>>();
+
+        private readonly IBudgetReportData budgetReportData;
+        public DetailedReportRepository(IBudgetReportData budgetReportData)
+        {
+            this.budgetReportData = budgetReportData ?? throw new ArgumentNullException(nameof(budgetReportData));
+
+            ExcelValues.Add(true, OnCommittedTrue);
+            ExcelValues.Add(false, OnCommittedFalse);
+        }
 
         private readonly Action<ConditionalData, ExcelWorksheet> OnCommittedFalse = (conditionalData, worksheet) =>
         {
@@ -44,28 +54,24 @@ namespace BridgeCareCodeFirst.Services
             worksheet.Cells[rowNumber, columnNumber + 1].Style.Fill.BackgroundColor.SetColor(Color.Red);
         };
 
-        public DetailedReportRepository()
+        public byte[] CreateExcelReport(SimulationResult data)
         {
-            ExcelValues.Add(true, OnCommittedTrue);
-            ExcelValues.Add(false, OnCommittedFalse);
-        }
-
-        public byte[] CreateExcelReport(ReportDataModel data)
-        {
-            DetailedReportData detailedReportData = new DetailedReportData();
+            var detailedReportData = new DetailedReport();
             // Getting data from the database
             var yearlyInvestment = detailedReportData.GetYearsData(data);
+
+            // Fetching years data here instead of in the 'GetYearsData' method, 
+            // because result of 'GetYearsData' method is used in another function
             List<int> listOfYears = new List<int>();
             foreach (var allYears in yearlyInvestment)
             {
                 listOfYears.Add(allYears.Year);
             }
             var totalYears = listOfYears.Distinct().ToArray();
-            BudgetReportData budgetReportData = new BudgetReportData();
             var budgetTypes = budgetReportData.InvestmentData(data);
             var budgetAndCost = budgetReportData.GetBudgetReportData(data, budgetTypes);
             var budgetReportTable = budgetAndCost.BudgetForYear;
-            BridgeCareContext db = new BridgeCareContext();
+            var db = new BridgeCareContext();
             var rawQueryForData = detailedReportData.GetDataForReport(data, db);
 
             var totalYearsCount = totalYears.Count();
@@ -200,7 +206,7 @@ namespace BridgeCareCodeFirst.Services
                     DataRow spentRow = viewTable.NewRow();
                     spentRow[0] = budget;
                     spentRow[1] = "Spent";
-                    List<int> listOverBudget = new List<int>();
+                    var listOverBudget = new List<int>();
                     for (int i = 0; i < totalYearsCount; i++)
                     {
                         var sumOfCosts = budgetAndCost.CostDetails.Where(_ => _.Years == totalYears[i] && _.Budget == budget)

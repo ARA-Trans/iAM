@@ -8,22 +8,30 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using BridgeCareCodeFirst;
-using BridgeCareCodeFirst.Models;
-using BridgeCareCodeFirst.Services;
-using BridgeCareCodeFirst.EntityClasses;
+using BridgeCare;
+using BridgeCare.Models;
+using BridgeCare.Services;
+using BridgeCare.EntityClasses;
 
-namespace BridgeCareCodeFirst.Controllers
+namespace BridgeCare.Controllers
 {
     public class SimulationsController : ApiController
     {
         private BridgeCareContext db = new BridgeCareContext();
-        private SimulationRepository simulationRepository = new SimulationRepository();
+        private ISimulation simulations;
+
+        public SimulationsController()
+        {
+        }
+        public SimulationsController(ISimulation simulation)
+        {
+            simulations = simulation ?? throw new ArgumentNullException(nameof(simulation));
+        }
 
         // GET: api/Simulations
-        public IQueryable<SimulationModel> GetSIMULATIONS()
+        public IQueryable<SimulationResult> GetSIMULATIONS()
         {
-            return simulationRepository.GetAllSimulations();
+            return simulations.GetAllSimulations();
         }
 
         // GET: api/Simulations/5
@@ -31,7 +39,7 @@ namespace BridgeCareCodeFirst.Controllers
         public IHttpActionResult GetSIMULATION(int id)
         {
             // this `id` is network id
-            var getResults = simulationRepository.GetSelectedSimulation(id);
+            var getResults = simulations.GetSelectedSimulation(id);
             if (getResults == null)
             {
                 return NotFound();

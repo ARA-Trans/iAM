@@ -1,10 +1,10 @@
-namespace BridgeCareCodeFirst
+namespace BridgeCare
 {
     using System;
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using BridgeCareCodeFirst.EntityClasses;
+    using BridgeCare.EntityClasses;
 
     public partial class BridgeCareContext : DbContext
     {

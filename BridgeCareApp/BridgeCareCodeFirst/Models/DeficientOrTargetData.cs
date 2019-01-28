@@ -5,13 +5,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCareCodeFirst.Models
+namespace BridgeCare.Models
 {
     public class DeficientOrTargetData
     {
-        private DeficientOrTargetTAB Results;
-        private Dictionary<bool, Func<ReportDataModel, Hashtable, int[], DeficientOrTargetTAB>> GetInfo = 
-            new Dictionary<bool, Func<ReportDataModel, Hashtable, int[], DeficientOrTargetTAB>>();
+        private Dictionary<bool, Func<SimulationResult, Hashtable, int[], DeficientOrTargetTab>> GetInfo = 
+            new Dictionary<bool, Func<SimulationResult, Hashtable, int[], DeficientOrTargetTab>>();
 
         public DeficientOrTargetData()
         {
@@ -19,10 +18,11 @@ namespace BridgeCareCodeFirst.Models
             GetInfo.Add(false, TargetInfo);
         }
 
-        public DeficientOrTargetTAB GetDeficientOrTarget(ReportDataModel data, int[] totalYears, bool isDeficient)
+        public DeficientOrTargetTab GetDeficientOrTarget(SimulationResult data, int[] totalYears, bool isDeficient)
         {
-            BridgeCareContext db = new BridgeCareContext();
-            IQueryable<DeficientResultModel> deficientOrTargetList = null;
+            var db = new BridgeCareContext();
+            IQueryable<DeficientResult> deficientOrTargetList = null;
+            DeficientOrTargetTab Results = null;
 
             string getReport =
                 "SELECT TargetID, Years, TargetMet, IsDeficient " +
@@ -31,7 +31,7 @@ namespace BridgeCareCodeFirst.Models
 
             try
             {
-                var rawDeficientList = db.Database.SqlQuery<DeficientResultModel>(getReport).AsQueryable();
+                var rawDeficientList = db.Database.SqlQuery<DeficientResult>(getReport).AsQueryable();
                 Hashtable keyValuePairs = new Hashtable();
                 Hashtable MetTarget;
 
@@ -82,7 +82,7 @@ namespace BridgeCareCodeFirst.Models
             return Results;
         }
 
-        public DeficientOrTargetTAB DeficientInfo(ReportDataModel data, Hashtable YearsIDValues, int[] totalYears)
+        public DeficientOrTargetTab DeficientInfo(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
         {
             BridgeCareContext db = new BridgeCareContext();
             var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
@@ -122,7 +122,7 @@ namespace BridgeCareCodeFirst.Models
                 deficientList.Add(increment, listDeficient);
                 increment++;
             }
-            DeficientOrTargetTAB dataForDeficientTAB = new DeficientOrTargetTAB();
+            DeficientOrTargetTab dataForDeficientTAB = new DeficientOrTargetTab();
             dataForDeficientTAB.DeficientOrTarget = DeficientTable;
             dataForDeficientTAB.DeficientOrGreen = deficientList;
 
@@ -130,7 +130,7 @@ namespace BridgeCareCodeFirst.Models
             return dataForDeficientTAB;
         }
 
-        public DeficientOrTargetTAB TargetInfo(ReportDataModel data, Hashtable YearsIDValues, int[] totalYears)
+        public DeficientOrTargetTab TargetInfo(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
         {
             BridgeCareContext db = new BridgeCareContext();
             var targetData = db.Target.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
@@ -223,7 +223,7 @@ namespace BridgeCareCodeFirst.Models
                 targetTable.Rows.Add(newDataRow);
                 increment++;
             }
-            DeficientOrTargetTAB dataForTargetTAB = new DeficientOrTargetTAB
+            DeficientOrTargetTab dataForTargetTAB = new DeficientOrTargetTab
             {
                 DeficientOrTarget = targetTable,
                 CoralData = excelFillCoral,
@@ -233,7 +233,7 @@ namespace BridgeCareCodeFirst.Models
             return dataForTargetTAB;
         }
 
-        public class DeficientOrTargetTAB
+        public class DeficientOrTargetTab
         {
             public DataTable DeficientOrTarget { get; set; } = new DataTable();
             public Dictionary<int, List<int>> DeficientOrGreen = new Dictionary<int, List<int>>();

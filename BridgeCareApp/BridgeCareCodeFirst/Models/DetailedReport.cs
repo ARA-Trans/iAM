@@ -1,16 +1,12 @@
-﻿using BridgeCareCodeFirst.EntityClasses;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCareCodeFirst.Models
+namespace BridgeCare.Models
 {
-    public class DetailedReportData
+    public class DetailedReport
     {
         [Column(TypeName = "VARCHAR")]
         public string Facility { get; set; }
@@ -25,12 +21,10 @@ namespace BridgeCareCodeFirst.Models
         public bool IsCommitted { get; set; }
         public int Years { get; set; }
 
-        private IQueryable<DetailedReportData> RawQueryForData = null;
-
-        public List<YearlyData> GetYearsData(ReportDataModel data)
+        public List<YearlyData> GetYearsData(SimulationResult data)
         {
             BridgeCareContext db = new BridgeCareContext();
-            List<YearlyData> yearsForBudget = new List<YearlyData>();
+            var yearsForBudget = new List<YearlyData>();
             try
             {
                 yearsForBudget = db.YEARLYINVESTMENTs.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId)
@@ -58,18 +52,19 @@ namespace BridgeCareCodeFirst.Models
             return yearsForBudget;
         }
 
-        public IQueryable<DetailedReportData> GetDataForReport(ReportDataModel data, BridgeCareContext db)
+        public IQueryable<DetailedReport> GetDataForReport(SimulationResult data, BridgeCareContext db)
         {
+            IQueryable<DetailedReport> RawQueryForData = null;
             string getReport =
-                "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
-                    " FROM Report_" + data.NetworkId
-                    + "_" + data.SimulationId + " Rpt WITH (NOLOCK) INNER JOIN Section_" + data.NetworkId + " Sec WITH (NOLOCK) " +
-                    " ON Rpt.SectionID = Sec.SectionID " +
-                    "Order By Facility, Section, Years";
+                    "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
+                        " FROM Report_" + data.NetworkId
+                        + "_" + data.SimulationId + " Rpt WITH (NOLOCK) INNER JOIN Section_" + data.NetworkId + " Sec WITH (NOLOCK) " +
+                        " ON Rpt.SectionID = Sec.SectionID " +
+                        "Order By Facility, Section, Years";
 
             try
             {
-               RawQueryForData = db.Database.SqlQuery<DetailedReportData>(getReport).AsQueryable();
+                RawQueryForData = db.Database.SqlQuery<DetailedReport>(getReport).AsQueryable();
             }
             catch (SqlException ex)
             {

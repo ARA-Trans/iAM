@@ -8,23 +8,30 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using BridgeCareCodeFirst;
-using BridgeCareCodeFirst.Models;
-using BridgeCareCodeFirst.Services;
-using BridgeCareCodeFirst.EntityClasses;
+using BridgeCare;
+using BridgeCare.Models;
+using BridgeCare.Services;
+using BridgeCare.EntityClasses;
 
-namespace BridgeCareCodeFirst.Controllers
+namespace BridgeCare.Controllers
 {
     public class NetworksController : ApiController
     {
         private BridgeCareContext db = new BridgeCareContext();
+        private readonly INetwork networks;
 
-        private NetworkRepository networkRepository = new NetworkRepository();
+        public NetworksController()
+        {
+        }
+        public NetworksController(INetwork networkRepository)
+        {
+            networks = networkRepository ?? throw new ArgumentNullException(nameof(networkRepository));
+        }
 
         // GET: api/NETWORKs
-        public IQueryable<NetworkModel> GetNETWORKS()
+        public IQueryable<Network> GetNETWORKS()
         {
-            return networkRepository.GetAllNetworks();
+            return networks.GetAllNetworks();
         }
 
         // GET: api/NETWORKs/5
