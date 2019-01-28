@@ -1,4 +1,5 @@
 ﻿using BridgeCare.Models;
+using BridgeCareCodeFirst.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
@@ -62,7 +63,7 @@ namespace BridgeCare.Services
 
             // Fetching years data here instead of in the 'GetYearsData' method, 
             // because result of 'GetYearsData' method is used in another function
-            List<int> listOfYears = new List<int>();
+            var listOfYears = new List<int>();
             foreach (var allYears in yearlyInvestment)
             {
                 listOfYears.Add(allYears.Year);
@@ -252,8 +253,8 @@ namespace BridgeCare.Services
                 // Adding new Excel TAB for Deficient results
                 ExcelWorksheet deficientReport = excelPackage.Workbook.Worksheets.Add("Deficient results");
 
-                DeficientOrTargetData deficientResultData = new DeficientOrTargetData();
-                var deficientTABResult = deficientResultData.GetDeficientOrTarget(data, totalYears, true);
+                var deficientResultData = new DeficientData();
+                var deficientTABResult = deficientResultData.GetDeficient(data, totalYears);
 
                 int increment = 2;
                 foreach (var result in deficientTABResult.DeficientOrGreen)
@@ -280,7 +281,8 @@ namespace BridgeCare.Services
                 // Adding new Excel TAB for Target Results
                 ExcelWorksheet targetReport = excelPackage.Workbook.Worksheets.Add("Target results");
 
-                var targetTABResult = deficientResultData.GetDeficientOrTarget(data, totalYears, false);
+                var targetData = new TargetData();
+                var targetTABResult = targetData.GetTarget(data, totalYears);
 
                 foreach (var coral in targetTABResult.CoralData)
                 {

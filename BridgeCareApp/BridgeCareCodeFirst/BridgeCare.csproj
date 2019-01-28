@@ -542,12 +542,14 @@
     </Compile>
     <Compile Include="Models\BudgetReportData.cs" />
     <Compile Include="Models\BudgetReport.cs" />
+    <Compile Include="Models\DeficientOrTarget.cs" />
     <Compile Include="Models\DeficientResult.cs" />
-    <Compile Include="Models\DeficientOrTargetData.cs" />
+    <Compile Include="Models\DeficientData.cs" />
     <Compile Include="Models\DetailedReport.cs" />
     <Compile Include="Models\Network.cs" />
     <Compile Include="Models\SimulationResult.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="Models\TargetData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DetailedReportRepository.cs" />
     <Compile Include="Services\IDetailedReport.cs" />
