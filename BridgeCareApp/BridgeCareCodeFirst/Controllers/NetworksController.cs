@@ -12,20 +12,18 @@ using BridgeCare;
 using BridgeCare.Models;
 using BridgeCare.Services;
 using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
 
 namespace BridgeCare.Controllers
 {
     public class NetworksController : ApiController
     {
-        private BridgeCareContext db = new BridgeCareContext();
+        private readonly BridgeCareContext db;
         private readonly INetwork networks;
-
-        public NetworksController()
-        {
-        }
-        public NetworksController(INetwork networkRepository)
+        public NetworksController(INetwork networkRepository, BridgeCareContext context)
         {
             networks = networkRepository ?? throw new ArgumentNullException(nameof(networkRepository));
+            db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: api/NETWORKs

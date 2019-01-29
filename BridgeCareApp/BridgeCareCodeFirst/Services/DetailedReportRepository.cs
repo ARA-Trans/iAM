@@ -1,5 +1,6 @@
-﻿using BridgeCare.Models;
-using BridgeCareCodeFirst.Models;
+﻿using BridgeCare.Interfaces;
+using BridgeCare.Models;
+using BridgeCareCodeFirst.Interfaces;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
@@ -8,59 +9,40 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using static BridgeCare.Models.BudgetReportData;
 
 namespace BridgeCare.Services
 {
-    public class DetailedReportRepository : IDetailedReport
+    public class DetailedReportRepository : IReportRepository
     {
         private Dictionary<bool, Action<ConditionalData, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<ConditionalData, ExcelWorksheet>>();
+        private readonly BridgeCareContext db;
+        private readonly IDetailedReport detailedReport;
+        private readonly IDeficientData deficientResult;
+        private readonly ITarget targets;
 
-        private readonly IBudgetReportData budgetReportData;
-        public DetailedReportRepository(IBudgetReportData budgetReportData)
+        private readonly IBudgetReport budgetReport;
+        public readonly FillWorkSheet fillWorkSheet;
+        public DetailedReportRepository(IBudgetReport report, IDetailedReport yearlyReport,
+            IDeficientData deficient, ITarget target, FillWorkSheet sheet, BridgeCareContext context)
         {
-            this.budgetReportData = budgetReportData ?? throw new ArgumentNullException(nameof(budgetReportData));
+            budgetReport = report ?? throw new ArgumentNullException(nameof(report));
+            db = context ?? throw new ArgumentNullException(nameof(context));
+            detailedReport = yearlyReport ?? throw new ArgumentNullException(nameof(yearlyReport));
+            deficientResult = deficient ?? throw new ArgumentNullException(nameof(deficient));
+            targets = target ?? throw new ArgumentNullException(nameof(target));
+            fillWorkSheet = sheet ?? throw new ArgumentNullException(nameof(sheet));
 
-            ExcelValues.Add(true, OnCommittedTrue);
-            ExcelValues.Add(false, OnCommittedFalse);
+            ExcelValues.Add(true, fillWorkSheet.OnCommittedTrue);
+            ExcelValues.Add(false, fillWorkSheet.OnCommittedFalse);
         }
-
-        private readonly Action<ConditionalData, ExcelWorksheet> OnCommittedFalse = (conditionalData, worksheet) =>
-        {
-            if (conditionalData.NumberTreatment == 0)
-            {
-                return; // Guard clause
-            }
-            int rowNumber = conditionalData.RowNumber;
-            int columnNumber = conditionalData.ColumnNumber;
-            worksheet.Cells[rowNumber, columnNumber + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-            if (conditionalData.Treatment == "No Treatment")
-            {
-                worksheet.Cells[rowNumber, columnNumber + 1].Value = "-";
-                worksheet.Cells[rowNumber, columnNumber + 1].Style.Fill.BackgroundColor.SetColor(Color.AliceBlue);
-            }
-            else
-            {
-                worksheet.Cells[rowNumber, columnNumber + 1].Value = conditionalData.Treatment;
-                worksheet.Cells[rowNumber, columnNumber + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
-            }
-        };
-
-        private readonly Action<ConditionalData, ExcelWorksheet> OnCommittedTrue = (conditionalData, worksheet) =>
-        {
-            int rowNumber = conditionalData.RowNumber;
-            int columnNumber = conditionalData.ColumnNumber;
-            worksheet.Cells[rowNumber, columnNumber + 1].Value = conditionalData.Treatment;
-            worksheet.Cells[rowNumber, columnNumber + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-            worksheet.Cells[rowNumber, columnNumber + 1].Style.Fill.BackgroundColor.SetColor(Color.Red);
-        };
 
         public byte[] CreateExcelReport(SimulationResult data)
         {
-            var detailedReportData = new DetailedReport();
             // Getting data from the database
-            var yearlyInvestment = detailedReportData.GetYearsData(data);
-
+            var yearlyInvestment = detailedReport.GetYearsData(data);
+            // Using BridgeCareContext because manual control is needed for the creation of the object.
+            // This object is going through data heavy operation. That is why it is not shared.
+            var dbContext = new BridgeCareContext();
             // Fetching years data here instead of in the 'GetYearsData' method, 
             // because result of 'GetYearsData' method is used in another function
             var listOfYears = new List<int>();
@@ -69,11 +51,10 @@ namespace BridgeCare.Services
                 listOfYears.Add(allYears.Year);
             }
             var totalYears = listOfYears.Distinct().ToArray();
-            var budgetTypes = budgetReportData.InvestmentData(data);
-            var budgetAndCost = budgetReportData.GetBudgetReportData(data, budgetTypes);
+            var budgetTypes = budgetReport.InvestmentData(data);
+            var budgetAndCost = budgetReport.GetBudgetReportData(data, budgetTypes);
             var budgetReportTable = budgetAndCost.BudgetForYear;
-            var db = new BridgeCareContext();
-            var rawQueryForData = detailedReportData.GetDataForReport(data, db);
+            var rawQueryForData = detailedReport.GetDataForReport(data, dbContext);
 
             var totalYearsCount = totalYears.Count();
 
@@ -87,7 +68,7 @@ namespace BridgeCare.Services
                 headers.Add(totalYears[i].ToString());
             }
 
-            using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("New.xlsx")))
+            using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("DetailedReport.xlsx")))
             {
                 var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
                 //create a WorkSheet
@@ -98,7 +79,7 @@ namespace BridgeCare.Services
                     worksheet.Cells[1, x + 1].Value = headers[x];
                 }
                 int rowsToColumns = 0, columnNumber = 2, rowNumber = 2;
-                ConditionalData conditionalData = new ConditionalData();
+                var conditionalData = new ConditionalData();
                 foreach (var newData in rawQueryForData)
                 {
                     if (rowsToColumns == 0)
@@ -126,7 +107,6 @@ namespace BridgeCare.Services
                         rowsToColumns++;
                     }
                 }
-                db.Dispose();
                 worksheet.Cells.AutoFitColumns();
 
                 // Adding new Excel TAB for Budget results
@@ -252,12 +232,10 @@ namespace BridgeCare.Services
 
                 // Adding new Excel TAB for Deficient results
                 ExcelWorksheet deficientReport = excelPackage.Workbook.Worksheets.Add("Deficient results");
-
-                var deficientResultData = new DeficientData();
-                var deficientTABResult = deficientResultData.GetDeficient(data, totalYears);
+                var deficientResults = deficientResult.GetDeficient(data, totalYears);
 
                 int increment = 2;
-                foreach (var result in deficientTABResult.DeficientOrGreen)
+                foreach (var result in deficientResults.DeficientColorFill)
                 {
                     for (int k = 2; k < totalYearsCount + 2; k++)
                     {
@@ -275,16 +253,14 @@ namespace BridgeCare.Services
                     increment++;
                 }
 
-                deficientReport.Cells.LoadFromDataTable(deficientTABResult.DeficientOrTarget, true);
+                deficientReport.Cells.LoadFromDataTable(deficientResults.Deficients, true);
                 deficientReport.Cells.AutoFitColumns();
 
                 // Adding new Excel TAB for Target Results
                 ExcelWorksheet targetReport = excelPackage.Workbook.Worksheets.Add("Target results");
+                var targetResults = targets.GetTarget(data, totalYears);
 
-                var targetData = new TargetData();
-                var targetTABResult = targetData.GetTarget(data, totalYears);
-
-                foreach (var coral in targetTABResult.CoralData)
+                foreach (var coral in targetResults.CoralColorFill)
                 {
                     foreach (var col in coral.Value)
                     {
@@ -292,7 +268,7 @@ namespace BridgeCare.Services
                         targetReport.Cells[coral.Key, col + 1].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
                     }
                 }
-                foreach (var green in targetTABResult.DeficientOrGreen)
+                foreach (var green in targetResults.GreenColorFill)
                 {
                     foreach (var col in green.Value)
                     {
@@ -300,7 +276,7 @@ namespace BridgeCare.Services
                         targetReport.Cells[green.Key, col + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
                     }
                 }
-                targetReport.Cells.LoadFromDataTable(targetTABResult.DeficientOrTarget, true);
+                targetReport.Cells.LoadFromDataTable(targetResults.Targets, true);
                 deficientReport.Cells.AutoFitColumns();
 
                 return excelPackage.GetAsByteArray();

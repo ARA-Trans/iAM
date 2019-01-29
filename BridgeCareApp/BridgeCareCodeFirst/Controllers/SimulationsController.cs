@@ -2,30 +2,26 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using BridgeCare;
 using BridgeCare.Models;
-using BridgeCare.Services;
 using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
 
 namespace BridgeCare.Controllers
 {
     public class SimulationsController : ApiController
     {
-        private BridgeCareContext db = new BridgeCareContext();
+        private readonly BridgeCareContext db;
         private ISimulation simulations;
 
-        public SimulationsController()
-        {
-        }
-        public SimulationsController(ISimulation simulation)
+        public SimulationsController(ISimulation simulation, BridgeCareContext context)
         {
             simulations = simulation ?? throw new ArgumentNullException(nameof(simulation));
+            db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: api/Simulations

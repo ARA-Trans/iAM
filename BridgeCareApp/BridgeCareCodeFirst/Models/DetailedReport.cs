@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BridgeCare.ApplicationLog;
+using BridgeCareCodeFirst.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
@@ -6,7 +8,7 @@ using System.Linq;
 
 namespace BridgeCare.Models
 {
-    public class DetailedReport
+    public class DetailedReport : IDetailedReport
     {
         [Column(TypeName = "VARCHAR")]
         public string Facility { get; set; }
@@ -21,9 +23,18 @@ namespace BridgeCare.Models
         public bool IsCommitted { get; set; }
         public int Years { get; set; }
 
+        private readonly BridgeCareContext db;
+
+        public DetailedReport(BridgeCareContext context)
+        {
+            db = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        // Required by entity framework
+        public DetailedReport() { }
+
         public List<YearlyData> GetYearsData(SimulationResult data)
         {
-            BridgeCareContext db = new BridgeCareContext();
             var yearsForBudget = new List<YearlyData>();
             try
             {
@@ -38,7 +49,6 @@ namespace BridgeCare.Models
             }
             catch (SqlException ex)
             {
-                db.Dispose();
                 if (ex.Number == -2 || ex.Number == 11)
                 {
                     throw new TimeoutException("The server has timed out. Please try after some time");
@@ -48,14 +58,13 @@ namespace BridgeCare.Models
                     throw new InvalidOperationException("Years data does not exist in the database");
                 }
             }
-            db.Dispose();
             return yearsForBudget;
         }
 
-        public IQueryable<DetailedReport> GetDataForReport(SimulationResult data, BridgeCareContext db)
+        public IQueryable<DetailedReport> GetDataForReport(SimulationResult data, BridgeCareContext dbContext)
         {
-            IQueryable<DetailedReport> RawQueryForData = null;
-            string getReport =
+            IQueryable<DetailedReport> rawQueryForData = null;
+            var select =
                     "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
                         " FROM Report_" + data.NetworkId
                         + "_" + data.SimulationId + " Rpt WITH (NOLOCK) INNER JOIN Section_" + data.NetworkId + " Sec WITH (NOLOCK) " +
@@ -64,26 +73,17 @@ namespace BridgeCare.Models
 
             try
             {
-                RawQueryForData = db.Database.SqlQuery<DetailedReport>(getReport).AsQueryable();
+                rawQueryForData = dbContext.Database.SqlQuery<DetailedReport>(select).AsQueryable();
             }
             catch (SqlException ex)
             {
-                db.Dispose();
-                if (ex.Number == -2 || ex.Number == 11)
-                {
-                    throw new TimeoutException("The server has timed out. Please try after some time");
-                }
-                if (ex.Number == 208)
-                {
-                    throw new InvalidOperationException("Network or simulation table does not exist in the database");
-                }
+                ThrowError.SqlError(ex, "Report_");
             }
-            catch (OutOfMemoryException)
+            catch (OutOfMemoryException ex)
             {
-                db.Dispose();
-                throw new OutOfMemoryException("The server is out of memory. Please try after some time");
+                ThrowError.OutOfMemoryError(ex);
             }
-            return RawQueryForData;
+            return rawQueryForData;
         }
 
         public class YearlyData

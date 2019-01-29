@@ -23,9 +23,5 @@ namespace BridgeCare.EntityClasses
         public string DeficientName { get; set; }
         public double Deficient { get; set; }
         public double PercentDeficient { get; set; }
-
-        [Column(TypeName = "VARCHAR")]
-        [StringLength(4000)]
-        public string Criteria { get; set; }
     }
 }

@@ -5,12 +5,19 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
+using BridgeCare.ApplicationLog;
 
 namespace BridgeCare.Services
 {
     public class SimulationRepository : ISimulation
     {
-        private BridgeCareContext db = new BridgeCareContext();
+        private readonly BridgeCareContext db;
+
+        public SimulationRepository(BridgeCareContext context)
+        {
+            db = context ?? throw new ArgumentNullException(nameof(context));
+        }
 
         private IQueryable<SimulationResult> filterSimulation;
 
@@ -40,14 +47,7 @@ namespace BridgeCare.Services
             }
             catch (SqlException ex)
             {
-                if (ex.Number == -2 || ex.Number == 11)
-                {
-                    throw new TimeoutException("The server has timed out. Please try after some time");
-                }
-                if (ex.Number == 208)
-                {
-                    throw new InvalidOperationException("Simulations does not exist in the database");
-                }
+                ThrowError.SqlError(ex, "Simulations");
             }
             catch (Exception)
             {

@@ -523,6 +523,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationLog\Logger.cs" />
+    <Compile Include="ApplicationLog\ThrowError.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\UnityResolver.cs" />
@@ -540,6 +542,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\ICostDetails.cs" />
+    <Compile Include="Interfaces\IDeficientData.cs" />
+    <Compile Include="Interfaces\IDetailedReport.cs" />
+    <Compile Include="Interfaces\ITarget.cs" />
     <Compile Include="Models\BudgetReportData.cs" />
     <Compile Include="Models\BudgetReport.cs" />
     <Compile Include="Models\DeficientOrTarget.cs" />
@@ -552,9 +559,10 @@
     <Compile Include="Models\TargetData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DetailedReportRepository.cs" />
-    <Compile Include="Services\IDetailedReport.cs" />
-    <Compile Include="Services\INetwork.cs" />
-    <Compile Include="Services\ISimulation.cs" />
+    <Compile Include="Interfaces\IReportRepository.cs" />
+    <Compile Include="Interfaces\INetwork.cs" />
+    <Compile Include="Interfaces\ISimulation.cs" />
+    <Compile Include="Services\FillWorkSheet.cs" />
     <Compile Include="Services\NetworkRepository.cs" />
     <Compile Include="Services\SimulationRepository.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />

@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using BridgeCare.ApplicationLog;
+using BridgeCare.Interfaces;
 using BridgeCare.Models;
 
 namespace BridgeCare.Services
 {
     public class NetworkRepository : INetwork
     {
-        private BridgeCareContext db = new BridgeCareContext();
+        private readonly BridgeCareContext db;
+
+        public NetworkRepository(BridgeCareContext context)
+        {
+            db = context ?? throw new ArgumentNullException(nameof(context));
+        }
 
         private IQueryable<Network> filteredColumns;
 
@@ -28,14 +35,7 @@ namespace BridgeCare.Services
             }
             catch (SqlException ex)
             {
-                if (ex.Number == -2 || ex.Number == 11)
-                {
-                    throw new TimeoutException("The server has timed out. Please try after some time");
-                }
-                if (ex.Number == 208)
-                {
-                    throw new InvalidOperationException("Networks does not exist in the database");
-                }
+                ThrowError.SqlError(ex, "Networks");
             }
             catch (Exception ex)
             {

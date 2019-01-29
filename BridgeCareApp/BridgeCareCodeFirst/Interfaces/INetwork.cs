@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BridgeCare.Services
+namespace BridgeCare.Interfaces
 {
     public interface INetwork
     {

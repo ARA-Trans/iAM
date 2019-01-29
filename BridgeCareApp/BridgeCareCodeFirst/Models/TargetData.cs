@@ -1,67 +1,58 @@
-﻿using BridgeCare;
-using BridgeCare.Models;
+﻿using BridgeCare.ApplicationLog;
+using BridgeCareCodeFirst.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using static BridgeCare.Models.DeficientData;
 
-namespace BridgeCareCodeFirst.Models
+namespace BridgeCare.Models
 {
-    public class TargetData
+    public class TargetData : ITarget
     {
-        public DeficientOrTargetTab GetTarget(SimulationResult data, int[] totalYears)
-        {
-            var db = new BridgeCareContext();
-            IQueryable<DeficientResult> deficientOrTargetList = null;
-            DeficientOrTargetTab Results = null;
+        private readonly BridgeCareContext db;
 
-            string getReport =
+        public TargetData(BridgeCareContext context)
+        {
+            db = context ?? throw new ArgumentNullException(nameof(context));
+        }
+        public Target GetTarget(SimulationResult data, int[] totalYears)
+        {
+            IQueryable<DeficientResult> targets = null;
+            Target results = null;
+
+            var select =
                 "SELECT TargetID, Years, TargetMet, IsDeficient " +
                     " FROM Target_" + data.NetworkId
                     + "_" + data.SimulationId;
 
             try
             {
-                var rawDeficientList = db.Database.SqlQuery<DeficientResult>(getReport).AsQueryable();
+                var rawDeficientList = db.Database.SqlQuery<DeficientResult>(select).AsQueryable();
 
-                deficientOrTargetList = rawDeficientList.Where(_ => _.IsDeficient == false);
+                targets = rawDeficientList.Where(_ => _.IsDeficient == false);
 
                 var dataList = new DeficientOrTarget();
-                var targetAndYear = dataList.DeficientTargetList(deficientOrTargetList);
-                var targetInfo = new TargetData();
-                Results = targetInfo.TargetInfo(data, targetAndYear, totalYears);
+                var targetAndYear = dataList.DeficientTargetList(targets);
+                results = GetTargetInformation(data, targetAndYear, totalYears);
             }
             catch (SqlException ex)
             {
-                db.Dispose();
-                if (ex.Number == -2 || ex.Number == 11)
-                {
-                    throw new TimeoutException("The server has timed out. Please try after some time");
-                }
-                if (ex.Number == 208)
-                {
-                    throw new InvalidOperationException("Target table does not exist in the database");
-                }
+                ThrowError.SqlError(ex, "Target");
             }
-            catch (OutOfMemoryException)
+            catch (OutOfMemoryException ex)
             {
-                db.Dispose();
-                throw new OutOfMemoryException("The server is out of memory. Please try after some time");
+                ThrowError.OutOfMemoryError(ex);
             }
             catch (Exception ex)
             {
-                db.Dispose();
                 Console.WriteLine(ex);
             }
-            db.Dispose();
-            return Results;
+            return results;
         }
-        public DeficientOrTargetTab TargetInfo(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
+        public Target GetTargetInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
         {
-            var db = new BridgeCareContext();
             var targetData = db.Target.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             var attributeData = db.Attributes.AsNoTracking();
             var attributeOrder = new Dictionary<string, bool>();
@@ -153,14 +144,28 @@ namespace BridgeCareCodeFirst.Models
                 targetTable.Rows.Add(newDataRow);
                 increment++;
             }
-            var dataForTargetTab = new DeficientOrTargetTab
+            var dataForTarget = new Target
             {
-                DeficientOrTarget = targetTable,
-                CoralData = excelFillCoral,
-                DeficientOrGreen = excelFillGreen
+                Targets = targetTable,
+                CoralColorFill = excelFillCoral,
+                GreenColorFill = excelFillGreen
             };
-            db.Dispose();
-            return dataForTargetTab;
+            return dataForTarget;
+        }
+        public class TargetParameters
+        {
+            public int Id;
+            public string Attribute;
+            public double TargetMean;
+            public string Name;
+            public string Criteria;
+            public int Row;
+        }
+        public class Target
+        {
+            public DataTable Targets { get; set; } = new DataTable();
+            public Dictionary<int, List<int>> GreenColorFill = new Dictionary<int, List<int>>();
+            public Dictionary<int, List<int>> CoralColorFill = new Dictionary<int, List<int>>();
         }
     }
 }
