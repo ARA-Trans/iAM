@@ -6,9 +6,9 @@ using System.Linq;
 using System.Web;
 using static BridgeCare.Models.DeficientData;
 
-namespace BridgeCareCodeFirst.Interfaces
+namespace BridgeCare.Interfaces
 {
-    public interface IDeficientData
+    public interface IDeficient
     {
         Deficient GetDeficient(SimulationResult data, int[] totalYears);
         Deficient GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears);

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
-namespace BridgeCareCodeFirst.ApplicationLog
+namespace BridgeCare.ApplicationLog
 {
     public class Logger
     {

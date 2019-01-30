@@ -1,4 +1,4 @@
-﻿using BridgeCareCodeFirst.Interfaces;
+﻿using BridgeCare.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using BridgeCare.ApplicationLog;
 
 namespace BridgeCare.Models
 {
-    public class BudgetReportData : IBudgetReport
+    public class BudgetReportData : IBudget
     {
         private readonly List<ICostDetails> costs;
         private readonly BridgeCareContext db;

@@ -2,7 +2,7 @@
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Services;
-using BridgeCareCodeFirst.Interfaces;
+using BridgeCare.Interfaces;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -37,15 +37,16 @@ namespace BridgeCare
             var container = new UnityContainer();
             var dbContext = new BridgeCareContext();
             dbContext.Configuration.ProxyCreationEnabled = false;
+            dbContext.Configuration.LazyLoadingEnabled = false;
             container.RegisterType<INetwork, NetworkRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<ISimulation, SimulationRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<IDetailedReport, DetailedReport>(new HierarchicalLifetimeManager());
             container.RegisterType<BridgeCareContext>(new HierarchicalLifetimeManager());
-            container.RegisterType<IBudgetReport, BudgetReportData>(new HierarchicalLifetimeManager());
-            container.RegisterType<IDeficientData, DeficientData>(new HierarchicalLifetimeManager());
+            container.RegisterType<IBudget, BudgetReportData>(new HierarchicalLifetimeManager());
+            container.RegisterType<IDeficient, DeficientData>(new HierarchicalLifetimeManager());
             container.RegisterType<ICostDetails, CostDetails>(new HierarchicalLifetimeManager());
             container.RegisterType<ITarget, TargetData>(new HierarchicalLifetimeManager());
-            container.RegisterType<IReportRepository, DetailedReportRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<IReportCreater, DetailedReportRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<FillWorkSheet>();
             config.DependencyResolver = new UnityResolver(container);
 

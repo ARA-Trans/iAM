@@ -12,8 +12,8 @@ namespace BridgeCare.Controllers
 {
     public class DetailedReportController : ApiController
     {
-        private readonly IReportRepository detailedReport;
-        public DetailedReportController(IReportRepository detailedReport)
+        private readonly IReportCreater detailedReport;
+        public DetailedReportController(IReportCreater detailedReport)
         {
             this.detailedReport = detailedReport ?? throw new ArgumentNullException(nameof(detailedReport));
         }

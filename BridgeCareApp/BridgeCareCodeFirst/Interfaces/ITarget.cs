@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static BridgeCare.Models.TargetData;
 
-namespace BridgeCareCodeFirst.Interfaces
+namespace BridgeCare.Interfaces
 {
     public interface ITarget
     {

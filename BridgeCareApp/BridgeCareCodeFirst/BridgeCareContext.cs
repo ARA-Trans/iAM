@@ -10,6 +10,7 @@ namespace BridgeCare
         public BridgeCareContext()
             : base("name=BridgeCareContext")
         {
+            Configuration.LazyLoadingEnabled = false;
         }
 
         //public virtual DbSet<DetailedReportModel> DetailedReportModels { get; set; }

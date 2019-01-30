@@ -1,6 +1,5 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCareCodeFirst.Interfaces;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
@@ -12,18 +11,18 @@ using System.Linq;
 
 namespace BridgeCare.Services
 {
-    public class DetailedReportRepository : IReportRepository
+    public class DetailedReportRepository : IReportCreater
     {
         private Dictionary<bool, Action<ConditionalData, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<ConditionalData, ExcelWorksheet>>();
         private readonly BridgeCareContext db;
         private readonly IDetailedReport detailedReport;
-        private readonly IDeficientData deficientResult;
+        private readonly IDeficient deficientResult;
         private readonly ITarget targets;
 
-        private readonly IBudgetReport budgetReport;
+        private readonly IBudget budgetReport;
         public readonly FillWorkSheet fillWorkSheet;
-        public DetailedReportRepository(IBudgetReport report, IDetailedReport yearlyReport,
-            IDeficientData deficient, ITarget target, FillWorkSheet sheet, BridgeCareContext context)
+        public DetailedReportRepository(IBudget report, IDetailedReport yearlyReport,
+            IDeficient deficient, ITarget target, FillWorkSheet sheet, BridgeCareContext context)
         {
             budgetReport = report ?? throw new ArgumentNullException(nameof(report));
             db = context ?? throw new ArgumentNullException(nameof(context));

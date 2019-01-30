@@ -1,5 +1,5 @@
 ﻿using BridgeCare.ApplicationLog;
-using BridgeCareCodeFirst.Interfaces;
+using BridgeCare.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BridgeCare.Models
 {
-    public class DeficientData : IDeficientData
+    public class DeficientData : IDeficient
     {
         private readonly BridgeCareContext db;
 

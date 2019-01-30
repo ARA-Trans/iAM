@@ -33,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "../AspWebApi/Entities/BridgeCareEntities.cs", "../AspWebApi/Models/SimulationModel.cs", "../BridgeCareCodeFirst/EntityClasses/SECTION_13.cs", "../BridgeCareCodeFirst/EntityClasses/DetailedReportModel.cs", "../BridgeCareCodeFirst/Models/BudgetReport.cs", "../BridgeCareCodeFirst/Models/DeficientResult.cs", "../BridgeCareCodeFirst/Models/SimulationResult.cs", "../BridgeCareCodeFirst/Models/Network.cs", "../BridgeCareCodeFirst/Models/DetailedReport.cs", "../BridgeCareCodeFirst/Models/DeficientData.cs", "../BridgeCareCodeFirst/Services/IReportRepository.cs", "../BridgeCareCodeFirst/Interfaces/ISimulation.cs"
+    "tests/**/*.tsx", "../AspWebApi/Entities/BridgeCareEntities.cs", "../AspWebApi/Models/SimulationModel.cs", "../BridgeCare/EntityClasses/SECTION_13.cs", "../BridgeCare/EntityClasses/DetailedReportModel.cs", "../BridgeCare/Models/BudgetReport.cs", "../BridgeCare/Models/DeficientResult.cs", "../BridgeCare/Models/SimulationResult.cs", "../BridgeCare/Models/Network.cs", "../BridgeCare/Models/DetailedReport.cs", "../BridgeCare/Models/DeficientData.cs", "../BridgeCare/Services/IReportRepository.cs", "../BridgeCare/Interfaces/ISimulation.cs"
   ],
   "exclude": [
     "node_modules"

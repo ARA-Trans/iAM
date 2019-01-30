@@ -1,5 +1,5 @@
 ﻿using BridgeCare.ApplicationLog;
-using BridgeCareCodeFirst.Interfaces;
+using BridgeCare.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

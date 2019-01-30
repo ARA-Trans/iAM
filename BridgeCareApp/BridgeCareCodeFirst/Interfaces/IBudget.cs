@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static BridgeCare.Models.BudgetReportData;
 
-namespace BridgeCareCodeFirst.Interfaces
+namespace BridgeCare.Interfaces
 {
-    public interface IBudgetReport
+    public interface IBudget
     {
         BudgetReportDetails GetBudgetReportData(SimulationResult data, string[] budgetTypes);
         string[] InvestmentData(SimulationResult data);
