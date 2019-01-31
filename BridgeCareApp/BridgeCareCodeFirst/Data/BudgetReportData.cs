@@ -5,20 +5,21 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using BridgeCare.ApplicationLog;
+using BridgeCare.Models;
 
-namespace BridgeCare.Models
+namespace BridgeCare.Data
 {
     public class BudgetReportData : IBudget
     {
-        private readonly List<ICostDetails> costs;
+        private readonly List<CostDetails> costs;
         private readonly BridgeCareContext db;
 
-        public BudgetReportData(List<ICostDetails> cost, BridgeCareContext context)
+        public BudgetReportData(List<CostDetails> cost, BridgeCareContext context)
         {
             costs = cost ?? throw new ArgumentNullException(nameof(cost));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public BudgetReportDetails GetBudgetReportData(SimulationResult data, string[] budgetTypes)
+        public CostAndBudgets GetBudgetReportData(SimulationResult data, string[] budgetTypes)
         {
             var BudgetYearView = new Hashtable();
             var select =
@@ -70,13 +71,13 @@ namespace BridgeCare.Models
             }
             catch (SqlException ex)
             {
-                ThrowError.SqlError(ex, "Network or Simulation");
+                HandleException.SqlError(ex, "Network or Simulation");
             }
             catch (OutOfMemoryException ex)
             {
-                ThrowError.OutOfMemoryError(ex);
+                HandleException.OutOfMemoryError(ex);
             }
-            var budgetReportDetails = new BudgetReportDetails
+            var budgetReportDetails = new CostAndBudgets
             {
                 BudgetForYear = BudgetYearView,
                 CostDetails = costs
@@ -96,19 +97,6 @@ namespace BridgeCare.Models
             }
             var budgetTypes = budgetOrder.Split(',');
             return budgetTypes;
-        }
-
-        public class CostDetails : ICostDetails
-        {
-            public double Cost { get; set; }
-            public int Years { get; set; }
-            public string Budget { get; set; }
-        }
-
-        public class BudgetReportDetails
-        {
-            public Hashtable BudgetForYear;
-            public List<ICostDetails> CostDetails;
         }
     }
 }

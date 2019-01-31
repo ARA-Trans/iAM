@@ -35,7 +35,7 @@ namespace BridgeCare.Services
             }
             catch (SqlException ex)
             {
-                ThrowError.SqlError(ex, "Networks");
+                HandleException.SqlError(ex, "Networks");
             }
             catch (Exception ex)
             {

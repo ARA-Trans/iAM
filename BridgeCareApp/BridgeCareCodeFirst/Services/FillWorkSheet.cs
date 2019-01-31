@@ -1,4 +1,4 @@
-﻿using BridgeCare.Services;
+﻿using BridgeCare.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Web;
-using static BridgeCare.Services.DetailedReportRepository;
 
 namespace BridgeCare.Services
 {

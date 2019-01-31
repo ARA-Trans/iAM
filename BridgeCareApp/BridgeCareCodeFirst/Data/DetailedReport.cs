@@ -1,12 +1,13 @@
 ﻿using BridgeCare.ApplicationLog;
 using BridgeCare.Interfaces;
+using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCare.Models
+namespace BridgeCare.Data
 {
     public class DetailedReport : IDetailedReport
     {
@@ -49,14 +50,7 @@ namespace BridgeCare.Models
             }
             catch (SqlException ex)
             {
-                if (ex.Number == -2 || ex.Number == 11)
-                {
-                    throw new TimeoutException("The server has timed out. Please try after some time");
-                }
-                if (ex.Number == 208)
-                {
-                    throw new InvalidOperationException("Years data does not exist in the database");
-                }
+                HandleException.SqlError(ex, "Years");
             }
             return yearsForBudget;
         }
@@ -77,20 +71,13 @@ namespace BridgeCare.Models
             }
             catch (SqlException ex)
             {
-                ThrowError.SqlError(ex, "Report_");
+                HandleException.SqlError(ex, "Report_");
             }
             catch (OutOfMemoryException ex)
             {
-                ThrowError.OutOfMemoryError(ex);
+                HandleException.OutOfMemoryError(ex);
             }
             return rawQueryForData;
-        }
-
-        public class YearlyData
-        {
-            public int Year { get; set; }
-            public double? Amount { get; set; }
-            public string BudgetName { get; set; }
         }
     }
 }

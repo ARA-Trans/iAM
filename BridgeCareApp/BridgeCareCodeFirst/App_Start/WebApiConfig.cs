@@ -2,7 +2,6 @@
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Services;
-using BridgeCare.Interfaces;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using Unity;
 using Unity.Lifetime;
-using static BridgeCare.Models.BudgetReportData;
+using BridgeCare.Data;
 
 namespace BridgeCare
 {
@@ -44,10 +43,17 @@ namespace BridgeCare
             container.RegisterType<BridgeCareContext>(new HierarchicalLifetimeManager());
             container.RegisterType<IBudget, BudgetReportData>(new HierarchicalLifetimeManager());
             container.RegisterType<IDeficient, DeficientData>(new HierarchicalLifetimeManager());
-            container.RegisterType<ICostDetails, CostDetails>(new HierarchicalLifetimeManager());
+            container.RegisterType<CostDetails>(new HierarchicalLifetimeManager());
             container.RegisterType<ITarget, TargetData>(new HierarchicalLifetimeManager());
             container.RegisterType<IReportCreater, DetailedReportRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<FillWorkSheet>();
+            container.RegisterType<DeficientOrTarget>();
+            container.RegisterType<ExcelFillCoral>();
+            container.RegisterType<GetTargetCellsData>();
+            container.RegisterType<FillTargets>();
+            container.RegisterType<FillDeficients>();
+            container.RegisterType<FillDetailedReport>();
+            container.RegisterType<FillBudget>();
             config.DependencyResolver = new UnityResolver(container);
 
             // Set JSON formatter as default one and remove XmlFormatter

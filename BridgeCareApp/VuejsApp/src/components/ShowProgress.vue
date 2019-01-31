@@ -4,7 +4,7 @@
             <v-container fill-height>
                 <v-layout column justify-center align-center>
                     <v-progress-circular indeterminate :size="70" :width="7" color="purple"></v-progress-circular>
-                    <h1>Please wait patiently</h1>
+                    <h1>Please wait</h1>
                 </v-layout>
             </v-container>
         </v-dialog>

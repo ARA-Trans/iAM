@@ -1,5 +1,6 @@
 ﻿using BridgeCare.ApplicationLog;
 using BridgeCare.Interfaces;
+using BridgeCare.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,20 +8,22 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCare.Models
+namespace BridgeCare.Data
 {
     public class DeficientData : IDeficient
     {
         private readonly BridgeCareContext db;
+        private readonly DeficientOrTarget getDeficients;
 
-        public DeficientData(BridgeCareContext context)
+        public DeficientData(BridgeCareContext context, DeficientOrTarget deficients)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
+            getDeficients = deficients ?? throw new ArgumentNullException(nameof(deficients));
         }
-        public Deficient GetDeficient(SimulationResult data, int[] totalYears)
+        public GetDeficients GetDeficient(SimulationResult data, int[] totalYears)
         {
             IQueryable<DeficientResult> deficients = null;
-            Deficient Results = null;
+            GetDeficients Results = null;
 
             var select =
                 "SELECT TargetID, Years, TargetMet, IsDeficient " +
@@ -33,33 +36,32 @@ namespace BridgeCare.Models
 
                 deficients = rawDeficientList.Where(_ => _.IsDeficient == true);
 
-                var dataList = new DeficientOrTarget();
-                var targetAndYear = dataList.DeficientTargetList(deficients);
+                var targetAndYear = getDeficients.DeficientTargetList(deficients);
                 Results = GetDeficientInformation(data, targetAndYear, totalYears);
             }
             catch (SqlException ex)
             {
-                ThrowError.SqlError(ex, "Target");
+                HandleException.SqlError(ex, "Target");
             }
             catch (OutOfMemoryException ex)
             {
-                ThrowError.OutOfMemoryError(ex);
+                HandleException.OutOfMemoryError(ex);
             }
             catch (Exception ex)
             {
-                ThrowError.GeneralError(ex);
+                HandleException.GeneralError(ex);
             }
             return Results;
         }
 
-        public Deficient GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
+        public GetDeficients GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
         {
             var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             var totalYearCount = totalYears.Count();
             DataTable DeficientTable = new DataTable();
             DeficientTable.Columns.Add("Attribute");
             DeficientTable.Columns.Add("Group");
-            Dictionary<int, List<int>> deficientList = new Dictionary<int, List<int>>();
+            var deficientList = new Dictionary<int, List<int>>();
             for (int i = 0; i < totalYearCount; i++)
             {
                 DeficientTable.Columns.Add(totalYears[i].ToString());
@@ -91,18 +93,12 @@ namespace BridgeCare.Models
                 deficientList.Add(increment, deficients);
                 increment++;
             }
-            var forDeficient = new Deficient
+            var forDeficient = new GetDeficients
             {
                 Deficients = DeficientTable,
                 DeficientColorFill = deficientList
             };
-
             return forDeficient;
-        }
-        public class Deficient
-        {
-            public DataTable Deficients { get; set; } = new DataTable();
-            public Dictionary<int, List<int>> DeficientColorFill = new Dictionary<int, List<int>>();
         }
     }
 }

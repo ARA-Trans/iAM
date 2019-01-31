@@ -7,7 +7,7 @@ using System.Web;
 
 namespace BridgeCare.ApplicationLog
 {
-    public static class ThrowError
+    public static class HandleException
     {
         public static void SqlError(SqlException ex, string table)
         {

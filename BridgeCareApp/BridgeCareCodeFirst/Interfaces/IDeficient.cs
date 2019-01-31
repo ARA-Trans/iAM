@@ -2,15 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using static BridgeCare.Models.DeficientData;
 
 namespace BridgeCare.Interfaces
 {
     public interface IDeficient
     {
-        Deficient GetDeficient(SimulationResult data, int[] totalYears);
-        Deficient GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears);
+        GetDeficients GetDeficient(SimulationResult data, int[] totalYears);
+        GetDeficients GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears);
     }
 }

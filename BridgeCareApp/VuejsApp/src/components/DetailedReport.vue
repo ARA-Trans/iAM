@@ -13,7 +13,7 @@
             <v-flex xs12 sm6 d-flex>
                 <v-select :items="simulations"
                           label="Select a Simulation"
-                          :disabled="noNetwork"
+                          :disabled="networksDropDownEnabled"
                           item-text="simulationName"
                           item-value="simulationId"
                           v-on:change="getSimulationId"
@@ -22,14 +22,14 @@
             <v-flex xs4>
                 <v-btn color="blue-grey"
                        class="white--text"
-                       :disabled="notAllSelected"
+                       :disabled="simulationsDropDownEnabled"
                        v-on:click="downloadReport">
                     Download Report
                     <v-icon right dark>cloud_download</v-icon>
                 </v-btn>
                 <!--<v-btn color="blue-grey"
                        class="white--text"
-                       :disabled="notAllSelected"
+                       :disabled="simulationsDropDownEnabled"
                        v-on:click="runSimulation">
                     Run Simulation
                     <v-icon right dark>cloud_download</v-icon>
@@ -49,6 +49,7 @@
 
     //@ts-ignore
     import ShowProgress from './ShowProgress'
+    import network from '../models/network'
 
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
@@ -63,8 +64,8 @@
         networkName: string = ""
         simulationName: string = ""
         simulationId: number = 0
-        notAllSelected: boolean = true
-        noNetwork: boolean = true
+        simulationsDropDownEnabled: boolean = true
+        networksDropDownEnabled: boolean = true
         downloadProgress: boolean = false
         loading: boolean = false
 
@@ -97,7 +98,7 @@
                     for (let i = 0; i < data.length; i++) {
                         this.simulations.push(data[i])
                     }
-                    this.noNetwork = false
+                    this.networksDropDownEnabled = false
                 }, error => {
                     console.log(error)
                 });
@@ -106,7 +107,7 @@
         getSimulationId(id: any) {
             this.simulationId = id
             this.simulationName = this.simulations.find(_ => _.simulationId == id).simulationName
-            this.notAllSelected = false
+            this.simulationsDropDownEnabled = false
         }
 
         downloadReport() {
@@ -125,6 +126,7 @@
             .then(response => {
                 this.downloadProgress = false
                 this.loading = false
+                // The if condition is used to work with IE11, and the else block is for Chrome
                 if (navigator.msSaveOrOpenBlob) {
                     navigator.msSaveOrOpenBlob(new Blob([response.data]), 'DetailedReport.xlsx')
                 }
