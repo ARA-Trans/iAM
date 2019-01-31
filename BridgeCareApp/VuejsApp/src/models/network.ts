@@ -1,4 +1,4 @@
-﻿export default class network {
-    public networkId: number = 0
-    public networkName: string = ""
+﻿export default class Network {
+    networkId: number = 0
+    networkName: string = ""
 }

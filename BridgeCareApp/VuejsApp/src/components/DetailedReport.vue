@@ -49,7 +49,8 @@
 
     //@ts-ignore
     import ShowProgress from './ShowProgress'
-    import network from '../models/network'
+    import Network from '../models/Network'
+    import Simulation from '../models/Simulation'
 
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
@@ -58,8 +59,8 @@
     })
     export default class DetailedReport extends Vue {
 
-        networks: any[] = []
-        simulations: any[] = []
+        networks: Network[] = []
+        simulations: Simulation[] = []
         networkId: number = 0
         networkName: string = ""
         simulationName: string = ""
@@ -74,7 +75,7 @@
             this.loading = true
             axios
                 .get('/api/Networks')
-                .then(response => (response.data as Promise<any[]>))
+                .then(response => (response.data as Promise<Network[]>))
                 .then(data => {
                     for (let i = 0; i < data.length; i++) {
                         this.networks.push(data[i])
@@ -88,12 +89,13 @@
                 });
         }
 
-        getNetworkId(id: any) {
+        getNetworkId(id: number) {
             this.networkId = id
-            this.networkName = this.networks.find(_ => _.networkId == id).networkName
+            let details = this.networks.find(t => t.networkId === id) as Network
+            this.networkName = details.networkName
             axios
                 .get(`/api/Simulations/${id}`)
-                .then(response => (response.data as Promise<any[]>))
+                .then(response => (response.data as Promise<Simulation[]>))
                 .then(data => {
                     for (let i = 0; i < data.length; i++) {
                         this.simulations.push(data[i])
@@ -106,7 +108,8 @@
 
         getSimulationId(id: any) {
             this.simulationId = id
-            this.simulationName = this.simulations.find(_ => _.simulationId == id).simulationName
+            let detail = this.simulations.find(_ => _.simulationId == id) as Simulation
+            this.simulationName = detail.simulationName
             this.simulationsDropDownEnabled = false
         }
 
@@ -123,28 +126,27 @@
                     SimulationId: this.simulationId
                 }
             })
-            .then(response => {
-                this.downloadProgress = false
-                this.loading = false
-                // The if condition is used to work with IE11, and the else block is for Chrome
-                if (navigator.msSaveOrOpenBlob) {
-                    navigator.msSaveOrOpenBlob(new Blob([response.data]), 'DetailedReport.xlsx')
-                }
-                else
-                {
-                    const url = window.URL.createObjectURL(new Blob([response.data]))
-                    const link = document.createElement('a')
-                    link.href = url
-                    link.setAttribute('download', 'DetailedReport.xlsx')
-                    document.body.appendChild(link)
-                    link.click()
-                }
-            })
-            .catch(error => {
-                this.downloadProgress = false
-                this.loading = false
-                console.log(error)
-            })
+                .then(response => {
+                    this.downloadProgress = false
+                    this.loading = false
+                    // The if condition is used to work with IE11, and the else block is for Chrome
+                    if (navigator.msSaveOrOpenBlob) {
+                        navigator.msSaveOrOpenBlob(new Blob([response.data]), 'DetailedReport.xlsx')
+                    }
+                    else {
+                        const url = window.URL.createObjectURL(new Blob([response.data]))
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.setAttribute('download', 'DetailedReport.xlsx')
+                        document.body.appendChild(link)
+                        link.click()
+                    }
+                })
+                .catch(error => {
+                    this.downloadProgress = false
+                    this.loading = false
+                    console.log(error)
+                })
         }
 
         runSimulation() {
@@ -159,7 +161,7 @@
                 }
             }).then(response => {
                 console.log(response.data)
-                })
+            })
                 .catch(error => {
                     console.log(error)
                 })

@@ -33,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "../AspWebApi/Entities/BridgeCareEntities.cs", "../AspWebApi/Models/SimulationModel.cs", "../BridgeCare/EntityClasses/SECTION_13.cs", "../BridgeCare/EntityClasses/DetailedReportModel.cs", "../BridgeCare/Models/BudgetReport.cs", "../BridgeCare/Models/DeficientResult.cs", "../BridgeCare/Models/SimulationResult.cs", "../BridgeCare/Models/Network.cs", "../BridgeCare/Models/DetailedReport.cs", "../BridgeCare/Models/DeficientData.cs", "../BridgeCare/Services/IReportRepository.cs", "../BridgeCare/Interfaces/ISimulation.cs"
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"
