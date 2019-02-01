@@ -6,7 +6,7 @@ using System.Web;
 
 namespace BridgeCare.Models
 {
-    public class CostAndBudgets
+    public class YearlyBudgetAndCost
     {
         public Hashtable BudgetForYear;
         public List<CostDetails> CostDetails;

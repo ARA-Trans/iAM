@@ -5,7 +5,7 @@ using System.Web;
 
 namespace BridgeCare.Models
 {
-    public class ConditionalData
+    public class DetailReportModel
     {
         public string Treatment { get; set; }
         public bool IsCommitted { get; set; }

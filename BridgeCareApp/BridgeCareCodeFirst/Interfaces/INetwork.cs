@@ -9,6 +9,6 @@ namespace BridgeCare.Interfaces
 {
     public interface INetwork
     {
-        IQueryable<Network> GetAllNetworks();
+        IQueryable<NetworkModel> GetAllNetworks();
     }
 }

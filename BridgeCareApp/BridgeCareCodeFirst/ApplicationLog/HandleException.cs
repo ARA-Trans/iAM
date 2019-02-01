@@ -31,7 +31,7 @@ namespace BridgeCare.ApplicationLog
         {
             if (ex.Number == -2 || ex.Number == 11)
             {
-                throw new TimeoutException("The server has timed out. Please try after some time");
+                throw new TimeoutException("The server has timed out. Please try again later");
             }
             if (ex.Number == 208)
             {
@@ -41,7 +41,7 @@ namespace BridgeCare.ApplicationLog
 
         private static void WriteOutOfMemoryEntry(OutOfMemoryException ex)
         {
-            throw new OutOfMemoryException($"{ex} The server is out of memory. Please try after some time");
+            throw new OutOfMemoryException($"{ex} The server is out of memory. Please try again later");
         }
     }
 }

@@ -26,7 +26,7 @@ namespace BridgeCare.Controllers
         }
 
         // POST: api/RunSimulation
-        public void Post([FromBody]SimulationResult data)
+        public void Post([FromBody]SimulationModel data)
         {
             try
             {

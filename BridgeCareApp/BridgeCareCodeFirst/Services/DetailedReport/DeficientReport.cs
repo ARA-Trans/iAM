@@ -8,19 +8,19 @@ using System.Linq;
 
 namespace BridgeCare.Services
 {
-    public class FillDeficients
+    public class DeficientReport
     {
         private readonly IDeficient deficientResult;
 
-        public FillDeficients(IDeficient deficient)
+        public DeficientReport(IDeficient deficient)
         {
             deficientResult = deficient ?? throw new ArgumentNullException(nameof(deficient));
         }
 
-        public void FillDeficient(ExcelWorksheet deficientReport, SimulationResult data, int[] totalYears)
+        public void Fill(ExcelWorksheet deficientReport, SimulationModel data, int[] totalYears)
         {
             var totalYearsCount = totalYears.Count();
-            var deficientResults = deficientResult.GetDeficient(data, totalYears);
+            var deficientResults = deficientResult.GetData(data, totalYears);
 
             deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
                         .Style.Fill.PatternType = ExcelFillStyle.Solid;

@@ -52,9 +52,6 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\HelloWorld.vue" />
-    <Content Include="src\components\ReportData.vue">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="src\components\ShowProgress.vue">
       <SubType>Code</SubType>
     </Content>

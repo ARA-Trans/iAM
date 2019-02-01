@@ -9,7 +9,7 @@ namespace BridgeCare.Interfaces
 {
     public interface ISimulation
     {
-        IQueryable<SimulationResult> GetAllSimulations();
-        IEnumerable<SimulationResult> GetSelectedSimulation(int id);
+        IQueryable<SimulationModel> GetAllSimulations();
+        IEnumerable<SimulationModel> GetSelectedSimulation(int id);
     }
 }

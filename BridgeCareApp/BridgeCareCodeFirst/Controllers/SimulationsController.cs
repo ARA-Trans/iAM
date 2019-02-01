@@ -25,14 +25,14 @@ namespace BridgeCare.Controllers
         }
 
         // GET: api/Simulations
-        public IQueryable<SimulationResult> GetSIMULATIONS()
+        public IQueryable<SimulationModel> GetSimulations()
         {
             return simulations.GetAllSimulations();
         }
 
         // GET: api/Simulations/5
         [ResponseType(typeof(SIMULATION))]
-        public IHttpActionResult GetSIMULATION(int id)
+        public IHttpActionResult GetSimulation(int id)
         {
             // this `id` is network id
             var getResults = simulations.GetSelectedSimulation(id);
@@ -52,7 +52,7 @@ namespace BridgeCare.Controllers
             base.Dispose(disposing);
         }
 
-        private bool SIMULATIONExists(int id)
+        private bool SimulationExists(int id)
         {
             return db.SIMULATIONS.Count(e => e.SIMULATIONID == id) > 0;
         }

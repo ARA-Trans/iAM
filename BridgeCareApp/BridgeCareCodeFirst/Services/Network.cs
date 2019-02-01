@@ -9,25 +9,25 @@ using BridgeCare.Models;
 
 namespace BridgeCare.Services
 {
-    public class NetworkRepository : INetwork
+    public class Network : INetwork
     {
         private readonly BridgeCareContext db;
 
-        public NetworkRepository(BridgeCareContext context)
+        public Network(BridgeCareContext context)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private IQueryable<Network> filteredColumns;
+        private IQueryable<NetworkModel> filteredColumns;
 
         public object Logger { get; private set; }
 
-        public IQueryable<Network> GetAllNetworks()
+        public IQueryable<NetworkModel> GetAllNetworks()
         {
             try
             {
                 filteredColumns = from contextTable in db.NETWORKS
-                                  select new Network
+                                  select new NetworkModel
                                   {
                                       NetworkId = contextTable.NETWORKID,
                                       NetworkName = contextTable.NETWORK_NAME

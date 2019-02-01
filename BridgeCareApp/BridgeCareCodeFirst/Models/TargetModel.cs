@@ -6,7 +6,7 @@ using System.Web;
 
 namespace BridgeCare.Models
 {
-    public class Target
+    public class TargetModel
     {
         public DataTable Targets { get; set; } = new DataTable();
         public CellAddress Address = new CellAddress();

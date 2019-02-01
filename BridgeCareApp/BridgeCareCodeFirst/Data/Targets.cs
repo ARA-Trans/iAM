@@ -10,22 +10,22 @@ using System.Linq;
 
 namespace BridgeCare.Data
 {
-    public class TargetData : ITarget
+    public class Targets : ITarget
     {
         private readonly BridgeCareContext db;
-        private readonly DeficientOrTarget getTargets;
-        private readonly TargetResults getTargetCell;
+        private readonly TargetsMet targets;
+        private readonly TargetResults targetCells;
 
-        public TargetData(BridgeCareContext context, DeficientOrTarget targets, TargetResults targetCells)
+        public Targets(BridgeCareContext context, TargetsMet targets, TargetResults result)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
-            getTargets = targets ?? throw new ArgumentNullException(nameof(targets));
-            getTargetCell = targetCells ?? throw new ArgumentNullException(nameof(targetCells));
+            this.targets = targets ?? throw new ArgumentNullException(nameof(targets));
+            targetCells = result ?? throw new ArgumentNullException(nameof(result));
         }
-        public Target GetTarget(SimulationResult data, int[] totalYears)
+        public TargetModel GetTarget(SimulationModel data, int[] totalYears)
         {
-            IQueryable<DeficientResult> targets = null;
-            Target results = null;
+            IQueryable<DeficientModel> results = null;
+            TargetModel target = null;
 
             var select =
                 "SELECT TargetID, Years, TargetMet, IsDeficient " +
@@ -34,12 +34,12 @@ namespace BridgeCare.Data
 
             try
             {
-                var rawDeficientList = db.Database.SqlQuery<DeficientResult>(select).AsQueryable();
+                var rawDeficientList = db.Database.SqlQuery<DeficientModel>(select).AsQueryable();
 
-                targets = rawDeficientList.Where(_ => _.IsDeficient == false);
+                results = rawDeficientList.Where(_ => _.IsDeficient == false);
 
-                var targetAndYear = getTargets.DeficientTargetList(targets);
-                results = GetTargetInformation(data, targetAndYear, totalYears);
+                var targetAndYear = targets.GetData(results);
+                target = GetTargetInformation(data, targetAndYear, totalYears);
             }
             catch (SqlException ex)
             {
@@ -53,9 +53,9 @@ namespace BridgeCare.Data
             {
                 Console.WriteLine(ex);
             }
-            return results;
+            return target;
         }
-        public Target GetTargetInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
+        public TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
         {
             var targetData = db.Target.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             
@@ -87,7 +87,7 @@ namespace BridgeCare.Data
                 idTargets.Add(target.Id, target);
             }
 
-            var dataForTarget = getTargetCell.GetCells(YearsIDValues, totalYears, idTargets);
+            var dataForTarget = targetCells.GetCells(YearsIDValues, totalYears, idTargets);
             return dataForTarget;
         }
     }

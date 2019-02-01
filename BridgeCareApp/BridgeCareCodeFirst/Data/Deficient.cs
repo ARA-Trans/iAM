@@ -10,22 +10,24 @@ using System.Linq;
 
 namespace BridgeCare.Data
 {
-    public class DeficientData : IDeficient
+    public class Deficient : IDeficient
     {
         private readonly BridgeCareContext db;
-        private readonly DeficientOrTarget getDeficients;
+        private readonly TargetsMet getDeficients;
         private readonly CellAddress address;
 
-        public DeficientData(BridgeCareContext context, DeficientOrTarget deficients, CellAddress cell)
+        public Deficient(BridgeCareContext context, TargetsMet deficients, CellAddress cell)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
             getDeficients = deficients ?? throw new ArgumentNullException(nameof(deficients));
             address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
-        public GetDeficients GetDeficient(SimulationResult data, int[] totalYears)
+        public DeficientResult GetData(SimulationModel data, int[] totalYears)
         {
-            IQueryable<DeficientResult> deficients = null;
-            GetDeficients Results = null;
+            // Deficient and DeficientResults are models. Deficient gets data from the database.
+            // DeficientResult gets the processed data
+            IQueryable<DeficientModel> deficients = null;
+            DeficientResult result = null;
 
             var select =
                 "SELECT TargetID, Years, TargetMet, IsDeficient " +
@@ -34,12 +36,12 @@ namespace BridgeCare.Data
 
             try
             {
-                var rawDeficientList = db.Database.SqlQuery<DeficientResult>(select).AsQueryable();
+                var rawDeficientList = db.Database.SqlQuery<DeficientModel>(select).AsQueryable();
 
                 deficients = rawDeficientList.Where(_ => _.IsDeficient == true);
 
-                var targetAndYear = getDeficients.DeficientTargetList(deficients);
-                Results = GetDeficientInformation(data, targetAndYear, totalYears);
+                var targetAndYear = getDeficients.GetData(deficients);
+                result = GetDeficientInformation(data, targetAndYear, totalYears);
             }
             catch (SqlException ex)
             {
@@ -53,17 +55,16 @@ namespace BridgeCare.Data
             {
                 HandleException.GeneralError(ex);
             }
-            return Results;
+            return result;
         }
 
-        public GetDeficients GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears)
+        public DeficientResult GetDeficientInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
         {
             var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             var totalYearCount = totalYears.Count();
             DataTable DeficientTable = new DataTable();
             DeficientTable.Columns.Add("Attribute");
             DeficientTable.Columns.Add("Group");
-            var deficientList = new Dictionary<int, List<int>>();
             for (int i = 0; i < totalYearCount; i++)
             {
                 DeficientTable.Columns.Add(totalYears[i].ToString());
@@ -78,8 +79,6 @@ namespace BridgeCare.Data
                 newDataRow["Attribute"] = item.Attribute_;
                 newDataRow["Group"] = item.DeficientName;
 
-                var deficients = new List<int>();
-
                 foreach (int key in yearValues.Keys)
                 {
                     int column = key - totalYears[0] + 2;
@@ -88,18 +87,15 @@ namespace BridgeCare.Data
 
                     if (value > item.PercentDeficient)
                     {
-                        deficients.Add(column);
                         address.Cells.Add((increment, column));
                     }
                 }
                 DeficientTable.Rows.Add(newDataRow);
-                deficientList.Add(increment, deficients);
                 increment++;
             }
-            var forDeficient = new GetDeficients
+            var forDeficient = new DeficientResult
             {
                 Deficients = DeficientTable,
-                DeficientColorFill = deficientList,
                 Address = address
             };
             return forDeficient;

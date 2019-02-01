@@ -7,7 +7,7 @@ namespace BridgeCare.Interfaces
 {
     public interface IDeficient
     {
-        GetDeficients GetDeficient(SimulationResult data, int[] totalYears);
-        GetDeficients GetDeficientInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears);
+        DeficientResult GetData(SimulationModel data, int[] totalYears);
+        DeficientResult GetDeficientInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears);
     }
 }

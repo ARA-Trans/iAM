@@ -1,7 +1,7 @@
 ﻿
 namespace BridgeCare.Models
 {
-    public class Network
+    public class NetworkModel
     {
         public int NetworkId { get; set; }
         public string NetworkName { get; set; }

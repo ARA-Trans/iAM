@@ -10,14 +10,14 @@ using System.Web;
 
 namespace BridgeCare.Services
 {
-    public class FillTargets
+    public class TargetReport
     {
         private readonly ITarget targets;
-        public FillTargets(ITarget target)
+        public TargetReport(ITarget target)
         {
             targets = target ?? throw new ArgumentNullException(nameof(target));
         }
-        public void FillTarget(ExcelWorksheet targetReport, SimulationResult data, int[] totalYears)
+        public void Fill(ExcelWorksheet targetReport, SimulationModel data, int[] totalYears)
         {
             var targetResults = targets.GetTarget(data, totalYears);
 
@@ -26,7 +26,7 @@ namespace BridgeCare.Services
             targetReport.Cells[2, 3, targetResults.Targets.Rows.Count + 1, targetResults.Targets.Columns.Count]
                         .Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
 
-            foreach(var (row, column) in targetResults.Address.Cells)
+            foreach (var (row, column) in targetResults.Address.Cells)
             {
                 targetReport.Cells[row, column + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
             }  

@@ -5,7 +5,7 @@ using System.Web;
 
 namespace BridgeCare.Models
 {
-    public class BudgetReport
+    public class BudgetModel
     {
         public int Years { get; set; }
         public string Budget { get; set; }

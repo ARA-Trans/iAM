@@ -10,7 +10,7 @@ namespace BridgeCare.Services
 {
     public class FillDetailedReport
     {
-        private Dictionary<bool, Action<ConditionalData, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<ConditionalData, ExcelWorksheet>>();
+        private Dictionary<bool, Action<DetailReportModel, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<DetailReportModel, ExcelWorksheet>>();
         private readonly IDetailedReport detailedReport;
         private readonly FillDetailedSheet fillWorkSheet;
 
@@ -22,12 +22,12 @@ namespace BridgeCare.Services
             ExcelValues.Add(true, fillWorkSheet.OnCommittedTrue);
             ExcelValues.Add(false, fillWorkSheet.OnCommittedFalse);
         }
-        public void FillYearlyData(ExcelWorksheet worksheet, int[] totalYears, SimulationResult data, BridgeCareContext dbContext)
+        public void Fill(ExcelWorksheet worksheet, int[] totalYears, SimulationModel data, BridgeCareContext dbContext)
         {
             var totalYearsCount = totalYears.Count();
-            var rawQueryForData = detailedReport.GetDataForReport(data, dbContext);
+            var rawQueryForData = detailedReport.GetRawQuery(data, dbContext);
 
-            List<string> headers = new List<string>
+            var headers = new List<string>
             {
                 "Facility",
                 "Section"
@@ -42,7 +42,7 @@ namespace BridgeCare.Services
             }
             int rowsToColumns = 0, columnNumber = 2, rowNumber = 2;
 
-            var conditionalData = new ConditionalData();
+            var conditionalData = new DetailReportModel();
             foreach (var newData in rawQueryForData)
             {
                 if (rowsToColumns == 0)

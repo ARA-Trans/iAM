@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace BridgeCare.Interfaces
 {
-    public interface IBudget
+    public interface IBudgetReport
     {
-        CostAndBudgets GetBudgetReportData(SimulationResult data, string[] budgetTypes);
-        string[] InvestmentData(SimulationResult data);
+        YearlyBudgetAndCost GetData(SimulationModel data, string[] budgetTypes);
+        string[] InvestmentData(SimulationModel data);
 
     }
 }

@@ -6,7 +6,7 @@ using System.Web;
 
 namespace BridgeCare.ApplicationLog
 {
-    public class Logger
+    public static class Logger
     {
         public static void Error(string message, string module)
         {

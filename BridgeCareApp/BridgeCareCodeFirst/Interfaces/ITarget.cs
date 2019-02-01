@@ -10,7 +10,7 @@ namespace BridgeCare.Interfaces
 {
     public interface ITarget
     {
-        Target GetTarget(SimulationResult data, int[] totalYears);
-        Target GetTargetInformation(SimulationResult data, Hashtable YearsIDValues, int[] totalYears);
+        TargetModel GetTarget(SimulationModel data, int[] totalYears);
+        TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears);
     }
 }

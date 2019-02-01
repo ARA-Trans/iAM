@@ -27,88 +27,22 @@ namespace BridgeCare.Controllers
         }
 
         // GET: api/NETWORKs
-        public IQueryable<Network> GetNETWORKS()
+        public IQueryable<NetworkModel> GetNetworks()
         {
             return networks.GetAllNetworks();
         }
 
         // GET: api/NETWORKs/5
         [ResponseType(typeof(NETWORK))]
-        public IHttpActionResult GetNETWORK(int id)
+        public IHttpActionResult GetNetwork(int id)
         {
-            NETWORK nETWORK = db.NETWORKS.Find(id);
-            if (nETWORK == null)
+            NETWORK network = db.NETWORKS.Find(id);
+            if (network == null)
             {
                 return NotFound();
             }
 
-            return Ok(nETWORK);
-        }
-
-        // PUT: api/NETWORKs/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutNETWORK(int id, NETWORK nETWORK)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != nETWORK.NETWORKID)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(nETWORK).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NETWORKExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/NETWORKs
-        [ResponseType(typeof(NETWORK))]
-        public IHttpActionResult PostNETWORK(NETWORK nETWORK)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.NETWORKS.Add(nETWORK);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = nETWORK.NETWORKID }, nETWORK);
-        }
-
-        // DELETE: api/NETWORKs/5
-        [ResponseType(typeof(NETWORK))]
-        public IHttpActionResult DeleteNETWORK(int id)
-        {
-            NETWORK nETWORK = db.NETWORKS.Find(id);
-            if (nETWORK == null)
-            {
-                return NotFound();
-            }
-
-            db.NETWORKS.Remove(nETWORK);
-            db.SaveChanges();
-
-            return Ok(nETWORK);
+            return Ok(network);
         }
 
         protected override void Dispose(bool disposing)
@@ -120,7 +54,7 @@ namespace BridgeCare.Controllers
             base.Dispose(disposing);
         }
 
-        private bool NETWORKExists(int id)
+        private bool NetworkExists(int id)
         {
             return db.NETWORKS.Count(e => e.NETWORKID == id) > 0;
         }

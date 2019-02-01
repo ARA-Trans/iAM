@@ -12,15 +12,15 @@ namespace BridgeCare.Controllers
 {
     public class DetailedReportController : ApiController
     {
-        private readonly IReportCreater detailedReport;
-        public DetailedReportController(IReportCreater detailedReport)
+        private readonly IReportCreator detailedReport;
+        public DetailedReportController(IReportCreator detailedReport)
         {
             this.detailedReport = detailedReport ?? throw new ArgumentNullException(nameof(detailedReport));
         }
 
         // POST: api/DetailedReport
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] SimulationResult data)
+        public HttpResponseMessage Post([FromBody] SimulationModel data)
         {
             if (!ModelState.IsValid)
             {
@@ -34,7 +34,7 @@ namespace BridgeCare.Controllers
             }
             catch (TimeoutException)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try after some time");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try again later");
             }
             catch (InvalidOperationException ex)
             {
@@ -43,7 +43,7 @@ namespace BridgeCare.Controllers
             }
             catch (OutOfMemoryException)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server is out of Memory. Please try after some time");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server is out of Memory. Please try again later");
             }
             response.Content.Headers.ContentType = mediaType;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");

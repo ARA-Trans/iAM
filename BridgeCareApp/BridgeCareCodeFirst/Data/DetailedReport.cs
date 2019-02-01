@@ -34,7 +34,7 @@ namespace BridgeCare.Data
         // Required by entity framework
         public DetailedReport() { }
 
-        public List<YearlyData> GetYearsData(SimulationResult data)
+        public List<YearlyData> GetYearsData(SimulationModel data)
         {
             var yearsForBudget = new List<YearlyData>();
             try
@@ -55,7 +55,7 @@ namespace BridgeCare.Data
             return yearsForBudget;
         }
 
-        public IQueryable<DetailedReport> GetDataForReport(SimulationResult data, BridgeCareContext dbContext)
+        public IQueryable<DetailedReport> GetRawQuery(SimulationModel data, BridgeCareContext dbContext)
         {
             IQueryable<DetailedReport> rawQueryForData = null;
             var select =

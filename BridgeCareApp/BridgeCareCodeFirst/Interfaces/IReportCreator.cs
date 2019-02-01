@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace BridgeCare.Interfaces
 {
-    public interface IReportCreater
+    public interface IReportCreator
     {
-        byte[] CreateExcelReport(SimulationResult data);
+        byte[] CreateExcelReport(SimulationModel data);
     }
 }

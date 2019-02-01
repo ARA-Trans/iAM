@@ -12,17 +12,17 @@ using System.Web;
 
 namespace BridgeCare.Services
 {
-    public class FillBudget
+    public class Budget
     {
-        private readonly IBudget budget;
-        public FillBudget(IBudget report)
+        private readonly IBudgetReport budget;
+        public Budget(IBudgetReport report)
         {
             budget = report ?? throw new ArgumentNullException(nameof(report));
         }
-        public void FillTotalView(ExcelWorksheet budgetReport, int[] totalYears, SimulationResult data, List<YearlyData> yearlyInvestment)
+        public void Fill(ExcelWorksheet budgetReport, int[] totalYears, SimulationModel data, List<YearlyData> yearlyInvestment)
         {
             var budgetTypes = budget.InvestmentData(data);
-            var budgetAndCost = budget.GetBudgetReportData(data, budgetTypes);
+            var budgetAndCost = budget.GetData(data, budgetTypes);
             var budgetReportTable = budgetAndCost.BudgetForYear;
 
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
@@ -74,7 +74,7 @@ namespace BridgeCare.Services
             FillTargetAndSpend(budgetReport, totalYears, budgetAndCost, budgetTypes, yearlyInvestment);
         }
 
-        public void FillTargetAndSpend(ExcelWorksheet budgetReport, int[] totalYears, CostAndBudgets budgetAndCost,
+        public void FillTargetAndSpend(ExcelWorksheet budgetReport, int[] totalYears, YearlyBudgetAndCost budgetAndCost,
             string[] budgetTypes, List<YearlyData> yearlyInvestment)
         {
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
@@ -122,7 +122,7 @@ namespace BridgeCare.Services
                 DataRow spentRow = viewTable.NewRow();
                 spentRow[0] = budget;
                 spentRow[1] = "Spent";
-                var listOverBudget = new List<int>();
+                var budgetOvershoot = new List<int>();
                 for (int i = 0; i < totalYearsCount; i++)
                 {
                     var sumOfCosts = budgetAndCost.CostDetails.Where(_ => _.Years == totalYears[i] && _.Budget == budget)
@@ -130,7 +130,7 @@ namespace BridgeCare.Services
                     var target = targetRow[i + 2] != null ? (double)targetRow[i + 2] : 0;
                     if (sumOfCosts > target)
                     {
-                        listOverBudget.Add(i);
+                        budgetOvershoot.Add(i);
                     }
                     spentRow[i + 2] = sumOfCosts;
                     totalSpentRow[i + 2] = sumOfCosts + (double)totalSpentRow[i + 2];
@@ -140,10 +140,12 @@ namespace BridgeCare.Services
                 viewTable.Rows.Add(spentRow);
                 budgetReport.Cells[lastRow + 1, 1].LoadFromDataTable(viewTable, false);
 
-                foreach (var overShoot in listOverBudget)
+                void setColor(int overShoot)
                 {
                     budgetReport.Cells[lastRow + 1, overShoot + 3].Style.Font.Color.SetColor(Color.Red);
                 }
+
+                budgetOvershoot.ForEach(setColor);
                 viewTable.Rows.Remove(spentRow);
             }
             budgetReport.InsertRow(lastRow + 1, 2);

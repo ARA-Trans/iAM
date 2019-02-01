@@ -1,7 +1,7 @@
 ﻿
 namespace BridgeCare.Models
 {
-    public class SimulationResult
+    public class SimulationModel
     {
         public int SimulationId { get; set; }
         public string SimulationName { get; set; }

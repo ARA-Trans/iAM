@@ -10,21 +10,21 @@ using BridgeCare.ApplicationLog;
 
 namespace BridgeCare.Services
 {
-    public class SimulationRepository : ISimulation
+    public class Simulations : ISimulation
     {
         private readonly BridgeCareContext db;
 
-        public SimulationRepository(BridgeCareContext context)
+        public Simulations(BridgeCareContext context)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private IQueryable<SimulationResult> filterSimulation;
+        private IQueryable<SimulationModel> filterSimulation;
 
-        public IQueryable<SimulationResult> GetAllSimulations()
+        public IQueryable<SimulationModel> GetAllSimulations()
         {
             var filteredColumns = from contextTable in db.SIMULATIONS
-                                  select new SimulationResult
+                                  select new SimulationModel
                                   {
                                       SimulationId = contextTable.SIMULATIONID,
                                       SimulationName = contextTable.SIMULATION1,
@@ -33,12 +33,12 @@ namespace BridgeCare.Services
             return filteredColumns;
         }
 
-        public IEnumerable<SimulationResult> GetSelectedSimulation(int id)
+        public IEnumerable<SimulationModel> GetSelectedSimulation(int id)
         {
             try
             {
                 filterSimulation = db.SIMULATIONS.Where(_ => _.NETWORKID == id)
-                .Select(p => new SimulationResult
+                .Select(p => new SimulationModel
                 {
                     SimulationId = p.SIMULATIONID,
                     SimulationName = p.SIMULATION1,

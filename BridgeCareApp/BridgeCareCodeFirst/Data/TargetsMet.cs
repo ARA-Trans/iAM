@@ -7,24 +7,24 @@ using System.Web;
 
 namespace BridgeCare.Data
 {
-    public class DeficientOrTarget
+    public class TargetsMet
     {
-        public Hashtable DeficientTargetList(IQueryable<DeficientResult> deficientOrTarget)
+        public Hashtable GetData(IQueryable<DeficientModel> deficientResults)
         {
             var targetAndYear = new Hashtable();
-            Hashtable MetTarget;
-            foreach (var item in deficientOrTarget)
+            Hashtable metTarget;
+            foreach (var item in deficientResults)
             {
                 if (targetAndYear.ContainsKey(item.TargetID))
                 {
-                    MetTarget = (Hashtable)targetAndYear[item.TargetID];
+                    metTarget = (Hashtable)targetAndYear[item.TargetID];
                 }
                 else
                 {
-                    MetTarget = new Hashtable();
-                    targetAndYear.Add(item.TargetID, MetTarget);
+                    metTarget = new Hashtable();
+                    targetAndYear.Add(item.TargetID, metTarget);
                 }
-                MetTarget.Add(item.Years, item.TargetMet);
+                metTarget.Add(item.Years, item.TargetMet);
             }
             return targetAndYear;
         }

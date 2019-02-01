@@ -9,26 +9,26 @@ using BridgeCare.Models;
 
 namespace BridgeCare.Data
 {
-    public class BudgetReportData : IBudget
+    public class BudgetReport : IBudgetReport
     {
         private readonly List<CostDetails> costs;
         private readonly BridgeCareContext db;
 
-        public BudgetReportData(List<CostDetails> cost, BridgeCareContext context)
+        public BudgetReport(List<CostDetails> cost, BridgeCareContext context)
         {
             costs = cost ?? throw new ArgumentNullException(nameof(cost));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public CostAndBudgets GetBudgetReportData(SimulationResult data, string[] budgetTypes)
+        public YearlyBudgetAndCost GetData(SimulationModel data, string[] budgetTypes)
         {
-            var BudgetYearView = new Hashtable();
+            var budgetYearView = new Hashtable();
             var select =
                 "SELECT Years, Budget, Cost_ " +
                     " FROM Report_" + data.NetworkId
                     + "_" + data.SimulationId + " WHERE BUDGET is not null";
             try
             {
-                var rawQueryForData = db.Database.SqlQuery<BudgetReport>(select).AsQueryable();
+                var rawQueryForData = db.Database.SqlQuery<BudgetModel>(select).AsQueryable();
 
                 double sum = 0;
                 foreach (var row in rawQueryForData)
@@ -37,14 +37,14 @@ namespace BridgeCare.Data
                     Hashtable yearView;
                     //[NOTE].. Filling up the hash table. Data is coming from the database in such a way
                     // that an Hashtable cannot be filled in one go and the checks are necessary.
-                    if (!BudgetYearView.Contains(row.Budget))
+                    if (!budgetYearView.Contains(row.Budget))
                     {
                         yearView = new Hashtable();
-                        BudgetYearView.Add(row.Budget, yearView);
+                        budgetYearView.Add(row.Budget, yearView);
                     }
                     else
                     {
-                        yearView = (Hashtable)BudgetYearView[row.Budget];
+                        yearView = (Hashtable)budgetYearView[row.Budget];
                     }
 
                     if (yearView.Contains(row.Years))
@@ -61,11 +61,11 @@ namespace BridgeCare.Data
                         Budget = row.Budget
                     });
                 }
-                foreach (string item in BudgetYearView.Keys)
+                foreach (string item in budgetYearView.Keys)
                 {
                     if (!budgetTypes.Contains(item))
                     {
-                        BudgetYearView.Remove(item);
+                        budgetYearView.Remove(item);
                     }
                 }
             }
@@ -77,15 +77,15 @@ namespace BridgeCare.Data
             {
                 HandleException.OutOfMemoryError(ex);
             }
-            var budgetReportDetails = new CostAndBudgets
+            var budgetReportDetails = new YearlyBudgetAndCost
             {
-                BudgetForYear = BudgetYearView,
+                BudgetForYear = budgetYearView,
                 CostDetails = costs
             };
             return budgetReportDetails;
         }
 
-        public string[] InvestmentData(SimulationResult data)
+        public string[] InvestmentData(SimulationModel data)
         {
             var db = new BridgeCareContext();
             var budgetOrder = db.INVESTMENTs.Where(_ => _.SIMULATIONID == data.SimulationId)

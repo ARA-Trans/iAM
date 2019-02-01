@@ -11,7 +11,7 @@ namespace BridgeCare.Services
 {
     public class FillDetailedSheet
     {
-        public readonly Action<ConditionalData, ExcelWorksheet> OnCommittedFalse = (conditionalData, worksheet) =>
+        public readonly Action<DetailReportModel, ExcelWorksheet> OnCommittedFalse = (conditionalData, worksheet) =>
         {
             if (conditionalData.NumberTreatment == 0)
             {
@@ -32,7 +32,7 @@ namespace BridgeCare.Services
             }
         };
 
-        public readonly Action<ConditionalData, ExcelWorksheet> OnCommittedTrue = (conditionalData, worksheet) =>
+        public readonly Action<DetailReportModel, ExcelWorksheet> OnCommittedTrue = (conditionalData, worksheet) =>
         {
             int rowNumber = conditionalData.RowNumber;
             int columnNumber = conditionalData.ColumnNumber;
