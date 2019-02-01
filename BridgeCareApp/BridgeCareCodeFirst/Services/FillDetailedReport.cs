@@ -12,9 +12,9 @@ namespace BridgeCare.Services
     {
         private Dictionary<bool, Action<ConditionalData, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<ConditionalData, ExcelWorksheet>>();
         private readonly IDetailedReport detailedReport;
-        private readonly FillWorkSheet fillWorkSheet;
+        private readonly FillDetailedSheet fillWorkSheet;
 
-        public FillDetailedReport(IDetailedReport yearlyReport, FillWorkSheet sheet)
+        public FillDetailedReport(IDetailedReport yearlyReport, FillDetailedSheet sheet)
         {
             detailedReport = yearlyReport ?? throw new ArgumentNullException(nameof(yearlyReport));
             fillWorkSheet = sheet ?? throw new ArgumentNullException(nameof(sheet));

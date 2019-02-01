@@ -46,7 +46,7 @@ namespace BridgeCare
             container.RegisterType<CostDetails>(new HierarchicalLifetimeManager());
             container.RegisterType<ITarget, TargetData>(new HierarchicalLifetimeManager());
             container.RegisterType<IReportCreater, DetailedReportRepository>(new HierarchicalLifetimeManager());
-            container.RegisterType<FillWorkSheet>();
+            container.RegisterType<FillDetailedSheet>();
             container.RegisterType<DeficientOrTarget>();
             container.RegisterType<TargetResults>();
             container.RegisterType<FillTargets>();

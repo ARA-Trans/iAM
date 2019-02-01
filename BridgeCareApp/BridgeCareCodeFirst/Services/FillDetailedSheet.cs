@@ -9,7 +9,7 @@ using System.Web;
 
 namespace BridgeCare.Services
 {
-    public class FillWorkSheet
+    public class FillDetailedSheet
     {
         public readonly Action<ConditionalData, ExcelWorksheet> OnCommittedFalse = (conditionalData, worksheet) =>
         {

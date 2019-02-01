@@ -544,7 +544,7 @@
     <Compile Include="Services\FillDeficients.cs" />
     <Compile Include="Services\FillDetailedReport.cs" />
     <Compile Include="Services\FillTargets.cs" />
-    <Compile Include="Services\FillWorkSheet.cs" />
+    <Compile Include="Services\FillDetailedSheet.cs" />
     <Compile Include="Services\NetworkRepository.cs" />
     <Compile Include="Services\SimulationRepository.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
