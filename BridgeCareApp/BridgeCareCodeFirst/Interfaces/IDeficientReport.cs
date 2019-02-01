@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace BridgeCare.Interfaces
 {
-    public interface IDeficient
+    public interface IDeficientReport
     {
         DeficientResult GetData(SimulationModel data, int[] totalYears);
         DeficientResult GetDeficientInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears);

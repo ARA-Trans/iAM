@@ -8,13 +8,13 @@ using System.Web;
 
 namespace BridgeCare.Services
 {
-    public class FillDetailedReport
+    public class Detailed
     {
         private Dictionary<bool, Action<DetailReportModel, ExcelWorksheet>> ExcelValues = new Dictionary<bool, Action<DetailReportModel, ExcelWorksheet>>();
         private readonly IDetailedReport detailedReport;
         private readonly FillDetailedSheet fillWorkSheet;
 
-        public FillDetailedReport(IDetailedReport yearlyReport, FillDetailedSheet sheet)
+        public Detailed(IDetailedReport yearlyReport, FillDetailedSheet sheet)
         {
             detailedReport = yearlyReport ?? throw new ArgumentNullException(nameof(yearlyReport));
             fillWorkSheet = sheet ?? throw new ArgumentNullException(nameof(sheet));

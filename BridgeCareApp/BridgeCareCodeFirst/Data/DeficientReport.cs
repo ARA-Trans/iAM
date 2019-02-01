@@ -10,13 +10,13 @@ using System.Linq;
 
 namespace BridgeCare.Data
 {
-    public class Deficient : IDeficient
+    public class DeficientReport : IDeficientReport
     {
         private readonly BridgeCareContext db;
         private readonly TargetsMet getDeficients;
         private readonly CellAddress address;
 
-        public Deficient(BridgeCareContext context, TargetsMet deficients, CellAddress cell)
+        public DeficientReport(BridgeCareContext context, TargetsMet deficients, CellAddress cell)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
             getDeficients = deficients ?? throw new ArgumentNullException(nameof(deficients));

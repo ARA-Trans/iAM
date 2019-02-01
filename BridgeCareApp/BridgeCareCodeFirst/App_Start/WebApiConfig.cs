@@ -2,6 +2,7 @@
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Services;
+using BridgeCare.Data;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using Unity;
 using Unity.Lifetime;
-using BridgeCare.Data;
 
 namespace BridgeCare
 {
@@ -41,16 +41,16 @@ namespace BridgeCare
             container.RegisterType<IDetailedReport, DetailedReport>(new HierarchicalLifetimeManager());
             container.RegisterType<BridgeCareContext>(new HierarchicalLifetimeManager());
             container.RegisterType<IBudgetReport, BudgetReport>(new HierarchicalLifetimeManager());
-            container.RegisterType<IDeficient, Deficient>(new HierarchicalLifetimeManager());
+            container.RegisterType<IDeficientReport, DeficientReport>(new HierarchicalLifetimeManager());
             container.RegisterType<CostDetails>(new HierarchicalLifetimeManager());
             container.RegisterType<ITarget, Targets>(new HierarchicalLifetimeManager());
             container.RegisterType<IReportCreator, ReportCreator>(new HierarchicalLifetimeManager());
             container.RegisterType<FillDetailedSheet>();
             container.RegisterType<TargetsMet>();
             container.RegisterType<TargetResults>();
-            container.RegisterType<TargetReport>();
-            container.RegisterType<DeficientReport>();
-            container.RegisterType<FillDetailedReport>();
+            container.RegisterType<Target>();
+            container.RegisterType<Deficient>();
+            container.RegisterType<Detailed>();
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
             config.DependencyResolver = new UnityResolver(container);

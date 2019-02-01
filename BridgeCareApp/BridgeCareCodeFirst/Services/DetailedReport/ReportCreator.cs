@@ -15,13 +15,13 @@ namespace BridgeCare.Services
     {
         private readonly BridgeCareContext db;
         private readonly IDetailedReport investment;
-        private readonly TargetReport targetReport;
-        private readonly DeficientReport deficientReport;
-        private readonly FillDetailedReport detailReport;
+        private readonly Target targetReport;
+        private readonly Deficient deficientReport;
+        private readonly Detailed detailReport;
         private readonly Budget budgetReport;
 
         public ReportCreator(IDetailedReport yearlyReport, Budget getBudget,
-                   TargetReport targetCell, DeficientReport deficientCell, FillDetailedReport details, BridgeCareContext context)
+                   Target targetCell, Deficient deficientCell, Detailed details, BridgeCareContext context)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
             investment = yearlyReport ?? throw new ArgumentNullException(nameof(yearlyReport));

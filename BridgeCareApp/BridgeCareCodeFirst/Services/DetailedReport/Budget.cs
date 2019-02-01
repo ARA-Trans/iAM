@@ -71,10 +71,10 @@ namespace BridgeCare.Services
             budgetReport.Cells[2, 3, lastRecord.Row, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
             budgetReport.Cells[2, 1, lastRecord.Row, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
             budgetReport.Cells[2, 1, lastRecord.Row, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-            FillTargetAndSpend(budgetReport, totalYears, budgetAndCost, budgetTypes, yearlyInvestment);
+            FillTargetAndSpent(budgetReport, totalYears, budgetAndCost, budgetTypes, yearlyInvestment);
         }
 
-        public void FillTargetAndSpend(ExcelWorksheet budgetReport, int[] totalYears, YearlyBudgetAndCost budgetAndCost,
+        public void FillTargetAndSpent(ExcelWorksheet budgetReport, int[] totalYears, YearlyBudgetAndCost budgetAndCost,
             string[] budgetTypes, List<YearlyData> yearlyInvestment)
         {
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";

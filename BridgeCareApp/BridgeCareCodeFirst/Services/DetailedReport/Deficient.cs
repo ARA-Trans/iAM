@@ -8,11 +8,11 @@ using System.Linq;
 
 namespace BridgeCare.Services
 {
-    public class DeficientReport
+    public class Deficient
     {
-        private readonly IDeficient deficientResult;
+        private readonly IDeficientReport deficientResult;
 
-        public DeficientReport(IDeficient deficient)
+        public Deficient(IDeficientReport deficient)
         {
             deficientResult = deficient ?? throw new ArgumentNullException(nameof(deficient));
         }

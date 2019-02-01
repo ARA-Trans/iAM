@@ -10,10 +10,10 @@ using System.Web;
 
 namespace BridgeCare.Services
 {
-    public class TargetReport
+    public class Target
     {
         private readonly ITarget targets;
-        public TargetReport(ITarget target)
+        public Target(ITarget target)
         {
             targets = target ?? throw new ArgumentNullException(nameof(target));
         }
