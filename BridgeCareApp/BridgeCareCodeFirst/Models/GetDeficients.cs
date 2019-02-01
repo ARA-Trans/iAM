@@ -10,5 +10,6 @@ namespace BridgeCare.Models
     {
         public DataTable Deficients { get; set; } = new DataTable();
         public Dictionary<int, List<int>> DeficientColorFill = new Dictionary<int, List<int>>();
+        public CellAddress Address = new CellAddress();
     }
 }

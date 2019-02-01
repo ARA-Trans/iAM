@@ -4,20 +4,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 
 namespace BridgeCare.Data
 {
-    public class GetTargetCellsData
+    public class TargetResults
     {
         private readonly BridgeCareContext db;
-        private readonly ExcelFillCoral excelFillCoral;
+        private readonly CellAddress address;
 
-        public GetTargetCellsData(BridgeCareContext context, ExcelFillCoral coral)
+        public TargetResults(BridgeCareContext context, CellAddress cell)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
-            excelFillCoral = coral ?? throw new ArgumentNullException(nameof(coral));
+            address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
+
         public Target GetCells(Hashtable YearsIDValues, int[] totalYears, Hashtable idTargets)
         {
             var attributeData = db.Attributes.AsNoTracking();
@@ -37,22 +37,16 @@ namespace BridgeCare.Data
                 targetTable.Columns.Add(totalYears[i].ToString());
             }
 
-            //var excelFillCoral = new Dictionary<int, List<int>>();
-            var excelFillGreen = new Dictionary<int, List<int>>();
             int increment = 2;
             foreach (var key in YearsIDValues.Keys)
             {
                 Hashtable yearHashValue = new Hashtable();
                 yearHashValue = (Hashtable)YearsIDValues[key];
                 TargetParameters target = (TargetParameters)idTargets[key];
-                var columns = new List<int>();
 
                 DataRow newDataRow = targetTable.NewRow();
                 newDataRow["Attribute"] = target.Attribute;
                 newDataRow["Group"] = target.Name;
-                excelFillCoral.Row.Add(increment);
-                //excelFillCoral.Add(increment, new List<int>());
-                excelFillGreen.Add(increment, new List<int>());
 
                 int column = 2;
                 foreach (int year in yearHashValue.Keys)
@@ -61,36 +55,29 @@ namespace BridgeCare.Data
                     newDataRow[column] = targetMetValue + "/" + target.TargetMean;
                     if (attributeOrder.ContainsKey(target.Attribute) && !attributeOrder[target.Attribute])
                     {
-                        columns.Add(column);
-                        //excelFillCoral[increment].Add(column);
                         if (targetMetValue < target.TargetMean)
                         {
-                            excelFillGreen[increment].Add(column);
-                            //excelFillCoral[increment].Remove(column);
+                            var cell = (row: increment, column: column);
+                            address.Cells.Add(cell);
                         }
                     }
                     else
                     {
-                        columns.Add(column);
-                        //excelFillCoral[increment].Add(column);
                         if (targetMetValue > target.TargetMean)
                         {
-                            excelFillGreen[increment].Add(column);
-                            //excelFillCoral[increment].Remove(column);
-                            columns.Remove(column);
+                            var cell = (row: increment, column: column);
+                            address.Cells.Add(cell);
                         }
                     }
                     column++;
                 }
-                excelFillCoral.CoralColumns.Add(columns);
                 targetTable.Rows.Add(newDataRow);
                 increment++;
             }
             var dataForTarget = new Target
             {
                 Targets = targetTable,
-                CoralColorFill = excelFillCoral,
-                GreenColorFill = excelFillGreen
+                Address = address
             };
             return dataForTarget;
         }

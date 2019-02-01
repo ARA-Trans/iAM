@@ -9,7 +9,6 @@ namespace BridgeCare.Models
     public class Target
     {
         public DataTable Targets { get; set; } = new DataTable();
-        public Dictionary<int, List<int>> GreenColorFill = new Dictionary<int, List<int>>();
-        public ExcelFillCoral CoralColorFill = new ExcelFillCoral();
+        public CellAddress Address = new CellAddress();
     }
 }

@@ -3,10 +3,8 @@ using BridgeCare.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Web;
 
 namespace BridgeCare.Services
 {
@@ -18,28 +16,23 @@ namespace BridgeCare.Services
         {
             deficientResult = deficient ?? throw new ArgumentNullException(nameof(deficient));
         }
+
         public void FillDeficient(ExcelWorksheet deficientReport, SimulationResult data, int[] totalYears)
         {
             var totalYearsCount = totalYears.Count();
             var deficientResults = deficientResult.GetDeficient(data, totalYears);
 
-            int increment = 2;
-            foreach (var result in deficientResults.DeficientColorFill)
+            deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
+                        .Style.Fill.PatternType = ExcelFillStyle.Solid;
+            deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
+                        .Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+
+            foreach (var (row, column) in deficientResults.Address.Cells)
             {
-                for (int k = 2; k < totalYearsCount + 2; k++)
+                if (column > totalYearsCount + 2)
                 {
-                    if (result.Value.Contains(k))
-                    {
-                        deficientReport.Cells[increment, k + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        deficientReport.Cells[increment, k + 1].Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
-                    }
-                    else
-                    {
-                        deficientReport.Cells[increment, k + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        deficientReport.Cells[increment, k + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
-                    }
+                    deficientReport.Cells[row, column + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
                 }
-                increment++;
             }
 
             deficientReport.Cells.LoadFromDataTable(deficientResults.Deficients, true);

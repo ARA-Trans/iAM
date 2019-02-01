@@ -62,28 +62,34 @@ namespace BridgeCare.Services
                         totalViewRow[j + 2] = (double)totalViewRow[j + 2] + viewData;
                     }
                 }
-                budgetReport.InsertRow(2, 1);
                 viewTable.Rows.Add(viewRow);
-                budgetReport.Cells[2, 3, 2, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
-                budgetReport.Cells[2, 1, 2, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                budgetReport.Cells[2, 1, 2, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                budgetReport.Cells[2, 1].LoadFromDataTable(viewTable, false);
-                viewTable.Rows.Remove(viewRow);
             }
             viewTable.Rows.Add(totalViewRow);
-            FillTargetAndSpend(budgetReport, totalYears, budgetAndCost, budgetTypes, viewTable, yearlyInvestment);
+            
+            budgetReport.Cells[2, 1].LoadFromDataTable(viewTable, false);
+            var lastRecord = budgetReport.Dimension.End;
+            budgetReport.Cells[2, 3, lastRecord.Row, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
+            budgetReport.Cells[2, 1, lastRecord.Row, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            budgetReport.Cells[2, 1, lastRecord.Row, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+            FillTargetAndSpend(budgetReport, totalYears, budgetAndCost, budgetTypes, yearlyInvestment);
         }
 
         public void FillTargetAndSpend(ExcelWorksheet budgetReport, int[] totalYears, CostAndBudgets budgetAndCost,
-            string[] budgetTypes, DataTable viewTable, List<YearlyData> yearlyInvestment)
+            string[] budgetTypes, List<YearlyData> yearlyInvestment)
         {
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
             var totalYearsCount = totalYears.Count();
+            DataTable viewTable = new DataTable();
+            viewTable.Columns.Add();
+            viewTable.Columns.Add();
             DataRow totalTargetRow = viewTable.NewRow();
             DataRow totalSpentRow = viewTable.NewRow();
 
+            var lastRow = budgetReport.Dimension.End.Row;
+
             for (int i = 0; i < totalYearsCount; i++)
             {
+                viewTable.Columns.Add($"{i + 2}", typeof(double));
                 totalTargetRow[i + 2] = 0;
                 totalSpentRow[i + 2] = 0;
             }
@@ -106,13 +112,12 @@ namespace BridgeCare.Services
                     totalTargetRow[count] = amount + (double)totalTargetRow[count];
                     count++;
                 }
-                budgetReport.InsertRow(2, 1);
+                budgetReport.InsertRow(lastRow + 1, 1);
                 viewTable.Rows.Add(targetRow);
-                budgetReport.Cells[2, 3, 2, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
-                budgetReport.Cells[2, 1, 2, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                budgetReport.Cells[2, 1, 2, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                budgetReport.Cells[2, 1].LoadFromDataTable(viewTable, false);
-
+                budgetReport.Cells[lastRow + 1, 1].LoadFromDataTable(viewTable, false);
+                budgetReport.Cells[lastRow + 1, 1, lastRow + 1, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                budgetReport.Cells[lastRow + 1, 1, lastRow + 1, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                
                 // creating row for spend amount
                 DataRow spentRow = viewTable.NewRow();
                 spentRow[0] = budget;
@@ -130,34 +135,34 @@ namespace BridgeCare.Services
                     spentRow[i + 2] = sumOfCosts;
                     totalSpentRow[i + 2] = sumOfCosts + (double)totalSpentRow[i + 2];
                 }
-                budgetReport.InsertRow(2, 1);
+                budgetReport.InsertRow(lastRow + 1, 1);
                 viewTable.Rows.Remove(targetRow);
                 viewTable.Rows.Add(spentRow);
-                budgetReport.Cells[2, 3, 2, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
+                budgetReport.Cells[lastRow + 1, 1].LoadFromDataTable(viewTable, false);
 
                 foreach (var overShoot in listOverBudget)
                 {
-                    budgetReport.Cells[4, overShoot + 3].Style.Font.Color.SetColor(Color.Red);
+                    budgetReport.Cells[lastRow + 1, overShoot + 3].Style.Font.Color.SetColor(Color.Red);
                 }
-                budgetReport.Cells[2, 1].LoadFromDataTable(viewTable, false);
                 viewTable.Rows.Remove(spentRow);
             }
-            budgetReport.InsertRow(2, 3);
+            budgetReport.InsertRow(lastRow + 1, 2);
             
             viewTable.Rows.Add(totalTargetRow);
             viewTable.Rows.Add(totalSpentRow);
-            budgetReport.Cells[2, 1, 3, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
-            budgetReport.Cells[2, 1, 3, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+            budgetReport.Cells[lastRow + 1, 1].LoadFromDataTable(viewTable, false);
+            budgetReport.Cells[lastRow + 1, 1, lastRow + 2, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            budgetReport.Cells[lastRow + 1, 1, lastRow + 2, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
 
             for (int i = 0; i < totalYearsCount; i++)
             {
                 if ((double)totalSpentRow.ItemArray[i + 2] > (double)totalTargetRow.ItemArray[i + 2])
                 {
-                    budgetReport.Cells[4, i + 3].Style.Font.Color.SetColor(Color.Red);
+                    budgetReport.Cells[lastRow + 2, i + 3].Style.Font.Color.SetColor(Color.Red);
                 }
             }
-            budgetReport.Cells[2, 3, 4, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
-            budgetReport.Cells[2, 1].LoadFromDataTable(viewTable, false);
+            budgetReport.Cells[lastRow + 1, 3, budgetReport.Dimension.End.Row, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
+         
             budgetReport.Cells.AutoFitColumns();
         }
     }

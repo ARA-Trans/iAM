@@ -14,11 +14,13 @@ namespace BridgeCare.Data
     {
         private readonly BridgeCareContext db;
         private readonly DeficientOrTarget getDeficients;
+        private readonly CellAddress address;
 
-        public DeficientData(BridgeCareContext context, DeficientOrTarget deficients)
+        public DeficientData(BridgeCareContext context, DeficientOrTarget deficients, CellAddress cell)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
             getDeficients = deficients ?? throw new ArgumentNullException(nameof(deficients));
+            address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
         public GetDeficients GetDeficient(SimulationResult data, int[] totalYears)
         {
@@ -66,7 +68,7 @@ namespace BridgeCare.Data
             {
                 DeficientTable.Columns.Add(totalYears[i].ToString());
             }
-            var increment = 0;
+            var increment = 2;
             foreach (var item in deficientTableData)
             {
                 Hashtable yearValues = new Hashtable();
@@ -87,6 +89,7 @@ namespace BridgeCare.Data
                     if (value > item.PercentDeficient)
                     {
                         deficients.Add(column);
+                        address.Cells.Add((increment, column));
                     }
                 }
                 DeficientTable.Rows.Add(newDataRow);
@@ -96,7 +99,8 @@ namespace BridgeCare.Data
             var forDeficient = new GetDeficients
             {
                 Deficients = DeficientTable,
-                DeficientColorFill = deficientList
+                DeficientColorFill = deficientList,
+                Address = address
             };
             return forDeficient;
         }

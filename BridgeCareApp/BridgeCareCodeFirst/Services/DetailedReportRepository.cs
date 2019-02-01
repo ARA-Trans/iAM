@@ -18,7 +18,7 @@ namespace BridgeCare.Services
         private readonly FillTargets fillTargets;
         private readonly FillDeficients fillDeficients;
         private readonly FillDetailedReport fillDetailedReport;
-        private readonly FillBudget fillBudget;
+        private readonly FillBudget budget;
 
         public DetailedReportRepository(IDetailedReport yearlyReport, FillBudget getBudget,
                    FillTargets targetCell, FillDeficients deficientCell, FillDetailedReport details, BridgeCareContext context)
@@ -28,7 +28,7 @@ namespace BridgeCare.Services
             fillTargets = targetCell ?? throw new ArgumentNullException(nameof(targetCell));
             fillDeficients = deficientCell ?? throw new ArgumentNullException(nameof(deficientCell));
             fillDetailedReport = details ?? throw new ArgumentNullException(nameof(details));
-            fillBudget = getBudget ?? throw new ArgumentNullException(nameof(getBudget));
+            budget = getBudget ?? throw new ArgumentNullException(nameof(getBudget));
         }
 
         public byte[] CreateExcelReport(SimulationResult data)
@@ -50,7 +50,7 @@ namespace BridgeCare.Services
                 // Adding new Excel TAB for Budget results
                 ExcelWorksheet budgetReport = excelPackage.Workbook.Worksheets.Add("Budget results");
 
-                fillBudget.FillTotalView(budgetReport, totalYears, data, yearlyInvestment);
+                budget.FillTotalView(budgetReport, totalYears, data, yearlyInvestment);
 
                 // Adding new Excel TAB for Deficient results
                 ExcelWorksheet deficientReport = excelPackage.Workbook.Worksheets.Add("Deficient results");

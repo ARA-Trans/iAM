@@ -518,6 +518,7 @@
     <Compile Include="Interfaces\ITarget.cs" />
     <Compile Include="Data\BudgetReportData.cs" />
     <Compile Include="Models\BudgetReport.cs" />
+    <Compile Include="Models\CellAddress.cs" />
     <Compile Include="Models\ConditionalData.cs" />
     <Compile Include="Models\CostAndBudgets.cs" />
     <Compile Include="Models\CostDetails.cs" />
@@ -525,9 +526,8 @@
     <Compile Include="Models\DeficientResult.cs" />
     <Compile Include="Data\DeficientData.cs" />
     <Compile Include="Data\DetailedReport.cs" />
-    <Compile Include="Models\ExcelFillCoral.cs" />
     <Compile Include="Models\GetDeficients.cs" />
-    <Compile Include="Data\GetTargetCellsData.cs" />
+    <Compile Include="Data\TargetResults.cs" />
     <Compile Include="Models\Network.cs" />
     <Compile Include="Models\SimulationResult.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />

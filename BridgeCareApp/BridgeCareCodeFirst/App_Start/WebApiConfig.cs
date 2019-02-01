@@ -48,12 +48,12 @@ namespace BridgeCare
             container.RegisterType<IReportCreater, DetailedReportRepository>(new HierarchicalLifetimeManager());
             container.RegisterType<FillWorkSheet>();
             container.RegisterType<DeficientOrTarget>();
-            container.RegisterType<ExcelFillCoral>();
-            container.RegisterType<GetTargetCellsData>();
+            container.RegisterType<TargetResults>();
             container.RegisterType<FillTargets>();
             container.RegisterType<FillDeficients>();
             container.RegisterType<FillDetailedReport>();
             container.RegisterType<FillBudget>();
+            container.RegisterType<CellAddress>();
             config.DependencyResolver = new UnityResolver(container);
 
             // Set JSON formatter as default one and remove XmlFormatter

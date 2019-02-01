@@ -14,9 +14,9 @@ namespace BridgeCare.Data
     {
         private readonly BridgeCareContext db;
         private readonly DeficientOrTarget getTargets;
-        private readonly GetTargetCellsData getTargetCell;
+        private readonly TargetResults getTargetCell;
 
-        public TargetData(BridgeCareContext context, DeficientOrTarget targets, GetTargetCellsData targetCells)
+        public TargetData(BridgeCareContext context, DeficientOrTarget targets, TargetResults targetCells)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
             getTargets = targets ?? throw new ArgumentNullException(nameof(targets));
