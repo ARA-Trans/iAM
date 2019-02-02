@@ -7,7 +7,7 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VuejsApp", "VuejsApp\VuejsA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E40427E5-3F1C-41E4-90DE-5BEF926BCEDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCare", "BridgeCareCodeFirst\BridgeCare.csproj", "{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCare", "BridgeCare\BridgeCare.csproj", "{74E9B84B-5902-457A-810C-618409DE4E45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,10 @@ Global
 		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F55AF77-CE22-45A8-9188-793D16E07ABE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06F176DF-03D4-4166-B6A7-7ECD1D338DFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74E9B84B-5902-457A-810C-618409DE4E45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74E9B84B-5902-457A-810C-618409DE4E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74E9B84B-5902-457A-810C-618409DE4E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74E9B84B-5902-457A-810C-618409DE4E45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
