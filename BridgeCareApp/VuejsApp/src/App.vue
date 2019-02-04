@@ -124,8 +124,7 @@
             return {
                 items: [
                     { navigation: 'Home', icon: 'dashboard', name: 'Home' },
-                    { navigation: 'TODO', icon: 'question_answer', name: 'TODO' },
-                    { navigation: 'ReportData', icon: 'receipt', name: 'Report data'}
+                    { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }
                 ],
                 drawer: true
             }

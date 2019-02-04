@@ -48,33 +48,39 @@
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
     <Content Include="src\assets\logo.svg" />
-    <Content Include="src\components\HelloWorld.vue" />
-    <Content Include="src\components\ReportData.vue">
+    <Content Include="src\components\DetailedReport.vue">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\components\todo.vue">
+    <Content Include="src\components\HelloWorld.vue" />
+    <Content Include="src\components\ShowProgress.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\TopNavbar.vue">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="tsconfig.json" />
     <Content Include="Web.config" />
     <None Include="Web.Debug.config">
       <SubType>Code</SubType>
     </None>
-    <None Include="VuejsAppPublish.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
     <Folder Include="src\components\" />
+    <Folder Include="src\models\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\models\Network.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\models\Simulation.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\router.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
