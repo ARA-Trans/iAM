@@ -58,7 +58,7 @@ namespace BridgeCare.Data
             return result;
         }
 
-        public DeficientResult GetDeficientInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
+        private DeficientResult GetDeficientInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
         {
             var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             var totalYearCount = totalYears.Count();

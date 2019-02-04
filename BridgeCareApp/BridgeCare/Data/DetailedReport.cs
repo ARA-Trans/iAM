@@ -34,14 +34,14 @@ namespace BridgeCare.Data
         // Required by entity framework
         public DetailedReport() { }
 
-        public List<YearlyData> GetYearsData(SimulationModel data)
+        public List<YearlyDataModel> GetYearsData(SimulationModel data)
         {
-            var yearsForBudget = new List<YearlyData>();
+            var yearsForBudget = new List<YearlyDataModel>();
             try
             {
                 yearsForBudget = db.YEARLYINVESTMENTs.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId)
                                                               .OrderBy(year => year.YEAR_)
-                                                              .Select(p => new YearlyData
+                                                              .Select(p => new YearlyDataModel
                                                               {
                                                                   Year = p.YEAR_,
                                                                   Amount = p.AMOUNT,

@@ -19,7 +19,7 @@ namespace BridgeCare.Services
         {
             budget = report ?? throw new ArgumentNullException(nameof(report));
         }
-        public void Fill(ExcelWorksheet budgetReport, int[] totalYears, SimulationModel data, List<YearlyData> yearlyInvestment)
+        public void Fill(ExcelWorksheet budgetReport, int[] totalYears, SimulationModel data, List<YearlyDataModel> yearlyInvestment)
         {
             var budgetTypes = budget.InvestmentData(data);
             var budgetAndCost = budget.GetData(data, budgetTypes);
@@ -74,8 +74,8 @@ namespace BridgeCare.Services
             FillTargetAndSpent(budgetReport, totalYears, budgetAndCost, budgetTypes, yearlyInvestment);
         }
 
-        public void FillTargetAndSpent(ExcelWorksheet budgetReport, int[] totalYears, YearlyBudgetAndCost budgetAndCost,
-            string[] budgetTypes, List<YearlyData> yearlyInvestment)
+        private void FillTargetAndSpent(ExcelWorksheet budgetReport, int[] totalYears, YearlyBudgetAndCost budgetAndCost,
+            string[] budgetTypes, List<YearlyDataModel> yearlyInvestment)
         {
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
             var totalYearsCount = totalYears.Count();

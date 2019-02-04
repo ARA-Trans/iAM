@@ -17,7 +17,7 @@ namespace BridgeCare.Services
         {
             targets = target ?? throw new ArgumentNullException(nameof(target));
         }
-        public void Fill(ExcelWorksheet targetReport, SimulationModel data, int[] totalYears)
+        internal void Fill(ExcelWorksheet targetReport, SimulationModel data, int[] totalYears)
         {
             var targetResults = targets.GetTarget(data, totalYears);
 

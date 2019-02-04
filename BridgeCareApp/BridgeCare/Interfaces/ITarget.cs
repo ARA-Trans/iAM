@@ -11,6 +11,5 @@ namespace BridgeCare.Interfaces
     public interface ITarget
     {
         TargetModel GetTarget(SimulationModel data, int[] totalYears);
-        TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears);
     }
 }

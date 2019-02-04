@@ -18,7 +18,7 @@ namespace BridgeCare.Data
             address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
 
-        public TargetModel GetCells(Hashtable YearsIDValues, int[] totalYears, Hashtable idTargets)
+        public TargetModel GetData(Hashtable YearsIDValues, int[] totalYears, Hashtable idTargets)
         {
             var attributeData = db.Attributes.AsNoTracking();
             var attributeOrder = new Dictionary<string, bool>();

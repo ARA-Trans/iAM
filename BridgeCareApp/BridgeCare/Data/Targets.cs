@@ -55,7 +55,7 @@ namespace BridgeCare.Data
             }
             return target;
         }
-        public TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
+        private TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
         {
             var targetData = db.Target.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             
@@ -87,7 +87,7 @@ namespace BridgeCare.Data
                 idTargets.Add(target.Id, target);
             }
 
-            var dataForTarget = targetCells.GetCells(YearsIDValues, totalYears, idTargets);
+            var dataForTarget = targetCells.GetData(YearsIDValues, totalYears, idTargets);
             return dataForTarget;
         }
     }

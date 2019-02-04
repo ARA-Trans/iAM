@@ -8,7 +8,7 @@ namespace BridgeCare.Interfaces
 {
     public interface IDetailedReport
     {
-        List<YearlyData> GetYearsData(SimulationModel data);
+        List<YearlyDataModel> GetYearsData(SimulationModel data);
         IQueryable<DetailedReport> GetRawQuery(SimulationModel data, BridgeCareContext db);
     }
 }

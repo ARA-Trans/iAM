@@ -1,6 +1,6 @@
 ﻿namespace BridgeCare.Models
 {
-    public class YearlyData
+    public class YearlyDataModel
     {
         public int Year { get; set; }
         public double? Amount { get; set; }
