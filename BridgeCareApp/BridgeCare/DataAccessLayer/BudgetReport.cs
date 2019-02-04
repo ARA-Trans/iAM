@@ -7,7 +7,7 @@ using System.Linq;
 using BridgeCare.ApplicationLog;
 using BridgeCare.Models;
 
-namespace BridgeCare.Data
+namespace BridgeCare.DataAccessLayer
 {
     public class BudgetReport : IBudgetReport
     {

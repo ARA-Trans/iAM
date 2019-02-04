@@ -1,4 +1,4 @@
-using BridgeCare.Data;
+using BridgeCare.DataAccessLayer;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Services;
@@ -64,6 +64,7 @@ namespace BridgeCare
             container.RegisterType<Detailed>();
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
+            container.RegisterType<IRunSimulation, RunSimulation>();
         }
     }
 }

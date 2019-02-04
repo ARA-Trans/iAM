@@ -170,12 +170,13 @@
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
-    <Compile Include="Data\BudgetReport.cs" />
-    <Compile Include="Data\DeficientReport.cs" />
-    <Compile Include="Data\DetailedReport.cs" />
-    <Compile Include="Data\TargetResults.cs" />
-    <Compile Include="Data\Targets.cs" />
-    <Compile Include="Data\TargetsMet.cs" />
+    <Compile Include="DataAccessLayer\BudgetReport.cs" />
+    <Compile Include="DataAccessLayer\DeficientReport.cs" />
+    <Compile Include="DataAccessLayer\DetailedReport.cs" />
+    <Compile Include="DataAccessLayer\RunSimulation.cs" />
+    <Compile Include="DataAccessLayer\TargetResults.cs" />
+    <Compile Include="DataAccessLayer\Targets.cs" />
+    <Compile Include="DataAccessLayer\TargetsMet.cs" />
     <Compile Include="EntityClasses\Attributes.cs" />
     <Compile Include="EntityClasses\Deficients.cs" />
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="Interfaces\IDetailedReport.cs" />
     <Compile Include="Interfaces\INetwork.cs" />
     <Compile Include="Interfaces\IReportCreator.cs" />
+    <Compile Include="Interfaces\IRunSimulation.cs" />
     <Compile Include="Interfaces\ISimulation.cs" />
     <Compile Include="Interfaces\ITarget.cs" />
     <Compile Include="Models\BudgetModel.cs" />

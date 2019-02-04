@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace BridgeCare.Data
+namespace BridgeCare.DataAccessLayer
 {
     public class TargetResults
     {

@@ -8,7 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCare.Data
+namespace BridgeCare.DataAccessLayer
 {
     public class Targets : ITarget
     {

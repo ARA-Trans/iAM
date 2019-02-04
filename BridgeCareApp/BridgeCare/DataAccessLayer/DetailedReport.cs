@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCare.Data
+namespace BridgeCare.DataAccessLayer
 {
     public class DetailedReport : IDetailedReport
     {
