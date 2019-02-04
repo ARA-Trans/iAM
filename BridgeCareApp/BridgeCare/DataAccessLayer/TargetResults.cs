@@ -18,7 +18,7 @@ namespace BridgeCare.DataAccessLayer
             address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
 
-        public TargetModel GetData(Hashtable YearsIDValues, int[] totalYears, Hashtable idTargets)
+        public TargetModel GetData(Hashtable yearsIDValues, int[] totalYears, Hashtable idTargets)
         {
             var attributeData = db.Attributes.AsNoTracking();
             var attributeOrder = new Dictionary<string, bool>();
@@ -36,12 +36,21 @@ namespace BridgeCare.DataAccessLayer
             {
                 targetTable.Columns.Add(totalYears[i].ToString());
             }
-
+            FillData(yearsIDValues, idTargets, targetTable, attributeOrder);
+            var dataForTarget = new TargetModel
+            {
+                Targets = targetTable,
+                Address = address
+            };
+            return dataForTarget;
+        }
+        private void FillData(Hashtable yearsIDValues, Hashtable idTargets, DataTable targetTable, Dictionary<string, bool> attributeOrder)
+        {
             int increment = 2;
-            foreach (var key in YearsIDValues.Keys)
+            foreach (var key in yearsIDValues.Keys)
             {
                 Hashtable yearHashValue = new Hashtable();
-                yearHashValue = (Hashtable)YearsIDValues[key];
+                yearHashValue = (Hashtable)yearsIDValues[key];
                 TargetParameters target = (TargetParameters)idTargets[key];
 
                 DataRow newDataRow = targetTable.NewRow();
@@ -74,12 +83,6 @@ namespace BridgeCare.DataAccessLayer
                 targetTable.Rows.Add(newDataRow);
                 increment++;
             }
-            var dataForTarget = new TargetModel
-            {
-                Targets = targetTable,
-                Address = address
-            };
-            return dataForTarget;
         }
     }
 }

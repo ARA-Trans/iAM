@@ -219,6 +219,8 @@
     <Compile Include="Services\Simulations.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Dpendencies\CalculateEvaluate.dll" />
+    <Content Include="Dpendencies\CalculateEvaluate.pdb" />
     <Content Include="Dpendencies\DatabaseManager.dll" />
     <Content Include="Dpendencies\DatabaseManager.pdb" />
     <Content Include="Dpendencies\Microsoft.SqlServer.ConnectionInfo.dll" />

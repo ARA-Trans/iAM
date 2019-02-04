@@ -1,4 +1,5 @@
 ﻿using BridgeCare.ApplicationLog;
+using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
@@ -13,13 +14,13 @@ namespace BridgeCare.DataAccessLayer
     public class DeficientReport : IDeficientReport
     {
         private readonly BridgeCareContext db;
-        private readonly TargetsMet getDeficients;
+        private readonly TargetsMet deficients;
         private readonly CellAddress address;
 
-        public DeficientReport(BridgeCareContext context, TargetsMet deficients, CellAddress cell)
+        public DeficientReport(BridgeCareContext context, TargetsMet deficient, CellAddress cell)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
-            getDeficients = deficients ?? throw new ArgumentNullException(nameof(deficients));
+            deficients = deficient ?? throw new ArgumentNullException(nameof(deficient));
             address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
         public DeficientResult GetData(SimulationModel data, int[] totalYears)
@@ -40,7 +41,7 @@ namespace BridgeCare.DataAccessLayer
 
                 deficients = rawDeficientList.Where(_ => _.IsDeficient == true);
 
-                var targetAndYear = getDeficients.GetData(deficients);
+                var targetAndYear = this.deficients.GetData(deficients);
                 result = GetDeficientInformation(data, targetAndYear, totalYears);
             }
             catch (SqlException ex)
@@ -58,7 +59,7 @@ namespace BridgeCare.DataAccessLayer
             return result;
         }
 
-        private DeficientResult GetDeficientInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
+        private DeficientResult GetDeficientInformation(SimulationModel data, Hashtable yearsIDValues, int[] totalYears)
         {
             var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
             var totalYearCount = totalYears.Count();
@@ -69,11 +70,22 @@ namespace BridgeCare.DataAccessLayer
             {
                 DeficientTable.Columns.Add(totalYears[i].ToString());
             }
+            FillData(deficientTableData, yearsIDValues, DeficientTable, totalYears);
+            var forDeficient = new DeficientResult
+            {
+                Deficients = DeficientTable,
+                Address = address
+            };
+            return forDeficient;
+        }
+
+        private void FillData(IQueryable<Deficients> deficientTableData, Hashtable yearsIDValues, DataTable DeficientTable, int[] totalYears)
+        {
             var increment = 2;
             foreach (var item in deficientTableData)
             {
                 Hashtable yearValues = new Hashtable();
-                yearValues = (Hashtable)YearsIDValues[item.Id_];
+                yearValues = (Hashtable)yearsIDValues[item.Id_];
 
                 DataRow newDataRow = DeficientTable.NewRow();
                 newDataRow["Attribute"] = item.Attribute_;
@@ -93,12 +105,6 @@ namespace BridgeCare.DataAccessLayer
                 DeficientTable.Rows.Add(newDataRow);
                 increment++;
             }
-            var forDeficient = new DeficientResult
-            {
-                Deficients = DeficientTable,
-                Address = address
-            };
-            return forDeficient;
         }
     }
 }

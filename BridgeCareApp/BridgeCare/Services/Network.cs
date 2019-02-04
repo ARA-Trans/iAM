@@ -20,8 +20,6 @@ namespace BridgeCare.Services
 
         private IQueryable<NetworkModel> filteredColumns;
 
-        public object Logger { get; private set; }
-
         public IQueryable<NetworkModel> GetAllNetworks()
         {
             try
