@@ -45,8 +45,6 @@ namespace BridgeCare
             // Make sure to add a Unity.Configuration to the using statements.
             // container.LoadConfiguration();
 
-            // TODO: Register your type's mappings here.
-            // container.RegisterType<IProductRepository, ProductRepository>();
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
             container.RegisterType<IDetailedReport, DetailedReport>();
