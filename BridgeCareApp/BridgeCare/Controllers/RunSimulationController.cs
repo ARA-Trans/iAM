@@ -1,7 +1,7 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.Interfaces;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace BridgeCare.Controllers
@@ -16,16 +16,14 @@ namespace BridgeCare.Controllers
         }
 
         // POST: api/RunSimulation
-        public void Post([FromBody]SimulationModel data)
+        public IHttpActionResult Post([FromBody]SimulationModel data)
         {
-            try
+            var result = simulation.Start(data);
+            if (result != null && result.Length > 0)
             {
-                simulation.Start(data);
+                return Ok(result);
             }
-            catch(Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+            return NotFound();
         }
     }
 }

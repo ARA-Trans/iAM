@@ -27,13 +27,13 @@
                     Download Report
                     <v-icon right dark>cloud_download</v-icon>
                 </v-btn>
-                <!--<v-btn color="blue-grey"
+                <v-btn color="blue-grey"
                        class="white--text"
                        :disabled="simulationsDropDownEnabled"
                        v-on:click="runSimulation">
                     Run Simulation
                     <v-icon right dark>cloud_download</v-icon>
-                </v-btn>-->
+                </v-btn>
             </v-flex>
             <v-flex xs12 v-if="downloadProgress" v-model="loading">
                 <ShowProgress />
