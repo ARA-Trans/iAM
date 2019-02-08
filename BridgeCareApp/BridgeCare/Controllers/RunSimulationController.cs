@@ -1,4 +1,5 @@
-﻿using BridgeCare.Interfaces;
+﻿using BridgeCare.DataAccessLayer;
+using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
 using System.Threading.Tasks;
@@ -16,10 +17,11 @@ namespace BridgeCare.Controllers
         }
 
         // POST: api/RunSimulation
-        public IHttpActionResult Post([FromBody]SimulationModel data)
+        public async Task<IHttpActionResult> Post([FromBody]SimulationModel data)
         {
-            var result = simulation.Start(data);
-            if (result != null && result.Length > 0)
+            var result = await simulation.Start(data);
+            //var result = Task.Run(() => new RunSimulation().Start(data));
+            if (result.Contains("successfully"))
             {
                 return Ok(result);
             }

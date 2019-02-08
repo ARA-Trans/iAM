@@ -5,6 +5,6 @@ namespace BridgeCare.Interfaces
 {
     public interface IRunSimulation
     {
-        string Start(SimulationModel data);
+        Task<string> Start(SimulationModel data);
     }
 }

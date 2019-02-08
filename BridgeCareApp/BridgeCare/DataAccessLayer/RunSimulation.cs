@@ -11,7 +11,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class RunSimulation : IRunSimulation
     {
-        public string Start(SimulationModel data)
+        public Task<string> Start(SimulationModel data)
         {
             try
             {
@@ -19,13 +19,15 @@ namespace BridgeCare.DataAccessLayer
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
                 var start = new Simulation.Simulation(data.SimulationName, data.NetworkName,
                     data.SimulationId.ToString(), data.NetworkId.ToString());
+                //Thread simulationThread = new Thread(new ThreadStart(start.CompileSimulation));
+                //simulationThread.Start();
                 start.CompileSimulation();
-                return "Simulation completed successfully";
+                return Task.FromResult("Simulation completed successfully");
             }
             catch (Exception ex)
             {
                 HandleException.GeneralError(ex);
-                return "Simulation failed";
+                return Task.FromResult("Simulation failed");
             }
         }
     }
