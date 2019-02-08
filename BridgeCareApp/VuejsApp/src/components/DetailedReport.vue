@@ -176,6 +176,8 @@
 
         runSimulation() {
             this.disableRunSimulation = true
+            this.downloadProgress = true
+            this.loading = true
             axios({
                 method: 'post',
                 url: '/api/RunSimulation',
@@ -187,10 +189,14 @@
                 }
             }).then(response => {
                 this.disableRunSimulation = false
+                this.downloadProgress = false
+                this.loading = false
                 console.log(response.data)
             })
                 .catch(error => {
                     this.disableRunSimulation = false
+                    this.downloadProgress = false
+                    this.loading = false
                     console.log(error)
                 })
         }
