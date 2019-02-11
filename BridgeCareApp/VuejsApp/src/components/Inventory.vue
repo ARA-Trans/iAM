@@ -4,23 +4,16 @@
             <v-select
                     :items="sectionIds"
                     label="Select a Section"
-                    :change="onSelectSection"
+                    v-on:change="onSelectSection"
                     outline>
             </v-select>
         </v-flex>
         <v-flex xs6>
-            <v-select :items="attributes" v-model="selectedAttributes" label="Add/Remove Attributes" multiple outline>
-                <!--<v-list-tile slot="prepend-item" ripple @click="onSelectAllAttributes">
-                    <v-list-tile-action>
-                        <v-icon :color="selectedAttributes.length > 0 ? 'indigo darken-4' : ''">{{ getAttributeSelectAllIcon }}</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-title>Select All</v-list-tile-title>
-                </v-list-tile>
-                <v-divider slot="prepend-item" class="mt-2"></v-divider>-->
-
+            <v-select :disabled="sectionAttributes.length <= 0" :items="sectionAttributes" v-model="selectedAttributes"
+                      v-on:change="setAttributeSelectAllIcon" label="Add/Remove Attributes" multiple outline>
                 <v-list-tile slot="prepend-item" ripple @click="onSelectAllAttributes">
                     <v-list-tile-action>
-                        <v-icon :color="selectedAttributes.length > 0 ? 'indigo darken-4' : ''">{{ getAttributeSelectAllIcon() }}</v-icon>
+                        <v-icon :color="selectedAttributes.length > 0 ? 'indigo darken-4' : ''">{{attrSelectAllIcon}}</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-title>Select All</v-list-tile-title>
                 </v-list-tile>
@@ -49,14 +42,20 @@
         headers: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
         sections: ISection[] = [];
         sectionIds: number[] = [];
-        attributes: string[] = [];
+        sectionAttributes: string[] = [];
         selectedAttributes: string[] = [];
         currentDate = new Date();
         startYear: number = 0;
         endYear: number = 0;
-        attrSelectAllIcon = 'mdi-checkbox-blank-outline';
+        attrSelectAllIcon = 'check_box_outline_blank';
         downloadProgress = false;
         loading = false;
+
+        /*data() {
+            return {
+                attrSelectAllIcon: 'check_box_outline_blank'
+            }
+        }*/
 
         created() {
             this.startYear = this.endYear = this.currentDate.getFullYear();
@@ -90,12 +89,12 @@
             // check that the section was found
             if (selectedSection) {
                 // reset the list of attributes and create a list for storing the years
-                this.attributes = [];
+                this.sectionAttributes = [];
                 const years: number[] = [];
                 // loop over the section's attributes
                 selectedSection.attributes.forEach((a: IAttribute) => {
                     // push the current attribute name onto the attributes list
-                    this.attributes.push(a.name);
+                    this.sectionAttributes.push(a.name);
                     // loop over the current attribute's yearly values and push the year onto the years list
                     a.yearlyValues.forEach((val: IAttributeYearlyValue) => years.push(val.year));
 
@@ -115,7 +114,7 @@
         }
 
         selectedAllAttributes() {
-            return this.selectedAttributes.length === this.attributes.length;
+            return this.selectedAttributes.length === this.sectionAttributes.length;
         }
 
         selectedSomeAttributes() {
@@ -126,19 +125,19 @@
             if (this.selectedAllAttributes()) {
                 this.selectedAttributes = [];
             } else {
-                this.selectedAttributes = this.attributes.slice();
+                this.selectedAttributes = this.sectionAttributes.slice();
             }
-            this.getAttributeSelectAllIcon();
+            this.setAttributeSelectAllIcon();
         }
 
-        getAttributeSelectAllIcon() {
-            if (this.selectedAllAttributes) {
-                this.attrSelectAllIcon = 'mdi-close-box';
+        setAttributeSelectAllIcon() {
+            if (this.selectedAllAttributes()) {
+                this.attrSelectAllIcon = 'check_box';
+            } else if (this.selectedSomeAttributes()) {
+                this.attrSelectAllIcon = 'indeterminate_check_box';
+            } else {
+                this.attrSelectAllIcon = 'check_box_outline_blank';
             }
-            if (this.selectedSomeAttributes) {
-                this.attrSelectAllIcon = 'mdi-minus-box';
-            }
-            this.attrSelectAllIcon = 'mdi-checkbox-blank-outline';
         }
 
         startProgressStatus() {
