@@ -96,6 +96,7 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
+    <TypeScriptCompile Include="src\store.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="babel.config.js" />
