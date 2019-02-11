@@ -123,7 +123,7 @@
         data() {
             return {
                 items: [
-                    { navigation: 'Home', icon: 'dashboard', name: 'Home' },
+                    { navigation: 'Inventory', icon: 'inbox', name: 'Inventory' },
                     { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }
                 ],
                 drawer: true
