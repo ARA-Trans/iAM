@@ -1,9 +1,10 @@
 ﻿using BridgeCare.Models;
+using System.Threading.Tasks;
 
 namespace BridgeCare.Interfaces
 {
     public interface IRunSimulation
     {
-        void Start(SimulationModel data);
+        Task<string> Start(SimulationModel data);
     }
 }

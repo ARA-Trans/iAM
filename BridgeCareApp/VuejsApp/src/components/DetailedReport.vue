@@ -13,7 +13,7 @@
             <v-flex xs12 sm6 d-flex>
                 <v-select :items="simulations"
                           label="Select a Simulation"
-                          :disabled="networksDropDownEnabled"
+                          :disabled="disableSimulationDropDown"
                           item-text="simulationName"
                           item-value="simulationId"
                           v-on:change="getSimulationId"
@@ -22,21 +22,24 @@
             <v-flex xs4>
                 <v-btn color="blue-grey"
                        class="white--text"
-                       :disabled="simulationsDropDownEnabled"
+                       :disabled="disableDownloadReport"
                        v-on:click="downloadReport">
                     Download Report
                     <v-icon right dark>cloud_download</v-icon>
                 </v-btn>
-                <!--<v-btn color="blue-grey"
+                <v-btn color="blue-grey"
                        class="white--text"
-                       :disabled="simulationsDropDownEnabled"
-                       v-on:click="runSimulation">
+                       :disabled="disableRunSimulation"
+                       v-on:click="fillWarningModal">
                     Run Simulation
                     <v-icon right dark>cloud_download</v-icon>
-                </v-btn>-->
+                </v-btn>
             </v-flex>
             <v-flex xs12 v-if="downloadProgress" v-model="loading">
-                <ShowProgress />
+                <AppSpinner />
+            </v-flex>
+            <v-flex xs12>
+                <AppModalPopup :modalData="warning" @decision="onModalClicked"/>
             </v-flex>
         </v-layout>
     </v-container>
@@ -44,18 +47,22 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
+    import { Component, Prop } from 'vue-property-decorator';
     import axios from 'axios'
 
     //@ts-ignore
-    import ShowProgress from './ShowProgress'
+    import AppSpinner from '../shared/AppSpinner'
     import Network from '../models/Network'
     import Simulation from '../models/Simulation'
+    //@ts-ignore
+    import AppModalPopup from '../shared/AppModalPopup'
+    //@ts-ignore
+    import IAlert from '@/models/IAlert'
 
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
     @Component({
-        components: { ShowProgress }
+        components: { AppSpinner, AppModalPopup }
     })
     export default class DetailedReport extends Vue {
 
@@ -65,12 +72,16 @@
         networkName: string = ""
         simulationName: string = ""
         simulationId: number = 0
-        simulationsDropDownEnabled: boolean = true
-        networksDropDownEnabled: boolean = true
+        disableDownloadReport: boolean = true
+        disableRunSimulation: boolean = true
+        disableSimulationDropDown: boolean = true
         downloadProgress: boolean = false
         loading: boolean = false
 
-        created() {
+        @Prop({ default: function () { return { showModal: false } } })
+        warning: IAlert
+
+        mounted() {
             this.downloadProgress = true
             this.loading = true
             axios
@@ -100,7 +111,7 @@
                     for (let i = 0; i < data.length; i++) {
                         this.simulations.push(data[i])
                     }
-                    this.networksDropDownEnabled = false
+                    this.disableSimulationDropDown = false
                 }, error => {
                     console.log(error)
                 });
@@ -110,7 +121,8 @@
             this.simulationId = id
             let detail = this.simulations.find(_ => _.simulationId == id) as Simulation
             this.simulationName = detail.simulationName
-            this.simulationsDropDownEnabled = false
+            this.disableDownloadReport = false
+            this.disableRunSimulation = false
         }
 
         downloadReport() {
@@ -149,7 +161,23 @@
                 })
         }
 
+        fillWarningModal() {
+            this.warning.showModal = true
+            this.warning.heading = 'Warning'
+            this.warning.message = 'The simulation can take around one and an half hours to finish. Are you sure that you want to continue?'
+        }
+
+        onModalClicked(value: boolean) {
+            this.warning.showModal = false
+            if (value == true) {
+                this.runSimulation()
+            }
+        }
+
         runSimulation() {
+            this.disableRunSimulation = true
+            this.downloadProgress = true
+            this.loading = true
             axios({
                 method: 'post',
                 url: '/api/RunSimulation',
@@ -160,9 +188,15 @@
                     SimulationName: this.simulationName
                 }
             }).then(response => {
+                this.disableRunSimulation = false
+                this.downloadProgress = false
+                this.loading = false
                 console.log(response.data)
             })
                 .catch(error => {
+                    this.disableRunSimulation = false
+                    this.downloadProgress = false
+                    this.loading = false
                     console.log(error)
                 })
         }

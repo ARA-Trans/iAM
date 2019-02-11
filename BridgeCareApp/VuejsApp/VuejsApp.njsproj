@@ -52,7 +52,10 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\HelloWorld.vue" />
-    <Content Include="src\components\ShowProgress.vue">
+    <Content Include="src\shared\AppShowProgress.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\shared\AppSpinner.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\TopNavbar.vue">
@@ -60,6 +63,9 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\shared\AppModalPopup.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="tsconfig.json" />
     <Content Include="Web.config" />
     <None Include="Web.Debug.config">
@@ -72,9 +78,13 @@
     <Folder Include="src\assets\" />
     <Folder Include="src\components\" />
     <Folder Include="src\models\" />
+    <Folder Include="src\shared\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\models\IAlert.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\models\Network.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
