@@ -82,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\main.ts" />
-    <TypeScriptCompile Include="src\models\IWarning.ts">
+    <TypeScriptCompile Include="src\models\IAlert.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\models\Network.ts">

@@ -39,7 +39,7 @@
                 <AppSpinner />
             </v-flex>
             <v-flex xs12>
-                <AppModalPopup :warningData="warning" @decision="onModalClicked"/>
+                <AppModalPopup :modalData="warning" @decision="onModalClicked"/>
             </v-flex>
         </v-layout>
     </v-container>
@@ -57,7 +57,7 @@
     //@ts-ignore
     import AppModalPopup from '../shared/AppModalPopup'
     //@ts-ignore
-    import IWarning from '@/models/IWarning'
+    import IAlert from '@/models/IAlert'
 
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
@@ -79,7 +79,7 @@
         loading: boolean = false
 
         @Prop({ default: function () { return { showModal: false } } })
-        warning: IWarning
+        warning: IAlert
 
         mounted() {
             this.downloadProgress = true

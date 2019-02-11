@@ -1,12 +1,12 @@
 ﻿<template>
     <v-layout row justify-center>
-        <v-dialog v-model="warningData.showModal" persistent
+        <v-dialog v-model="modalData.showModal" persistent
                   max-width="290">
             <v-card>
-                <v-card-title class="headline">{{warningData.heading}}</v-card-title>
+                <v-card-title class="headline">{{modalData.heading}}</v-card-title>
 
                 <v-card-text>
-                    {{warningData.message}}
+                    {{modalData.message}}
                 </v-card-text>
 
                 <v-card-actions>
@@ -32,16 +32,16 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component, Prop } from 'vue-property-decorator';
-    import { IWarning } from '@/models/IWarning';
+    import { IAlert } from '@/models/IAlert';
 
     @Component
     export default class AppModalPupup extends Vue {
 
         @Prop()
-        warningData: IWarning
+        modalData: IAlert
 
         sendUserSelection(decision: boolean) {
-            this.warningData
+            this.modalData
             this.$emit('decision', decision)
         }
     }
