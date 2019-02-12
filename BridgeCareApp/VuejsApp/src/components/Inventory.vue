@@ -1,25 +1,49 @@
 <template>
     <v-container fluid grid-list-xl>
-        <v-flex xs2>
-            <v-select
-                    :items="sectionIds"
-                    label="Select a Section"
-                    v-on:change="onSelectSection"
-                    outline>
-            </v-select>
-        </v-flex>
-        <v-flex xs6>
-            <v-select :disabled="sectionAttributes.length <= 0" :items="sectionAttributes" v-model="selectedAttributes"
-                      v-on:change="setAttributeSelectAllIcon" label="Add/Remove Attributes" multiple outline>
-                <v-list-tile slot="prepend-item" ripple @click="onSelectAllAttributes">
-                    <v-list-tile-action>
-                        <v-icon :color="selectedAttributes.length > 0 ? 'indigo darken-4' : ''">{{attrSelectAllIcon}}</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-title>Select All</v-list-tile-title>
-                </v-list-tile>
-                <v-divider slot="prepend-item" class="mt-2"></v-divider>
-            </v-select>
-        </v-flex>
+        <v-layout row wrap>
+            <v-flex xs2>
+                <v-select
+                        :items="sectionIds"
+                        label="Select a Section"
+                        v-on:change="onSelectSection"
+                        outline>
+                </v-select>
+            </v-flex>
+            <v-flex xs1></v-flex>
+            <v-flex xs4>
+                <v-select :disabled="sectionAttributes.length <= 0" :items="sectionAttributes" v-model="selectedAttributes"
+                          v-on:change="setAttributeSelectAllIcon" label="Add/Remove Attributes" multiple outline>
+                    <v-list-tile slot="prepend-item" ripple @click="onSelectAllAttributes">
+                        <v-list-tile-action>
+                            <v-icon :color="selectedAttributes.length > 0 ? 'indigo darken-4' : ''">{{selectAllAttrIcon}}</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Select All</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider slot="prepend-item" class="mt-2"></v-divider>
+                </v-select>
+            </v-flex>
+            <v-flex xs1></v-flex>
+            <v-flex xs2>
+                <v-select :disabled="sectionAttributes.length <= 0" :items="startYears" v-model="startYear"
+                          v-on:change="onChangeStartYear" outline label="Select Start Year"></v-select>
+            </v-flex>
+            <v-flex xs2>
+                <v-select :disabled="sectionAttributes.length <= 0" :items="endYears" v-model="endYear"
+                          v-on:change="onChangeEndYear" outline label="Select End Year"></v-select>
+            </v-flex>
+        </v-layout>
+        <v-layout row wrap>
+            <v-flex xs12>
+                <v-data-table v-if="hasValue(selectedSectionGridData)" :headers="sectionGridHeaders"
+                              :items="selectedSectionGridData" class="elevation-1">
+                    <template slot="items" slot-scope="props">
+                        <td v-for="sectionGridHeader in sectionGridHeaders">
+                            {{props.item[sectionGridHeader.value]}}
+                        </td>
+                    </template>
+                </v-data-table>
+            </v-flex>
+        </v-layout>
     </v-container>
 </template>
 
@@ -39,26 +63,24 @@
         components: {AppSpinner}
     })
     export default class Inventory extends Vue {
-        headers: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
+        sectionGridHeaders: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
         sections: ISection[] = [];
         sectionIds: number[] = [];
+        selectedSection: ISection;
         sectionAttributes: string[] = [];
         selectedAttributes: string[] = [];
-        currentDate = new Date();
-        startYear: number = 0;
-        endYear: number = 0;
-        attrSelectAllIcon = 'check_box_outline_blank';
+        selectAllAttrIcon = 'check_box_outline_blank';
+        startYears: number[] = [];
+        endYears: number[] =[];
+        startYear: number = new Date().getFullYear();
+        endYear: number = new Date().getFullYear();
+        selectedSectionGridData: any[] = [];
         downloadProgress = false;
         loading = false;
-
-        /*data() {
-            return {
-                attrSelectAllIcon: 'check_box_outline_blank'
-            }
-        }*/
-
+        /**
+         * Vue component has been created
+         */
         created() {
-            this.startYear = this.endYear = this.currentDate.getFullYear();
             this.startProgressStatus();
             // simulate a service call to get the bridge ids
             setTimeout(() => {
@@ -82,45 +104,89 @@
                     }
                 );*/
         }
-
+        /**
+         * Section has been selected; Sets up the list of values for attribute & start/end years filters and the initial
+         * data grid headers
+         * @param sectionId Selected section's id
+         */
         onSelectSection(sectionId: number) {
             // find the section in the list of sections using the given sectionId
-            const selectedSection = this.sections.find((s: ISection) => s.sectionId === sectionId);
-            // check that the section was found
-            if (selectedSection) {
-                // reset the list of attributes and create a list for storing the years
+            //@ts-ignore
+            this.selectedSection = this.sections.find((s: ISection) => s.sectionId === sectionId);
+            // if a section was found...
+            if (this.hasValue(this.selectedSection)) {
+                // reset the list of attributes and create a placeholder list for the years
                 this.sectionAttributes = [];
                 const years: number[] = [];
-                // loop over the section's attributes
-                selectedSection.attributes.forEach((a: IAttribute) => {
+                // sort function that sorts by the 'year' property of attribute yearly values
+                const sortByYear = R.sortBy(R.prop('year'));
+                // for each of the attributes...
+                this.selectedSection.attributes.forEach((a: IAttribute) => {
                     // push the current attribute name onto the attributes list
                     this.sectionAttributes.push(a.name);
-                    // loop over the current attribute's yearly values and push the year onto the years list
-                    a.yearlyValues.forEach((val: IAttributeYearlyValue) => years.push(val.year));
+                    // sort the yearly values for the given attribute in ascending order
+                    const sortedYearlyValuesAsc = sortByYear(a.yearlyValues);
+                    // for each sorted yearly value push the yearly value year onto the years list
+                    sortedYearlyValuesAsc.forEach((val: IAttributeYearlyValue) => years.push(val.year));
 
                 });
-                // sort function that returns the difference between a & b
-                const diff = (a: number, b: number) => { return a - b; };
-                // remove year duplicates then reverse sort the list so years are listed from most recent to past year
-                const sortedYears = R.reverse(R.sort(diff, R.uniq(years)));
-                // loop over the sorted list of years to add new headers to the headers list using the years as the
+                // set all section attributes as selected by default
+                this.selectedAttributes = this.sectionAttributes;
+                // update the selectAllAttrIcon
+                this.setAttributeSelectAllIcon();
+                // set the start years list while removing any duplicate years
+                this.startYears = R.uniq(years);
+                this.startYear = this.hasValue(this.startYears) ? this.startYears[0] : 0;
+                // set the end years list with a copy of the start years list in desc order
+                this.endYears = R.reverse(this.startYears);
+                this.endYear = this.hasValue(this.endYears) ? this.endYears[0] : 0;
+                // for each of the end years add a new header to the sectionGridHeaders list using the years as the
                 // text/value properties
-                sortedYears.forEach((year: number) => {
-                    this.headers.push(
+                this.endYears.forEach((year: number) => {
+                    this.sectionGridHeaders.push(
                         {text: year.toString(), sortable: false, value: year.toString()}
                     )
-                })
+                });
+                this.setSelectedSectionGridData();
             }
         }
-
+        /**
+         * Sets the selected section's grid data
+         */
+        setSelectedSectionGridData() {
+            //TODO: apply logic to use the select filters (attributes & start/end years)
+            this.selectedSectionGridData = this.selectedSection.attributes.map((a: IAttribute) => {
+                const row = {
+                    name: a.name
+                };
+                this.endYears.forEach((n: number) => {
+                    if (R.any(R.propEq('year', n), a.yearlyValues)) {
+                        //@ts-ignore
+                        row[`${n}`] = a.yearlyValues.find((val: IAttributeYearlyValue) => val.year === n).value;
+                    } else {
+                        //@ts-ignore
+                        row[`${n}`] = 'N/A';
+                    }
+                });
+                return row;
+            });
+        }
+        /**
+         * Whether or not all attributes for a selected section have been selected
+         */
         selectedAllAttributes() {
             return this.selectedAttributes.length === this.sectionAttributes.length;
         }
-
+        /**
+         * Whether or not some attributes for a selected section have been selected
+         */
         selectedSomeAttributes() {
             return this.selectedAttributes.length > 0;
         }
-
+        /**
+         * Select all selected section attributes checkbox has been clicked; Sets the list of selected attributes & sets
+         * the selectAllAttrIcon
+         */
         onSelectAllAttributes() {
             if (this.selectedAllAttributes()) {
                 this.selectedAttributes = [];
@@ -129,25 +195,70 @@
             }
             this.setAttributeSelectAllIcon();
         }
-
+        /**
+         * Sets the selectAllAttrIcon based on selected section's selected attributes
+         */
         setAttributeSelectAllIcon() {
             if (this.selectedAllAttributes()) {
-                this.attrSelectAllIcon = 'check_box';
+                this.selectAllAttrIcon = 'check_box';
             } else if (this.selectedSomeAttributes()) {
-                this.attrSelectAllIcon = 'indeterminate_check_box';
+                this.selectAllAttrIcon = 'indeterminate_check_box';
             } else {
-                this.attrSelectAllIcon = 'check_box_outline_blank';
+                this.selectAllAttrIcon = 'check_box_outline_blank';
             }
         }
-
+        /**
+         * A start year has been selected; Sets the end year to be equal to or greater than the start year depending on
+         * which start year has been selected
+         */
+        onChangeStartYear() {
+            if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
+                if (this.startYear > this.endYear) {
+                    if (this.startYear === this.startYears[this.startYears.length - 1]) {
+                        this.endYear = this.startYear;
+                    } else {
+                        //@ts-ignore
+                        this.endYear = this.startYears.find((n: number) => n < this.startYear);
+                    }
+                }
+            }
+        }
+        /**
+         * An end year has been selected; Sets the start year to be equal to or less than the start year depending on
+         * which end year has been selected
+         */
+        onChangeEndYear() {
+            if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
+                if (this.endYear < this.startYear) {
+                    if (this.endYear === this.endYears[0]) {
+                        this.startYear = this.endYear;
+                    } else {
+                        //@ts-ignore
+                        this.startYear = this.endYears.find((n: number) => n < this.endYear);
+                    }
+                }
+            }
+        }
+        /**
+         * Sets downloadProgress & loading properties to true
+         */
         startProgressStatus() {
             this.downloadProgress = true;
             this.loading = true;
         }
-
+        /**
+         * Sets downloadProgress & loading properties to false
+         */
         stopProgressStatus() {
             this.downloadProgress = false;
             this.loading = false;
+        }
+        /**
+         * Whether or not the specified item has a value (is not null, is not undefined, and is not considered empty)
+         * @param item
+         */
+        hasValue(item: any) {
+            return !R.isNil(item) && !R.isEmpty(item);
         }
     }
 </script>
