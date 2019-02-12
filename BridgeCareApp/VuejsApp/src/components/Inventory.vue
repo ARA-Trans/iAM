@@ -13,6 +13,12 @@
             <v-flex xs4>
                 <v-select :disabled="sectionAttributes.length <= 0" :items="sectionAttributes" v-model="selectedAttributes"
                           v-on:change="setAttributeSelectAllIcon" label="Add/Remove Attributes" multiple outline>
+                    <template slot="selection" slot-scope="{item, index}">
+                        <span v-if="index === 0">{{item}}</span>
+                        <span v-if="index === 1">, {{item}}</span>
+                        <span v-if="index === 2">, {{item}}</span>
+                        <span v-if="index === 3" class="grey--text caption">(+{{selectedAttributes.length - 3}} others)</span>
+                    </template>
                     <v-list-tile slot="prepend-item" ripple @click="onSelectAllAttributes">
                         <v-list-tile-action>
                             <v-icon :color="selectedAttributes.length > 0 ? 'indigo darken-4' : ''">{{selectAllAttrIcon}}</v-icon>
@@ -214,11 +220,17 @@
         onChangeStartYear() {
             if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
                 if (this.startYear > this.endYear) {
-                    if (this.startYear === this.startYears[this.startYears.length - 1]) {
+                    if (this.startYear === this.endYears[0]) {
                         this.endYear = this.startYear;
                     } else {
-                        //@ts-ignore
-                        this.endYear = this.startYears.find((n: number) => n < this.startYear);
+                        let index = 0;
+                        const last = this.startYears.length - 1;
+                        while (index <= last || this.endYear <= this.startYear) {
+                            if (this.startYears[index] > this.endYear) {
+                                this.endYear = this.startYears[index];
+                            }
+                            index++;
+                        }
                     }
                 }
             }
@@ -230,11 +242,17 @@
         onChangeEndYear() {
             if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
                 if (this.endYear < this.startYear) {
-                    if (this.endYear === this.endYears[0]) {
+                    if (this.endYear === this.startYears[0]) {
                         this.startYear = this.endYear;
                     } else {
-                        //@ts-ignore
-                        this.startYear = this.endYears.find((n: number) => n < this.endYear);
+                        let index = 0;
+                        const last = this.endYears.length - 1;
+                        while (index <= last || this.startYear >= this.endYear) {
+                            if (this.endYears[index] < this.startYear) {
+                                this.startYear = this.endYears[index];
+                            }
+                            index++;
+                        }
                     }
                 }
             }
