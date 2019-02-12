@@ -6,7 +6,7 @@
                           label="Select a Network"
                           item-text="networkName"
                           item-value="networkId"
-                          v-on:change="getNetworkId"
+                          v-on:change="getSimulations"
                           outline>
                 </v-select>
             </v-flex>
@@ -50,14 +50,11 @@
     import { Component, Prop } from 'vue-property-decorator';
     import axios from 'axios'
 
-    //@ts-ignore
-    import AppSpinner from '../shared/AppSpinner'
-    import Network from '../models/Network'
+    import AppSpinner from '../shared/AppSpinner.vue'
+    import INetwork from '@/models/INetwork'
     import Simulation from '../models/Simulation'
-    //@ts-ignore
-    import AppModalPopup from '../shared/AppModalPopup'
-    //@ts-ignore
-    import IAlert from '@/models/IAlert'
+    import AppModalPopup from '../shared/AppModalPopup.vue'
+    import { IAlert } from '@/models/IAlert'
 
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
@@ -66,7 +63,7 @@
     })
     export default class DetailedReport extends Vue {
 
-        networks: Network[] = []
+        networks: INetwork[] = []
         simulations: Simulation[] = []
         networkId: number = 0
         networkName: string = ""
@@ -86,11 +83,13 @@
             this.loading = true
             axios
                 .get('/api/Networks')
-                .then(response => (response.data as Promise<Network[]>))
+                .then(response => (response.data as Promise<INetwork[]>))
                 .then(data => {
-                    for (let i = 0; i < data.length; i++) {
-                        this.networks.push(data[i])
-                    }
+                    this.$store.dispatch({
+                        type: 'networks',
+                        data: data
+                    })
+                    this.networks = this.$store.getters.networks as INetwork[]
                     this.downloadProgress = false
                     this.loading = false
                 }, error => {
@@ -100,17 +99,19 @@
                 });
         }
 
-        getNetworkId(id: number) {
+        getSimulations(id: number) {
             this.networkId = id
-            let details = this.networks.find(t => t.networkId === id) as Network
+            let details = this.networks.find(t => t.networkId === id) as INetwork
             this.networkName = details.networkName
             axios
                 .get(`/api/Simulations/${id}`)
                 .then(response => (response.data as Promise<Simulation[]>))
                 .then(data => {
-                    for (let i = 0; i < data.length; i++) {
-                        this.simulations.push(data[i])
-                    }
+                    this.$store.dispatch({
+                        type: 'simulations',
+                        data: data
+                    })
+                    this.simulations = this.$store.getters.simulations as Simulation[]
                     this.disableSimulationDropDown = false
                 }, error => {
                     console.log(error)

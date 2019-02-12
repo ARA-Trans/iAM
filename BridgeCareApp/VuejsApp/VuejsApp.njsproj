@@ -85,7 +85,7 @@
     <TypeScriptCompile Include="src\models\IAlert.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\models\Network.ts">
+    <TypeScriptCompile Include="src\models\INetwork.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\models\Simulation.ts">

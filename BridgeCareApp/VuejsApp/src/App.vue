@@ -8,8 +8,7 @@
     import Vue from 'vue'
     import { Component } from 'vue-property-decorator'
 
-    //@ts-ignore
-    import TopNavbar from './components/TopNavbar'
+    import TopNavbar from './components/TopNavbar.vue'
 
     @Component({
         components: { TopNavbar }
