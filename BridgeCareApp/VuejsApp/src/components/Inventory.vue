@@ -12,7 +12,7 @@
             <v-flex xs1></v-flex>
             <v-flex xs4>
                 <v-select :disabled="sectionAttributes.length <= 0" :items="sectionAttributes" v-model="selectedAttributes"
-                          v-on:change="setAttributeSelectAllIcon" label="Add/Remove Attributes" multiple outline>
+                          v-on:change="onSelectAttribute" label="Add/Remove Attributes" multiple outline>
                     <template slot="selection" slot-scope="{item, index}">
                         <span v-if="index === 0">{{item}}</span>
                         <span v-if="index === 1">, {{item}}</span>
@@ -54,14 +54,14 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import {Component} from 'vue-property-decorator';
-    import axios from 'axios';
-
+    import Vue from "vue";
+    import {Component} from "vue-property-decorator";
+    import axios from "axios";
     //@ts-ignore
-    import AppSpinner from '../shared/AppSpinner';
+    import AppSpinner from "../shared/AppSpinner";
     import {IAttribute, IAttributeYearlyValue, ISection, mockSections} from "@/models/section";
-    import * as R from 'ramda';
+    import * as R from "ramda";
+    import * as moment from "moment";
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -146,13 +146,7 @@
                 // set the end years list with a copy of the start years list in desc order
                 this.endYears = R.reverse(this.startYears);
                 this.endYear = this.hasValue(this.endYears) ? this.endYears[0] : 0;
-                // for each of the end years add a new header to the sectionGridHeaders list using the years as the
-                // text/value properties
-                this.endYears.forEach((year: number) => {
-                    this.sectionGridHeaders.push(
-                        {text: year.toString(), sortable: false, value: year.toString()}
-                    )
-                });
+                // set the selected section's grid data
                 this.setSelectedSectionGridData();
             }
         }
@@ -160,22 +154,54 @@
          * Sets the selected section's grid data
          */
         setSelectedSectionGridData() {
-            //TODO: apply logic to use the select filters (attributes & start/end years)
-            this.selectedSectionGridData = this.selectedSection.attributes.map((a: IAttribute) => {
-                const row = {
-                    name: a.name
-                };
-                this.endYears.forEach((n: number) => {
-                    if (R.any(R.propEq('year', n), a.yearlyValues)) {
-                        //@ts-ignore
-                        row[`${n}`] = a.yearlyValues.find((val: IAttributeYearlyValue) => val.year === n).value;
-                    } else {
-                        //@ts-ignore
-                        row[`${n}`] = 'N/A';
-                    }
+            // get the selected attributes
+            const filteredAttributes = this.selectedSection.attributes.filter((a: IAttribute) =>
+                this.selectedAttributes.indexOf(a.name) !== -1
+            );
+            // get the selected year range
+            const yearRange = this.getYearRange();
+            if (this.hasValue(filteredAttributes) && this.hasValue(yearRange)) {
+                //reset the sectionGridHeaders list
+                this.sectionGridHeaders = R.filter(h => R.propEq("value", "name", h), this.sectionGridHeaders);
+                // for each of the years in the yearRange list add a new header to the sectionGridHeaders list using
+                // the years as the text/value properties
+                yearRange.forEach((year: number) => {
+                    this.sectionGridHeaders.push(
+                        {text: year.toString(), sortable: false, value: year.toString()}
+                    )
                 });
-                return row;
-            });
+                // set the selected section grid data
+                this.selectedSectionGridData = filteredAttributes.map((a: IAttribute) => {
+                    const row = {
+                        name: a.name
+                    };
+                    yearRange.forEach((n: number) => {
+                        if (R.any(R.propEq("year", n), a.yearlyValues)) {
+                            //@ts-ignore
+                            row[`${n}`] = a.yearlyValues.find((val: IAttributeYearlyValue) => val.year === n).value;
+                        } else {
+                            //@ts-ignore
+                            row[`${n}`] = "N/A";
+                        }
+                    });
+                    return row;
+                });
+            } else {
+                this.selectedSectionGridData = [];
+            }
+        }
+
+        /**
+         * Sets the selectAllAttrIcon based on selected section's selected attributes
+         */
+        setAttributeSelectAllIcon() {
+            if (this.selectedAllAttributes()) {
+                this.selectAllAttrIcon = "check_box";
+            } else if (this.selectedSomeAttributes()) {
+                this.selectAllAttrIcon = "indeterminate_check_box";
+            } else {
+                this.selectAllAttrIcon = "check_box_outline_blank";
+            }
         }
         /**
          * Whether or not all attributes for a selected section have been selected
@@ -200,18 +226,14 @@
                 this.selectedAttributes = this.sectionAttributes.slice();
             }
             this.setAttributeSelectAllIcon();
+            this.setSelectedSectionGridData();
         }
         /**
-         * Sets the selectAllAttrIcon based on selected section's selected attributes
+         * An attribute has been selected/unselected; Set the selectAllAttrIcon & selectedSectionGridData
          */
-        setAttributeSelectAllIcon() {
-            if (this.selectedAllAttributes()) {
-                this.selectAllAttrIcon = 'check_box';
-            } else if (this.selectedSomeAttributes()) {
-                this.selectAllAttrIcon = 'indeterminate_check_box';
-            } else {
-                this.selectAllAttrIcon = 'check_box_outline_blank';
-            }
+        onSelectAttribute() {
+            this.setAttributeSelectAllIcon();
+            this.setSelectedSectionGridData();
         }
         /**
          * A start year has been selected; Sets the end year to be equal to or greater than the start year depending on
@@ -233,6 +255,7 @@
                         }
                     }
                 }
+                this.setSelectedSectionGridData();
             }
         }
         /**
@@ -255,6 +278,22 @@
                         }
                     }
                 }
+                this.setSelectedSectionGridData();
+            }
+        }
+
+        getYearRange() {
+            if (this.startYear === this.endYear) {
+                return [this.endYear];
+            } else {
+                const range: number[] = [];
+                let currentYear = this.endYear;
+                while (currentYear >= this.startYear) {
+                    range.push(currentYear);
+                    //@ts-ignore
+                    currentYear = parseInt(moment().year(currentYear).subtract(1, "year").format("YYYY"));
+                }
+                return range;
             }
         }
         /**
@@ -280,3 +319,4 @@
         }
     }
 </script>
+
