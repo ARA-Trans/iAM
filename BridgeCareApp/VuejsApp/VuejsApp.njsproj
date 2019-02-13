@@ -85,7 +85,7 @@
     <TypeScriptCompile Include="src\models\IAlert.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\models\Network.ts">
+    <TypeScriptCompile Include="src\models\INetwork.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\models\Simulation.ts">
@@ -96,6 +96,7 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
+    <TypeScriptCompile Include="src\store.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="babel.config.js" />
