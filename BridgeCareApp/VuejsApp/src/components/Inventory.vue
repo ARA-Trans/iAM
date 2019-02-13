@@ -50,6 +50,21 @@
                 </v-data-table>
             </v-flex>
         </v-layout>
+        <v-layout row wrap>
+            <v-flex xs12>
+                <div v-if="hasValue(selectedSectionGridData)">
+                    <iframe class="gmap_canvas"
+                            src="https://maps.google.com/maps?q=ben%20franklin%20bridge%20pennsylvania&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                            frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
+                    </iframe>
+                </div>
+            </v-flex>
+        </v-layout>
+        <v-layout row wrap>
+            <v-flex v-if="hasValue(selectedSectionGridData)" v-for="img in images">
+                <v-img :src="img.src" aspect-ratio="1"></v-img>
+            </v-flex>
+        </v-layout>
     </v-container>
 </template>
 
@@ -81,6 +96,16 @@
         startYear: number = new Date().getFullYear();
         endYear: number = new Date().getFullYear();
         selectedSectionGridData: any[] = [];
+        images: object[] = [
+            {src: require("@/assets/images/inventory_mock_bridge_images/1.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/2.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/3.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/4.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/5.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/6.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/7.jpg")},
+            {src: require("@/assets/images/inventory_mock_bridge_images/8.jpg")}
+        ];
         downloadProgress = false;
         loading = false;
         /**
@@ -320,3 +345,9 @@
     }
 </script>
 
+<style>
+    .gmap_canvas {
+        width: 100%;
+        height: 300px;
+    }
+</style>
