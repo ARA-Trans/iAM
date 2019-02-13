@@ -39,7 +39,7 @@
                 <AppSpinner />
             </v-flex>
             <v-flex xs12>
-                <AppModalPopup :modalData="warning" @decision="onModalClicked"/>
+                <AppModalPopup :modalData="warning" @decision="onModalClicked" />
             </v-flex>
         </v-layout>
     </v-container>
@@ -81,41 +81,34 @@
         mounted() {
             this.downloadProgress = true
             this.loading = true
-            axios
-                .get('/api/Networks')
-                .then(response => (response.data as Promise<INetwork[]>))
-                .then(data => {
-                    this.$store.dispatch({
-                        type: 'networks',
-                        data: data
-                    })
-                    this.networks = this.$store.getters.networks as INetwork[]
-                    this.downloadProgress = false
-                    this.loading = false
-                }, error => {
-                    this.downloadProgress = false
-                    this.loading = false
-                    console.log(error)
-                });
+
+            this.$store.dispatch({
+                type: 'getNetworks'
+            }).then(() => {
+                this.downloadProgress = false
+                this.loading = false
+                this.networks = this.$store.getters.networks as INetwork[]
+            }).catch((error) => {
+                this.downloadProgress = false
+                this.loading = false
+                console.log(error)
+            })
         }
 
         getSimulations(id: number) {
             this.networkId = id
             let details = this.networks.find(t => t.networkId === id) as INetwork
             this.networkName = details.networkName
-            axios
-                .get(`/api/Simulations/${id}`)
-                .then(response => (response.data as Promise<Simulation[]>))
-                .then(data => {
-                    this.$store.dispatch({
-                        type: 'simulations',
-                        data: data
-                    })
-                    this.simulations = this.$store.getters.simulations as Simulation[]
+
+            this.$store.dispatch({
+                type: 'getSimulations',
+                id: id
+            }).then(() => {
+                this.simulations = this.$store.getters.simulations as Simulation[]
                     this.disableSimulationDropDown = false
-                }, error => {
+                }).catch((error) => {
                     console.log(error)
-                });
+                })
         }
 
         getSimulationId(id: any) {
