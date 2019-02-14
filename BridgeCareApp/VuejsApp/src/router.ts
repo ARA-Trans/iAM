@@ -3,8 +3,9 @@ import Router from 'vue-router'
 
 import HelloWorld from './components/HelloWorld.vue';
 import DetailedReport from '@/components/DetailedReport.vue';
+import Scenario from '@/components/Scenario.vue';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
     mode: 'history',
@@ -18,6 +19,11 @@ export default new Router({
             path: '/DetailedReport',
             name: 'DetailedReport',
             component: DetailedReport
+        },
+        {
+            path: '/Scenarios',
+            name: 'Scenarios',
+            component: Scenario
         },
         { path: '*', redirect: '/' }
         //{
