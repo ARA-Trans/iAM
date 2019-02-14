@@ -3,6 +3,8 @@ import Router from 'vue-router'
 
 import HelloWorld from './components/HelloWorld.vue';
 import DetailedReport from '@/components/DetailedReport.vue';
+import EditScenario from '@/components/scenario/EditScenario.vue';
+import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 
 Vue.use(Router)
 
@@ -18,6 +20,16 @@ export default new Router({
             path: '/DetailedReport',
             name: 'DetailedReport',
             component: DetailedReport
+        },
+        {
+            path: '/EditScenario',
+            name: 'EditScenario',
+            component: EditScenario
+        },
+        {
+            path: '/EditAnalysis',
+            name: 'EditAnalysis',
+            component: EditAnalysis
         },
         { path: '*', redirect: '/' }
         //{

@@ -43,23 +43,22 @@ export default new Vuex.Store({
         fillSimulations({ commit }, payload) {
             commit('simulations', payload.data)
         },
-        getNetworks({ commit }) {
-            axios
+        async getNetworks({ commit }) {
+            await axios
                 .get('/api/Networks')
                 .then(response => (response.data as Promise<INetwork[]>))
                 .then(payload => {
                     commit('networks', payload)
                 });
         },
-        getSimulations({ commit }, payload) {
-            axios
+        async getSimulations({ commit }, payload) {
+            await axios
                 .get(`/api/Simulations/${payload.id}`)
                 .then(response => (response.data as Promise<Simulation[]>))
                 .then(data => {
                     commit('simulations', data)
                 });
         }
-
     },
     getters: {
         loginStatus(state) {

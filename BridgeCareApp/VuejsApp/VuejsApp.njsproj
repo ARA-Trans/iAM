@@ -52,6 +52,12 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\HelloWorld.vue" />
+    <Content Include="src\components\scenario\EditAnalysis.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\scenario\EditScenario.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\shared\AppShowProgress.vue">
       <SubType>Code</SubType>
     </Content>
@@ -77,6 +83,7 @@
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\scenario\" />
     <Folder Include="src\models\" />
     <Folder Include="src\shared\" />
   </ItemGroup>
