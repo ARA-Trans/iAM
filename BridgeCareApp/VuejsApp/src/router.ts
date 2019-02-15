@@ -1,8 +1,8 @@
 ﻿import Vue from 'vue'
 import Router from 'vue-router'
 
-import HelloWorld from './components/HelloWorld.vue';
 import DetailedReport from '@/components/DetailedReport.vue';
+import Inventory from '@/components/Inventory.vue';
 import Scenario from '@/components/Scenario.vue';
 
 Vue.use(Router);
@@ -11,9 +11,9 @@ export default new Router({
     mode: 'history',
     routes: [
         {
-            path: '/',
-            name: 'Home',
-            component: HelloWorld
+            path: '/Inventory',
+            name: 'Inventory',
+            component: Inventory
         },
         {
             path: '/DetailedReport',
@@ -25,7 +25,7 @@ export default new Router({
             name: 'Scenarios',
             component: Scenario
         },
-        { path: '*', redirect: '/' }
+        { path: '*', redirect: '/Inventory' }
         //{
         //    path: '/about',
         //    name: 'about',
