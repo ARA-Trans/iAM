@@ -72,7 +72,6 @@
 
     @Component
     export default class EditAnalysis extends Vue {
-        message: string = 'Test'
         menu: boolean = false
         date: string = ''
         maxDate: string = moment().year().toString()
