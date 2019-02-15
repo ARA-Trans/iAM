@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
+import Scenario from '@/components/Scenario.vue';
 
 Vue.use(Router);
 
@@ -18,6 +19,11 @@ export default new Router({
             path: '/DetailedReport',
             name: 'DetailedReport',
             component: DetailedReport
+        },
+        {
+            path: '/Scenarios',
+            name: 'Scenarios',
+            component: Scenario
         },
         { path: '*', redirect: '/Inventory' }
         //{
