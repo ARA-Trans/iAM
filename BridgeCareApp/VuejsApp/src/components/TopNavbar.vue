@@ -56,14 +56,14 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
-    import * as Msal from 'msal'
+    import Vue from "vue";
+    import {Component} from "vue-property-decorator";
+    import * as Msal from "msal"
 
     @Component
     export default class TopNavbar extends Vue {
-        loginFailed: boolean = true
-        userName: string = ''
+        loginFailed: boolean = true;
+        userName: string = "";
 
         applicationConfig: {
             clientID: string; graphScopes: string[]; authority: string;
@@ -114,7 +114,7 @@
         data() {
             return {
                 routes: [
-                    { navigation: 'Home', icon: 'dashboard', name: 'Home' },
+                    {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
                     { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' },
                     { navigation: 'EditScenario', icon: 'event', name: 'Edit scenario'}
                 ],
@@ -128,7 +128,7 @@
 
         created() {
 
-            this.loginFailed = this.$store.getters.loginStatus
+            this.loginFailed = this.$store.getters.loginStatus;
             let user = this.clientApp.getUser();
             if (!user) {
             }
@@ -136,8 +136,8 @@
                 this.$store.dispatch({
                     type: 'login',
                     status: false
-                })
-                this.loginFailed = this.$store.getters.loginStatus
+                });
+                this.loginFailed = this.$store.getters.loginStatus;
                 this.updateUI();
             }
         }
@@ -146,15 +146,15 @@
             this.$store.dispatch({
                 type: 'login',
                 status: true
-            })
-            this.loginFailed = this.$store.getters.loginStatus
+            });
+            this.loginFailed = this.$store.getters.loginStatus;
             this.clientApp.loginPopup(this.applicationConfig.graphScopes).then(
                 idToken => {
                     this.$store.dispatch({
                         type: 'login',
                         status: false
-                    })
-                    this.loginFailed = this.$store.getters.loginStatus
+                    });
+                    this.loginFailed = this.$store.getters.loginStatus;
                     this.updateUI();
                 },
                 (error) => {
@@ -199,8 +199,8 @@
             this.$store.dispatch({
                 type: 'userName',
                 name: this.clientApp.getUser().name
-            })
-            this.userName = this.$store.getters.userName
+            });
+            this.userName = this.$store.getters.userName;
             this.logMessage("User '" + this.userName + "' logged-in");
         }
         logMessage(s: string) {

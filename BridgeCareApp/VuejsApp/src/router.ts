@@ -1,26 +1,33 @@
 ﻿import Vue from 'vue'
 import Router from 'vue-router'
 
-import HelloWorld from './components/HelloWorld.vue';
 import DetailedReport from '@/components/DetailedReport.vue';
+import Inventory from '@/components/Inventory.vue';
+import Scenario from '@/components/Scenario.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
     mode: 'history',
     routes: [
         {
-            path: '/',
-            name: 'Home',
-            component: HelloWorld
+            path: '/Inventory',
+            name: 'Inventory',
+            component: Inventory
         },
         {
             path: '/DetailedReport',
             name: 'DetailedReport',
             component: DetailedReport
         },
+        {
+            path: '/Scenarios',
+            name: 'Scenarios',
+            component: Scenario
+        },
+        { path: '*', redirect: '/Inventory' }
         {
             path: '/EditScenario',
             name: 'EditScenario',
@@ -30,8 +37,7 @@ export default new Router({
             path: '/EditAnalysis',
             name: 'EditAnalysis',
             component: EditAnalysis
-        },
-        { path: '*', redirect: '/' }
+        }
         //{
         //    path: '/about',
         //    name: 'about',

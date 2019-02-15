@@ -1,6 +1,6 @@
 <template>
         <v-app class="grey lighten-4">
-            <TopNavbar/>           
+            <TopNavbar/>
         </v-app>
 </template>
 <script lang="ts">
