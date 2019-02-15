@@ -114,9 +114,9 @@
         data() {
             return {
                 routes: [
+                    { navigation: "Inventory", icon: "home", name: "Inventory" },
                     {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
                     { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' },
-                    { navigation: 'EditScenario', icon: 'event', name: 'Edit scenario'}
                 ],
                 drawer: true
             }

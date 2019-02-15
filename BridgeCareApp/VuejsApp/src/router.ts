@@ -27,7 +27,6 @@ export default new Router({
             name: 'Scenarios',
             component: Scenario
         },
-        { path: '*', redirect: '/Inventory' }
         {
             path: '/EditScenario',
             name: 'EditScenario',
@@ -37,7 +36,8 @@ export default new Router({
             path: '/EditAnalysis',
             name: 'EditAnalysis',
             component: EditAnalysis
-        }
+        },
+        { path: '*', redirect: '/Inventory' }
         //{
         //    path: '/about',
         //    name: 'about',
