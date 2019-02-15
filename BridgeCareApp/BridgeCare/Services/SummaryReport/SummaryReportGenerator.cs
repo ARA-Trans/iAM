@@ -1,4 +1,4 @@
-﻿using BridgeCare.Interfaces.SummaryReport;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using OfficeOpenXml;
 using System;
@@ -22,8 +22,16 @@ namespace BridgeCare.Services.SummaryReport
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData)); ;
         }
 
+        /// <summary>
+        /// Generate Bridge Summary Report for given simulation details.
+        /// </summary>
+        /// <param name="simulationModel"></param>
+        /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
         {
+            //Temp -- remove later
+            simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 9 };
+
             //Get data
             var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationModel.SimulationId);
             var simulationYears = simulationYearsModel.Years;

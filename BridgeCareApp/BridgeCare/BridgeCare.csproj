@@ -185,6 +185,9 @@
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
+    <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
+    <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
     <Compile Include="EntityClasses\Targets.cs" />
     <Compile Include="EntityClasses\YEARLYINVESTMENT.cs" />
@@ -210,6 +213,9 @@
     <Compile Include="Models\DetailReportModel.cs" />
     <Compile Include="Models\NetworkModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
+    <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
+    <Compile Include="Models\SummaryReport\SectionDataModel.cs" />
+    <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
@@ -243,7 +249,9 @@
     <Content Include="Dpendencies\SimulationDataAccess.dll" />
     <Content Include="Dpendencies\SimulationDataAccess.pdb" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

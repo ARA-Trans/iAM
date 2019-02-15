@@ -1,12 +1,12 @@
 ﻿using BridgeCare.ApplicationLog;
-using BridgeCare.Interfaces.SummaryReport;
-using BridgeCare.Models.SummaryReport;
+using BridgeCare.Interfaces;
+using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace BridgeCare.DataAccessLayer.SummaryReport
+namespace BridgeCare.DataAccessLayer
 {
     public class CommonSummaryReportData : ICommonSummaryReportData
     {
@@ -23,7 +23,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 return new SimulationYearsModel
                 {
                     SimulationID = simulationId,
-                    Years = dbContext.YEARLYINVESTMENTs.Where(y => y.SIMULATIONID == simulationId).Select(y => y.YEAR_).ToList()
+                    Years = dbContext.YEARLYINVESTMENTs.Where(y => y.SIMULATIONID == simulationId).Select(y => y.YEAR_).Distinct().ToList()
                 };
             }
             catch (SqlException ex)

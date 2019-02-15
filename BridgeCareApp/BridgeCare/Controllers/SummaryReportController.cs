@@ -1,8 +1,5 @@
-﻿using BridgeCare.Interfaces.SummaryReport;
+﻿using BridgeCare.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,7 +19,7 @@ namespace BridgeCare.Controllers
 
         // POST: api/SummaryReport
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] SimulationModel data)
+        public HttpResponseMessage Post([FromBody] SimulationModel simulationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -34,7 +31,7 @@ namespace BridgeCare.Controllers
 
             try
             {
-                response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(data));
+                response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(simulationModel));
             }
             catch (TimeoutException)
             {

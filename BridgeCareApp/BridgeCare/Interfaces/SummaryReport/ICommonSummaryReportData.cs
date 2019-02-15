@@ -1,11 +1,11 @@
-﻿using BridgeCare.Models.SummaryReport;
+﻿using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BridgeCare.Interfaces.SummaryReport
+namespace BridgeCare.Interfaces
 {
     public interface ICommonSummaryReportData
     {

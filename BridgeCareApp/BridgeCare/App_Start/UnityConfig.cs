@@ -1,7 +1,5 @@
 using BridgeCare.DataAccessLayer;
-using BridgeCare.DataAccessLayer.SummaryReport;
 using BridgeCare.Interfaces;
-using BridgeCare.Interfaces.SummaryReport;
 using BridgeCare.Models;
 using BridgeCare.Services;
 using BridgeCare.Services.SummaryReport;

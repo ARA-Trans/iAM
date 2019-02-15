@@ -21,6 +21,9 @@ namespace BridgeCare
         public virtual DbSet<Deficients> Deficient { get; set; }
         public virtual DbSet<Targets> Target { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
+        public virtual DbSet<PennDotBridgeData> PennDotBridgeData { get; set; }
+        public virtual DbSet<PennDotReportAData> PennDotReportAData { get; set; }
+        public virtual DbSet<SdRisk> SdRisks { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<NETWORK>()
