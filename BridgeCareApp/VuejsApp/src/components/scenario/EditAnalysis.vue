@@ -7,23 +7,22 @@
                             v-model="menu"
                             :close-on-content-click="false"
                             :nudge-right="40"
-                            :return-value.sync="date"
                             lazy
                             transition="scale-transition"
                             offset-y
                             full-width
                             min-width="290px">
                         <v-text-field slot="activator"
-                                        v-model="date"
-                                        label="Start year"
-                                        prepend-icon="event"
-                                        readonly
-                                        placeholder="Start year"></v-text-field>
-                        <v-date-picker v-model="date" no-title scrollable>
-                            <v-spacer></v-spacer>
-                            <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-                            <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-                        </v-date-picker>
+                                      v-model="date"
+                                      label="Start year"
+                                      prepend-icon="event"
+                                      readonly></v-text-field>
+                        <v-date-picker ref="picker"
+                                       v-model="date"
+                                        min="1950"
+                                       reactive
+                                       no-title
+                                       @input="save"></v-date-picker>
                     </v-menu>
                 </v-flex>
                 <v-flex xs12>
@@ -67,22 +66,36 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
+    import { Component, Watch } from 'vue-property-decorator';
+
+    import moment from 'moment';
 
     @Component
     export default class EditAnalysis extends Vue {
         message: string = 'Test'
+        menu: boolean = false
+        date: string = ''
+        maxDate: string = moment().year().toString()
 
         data() {
             return {
-                date: new Date().toISOString().substr(0, 10),
-                menu: false,
-                modal: false,
                 analysisPeriod: 0,
                 benefitLimit: 0,
                 optimizationType: ['Incremental benefit/cost', 'Another one', 'The better one'],
                 budgetType: ['As budget permits', 'Another one', 'The better one'],
             }
+        }
+        
+        @Watch('menu')
+        onDateChanged(val: string) {
+            //@ts-ignore
+            val && this.$nextTick(() => (this.$refs.picker.activePicker = 'YEAR'))
+        }
+        save(date: string) {
+            this.date = date.substring(0, 4)
+            //@ts-ignore
+            this.$refs.picker.activePicker = 'YEAR'
+            this.menu = false;
         }
         cancel() {
             this.$router.push('EditScenario')
