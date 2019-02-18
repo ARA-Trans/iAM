@@ -35,7 +35,7 @@
     import { IAlert } from '@/models/IAlert';
 
     @Component
-    export default class AppModalPupup extends Vue {
+    export default class AppModalPopup extends Vue {
 
         @Prop()
         modalData: IAlert
