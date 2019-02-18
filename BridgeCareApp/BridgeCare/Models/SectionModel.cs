@@ -15,10 +15,7 @@ namespace BridgeCare.Models
         public string Section { get; set; }
 
         public int NetworkID { get; set; }
-        public string NetworkName { get; set; }
-        //isnt this needed, data is valid only for a specific network
-        //can be broken easily
-        //public NetworkModel Network { get; set; }
-
+        //public string NetworkName { get; set; }
+ 
     }
 }

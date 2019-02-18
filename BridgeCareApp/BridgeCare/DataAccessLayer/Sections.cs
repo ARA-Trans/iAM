@@ -17,7 +17,7 @@ namespace BridgeCare.DataAccessLayer
         {
             IQueryable < SectionModel > rawQueryForData = null;
 
-            var select = String.Format("SELECT Sectionid,Facility,Section,{0} as Networkid,\'{1}\' as Networkname FROM Section_{0}", data.NetworkId, data.NetworkName);
+            var select = String.Format("SELECT Sectionid,Facility,Section,{0} as Networkid FROM Section_{0}", data.NetworkId);
 
             try
             {
