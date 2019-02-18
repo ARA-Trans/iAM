@@ -44,7 +44,7 @@ namespace BridgeCare.Services.SummaryReport
                 summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
 
-
+                
                 return excelPackage.GetAsByteArray();
             }
         }
