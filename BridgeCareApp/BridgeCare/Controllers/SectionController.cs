@@ -29,8 +29,8 @@ namespace BridgeCare.Controllers
         }
 
         // POST: api/sections
-        [HttpPost]
-        public IQueryable<SectionModel> Post([FromBody] NetworkModel data)
+        //[HttpPost]
+        public IQueryable<SectionModel> Get(NetworkModel data)
         {
             return section.GetSections(data,db);
         }

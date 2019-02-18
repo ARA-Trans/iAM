@@ -184,6 +184,7 @@
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="EntityClasses\SECTIONS.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
     <Compile Include="EntityClasses\Targets.cs" />
     <Compile Include="EntityClasses\YEARLYINVESTMENT.cs" />
