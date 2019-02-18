@@ -28,7 +28,7 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // POST: api/sections
+        // POST: api/section
         //[HttpPost]
         public IQueryable<SectionModel> Get(NetworkModel data)
         {
