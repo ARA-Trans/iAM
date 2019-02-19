@@ -116,7 +116,8 @@
             return {
                 routes: [
                     {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
-                    { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }
+                    { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' },
+                    {navigation: "CriteriaEditor", name: "Criteria Editor"}
                 ],
                 drawer: true
             }

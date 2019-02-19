@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
 import Scenario from '@/components/Scenario.vue';
+import CriteriaEditor from '@/shared/CriteriaEditor.vue';
 
 Vue.use(Router);
 
@@ -24,6 +25,11 @@ export default new Router({
             path: '/Scenarios',
             name: 'Scenarios',
             component: Scenario
+        },
+        {
+            path: '/CriteriaEditor',
+            name: 'Criteria Editor',
+            component: CriteriaEditor
         },
         { path: '*', redirect: '/Inventory' }
         //{
