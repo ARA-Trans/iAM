@@ -47,11 +47,27 @@
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\1.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\2.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\3.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\4.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\5.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\6.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\7.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\8.jpg" />
     <Content Include="src\assets\logo.svg" />
     <Content Include="src\components\DetailedReport.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\HelloWorld.vue" />
+    <Content Include="src\components\Inventory.vue" />
+    <Content Include="src\components\Scenario.vue" />
+    <Content Include="src\components\scenario\EditAnalysis.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\scenario\EditScenario.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\shared\AppShowProgress.vue">
       <SubType>Code</SubType>
     </Content>
@@ -76,7 +92,10 @@
     <Folder Include="public\" />
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
+    <Folder Include="src\assets\images\" />
+    <Folder Include="src\assets\images\inventory_mock_bridge_images\" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\scenario\" />
     <Folder Include="src\models\" />
     <Folder Include="src\shared\" />
   </ItemGroup>
@@ -88,6 +107,8 @@
     <TypeScriptCompile Include="src\models\INetwork.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\models\scenario.ts" />
+    <TypeScriptCompile Include="src\models\section.ts" />
     <TypeScriptCompile Include="src\models\Simulation.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

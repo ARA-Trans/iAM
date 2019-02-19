@@ -19,7 +19,7 @@
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="">
+                                        <v-btn flat icon color="green" v-on:click="editScenario">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -57,7 +57,7 @@
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="">
+                                        <v-btn flat icon color="green" v-on:click="editSharedScenario">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -137,6 +137,13 @@
         formatDate(unformattedDate: Date) {
             //@ts-ignore
             return moment(unformattedDate).format("M/D/YYYY");
+        }
+
+        editScenario() {
+            this.$router.push({path: 'EditScenario'});
+        }
+        editSharedScenario() {
+            this.$router.push({ path: 'EditScenario' });
         }
     }
 </script>

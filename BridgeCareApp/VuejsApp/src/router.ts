@@ -4,6 +4,8 @@ import Router from 'vue-router'
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
 import Scenario from '@/components/Scenario.vue';
+import EditScenario from '@/components/scenario/EditScenario.vue';
+import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 
 Vue.use(Router);
 
@@ -24,6 +26,16 @@ export default new Router({
             path: '/Scenarios',
             name: 'Scenarios',
             component: Scenario
+        },
+        {
+            path: '/EditScenario',
+            name: 'EditScenario',
+            component: EditScenario
+        },
+        {
+            path: '/EditAnalysis',
+            name: 'EditAnalysis',
+            component: EditAnalysis
         },
         { path: '*', redirect: '/Inventory' }
         //{
