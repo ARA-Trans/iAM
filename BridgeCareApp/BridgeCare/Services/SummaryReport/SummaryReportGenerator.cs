@@ -40,11 +40,13 @@ namespace BridgeCare.Services.SummaryReport
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
                 //Bridge Data tab
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
+                var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
 
+
                 
+
                 return excelPackage.GetAsByteArray();
             }
         }

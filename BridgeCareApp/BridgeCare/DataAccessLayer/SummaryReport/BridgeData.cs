@@ -57,7 +57,7 @@ namespace BridgeCare.DataAccessLayer
             IQueryable<SectionDataModel> rawQueryForSectionData = null;
 
             //FACILITY is BRKEY, SECTION is BRIDGE_ID
-            var selectSectionStatement = "SELECT FACILITY, SECTION " + " FROM SECTION_" + simulationModel.NetworkId + " Rpt WITH(NOLOCK) INNER JOIN Section_" + simulationModel.NetworkId + " Sec WITH(NOLOCK) " + " ON Rpt.SectionID = Sec.SectionID " + " Order By FACILITY ASC";
+            var selectSectionStatement = "SELECT FACILITY, SECTION " + " FROM SECTION_" + simulationModel.NetworkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
             try
             {
                 rawQueryForSectionData = dbContext.Database.SqlQuery<SectionDataModel>(selectSectionStatement).AsQueryable();

@@ -4,8 +4,8 @@ namespace BridgeCare.Models
 {
     public class SectionDataModel
     {        
-        public int BRKey { get; set; }
+        public string FACILITY { get; set; }
                 
-        public string BridgeID { get; set; }
+        public string SECTION { get; set; }
     }
 }
