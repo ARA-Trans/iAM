@@ -4,9 +4,10 @@ import axios from 'axios'
 
 import INetwork from '@/models/INetwork'
 import Simulation from '@/models/Simulation'
-import {IScenario, sharedScenarios, userScenarios} from '@/models/scenario';
+import {IScenario} from '@/models/scenario';
 import * as R from 'ramda';
 import * as moment from 'moment';
+import {sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
 
 Vue.use(Vuex);
 

@@ -16,6 +16,6 @@ export interface CriteriaRule {
 }
 
 export const emptyCriteria: Criteria = {
-    logicalOperator: 'all',
+    logicalOperator: 'AND',
     children: []
 };
