@@ -30,11 +30,14 @@ namespace BridgeCare.Services
             var BRKeys = new List<int>();
             
             var sectionDataModels = bridgeData.GetSectionData(simulationModel, dbContext);
-            // remove later var first = sectionDataModels.Where(s => s.FACILITY == "1004").FirstOrDefault();
-            // remove later var count = sectionDataModels.Count();
+            var simulationDataTable = bridgeData.GetSimulationData(simulationModel, dbContext, simulationYears);
+            
+            //TODO build SimulationDataModel in Caller class based on this result set, use years list to get idea of how many yrs data plus _0 columns. Use years list
+            // TODO Project and cost to be filled up using REPORT_NID_SID table
+            // TODO check macro for setting specific values based on certain values
 
-            // TODO call for geting simulation data, then make data models here, 
-            // then take only those brkeys from section models which in present in simulation models make brkeys list and sent to below.
+
+            // TODO then take only those brkeys from section models which in present in simulation models make brkeys list and sent to below.
 
             // Temp, remove after above is implemented 
             BRKeys.Add(1004);

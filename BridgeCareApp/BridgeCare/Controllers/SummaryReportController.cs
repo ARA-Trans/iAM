@@ -37,7 +37,7 @@ namespace BridgeCare.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try again later.");
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
                     "Selected Network table and/or simulation table are not present in the database.");
