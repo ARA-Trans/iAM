@@ -12,8 +12,9 @@ namespace BridgeCare.Interfaces
     {
         List<BridgeDataModel> GetBridgeData(List<int> BRKeys, BridgeCareContext dbContext);
 
-        IQueryable<SectionDataModel> GetSectionData(SimulationModel simulationModel, BridgeCareContext dbContext);
+        IQueryable<SectionModel> GetSectionData(SimulationModel simulationModel, BridgeCareContext dbContext);
 
         DataTable GetSimulationData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears);
+        IQueryable<ProjectCostModel> GetReportData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears);
     }
 }

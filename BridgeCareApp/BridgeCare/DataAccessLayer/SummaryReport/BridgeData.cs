@@ -5,7 +5,6 @@ using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Core.EntityClient;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -22,13 +21,13 @@ namespace BridgeCare.DataAccessLayer
         public List<BridgeDataModel> GetBridgeData(List<int> BRKeys, BridgeCareContext dbContext)
         {
             var bridgeDataModels = new List<BridgeDataModel>();
-
             try
             {
                 var penndotBridgeData = dbContext.PennDotBridgeData.Where(p => BRKeys.Contains(p.BRKEY)).ToList();
                 var pennDotReportAData = dbContext.PennDotReportAData.Where(p => BRKeys.Contains(p.BRKEY)).ToList();
                 var sdRisk = dbContext.SdRisks.Where(s => BRKeys.Contains(s.BRKEY)).ToList();
                 //TODO ask why this is set in macro Func_Class='12' where BRKey=8356") Func_Class='16' where BRKey=45700") Func_Class='01' where BRKey=29077") Func_Class='06' where BRKey=55748")
+                BRKeys = BRKeys.OrderBy(b => b).ToList();
                 foreach (int BRKey in BRKeys)
                 {
                     var penndotBridgeDataRow = penndotBridgeData.Where(b => b.BRKEY == BRKey).FirstOrDefault();
@@ -54,16 +53,16 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="simulationModel"></param>
         /// <param name="dbContext"></param>
-        /// <returns>IQueryable<SectionDataModel></returns>
-        public IQueryable<SectionDataModel> GetSectionData(SimulationModel simulationModel, BridgeCareContext dbContext)
+        /// <returns>IQueryable<SectionModel></returns>
+        public IQueryable<SectionModel> GetSectionData(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            IQueryable<SectionDataModel> rawQueryForSectionData = null;
+            IQueryable<SectionModel> rawQueryForSectionData = null;
 
             //FACILITY is BRKEY, SECTION is BRIDGE_ID
             var selectSectionStatement = "SELECT SECTIONID, FACILITY, SECTION " + " FROM SECTION_" + simulationModel.NetworkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
             try
             {
-                rawQueryForSectionData = dbContext.Database.SqlQuery<SectionDataModel>(selectSectionStatement).AsQueryable();
+                rawQueryForSectionData = dbContext.Database.SqlQuery<SectionModel>(selectSectionStatement).AsQueryable();
             }
             catch (SqlException ex)
             {
@@ -92,7 +91,7 @@ namespace BridgeCare.DataAccessLayer
 
             var selectSimulationStatement = "SELECT SECTIONID, DECK_SEEDED_0, SUP_SEEDED_0, SUB_SEEDED_0, CULV_SEEDED_0, DECK_DURATION_N_0, SUP_DURATION_N_0, SUB_DURATION_N_0, CULV_DURATION_N_0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
             try
-            {                
+            {   
                 var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString);
                 using (var cmd = new SqlCommand(selectSimulationStatement, connection))
                 {
@@ -104,7 +103,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Simulation_" + simulationModel.SimulationId + "_" + simulationModel.SimulationId);
+                HandleException.SqlError(ex, "Simulation_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId);
             }
             catch (OutOfMemoryException ex)
             {
@@ -112,6 +111,34 @@ namespace BridgeCare.DataAccessLayer
             }
 
             return simulationDataTable;
+        }
+
+        /// <summary>
+        /// Get Project, Cost related data from dynamic table Report_x_y, x = Network Id, y = Simulation Id
+        /// </summary>
+        /// <param name="simulationModel"></param>
+        /// <param name="dbContext"></param>
+        /// <param name="simulationYears"></param>
+        /// <returns></returns>
+        public IQueryable<ProjectCostModel> GetReportData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears)
+        {            
+            IQueryable<ProjectCostModel> rawQueryForReportData = null;
+            var years = string.Join(",", simulationYears);
+            var selectReportStatement = "SELECT SECTIONID, TREATMENT, COST_, YEARS " + " FROM REPORT_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + " WITH(NOLOCK) WHERE BUDGET = 'actual_spent' AND YEARS IN (" + years + ")";
+            try
+            {
+                rawQueryForReportData = dbContext.Database.SqlQuery<ProjectCostModel>(selectReportStatement).AsQueryable();
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "Report_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                HandleException.OutOfMemoryError(ex);
+            }
+
+            return rawQueryForReportData;
         }
 
         #region private methods
@@ -142,7 +169,7 @@ namespace BridgeCare.DataAccessLayer
                 ADTOverTenThousand = Convert.ToInt32(pennDotReportADataRow.ADTTOTAL) > 10000 ? "Y" : "N",
                 RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)
             };
-        }
+        }        
         #endregion
     }
 }

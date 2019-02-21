@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace BridgeCare.Models.SummaryReport
+﻿namespace BridgeCare.Models
 {
     public class SimulationDataModel
     {
-        public int SECTIONID { get; set; }
+        public int SectionId { get; set; }
+
+        public int Year { get; set; }
 
         public string Deck { get; set; }
 

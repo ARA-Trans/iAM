@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using BridgeCare.Interfaces;
@@ -28,21 +29,18 @@ namespace BridgeCare.Services
         public void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
         {
             var BRKeys = new List<int>();
-            
-            var sectionDataModels = bridgeData.GetSectionData(simulationModel, dbContext);
+
+            var sectionModels = bridgeData.GetSectionData(simulationModel, dbContext);
             var simulationDataTable = bridgeData.GetSimulationData(simulationModel, dbContext, simulationYears);
-            
-            //TODO build SimulationDataModel in Caller class based on this result set, use years list to get idea of how many yrs data plus _0 columns. Use years list
-            // TODO Project and cost to be filled up using REPORT_NID_SID table
-            // TODO check macro for setting specific values based on certain values
-
-
-            // TODO then take only those brkeys from section models which in present in simulation models make brkeys list and sent to below.
-
-            // Temp, remove after above is implemented 
-            BRKeys.Add(1004);
-            BRKeys.Add(1006);
+            var projectCostModels = bridgeData.GetReportData(simulationModel, dbContext, simulationYears);
+            var sectionIdsFromSimulationTable = from dt in simulationDataTable.AsEnumerable()
+                                                select dt.Field<int>("SECTIONID");
+            var sectionModelsForSummaryReport = sectionModels.Where(sm => sectionIdsFromSimulationTable.Contains(sm.SECTIONID));
+            BRKeys = sectionModelsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
             var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, dbContext);
+
+            // TODO build SimulationDataModel -- check macro for setting specific values based on certain values
+            var simulationDataModels = GetSimulationDataModels(simulationDataTable, simulationYears);
 
             // Fiil up the excel.
             var headers = GetHeaders();
@@ -50,6 +48,7 @@ namespace BridgeCare.Services
             // TODO header cells this Poor on/off Rate will have merge in 2 rows.
 
             // TODO // Add row next to headers for fitlers and year no.s for dynamic data.
+
             //HELP: cover from top, left to right bottom whole set of data
             //        using (ExcelRange autoFilterCells = ws.Cells[
             //startRowIndex, territoryNameIndex,
@@ -60,11 +59,42 @@ namespace BridgeCare.Services
 
             // Row 4 should be current here
             AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
+            // TODO Add work done cellls
+            // TODO Add Poor On/Off rate cells
+            // TODO Add simu. data cells
 
             worksheet.Cells.AutoFitColumns();
         }
 
         #region Private Methods
+        private static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears)
+        {
+            var simulationDMs = new List<SimulationDataModel>();
+            foreach (DataRow simulationRow in simulationDataTable.Rows)
+            {
+                var simulationDM = new SimulationDataModel
+                {
+                    Deck = simulationRow["DECK_SEEDED_0"].ToString(),
+                    Super = simulationRow["SUP_SEEDED_0"].ToString(),
+                    Sub = simulationRow["SUB_SEEDED_0"].ToString(),
+                    Culv = simulationRow["CULV_SEEDED_0"].ToString(),
+                    DeckD = simulationRow["DECK_DURATION_N_0"].ToString(),
+                    SuperD = simulationRow["SUP_DURATION_N_0"].ToString(),
+                    SubD = simulationRow["SUB_DURATION_N_0"].ToString(),
+                    CulvD = simulationRow["CULV_DURATION_N_0"].ToString(),
+                    SectionId = Convert.ToInt32(simulationRow["SECTIONID"])
+                };
+                simulationDM.MinC = Math.Min(Convert.ToDouble(simulationDM.Deck), Convert.ToDouble(simulationDM.Culv)).ToString();
+                simulationDM.SD = Convert.ToDouble(simulationDM.DeckD) < 5 ? "Y" : "N";
+
+                // TODO create such models for SimuYears range, add year value too so it will help painting the excel
+
+                simulationDMs.Add(simulationDM);
+            }
+
+            return simulationDMs;
+        }
+                
         private static CurrentCell AddHeadersCells(ExcelWorksheet worksheet, List<string> headers, List<int> simulationYears)
         {
             int headerRow = 1;

@@ -215,7 +215,8 @@
     <Compile Include="Models\SimulationModel.cs" />
     <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
     <Compile Include="Models\SummaryReport\CurrentCell.cs" />
-    <Compile Include="Models\SummaryReport\SectionDataModel.cs" />
+    <Compile Include="Models\SummaryReport\ProjectCostModel.cs" />
+    <Compile Include="Models\SummaryReport\SectionModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />
     <Compile Include="Models\TargetModel.cs" />
