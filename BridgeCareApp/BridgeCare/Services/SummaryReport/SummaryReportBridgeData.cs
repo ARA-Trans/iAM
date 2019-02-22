@@ -39,13 +39,12 @@ namespace BridgeCare.Services
             BRKeys = sectionModelsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
             var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, dbContext);
 
-            // TODO build SimulationDataModel -- check macro for setting specific values based on certain values
-            var simulationDataModels = GetSimulationDataModels(simulationDataTable, simulationYears);
+            // TODO Check macro for setting specific values based on certain values
+            var simulationDataModels = GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels);
 
             // Fiil up the excel.
             var headers = GetHeaders();
-            var currentCell = AddHeadersCells(worksheet, headers, simulationYears);
-            // TODO header cells this Poor on/off Rate will have merge in 2 rows.
+            var currentCell = AddHeadersCells(worksheet, headers, simulationYears);           
 
             // TODO // Add row next to headers for fitlers and year no.s for dynamic data.
 
@@ -56,45 +55,113 @@ namespace BridgeCare.Services
             //        {
             //            autoFilterCells.AutoFilter = true;
             //        }
-
-            // Row 4 should be current here
+                        
             AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
-            // TODO Add work done cellls
-            // TODO Add Poor On/Off rate cells
-            // TODO Add simu. data cells
+            AddDynamicDataCells(worksheet, sectionModelsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
 
             worksheet.Cells.AutoFitColumns();
         }
 
         #region Private Methods
-        private static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears)
+        private void AddDynamicDataCells(ExcelWorksheet worksheet, IQueryable<SectionModel> sectionModelsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
+        {   
+            var sectionModels = sectionModelsForSummaryReport.ToList();
+            var row = 4; // Data starts here
+            var coln = currentCell.Coln;
+            foreach (var brKey in bridgeDataModels.Select(b => b.BRKey))
+            {
+                coln = currentCell.Coln;
+                row++;
+                var workDoneMoreThanOnce = 0;
+                var sectionModel = sectionModels.Where(s => Convert.ToInt32(s.FACILITY) == brKey).FirstOrDefault();
+                var simulationDataModel = simulationDataModels.Where(s => s.SectionId == sectionModel.SECTIONID).FirstOrDefault();
+                var yearsData = simulationDataModel.YearsData;
+                // Add work done cellls
+                for (var cnt = 1; cnt < yearsData.Count(); cnt++)
+                {
+                    var cost = yearsData[cnt].Cost;
+                    worksheet.Cells[row, ++coln].Value = cost > 0 ? "Yes" : "--";
+                    workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
+                }
+                worksheet.Cells[row, ++coln].Value = workDoneMoreThanOnce > 1 ? "Yes" : "--";
+
+                // Empty Total column
+                coln++;
+                
+                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"
+                // TODO Ask if prev yr formula is wrong in report, not matching with other yrs formulae.
+                for (var cnt = 1; cnt < yearsData.Count(); cnt++)
+                {
+                    var prevYrSD = yearsData[cnt - 1].SD;
+                    var thisYrSD = yearsData[cnt].SD;
+                    worksheet.Cells[row, ++coln].Value = prevYrSD == "Y" ? (thisYrSD == "N" ? "Off" : "On") : "--";
+                }
+
+                // TODO Add simu. data cells
+                // PrevYr
+                // All yrs
+
+            }
+        }
+                
+        private static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears, IQueryable<ProjectCostModel> projectCostModels)
         {
             var simulationDMs = new List<SimulationDataModel>();
+            var projectCostsList = projectCostModels.ToList();
             foreach (DataRow simulationRow in simulationDataTable.Rows)
             {
-                var simulationDM = new SimulationDataModel
-                {
-                    Deck = simulationRow["DECK_SEEDED_0"].ToString(),
-                    Super = simulationRow["SUP_SEEDED_0"].ToString(),
-                    Sub = simulationRow["SUB_SEEDED_0"].ToString(),
-                    Culv = simulationRow["CULV_SEEDED_0"].ToString(),
-                    DeckD = simulationRow["DECK_DURATION_N_0"].ToString(),
-                    SuperD = simulationRow["SUP_DURATION_N_0"].ToString(),
-                    SubD = simulationRow["SUB_DURATION_N_0"].ToString(),
-                    CulvD = simulationRow["CULV_DURATION_N_0"].ToString(),
-                    SectionId = Convert.ToInt32(simulationRow["SECTIONID"])
-                };
-                simulationDM.MinC = Math.Min(Convert.ToDouble(simulationDM.Deck), Convert.ToDouble(simulationDM.Culv)).ToString();
-                simulationDM.SD = Convert.ToDouble(simulationDM.DeckD) < 5 ? "Y" : "N";
-
-                // TODO create such models for SimuYears range, add year value too so it will help painting the excel
-
+                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);
+                var projectCostEntry = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).FirstOrDefault();
+                AddAllYearsData(simulationRow, simulationYears, projectCostEntry, simulationDM);
                 simulationDMs.Add(simulationDM);
             }
 
             return simulationDMs;
         }
-                
+
+        private static void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, ProjectCostModel projectCostEntry, SimulationDataModel simulationDM)
+        {
+            var yearsDMs = new List<YearsData>();
+            foreach (int year in simulationYears)
+            {
+                yearsDMs.Add(AddYearsData(simulationRow, projectCostEntry, year));
+            }
+            simulationDM.YearsData.AddRange(yearsDMs.OrderBy(y => y.Year).ToList());
+        }
+
+        private static SimulationDataModel CreatePrevYearSimulationMdel(DataRow simulationRow)
+        {
+            YearsData yearsData = AddYearsData(simulationRow, null, 0);
+            return new SimulationDataModel
+            {
+                YearsData = new List<YearsData>() { yearsData },
+                SectionId = Convert.ToInt32(simulationRow["SECTIONID"])
+            };
+        }
+
+        private static YearsData AddYearsData(DataRow simulationRow, ProjectCostModel projectCostEntry, int year)
+        {
+            var yearsData = new YearsData
+            {
+                Deck = simulationRow["DECK_SEEDED_" + year].ToString(),
+                Super = simulationRow["SUP_SEEDED_" + year].ToString(),
+                Sub = simulationRow["SUB_SEEDED_" + year].ToString(),
+                Culv = simulationRow["CULV_SEEDED_" + year].ToString(),
+                DeckD = simulationRow["DECK_DURATION_N_" + year].ToString(),
+                SuperD = simulationRow["SUP_DURATION_N_" + year].ToString(),
+                SubD = simulationRow["SUB_DURATION_N_" + year].ToString(),
+                CulvD = simulationRow["CULV_DURATION_N_" + year].ToString(),
+                Year = year
+            };
+            yearsData.MinC = Math.Min(Convert.ToDouble(yearsData.Deck), Convert.ToDouble(yearsData.Culv)).ToString();
+            yearsData.SD = Convert.ToDouble(yearsData.DeckD) < 5 ? "Y" : "N";
+
+            yearsData.Project = year != 0 ? projectCostEntry?.TREATMENT : string.Empty;
+            yearsData.Cost = year != 0 ? (projectCostEntry == null ? 0 : projectCostEntry.COST_) : 0;
+
+            return yearsData;
+        }
+
         private static CurrentCell AddHeadersCells(ExcelWorksheet worksheet, List<string> headers, List<int> simulationYears)
         {
             int headerRow = 1;
@@ -107,7 +174,7 @@ namespace BridgeCare.Services
             // TODO Build rest of headers - dynamic header names
             AddDynamicHeadersCells(worksheet, currentCell, simulationYears);
 
-            
+
             return currentCell;
         }
 
@@ -119,37 +186,49 @@ namespace BridgeCare.Services
             foreach (var year in simulationYears)
             {
                 worksheet.Cells[row, ++coln].Value = headerFooterText + year;
+                worksheet.Cells[row + 2, coln].Value = year;
             }
             worksheet.Cells[row, ++coln].Value = "Work Done more than once";
             worksheet.Cells[row, ++coln].Value = "Total";
             worksheet.Cells[row, ++coln].Value = "Poor On/Off Rate";
-
-            // Merge 2 rows for headers till Poor On/Off Rate column.            
-            worksheet.Row(row).Height = 40;
-            for (int cellColn = 1; cellColn <= coln; cellColn++)
+            var poorOnOffRateColn = coln;
+            foreach (var year in simulationYears)
             {
-                using (var cells = worksheet.Cells[row, cellColn, row + 1, cellColn])
-                {
-                    cells.Merge = true;
-                    cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    cells.Style.WrapText = true;
-                    cells.Style.Font.Bold = true;
-                }
+                worksheet.Cells[row + 2, coln++].Value = year;
             }
 
+            // Merge 2 rows for headers till column before Poor On/Off Rate
+            worksheet.Row(row).Height = 40;
+            for (int cellColn = 1; cellColn < poorOnOffRateColn; cellColn++)
+            {
+                MergeCells(worksheet, row, cellColn, row + 1, cellColn);
+            }
+            // Merge columns for Poor On/Off Rate
+            MergeCells(worksheet, row, poorOnOffRateColn, row + 1, coln - 1);
+            
             // Next column is empty(as per report)
             currentCell.Coln = coln++;
-            currentCell.Row++;
-            worksheet.Row(currentCell.Row).Height = 40;
+            currentCell.Row = currentCell.Row + 2;            
         }
 
-        private static void AddBridgeDataModelsCells(ExcelWorksheet worksheet, List<BridgeDataModel> bridgeDataModels,CurrentCell currentCell)
+        private static void MergeCells(ExcelWorksheet worksheet, int fromRow, int fromColn, int toRow, int toColn)
+        {
+            using (var cells = worksheet.Cells[fromRow, fromColn, toRow, toColn])
+            {
+                cells.Merge = true;
+                cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                cells.Style.WrapText = true;
+                cells.Style.Font.Bold = true;
+            }
+        }
+
+        private static void AddBridgeDataModelsCells(ExcelWorksheet worksheet, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
         {
             var rowNo = currentCell.Row;
             var colnNo = currentCell.Coln;
             foreach (var bridgeDataModel in bridgeDataModels)
-            {                
+            {
                 rowNo++;
                 colnNo = 1;
                 worksheet.Cells[rowNo, colnNo++].Value = bridgeDataModel.BridgeID;
@@ -163,7 +242,7 @@ namespace BridgeCare.Services
                 worksheet.Cells[rowNo, colnNo++].Value = bridgeDataModel.YearBuilt;
                 worksheet.Cells[rowNo, colnNo++].Value = bridgeDataModel.Age;
                 worksheet.Cells[rowNo, colnNo++].Value = bridgeDataModel.ADTOverTenThousand;
-                worksheet.Cells[rowNo, colnNo].Value = bridgeDataModel.RiskScore;                
+                worksheet.Cells[rowNo, colnNo].Value = bridgeDataModel.RiskScore;
             }
             currentCell.Row = rowNo;
             currentCell.Coln = colnNo;

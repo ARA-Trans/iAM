@@ -219,6 +219,7 @@
     <Compile Include="Models\SummaryReport\SectionModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />
+    <Compile Include="Models\SummaryReport\YearsData.cs" />
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
