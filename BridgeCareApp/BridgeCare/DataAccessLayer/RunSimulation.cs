@@ -19,13 +19,19 @@ namespace BridgeCare.DataAccessLayer
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
                 var start = new Simulation.Simulation(data.SimulationName, data.NetworkName,
                     data.SimulationId.ToString(), data.NetworkId.ToString());
-                //Thread simulationThread = new Thread(new ThreadStart(start.CompileSimulation));
-                //simulationThread.Start();
-                start.CompileSimulation();
+                Thread simulationThread = new Thread(new ThreadStart(start.CompileSimulation));
+                simulationThread.Start();
+                simulationThread.Join();
+                //start.CompileSimulation();
+                if (!simulationThread.IsAlive)
+                {
+                    DBMgr.CloseConnection();
+                }
                 return Task.FromResult("Simulation completed successfully");
             }
             catch (Exception ex)
             {
+                DBMgr.CloseConnection();
                 HandleException.GeneralError(ex);
                 return Task.FromResult("Simulation failed");
             }
