@@ -9,13 +9,9 @@ namespace BridgeCare.Models
 {
     public class SectionModel
     {
-
         public int SectionId { get; set; }
         public string BridgeID { get; set; }
         public string BridgeKey { get; set; }
-
         public int NetworkID { get; set; }
-       
- 
     }
 }
