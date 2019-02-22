@@ -11,11 +11,11 @@ namespace BridgeCare.Models
     {
 
         public int SectionId { get; set; }
-        public string Facility { get; set; }
-        public string Section { get; set; }
+        public string BridgeID { get; set; }
+        public string BridgeKey { get; set; }
 
         public int NetworkID { get; set; }
-        //public string NetworkName { get; set; }
+       
  
     }
 }

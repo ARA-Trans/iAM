@@ -15,9 +15,9 @@ namespace BridgeCare.DataAccessLayer
         public Sections() { }
         public IQueryable<SectionModel> GetSections(NetworkModel data, BridgeCareContext db)
         {
-            IQueryable < SectionModel > rawQueryForData = null;
+            IQueryable <SectionModel> rawQueryForData = null;
 
-            var select = String.Format("SELECT Sectionid,Facility,Section,{0} as Networkid FROM Section_{0}", data.NetworkId);
+            var select = String.Format("SELECT Sectionid,Facility as BridgeID,Section as BridgeKey,{0} as Networkid FROM Section_{0}", data.NetworkId);
 
             try
             {
