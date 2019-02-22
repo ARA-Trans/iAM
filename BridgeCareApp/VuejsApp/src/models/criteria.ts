@@ -1,3 +1,8 @@
+export interface CriteriaAttribute {
+    name: string;
+    values: string[];
+}
+
 export interface Criteria {
     logicalOperator: string;
     children?: CriteriaType[];

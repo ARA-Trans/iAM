@@ -337,6 +337,14 @@
             this.downloadProgress = false;
             this.loading = false;
         }
+
+        /**
+         * Calls the utility hasValue function
+         * @param item
+         */
+        hasValue(item: any) {
+            return hasValue(item);
+        }
     }
 </script>
 

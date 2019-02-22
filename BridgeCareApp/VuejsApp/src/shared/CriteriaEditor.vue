@@ -16,14 +16,14 @@
     import Vue from "vue";
     import {Component} from "vue-property-decorator";
     import VueQueryBuilder from "vue-query-builder/src/VueQueryBuilder.vue";
-    import {Criteria, emptyCriteria} from "@/models/criteria";
-    import {parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
-    import {attributes} from "@/shared/utils/mock-data";
+    import {Criteria, CriteriaAttribute, emptyCriteria} from "@/models/criteria";
+    import {parseCriteriaString, parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
 
     @Component({
         components: {VueQueryBuilder}
     })
     export default class CriteriaEditor extends Vue {
+        criteriaAttributes: CriteriaAttribute[] = this.$store.getters.criteriaAttributes;
         criteria: Criteria = emptyCriteria;
         rules: any[] = [];
         labels: object = {
@@ -39,20 +39,44 @@
             "textInputPlaceholder": "value"
         };
 
+        beforeCreate() {
+            this.$store.dispatch({type: "getCriteriaAttributes"});
+        }
+
         created() {
-            attributes.forEach((attr: string) => {
-                this.rules.push({
-                    type: "text",
-                    label: attr,
-                    id: attr,
-                    operators: ["=", "<>", "<", "<=", ">", ">="]
-                });
-            });
+            this.rules = this.criteriaAttributes.map((ca: CriteriaAttribute) => ({
+                // TODO: implement select when we have service that returns predetermined values
+                /*type: 'select',
+                label: ca.name,
+                id: ca.name,
+                operators: ['=', '<>', '<', '<=', '>', '>='],
+                choices: ca.values.map((val: string) => ({
+                    label: val,
+                    value: val
+                }))*/
+                type: "text",
+                label: ca.name,
+                id: ca.name,
+                operators: ["=", "<>", "<", "<=", ">", ">="]
+            }));
         }
 
         logIt() {
             console.log(JSON.stringify(this.criteria));
-            console.log(parseQueryBuilderJson(this.criteria).join(""));
+            const clause = parseQueryBuilderJson(this.criteria).join("");
+            const newCriteria: Criteria = {
+                logicalOperator: "AND",
+                children: []
+            };
+            const json = parseCriteriaString(clause, newCriteria);
+            console.log(clause);
+            console.log(JSON.stringify(json));
+            /*console.log(
+                parseCriteriaString(
+                    '[ADTTOTAL]>=\'5\' AND ([ADTYEAR]>=\'4\' AND [ADTYEAR]<=\'7\' AND ([AGE]=\'4\' OR [AGE]=\'6\'))',
+                    {logicalOperator: 'AND', children: []}
+                )
+            );*/
         }
     }
 </script>

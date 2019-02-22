@@ -7,7 +7,8 @@ import Simulation from '@/models/Simulation'
 import {IScenario} from '@/models/scenario';
 import * as R from 'ramda';
 import * as moment from 'moment';
-import {sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
+import {attributes, sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
+import {CriteriaAttribute} from '@/models/criteria';
 
 Vue.use(Vuex);
 
@@ -19,7 +20,8 @@ export default new Vuex.Store({
         userName: '',
         networks: [] as INetwork[],
         simulations: [] as Simulation[],
-        scenarios: [] as IScenario[]
+        scenarios: [] as IScenario[],
+        criteriaAttributes: [] as CriteriaAttribute[]
     },
     mutations: {
         login(state, payload) {
@@ -52,6 +54,9 @@ export default new Vuex.Store({
                 // update state with only the latest scenarios
                 state.scenarios = latest as IScenario[];
             }
+        },
+        criteriaAttributes(state, payload) {
+            state.criteriaAttributes = payload;
         }
     },
     actions: {
@@ -108,6 +113,22 @@ export default new Vuex.Store({
                 .then(data => {
                     commit('scenarios', data)
                 });*/
+        },
+        async getCriteriaAttributes({commit}, payload) {
+            // TODO: integrate web service to get criteria editor attributes, for now just create some mock data
+            const criteriaAttributes = attributes.map((a: string) => {
+                return {
+                    name: a,
+                    values: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+                };
+            });
+            commit('criteriaAttributes', criteriaAttributes);
+            /*axios
+                .get('/api/GetCriteriaEditorAttributes')
+                .then(response => (response.data as Promise<CriteriaAttribute[]>))
+                .then(data => {
+                    commit('criteriaAttributes', data)
+                });*/
         }
     },
     getters: {
@@ -125,6 +146,9 @@ export default new Vuex.Store({
         },
         scenarios(state) {
             return state.scenarios
+        },
+        criteriaAttributes(state) {
+            return state.criteriaAttributes
         }
     }
 })
