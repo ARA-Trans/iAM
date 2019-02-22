@@ -47,6 +47,7 @@ namespace BridgeCare
 
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
+            container.RegisterType<ISections, Sections>();
             container.RegisterType<IDetailedReport, DetailedReport>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
