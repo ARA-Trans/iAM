@@ -102,7 +102,6 @@
             this.clientApp = new Msal.UserAgentApplication(
                 this.applicationConfig.clientID, this.applicationConfig.authority,
                 (errorDesc, token, error, tokenType) => {
-                    //this.getSilentTokenForLogin1(errorDesc, token, error, tokenType);
                     console.log(token);
                 },
                 {
@@ -115,8 +114,9 @@
         data() {
             return {
                 routes: [
+                    { navigation: "Inventory", icon: "home", name: "Inventory" },
                     {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
-                    { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }
+                    { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' },
                 ],
                 drawer: true
             }

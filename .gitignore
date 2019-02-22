@@ -338,6 +338,7 @@ build
 *.log
 .dist/
 ./BridgeCareApp/VuejsApp/dist
+package-lock.json
 
 # Database connection specification
 connection.config
