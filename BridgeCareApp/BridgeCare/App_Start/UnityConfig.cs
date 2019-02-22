@@ -49,12 +49,15 @@ namespace BridgeCare
             container.RegisterType<ISimulation, Simulations>();
             container.RegisterType<ISections, Sections>();
             container.RegisterType<IDetailedReport, DetailedReport>();
+            container.RegisterType<IAttributeNames, AttributeNames>();
+            container.RegisterType<IAttributeByYear, AttributeByYear>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
             container.RegisterType<IDeficientReport, DeficientReport>();
             container.RegisterType<CostDetails>();
             container.RegisterType<ITarget, Targets>();
             container.RegisterType<IReportCreator, ReportCreator>();
+            container.RegisterType<FillDetailedSheet>();
             container.RegisterType<FillDetailedSheet>();
             container.RegisterType<TargetsMet>();
             container.RegisterType<TargetResults>();

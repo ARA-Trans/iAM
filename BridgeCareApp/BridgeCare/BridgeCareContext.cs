@@ -4,6 +4,14 @@ namespace BridgeCare
     using System.Data.Entity;
     using System.Linq;
     using BridgeCare.EntityClasses;
+    using System.Data.SqlClient;
+    using BridgeCare.ApplicationLog;
+    using BridgeCare.Interfaces;
+    using BridgeCare.Models;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Entity.Core.EntityClient;
+
 
     public partial class BridgeCareContext : DbContext
     {
@@ -43,6 +51,20 @@ namespace BridgeCare
             modelBuilder.Entity<INVESTMENTS>()
                 .Property(e => e.BUDGETORDER)
                 .IsUnicode(false);
+        }
+
+        public DataTable NonEntitySQLQuery(string selectStatement)
+        {
+            var resultsDataTable = new DataTable();
+            var connection = new SqlConnection(this.Database.Connection.ConnectionString);
+            using (var cmd = new SqlCommand(selectStatement, connection))
+            {
+                cmd.CommandTimeout = 180;
+                var dataAdapter = new SqlDataAdapter(cmd);
+                dataAdapter.Fill(resultsDataTable);
+                dataAdapter.Dispose();
+            }
+            return resultsDataTable;
         }
     }
 }
