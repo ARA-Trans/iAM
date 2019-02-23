@@ -24,10 +24,6 @@ namespace BridgeCare.DataAccessLayer
             {
                 rawQueryForData = db.Database.SqlQuery<AttributeNameModel>(select).AsQueryable();
 
-                //foreach (AttributeNameModel g in rawQueryForData)
-                //{
-                //    string name = g.Attribute_;
-                //}
             }
             catch (SqlException ex)
             {
