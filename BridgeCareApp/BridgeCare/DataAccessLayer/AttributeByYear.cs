@@ -100,7 +100,7 @@ namespace BridgeCare.DataAccessLayer
             }
             return returnValues;
         }
-        // returnindex where findname == name, -1 if not found
+        // return reference to array element where name  matches findname
         // encapsulated here as brute force version , could utilize map instead
         public AttributeByYearModel IndexofName(List<AttributeByYearModel> lam, string findname)
         {
