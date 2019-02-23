@@ -17,8 +17,9 @@ namespace BridgeCare.DataAccessLayer
         {
             IQueryable<LatLonSectionModel> rawQueryForData = null;
 
-            // bug in program: Long is null in rolled up DB even whe the source DB has valid data, including isnull statments to change these to'0'
-            // if not the mapping to a non nullable data type crashes the entity framwork
+            // bug in program: Long is null in rolled up DB even whe the source DB has valid data, including isnull 
+            // statments to change these to '0' to avoid an exception
+            // as  mapping a null to a non nullable data type crashes the entity framwork
             var select = String.Format("SELECT Sectionid,isnull(Lat,0) Lat,isnull(Long,0) Long FROM Segment_{0}_NS0", NetworkId);
 
             try
