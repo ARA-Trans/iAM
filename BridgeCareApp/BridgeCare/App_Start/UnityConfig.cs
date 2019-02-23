@@ -48,6 +48,7 @@ namespace BridgeCare
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
             container.RegisterType<ISections, Sections>();
+            container.RegisterType<ILatLonSection, LatLonSection>();
             container.RegisterType<IDetailedReport, DetailedReport>();
             container.RegisterType<IAttributeNames, AttributeNames>();
             container.RegisterType<IAttributeByYear, AttributeByYear>();
