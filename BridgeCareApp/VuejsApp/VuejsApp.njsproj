@@ -44,6 +44,7 @@
     <Content Include=".env.production">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="libman.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />

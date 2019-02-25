@@ -166,6 +166,7 @@
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BridgeCareContext.cs" />
+    <Compile Include="Controllers\SectionController.cs" />
     <Compile Include="Controllers\DetailedReportController.cs" />
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
     <Compile Include="DataAccessLayer\DetailedReport.cs" />
     <Compile Include="DataAccessLayer\RunSimulation.cs" />
+    <Compile Include="DataAccessLayer\Sections.cs" />
     <Compile Include="DataAccessLayer\TargetResults.cs" />
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
@@ -194,6 +196,7 @@
     <Compile Include="Interfaces\INetwork.cs" />
     <Compile Include="Interfaces\IReportCreator.cs" />
     <Compile Include="Interfaces\IRunSimulation.cs" />
+    <Compile Include="Interfaces\ISections.cs" />
     <Compile Include="Interfaces\ISimulation.cs" />
     <Compile Include="Interfaces\ITarget.cs" />
     <Compile Include="Models\BudgetModel.cs" />
@@ -203,6 +206,7 @@
     <Compile Include="Models\DeficientResult.cs" />
     <Compile Include="Models\DetailReportModel.cs" />
     <Compile Include="Models\NetworkModel.cs" />
+    <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
