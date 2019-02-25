@@ -59,7 +59,6 @@ namespace BridgeCare
             container.RegisterType<ITarget, Targets>();
             container.RegisterType<IReportCreator, ReportCreator>();
             container.RegisterType<FillDetailedSheet>();
-            container.RegisterType<FillDetailedSheet>();
             container.RegisterType<TargetsMet>();
             container.RegisterType<TargetResults>();
             container.RegisterType<Target>();

@@ -1,6 +1,7 @@
 ﻿using BridgeCare.ApplicationLog;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace BridgeCare.DataAccessLayer
 
             try
             {
-                dt = db.NonEntitySQLQuery(select);
+                dt = UtilityFunctions.NonEntitySQLQuery(select,db);
                 List<AttributeByYearModel> returnvals = DataTableToAttributeList(dt);
                 return returnvals;
             }
@@ -51,7 +52,7 @@ namespace BridgeCare.DataAccessLayer
 
             try
             {
-                dt = db.NonEntitySQLQuery(select);
+                dt = UtilityFunctions.NonEntitySQLQuery(select,db);
                 List<AttributeByYearModel> returnvals = DataTableToAttributeList(dt);
                 return returnvals;
             }

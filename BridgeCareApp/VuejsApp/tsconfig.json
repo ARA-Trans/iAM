@@ -34,7 +34,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "../BridgeCare/Controllers/HistoricalAttributeByYearController.cs", "../BridgeCare/Models/SimulatedSegmentAddressModel.cs"
+    "tests/**/*.tsx"
+
   ],
   "exclude": [
     "node_modules"
