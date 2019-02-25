@@ -21,8 +21,6 @@ namespace BridgeCare.DataAccessLayer
                     data.SimulationId.ToString(), data.NetworkId.ToString());
                 Thread simulationThread = new Thread(new ThreadStart(start.CompileSimulation));
                 simulationThread.Start();
-                simulationThread.Join();
-                //start.CompileSimulation();
                 if (!simulationThread.IsAlive)
                 {
                     DBMgr.CloseConnection();
