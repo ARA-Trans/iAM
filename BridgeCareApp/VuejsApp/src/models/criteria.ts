@@ -1,8 +1,3 @@
-export interface CriteriaEditorModalData {
-    clause: string;
-    showDialog: boolean;
-}
-
 export interface CriteriaAttribute {
     name: string;
     values: string[];
