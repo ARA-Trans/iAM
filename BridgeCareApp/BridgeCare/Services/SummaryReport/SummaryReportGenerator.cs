@@ -2,9 +2,6 @@
 using BridgeCare.Models;
 using OfficeOpenXml;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace BridgeCare.Services.SummaryReport
 {
@@ -29,17 +26,17 @@ namespace BridgeCare.Services.SummaryReport
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
         {
-            //Temp -- remove later
+            // Temporary -- remove after UI is ready to invoke this report
             simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 9 };
 
-            //Get data
+            // Get data
             var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationModel.SimulationId);
             var simulationYears = simulationYearsModel.Years;
             var dbContext = new BridgeCareContext();
                         
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
-                //Bridge Data tab
+                // Bridge Data tab
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
