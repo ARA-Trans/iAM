@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace BridgeCare.Controllers
 {
@@ -18,16 +19,8 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // Get: api/attributenames
-        public List<string> Get()
-        {
-            IQueryable<AttributeNameModel> returned = attributes.GetAttributeNames(db);
-            List<string> toReturn = new List<string>();
-            foreach (AttributeNameModel nameModel in returned)
-            {
-                toReturn.Add(nameModel.Name);
-            }
-            return toReturn;
-        }
+        // Get: api/attributeNames
+        public List<AttributeNameModel> Get() => attributes.GetAttributeNames(db).ToList();
+        
     }
 }

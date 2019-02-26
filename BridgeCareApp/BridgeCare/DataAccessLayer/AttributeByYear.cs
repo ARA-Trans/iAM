@@ -24,7 +24,7 @@ namespace BridgeCare.DataAccessLayer
             if (segmentAddressModel == null)
                 return new List<AttributeByYearModel>();
 
-            var selectStatement = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}", 
+            var selectStatement = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}",
                 segmentAddressModel.NetworkId, segmentAddressModel.SimulationId, segmentAddressModel.SectionId);
 
             return GeneralAttributeValueQuery(selectStatement);

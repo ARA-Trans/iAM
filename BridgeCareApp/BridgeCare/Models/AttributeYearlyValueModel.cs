@@ -6,10 +6,10 @@
         {
         }
 
-        public AttributeYearlyValueModel(int setyear, string setvalue)
+        public AttributeYearlyValueModel(int year, string value)
         {
-            Year = setyear;
-            Value = setvalue;
+            Year = year;
+            Value = value;
         }
 
         public int Year { get; set; }

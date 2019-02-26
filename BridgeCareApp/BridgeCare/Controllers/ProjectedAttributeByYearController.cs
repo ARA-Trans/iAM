@@ -18,7 +18,7 @@ namespace BridgeCare.Controllers
         }
 
         // usage
-        // Get: api/projectedattributesbyyear/
+        // Get: api/projectedAttributesByYear/
         // body (example)
         // {
         //"sectionId":1000012,

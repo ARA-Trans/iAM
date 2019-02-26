@@ -11,14 +11,13 @@ namespace BridgeCare.Controllers
         private readonly BridgeCareContext db;
         private readonly ILatitudeLongitudeSection LatitudeLongitude;
 
-        public LatitudeLongitudeSectionController(ILatitudeLongitudeSection lattitudeLongitudeSection, BridgeCareContext context)
+        public LatitudeLongitudeSectionController(ILatitudeLongitudeSection latitudeLongitudeSection, BridgeCareContext context)
         {
-            LatitudeLongitude = lattitudeLongitudeSection ?? throw new ArgumentNullException(nameof(lattitudeLongitudeSection));
+            LatitudeLongitude = latitudeLongitudeSection ?? throw new ArgumentNullException(nameof(latitudeLongitudeSection));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // Get: api/LatitudeLongitudesection
         public IQueryable<LatitudeLongitudeSectionModel> Get(SectionModel sectionModel) => LatitudeLongitude.GetLatitudeLongitude(sectionModel.NetworkId, db);
-   
     }
 }

@@ -6,7 +6,7 @@ using System.Web.Http;
 
 namespace BridgeCare.Controllers
 {
-    //retrieves all attributes year and value pairsfor give sectionId
+    ///retrieves all attributes year and value pairsfor give sectionId
     public class HistoricalAttributesByYearController : ApiController
     {
         private readonly BridgeCareContext db;
@@ -18,10 +18,8 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // Get: api/historicalattributesbyyear/
-        public List<AttributeByYearModel> Get(SectionModel sectionModel)
-        {
-            return attributes.GetHistoricalAttributes(sectionModel, db);
-        }
+        /// Get: api/historicalAttributesByYear/
+        public List<AttributeByYearModel> Get(SectionModel sectionModel) => attributes.GetHistoricalAttributes(sectionModel, db);
+
     }
 }
