@@ -6,7 +6,7 @@ import Inventory from '@/components/Inventory.vue';
 import Scenario from '@/components/Scenario.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
-import CriteriaEditor from '@/shared/CriteriaEditor.vue';
+import Criteria from '@/components/Criteria.vue';
 
 Vue.use(Router);
 
@@ -39,9 +39,9 @@ export default new Router({
             component: EditAnalysis
         },
         {
-            path: '/CriteriaEditor',
-            name: 'Criteria Editor',
-            component: CriteriaEditor
+            path: '/Criteria',
+            name: 'Criteria',
+            component: Criteria
         },
         { path: '*', redirect: '/Inventory' }
         //{

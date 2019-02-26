@@ -15,93 +15,104 @@ export const parseQueryBuilderJson = (criteria: Criteria) => {
         // @ts-ignore
         // loop over the criteria children and append all rules
         criteria.children.forEach((child: CriteriaType) => {
-            // append the logical operator if the string list is not empty
-            if (hasValue(clause)) {
-                clause.push(logicalOperator);
-            }
-            // append rule to string list
             if (child.type === 'query-builder-rule') {
+                // create a clause rule from the query builder child.query
                 const rule = parseQueryBuilderRule(child.query as CriteriaRule);
-                clause.push(rule);
+                if (hasValue(rule)) {
+                    // append the logical operator if the string list is not empty
+                    if (hasValue(clause)) {
+                        clause.push(logicalOperator);
+                    }
+                    // append rule to string list
+                    clause.push(rule);
+                }
             } else {
-                // recursively call this function to create a rule group
-                clause.push('(');
-                clause.push(...parseQueryBuilderJson(child.query as Criteria));
-                clause.push(')');
+                const clauseGroup = parseQueryBuilderJson(child.query as Criteria);
+                const clauseGroupVal = clauseGroup.join('');
+                if (hasValue(clauseGroupVal)) {
+                    // append the logical operator if the string list is not empty
+                    if (hasValue(clause)) {
+                        clause.push(logicalOperator);
+                    }
+                    // recursively call this function to create a rule group
+                    clause.push('(');
+                    clause.push(...clauseGroup);
+                    clause.push(')');
+                }
             }
         });
     }
     return clause;
 };
-
 /**
  * Creates a clause rule substring from a given criteria rule object
  * @param criteriaRule The criteria rule object used to create the clause rule substring
  */
 function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
-    // get the criteria rule value
-    // @ts-ignore
-    const value = isNaN(parseInt(criteriaRule.value, 10))
-        ? `'${criteriaRule.value}'`
-        : criteriaRule.value;
     // return the concatenated rule string
-    return `[${criteriaRule.selectedOperand}]${criteriaRule.selectedOperator}'${value}'`;
+    return hasValue(criteriaRule.value)
+        ? `[${criteriaRule.selectedOperand}]${criteriaRule.selectedOperator}'${criteriaRule.value}'`
+        : '';
 }
 
 
 /**
  * Parses a clause string into a criteria object
  * @param clause The clause string to parse
- * @param criteria The current criteria object to add criteria types, rules, and sub-criteria to
  */
-export const parseCriteriaString = (clause: string, criteria: Criteria) => {
+export const parseCriteriaString = (clause: string) => {
+    // create a new criteria object
+    const newCriteria: Criteria = {
+        logicalOperator: '',
+        children: []
+    };
+    // if no open parentheses are present, assume clause string was created in legacy app
+    if ((clause.match(/\(/g) || []).length === 0) {
+        // ensure there are no close parentheses in the string before parsing
+        clause = clause.split(')').join(' ');
+        // parse the clause string and return
+        return parseLegacyAppClause(clause, newCriteria);
+    } else {
+        // parse the clause as a query builder string and return
+        return parseQueryBuilderClause(clause, newCriteria);
+    }
+};
+
+/**
+ * Parses legacy app formatted clause string data into a criteria object
+ * @param clause The clause string to parse
+ * @param criteria The criteria object to parse the data into
+ */
+function parseLegacyAppClause(clause: string, criteria: Criteria) {
     const splitVals = clause.split(' ');
     let i = 0;
-    let lastIndex = splitVals.length - 1;
     while (i < splitVals.length) {
         const splitVal = splitVals[i];
-        if (splitVal.charAt(0) === '(') {
-            // start j at the next index of the substring list
-            let j = i + 1;
-            // set groupEnd as the number of ( chars - the number of ) chars, 0 means the clause subgroup has been found
-            let groupEnd = (splitVal.match(/\(/g) || []).length - (splitVal.match(/\)/g) || []).length;
-            const stringLength = splitVals[j].length - 1;
-            // loop over the substring list until j = substring list length or groupEnd = 0
-            while (groupEnd !== 0) {
-                // get current substring at substring list index j
-                const clauseSubstring = splitVals[j];
-                // add current groupEnd value to current substring number of ( chars - the substring number of ) chars
-                groupEnd = groupEnd + (clauseSubstring.match(/\(/g) || []).length
-                    - (clauseSubstring.match(/\)/g) || []).length;
-                // if groupEnd != 0 then add 1 to j to continue to next substring in list
-                if (groupEnd !== 0) {
-                    j++;
-                }
+        if (splitVal === 'AND' || splitVal === 'OR') {
+            if (!hasValue(criteria.logicalOperator)) {
+                // set criteria logical operator if it doesn't currently have one
+                criteria.logicalOperator = splitVal;
+            } else if (criteria.logicalOperator !== splitVal) {
+                // create a new clause string starting at the current iteration to the end of the splitVals array
+                const groupClause = splitVals.slice(i).join(' ');
+                // create a new criteria object
+                const newCriteria: Criteria = {
+                    logicalOperator: '',
+                    children: []
+                };
+                // create a new criteria type object, and recursively call the parseLegacyAppClause function with the
+                // new clause and new criteria to create a query builder group of rules
+                const criteriaType: CriteriaType = {
+                    type: 'query-builder-group',
+                    query: parseLegacyAppClause(groupClause, newCriteria)
+                };
+                // @ts-ignore
+                // add the new criteria type to the current criteria
+                criteria.children.push(criteriaType);
+                // set current iteration value to the length of the current splitVals array and continue
+                i = splitVals.length;
+                continue;
             }
-            // slice the array at the current iteration to the updatedIndex value, then join with a space
-            const joinedVals = splitVals.slice(i, j + 1).join(' ');
-            // create a new clause string and slice off the ( and ) chars at the start and end
-            const groupClause = joinedVals.slice(1, joinedVals.length - 1);
-            // create a new criteria object
-            const newCriteria: Criteria = {
-                logicalOperator: 'AND',
-                children: []
-            };
-            // create a new criteria type object, and recursively call the parseCriteriaString function with the new clause
-            // and new criteria to create a query builder group of rules
-            const criteriaType: CriteriaType = {
-                type: 'query-builder-group',
-                query: parseCriteriaString(groupClause, newCriteria)
-            };
-            // @ts-ignore
-            // add the new criteria type to the current criteria
-            criteria.children.push(criteriaType);
-            // set current iteration to the updated index to begin iteration after the query group
-            i = j + 1;
-            continue;
-        } else if (splitVal.indexOf('AND') !== -1 || splitVal.indexOf('OR') !== -1) {
-            // set logical operator for current criteria
-            criteria.logicalOperator = splitVal;
         } else {
             // create a new criteria rule by parsing the current substring
             const criteriaRule: CriteriaRule = parseCriteriaRule(splitVal);
@@ -117,8 +128,87 @@ export const parseCriteriaString = (clause: string, criteria: Criteria) => {
         i++;
     }
     return criteria;
-};
+}
 
+/**
+ * Parses query builder formatted clause string into a criteria object
+ * @param clause The clause string to parse
+ * @param criteria The criteria object to parse the data into
+ */
+function parseQueryBuilderClause(clause: string, criteria: Criteria) {
+    const splitVals = clause.split(' ');
+    let i = 0;
+    while (i < splitVals.length) {
+        const splitVal = splitVals[i];
+        if (splitVal.charAt(0) === '(') {
+            // set groupEnd as the number of ( chars - the number of ) chars, 0 means the clause subgroup has been found
+            let groupEnd = (splitVal.match(/\(/g) || []).length - (splitVal.match(/\)/g) || []).length;
+            // set placeholder for clause substring
+            let groupClause = '';
+            if (groupEnd === 0) {
+                // group contains only 1 operand/operator and no logical operators, so slice of the '(' & ')' chars at
+                // start and end of the current iteration value
+                groupClause = splitVal.slice(1, splitVal.length - 1);
+                i++;
+            } else {
+                // start j at the next index of the substring list
+                let j = i + 1;
+                // loop over the substring list until groupEnd = 0
+                while (groupEnd !== 0) {
+                    // get current substring at substring list index j
+                    const clauseSubstring = splitVals[j];
+                    // add current groupEnd value to current substring number of '(' chars - the substring number of ')' chars
+                    groupEnd = groupEnd + (clauseSubstring.match(/\(/g) || []).length
+                        - (clauseSubstring.match(/\)/g) || []).length;
+                    // if groupEnd != 0 then add 1 to j to continue to next substring in list
+                    if (groupEnd !== 0) {
+                        j++;
+                    }
+                }
+                // slice the array at the current iteration to j + 1 index, then join with whitespace
+                const joinedVals = splitVals.slice(i, j + 1).join(' ');
+                // create a new clause string and slice off the '(' & ')' chars at the start and end
+                groupClause = joinedVals.slice(1, joinedVals.length - 1);
+                // set current iteration to j + 1 to begin iteration after the query group
+                i = j + 1;
+            }
+            // create a new criteria object
+            const newCriteria: Criteria = {
+                logicalOperator: 'AND',
+                children: []
+            };
+            // create a new criteria type object, and recursively call the parseCriteriaString function with the new clause
+            // and new criteria to create a query builder group of rules
+            const criteriaType: CriteriaType = {
+                type: 'query-builder-group',
+                query: parseQueryBuilderClause(groupClause, newCriteria)
+            };
+            // @ts-ignore
+            // add the new criteria type to the current criteria
+            criteria.children.push(criteriaType);
+            // continue to next iteration
+            continue;
+        } else if (splitVal === 'AND' || splitVal === 'OR') {
+            if (!hasValue(criteria.logicalOperator)) {
+                // set logical operator for current criteria
+                criteria.logicalOperator = splitVal;
+            }
+        } else {
+            // create a new criteria rule by parsing the current substring
+            const criteriaRule: CriteriaRule = parseCriteriaRule(splitVal);
+            // create a new criteria type and add the new criteria rule to it
+            const criteriaType: CriteriaType = {
+                type: 'query-builder-rule',
+                query: criteriaRule
+            };
+            // @ts-ignore
+            // add the new criteria type to the current criteria
+            criteria.children.push(criteriaType);
+        }
+        i++;
+    }
+    return criteria;
+}
 /**
  * Parses a clause substring into a criteria rule object
  * @param criteriaRuleString The clause substring to parse

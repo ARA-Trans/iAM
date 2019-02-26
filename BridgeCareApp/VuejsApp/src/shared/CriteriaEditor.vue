@@ -1,30 +1,44 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <v-layout row wrap>
-            <v-flex xs12>
-                <v-btn v-on:click="logIt">See it!</v-btn>
-            </v-flex>
-            <v-flex xs12>
-                <vue-query-builder :labels="labels" :rules="rules" :maxDepth="25" :styled="true"
-                                   v-model="criteria"></vue-query-builder>
-            </v-flex>
-        </v-layout>
-    </v-container>
+    <v-layout row justify-center>
+        <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="500px">
+            <v-card>
+                <v-card-title>Criteria Editor</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text style="height: 500px;">
+                    <vue-query-builder :labels="labels" :rules="rules" :maxDepth="25" :styled="true"
+                                       v-model="criteria"></vue-query-builder>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-btn color="blue darken-1" v-on:click="onSubmit(true)" v-bind:disabled="isNotValidCriteria()">
+                        Apply
+                    </v-btn>
+                    <v-btn color="red darken-1" v-on:click="onSubmit(false)">Cancel</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {Component} from "vue-property-decorator";
+    import {Component, Prop} from "vue-property-decorator";
     import VueQueryBuilder from "vue-query-builder/src/VueQueryBuilder.vue";
     import {Criteria, CriteriaAttribute, emptyCriteria} from "@/models/criteria";
     import {parseCriteriaString, parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
+    import {hasValue} from "@/shared/utils/has-value";
 
     @Component({
         components: {VueQueryBuilder}
     })
     export default class CriteriaEditor extends Vue {
+        @Prop()
+        showCriteriaEditor: boolean;
+        @Prop()
+        clause: string;
+
         criteriaAttributes: CriteriaAttribute[] = this.$store.getters.criteriaAttributes;
-        criteria: Criteria = emptyCriteria;
+        criteria: Criteria;
         rules: any[] = [];
         labels: object = {
             "matchType": "",
@@ -59,24 +73,23 @@
                 id: ca.name,
                 operators: ["=", "<>", "<", "<=", ">", ">="]
             }));
+
+            try {
+                this.criteria = parseCriteriaString(this.clause);
+            } catch (e) {
+                this.criteria = emptyCriteria;
+            }
         }
 
-        logIt() {
-            console.log(JSON.stringify(this.criteria));
-            const clause = parseQueryBuilderJson(this.criteria).join("");
-            const newCriteria: Criteria = {
-                logicalOperator: "AND",
-                children: []
-            };
-            const json = parseCriteriaString(clause, newCriteria);
-            console.log(clause);
-            console.log(JSON.stringify(json));
-            /*console.log(
-                parseCriteriaString(
-                    '[ADTTOTAL]>=\'5\' AND ([ADTYEAR]>=\'4\' AND [ADTYEAR]<=\'7\' AND ([AGE]=\'4\' OR [AGE]=\'6\'))',
-                    {logicalOperator: 'AND', children: []}
-                )
-            );*/
+        isNotValidCriteria() {
+            return !hasValue(parseQueryBuilderJson(this.criteria).join(""));
+        }
+
+        onSubmit(notCanceled: boolean) {
+            if (notCanceled) {
+                this.$emit("applyCriteria", parseQueryBuilderJson(this.criteria).join(""));
+            }
+            this.showCriteriaEditor = false;
         }
     }
 </script>
