@@ -51,6 +51,7 @@ namespace BridgeCare.DataAccessLayer
             {
                 Hashtable yearHashValue = new Hashtable();
                 yearHashValue = (Hashtable)yearsIDValues[key];
+                var yearValues = yearHashValue.Keys.Cast<int>().OrderBy(_ => _);
                 TargetParameters target = (TargetParameters)idTargets[key];
 
                 DataRow newDataRow = targetTable.NewRow();
@@ -58,7 +59,7 @@ namespace BridgeCare.DataAccessLayer
                 newDataRow["Group"] = target.Name;
 
                 int column = 2;
-                foreach (int year in yearHashValue.Keys)
+                foreach (int year in yearValues)
                 {
                     double targetMetValue = (double)yearHashValue[year];
                     newDataRow[column] = targetMetValue + "/" + target.TargetMean;

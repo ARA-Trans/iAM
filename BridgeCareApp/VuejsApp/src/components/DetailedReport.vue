@@ -158,7 +158,7 @@
         fillWarningModal() {
             this.warning.showModal = true
             this.warning.heading = 'Warning'
-            this.warning.message = 'The simulation can take around one and an half hours to finish. Are you sure that you want to continue?'
+            this.warning.message = 'The simulation can take around five minutes to finish. Are you sure that you want to continue?'
         }
 
         onModalClicked(value: boolean) {
