@@ -29,13 +29,13 @@ namespace BridgeCare.Services
         {
             var BRKeys = new List<int>();
 
-            var sectionModels = bridgeData.GetSectionData(simulationModel, dbContext);
+            var sections = bridgeData.GetSectionData(simulationModel, dbContext);
             var simulationDataTable = bridgeData.GetSimulationData(simulationModel, dbContext, simulationYears);
             var projectCostModels = bridgeData.GetReportData(simulationModel, dbContext, simulationYears);
             var sectionIdsFromSimulationTable = from dt in simulationDataTable.AsEnumerable()
                                                 select dt.Field<int>("SECTIONID");
-            var sectionModelsForSummaryReport = sectionModels.Where(sm => sectionIdsFromSimulationTable.Contains(sm.SECTIONID)).ToList();
-            BRKeys = sectionModelsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
+            var sectionsForSummaryReport = sections.Where(sm => sectionIdsFromSimulationTable.Contains(sm.SECTIONID)).ToList();
+            BRKeys = sectionsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
             var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, dbContext);
                         
             var simulationDataModels = GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels);
@@ -51,14 +51,14 @@ namespace BridgeCare.Services
             }
 
             AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
-            AddDynamicDataCells(worksheet, sectionModelsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
+            AddDynamicDataCells(worksheet, sectionsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
             // TODO uncomment later: Postman getting hang if this is kept 
             // ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Coln]);
             worksheet.Cells.AutoFitColumns();
         }
 
         #region Private Methods
-        private void AddDynamicDataCells(ExcelWorksheet worksheet, List<SectionModel> sectionModelsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
+        private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
         {            
             var row = 4; // Data starts here
             var coln = currentCell.Coln;
@@ -68,8 +68,8 @@ namespace BridgeCare.Services
                 var brKey = bridgeDataModel.BRKey;
                 var familyId = bridgeDataModel.BridgeFamily;
                 var workDoneMoreThanOnce = 0;
-                var sectionModel = sectionModelsForSummaryReport.Where(s => Convert.ToInt32(s.FACILITY) == brKey).FirstOrDefault();
-                var simulationDataModel = simulationDataModels.Where(s => s.SectionId == sectionModel.SECTIONID).FirstOrDefault();
+                var section = sectionsForSummaryReport.Where(s => Convert.ToInt32(s.FACILITY) == brKey).FirstOrDefault();
+                var simulationDataModel = simulationDataModels.Where(s => s.SectionId == section.SECTIONID).FirstOrDefault();
                 var yearsData = simulationDataModel.YearsData;
                 // Add work done cellls
                 for (var cnt = 1; cnt < yearsData.Count(); cnt++)
@@ -133,7 +133,7 @@ namespace BridgeCare.Services
             return coln;
         }
 
-        private static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears, IQueryable<ProjectCostModel> projectCostModels)
+        private static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears, IQueryable<ReportProjectCost> projectCostModels)
         {
             var simulationDMs = new List<SimulationDataModel>();
             var projectCostsList = projectCostModels.ToList();
@@ -148,7 +148,7 @@ namespace BridgeCare.Services
             return simulationDMs;
         }
 
-        private static void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, ProjectCostModel projectCostEntry, SimulationDataModel simulationDM)
+        private static void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, ReportProjectCost projectCostEntry, SimulationDataModel simulationDM)
         {
             var yearsDMs = new List<YearsData>();
             foreach (int year in simulationYears)
@@ -168,7 +168,7 @@ namespace BridgeCare.Services
             };
         }
 
-        private static YearsData AddYearsData(DataRow simulationRow, ProjectCostModel projectCostEntry, int year)
+        private static YearsData AddYearsData(DataRow simulationRow, ReportProjectCost projectCostEntry, int year)
         {
             var yearsData = new YearsData
             {

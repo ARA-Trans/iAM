@@ -1,6 +1,6 @@
 ﻿namespace BridgeCare.Models
 {
-    public class ProjectCostModel
+    public class ReportProjectCost
     {
         public int SECTIONID { get; set; }
 

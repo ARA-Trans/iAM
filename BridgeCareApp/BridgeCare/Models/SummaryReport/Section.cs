@@ -2,7 +2,7 @@
 
 namespace BridgeCare.Models
 {
-    public class SectionModel
+    public class Section
     {
         public int SECTIONID { get; set; }
 

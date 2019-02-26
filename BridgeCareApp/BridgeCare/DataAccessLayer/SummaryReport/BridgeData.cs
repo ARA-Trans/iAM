@@ -53,16 +53,16 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="simulationModel"></param>
         /// <param name="dbContext"></param>
-        /// <returns>IQueryable<SectionModel></returns>
-        public IQueryable<SectionModel> GetSectionData(SimulationModel simulationModel, BridgeCareContext dbContext)
+        /// <returns>IQueryable<Section></returns>
+        public IQueryable<Section> GetSectionData(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            IQueryable<SectionModel> rawQueryForSectionData = null;
+            IQueryable<Section> rawQueryForSectionData = null;
 
             // FACILITY is BRKEY, SECTION is BRIDGE_ID
             var selectSectionStatement = "SELECT SECTIONID, FACILITY, SECTION " + " FROM SECTION_" + simulationModel.NetworkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
             try
             {
-                rawQueryForSectionData = dbContext.Database.SqlQuery<SectionModel>(selectSectionStatement).AsQueryable();
+                rawQueryForSectionData = dbContext.Database.SqlQuery<Section>(selectSectionStatement).AsQueryable();
             }
             catch (SqlException ex)
             {
@@ -120,14 +120,14 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="dbContext"></param>
         /// <param name="simulationYears"></param>
         /// <returns></returns>
-        public IQueryable<ProjectCostModel> GetReportData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears)
+        public IQueryable<ReportProjectCost> GetReportData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears)
         {            
-            IQueryable<ProjectCostModel> rawQueryForReportData = null;
+            IQueryable<ReportProjectCost> rawQueryForReportData = null;
             var years = string.Join(",", simulationYears);
             var selectReportStatement = "SELECT SECTIONID, TREATMENT, COST_, YEARS " + " FROM REPORT_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + " WITH(NOLOCK) WHERE BUDGET = 'actual_spent' AND YEARS IN (" + years + ")";
             try
             {
-                rawQueryForReportData = dbContext.Database.SqlQuery<ProjectCostModel>(selectReportStatement).AsQueryable();
+                rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();
             }
             catch (SqlException ex)
             {
