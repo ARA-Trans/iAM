@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import {Criteria, CriteriaRule, CriteriaType} from '@/models/criteria';
+import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/models/criteria';
 import {hasValue} from '@/shared/utils/has-value';
 
 /**
@@ -61,21 +61,24 @@ function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
  * @param clause The clause string to parse
  */
 export const parseCriteriaString = (clause: string) => {
-    // create a new criteria object
-    const newCriteria: Criteria = {
-        logicalOperator: '',
-        children: []
-    };
-    // if no open parentheses are present, assume clause string was created in legacy app
-    if ((clause.match(/\(/g) || []).length === 0) {
-        // ensure there are no close parentheses in the string before parsing
-        clause = clause.split(')').join(' ');
-        // parse the clause string and return
-        return parseLegacyAppClause(clause, newCriteria);
-    } else {
-        // parse the clause as a query builder string and return
-        return parseQueryBuilderClause(clause, newCriteria);
+    if (hasValue(clause)) {
+        // create a new criteria object
+        const newCriteria: Criteria = {
+            logicalOperator: '',
+            children: []
+        };
+        // if no open parentheses are present, assume clause string was created in legacy app
+        if ((clause.match(/\(/g) || []).length === 0) {
+            // ensure there are no close parentheses in the string before parsing
+            clause = clause.split(')').join(' ');
+            // parse the clause string and return
+            return parseLegacyAppClause(clause, newCriteria);
+        } else {
+            // parse the clause as a query builder string and return
+            return parseQueryBuilderClause(clause, newCriteria);
+        }
     }
+    return emptyCriteria;
 };
 
 /**

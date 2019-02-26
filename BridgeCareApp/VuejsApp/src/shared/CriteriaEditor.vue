@@ -1,7 +1,7 @@
 <template>
     <v-layout row justify-center>
         <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="500px">
-            <v-card>
+            <v-card v-if="criteria">
                 <v-card-title>Criteria Editor</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text style="height: 500px;">
@@ -22,11 +22,12 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {Component, Prop} from "vue-property-decorator";
+    import {Component, Prop, Watch} from "vue-property-decorator";
     import VueQueryBuilder from "vue-query-builder/src/VueQueryBuilder.vue";
     import {Criteria, CriteriaAttribute, emptyCriteria} from "@/models/criteria";
-    import {parseCriteriaString, parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
+    import {parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
     import {hasValue} from "@/shared/utils/has-value";
+    import {State} from "vuex-class";
 
     @Component({
         components: {VueQueryBuilder}
@@ -34,11 +35,11 @@
     export default class CriteriaEditor extends Vue {
         @Prop()
         showCriteriaEditor: boolean;
-        @Prop()
-        clause: string;
+        @State(state => state.criteria)
+        stateCriteria: Criteria;
 
         criteriaAttributes: CriteriaAttribute[] = this.$store.getters.criteriaAttributes;
-        criteria: Criteria;
+        criteria: Criteria = emptyCriteria;
         rules: any[] = [];
         labels: object = {
             "matchType": "",
@@ -52,6 +53,11 @@
             "removeGroup": "&times;",
             "textInputPlaceholder": "value"
         };
+
+        @Watch("stateCriteria")
+        onStateCriteriaChanged(val: Criteria, oldVal: Criteria) {
+            this.criteria = val;
+        }
 
         beforeCreate() {
             this.$store.dispatch({type: "getCriteriaAttributes"});
@@ -73,12 +79,6 @@
                 id: ca.name,
                 operators: ["=", "<>", "<", "<=", ">", ">="]
             }));
-
-            try {
-                this.criteria = parseCriteriaString(this.clause);
-            } catch (e) {
-                this.criteria = emptyCriteria;
-            }
         }
 
         isNotValidCriteria() {
@@ -88,8 +88,9 @@
         onSubmit(notCanceled: boolean) {
             if (notCanceled) {
                 this.$emit("applyCriteria", parseQueryBuilderJson(this.criteria).join(""));
+            } else {
+                this.$emit("applyCriteria", "");
             }
-            this.showCriteriaEditor = false;
         }
     }
 </script>

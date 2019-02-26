@@ -8,7 +8,8 @@ import {IScenario} from '@/models/scenario';
 import * as R from 'ramda';
 import * as moment from 'moment';
 import {attributes, sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
-import {CriteriaAttribute} from '@/models/criteria';
+import {Criteria, CriteriaAttribute, emptyCriteria} from '@/models/criteria';
+import {parseCriteriaString} from '@/shared/utils/criteria-editor-parsers';
 
 Vue.use(Vuex);
 
@@ -21,7 +22,8 @@ export default new Vuex.Store({
         networks: [] as INetwork[],
         simulations: [] as Simulation[],
         scenarios: [] as IScenario[],
-        criteriaAttributes: [] as CriteriaAttribute[]
+        criteriaAttributes: [] as CriteriaAttribute[],
+        criteria: emptyCriteria as Criteria
     },
     mutations: {
         login(state, payload) {
@@ -57,6 +59,9 @@ export default new Vuex.Store({
         },
         criteriaAttributes(state, payload) {
             state.criteriaAttributes = payload;
+        },
+        criteria(state, payload) {
+            state.criteria = parseCriteriaString(payload.clause);
         }
     },
     actions: {
@@ -129,6 +134,9 @@ export default new Vuex.Store({
                 .then(data => {
                     commit('criteriaAttributes', data)
                 });*/
+        },
+        setCriteria({commit}, payload) {
+            commit('criteria', payload);
         }
     },
     getters: {
@@ -149,6 +157,9 @@ export default new Vuex.Store({
         },
         criteriaAttributes(state) {
             return state.criteriaAttributes
+        },
+        criteria(state) {
+            return state.criteria as Criteria
         }
     }
 })
