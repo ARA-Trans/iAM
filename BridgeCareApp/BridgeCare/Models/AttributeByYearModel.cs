@@ -1,9 +1,4 @@
-﻿using BridgeCare.Interfaces;
-using System;
-using System.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace BridgeCare.Models
 {
@@ -11,10 +6,10 @@ namespace BridgeCare.Models
     {
         public AttributeByYearModel()
         {
-            yearlyvalues = new List<AttributeYearlyValueModel>();
+            YearlyValues = new List<AttributeYearlyValueModel>();
         }
-        public string name { get; set; }
-        public List<AttributeYearlyValueModel> yearlyvalues { get; set; }
 
+        public string Name { get; set; }
+        public List<AttributeYearlyValueModel> YearlyValues { get; set; }
     }
 }

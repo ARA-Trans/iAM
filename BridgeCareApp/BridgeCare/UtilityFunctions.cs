@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data.Entity;
-using System.Data;
-using System.Data.Entity.Core.EntityClient;
-using BridgeCare.EntityClasses;
+﻿using System.Data;
 using System.Data.SqlClient;
 
 namespace BridgeCare.Utility
 {
     public class UtilityFunctions
     {
-        public static DataTable NonEntitySQLQuery(string selectStatement,BridgeCareContext db)
+        public static DataTable NonEntitySQLQuery(string selectStatement, BridgeCareContext db)
         {
             var resultsDataTable = new DataTable();
             var connection = new SqlConnection(db.Database.Connection.ConnectionString);
@@ -25,6 +18,7 @@ namespace BridgeCare.Utility
             }
             return resultsDataTable;
         }
+
         public static bool IsDigitsOnly(string str)
         {
             foreach (char c in str)
@@ -36,21 +30,15 @@ namespace BridgeCare.Utility
             return true;
         }
 
-        //funny numbers in here assumes we know all data occurs after 1900 and the simulation will never go out farther than 50 years
-
+        //check for year
         public static bool IsIamYear(string str)
         {
-            if (IsDigitsOnly(str))
+            if (IsDigitsOnly(str) && str.Length == 4)
             {
-                int number = Convert.ToInt32(str);
-                if (number > 1900 && number < (DateTime.Now.Year + 50))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
         }
     }
-      
 }

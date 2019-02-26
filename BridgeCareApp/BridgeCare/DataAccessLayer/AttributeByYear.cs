@@ -3,7 +3,6 @@ using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Utility;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -20,98 +19,85 @@ namespace BridgeCare.DataAccessLayer
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public List<AttributeByYearModel> GetProjectedAttributes(int SimulationId, int NetworkId, int SectionId, BridgeCareContext db)
+        public List<AttributeByYearModel> GetProjectedAttributes(SimulatedSegmentAddressModel segmentAddressModel, BridgeCareContext db)
         {
-            DataTable dt = null;
-            var select = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}", NetworkId, SimulationId, SectionId);
+            if (segmentAddressModel == null)
+                return new List<AttributeByYearModel>();
 
-            try
-            {
-                dt = UtilityFunctions.NonEntitySQLQuery(select,db);
-                List<AttributeByYearModel> returnvals = DataTableToAttributeList(dt);
-                return returnvals;
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Query:" + select);
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
+            var selectStatement = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}", 
+                segmentAddressModel.NetworkId, segmentAddressModel.SimulationId, segmentAddressModel.SectionId);
 
-            return null;
+            return GeneralAttributeValueQuery(selectStatement);
         }
 
-        public List<AttributeByYearModel> GetHistoricalAttributes(int NetworkId, int sectionID, BridgeCareContext db)
+        public List<AttributeByYearModel> GetHistoricalAttributes(SectionModel sectionModel, BridgeCareContext db)
         {
-            DataTable dt = null;
-            var select = String.Format(
+            if (sectionModel == null)
+                return new List<AttributeByYearModel>();
+
+            var selectStatement = String.Format(
                 "SELECT * FROM SEGMENT_{0}_NS0 WHERE SectionID={1}",
-                NetworkId, sectionID);
+                sectionModel.NetworkId, sectionModel.SectionId);
+
+            return GeneralAttributeValueQuery(selectStatement);
+        }
+
+        public List<AttributeByYearModel> GeneralAttributeValueQuery(string selectStatement)
+        {
+            DataTable queryReturnValues = null;
 
             try
             {
-                dt = UtilityFunctions.NonEntitySQLQuery(select,db);
-                List<AttributeByYearModel> returnvals = DataTableToAttributeList(dt);
-                return returnvals;
+                queryReturnValues = UtilityFunctions.NonEntitySQLQuery(selectStatement, db);
+                List<AttributeByYearModel> attributesByYear = DataTableToAttributeList(queryReturnValues);
+                return attributesByYear;
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Query:" + select);
+                HandleException.SqlError(ex, "Query:" + selectStatement);
             }
             catch (OutOfMemoryException ex)
             {
                 HandleException.OutOfMemoryError(ex);
             }
-            return null;
+
+            return new List<AttributeByYearModel>();
         }
 
         public List<AttributeByYearModel> DataTableToAttributeList(DataTable dt)
         {
-            List<AttributeByYearModel> returnValues = new List<AttributeByYearModel>();
+            List<AttributeByYearModel> returnAttributeList = new List<AttributeByYearModel>();
 
-            foreach (DataColumn col in dt.Columns)
+            foreach (DataColumn column in dt.Columns)
             {
-                string value = dt.Rows[0][col.ColumnName].ToString();
+                if (dt.Rows.Count <= 0)
+                    break;
 
-                string[] tokens = col.ColumnName.Split('_');
+                string value = dt.Rows[0][column.ColumnName].ToString();
+
+                string[] tokens = column.ColumnName.Split('_');
                 if (UtilityFunctions.IsIamYear(tokens.Last()) && value.Length > 0)
                 {
-                    //yes means this is an attribute_year column, subtract 5 digits, 4 for year and one '_'
+                    //true means this is an attribute_year column, subtract 5 digits, 4 for year and one '_'
+                    string name = column.ColumnName.Substring(0, column.ColumnName.Length - 5);
+                    AttributeYearlyValueModel attributeYearValue = new AttributeYearlyValueModel();
 
-                    string name = col.ColumnName.Substring(0, col.ColumnName.Length - 5);
-                    AttributeYearlyValueModel yvm = new AttributeYearlyValueModel();
+                    attributeYearValue.Year = Convert.ToInt32(tokens.Last());
+                    attributeYearValue.Value = value;
 
-                    yvm.year = Convert.ToInt32(tokens.Last());
-                    yvm.value = value;
-
-                    AttributeByYearModel temp = IndexofName(returnValues, name);
-                    if (temp == null)
+                    AttributeByYearModel attributeInList = returnAttributeList.Find(_ => _.Name == name);
+                    //if the list does not have the attribute already add it
+                    if (attributeInList == null)
                     {
-                        temp = new AttributeByYearModel();
-                        temp.name = name;
+                        attributeInList = new AttributeByYearModel();
+                        attributeInList.Name = name;
                     }
 
-                    temp.yearlyvalues.Add(yvm);
-                    returnValues.Add(temp);
+                    attributeInList.YearlyValues.Add(attributeYearValue);
+                    returnAttributeList.Add(attributeInList);
                 }
-
-
             }
-            return returnValues;
-        }
-        // return reference to array element where name  matches findname
-        // encapsulated here as brute force version , could utilize map instead
-        public AttributeByYearModel IndexofName(List<AttributeByYearModel> lam, string findname)
-        {
-            foreach (AttributeByYearModel aym in lam)
-            {
-                if (aym.name == findname)
-                    return aym;
-            }
-            return null;
-
+            return returnAttributeList;
         }
     }
 }

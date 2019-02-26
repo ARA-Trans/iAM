@@ -2,9 +2,6 @@
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -12,7 +9,9 @@ namespace BridgeCare.DataAccessLayer
 {
     public class AttributeNames : IAttributeNames
     {
-        public AttributeNames() { }
+        public AttributeNames()
+        {
+        }
 
         public IQueryable<AttributeNameModel> GetAttributeNames(BridgeCareContext db)
         {
@@ -23,7 +22,6 @@ namespace BridgeCare.DataAccessLayer
             try
             {
                 rawQueryForData = db.Database.SqlQuery<AttributeNameModel>(select).AsQueryable();
-
             }
             catch (SqlException ex)
             {

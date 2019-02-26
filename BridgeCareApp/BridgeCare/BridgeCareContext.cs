@@ -1,17 +1,7 @@
 namespace BridgeCare
 {
-    using System;
-    using System.Data.Entity;
-    using System.Linq;
     using BridgeCare.EntityClasses;
-    using System.Data.SqlClient;
-    using BridgeCare.ApplicationLog;
-    using BridgeCare.Interfaces;
-    using BridgeCare.Models;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Data.Entity.Core.EntityClient;
-
+    using System.Data.Entity;
 
     public partial class BridgeCareContext : DbContext
     {
@@ -23,12 +13,14 @@ namespace BridgeCare
 
         //public virtual DbSet<DetailedReportModel> DetailedReportModels { get; set; }
         public virtual DbSet<NETWORK> NETWORKS { get; set; }
+
         public virtual DbSet<SIMULATION> SIMULATIONS { get; set; }
         public virtual DbSet<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
         public virtual DbSet<INVESTMENTS> INVESTMENTs { get; set; }
         public virtual DbSet<Deficients> Deficient { get; set; }
         public virtual DbSet<Targets> Target { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<NETWORK>()
@@ -52,9 +44,5 @@ namespace BridgeCare
                 .Property(e => e.BUDGETORDER)
                 .IsUnicode(false);
         }
- 
     }
-
-
 }
-    

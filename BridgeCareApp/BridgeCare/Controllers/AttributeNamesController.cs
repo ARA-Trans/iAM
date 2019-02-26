@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Description;
-using BridgeCare;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.Services;
-using BridgeCare.EntityClasses;
-using BridgeCare.Interfaces;
-using BridgeCare.DataAccessLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
 
 namespace BridgeCare.Controllers
 {
@@ -21,22 +11,23 @@ namespace BridgeCare.Controllers
     {
         private readonly BridgeCareContext db;
         private readonly IAttributeNames attributes;
-        public AttributeNamesController(IAttributeNames att,BridgeCareContext context)
+
+        public AttributeNamesController(IAttributeNames attributeNames, BridgeCareContext context)
         {
-            attributes = att ?? throw new ArgumentNullException(nameof(att));
+            attributes = attributeNames ?? throw new ArgumentNullException(nameof(attributeNames));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // Get: api/attributenames
         public List<string> Get()
         {
-            IQueryable < AttributeNameModel > returned = attributes.GetAttributeNames(db);
-            List<string> toreturn = new List<string>();
-            foreach (AttributeNameModel nm in returned)
+            IQueryable<AttributeNameModel> returned = attributes.GetAttributeNames(db);
+            List<string> toReturn = new List<string>();
+            foreach (AttributeNameModel nameModel in returned)
             {
-                toreturn.Add(nm.Name);
+                toReturn.Add(nameModel.Name);
             }
-            return toreturn; 
+            return toReturn;
         }
     }
 }

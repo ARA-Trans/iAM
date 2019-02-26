@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Description;
-using BridgeCare;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.Services;
-using BridgeCare.EntityClasses;
-using BridgeCare.Interfaces;
-using BridgeCare.DataAccessLayer;
-using BridgeCare.ApplicationLog;
+using System;
+using System.Collections.Generic;
+using System.Web.Http;
 
 namespace BridgeCare.Controllers
 {
@@ -22,23 +10,24 @@ namespace BridgeCare.Controllers
     {
         private readonly BridgeCareContext db;
         private readonly IAttributeByYear attributes;
+
         public ProjectedAttributesByYearController(IAttributeByYear aby, BridgeCareContext context)
         {
             attributes = aby ?? throw new ArgumentNullException(nameof(aby));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        // usage
         // Get: api/projectedattributesbyyear/
-        public List<AttributeByYearModel> Get(SimulatedSegmentAddressModel sm)
-        {    
-            if (sm == null)
-                return null;
-
-            List<AttributeByYearModel> returnValues  = attributes.GetProjectedAttributes(sm.SimulationId, sm.NetworkId, sm.SectionId, db);
-
-            return returnValues;
+        // body (example)
+        // {
+        //"sectionId":1000012,
+        //"networkId":13,
+        //"simulationId":9
+        // }
+        public List<AttributeByYearModel> Get(SimulatedSegmentAddressModel segmentAddressModel)
+        {
+            return attributes.GetProjectedAttributes(segmentAddressModel, db);
         }
-
-
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace BridgeCare.Models
+﻿namespace BridgeCare.Models
 {
     public class NetworkModel
     {

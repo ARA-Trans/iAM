@@ -5,7 +5,6 @@ using BridgeCare.Services;
 using System;
 
 using Unity;
-using Unity.Lifetime;
 
 namespace BridgeCare
 {
@@ -15,6 +14,7 @@ namespace BridgeCare
     public static class UnityConfig
     {
         #region Unity Container
+
         private static Lazy<IUnityContainer> container =
           new Lazy<IUnityContainer>(() =>
           {
@@ -27,7 +27,8 @@ namespace BridgeCare
         /// Configured Unity Container.
         /// </summary>
         public static IUnityContainer Container => container.Value;
-        #endregion
+
+        #endregion Unity Container
 
         /// <summary>
         /// Registers the type mappings with the Unity container.
@@ -48,7 +49,7 @@ namespace BridgeCare
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
             container.RegisterType<ISections, Sections>();
-            container.RegisterType<ILatLonSection, LatLonSection>();
+            container.RegisterType<ILatitudeLongitudeSection, LatitudeLongitudeSection>();
             container.RegisterType<IDetailedReport, DetailedReport>();
             container.RegisterType<IAttributeNames, AttributeNames>();
             container.RegisterType<IAttributeByYear, AttributeByYear>();
