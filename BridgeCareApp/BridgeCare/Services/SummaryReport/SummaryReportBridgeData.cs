@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using OfficeOpenXml;
@@ -45,19 +44,16 @@ namespace BridgeCare.Services
             var headers = GetHeaders();
             var currentCell = AddHeadersCells(worksheet, headers, simulationYears);
 
-            // TODO // Add row next to headers for fitlers and year no.s for dynamic data.
-
-            //HELP: cover from top, left to right bottom whole set of data
-            //        using (ExcelRange autoFilterCells = ws.Cells[
-            //startRowIndex, territoryNameIndex,
-            //toRowIndex, totalIndex])
-            //        {
-            //            autoFilterCells.AutoFilter = true;
-            //        }
+            // Add row next to headers for fitlers and year no.s for dynamic data. Cover from top, left to right bottom whole set of data
+            using (ExcelRange autoFilterCells = worksheet.Cells[3, 1, currentCell.Row, currentCell.Coln])
+            {
+                autoFilterCells.AutoFilter = true;
+            }
 
             AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
             AddDynamicDataCells(worksheet, sectionModelsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
-            ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Coln]);
+            // TODO uncomment later: Postman getting hang if this is kept 
+            // ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Coln]);
             worksheet.Cells.AutoFitColumns();
         }
 
