@@ -21,10 +21,13 @@ namespace BridgeCare.Services
         {
             var targetResults = targets.GetTarget(data, totalYears);
 
-            targetReport.Cells[2, 3, targetResults.Targets.Rows.Count + 1, targetResults.Targets.Columns.Count]
+            if(targetResults.Targets.Rows.Count > 0)
+            {
+                targetReport.Cells[2, 3, targetResults.Targets.Rows.Count + 1, targetResults.Targets.Columns.Count]
                         .Style.Fill.PatternType = ExcelFillStyle.Solid;
-            targetReport.Cells[2, 3, targetResults.Targets.Rows.Count + 1, targetResults.Targets.Columns.Count]
-                        .Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+                targetReport.Cells[2, 3, targetResults.Targets.Rows.Count + 1, targetResults.Targets.Columns.Count]
+                            .Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+            }
 
             foreach (var (row, column) in targetResults.Address.Cells)
             {

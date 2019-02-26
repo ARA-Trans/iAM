@@ -91,6 +91,10 @@ namespace BridgeCare.DataAccessLayer
                 newDataRow["Attribute"] = item.Attribute_;
                 newDataRow["Group"] = item.DeficientName;
 
+                if(yearValues.Count <= 0)
+                {
+                    continue;
+                }
                 foreach (int key in yearValues.Keys)
                 {
                     int column = key - totalYears[0] + 2;

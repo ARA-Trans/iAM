@@ -16,7 +16,7 @@
     import { Component } from 'vue-property-decorator';
 
     @Component
-    export default class ShowProgress extends Vue {
+    export default class AppSpinner extends Vue {
         loading: boolean = true
 
     }

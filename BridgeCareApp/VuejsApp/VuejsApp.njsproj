@@ -8,7 +8,7 @@
     <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
     <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
     <NameOfLastUsedPublishProfile>File</NameOfLastUsedPublishProfile>
-    <ToolsVersionPromptShown>3.1</ToolsVersionPromptShown>
+    <ToolsVersionPromptShown>3.0</ToolsVersionPromptShown>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -28,7 +28,7 @@
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <EnableTypeScript>true</EnableTypeScript>
-    <StartWebBrowser>True</StartWebBrowser>
+    <StartWebBrowser>False</StartWebBrowser>
     <ScriptArguments>serve</ScriptArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -44,15 +44,35 @@
     <Content Include=".env.production">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="libman.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\1.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\2.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\3.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\4.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\5.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\6.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\7.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\8.jpg" />
     <Content Include="src\assets\logo.svg" />
     <Content Include="src\components\DetailedReport.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\HelloWorld.vue" />
-    <Content Include="src\components\ShowProgress.vue">
+    <Content Include="src\components\Inventory.vue" />
+    <Content Include="src\components\Scenario.vue" />
+    <Content Include="src\components\scenario\EditAnalysis.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\scenario\EditScenario.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\shared\AppShowProgress.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\shared\AppSpinner.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\TopNavbar.vue">
@@ -60,6 +80,9 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\shared\AppModalPopup.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="tsconfig.json" />
     <Content Include="Web.config" />
     <None Include="Web.Debug.config">
@@ -70,14 +93,23 @@
     <Folder Include="public\" />
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
+    <Folder Include="src\assets\images\" />
+    <Folder Include="src\assets\images\inventory_mock_bridge_images\" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\scenario\" />
     <Folder Include="src\models\" />
+    <Folder Include="src\shared\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\main.ts" />
-    <TypeScriptCompile Include="src\models\Network.ts">
+    <TypeScriptCompile Include="src\models\IAlert.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\models\INetwork.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\models\scenario.ts" />
+    <TypeScriptCompile Include="src\models\section.ts" />
     <TypeScriptCompile Include="src\models\Simulation.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -86,6 +118,7 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
+    <TypeScriptCompile Include="src\store.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="babel.config.js" />

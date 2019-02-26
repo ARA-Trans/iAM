@@ -22,10 +22,13 @@ namespace BridgeCare.Services
             var totalYearsCount = totalYears.Count();
             var deficientResults = deficientResult.GetData(data, totalYears);
 
-            deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
+            if(deficientResults.Deficients.Rows.Count > 0)
+            {
+                deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
                         .Style.Fill.PatternType = ExcelFillStyle.Solid;
-            deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
-                        .Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+                deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
+                            .Style.Fill.BackgroundColor.SetColor(Color.LightCoral);
+            }
 
             foreach (var (row, column) in deficientResults.Address.Cells)
             {

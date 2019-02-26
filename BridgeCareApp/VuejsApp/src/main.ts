@@ -1,4 +1,5 @@
 import '@babel/polyfill'
+import '@fortawesome/fontawesome-free/css/all.css'
 import Vue from 'vue'
 import 'vuetify/dist/vuetify.min.css'
 import 'bootstrap';
@@ -7,12 +8,16 @@ import Vuetify from 'vuetify'
 
 import App from './App.vue';
 import router from './router'
+import store from './store'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+    iconfont: 'fa'
+})
 
 Vue.config.productionTip = false;
 
 new Vue({
     render: h => h(App),
-    router,
+    store,
+    router
 }).$mount('#app');

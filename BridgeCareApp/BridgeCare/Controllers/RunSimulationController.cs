@@ -1,7 +1,8 @@
-﻿using BridgeCare.ApplicationLog;
+﻿using BridgeCare.DataAccessLayer;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace BridgeCare.Controllers
@@ -16,16 +17,15 @@ namespace BridgeCare.Controllers
         }
 
         // POST: api/RunSimulation
-        public void Post([FromBody]SimulationModel data)
+        public async Task<IHttpActionResult> Post([FromBody]SimulationModel data)
         {
-            try
+            var result = await Task.Factory.StartNew(() => { return simulation.Start(data); });
+            //var result = await simulation.Start(data);
+            if (result.IsCompleted)
             {
-                simulation.Start(data);
+                return Ok(result);
             }
-            catch(Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+            return NotFound();
         }
     }
 }
