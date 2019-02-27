@@ -72,8 +72,8 @@
     import Vue from "vue";
     import {Component} from "vue-property-decorator";
     import axios from "axios";
-    //@ts-ignore
-    import AppSpinner from "../shared/AppSpinner";
+
+    import AppSpinner from "../shared/AppSpinner.vue";
     import {IAttribute, IAttributeYearlyValue, ISection} from "@/models/section";
     import * as R from "ramda";
     import * as moment from "moment";
