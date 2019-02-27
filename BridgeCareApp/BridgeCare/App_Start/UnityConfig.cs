@@ -2,6 +2,7 @@ using BridgeCare.DataAccessLayer;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Services;
+using BridgeCare.Services.SummaryReport;
 using System;
 
 using Unity;
@@ -68,6 +69,13 @@ namespace BridgeCare
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
             container.RegisterType<IRunSimulation, RunSimulation>();
+            
+            //Summary Report types
+            container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();
+            container.RegisterType<IBridgeData, BridgeData>();
+            container.RegisterType<SummaryReportBridgeData>();
+            container.RegisterType<ICommonSummaryReportData, CommonSummaryReportData>();
+
         }
     }
 }
