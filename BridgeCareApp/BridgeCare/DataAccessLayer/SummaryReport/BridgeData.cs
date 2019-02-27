@@ -12,6 +12,15 @@ namespace BridgeCare.DataAccessLayer
 {
     public class BridgeData : IBridgeData
     {
+        const string DeckSeeded= "DECK_SEEDED_";
+        const string SupSeeded = "SUP_SEEDED_";
+        const string SubSeeded = "SUB_SEEDED_";
+        const string CulvSeeded = "CULV_SEEDED_";
+        const string DeckDurationN = "DECK_DURATION_N_";
+        const string SupDurationN = "SUP_DURATION_N_";
+        const string SubDurationN = "SUB_DURATION_N_";
+        const string CulvDurationN = "CULV_DURATION_N_";
+
         /// <summary>
         /// Get and create BridgeDataModels from Constant tables for summary report. 
         /// </summary>
@@ -28,7 +37,7 @@ namespace BridgeCare.DataAccessLayer
                 var sdRisk = dbContext.SdRisks.Where(s => BRKeys.Contains(s.BRKEY)).ToList();
                 // TODO ask why this is set in macro Func_Class='12' where BRKey=8356") Func_Class='16' where BRKey=45700") Func_Class='01' where BRKey=29077") Func_Class='06' where BRKey=55748")
                 BRKeys = BRKeys.OrderBy(b => b).ToList();
-                foreach (int BRKey in BRKeys)
+                foreach (var BRKey in BRKeys)
                 {
                     var penndotBridgeDataRow = penndotBridgeData.Where(b => b.BRKEY == BRKey).FirstOrDefault();
                     var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
@@ -89,7 +98,7 @@ namespace BridgeCare.DataAccessLayer
             var simulationDataTable = new DataTable();
             dynamicColumns = GetDynamicColumns(simulationYears, dynamicColumns);
 
-            var selectSimulationStatement = "SELECT SECTIONID, DECK_SEEDED_0, SUP_SEEDED_0, SUB_SEEDED_0, CULV_SEEDED_0, DECK_DURATION_N_0, SUP_DURATION_N_0, SUB_DURATION_N_0, CULV_DURATION_N_0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
+            var selectSimulationStatement = "SELECT SECTIONID, " + DeckSeeded + "0, " + SupSeeded + "0, " + SubSeeded + "0, " + CulvSeeded + "0, " + DeckDurationN + "0, " + SupDurationN + "0, " + SubDurationN + "0, " + CulvDurationN + "0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
             try
             {   
                 var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString);
@@ -146,7 +155,7 @@ namespace BridgeCare.DataAccessLayer
         {
             foreach (var year in simulationYears)
             {
-                dynamicColumns = dynamicColumns + ", DECK_SEEDED_" + year + ", SUP_SEEDED_" + year + ", SUB_SEEDED_" + year + ", CULV_SEEDED_" + year + ", DECK_DURATION_N_" + year + ", SUP_DURATION_N_" + year + ", SUB_DURATION_N_" + year + ", CULV_DURATION_N_" + year;
+                dynamicColumns = dynamicColumns + ", " + DeckSeeded + year + ", " + SupSeeded + year + ", " + SubSeeded + year + ", " + CulvSeeded + year + ", " + DeckDurationN + year + ", " + SupDurationN + year + ", " + SubDurationN + year + ", " + CulvDurationN + year;
             }
 
             return dynamicColumns;
