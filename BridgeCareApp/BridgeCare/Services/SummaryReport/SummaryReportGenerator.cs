@@ -26,7 +26,7 @@ namespace BridgeCare.Services.SummaryReport
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
         {
-            // Temporary -- remove after UI is ready to invoke this report
+            // TODO: This is temporary -- remove after UI is ready to invoke this report
             simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 9 };
 
             // Get data
