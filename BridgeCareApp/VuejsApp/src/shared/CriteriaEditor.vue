@@ -1,10 +1,10 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="500px">
+        <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="700px">
             <v-card v-if="criteria">
                 <v-card-title>Criteria Editor</v-card-title>
                 <v-divider></v-divider>
-                <v-card-text style="height: 500px;">
+                <v-card-text style="height: 700px;">
                     <vue-query-builder :labels="labels" :rules="rules" :maxDepth="25" :styled="true"
                                        v-model="criteria"></vue-query-builder>
                 </v-card-text>
