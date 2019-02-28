@@ -121,6 +121,7 @@
                     {navigation: "Inventory", icon: "home", name: "Inventory"},
                     {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
                     {navigation: "DetailedReport", icon: "receipt", name: "Detailed report"},
+                    {navigation: "Criteria", name: "Criteria"}
                 ],
                 drawer: true
             }
