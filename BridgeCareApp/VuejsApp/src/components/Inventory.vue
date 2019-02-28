@@ -72,11 +72,13 @@
     import Vue from "vue";
     import {Component} from "vue-property-decorator";
     import axios from "axios";
-    //@ts-ignore
-    import AppSpinner from "../shared/AppSpinner";
-    import {IAttribute, IAttributeYearlyValue, ISection, mockSections} from "@/models/section";
+
+    import AppSpinner from "../shared/AppSpinner.vue";
+    import {IAttribute, IAttributeYearlyValue, ISection} from "@/models/section";
     import * as R from "ramda";
     import * as moment from "moment";
+    import {hasValue} from "@/shared/utils/has-value";
+    import {mockSections} from "@/shared/utils/mock-data";
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -145,7 +147,7 @@
             //@ts-ignore
             this.selectedSection = this.sections.find((s: ISection) => s.sectionId === sectionId);
             // if a section was found...
-            if (this.hasValue(this.selectedSection)) {
+            if (hasValue(this.selectedSection)) {
                 // reset the list of attributes and create a placeholder list for the years
                 this.sectionAttributes = [];
                 const years: number[] = [];
@@ -167,10 +169,10 @@
                 this.setAttributeSelectAllIcon();
                 // set the start years list while removing any duplicate years
                 this.startYears = R.uniq(years);
-                this.startYear = this.hasValue(this.startYears) ? this.startYears[0] : 0;
+                this.startYear = hasValue(this.startYears) ? this.startYears[0] : 0;
                 // set the end years list with a copy of the start years list in desc order
                 this.endYears = R.reverse(this.startYears);
-                this.endYear = this.hasValue(this.endYears) ? this.endYears[0] : 0;
+                this.endYear = hasValue(this.endYears) ? this.endYears[0] : 0;
                 // set the selected section's grid data
                 this.setSelectedSectionGridData();
             }
@@ -185,7 +187,7 @@
             );
             // get the selected year range
             const yearRange = this.getYearRange();
-            if (this.hasValue(filteredAttributes) && this.hasValue(yearRange)) {
+            if (hasValue(filteredAttributes) && hasValue(yearRange)) {
                 //reset the sectionGridHeaders list
                 this.sectionGridHeaders = R.filter(h => R.propEq("value", "name", h), this.sectionGridHeaders);
                 // for each of the years in the yearRange list add a new header to the sectionGridHeaders list using
@@ -265,7 +267,7 @@
          * which start year has been selected
          */
         onChangeStartYear() {
-            if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
+            if (hasValue(this.startYear) && hasValue(this.endYear)) {
                 if (this.startYear > this.endYear) {
                     if (this.startYear === this.endYears[0]) {
                         this.endYear = this.startYear;
@@ -288,7 +290,7 @@
          * which end year has been selected
          */
         onChangeEndYear() {
-            if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
+            if (hasValue(this.startYear) && hasValue(this.endYear)) {
                 if (this.endYear < this.startYear) {
                     if (this.endYear === this.startYears[0]) {
                         this.startYear = this.endYear;
@@ -335,12 +337,13 @@
             this.downloadProgress = false;
             this.loading = false;
         }
+
         /**
-         * Whether or not the specified item has a value (is not null, is not undefined, and is not considered empty)
+         * Calls the utility hasValue function
          * @param item
          */
         hasValue(item: any) {
-            return !R.isNil(item) && !R.isEmpty(item);
+            return hasValue(item);
         }
     }
 </script>
