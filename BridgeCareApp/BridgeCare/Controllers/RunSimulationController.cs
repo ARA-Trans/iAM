@@ -19,8 +19,9 @@ namespace BridgeCare.Controllers
         // POST: api/RunSimulation
         public async Task<IHttpActionResult> Post([FromBody]SimulationModel data)
         {
-            var result = await simulation.Start(data);
-            if (result.Contains("successfully"))
+            var result = await Task.Factory.StartNew(() => { return simulation.Start(data); });
+            //var result = await simulation.Start(data);
+            if (result.IsCompleted)
             {
                 return Ok(result);
             }

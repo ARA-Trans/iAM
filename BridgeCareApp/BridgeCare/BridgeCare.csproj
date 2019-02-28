@@ -177,12 +177,15 @@
     <Compile Include="Controllers\SimulationsController.cs" />
     <Compile Include="DataAccessLayer\AttributeByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
+    <Compile Include="Controllers\SummaryReportController.cs" />
+    <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
     <Compile Include="DataAccessLayer\DetailedReport.cs" />
     <Compile Include="DataAccessLayer\LatitudeLongitudeSection.cs" />
     <Compile Include="DataAccessLayer\RunSimulation.cs" />
     <Compile Include="DataAccessLayer\Sections.cs" />
+    <Compile Include="DataAccessLayer\SummaryReport\CommonSummaryReportData.cs" />
     <Compile Include="DataAccessLayer\TargetResults.cs" />
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
@@ -191,6 +194,9 @@
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
+    <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
+    <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
     <Compile Include="EntityClasses\Targets.cs" />
     <Compile Include="EntityClasses\YEARLYINVESTMENT.cs" />
@@ -200,6 +206,7 @@
     <Compile Include="Interfaces\IAttributeByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
     <Compile Include="Interfaces\IDetailedReport.cs" />
     <Compile Include="Interfaces\ILatitudeLongitudeSection.cs" />
@@ -212,6 +219,7 @@
     <Compile Include="Models\AttributeByYearModel.cs" />
     <Compile Include="Models\AttributeNameModel.cs" />
     <Compile Include="Models\AttributeYearlyValueModel.cs" />
+    <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\CellAddress.cs" />
     <Compile Include="Models\LatitudeLongitudeSectionModel.cs" />
@@ -223,6 +231,13 @@
     <Compile Include="Models\NetworkModel.cs" />
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
+    <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
+    <Compile Include="Models\SummaryReport\CurrentCell.cs" />
+    <Compile Include="Models\SummaryReport\ReportProjectCost.cs" />
+    <Compile Include="Models\SummaryReport\Section.cs" />
+    <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
+    <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />
+    <Compile Include="Models\SummaryReport\YearsData.cs" />
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
@@ -237,6 +252,9 @@
     <Compile Include="Services\Network.cs" />
     <Compile Include="Services\Simulations.cs" />
     <Compile Include="UtilityFunctions.cs" />
+    <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
+    <Compile Include="Services\SummaryReport\SummaryReportGenerator.cs" />
+    <Compile Include="Services\SummaryReport\SummaryReportHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dpendencies\CalculateEvaluate.dll" />
@@ -256,7 +274,9 @@
     <Content Include="Dpendencies\SimulationDataAccess.dll" />
     <Content Include="Dpendencies\SimulationDataAccess.pdb" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -266,9 +286,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\SummaryReportBridgeData\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="connection.config" />
+    <Content Include="connection.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -313,4 +336,11 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <Target Name="CopyRoslynFiles" AfterTargets="AfterBuild" Condition="!$(Disable_CopyWebApplication) And '$(OutDir)' != '$(OutputPath)'">
+    <ItemGroup>
+      <RoslynFiles Include="$(CscToolPath)\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(WebProjectOutputDir)\bin\roslyn" />
+    <Copy SourceFiles="@(RoslynFiles)" DestinationFolder="$(WebProjectOutputDir)\bin\roslyn" SkipUnchangedFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+  </Target>
 </Project>
