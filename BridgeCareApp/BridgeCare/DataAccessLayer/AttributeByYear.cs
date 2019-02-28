@@ -45,12 +45,10 @@ namespace BridgeCare.DataAccessLayer
 
         public List<AttributeByYearModel> GeneralAttributeValueQuery(string selectStatement)
         {
-            DataTable queryReturnValues = null;
-
             try
             {
-                queryReturnValues = UtilityFunctions.NonEntitySQLQuery(selectStatement, db);
-                List<AttributeByYearModel> attributesByYear = new AttributeYearDataTable(queryReturnValues).Fetch();
+                DataTable queryReturnValues = UtilityFunctions.NonEntitySQLQuery(selectStatement, db);
+                return new AttributeYearDataTable(queryReturnValues).Fetch();
             }
             catch (SqlException ex)
             {
