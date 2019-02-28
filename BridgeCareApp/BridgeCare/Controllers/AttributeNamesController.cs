@@ -20,7 +20,8 @@ namespace BridgeCare.Controllers
         }
 
         // Get: api/attributeNames
-        public List<AttributeNameModel> Get() => attributes.GetAttributeNames(db).ToList();
+        [HttpGet]
+        public HttpResponseMessage<List<AttributeNameModel>> Get() => Ok(attributes.GetAttributeNames(db).ToList());
         
     }
 }

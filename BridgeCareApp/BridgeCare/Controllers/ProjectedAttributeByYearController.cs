@@ -11,9 +11,9 @@ namespace BridgeCare.Controllers
         private readonly BridgeCareContext db;
         private readonly IAttributeByYear attributes;
 
-        public ProjectedAttributesByYearController(IAttributeByYear aby, BridgeCareContext context)
+        public ProjectedAttributesByYearController(IAttributeByYear attributeByYear, BridgeCareContext context)
         {
-            attributes = aby ?? throw new ArgumentNullException(nameof(aby));
+            attributes = attributeByYear ?? throw new ArgumentNullException(nameof(attributeByYear));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
