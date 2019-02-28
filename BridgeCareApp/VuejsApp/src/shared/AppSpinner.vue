@@ -12,13 +12,13 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
+    import Vue from "vue";
+    import {Component} from "vue-property-decorator";
+    import {State} from "vuex-class";
 
     @Component
     export default class AppSpinner extends Vue {
-        loading: boolean = true
-
+        @State("isBusy") loading: boolean;
     }
 </script>
 

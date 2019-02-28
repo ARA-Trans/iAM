@@ -1,16 +1,22 @@
 <template>
     <v-container fluid grid-list-xl>
         <v-layout row wrap>
+            <v-flex xs1>
+                <v-slider v-model="sectionKeyTypes" :tick-labels="sectionKeyTypesLabels" tick-size="2" ticks="always"
+                          step="1" :max="1" v-on:change="onToggleSectionTypeSelect">
+                </v-slider>
+            </v-flex>
             <v-flex xs2>
-                <v-select
-                        :items="sectionIds"
-                        label="Select a Section"
-                        v-on:change="onSelectSection"
-                        outline>
+                <v-select v-if="sectionKeyTypes === 0" :items="referenceIds" label="Select a BMS Id"
+                          v-on:change="onSelectSectionByRefId" outline>
+                </v-select>
+
+                <v-select v-if="sectionKeyTypes === 1" :items="referenceKeys" label="Select a BR Key"
+                          v-on:change="onSelectSectionByRefKey" outline>
                 </v-select>
             </v-flex>
             <v-flex xs1></v-flex>
-            <v-flex xs4>
+            <v-flex xs3>
                 <v-select :disabled="sectionAttributes.length <= 0" :items="sectionAttributes" v-model="selectedAttributes"
                           v-on:change="onSelectAttribute" label="Add/Remove Attributes" multiple outline>
                     <template slot="selection" slot-scope="{item, index}">
@@ -51,7 +57,7 @@
             </v-flex>
         </v-layout>
         <v-layout row wrap>
-            <v-flex xs12>
+            <v-flex xs6>
                 <div v-if="hasValue(selectedSectionGridData)">
                     <iframe class="gmap_canvas"
                             src="https://maps.google.com/maps?q=ben%20franklin%20bridge%20pennsylvania&t=&z=15&ie=UTF8&iwloc=&output=embed"
@@ -59,10 +65,18 @@
                     </iframe>
                 </div>
             </v-flex>
+            <v-flex xs6>
+
+            </v-flex>
         </v-layout>
         <v-layout row wrap>
             <v-flex v-if="hasValue(selectedSectionGridData)" v-for="img in images">
                 <v-img :src="img.src" aspect-ratio="1"></v-img>
+            </v-flex>
+        </v-layout>
+        <v-layout row wrap>
+            <v-flex xs12>
+                <AppSpinner/>
             </v-flex>
         </v-layout>
     </v-container>
@@ -70,11 +84,12 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {Component} from "vue-property-decorator";
+    import {Component, Watch} from "vue-property-decorator";
+    import {State} from "vuex-class";
     import axios from "axios";
-    //@ts-ignore
-    import AppSpinner from "../shared/AppSpinner";
-    import {IAttribute, IAttributeYearlyValue, ISection, mockSections} from "@/models/section";
+
+    import AppSpinner from "../shared/AppSpinner.vue";
+    import {Attribute, AttributeYearlyValue, Section, SectionDetail} from "@/models/section";
     import * as R from "ramda";
     import * as moment from "moment";
 
@@ -84,10 +99,16 @@
         components: {AppSpinner}
     })
     export default class Inventory extends Vue {
+        @State("sections") stateSections: Section[];
+        @State("sectionDetail") stateSectionDetail: SectionDetail;
+
+        sectionKeyTypes: number = 0;
+        sectionKeyTypesLabels = ["BMS ID", "BR KEY"];
         sectionGridHeaders: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
-        sections: ISection[] = [];
-        sectionIds: number[] = [];
-        selectedSection: ISection;
+        sections: Section[] = [];
+        referenceIds: number[] = [];
+        referenceKeys: number[] = [];
+        selectedSection: SectionDetail;
         sectionAttributes: string[] = [];
         selectedAttributes: string[] = [];
         selectAllAttrIcon = 'check_box_outline_blank';
@@ -108,43 +129,63 @@
         ];
         downloadProgress = false;
         loading = false;
-        /**
-         * Vue component has been created
-         */
-        created() {
-            this.startProgressStatus();
-            // simulate a service call to get the bridge ids
-            setTimeout(() => {
-                this.sections = mockSections;
-                this.sectionIds = this.sections.map((s: ISection) => s.sectionId);
-                this.stopProgressStatus();
-            }, 2000)
-            // TODO: uncomment the following code when web service is in place
-            /*axios
-                .get('/api/Sections')
-                .then(response => (response.data as Promise<ISection[]>))
-                .then(
-                    data => {
-                        this.sections = data;
-                        this.sectionIds = this.sections.map((s: ISection) => s.sectionId);
-                        this.stopProgressStatus();
-                    },
-                    error => {
-                        this.stopProgressStatus();
-                        console.log(error);
-                    }
-                );*/
+
+        @Watch("stateSections")
+        onStateSectionsChanged(val: Section[]) {
+            this.sections = val;
+            this.referenceIds = this.sections.map((s: Section) => s.referenceId);
+            this.referenceKeys = this.sections.map((s: Section) => s.referenceKey);
+        }
+
+        @Watch("stateSectionDetail")
+        onStateSectionDetailChanged(val: SectionDetail) {
+            this.selectedSection = val;
+            this.onGotSectionDetail();
         }
         /**
-         * Section has been selected; Sets up the list of values for attribute & start/end years filters and the initial
-         * data grid headers
-         * @param sectionId Selected section's id
+         * Vue component has been mounted
          */
-        onSelectSection(sectionId: number) {
-            // find the section in the list of sections using the given sectionId
-            //@ts-ignore
-            this.selectedSection = this.sections.find((s: ISection) => s.sectionId === sectionId);
-            // if a section was found...
+        mounted() {
+            this.$store.dispatch({
+                type: "getNetworkInventory"
+            });
+        }
+
+        onToggleSectionTypeSelect() {
+            this.$store.dispatch({
+                type: "getInventoryItemDetail",
+                section: null
+            });
+        }
+        /**
+         * Reference id has been selected
+         */
+        onSelectSectionByRefId(refId: number) {
+            // @ts-ignore
+            const section: Section = this.sections.find((s: Section) => s.referenceId === refId);
+            this.$store.dispatch({
+                type: "getInventoryItemDetail",
+                section: section
+            });
+        }
+
+        /**
+         * Reference key has been selected
+         */
+        onSelectSectionByRefKey(refKey: number) {
+            // @ts-ignore
+            const section: Section = this.sections.find((s: Section) => s.referenceKey === refKey);
+            this.$store.dispatch({
+                type: "getInventoryItemDetail",
+                section: section
+            });
+        }
+
+        /**
+         * Section detail has been retrieved from server; Sets up the list of values for attribute & start/end years
+         * filters and the initial data grid headers
+         */
+        onGotSectionDetail() {
             if (this.hasValue(this.selectedSection)) {
                 // reset the list of attributes and create a placeholder list for the years
                 this.sectionAttributes = [];
@@ -152,13 +193,13 @@
                 // sort function that sorts by the 'year' property of attribute yearly values
                 const sortByYear = R.sortBy(R.prop('year'));
                 // for each of the attributes...
-                this.selectedSection.attributes.forEach((a: IAttribute) => {
+                this.selectedSection.attributes.forEach((a: Attribute) => {
                     // push the current attribute name onto the attributes list
                     this.sectionAttributes.push(a.name);
                     // sort the yearly values for the given attribute in ascending order
                     const sortedYearlyValuesAsc = sortByYear(a.yearlyValues);
                     // for each sorted yearly value push the yearly value year onto the years list
-                    sortedYearlyValuesAsc.forEach((val: IAttributeYearlyValue) => years.push(val.year));
+                    sortedYearlyValuesAsc.forEach((val: AttributeYearlyValue) => years.push(val.year));
 
                 });
                 // set all section attributes as selected by default
@@ -180,7 +221,7 @@
          */
         setSelectedSectionGridData() {
             // get the selected attributes
-            const filteredAttributes = this.selectedSection.attributes.filter((a: IAttribute) =>
+            const filteredAttributes = this.selectedSection.attributes.filter((a: Attribute) =>
                 this.selectedAttributes.indexOf(a.name) !== -1
             );
             // get the selected year range
@@ -196,14 +237,14 @@
                     )
                 });
                 // set the selected section grid data
-                this.selectedSectionGridData = filteredAttributes.map((a: IAttribute) => {
+                this.selectedSectionGridData = filteredAttributes.map((a: Attribute) => {
                     const row = {
                         name: a.name
                     };
                     yearRange.forEach((n: number) => {
                         if (R.any(R.propEq("year", n), a.yearlyValues)) {
                             //@ts-ignore
-                            row[`${n}`] = a.yearlyValues.find((val: IAttributeYearlyValue) => val.year === n).value;
+                            row[`${n}`] = a.yearlyValues.find((val: AttributeYearlyValue) => val.year === n).value;
                         } else {
                             //@ts-ignore
                             row[`${n}`] = "N/A";
