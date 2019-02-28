@@ -2,6 +2,7 @@
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Utility;
+using BridgeCare.DataAccessLayer.DataAdapters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -49,8 +50,7 @@ namespace BridgeCare.DataAccessLayer
             try
             {
                 queryReturnValues = UtilityFunctions.NonEntitySQLQuery(selectStatement, db);
-                List<AttributeByYearModel> attributesByYear = DataTableToAttributeList(queryReturnValues);
-                return attributesByYear;
+                List<AttributeByYearModel> attributesByYear = new AttributeYearDataTable(queryReturnValues).Fetch();
             }
             catch (SqlException ex)
             {
@@ -64,40 +64,6 @@ namespace BridgeCare.DataAccessLayer
             return new List<AttributeByYearModel>();
         }
 
-        public List<AttributeByYearModel> DataTableToAttributeList(DataTable dt)
-        {
-            List<AttributeByYearModel> returnAttributeList = new List<AttributeByYearModel>();
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                if (dt.Rows.Count <= 0)
-                    break;
-
-                string value = dt.Rows[0][column.ColumnName].ToString();
-
-                string[] tokens = column.ColumnName.Split('_');
-                if (UtilityFunctions.IsIamYear(tokens.Last()) && value.Length > 0)
-                {
-                    //true means this is an attribute_year column, subtract 5 digits, 4 for year and one '_'
-                    string name = column.ColumnName.Substring(0, column.ColumnName.Length - 5);
-                    AttributeYearlyValueModel attributeYearValue = new AttributeYearlyValueModel();
-
-                    attributeYearValue.Year = Convert.ToInt32(tokens.Last());
-                    attributeYearValue.Value = value;
-
-                    AttributeByYearModel attributeInList = returnAttributeList.Find(_ => _.Name == name);
-                    //if the list does not have the attribute already add it
-                    if (attributeInList == null)
-                    {
-                        attributeInList = new AttributeByYearModel();
-                        attributeInList.Name = name;
-                    }
-
-                    attributeInList.YearlyValues.Add(attributeYearValue);
-                    returnAttributeList.Add(attributeInList);
-                }
-            }
-            return returnAttributeList;
-        }
+       
     }
 }

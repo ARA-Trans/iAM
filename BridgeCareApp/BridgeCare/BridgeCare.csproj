@@ -178,6 +178,7 @@
     <Compile Include="DataAccessLayer\AttributeByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
+    <Compile Include="DataAccessLayer\DataAdapters\AttributeYearDataTableAdapter.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
