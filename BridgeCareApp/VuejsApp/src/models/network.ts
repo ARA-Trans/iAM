@@ -1,4 +1,4 @@
-﻿export default interface INetwork {
+﻿export interface Network {
     networkId: number
     networkName: string
 }

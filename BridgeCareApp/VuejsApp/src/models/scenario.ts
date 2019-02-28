@@ -1,4 +1,4 @@
-export interface IScenario {
+export interface Scenario {
     scenarioId: number;
     name: string;
     createdDate: Date;
@@ -8,7 +8,7 @@ export interface IScenario {
 }
 
 /***********************************************MOCK DATA**************************************************************/
-export const userScenarios: IScenario[] = [
+export const userScenarios: Scenario[] = [
     {
         scenarioId: 1,
         name: 'Scenario A-1',
@@ -59,7 +59,7 @@ export const userScenarios: IScenario[] = [
     }
 ];
 
-export const sharedScenarios: IScenario[] = [
+export const sharedScenarios: Scenario[] = [
     {
         scenarioId: 7,
         name: 'Scenario C-1',
