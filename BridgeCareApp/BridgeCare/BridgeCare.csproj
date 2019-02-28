@@ -217,6 +217,7 @@
     <Compile Include="Interfaces\ISections.cs" />
     <Compile Include="Interfaces\ISimulation.cs" />
     <Compile Include="Interfaces\ITarget.cs" />
+    <Compile Include="Interfaces\SummaryReport\ISummaryReportGenrator.cs" />
     <Compile Include="Models\AttributeByYearModel.cs" />
     <Compile Include="Models\AttributeNameModel.cs" />
     <Compile Include="Models\AttributeYearlyValueModel.cs" />
