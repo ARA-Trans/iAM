@@ -1,5 +1,6 @@
 import {Scenario} from '@/models/scenario';
 import {Attribute, AttributeYearlyValue, Section} from '@/models/section';
+import {InvestmentStrategy, InvestmentStrategyDetail} from '@/models/investment';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
 export const attributes: string[] = [
@@ -284,3 +285,23 @@ export const mockSections: Section[] = [
         ]
     }
 ];
+/*******************************************INVESTMENT EDITOR MOCK DATA************************************************/
+export const mockInvestmentStrategies: InvestmentStrategy[] = [
+    {
+        id: 1234567890,
+        name: 'Investment Strategy 1'
+    },
+    {
+        id: 1234567891,
+        name: 'Investment Strategy 2'
+    }
+];
+
+export const mockInvestmentStrategy1Detail: InvestmentStrategyDetail = {
+    investmentStrategyId: 1234567890,
+    inflationRate: 3.15,
+    discountRate: 1.345,
+    year: 2019,
+    budgets: [],
+    description: ''
+};

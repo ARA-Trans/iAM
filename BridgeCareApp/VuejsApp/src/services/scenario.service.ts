@@ -4,7 +4,6 @@ import {Scenario} from '@/models/scenario';
 import {sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
 import * as moment from 'moment';
 
-
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class ScenarioService extends Vue {
