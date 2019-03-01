@@ -8,7 +8,9 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "lint": "wotan 'src/**' -e '**/*.vue.js'",
+    "lint-fix": "wotan --fix 'src/**' -e '**/*.vue.js'"
   },
   "dependencies": {
     "@types/ramda": "0.25.48",
