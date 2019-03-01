@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BridgeCare.Interfaces
 {
-    public interface IAttributeByYear
+    public interface IAttributesByYear
     {
         List<AttributeByYearModel> GetHistoricalAttributes(SectionModel sectionModel, BridgeCareContext db);
 

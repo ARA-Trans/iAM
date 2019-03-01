@@ -50,10 +50,10 @@ namespace BridgeCare
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
             container.RegisterType<ISections, Sections>();
-            container.RegisterType<ILatitudeLongitudeSection, LatitudeLongitudeSection>();
+            container.RegisterType<ISectionGeoLocator, SectionGeoLocator>();
             container.RegisterType<IDetailedReport, DetailedReport>();
             container.RegisterType<IAttributeNames, AttributeNames>();
-            container.RegisterType<IAttributeByYear, AttributeByYear>();
+            container.RegisterType<IAttributesByYear, AttributesByYear>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
             container.RegisterType<IDeficientReport, DeficientReport>();

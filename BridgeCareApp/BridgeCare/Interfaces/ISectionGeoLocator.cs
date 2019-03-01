@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BridgeCare.Interfaces
 {
-    public interface ILatitudeLongitudeSection
+    public interface ISectionGeoLocator
     {
         IQueryable<LatitudeLongitudeSectionModel> GetLatitudeLongitude(int NetworkId, BridgeCareContext db);
     }

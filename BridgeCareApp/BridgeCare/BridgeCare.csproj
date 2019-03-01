@@ -166,24 +166,23 @@
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BridgeCareContext.cs" />
-    <Compile Include="Controllers\HistoricalAttributeByYearController.cs" />
+    <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
-    <Compile Include="Controllers\LatitudeLongitudeSectionController.cs" />
-    <Compile Include="Controllers\ProjectedAttributeByYearController.cs" />
+    <Compile Include="Controllers\SectionGeoLocatorController.cs" />
+    <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
     <Compile Include="Controllers\DetailedReportController.cs" />
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
-    <Compile Include="DataAccessLayer\AttributeByYear.cs" />
+    <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
-    <Compile Include="DataAccessLayer\DataAdapters\AttributeYearDataTableAdapter.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
     <Compile Include="DataAccessLayer\DetailedReport.cs" />
-    <Compile Include="DataAccessLayer\LatitudeLongitudeSection.cs" />
+    <Compile Include="DataAccessLayer\SectionGeoLocator.cs" />
     <Compile Include="DataAccessLayer\RunSimulation.cs" />
     <Compile Include="DataAccessLayer\Sections.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\CommonSummaryReportData.cs" />
@@ -204,13 +203,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\IAttributeByYear.cs" />
+    <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
     <Compile Include="Interfaces\IDetailedReport.cs" />
-    <Compile Include="Interfaces\ILatitudeLongitudeSection.cs" />
+    <Compile Include="Interfaces\ISectionGeoLocator.cs" />
     <Compile Include="Interfaces\INetwork.cs" />
     <Compile Include="Interfaces\IReportCreator.cs" />
     <Compile Include="Interfaces\IRunSimulation.cs" />

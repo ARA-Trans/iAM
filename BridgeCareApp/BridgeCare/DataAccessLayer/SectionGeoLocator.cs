@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class LatitudeLongitudeSection : ILatitudeLongitudeSection
+    public class SectionGeoLocator : ISectionGeoLocator
     {
-        public LatitudeLongitudeSection()
+        public SectionGeoLocator()
         {
         }
 

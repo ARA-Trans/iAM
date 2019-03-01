@@ -6,12 +6,12 @@ using System.Web.Http;
 
 namespace BridgeCare.Controllers
 {
-    public class LatitudeLongitudeSectionController : ApiController
+    public class SectionGeoLocatorController : ApiController
     {
         private readonly BridgeCareContext db;
-        private readonly ILatitudeLongitudeSection LatitudeLongitude;
+        private readonly ISectionGeoLocator LatitudeLongitude;
 
-        public LatitudeLongitudeSectionController(ILatitudeLongitudeSection latitudeLongitudeSection, BridgeCareContext context)
+        public SectionGeoLocatorController(ISectionGeoLocator latitudeLongitudeSection, BridgeCareContext context)
         {
             LatitudeLongitude = latitudeLongitudeSection ?? throw new ArgumentNullException(nameof(latitudeLongitudeSection));
             db = context ?? throw new ArgumentNullException(nameof(context));
