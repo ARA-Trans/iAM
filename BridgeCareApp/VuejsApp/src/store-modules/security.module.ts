@@ -1,6 +1,6 @@
 const state = {
     loginFailed: true,
-    username: ''
+    userName: ''
 };
 
 const mutations = {
@@ -9,8 +9,8 @@ const mutations = {
         state.loginFailed = status;
     },
     // @ts-ignore
-    usernameMutator(state, username) {
-        state.username = username;
+    userNameMutator(state, userName) {
+        state.userName = userName;
     }
 };
 
@@ -21,7 +21,7 @@ const actions = {
     },
     // @ts-ignore
     setUsername({commit}, payload) {
-        commit('usernameMutator', payload.username);
+        commit('userNameMutator', payload.userName);
     }
 };
 

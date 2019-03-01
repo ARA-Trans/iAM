@@ -1,10 +1,10 @@
-import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/models/criteria';
+import {CriteriaEditorAttribute, emptyCriteria} from '@/models/criteria';
 import CriteriaEditorService from '@/services/criteria-editor.service';
 import {parseCriteriaString} from '@/shared/utils/criteria-editor-parsers';
 
 const state = {
     criteriaEditorAttributes: [] as CriteriaEditorAttribute[],
-    criteria: emptyCriteria as Criteria
+    criteria: emptyCriteria
 };
 
 const mutations = {
