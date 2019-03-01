@@ -7,15 +7,15 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class SectionGeoLocator : ISectionGeoLocator
+    public class SectionLocator : ISectionLocator
     {
-        public SectionGeoLocator()
+        public SectionLocator()
         {
         }
 
-        public IQueryable<LatitudeLongitudeSectionModel> GetLatitudeLongitude(int NetworkId, BridgeCareContext db)
+        public IQueryable<SectionLocationModel> GetLatitudeLongitude(int NetworkId, BridgeCareContext db)
         {
-            IQueryable<LatitudeLongitudeSectionModel> rawQueryForData = null;
+            IQueryable<SectionLocationModel> rawQueryForData = null;
 
             // Including isnull statments to change these to '0' to avoid an exception
             // as  mapping a null to a non nullable data type crashes the entity framwork
@@ -24,7 +24,7 @@ namespace BridgeCare.DataAccessLayer
 
             try
             {
-                rawQueryForData = db.Database.SqlQuery<LatitudeLongitudeSectionModel>(select).AsQueryable();
+                rawQueryForData = db.Database.SqlQuery<SectionLocationModel>(select).AsQueryable();
             }
             catch (SqlException ex)
             {

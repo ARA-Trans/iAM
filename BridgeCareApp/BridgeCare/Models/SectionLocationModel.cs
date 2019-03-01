@@ -1,6 +1,6 @@
 ﻿namespace BridgeCare.Models
 {
-    public class LatitudeLongitudeSectionModel
+    public class SectionLocationModel
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }

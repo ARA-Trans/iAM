@@ -25,7 +25,7 @@ namespace BridgeCare.Controllers
         //"networkId":13,
         //"simulationId":9
         // }
-        public List<AttributeByYearModel> Get(SimulatedSegmentAddressModel segmentAddressModel)
+        public List<AttributeByYearModel> Get(SimulatedSegmentIdsModel segmentAddressModel)
         {
             return attributes.GetProjectedAttributes(segmentAddressModel, db);
         }

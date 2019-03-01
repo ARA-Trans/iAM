@@ -7,6 +7,6 @@ namespace BridgeCare.Interfaces
     {
         List<AttributeByYearModel> GetHistoricalAttributes(SectionModel sectionModel, BridgeCareContext db);
 
-        List<AttributeByYearModel> GetProjectedAttributes(SimulatedSegmentAddressModel segmentAddressModel, BridgeCareContext db);
+        List<AttributeByYearModel> GetProjectedAttributes(SimulatedSegmentIdsModel segmentAddressModel, BridgeCareContext db);
     }
 }

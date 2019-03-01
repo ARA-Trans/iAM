@@ -1,6 +1,6 @@
 ﻿namespace BridgeCare.Models
 {
-    public class SimulatedSegmentAddressModel
+    public class SimulatedSegmentIdsModel
     {
         public int SectionId { get; set; }
         public int NetworkId { get; set; }
