@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios'
-import {Scenario, sharedScenarios, userScenarios} from '@/models/scenario';
+import {Scenario} from '@/models/scenario';
+import {sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
 import * as moment from 'moment';
 
 

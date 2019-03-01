@@ -1,5 +1,5 @@
-import {IScenario} from '../../models/scenario';
-import {IAttribute, IAttributeYearlyValue, ISection} from '../../models/section';
+import {Scenario} from '@/models/scenario';
+import {Attribute, AttributeYearlyValue, Section} from '@/models/section';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
 export const attributes: string[] = [
@@ -70,7 +70,7 @@ export const attributes: string[] = [
 ];
 
 /********************************************SCENARIOS MOCK DATA*******************************************************/
-export const userScenarios: IScenario[] = [
+export const userScenarios: Scenario[] = [
     {
         scenarioId: 1,
         name: 'Scenario A-1',
@@ -121,7 +121,7 @@ export const userScenarios: IScenario[] = [
     }
 ];
 
-export const sharedScenarios: IScenario[] = [
+export const sharedScenarios: Scenario[] = [
     {
         scenarioId: 7,
         name: 'Scenario C-1',
@@ -148,7 +148,7 @@ export const sharedScenarios: IScenario[] = [
     }
 ];
 /*******************************************INVENTORY MOCK DATA********************************************************/
-export const mockLengthValues: IAttributeYearlyValue[] = [
+export const mockLengthValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 100,
@@ -162,12 +162,12 @@ export const mockLengthValues: IAttributeYearlyValue[] = [
         value: 100,
     }
 ];
-export const mockLengthAttribute: IAttribute = {
+export const mockLengthAttribute: Attribute = {
     name: 'LENGTH',
     yearlyValues: mockLengthValues
 };
 
-export const mockAttrDeckAreaValues: IAttributeYearlyValue[] = [
+export const mockAttrDeckAreaValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 4781.25,
@@ -181,12 +181,12 @@ export const mockAttrDeckAreaValues: IAttributeYearlyValue[] = [
         value: 4781.25,
     }
 ];
-export const mockDeckAreaAttribute: IAttribute = {
+export const mockDeckAreaAttribute: Attribute = {
     name: 'DECK_AREA',
     yearlyValues: mockAttrDeckAreaValues
 };
 
-export const mockAdtTotalValues: IAttributeYearlyValue[] = [
+export const mockAdtTotalValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 1065,
@@ -200,12 +200,12 @@ export const mockAdtTotalValues: IAttributeYearlyValue[] = [
         value: 1055
     }
 ];
-export const mockAdtTotalAttribute: IAttribute = {
+export const mockAdtTotalAttribute: Attribute = {
     name: 'ADTTOTAL',
     yearlyValues: mockAdtTotalValues
 };
 
-export const mockBusPlanNetworkValues: IAttributeYearlyValue[] = [
+export const mockBusPlanNetworkValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 2,
@@ -219,12 +219,12 @@ export const mockBusPlanNetworkValues: IAttributeYearlyValue[] = [
         value: 1
     }
 ];
-export const mockBusPlanNetworkAttribute: IAttribute = {
+export const mockBusPlanNetworkAttribute: Attribute = {
     name: 'BUS_PLAN_NETWORK',
     yearlyValues: mockBusPlanNetworkValues
 };
 
-export const mockBridgeTypeValues: IAttributeYearlyValue[] = [
+export const mockBridgeTypeValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 'B',
@@ -234,23 +234,23 @@ export const mockBridgeTypeValues: IAttributeYearlyValue[] = [
         value: 'B'
     }
 ];
-export const mockBridgeTypeAttribute: IAttribute = {
+export const mockBridgeTypeAttribute: Attribute = {
     name: 'BRIDGE_TYPE',
     yearlyValues: mockBridgeTypeValues
 };
 
-export const mockConditionIndexValues: IAttributeYearlyValue[] = [
+export const mockConditionIndexValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 10,
     }
 ];
-export const mockConditionIndexAttribute: IAttribute = {
+export const mockConditionIndexAttribute: Attribute = {
     name: 'CONDITIONINDEX',
     yearlyValues: mockConditionIndexValues
 };
 
-export const mockFamilyIdValues: IAttributeYearlyValue[] = [
+export const mockFamilyIdValues: AttributeYearlyValue[] = [
     {
         year: 2019,
         value: 3,
@@ -264,12 +264,12 @@ export const mockFamilyIdValues: IAttributeYearlyValue[] = [
         value: 3
     }
 ];
-export const mockFamilyIdAttribute: IAttribute = {
+export const mockFamilyIdAttribute: Attribute = {
     name: 'FAMILY_ID',
     yearlyValues: mockFamilyIdValues
 };
 
-export const mockSections: ISection[] = [
+export const mockSections: Section[] = [
     {
         sectionId: 60006206001408,
         location: {lat: 39.949, long: -75.139},

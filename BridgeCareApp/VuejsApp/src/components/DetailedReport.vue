@@ -74,6 +74,7 @@
         @Action("getNetworks") getNetworksAction: any;
         @Action("getSimulations") getSimulationsAction: any;
         @Action("getDetailedReport") getDetailedReportAction: any;
+        @Action("clearReportBlob") clearReportBlobAction: any;
         @Action("runSimulation") runSimulationAction: any;
 
         @Prop({
@@ -103,9 +104,7 @@
                     link.click();
                 }
                 // clear detailedReport state after report blob has been downloaded
-                this.$store.dispatch({
-                    type: "clearReportBlob"
-                })
+                this.clearReportBlobAction();
             }
         }
 

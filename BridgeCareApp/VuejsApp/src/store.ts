@@ -7,7 +7,8 @@ import network from '@/store-modules/network.module';
 import simulation from '@/store-modules/simulation.module';
 import scenario from '@/store-modules/scenario.module';
 import detailedReport from '@/store-modules/detailed-report.module';
-import criteria from '@/store-modules/criteria.module';
+import criteriaEditor from '@/store-modules/criteria-editor.module';
+import inventory from '@/store-modules/inventory.module';
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default new Vuex.Store({
         simulation,
         detailedReport,
         scenario,
-        criteria
+        criteriaEditor,
+        inventory
     }
 });

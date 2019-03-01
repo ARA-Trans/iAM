@@ -1,7 +1,7 @@
 <template>
     <v-layout row justify-center>
         <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="700px">
-            <v-card v-if="criteria">
+            <v-card>
                 <v-card-title>Criteria Editor</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text style="height: 700px;">
@@ -23,22 +23,23 @@
 <script lang="ts">
     import Vue from "vue";
     import {Component, Prop, Watch} from "vue-property-decorator";
+    import {Action, State} from "vuex-class";
     import VueQueryBuilder from "vue-query-builder/src/VueQueryBuilder.vue";
-    import {Criteria, CriteriaAttribute, emptyCriteria} from "@/models/criteria";
+    import {Criteria, CriteriaEditorAttribute, emptyCriteria} from "@/models/criteria";
     import {parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
     import {hasValue} from "@/shared/utils/has-value";
-    import {State} from "vuex-class";
 
     @Component({
         components: {VueQueryBuilder}
     })
     export default class CriteriaEditor extends Vue {
-        @Prop()
-        showCriteriaEditor: boolean;
-        @State(state => state.criteria)
-        stateCriteria: Criteria;
+        @Prop() showCriteriaEditor: boolean;
 
-        criteriaAttributes: CriteriaAttribute[] = this.$store.getters.criteriaAttributes;
+        @State(state => state.criteriaEditor.criteriaEditorAttributes) criteriaEditorAttributes: CriteriaEditorAttribute[];
+        @State(state => state.criteriaEditor.criteria) stateCriteria: Criteria;
+
+        @Action("setCriteriaEditorAttributes") setCriteriaEditorAttributesAction: any;
+
         criteria: Criteria = emptyCriteria;
         rules: any[] = [];
         labels: object = {
@@ -54,18 +55,10 @@
             "textInputPlaceholder": "value"
         };
 
-        @Watch("stateCriteria")
-        onStateCriteriaChanged(val: Criteria, oldVal: Criteria) {
-            this.criteria = val;
-        }
-
-        beforeCreate() {
-            this.$store.dispatch({type: "getCriteriaAttributes"});
-        }
-
-        created() {
-            this.rules = this.criteriaAttributes.map((ca: CriteriaAttribute) => ({
-                // TODO: implement select when we have service that returns predetermined values
+        @Watch("criteriaEditorAttributes")
+        onCriteriaEditorAttributesChanged(val: CriteriaEditorAttribute[]) {
+            this.rules = val.map((cea: CriteriaEditorAttribute) => ({
+                // TODO: implement select when we have web service that returns predetermined values
                 /*type: 'select',
                 label: ca.name,
                 id: ca.name,
@@ -75,10 +68,19 @@
                     value: val
                 }))*/
                 type: "text",
-                label: ca.name,
-                id: ca.name,
+                label: cea.name,
+                id: cea.name,
                 operators: ["=", "<>", "<", "<=", ">", ">="]
             }));
+        }
+
+        @Watch("stateCriteria")
+        onStateCriteriaChanged(val: Criteria) {
+            this.criteria = val;
+        }
+
+        mounted() {
+            this.setCriteriaEditorAttributesAction();
         }
 
         isNotValidCriteria() {

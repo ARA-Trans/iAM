@@ -67,8 +67,8 @@
         @State(state => state.security.loginFailed) loginFailed: boolean;
         @State(state => state.security.username) username: string;
 
-        @Action("setLoginStatus") setLoginStatusAction;
-        @Action("setUsername") setUsernameAction;
+        @Action("setLoginStatus") setLoginStatusAction: any;
+        @Action("setUsername") setUsernameAction: any;
 
         applicationConfig: {
             clientID: string; graphScopes: string[]; authority: string;
