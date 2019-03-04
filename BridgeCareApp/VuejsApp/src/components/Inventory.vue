@@ -197,7 +197,7 @@
                 yearRange.forEach((year: number) => {
                     this.sectionGridHeaders.push(
                         {text: year.toString(), sortable: false, value: year.toString()}
-                    )
+                    );
                 });
                 // set the selected section grid data
                 this.selectedSectionGridData = filteredAttributes.map((a: Attribute) => {

@@ -59,7 +59,7 @@
     import {Alert} from '@/models/alert';
     import {hasValue} from '@/shared/utils/has-value';
 
-    import { db } from '@/firebase'
+    import { statusReference } from '@/firebase';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -81,25 +81,24 @@
 
         @Prop({
             default: function () {
-                return {showModal: false}
+                return {showModal: false};
             }
         })
         warning: Alert;
         created() {
-            db.ref('simulationStatus').on('value', (snapshot:any) => {
-                const fetch = []
-                //@ts-ignore
-                const obj = snapshot.val()
-                for (let key in obj) {
-                    fetch.push({
+            statusReference.on('value', (snapshot:any) => {
+                const simulationStatus = [];                
+                const results = snapshot.val();
+                for (let key in results) {
+                    simulationStatus.push({
                         Id: key,
-                        Status: obj[key].Status
-                    })
+                        Status: results[key].Status
+                    });
                 }
-                console.log(fetch)
+                console.log(simulationStatus);
             }, (error: any) => {
 
-            })
+            });
         }
 
         networkId: number = 0;
@@ -146,8 +145,7 @@
          */
         onSelectNetwork(networkId: number) {
             this.networkId = networkId;
-            // @ts-ignore
-            const selectedNetwork: Network = this.networks.find(t => t.networkId === networkId);
+            const selectedNetwork: Network = this.networks.find(t => t.networkId === networkId) as Network;
             this.networkName = hasValue(selectedNetwork) ? selectedNetwork.networkName : '';
             // dispatch action to get simulations
             this.setIsBusyAction({isBusy: true});
@@ -165,8 +163,7 @@
          */
         onSelectSimulation(simulationId: number) {
             this.simulationId = simulationId;
-            // @ts-ignore
-            const selectedSimulation: Simulation = this.simulations.find((s: Simulation) => s.simulationId == simulationId);
+            const selectedSimulation: Simulation = this.simulations.find((s: Simulation) => s.simulationId == simulationId) as Simulation;
             this.simulationName = hasValue(selectedSimulation) ? selectedSimulation.simulationName : '';
         }
 

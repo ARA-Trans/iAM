@@ -4,7 +4,12 @@
       true,
       "single"
     ],
-    "indent": [true, "spaces", 2]
+    "indent": [ true, "spaces", 2 ],
+    "no-consecutive-blank-lines": false,
+    "curly": true,
+    "new-parens": true,
+    "semicolon": true,
+    "import-spacing": true
   },
   "defaultSeverity": "warning",
   "linterOptions": {

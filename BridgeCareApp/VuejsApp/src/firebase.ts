@@ -1,4 +1,8 @@
-﻿import firebase from 'firebase'
+﻿// This import loads the firebase namespace along with all its type information.
+import * as firebase from 'firebase/app';
+
+// These imports load individual services into the firebase namespace.
+import 'firebase/database';
 
 const firebaseApp = firebase.initializeApp({
     apiKey: 'AIzaSyAEw-O3t5gVEwh37pXYkBzN1pSiEVc7BYM',
@@ -9,5 +13,5 @@ const firebaseApp = firebase.initializeApp({
     messagingSenderId: '826288103315'
 });
 export const db = firebaseApp.database();
-export const statusReference = db.ref('simulationStatus')
+export const statusReference = db.ref('simulationStatus');
 export default firebaseApp;

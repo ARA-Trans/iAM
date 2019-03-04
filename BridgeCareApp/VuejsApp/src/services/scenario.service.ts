@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import axios from 'axios'
+import axios from 'axios';
 import {Scenario} from '@/models/scenario';
 import {sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
 import * as moment from 'moment';
@@ -16,13 +16,13 @@ export default class ScenarioService extends Vue {
                 return {
                     ...s,
                     createdDate: dateMinus2Days
-                }
+                };
             }),
             ...sharedScenarios.map((s: Scenario) => {
                 return {
                     ...s,
                     createdDate: dateMinus2Days
-                }
+                };
             })
         ];
         return Promise.resolve<Scenario[]>(scenarios);

@@ -41,7 +41,7 @@
 
         sendUserSelection(decision: boolean) {
             this.modalData;
-            this.$emit('decision', decision)
+            this.$emit('decision', decision);
         }
     }
 </script>

@@ -2,7 +2,7 @@
 
 declare module 'vue/types/options' {
     interface ComponentOptions<V extends Vue> {
-        firebase?: any,
+        firebase?: any;
     }
 }
 
@@ -13,6 +13,6 @@ declare module 'vue/types/options' {
 */
 declare module 'vue/types/vue' {
     interface Vue {
-        [key: string]: any
+        [key: string]: any;
     }
 }
