@@ -47,17 +47,17 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component, Prop, Watch} from "vue-property-decorator";
-    import {Action, State} from "vuex-class";
-    import axios from "axios";
+    import Vue from 'vue';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import axios from 'axios';
 
-    import AppSpinner from "../shared/AppSpinner.vue";
-    import {Network} from "@/models/network";
-    import {Simulation} from "@/models/simulation";
-    import AppModalPopup from "../shared/AppModalPopup.vue";
-    import {Alert} from "@/models/alert";
-    import {hasValue} from "@/shared/utils/has-value";
+    import AppSpinner from '../shared/AppSpinner.vue';
+    import {Network} from '@/models/network';
+    import {Simulation} from '@/models/simulation';
+    import AppModalPopup from '../shared/AppModalPopup.vue';
+    import {Alert} from '@/models/alert';
+    import {hasValue} from '@/shared/utils/has-value';
 
     import { db } from '@/firebase'
 
@@ -72,12 +72,12 @@
         @State(state => state.simulation.simulations) simulations: Simulation[];
         @State(state => state.detailedReport.reportBlob) reportBlob: Blob;
 
-        @Action("setIsBusy") setIsBusyAction: any;
-        @Action("getNetworks") getNetworksAction: any;
-        @Action("getSimulations") getSimulationsAction: any;
-        @Action("getDetailedReport") getDetailedReportAction: any;
-        @Action("clearReportBlob") clearReportBlobAction: any;
-        @Action("runSimulation") runSimulationAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getNetworks') getNetworksAction: any;
+        @Action('getSimulations') getSimulationsAction: any;
+        @Action('getDetailedReport') getDetailedReportAction: any;
+        @Action('clearReportBlob') clearReportBlobAction: any;
+        @Action('runSimulation') runSimulationAction: any;
 
         @Prop({
             default: function () {
@@ -85,10 +85,8 @@
             }
         })
         warning: Alert;
-        @Prop({ default: function () { return { showModal: false } } })
-        warning: IAlert
         created() {
-            db.ref('simulationStatus').on('value', (snapshot) => {
+            db.ref('simulationStatus').on('value', (snapshot:any) => {
                 const fetch = []
                 //@ts-ignore
                 const obj = snapshot.val()
@@ -105,21 +103,21 @@
         }
 
         networkId: number = 0;
-        networkName: string = "";
+        networkName: string = '';
         simulationId: number = 0;
-        simulationName: string = "";
+        simulationName: string = '';
 
-        @Watch("reportBlob")
+        @Watch('reportBlob')
         onReportBlobChanged(val: Blob) {
             if (hasValue(val)) {
                 // The if condition is used to work with IE11, and the else block is for Chrome
                 if (navigator.msSaveOrOpenBlob) {
-                    navigator.msSaveOrOpenBlob(val, "DetailedReport.xlsx");
+                    navigator.msSaveOrOpenBlob(val, 'DetailedReport.xlsx');
                 } else {
                     const url = window.URL.createObjectURL(val);
-                    const link = document.createElement("a");
+                    const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute("download", "DetailedReport.xlsx");
+                    link.setAttribute('download', 'DetailedReport.xlsx');
                     document.body.appendChild(link);
                     link.click();
                 }
@@ -150,7 +148,7 @@
             this.networkId = networkId;
             // @ts-ignore
             const selectedNetwork: Network = this.networks.find(t => t.networkId === networkId);
-            this.networkName = hasValue(selectedNetwork) ? selectedNetwork.networkName : "";
+            this.networkName = hasValue(selectedNetwork) ? selectedNetwork.networkName : '';
             // dispatch action to get simulations
             this.setIsBusyAction({isBusy: true});
             this.getSimulationsAction({networkId: networkId}).then(() =>
@@ -169,7 +167,7 @@
             this.simulationId = simulationId;
             // @ts-ignore
             const selectedSimulation: Simulation = this.simulations.find((s: Simulation) => s.simulationId == simulationId);
-            this.simulationName = hasValue(selectedSimulation) ? selectedSimulation.simulationName : "";
+            this.simulationName = hasValue(selectedSimulation) ? selectedSimulation.simulationName : '';
         }
 
         /**
@@ -194,9 +192,9 @@
          */
         onRunSimulation() {
             this.warning.showModal = true;
-            this.warning.heading = "Warning";
-            this.warning.message = "The simulation can take around five minutes to finish. " +
-                "Are you sure that you want to continue?";
+            this.warning.heading = 'Warning';
+            this.warning.message = 'The simulation can take around five minutes to finish. ' +
+                'Are you sure that you want to continue?';
         }
 
         /**

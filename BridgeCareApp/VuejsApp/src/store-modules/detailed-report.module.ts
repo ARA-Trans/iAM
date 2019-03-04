@@ -13,8 +13,8 @@ const mutations = {
 
 const actions = {
     // @ts-ignore
-    getDetailedReport({commit}, payload) {
-        new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
+    async getDetailedReport({ commit }, payload) {
+        await new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
             .then((reportBlob: Blob) => commit('reportBlobMutator', reportBlob))
             .catch((error: any) => console.log(error));
     },

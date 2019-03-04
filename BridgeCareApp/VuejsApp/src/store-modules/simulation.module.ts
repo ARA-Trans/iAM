@@ -14,8 +14,8 @@ const mutations = {
 
 const actions = {
     // @ts-ignore
-    getSimulations({commit}, payload) {
-        new SimulationService().getSimulations(payload.networkId)
+    async getSimulations({ commit }, payload) {
+        await new SimulationService().getSimulations(payload.networkId)
             .then((simulations: Simulation[]) => commit('simulationsMutator', simulations))
             .catch((error: any) => console.log(error));
     },

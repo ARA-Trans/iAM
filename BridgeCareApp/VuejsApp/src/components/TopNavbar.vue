@@ -57,18 +57,18 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component} from "vue-property-decorator";
-    import {Action, State} from "vuex-class";
-    import * as Msal from "msal"
+    import Vue from 'vue';
+    import {Component} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import * as Msal from 'msal'
 
     @Component
     export default class TopNavbar extends Vue {
         @State(state => state.security.loginFailed) loginFailed: boolean;
         @State(state => state.security.userName) userName: string;
 
-        @Action("setLoginStatus") setLoginStatusAction: any;
-        @Action("setUsername") setUsernameAction: any;
+        @Action('setLoginStatus') setLoginStatusAction: any;
+        @Action('setUsername') setUsernameAction: any;
 
         applicationConfig: {
             clientID: string; graphScopes: string[]; authority: string;
@@ -77,28 +77,28 @@
 
         clientApp: Msal.UserAgentApplication;
 
-        signupSignInPolicy: string = "https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_su-si-pol";
-        passwordResetPolicy: string = "https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_pr-pol";
+        signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_su-si-pol';
+        passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_pr-pol';
 
         constructor() {
             super();
             let PROD_REDIRECT_URI = process.env.VUE_APP_CLIENT_APP_URL;
             let redirectUri = window.location.origin;
-            if (window.location.hostname !== "127.0.0.1") {
+            if (window.location.hostname !== '127.0.0.1') {
                 redirectUri = PROD_REDIRECT_URI;
             }
 
-            if (process.env.VUE_APP_IS_PRODUCTION == "false") {
+            if (process.env.VUE_APP_IS_PRODUCTION == 'false') {
                 this.applicationConfig = {
-                    clientID: "6abd6916-ce43-4cb1-9189-5749fc544e78",
-                    graphScopes: ["https://aratranstest.onmicrosoft.com/user/user_impersonation"],
+                    clientID: '6abd6916-ce43-4cb1-9189-5749fc544e78',
+                    graphScopes: ['https://aratranstest.onmicrosoft.com/user/user_impersonation'],
                     authority: this.signupSignInPolicy,
                     authorityPR: this.passwordResetPolicy
                 };
             } else {
                 this.applicationConfig = {
-                    clientID: "c4132c6f-fbb2-489c-bdf5-dda2ce009af8",
-                    graphScopes: ["https://aratranstest.onmicrosoft.com/userStage/user_impersonation"],
+                    clientID: 'c4132c6f-fbb2-489c-bdf5-dda2ce009af8',
+                    graphScopes: ['https://aratranstest.onmicrosoft.com/userStage/user_impersonation'],
                     authority: this.signupSignInPolicy,
                     authorityPR: this.passwordResetPolicy
                 };
@@ -109,7 +109,7 @@
                     console.log(token);
                 },
                 {
-                    cacheLocation: "localStorage",
+                    cacheLocation: 'localStorage',
                 }
             );
         }
@@ -117,10 +117,10 @@
         data() {
             return {
                 routes: [
-                    {navigation: "Inventory", icon: "home", name: "Inventory"},
-                    {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
-                    {navigation: "DetailedReport", icon: "receipt", name: "Detailed report"},
-                    {navigation: "Criteria", name: "Criteria"}
+                    {navigation: 'Inventory', icon: 'home', name: 'Inventory'},
+                    {navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios'},
+                    {navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report'},
+                    {navigation: 'Criteria', name: 'Criteria'}
                 ],
                 drawer: true
             }
@@ -134,7 +134,7 @@
             let user = this.clientApp.getUser();
             if (!user) {
                 this.setLoginStatusAction({status: true});
-                this.setUsernameAction({userName: ""});
+                this.setUsernameAction({userName: ''});
             } else {
                 this.setLoginStatusAction({status: false});
                 this.setUsernameAction({userName: user.name});
@@ -160,24 +160,24 @@
             // To add Forget Password policy, when a user clicks on `forget password` link.
             // We are catching the error thrown by Azure AD B2C and repopulating the `clientApp` object with new policy
             // and calling the `login()` method again.
-            if (error.indexOf("AADB2C90118") > -1) {
+            if (error.indexOf('AADB2C90118') > -1) {
                 this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
                     this.applicationConfig.authorityPR,
                     (errorDesc, token, error, tokenType) => {
                         // callback for login redirect
                     },
-                    {cacheLocation: "localStorage"});
+                    {cacheLocation: 'localStorage'});
                 this.login();
-            } else if (error.indexOf("AADB2C90091") > -1) {
+            } else if (error.indexOf('AADB2C90091') > -1) {
                 this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
                     this.applicationConfig.authority,
                     (errorDesc, token, error, tokenType) => {
                         // callback for login redirect
                     },
-                    {cacheLocation: "localStorage"});
+                    {cacheLocation: 'localStorage'});
                 this.login();
             } else {
-                this.logMessage("Error during login:\n" + error);
+                this.logMessage('Error during login:\n' + error);
             }
         }
 
@@ -187,7 +187,7 @@
 
         updateUI() {
             this.setUsernameAction({userName: this.clientApp.getUser().name});
-            this.logMessage("User '" + this.userName + "' logged-in");
+            this.logMessage('User \'' + this.userName + '\' logged-in');
         }
 
         logMessage(s: string) {

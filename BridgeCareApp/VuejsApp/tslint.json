@@ -3,6 +3,11 @@
     "quotemark": [
       true,
       "single"
-    ]
+    ],
+    "indent": [true, "spaces", 2]
+  },
+  "defaultSeverity": "warning",
+  "linterOptions": {
+    "exclude": [ "node_modules/**" ]
   }
 }

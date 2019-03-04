@@ -14,8 +14,8 @@ const mutations = {
 
 const actions = {
     // @ts-ignore
-    getNetworks({commit}) {
-        new NetworkService().getNetworks()
+    async getNetworks({ commit }) {
+        await new NetworkService().getNetworks()
             .then((networks: Network[]) => commit('networksMutator', networks))
             .catch((error: any) => console.log(error));
     }

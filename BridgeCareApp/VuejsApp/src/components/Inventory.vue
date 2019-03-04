@@ -74,16 +74,16 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component, Watch} from "vue-property-decorator";
-    import {Action, State} from "vuex-class";
-    import axios from "axios";
+    import Vue from 'vue';
+    import {Component, Watch} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import axios from 'axios';
 
-    import AppSpinner from "../shared/AppSpinner.vue";
-    import {Attribute, AttributesWithYearlyValues, Section} from "@/models/section";
-    import * as R from "ramda";
-    import * as moment from "moment";
-    import {hasValue} from "@/shared/utils/has-value";
+    import AppSpinner from '../shared/AppSpinner.vue';
+    import {Attribute, AttributesWithYearlyValues, Section} from '@/models/section';
+    import * as R from 'ramda';
+    import * as moment from 'moment';
+    import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -94,8 +94,8 @@
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.inventory.sections) sections: Section[];
 
-        @Action("setIsBusy") setIsBusyAction: any;
-        @Action("getNetworkInventory") getNetworkInventoryAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getNetworkInventory') getNetworkInventoryAction: any;
 
         sectionGridHeaders: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
         sectionIds: number[] = [];
@@ -109,17 +109,17 @@
         endYear: number = new Date().getFullYear();
         selectedSectionGridData: any[] = [];
         images: object[] = [
-            {src: require("@/assets/images/inventory_mock_bridge_images/1.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/2.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/3.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/4.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/5.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/6.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/7.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/8.jpg")}
+            {src: require('@/assets/images/inventory_mock_bridge_images/1.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/2.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/3.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/4.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/5.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/6.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/7.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/8.jpg')}
         ];
 
-        @Watch("sections")
+        @Watch('sections')
         onSectionsChanged(val: Section[]) {
             this.sectionIds = val.map((s: Section) => s.sectionId);
         }
@@ -191,7 +191,7 @@
             const yearRange = this.getYearRange();
             if (hasValue(filteredAttributes) && hasValue(yearRange)) {
                 //reset the sectionGridHeaders list
-                this.sectionGridHeaders = R.filter(h => R.propEq("value", "name", h), this.sectionGridHeaders);
+                this.sectionGridHeaders = R.filter(h => R.propEq('value', 'name', h), this.sectionGridHeaders);
                 // for each of the years in the yearRange list add a new header to the sectionGridHeaders list using
                 // the years as the text/value properties
                 yearRange.forEach((year: number) => {
@@ -205,12 +205,12 @@
                         name: a.name
                     };
                     yearRange.forEach((n: number) => {
-                        if (R.any(R.propEq("year", n), a.yearlyValues)) {
+                        if (R.any(R.propEq('year', n), a.yearlyValues)) {
                             //@ts-ignore
                             row[`${n}`] = a.yearlyValues.find((val: AttributesWithYearlyValues) => val.year === n).value;
                         } else {
                             //@ts-ignore
-                            row[`${n}`] = "N/A";
+                            row[`${n}`] = 'N/A';
                         }
                     });
                     return row;
@@ -225,11 +225,11 @@
          */
         setAttributeSelectAllIcon() {
             if (this.selectedAllAttributes()) {
-                this.selectAllAttrIcon = "check_box";
+                this.selectAllAttrIcon = 'check_box';
             } else if (this.selectedSomeAttributes()) {
-                this.selectAllAttrIcon = "indeterminate_check_box";
+                this.selectAllAttrIcon = 'indeterminate_check_box';
             } else {
-                this.selectAllAttrIcon = "check_box_outline_blank";
+                this.selectAllAttrIcon = 'check_box_outline_blank';
             }
         }
         /**
@@ -320,7 +320,7 @@
                 while (currentYear >= this.startYear) {
                     range.push(currentYear);
                     //@ts-ignore
-                    currentYear = parseInt(moment().year(currentYear).subtract(1, "year").format("YYYY"));
+                    currentYear = parseInt(moment().year(currentYear).subtract(1, 'year').format('YYYY'));
                 }
                 return range;
             }
