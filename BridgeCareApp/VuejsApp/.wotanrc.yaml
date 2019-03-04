@@ -1,0 +1,1 @@
+extends: wotan:recommended # use all recommended rules, could be an array to extend multiple configs
