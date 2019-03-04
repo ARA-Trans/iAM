@@ -55,6 +55,7 @@
     import Simulation from '../models/Simulation'
     import AppModalPopup from '../shared/AppModalPopup.vue'
     import { IAlert } from '@/models/IAlert'
+    import { db } from '@/firebase'
 
     axios.defaults.baseURL = process.env.VUE_APP_URL
 
@@ -77,6 +78,22 @@
 
         @Prop({ default: function () { return { showModal: false } } })
         warning: IAlert
+        created() {
+            db.ref('simulationStatus').on('value', (snapshot) => {
+                const fetch = []
+                //@ts-ignore
+                const obj = snapshot.val()
+                for (let key in obj) {
+                    fetch.push({
+                        Id: key,
+                        Status: obj[key].Status
+                    })
+                }
+                console.log(fetch)
+            }, (error: any) => {
+
+            })
+        }
 
         mounted() {
             this.downloadProgress = true
@@ -105,10 +122,10 @@
                 id: id
             }).then(() => {
                 this.simulations = this.$store.getters.simulations as Simulation[]
-                    this.disableSimulationDropDown = false
-                }).catch((error) => {
-                    console.log(error)
-                })
+                this.disableSimulationDropDown = false
+            }).catch((error) => {
+                console.log(error)
+            })
         }
 
         getSimulationId(id: any) {

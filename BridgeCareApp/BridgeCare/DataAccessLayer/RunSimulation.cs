@@ -25,7 +25,7 @@ namespace BridgeCare.DataAccessLayer
                 {
                     DBMgr.CloseConnection();
                 }
-                return Task.FromResult("Simulation completed successfully");
+                return Task.FromResult("Simulation is running in the background");
             }
             catch (Exception ex)
             {

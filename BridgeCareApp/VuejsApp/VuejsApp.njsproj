@@ -101,6 +101,9 @@
     <Folder Include="src\shared\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="src\firebase.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\main.ts" />
     <TypeScriptCompile Include="src\models\IAlert.ts">
       <SubType>Code</SubType>
@@ -118,6 +121,12 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
+    <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\shims-vuefire.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store.ts" />
   </ItemGroup>
   <ItemGroup>
