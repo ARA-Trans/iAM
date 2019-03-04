@@ -1,20 +1,20 @@
-export interface AttributeYearlyValue {
+export interface AttributesWithYearlyValues {
     year: number;
     value: any;
 }
 
 export interface Attribute {
     name: string;
-    yearlyValues: AttributeYearlyValue[];
+    yearlyValues: AttributesWithYearlyValues[];
 }
 
-export interface LatLong {
+export interface LatitudeLongitude {
     lat: number;
     long: number;
 }
 
 export interface Section {
     sectionId: number;
-    location: LatLong;
+    location: LatitudeLongitude;
     attributes: Attribute[];
 }

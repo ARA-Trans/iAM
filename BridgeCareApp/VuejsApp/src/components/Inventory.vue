@@ -80,7 +80,7 @@
     import axios from "axios";
 
     import AppSpinner from "../shared/AppSpinner.vue";
-    import {Attribute, AttributeYearlyValue, Section} from "@/models/section";
+    import {Attribute, AttributesWithYearlyValues, Section} from "@/models/section";
     import * as R from "ramda";
     import * as moment from "moment";
     import {hasValue} from "@/shared/utils/has-value";
@@ -160,7 +160,9 @@
                     // sort the yearly values for the given attribute in ascending order
                     const sortedYearlyValuesAsc = sortByYear(a.yearlyValues);
                     // for each sorted yearly value push the yearly value year onto the years list
-                    sortedYearlyValuesAsc.forEach((val: AttributeYearlyValue) => years.push(val.year));
+                    sortedYearlyValuesAsc.forEach((attributesWithYearlyValues: AttributesWithYearlyValues) =>
+                        years.push(attributesWithYearlyValues.year)
+                    );
 
                 });
                 // set all section attributes as selected by default
@@ -205,7 +207,7 @@
                     yearRange.forEach((n: number) => {
                         if (R.any(R.propEq("year", n), a.yearlyValues)) {
                             //@ts-ignore
-                            row[`${n}`] = a.yearlyValues.find((val: AttributeYearlyValue) => val.year === n).value;
+                            row[`${n}`] = a.yearlyValues.find((val: AttributesWithYearlyValues) => val.year === n).value;
                         } else {
                             //@ts-ignore
                             row[`${n}`] = "N/A";

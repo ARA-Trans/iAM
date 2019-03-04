@@ -1,5 +1,5 @@
 import {Scenario} from '@/models/scenario';
-import {Attribute, AttributeYearlyValue, Section} from '@/models/section';
+import {Attribute, AttributesWithYearlyValues, Section} from '@/models/section';
 import {InvestmentStrategy, InvestmentStrategyDetail} from '@/models/investment';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
@@ -149,7 +149,7 @@ export const sharedScenarios: Scenario[] = [
     }
 ];
 /*******************************************INVENTORY MOCK DATA********************************************************/
-export const mockLengthValues: AttributeYearlyValue[] = [
+export const mockLengthValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 100,
@@ -168,7 +168,7 @@ export const mockLengthAttribute: Attribute = {
     yearlyValues: mockLengthValues
 };
 
-export const mockAttrDeckAreaValues: AttributeYearlyValue[] = [
+export const mockAttrDeckAreaValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 4781.25,
@@ -187,7 +187,7 @@ export const mockDeckAreaAttribute: Attribute = {
     yearlyValues: mockAttrDeckAreaValues
 };
 
-export const mockAdtTotalValues: AttributeYearlyValue[] = [
+export const mockAdtTotalValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 1065,
@@ -206,7 +206,7 @@ export const mockAdtTotalAttribute: Attribute = {
     yearlyValues: mockAdtTotalValues
 };
 
-export const mockBusPlanNetworkValues: AttributeYearlyValue[] = [
+export const mockBusPlanNetworkValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 2,
@@ -225,7 +225,7 @@ export const mockBusPlanNetworkAttribute: Attribute = {
     yearlyValues: mockBusPlanNetworkValues
 };
 
-export const mockBridgeTypeValues: AttributeYearlyValue[] = [
+export const mockBridgeTypeValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 'B',
@@ -240,7 +240,7 @@ export const mockBridgeTypeAttribute: Attribute = {
     yearlyValues: mockBridgeTypeValues
 };
 
-export const mockConditionIndexValues: AttributeYearlyValue[] = [
+export const mockConditionIndexValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 10,
@@ -251,7 +251,7 @@ export const mockConditionIndexAttribute: Attribute = {
     yearlyValues: mockConditionIndexValues
 };
 
-export const mockFamilyIdValues: AttributeYearlyValue[] = [
+export const mockFamilyIdValues: AttributesWithYearlyValues[] = [
     {
         year: 2019,
         value: 3,

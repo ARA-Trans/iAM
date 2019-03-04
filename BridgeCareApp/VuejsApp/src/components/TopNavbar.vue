@@ -65,7 +65,7 @@
     @Component
     export default class TopNavbar extends Vue {
         @State(state => state.security.loginFailed) loginFailed: boolean;
-        @State(state => state.security.username) username: string;
+        @State(state => state.security.userName) userName: string;
 
         @Action("setLoginStatus") setLoginStatusAction: any;
         @Action("setUsername") setUsernameAction: any;
@@ -110,7 +110,6 @@
                 },
                 {
                     cacheLocation: "localStorage",
-                    //redirectUri: redirectUri
                 }
             );
         }
@@ -135,10 +134,10 @@
             let user = this.clientApp.getUser();
             if (!user) {
                 this.setLoginStatusAction({status: true});
-                this.setUsernameAction({username: ""});
+                this.setUsernameAction({userName: ""});
             } else {
                 this.setLoginStatusAction({status: false});
-                this.setUsernameAction({username: user.name});
+                this.setUsernameAction({userName: user.name});
                 this.updateUI();
             }
         }
@@ -187,8 +186,8 @@
         }
 
         updateUI() {
-            this.setUsernameAction({username: this.clientApp.getUser().name});
-            this.logMessage("User '" + this.username + "' logged-in");
+            this.setUsernameAction({userName: this.clientApp.getUser().name});
+            this.logMessage("User '" + this.userName + "' logged-in");
         }
 
         logMessage(s: string) {
