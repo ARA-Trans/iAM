@@ -65,20 +65,25 @@
                 <v-img :src="img.src" aspect-ratio="1"></v-img>
             </v-flex>
         </v-layout>
+        <v-layout row wrap>
+            <v-flex xs12>
+                <AppSpinner/>
+            </v-flex>
+        </v-layout>
     </v-container>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {Component} from "vue-property-decorator";
+    import {Component, Watch} from "vue-property-decorator";
+    import {Action, State} from "vuex-class";
     import axios from "axios";
 
     import AppSpinner from "../shared/AppSpinner.vue";
-    import {IAttribute, IAttributeYearlyValue, ISection} from "@/models/section";
+    import {Attribute, AttributesWithYearlyValues, Section} from "@/models/section";
     import * as R from "ramda";
     import * as moment from "moment";
     import {hasValue} from "@/shared/utils/has-value";
-    import {mockSections} from "@/shared/utils/mock-data";
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -86,10 +91,15 @@
         components: {AppSpinner}
     })
     export default class Inventory extends Vue {
+        @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.inventory.sections) sections: Section[];
+
+        @Action("setIsBusy") setIsBusyAction: any;
+        @Action("getNetworkInventory") getNetworkInventoryAction: any;
+
         sectionGridHeaders: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
-        sections: ISection[] = [];
         sectionIds: number[] = [];
-        selectedSection: ISection;
+        selectedSection: Section;
         sectionAttributes: string[] = [];
         selectedAttributes: string[] = [];
         selectAllAttrIcon = 'check_box_outline_blank';
@@ -108,34 +118,24 @@
             {src: require("@/assets/images/inventory_mock_bridge_images/7.jpg")},
             {src: require("@/assets/images/inventory_mock_bridge_images/8.jpg")}
         ];
-        downloadProgress = false;
-        loading = false;
+
+        @Watch("sections")
+        onSectionsChanged(val: Section[]) {
+            this.sectionIds = val.map((s: Section) => s.sectionId);
+        }
         /**
          * Vue component has been created
          */
-        created() {
-            this.startProgressStatus();
-            // simulate a service call to get the bridge ids
-            setTimeout(() => {
-                this.sections = mockSections;
-                this.sectionIds = this.sections.map((s: ISection) => s.sectionId);
-                this.stopProgressStatus();
-            }, 2000)
-            // TODO: uncomment the following code when web service is in place
-            /*axios
-                .get('/api/Sections')
-                .then(response => (response.data as Promise<ISection[]>))
-                .then(
-                    data => {
-                        this.sections = data;
-                        this.sectionIds = this.sections.map((s: ISection) => s.sectionId);
-                        this.stopProgressStatus();
-                    },
-                    error => {
-                        this.stopProgressStatus();
-                        console.log(error);
-                    }
-                );*/
+        mounted() {
+            this.setIsBusyAction({isBusy: true});
+            this.getNetworkInventoryAction({
+                network: {}
+            }).then(() =>
+                this.setIsBusyAction({isBusy: false})
+            ).catch((error: any) => {
+                this.setIsBusyAction({isBusy: false});
+                console.log(error);
+            });
         }
         /**
          * Section has been selected; Sets up the list of values for attribute & start/end years filters and the initial
@@ -145,7 +145,7 @@
         onSelectSection(sectionId: number) {
             // find the section in the list of sections using the given sectionId
             //@ts-ignore
-            this.selectedSection = this.sections.find((s: ISection) => s.sectionId === sectionId);
+            this.selectedSection = this.sections.find((s: Section) => s.sectionId === sectionId);
             // if a section was found...
             if (hasValue(this.selectedSection)) {
                 // reset the list of attributes and create a placeholder list for the years
@@ -154,13 +154,15 @@
                 // sort function that sorts by the 'year' property of attribute yearly values
                 const sortByYear = R.sortBy(R.prop('year'));
                 // for each of the attributes...
-                this.selectedSection.attributes.forEach((a: IAttribute) => {
+                this.selectedSection.attributes.forEach((a: Attribute) => {
                     // push the current attribute name onto the attributes list
                     this.sectionAttributes.push(a.name);
                     // sort the yearly values for the given attribute in ascending order
                     const sortedYearlyValuesAsc = sortByYear(a.yearlyValues);
                     // for each sorted yearly value push the yearly value year onto the years list
-                    sortedYearlyValuesAsc.forEach((val: IAttributeYearlyValue) => years.push(val.year));
+                    sortedYearlyValuesAsc.forEach((attributesWithYearlyValues: AttributesWithYearlyValues) =>
+                        years.push(attributesWithYearlyValues.year)
+                    );
 
                 });
                 // set all section attributes as selected by default
@@ -182,7 +184,7 @@
          */
         setSelectedSectionGridData() {
             // get the selected attributes
-            const filteredAttributes = this.selectedSection.attributes.filter((a: IAttribute) =>
+            const filteredAttributes = this.selectedSection.attributes.filter((a: Attribute) =>
                 this.selectedAttributes.indexOf(a.name) !== -1
             );
             // get the selected year range
@@ -198,14 +200,14 @@
                     )
                 });
                 // set the selected section grid data
-                this.selectedSectionGridData = filteredAttributes.map((a: IAttribute) => {
+                this.selectedSectionGridData = filteredAttributes.map((a: Attribute) => {
                     const row = {
                         name: a.name
                     };
                     yearRange.forEach((n: number) => {
                         if (R.any(R.propEq("year", n), a.yearlyValues)) {
                             //@ts-ignore
-                            row[`${n}`] = a.yearlyValues.find((val: IAttributeYearlyValue) => val.year === n).value;
+                            row[`${n}`] = a.yearlyValues.find((val: AttributesWithYearlyValues) => val.year === n).value;
                         } else {
                             //@ts-ignore
                             row[`${n}`] = "N/A";
@@ -322,20 +324,6 @@
                 }
                 return range;
             }
-        }
-        /**
-         * Sets downloadProgress & loading properties to true
-         */
-        startProgressStatus() {
-            this.downloadProgress = true;
-            this.loading = true;
-        }
-        /**
-         * Sets downloadProgress & loading properties to false
-         */
-        stopProgressStatus() {
-            this.downloadProgress = false;
-            this.loading = false;
         }
 
         /**

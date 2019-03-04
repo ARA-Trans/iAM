@@ -12,12 +12,12 @@ import store from './store'
 
 Vue.use(Vuetify, {
     iconfont: 'fa'
-})
+});
 
 Vue.config.productionTip = false;
 
 new Vue({
-    render: h => h(App),
     store,
-    router
+    router,
+    render: h => h(App)
 }).$mount('#app');

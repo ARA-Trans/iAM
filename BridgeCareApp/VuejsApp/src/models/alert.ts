@@ -1,4 +1,4 @@
-﻿export interface IAlert {
+﻿export interface Alert {
     showModal: boolean;
     heading: string;
     message: string

@@ -1,4 +1,4 @@
-export interface IScenario {
+export interface Scenario {
     scenarioId: number;
     name: string;
     createdDate: Date;

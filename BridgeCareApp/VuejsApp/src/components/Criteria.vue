@@ -20,31 +20,28 @@
 <script lang="ts">
     import Vue from "vue";
     import {Component} from "vue-property-decorator";
+    import {Action} from "vuex-class";
     import CriteriaEditor from "../shared/CriteriaEditor.vue";
 
     @Component({
         components: {CriteriaEditor}
     })
     export default class Criteria extends Vue {
+        @Action("setCriteria") setCriteriaAction: any;
+
         beforeParsing: string = "[ADTTOTAL]='50' OR [ADTYEAR]='1999' AND [AGE]>'30' OR [APPRALIGN]>='7' OR [APPRALIGN]<='5'";
         afterParsing: string = "";
         showCriteriaEditor: boolean = false;
 
         onLaunchCriteriaEditor() {
             this.afterParsing = "";
-            this.$store.dispatch({
-                type: "setCriteria",
-                clause: this.beforeParsing
-            });
+            this.setCriteriaAction({clause: this.beforeParsing});
             this.showCriteriaEditor = true;
         }
 
         onApplyCriteria(clause: string) {
             this.afterParsing = clause;
-            this.$store.dispatch({
-                type: "setCriteria",
-                clause: ""
-            });
+            this.setCriteriaAction({clause: ""});
             this.showCriteriaEditor = false;
         }
     }

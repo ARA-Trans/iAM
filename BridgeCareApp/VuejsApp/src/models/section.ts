@@ -1,20 +1,20 @@
-export interface IAttributeYearlyValue {
+export interface AttributesWithYearlyValues {
     year: number;
     value: any;
 }
 
-export interface IAttribute {
+export interface Attribute {
     name: string;
-    yearlyValues: IAttributeYearlyValue[];
+    yearlyValues: AttributesWithYearlyValues[];
 }
 
-export interface ILocation {
+export interface LatitudeLongitude {
     lat: number;
     long: number;
 }
 
-export interface ISection {
+export interface Section {
     sectionId: number;
-    location: ILocation;
-    attributes: IAttribute[];
+    location: LatitudeLongitude;
+    attributes: Attribute[];
 }

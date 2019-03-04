@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
-import Scenario from '@/components/Scenario.vue';
+import Scenario from '@/components/Scenarios.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import Criteria from '@/components/Criteria.vue';

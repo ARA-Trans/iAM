@@ -30,19 +30,18 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import { Component, Prop } from 'vue-property-decorator';
-    import { IAlert } from '@/models/IAlert';
+    import Vue from "vue";
+    import {Component, Prop} from "vue-property-decorator";
+    import {Alert} from "@/models/alert";
 
     @Component
     export default class AppModalPopup extends Vue {
-
         @Prop()
-        modalData: IAlert
+        modalData: Alert;
 
         sendUserSelection(decision: boolean) {
-            this.modalData
-            this.$emit('decision', decision)
+            this.modalData;
+            this.$emit("decision", decision)
         }
     }
 </script>
