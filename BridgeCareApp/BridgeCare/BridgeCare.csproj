@@ -246,12 +246,15 @@
     <Content Include="Dpendencies\CalculateEvaluate.pdb" />
     <Content Include="Dpendencies\DatabaseManager.dll" />
     <Content Include="Dpendencies\DatabaseManager.pdb" />
+    <Content Include="Dpendencies\FireSharp.dll" />
     <Content Include="Dpendencies\Microsoft.SqlServer.ConnectionInfo.dll" />
     <Content Include="Dpendencies\Microsoft.SqlServer.Dmf.dll" />
     <Content Include="Dpendencies\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
     <Content Include="Dpendencies\Microsoft.SqlServer.ServiceBrokerEnum.dll" />
     <Content Include="Dpendencies\Microsoft.SqlServer.Smo.dll" />
     <Content Include="Dpendencies\Microsoft.SqlServer.SqlEnum.dll" />
+    <Content Include="Dpendencies\RestSharp.dll" />
+    <Content Include="Dpendencies\RestSharp.xml" />
     <Content Include="Dpendencies\RoadCareGlobalOperations.dll" />
     <Content Include="Dpendencies\RoadCareGlobalOperations.pdb" />
     <Content Include="Dpendencies\Simulation.dll" />

@@ -30,7 +30,7 @@
                 </v-btn>
                 <v-btn color="blue-grey"
                        class="white--text"
-                       :disabled="isBusy || simulationId === 0"
+                       :disabled="simulationId === 0 || isBusy"
                        v-on:click="onRunSimulation">
                     Run Simulation
                     <v-icon right dark>cloud_download</v-icon>
@@ -54,10 +54,11 @@
 
     import AppSpinner from '../shared/AppSpinner.vue';
     import {Network} from '@/models/network';
-    import {Simulation} from '@/models/simulation';
+    import { Simulation } from '@/models/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
     import {Alert} from '@/models/alert';
-    import {hasValue} from '@/shared/utils/has-value';
+    import { hasValue } from '@/shared/utils/has-value';
+    
 
     import { statusReference } from '@/firebase';
 
@@ -79,6 +80,7 @@
         @Action('clearReportBlob') clearReportBlobAction: any;
         @Action('runSimulation') runSimulationAction: any;
 
+
         @Prop({
             default: function () {
                 return {showModal: false};
@@ -86,13 +88,13 @@
         })
         warning: Alert;
         created() {
-            statusReference.on('value', (snapshot:any) => {
-                const simulationStatus = [];                
+            statusReference.on('value', (snapshot: any) => {
+                let simulationStatus = [];
                 const results = snapshot.val();
                 for (let key in results) {
                     simulationStatus.push({
-                        Id: key,
-                        Status: results[key].Status
+                        id: key,
+                        status: results[key].Status
                     });
                 }
                 console.log(simulationStatus);
@@ -211,14 +213,15 @@
         runSimulation() {
             // dispatch action to run simulation
             this.runSimulationAction({
-                NetworkId: this.networkId,
-                SimulationId: this.simulationId,
-                NetworkName: this.networkName,
-                SimulationName: this.simulationName
+                networkId: this.networkId,
+                simulationId: this.simulationId,
+                networkName: this.networkName,
+                simulationName: this.simulationName
             }).then(() =>
                 this.setIsBusyAction({isBusy: false})
             ).catch((error: any) => {
-                this.setIsBusyAction({isBusy: false});
+                this.setIsBusyAction({ isBusy: false });
+                this.setSimulationStatusAction({ status: false })
                 console.log(error);
             });
         }

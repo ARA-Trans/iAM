@@ -19,8 +19,8 @@ namespace BridgeCare.DataAccessLayer
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
                 var start = new Simulation.Simulation(data.SimulationName, data.NetworkName,
                     data.SimulationId.ToString(), data.NetworkId.ToString());
-                Thread simulationThread = new Thread(new ThreadStart(start.CompileSimulation));
-                simulationThread.Start();
+                Thread simulationThread = new Thread(new ParameterizedThreadStart(start.CompileSimulation));
+                simulationThread.Start(true);
                 if (!simulationThread.IsAlive)
                 {
                     DBMgr.CloseConnection();
