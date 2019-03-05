@@ -168,6 +168,7 @@
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
+    <Compile Include="Controllers\InvestmentStrategiesController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
     <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
+    <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
@@ -206,6 +208,7 @@
     <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\IInvestmentStrategies.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
     <Compile Include="Interfaces\IDetailedReport.cs" />
@@ -223,6 +226,9 @@
     <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\CellAddress.cs" />
+    <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
+    <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
+    <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
     <Compile Include="Models\SimulatedSegmentIdsModel.cs" />
     <Compile Include="Models\CostDetails.cs" />

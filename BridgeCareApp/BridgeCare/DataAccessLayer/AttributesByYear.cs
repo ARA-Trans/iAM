@@ -34,10 +34,10 @@ namespace BridgeCare.DataAccessLayer
 
         public List<AttributeByYearModel> GetHistoricalAttributes(SectionModel sectionModel, BridgeCareContext db)
         {
-            //if (sectionModel == null)
-            //{
-            //    return new List<AttributeByYearModel>();
-            //}
+            if (sectionModel == null)
+            {
+                return new List<AttributeByYearModel>();
+            }
 
             var selectStatement = String.Format(
                 "SELECT * FROM SEGMENT_{0}_NS0 WHERE SectionID={1}",
