@@ -1,5 +1,5 @@
-﻿import Vue from 'vue'
-import Router from 'vue-router'
+﻿import Vue from 'vue';
+import Router from 'vue-router';
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
@@ -53,4 +53,4 @@ export default new Router({
         //    component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
         //}
     ]
-})
+});

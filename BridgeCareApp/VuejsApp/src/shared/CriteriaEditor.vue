@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component, Prop, Watch} from "vue-property-decorator";
-    import {Action, State} from "vuex-class";
-    import VueQueryBuilder from "vue-query-builder/src/VueQueryBuilder.vue";
-    import {Criteria, CriteriaEditorAttribute, emptyCriteria} from "@/models/criteria";
-    import {parseQueryBuilderJson} from "@/shared/utils/criteria-editor-parsers";
-    import {hasValue} from "@/shared/utils/has-value";
+    import Vue from 'vue';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
+    import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/models/criteria';
+    import {parseQueryBuilderJson} from '@/shared/utils/criteria-editor-parsers';
+    import {hasValue} from '@/shared/utils/has-value';
 
     @Component({
         components: {VueQueryBuilder}
@@ -38,24 +38,24 @@
         @State(state => state.criteriaEditor.criteriaEditorAttributes) criteriaEditorAttributes: CriteriaEditorAttribute[];
         @State(state => state.criteriaEditor.criteria) stateCriteria: Criteria;
 
-        @Action("setCriteriaEditorAttributes") setCriteriaEditorAttributesAction: any;
+        @Action('setCriteriaEditorAttributes') setCriteriaEditorAttributesAction: any;
 
         criteria: Criteria = emptyCriteria;
         rules: any[] = [];
         labels: object = {
-            "matchType": "",
-            "matchTypes": [
-                {"id": "AND", "label": "AND"},
-                {"id": "OR", "label": "OR"}
+            'matchType': '',
+            'matchTypes': [
+                {'id': 'AND', 'label': 'AND'},
+                {'id': 'OR', 'label': 'OR'}
             ],
-            "addRule": "Add Rule",
-            "removeRule": "&times;",
-            "addGroup": "Add Group",
-            "removeGroup": "&times;",
-            "textInputPlaceholder": "value"
+            'addRule': 'Add Rule',
+            'removeRule': '&times;',
+            'addGroup': 'Add Group',
+            'removeGroup': '&times;',
+            'textInputPlaceholder': 'value'
         };
 
-        @Watch("criteriaEditorAttributes")
+        @Watch('criteriaEditorAttributes')
         onCriteriaEditorAttributesChanged(val: CriteriaEditorAttribute[]) {
             this.rules = val.map((cea: CriteriaEditorAttribute) => ({
                 // TODO: implement select when we have web service that returns predetermined values
@@ -67,14 +67,14 @@
                     label: val,
                     value: val
                 }))*/
-                type: "text",
+                type: 'text',
                 label: cea.name,
                 id: cea.name,
-                operators: ["=", "<>", "<", "<=", ">", ">="]
+                operators: ['=', '<>', '<', '<=', '>', '>=']
             }));
         }
 
-        @Watch("stateCriteria")
+        @Watch('stateCriteria')
         onStateCriteriaChanged(val: Criteria) {
             this.criteria = val;
         }
@@ -84,14 +84,14 @@
         }
 
         isNotValidCriteria() {
-            return !hasValue(parseQueryBuilderJson(this.criteria).join(""));
+            return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
         }
 
         onSubmit(notCanceled: boolean) {
             if (notCanceled) {
-                this.$emit("applyCriteria", parseQueryBuilderJson(this.criteria).join(""));
+                this.$emit('applyCriteria', parseQueryBuilderJson(this.criteria).join(''));
             } else {
-                this.$emit("applyCriteria", "");
+                this.$emit('applyCriteria', '');
             }
         }
     }
