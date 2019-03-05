@@ -18,12 +18,9 @@ namespace BridgeCare.DataAccessLayer
 
         public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(NetworkModel network, BridgeCareContext db)
         {
-            //var investmentStrategies = new List<InvestmentStrategyModel>();
-
             try
             {
                 var investmentStrategies = db.INVESTMENTs
-                    //.Where(x => x.SIMULATION.NETWORKID == network.NetworkId)
                     .Select(p => new InvestmentStrategyModel
                     {
                         Id = p.SIMULATIONID,

@@ -27,5 +27,6 @@ namespace BridgeCare.EntityClasses
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
+        public virtual INVESTMENTS INVESTMENTS { get; set; }
     }
 }
