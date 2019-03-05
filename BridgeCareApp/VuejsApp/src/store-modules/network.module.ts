@@ -1,4 +1,4 @@
-import {Network} from '../models/network';
+import {Network} from '@/models/iAM/network';
 import NetworkService from '../services/network.service';
 
 const state = {
@@ -6,15 +6,13 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    networksMutator(state, networks) {
+    networksMutator(state: any, networks: Network[]) {
         state.networks = networks;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    getNetworks({commit}) {
+    getNetworks({commit}: any) {
         new NetworkService().getNetworks()
             .then((networks: Network[]) => commit('networksMutator', networks))
             .catch((error: any) => console.log(error));

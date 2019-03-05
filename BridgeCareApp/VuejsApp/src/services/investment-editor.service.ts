@@ -1,16 +1,13 @@
 import axios from 'axios';
-import {InvestmentStrategy, InvestmentStrategyDetail} from '@/models/investment';
+import {InvestmentStrategy} from '@/models/iAM/investment';
+import {mockInvestmentStrategies} from '@/shared/utils/mock-data';
+import {Network} from '@/models/iAM/network';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InvestmentEditorService {
-    getInvestmentStrategies(): Promise<InvestmentStrategy[]> {
-        return Promise.resolve<InvestmentStrategy[]>([]);
+    getInvestmentStrategies(network: Network): Promise<InvestmentStrategy[]> {
+        return Promise.resolve<InvestmentStrategy[]>(mockInvestmentStrategies);
         // TODO: add axios web service call for investment strategies
-    }
-
-    getInvestmentStrategyDetails(id: number): Promise<InvestmentStrategyDetail[]> {
-        return Promise.resolve<InvestmentStrategyDetail[]>([]);
-        // TODO: add axios web service call for investment strategy detail
     }
 }

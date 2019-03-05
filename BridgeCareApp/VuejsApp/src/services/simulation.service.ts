@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import axios from 'axios';
-import {Simulation} from '@/models/simulation';
+import {Simulation} from '@/models/iAM/simulation';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 

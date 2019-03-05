@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {Network} from '@/models/network';
+import {Network} from '@/models/iAM/network';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 

@@ -1,4 +1,4 @@
-import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/models/criteria';
+import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/models/iAM/criteria';
 import CriteriaEditorService from '@/services/criteria-editor.service';
 import {parseCriteriaString} from '@/shared/utils/criteria-editor-parsers';
 
@@ -8,27 +8,23 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    criteriaEditorAttributesMutator(state, criteriaEditorAttributes) {
+    criteriaEditorAttributesMutator(state: any, criteriaEditorAttributes: CriteriaEditorAttribute[]) {
         state.criteriaEditorAttributes = criteriaEditorAttributes;
     },
-    // @ts-ignore
-    criteriaMutator(state, criteria) {
+    criteriaMutator(state: any, criteria: Criteria) {
         state.criteria = criteria;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    setCriteriaEditorAttributes({commit}, payload) {
+    getCriteriaEditorAttributes({commit}: any, payload: any) {
         new CriteriaEditorService().getCriteriaEditorAttributes()
             .then((criteriaEditorAttributes: CriteriaEditorAttribute[]) =>
                 commit('criteriaEditorAttributesMutator', criteriaEditorAttributes)
             )
             .catch((error: any) => console.log(error));
     },
-    // @ts-ignore
-    setCriteria({commit}, payload) {
+    setCriteria({commit}: any, payload: any) {
         commit('criteriaMutator', parseCriteriaString(payload.clause));
     }
 };

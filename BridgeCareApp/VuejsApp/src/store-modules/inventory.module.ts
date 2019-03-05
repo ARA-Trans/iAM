@@ -1,4 +1,4 @@
-import {Section} from '@/models/section';
+import {Section} from '@/models/iAM/section';
 import InventoryService from '@/services/inventory.service';
 
 const state = {
@@ -6,15 +6,13 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    sectionsMutator(state, sections) {
+    sectionsMutator(state: any, sections: Section) {
         state.sections = sections;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    getNetworkInventory({commit}, payload) {
+    getNetworkInventory({commit}: any, payload: any) {
         new InventoryService().getNetworkInventory(payload.network)
             .then((sections: Section[]) =>
                 commit('sectionsMutator', sections)

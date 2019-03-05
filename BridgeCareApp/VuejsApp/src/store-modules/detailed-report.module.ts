@@ -5,21 +5,18 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    reportBlobMutator(state, reportBlob) {
+    reportBlobMutator(state: any, reportBlob: Blob) {
         state.reportBlob = reportBlob;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    getDetailedReport({commit}, payload) {
+    getDetailedReport({commit}: any, payload: any) {
         new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
             .then((reportBlob: Blob) => commit('reportBlobMutator', reportBlob))
             .catch((error: any) => console.log(error));
     },
-    // @ts-ignore
-    clearReportBlob({commit}) {
+    clearReportBlob({commit}: any) {
         commit('reportBlobMutator', null);
     }
 };

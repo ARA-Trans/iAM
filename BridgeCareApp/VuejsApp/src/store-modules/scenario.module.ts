@@ -1,4 +1,4 @@
-import {Scenario} from '../models/scenario';
+import {Scenario} from '@/models/iAM/scenario';
 import ScenarioService from '../services/scenario.service';
 
 const state = {
@@ -6,15 +6,13 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    scenariosMutator(state, scenarios) {
+    scenariosMutator(state: any, scenarios: Scenario[]) {
         state.scenarios = scenarios;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    getUserScenarios({commit}, payload) {
+    getUserScenarios({commit}: any, payload: any) {
         new ScenarioService().getUserScenarios(payload.userId)
             .then((scenarios: Scenario[]) => commit('scenariosMutator', scenarios))
             .catch((error: any) => console.log(error));

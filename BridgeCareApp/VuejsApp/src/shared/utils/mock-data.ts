@@ -1,6 +1,6 @@
-import {Scenario} from '@/models/scenario';
-import {Attribute, AttributesWithYearlyValues, Section} from '@/models/section';
-import {InvestmentStrategy, InvestmentStrategyDetail} from '@/models/investment';
+import {Scenario} from '@/models/iAM/scenario';
+import {Attribute, AttributesWithYearlyValues, Section} from '@/models/iAM/section';
+import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/models/iAM/investment';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
 export const attributes: string[] = [
@@ -286,22 +286,28 @@ export const mockSections: Section[] = [
     }
 ];
 /*******************************************INVESTMENT EDITOR MOCK DATA************************************************/
-export const mockInvestmentStrategies: InvestmentStrategy[] = [
+export const mockInvestmentBudgetYears: InvestmentStrategyBudgetYear[] = [
     {
-        id: 1234567890,
-        name: 'Investment Strategy 1'
-    },
-    {
-        id: 1234567891,
-        name: 'Investment Strategy 2'
+        year: 2019,
+        budgets: [],
     }
 ];
 
-export const mockInvestmentStrategy1Detail: InvestmentStrategyDetail = {
-    investmentStrategyId: 1234567890,
-    inflationRate: 3.15,
-    discountRate: 1.345,
-    year: 2019,
-    budgets: [],
-    description: ''
-};
+export const mockInvestmentStrategies: InvestmentStrategy[] = [
+    {
+        id: 1234567890,
+        name: 'Investment Strategy 1',
+        inflationRate: 3,
+        discountRate: 2,
+        budgetYears: mockInvestmentBudgetYears,
+        description: ''
+    },
+    {
+        id: 1234567891,
+        name: 'Investment Strategy 2',
+        inflationRate: 2,
+        discountRate: 3,
+        budgetYears: mockInvestmentBudgetYears,
+        description: ''
+    }
+];
