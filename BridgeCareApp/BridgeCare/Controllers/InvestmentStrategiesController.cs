@@ -24,9 +24,7 @@ namespace BridgeCare.Controllers
 
         // Get: api/InvestmentStrategies
 
-        public IQueryable<InvestmentStrategyModel> Get(NetworkModel network)
-        {
-            return investmentStrategies.GetInvestmentStrategies(network, db);
-        }
+        public IQueryable<InvestmentStrategyModel> Get(NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
+        
     }
 }
