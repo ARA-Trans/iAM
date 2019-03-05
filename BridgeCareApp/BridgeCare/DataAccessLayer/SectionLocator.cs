@@ -13,7 +13,7 @@ namespace BridgeCare.DataAccessLayer
         {
         }
 
-        public IQueryable<SectionLocationModel> GetLatitudeLongitude(int NetworkId, BridgeCareContext db)
+        public IQueryable<SectionLocationModel> Locate(int NetworkId, BridgeCareContext db)
         {
             IQueryable<SectionLocationModel> rawQueryForData = null;
 

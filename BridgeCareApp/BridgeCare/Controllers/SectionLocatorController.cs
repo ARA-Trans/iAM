@@ -18,6 +18,6 @@ namespace BridgeCare.Controllers
         }
 
         // Get: api/LatitudeLongitudesection
-        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) => SectionLocator.GetLatitudeLongitude(sectionModel.NetworkId, db);
+        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) => SectionLocator.Locate(sectionModel.NetworkId, db);
     }
 }

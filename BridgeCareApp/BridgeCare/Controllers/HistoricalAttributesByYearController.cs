@@ -21,6 +21,5 @@ namespace BridgeCare.Controllers
         /// Get: api/historicalAttributesByYear/
         [HttpGet]
         public List<AttributeByYearModel> Get(SectionModel sectionModel) => attributes.GetHistoricalAttributes(sectionModel, db);
-
     }
 }

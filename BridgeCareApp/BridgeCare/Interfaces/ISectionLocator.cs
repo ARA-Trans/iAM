@@ -5,6 +5,6 @@ namespace BridgeCare.Interfaces
 {
     public interface ISectionLocator
     {
-        IQueryable<SectionLocationModel> GetLatitudeLongitude(int NetworkId, BridgeCareContext db);
+        IQueryable<SectionLocationModel> Locate(int NetworkId, BridgeCareContext db);
     }
 }
