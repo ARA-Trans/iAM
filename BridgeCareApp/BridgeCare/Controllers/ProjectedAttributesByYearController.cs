@@ -17,14 +17,15 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // usage
-        // Get: api/projectedAttributesByYear/
-        // body (example)
-        // {
-        //"sectionId":1000012,
-        //"networkId":13,
-        //"simulationId":9
-        // }
+        /// <summary>
+        /// Get: api/projectedAttributesByYear/
+        /// body (example)
+        /// {
+        ///"sectionId":1000012,
+        ///"networkId":13,
+        ///"simulationId":9
+        /// }
+        /// </summary>
         public List<AttributeByYearModel> Get(SimulatedSegmentIdsModel segmentAddressModel)
         {
             return attributes.GetProjectedAttributes(segmentAddressModel, db);
