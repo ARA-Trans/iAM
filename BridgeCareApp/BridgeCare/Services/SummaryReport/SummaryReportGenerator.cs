@@ -9,14 +9,16 @@ namespace BridgeCare.Services.SummaryReport
     /// This class utilizes services classes for each tab to fill report data.
     /// </summary>
     public class SummaryReportGenerator : ISummaryReportGenerator
-    {        
-        private readonly SummaryReportBridgeData summaryReportBridgeData;
+    {
         private readonly ICommonSummaryReportData commonSummaryReportData;
+        private readonly SummaryReportBridgeData summaryReportBridgeData;        
+        private readonly SummaryReportBridgeWorkSummary summaryReportBridgeWorkSummary;
 
-        public SummaryReportGenerator(SummaryReportBridgeData summaryReportBridgeData, ICommonSummaryReportData commonSummaryReportData)
+        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, SummaryReportBridgeWorkSummary summaryReportBridgeWorkSummary)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
-            this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData)); ;
+            this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
+            this.summaryReportBridgeWorkSummary=summaryReportBridgeWorkSummary?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
         }
 
         /// <summary>
@@ -38,9 +40,11 @@ namespace BridgeCare.Services.SummaryReport
             {
                 // Bridge Data tab
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
-                summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
+                var simulationDataModels = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
-
+                // Bridge Work Summary tab
+                worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
+                summaryReportBridgeWorkSummary.Fill(worksheet, simulationDataModels, simulationYears, dbContext);
 
                 
 

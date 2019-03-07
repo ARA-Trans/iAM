@@ -25,7 +25,7 @@ namespace BridgeCare.Services
         /// <param name="simulationModel"></param>
         /// <param name="simulationYears"></param>
         /// <param name="dbContext"></param>
-        public void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
+        public List<SimulationDataModel> Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
         {
             var BRKeys = new List<int>();
 
@@ -53,8 +53,10 @@ namespace BridgeCare.Services
             AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
             AddDynamicDataCells(worksheet, sectionsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
             // TODO The line below currently hangs Postman in testing. It will be required for final production.
-            // ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
+            // ExcelHelper.ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
+
+            return simulationDataModels;
         }
 
         #region Private Methods
@@ -62,6 +64,8 @@ namespace BridgeCare.Services
         {            
             var row = 4; // Data starts here
             var column = currentCell.Column;
+            int totalColumn = 0;
+            int totalColumnValue = 0;
             foreach (var bridgeDataModel in bridgeDataModels)
             {
                 column = currentCell.Column;
@@ -79,12 +83,14 @@ namespace BridgeCare.Services
                     workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
                 worksheet.Cells[row, ++column].Value = workDoneMoreThanOnce > 1 ? "Yes" : "--";
+                totalColumnValue = workDoneMoreThanOnce > 1 ? totalColumnValue + 1 : totalColumnValue;
 
                 // Empty Total column
                 column++;
+                // Add Total of count of Work done more than once column cells if "Yes"
+                totalColumn = column;                
 
-                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"
-                // TODO Ask if previous year formula is wrong in report, not matching with other years formulae.
+                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"                
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     var prevYrSD = yearsData[index - 1].SD;
@@ -92,7 +98,7 @@ namespace BridgeCare.Services
                     worksheet.Cells[row, ++column].Value = prevYrSD == "Y" ? (thisYrSD == "N" ? "Off" : "On") : "--";
                 }
 
-                // Empty Total column
+                // Empty column
                 column++;
 
                 // Last Year simulation data
@@ -106,9 +112,9 @@ namespace BridgeCare.Services
                 }
                 row++;
             }
+            worksheet.Cells[3, totalColumn].Value = totalColumnValue;
             currentCell.Row = row - 1;
-            currentCell.Column = column - 1;
-
+            currentCell.Column = column - 1;            
         }
 
         private static int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId)
@@ -127,6 +133,7 @@ namespace BridgeCare.Services
             {
                 worksheet.Cells[row, ++column].Value = yearData.Project;
                 worksheet.Cells[row, ++column].Value = yearData.Cost;
+                ExcelHelper.SetCurrencyFormat(worksheet.Cells[row, column]);
             }
             // Empty column
             column++;
@@ -155,7 +162,7 @@ namespace BridgeCare.Services
             {
                 worksheet.Cells[row, ++column].Value = headerConstText + year;
                 worksheet.Cells[row + 2, column].Value = year;
-                ApplyStyle(worksheet.Cells[row + 2, column]);
+                ExcelHelper.ApplyStyle(worksheet.Cells[row + 2, column]);
             }
             worksheet.Cells[row, ++column].Value = "Work Done more than once";
             worksheet.Cells[row, ++column].Value = "Total";
@@ -164,7 +171,7 @@ namespace BridgeCare.Services
             foreach (var year in simulationYears)
             {
                 worksheet.Cells[row + 2, column].Value = year;
-                ApplyStyle(worksheet.Cells[row + 2, column]);
+                ExcelHelper.ApplyStyle(worksheet.Cells[row + 2, column]);
                 column++;
             }
 
@@ -172,10 +179,10 @@ namespace BridgeCare.Services
             worksheet.Row(row).Height = 40;
             for (int cellColumn = 1; cellColumn < poorOnOffRateColumn; cellColumn++)
             {
-                MergeCells(worksheet, row, cellColumn, row + 1, cellColumn);
+               ExcelHelper.MergeCells(worksheet, row, cellColumn, row + 1, cellColumn);
             }
             // Merge columns for Poor On/Off Rate
-            MergeCells(worksheet, row, poorOnOffRateColumn, row + 1, column - 1);
+            ExcelHelper.MergeCells(worksheet, row, poorOnOffRateColumn, row + 1, column - 1);
             currentCell.Column = column;
 
             // Add Years Data headers
@@ -183,7 +190,7 @@ namespace BridgeCare.Services
             worksheet.Cells[row, ++column].Value = simulationYears[0] - 1;
             column = currentCell.Column;
             column = AddSimulationHeaderTexts(worksheet, currentCell, column, row, simulationHeaderTexts, simulationHeaderTexts.Count - 2);
-            MergeCells(worksheet, row, currentCell.Column + 1, row, column);
+            ExcelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
 
             // Empty column
             currentCell.Column = ++column;
@@ -193,7 +200,7 @@ namespace BridgeCare.Services
                 worksheet.Cells[row, ++column].Value = simulationYear;
                 column = currentCell.Column;
                 column = AddSimulationHeaderTexts(worksheet, currentCell, column, row, simulationHeaderTexts, simulationHeaderTexts.Count);
-                MergeCells(worksheet, row, currentCell.Column + 1, row, column);
+                ExcelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
                 currentCell.Column = ++column;
             }
 
@@ -205,7 +212,7 @@ namespace BridgeCare.Services
             for (var index = 0; index < length; index++)
             {
                 worksheet.Cells[row + 1, ++column].Value = simulationHeaderTexts[index];
-                ApplyStyle(worksheet.Cells[row + 1, column]);
+                ExcelHelper.ApplyStyle(worksheet.Cells[row + 1, column]);
             }
 
             return column;
@@ -229,32 +236,7 @@ namespace BridgeCare.Services
                 "Cost"
             };
         }
-
-        private static void MergeCells(ExcelWorksheet worksheet, int fromRow, int fromColumn, int toRow, int toColumn)
-        {
-            using (var cells = worksheet.Cells[fromRow, fromColumn, toRow, toColumn])
-            {
-                cells.Merge = true;
-                ApplyStyle(cells);
-            }
-        }
-
-        private static void ApplyStyle(ExcelRange cells)
-        {
-            cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-            cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-            cells.Style.WrapText = true;
-            cells.Style.Font.Bold = true;
-        }
-
-        private static void ApplyBorder(ExcelRange cells)
-        {
-            cells.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            cells.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            cells.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            cells.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-        }
-
+                
         private static void AddBridgeDataModelsCells(ExcelWorksheet worksheet, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
         {
             var rowNo = currentCell.Row;

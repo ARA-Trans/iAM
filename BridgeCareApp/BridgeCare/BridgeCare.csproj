@@ -237,7 +237,9 @@
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\Network.cs" />
     <Compile Include="Services\Simulations.cs" />
+    <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
+    <Compile Include="Services\SummaryReport\SummaryReportBridgeWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportGenerator.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportHelper.cs" />
   </ItemGroup>

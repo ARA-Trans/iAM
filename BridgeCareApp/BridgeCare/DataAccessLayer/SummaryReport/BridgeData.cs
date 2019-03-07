@@ -34,8 +34,7 @@ namespace BridgeCare.DataAccessLayer
             {
                 var penndotBridgeData = dbContext.PennDotBridgeData.Where(p => BRKeys.Contains(p.BRKEY)).ToList();
                 var pennDotReportAData = dbContext.PennDotReportAData.Where(p => BRKeys.Contains(p.BRKEY)).ToList();
-                var sdRisk = dbContext.SdRisks.Where(s => BRKeys.Contains(s.BRKEY)).ToList();
-                // TODO ask why this is set in macro Func_Class='12' where BRKey=8356") Func_Class='16' where BRKey=45700") Func_Class='01' where BRKey=29077") Func_Class='06' where BRKey=55748")
+                var sdRisk = dbContext.SdRisks.Where(s => BRKeys.Contains(s.BRKEY)).ToList();                
                 BRKeys = BRKeys.OrderBy(b => b).ToList();
                 foreach (var BRKey in BRKeys)
                 {

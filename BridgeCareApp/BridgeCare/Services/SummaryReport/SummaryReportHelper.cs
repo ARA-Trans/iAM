@@ -15,8 +15,9 @@ namespace BridgeCare.Services
             foreach (DataRow simulationRow in simulationDataTable.Rows)
             {
                 var simulationDM = CreatePrevYearSimulationMdel(simulationRow);
-                var projectCostEntry = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).FirstOrDefault();
-                AddAllYearsData(simulationRow, simulationYears, projectCostEntry, simulationDM);
+                // TODO take list and then fetch by year
+                var projectCostEntries = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).ToList();
+                AddAllYearsData(simulationRow, simulationYears, projectCostEntries, simulationDM);
                 simulationDataModels.Add(simulationDM);
             }
 
@@ -34,11 +35,12 @@ namespace BridgeCare.Services
             };
         }
 
-        private static void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, ReportProjectCost projectCostEntry, SimulationDataModel simulationDM)
+        private static void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, List<ReportProjectCost> projectCostEntries, SimulationDataModel simulationDM)
         {
             var yearsDataModels = new List<YearsData>();
             foreach (int year in simulationYears)
             {
+                var projectCostEntry = projectCostEntries.Where(p => p.YEARS == year).FirstOrDefault();
                 yearsDataModels.Add(AddYearsData(simulationRow, projectCostEntry, year));
             }
             simulationDM.YearsData.AddRange(yearsDataModels.OrderBy(y => y.Year).ToList());
