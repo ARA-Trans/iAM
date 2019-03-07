@@ -13,25 +13,133 @@ namespace BridgeCare.Services
 
             FillCostOfCulvertWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);
             FillCostOfBridgeWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);
-
+            // TODO ask why Total row is with same hard coded number 30000000 in excel?
+            FillTotalBudgetSection(worksheet, currentCell, simulationYears);
 
             worksheet.Cells.AutoFitColumns();
+        }
+
+        private void FillTotalBudgetSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears)
+        {
+            currentCell.Column = 1;
+            AddHeaders(worksheet, currentCell, simulationYears, "Total Budget");
+            AddDetailsForTotalBudget(worksheet, simulationYears, currentCell);
+        }
+
+        private void AddDetailsForTotalBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell)
+        {
+            var startRow = ++currentCell.Row;
+            var row = startRow;
+            // Headers in column 1
+            var startColumn = 1;
+            var column = startColumn;
+            worksheet.Cells[row++, column].Value = "Preservation";
+            worksheet.Cells[row++, column].Value = "Construction";            
+            worksheet.Cells[row++, column].Value = "Total";
+            column++;
+            var fromColumn = column + 1;
+            foreach (var year in simulationYears)
+            {
+                row = startRow;
+                column = ++column;
+
+                // Preservation                
+                worksheet.Cells[row, column].Value = string.Empty;
+
+                // Construction                
+                worksheet.Cells[++row, column].Value = string.Empty;
+
+                // Total
+                worksheet.Cells[++row, column].Value = 30000000;
+            }
+            ExcelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
+            ExcelHelper.SetCustomCurrencyFormat(worksheet.Cells[startRow, fromColumn, row, column]);
+
+            // Empty row
+            currentCell.Row = ++row;
+            currentCell.Column = column;
         }
 
         private void FillCostOfBridgeWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
             currentCell.Column = 1;
             AddHeaders(worksheet, currentCell, simulationYears, "Cost of Bridge Work");
+            AddCostsOfBridgeWork(worksheet, simulationDataModels, simulationYears, currentCell);
+        }
 
-        }        
+        private void AddCostsOfBridgeWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell)
+        {
+            var startRow = ++currentCell.Row;
+            var row = startRow;
+            // Headers in column 1
+            var startColumn = 1;
+            var column = startColumn;
+            worksheet.Cells[row++, column].Value = "Latex";
+            worksheet.Cells[row++, column].Value = "Epoxy";
+            worksheet.Cells[row++, column].Value = "Large Bridge Preservation";
+            worksheet.Cells[row++, column].Value = "Deck Replacement";
+            worksheet.Cells[row++, column].Value = "Sub Rehab";
+            worksheet.Cells[row++, column].Value = "Super Replacement";
+            worksheet.Cells[row++, column].Value = "Large Bridge Rehab";
+            worksheet.Cells[row++, column].Value = "Replacement";
+            worksheet.Cells[row++, column].Value = "Bridge Total";
+            column++;
+            var fromColumn = column + 1;
+            foreach (var year in simulationYears)
+            {
+                row = startRow;
+                column = ++column;
+
+                // Latex
+                var latexCost = CalculateCost(simulationDataModels, year, "Latex");
+                worksheet.Cells[row, column].Value = latexCost;
+
+                // Epoxy
+                var epoxyCost = CalculateCost(simulationDataModels, year, "Epoxy");
+                worksheet.Cells[++row, column].Value = epoxyCost;
+
+                // Large Bridge Preservation
+                var largeBridgePreservationCost = CalculateCost(simulationDataModels, year, "Large Bridge Preservation");
+                worksheet.Cells[++row, column].Value = largeBridgePreservationCost;
+
+                // Deck Replacement
+                var deckReplacementCost = CalculateCost(simulationDataModels, year, "Deck Replacement");
+                worksheet.Cells[++row, column].Value = deckReplacementCost;
+
+                // Sub Rehab
+                var subRehabCost = CalculateCost(simulationDataModels, year, "Sub Rehab");
+                worksheet.Cells[++row, column].Value = subRehabCost;
+
+                // Super Replacement
+                var superReplacementCost = CalculateCost(simulationDataModels, year, "Superstructure Replacement");
+                worksheet.Cells[++row, column].Value = superReplacementCost;
+
+                // Large Bridge Rehab
+                var largeBridgeRehabCost = CalculateCost(simulationDataModels, year, "Large Bridge Rehab");
+                worksheet.Cells[++row, column].Value = largeBridgeRehabCost;
+
+                // Replacement
+                var replacementCost = CalculateCost(simulationDataModels, year, "Bridge Replacement");
+                worksheet.Cells[++row, column].Value = replacementCost;
+
+                // Bridge Total
+                worksheet.Cells[++row, column].Value = latexCost + epoxyCost + largeBridgePreservationCost + deckReplacementCost + subRehabCost + superReplacementCost + largeBridgeRehabCost + replacementCost;
+            }
+            ExcelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
+            ExcelHelper.SetCustomCurrencyFormat(worksheet.Cells[startRow, fromColumn, row, column]);
+
+            // Empty row
+            currentCell.Row = ++row;
+            currentCell.Column = column;
+        }
 
         private void FillCostOfCulvertWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
-            AddHeaders(worksheet, currentCell, simulationYears, "Cost of Culvert Work");           
-            AddCostsOfWork(worksheet, simulationDataModels, simulationYears, currentCell);
+            AddHeaders(worksheet, currentCell, simulationYears, "Cost of Culvert Work");
+            AddCostsOfCulvertWork(worksheet, simulationDataModels, simulationYears, currentCell);
         }
-        
-        private void AddCostsOfWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell)
+
+        private void AddCostsOfCulvertWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell)
         {
             var startRow = ++currentCell.Row;
             var row = startRow;
@@ -65,7 +173,7 @@ namespace BridgeCare.Services
                 worksheet.Cells[++row, column].Value = preservationCost + rehabilitationCost + replacementCost;                
             }
             ExcelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
-           // ExcelHelper.SetCustomCurrencyFormat(worksheet.Cells[startRow, fromColumn, row, column]);
+            ExcelHelper.SetCustomCurrencyFormat(worksheet.Cells[startRow, fromColumn, row, column]);
 
             // Empty row
             currentCell.Row = ++row;

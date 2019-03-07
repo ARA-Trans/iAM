@@ -61,7 +61,7 @@ namespace BridgeCare.Services
         /// <param name="cells"></param>
         public static void SetCustomCurrencyFormat(ExcelRange cells)
         {
-            cells.Style.Numberformat.Format = "_($* #,##0_);_($* (#,##0);_($* ' - '??_);_(@_)";
+            cells.Style.Numberformat.Format = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
         }
     }
 }
