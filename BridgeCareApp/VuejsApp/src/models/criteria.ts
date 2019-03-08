@@ -1,4 +1,4 @@
-export interface CriteriaAttribute {
+export interface CriteriaEditorAttribute {
     name: string;
     values: string[];
 }

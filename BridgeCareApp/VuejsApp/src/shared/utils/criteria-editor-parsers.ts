@@ -8,7 +8,7 @@ import {hasValue} from '@/shared/utils/has-value';
  */
 export const parseQueryBuilderJson = (criteria: Criteria) => {
     // create an empty string list to build the where clause
-    let clause: string[] = [];
+    const clause: string[] = [];
     if (!R.isNil(criteria) && !R.isEmpty(criteria.children)) {
         // set the logical operator
         const logicalOperator = ` ${criteria.logicalOperator} `;
