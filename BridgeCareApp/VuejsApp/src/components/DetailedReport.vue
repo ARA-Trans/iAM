@@ -58,8 +58,6 @@
     import AppModalPopup from '../shared/AppModalPopup.vue';
     import {Alert} from '@/models/alert';
     import { hasValue } from '@/shared/utils/has-value';
-    
-
     import { statusReference } from '@/firebase';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
@@ -221,7 +219,7 @@
                 this.setIsBusyAction({isBusy: false})
             ).catch((error: any) => {
                 this.setIsBusyAction({ isBusy: false });
-                this.setSimulationStatusAction({ status: false })
+                this.setSimulationStatusAction({ status: false });
                 console.log(error);
             });
         }

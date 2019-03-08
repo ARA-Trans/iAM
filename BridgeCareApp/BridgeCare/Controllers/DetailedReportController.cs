@@ -30,7 +30,7 @@ namespace BridgeCare.Controllers
             MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
             try
             {
-                response.Content = new ByteArrayContent(detailedReport.CreateExcelReport(data));
+                response.Content = new  ByteArrayContent(detailedReport.CreateExcelReport(data));
             }
             catch (TimeoutException)
             {

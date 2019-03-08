@@ -61,6 +61,8 @@
     import {Component} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import * as Msal from 'msal';
+    import { usersReference, db } from '@/firebase';
+import { Roles } from '@/models/user';
 
     @Component
     export default class TopNavbar extends Vue {
@@ -188,10 +190,31 @@
         updateUI() {
             this.setUsernameAction({userName: this.clientApp.getUser().name});
             this.logMessage('User \'' + this.userName + '\' logged-in');
+            usersReference.once('value', (snapshot) => {
+                //@ts-ignore
+                if (snapshot.hasChild(this.clientApp.getUser().idToken.sub)) {
+                    console.log('user found');
+                }
+                else {
+                    console.log('user not found');
+                    const newUser = {
+                        //@ts-ignore
+                        email: this.clientApp.getUser().idToken.emails[0],
+                        roles: { owner: true, reader: true }
+                    };
+                    //@ts-ignore
+                    db.ref('users/' + this.clientApp.getUser().idToken.sub).update(newUser);
+                }
+            });
+            
         }
 
         logMessage(s: string) {
             console.log(s);
         }
+    }
+    class userData {
+        email: string;
+        roles: Roles;
     }
 </script>
