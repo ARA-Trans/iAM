@@ -12,7 +12,6 @@ namespace System.Web.Http.Filters
         {
             if (_validate(actionContext.ActionArguments))
             {
-                var testb = actionContext.ActionDescriptor;
                 actionContext.Response = actionContext.Request.CreateErrorResponse(
                 HttpStatusCode.BadRequest, "The argument cannot be null");
             }
