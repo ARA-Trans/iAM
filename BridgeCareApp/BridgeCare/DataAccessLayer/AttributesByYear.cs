@@ -21,34 +21,36 @@ namespace BridgeCare.DataAccessLayer
 
         public List<AttributeByYearModel> GetProjectedAttributes(SimulatedSegmentIdsModel segmentAddressModel, BridgeCareContext db)
         {
+            var projectedAttributesAndValues = new List<AttributeByYearModel>();
             try
             {
-                var selectStatement = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}",
+                var selectStatement = string.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}",
                 segmentAddressModel.NetworkId, segmentAddressModel.SimulationId, segmentAddressModel.SectionId);
-                return GeneralAttributeValueQuery(selectStatement);
+                projectedAttributesAndValues = GeneralAttributeValueQuery(selectStatement);
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "ProjectedAttributes");
             }
-            return EmptyResult.AsList<AttributeByYearModel>();
+            return projectedAttributesAndValues;
         }
 
         public List<AttributeByYearModel> GetHistoricalAttributes(SectionModel sectionModel, BridgeCareContext db)
         {
+            var historicalAttributes = new List<AttributeByYearModel>();
             try
             {
                 var selectStatement = String.Format(
                     "SELECT * FROM SEGMENT_{0}_NS0 WHERE SectionID={1}",
                     sectionModel.NetworkId, sectionModel.SectionId);
 
-                return GeneralAttributeValueQuery(selectStatement);
+                historicalAttributes = GeneralAttributeValueQuery(selectStatement);
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "HistoricalAttributes");
             }
-            return EmptyResult.AsList<AttributeByYearModel>();
+            return historicalAttributes;
         }
 
         public List<AttributeByYearModel> GeneralAttributeValueQuery(string selectStatement)

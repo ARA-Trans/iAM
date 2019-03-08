@@ -1,6 +1,5 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.DataAccessLayer;
 using System;
 using System.Linq;
 using System.Web.Http;
@@ -21,6 +20,6 @@ namespace BridgeCare.Controllers
 
         // Get: api/SectionLocator
         [ModelValidation]
-        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) =>  SectionLocator.Locate(sectionModel, db);
+        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) => SectionLocator.Locate(sectionModel, db);
     }
 }

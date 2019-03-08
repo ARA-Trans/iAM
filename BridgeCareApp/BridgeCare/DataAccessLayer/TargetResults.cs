@@ -44,6 +44,7 @@ namespace BridgeCare.DataAccessLayer
             };
             return dataForTarget;
         }
+
         private void FillData(Hashtable yearsIDValues, Hashtable idTargets, DataTable targetTable, Dictionary<string, bool> attributeOrder)
         {
             int increment = 2;

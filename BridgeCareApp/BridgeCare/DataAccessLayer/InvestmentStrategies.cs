@@ -18,9 +18,10 @@ namespace BridgeCare.DataAccessLayer
 
         public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(NetworkModel network, BridgeCareContext db)
         {
+            var investmentStrategies = Enumerable.Empty<InvestmentStrategyModel>();
             try
             {
-                var investmentStrategies = db.INVESTMENTs
+                investmentStrategies = db.INVESTMENTs
                     .Select(p => new InvestmentStrategyModel
                     {
                         Id = p.SIMULATIONID,
@@ -30,14 +31,12 @@ namespace BridgeCare.DataAccessLayer
                         InflationRate = p.INFLATIONRATE ?? 0,
                         DiscountRate = p.DISCOUNTRATE ?? 0
                     });
-
-                return investmentStrategies;
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "Investment Strategies");
             }
-            return EmptyResult.AsQueryable<InvestmentStrategyModel>();
+            return investmentStrategies.AsQueryable();
         }
     }
 }

@@ -16,10 +16,10 @@ namespace BridgeCare.DataAccessLayer
         public IQueryable<AttributeNameModel> GetAttributeNames(BridgeCareContext db)
         {
             var select = ("SELECT ATTRIBUTE_ as Name FROM Attributes_");
-
+            var rawQueryForData = Enumerable.Empty<AttributeNameModel>();
             try
             {
-                var rawQueryForData = db.Database.SqlQuery<AttributeNameModel>(select).AsQueryable();
+                rawQueryForData = db.Database.SqlQuery<AttributeNameModel>(select);
             }
             catch (SqlException ex)
             {
@@ -29,8 +29,7 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.OutOfMemoryError(ex);
             }
-            return EmptyResult.AsQueryable<AttributeNameModel>();
-
+            return rawQueryForData.AsQueryable();
         }
     }
 }

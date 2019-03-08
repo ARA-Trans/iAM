@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Controllers
 {
@@ -22,6 +21,5 @@ namespace BridgeCare.Controllers
         // Get: api/section
         [ModelValidation]
         public IQueryable<SectionModel> Get(NetworkModel data) => section.GetSections(data, db);
-      
     }
 }

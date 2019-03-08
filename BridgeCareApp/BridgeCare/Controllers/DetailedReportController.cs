@@ -1,8 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.Services;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,6 +11,7 @@ namespace BridgeCare.Controllers
     public class DetailedReportController : ApiController
     {
         private readonly IReportCreator detailedReport;
+
         public DetailedReportController(IReportCreator detailedReport)
         {
             this.detailedReport = detailedReport ?? throw new ArgumentNullException(nameof(detailedReport));

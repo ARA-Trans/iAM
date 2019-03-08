@@ -19,5 +19,4 @@ namespace BridgeCare.Utility
             return resultsDataTable;
         }
     }
-
 }

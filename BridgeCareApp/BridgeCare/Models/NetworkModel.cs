@@ -6,6 +6,7 @@ namespace BridgeCare.Models
     {
         [Range(1, int.MaxValue)]
         public int NetworkId { get; set; }
+
         public string NetworkName { get; set; }
     }
 }

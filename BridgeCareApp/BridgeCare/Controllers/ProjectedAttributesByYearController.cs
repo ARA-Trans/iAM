@@ -1,11 +1,9 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.DataAccessLayer;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Controllers
 {
@@ -21,18 +19,12 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
-        /// Get: api/projectedAttributesByYear/
-        /// body (example)
-        /// {
-        ///"sectionId":1000012,
-        ///"networkId":13,
-        ///"simulationId":9
-        /// }
+        /// Get: api/projectedAttributesByYear/ body (example) {
+        /// "sectionId":1000012, "networkId":13, "simulationId":9 }
         /// </summary>
-        ///        
         [HttpGet]
         [ModelValidation]
-        public List<AttributeByYearModel> Get([FromBody]SimulatedSegmentIdsModel segmentAddressModel) => 
+        public List<AttributeByYearModel> Get([FromBody]SimulatedSegmentIdsModel segmentAddressModel) =>
            attributes.GetProjectedAttributes(segmentAddressModel, db);
     }
 }

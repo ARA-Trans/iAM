@@ -180,7 +180,6 @@
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
-    <Compile Include="DataAccessLayer\EmptyResult.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
@@ -266,22 +265,17 @@
     <Compile Include="Services\SummaryReport\SummaryReportHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dpendencies\CalculateEvaluate.dll" />
-    <Content Include="Dpendencies\CalculateEvaluate.pdb" />
-    <Content Include="Dpendencies\DatabaseManager.dll" />
-    <Content Include="Dpendencies\DatabaseManager.pdb" />
-    <Content Include="Dpendencies\Microsoft.SqlServer.ConnectionInfo.dll" />
-    <Content Include="Dpendencies\Microsoft.SqlServer.Dmf.dll" />
-    <Content Include="Dpendencies\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
-    <Content Include="Dpendencies\Microsoft.SqlServer.ServiceBrokerEnum.dll" />
-    <Content Include="Dpendencies\Microsoft.SqlServer.Smo.dll" />
-    <Content Include="Dpendencies\Microsoft.SqlServer.SqlEnum.dll" />
-    <Content Include="Dpendencies\RoadCareGlobalOperations.dll" />
-    <Content Include="Dpendencies\RoadCareGlobalOperations.pdb" />
-    <Content Include="Dpendencies\Simulation.dll" />
-    <Content Include="Dpendencies\Simulation.pdb" />
-    <Content Include="Dpendencies\SimulationDataAccess.dll" />
-    <Content Include="Dpendencies\SimulationDataAccess.pdb" />
+    <Content Include="Dependencies\CalculateEvaluate.dll" />
+    <Content Include="Dependencies\DatabaseManager.dll" />
+    <Content Include="Dependencies\Microsoft.SqlServer.ConnectionInfo.dll" />
+    <Content Include="Dependencies\Microsoft.SqlServer.Dmf.dll" />
+    <Content Include="Dependencies\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
+    <Content Include="Dependencies\Microsoft.SqlServer.ServiceBrokerEnum.dll" />
+    <Content Include="Dependencies\Microsoft.SqlServer.Smo.dll" />
+    <Content Include="Dependencies\Microsoft.SqlServer.SqlEnum.dll" />
+    <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
+    <Content Include="Dependencies\Simulation.dll" />
+    <Content Include="Dependencies\SimulationDataAccess.dll" />
     <Content Include="Global.asax" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

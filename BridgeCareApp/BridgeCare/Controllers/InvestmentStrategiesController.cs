@@ -4,14 +4,12 @@ using System;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Controllers
 {
     /// <summary>
     /// Http interface to get a list of investment strategies which are text
     /// descriptions and a corresponding index for each one
-    ///
     /// </summary>
     public class InvestmentStrategiesController : ApiController
     {
@@ -27,6 +25,5 @@ namespace BridgeCare.Controllers
         // Get: api/InvestmentStrategies
         [ModelValidation]
         public IQueryable<InvestmentStrategyModel> Get(NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
-        
     }
 }

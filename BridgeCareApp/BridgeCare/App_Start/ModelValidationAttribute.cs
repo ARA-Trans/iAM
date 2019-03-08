@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 
-
 namespace System.Web.Http.Filters
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
