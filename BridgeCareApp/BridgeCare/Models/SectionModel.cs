@@ -1,17 +1,16 @@
-﻿using BridgeCare.Interfaces;
-using System;
-using System.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
     public class SectionModel
     {
+        [Range(1, int.MaxValue)]
         public int SectionId { get; set; }
-        public string BridgeID { get; set; }
-        public string BridgeKey { get; set; }
+
+        public string ReferenceId { get; set; }
+        public string ReferenceKey { get; set; }
+
+        [Range(1, int.MaxValue)]
         public int NetworkId { get; set; }
     }
 }

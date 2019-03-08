@@ -4,7 +4,6 @@ using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -23,10 +22,11 @@ namespace BridgeCare.DataAccessLayer
             deficients = deficient ?? throw new ArgumentNullException(nameof(deficient));
             address = cell ?? throw new ArgumentNullException(nameof(cell));
         }
+
         public DeficientResult GetData(SimulationModel data, int[] totalYears)
         {
-            // Deficient and DeficientResults are models. Deficient gets data from the database.
-            // DeficientResult gets the processed data
+            // Deficient and DeficientResults are models. Deficient gets data
+            // from the database. DeficientResult gets the processed data
             IQueryable<DeficientModel> deficients = null;
             DeficientResult result = null;
 
@@ -91,7 +91,7 @@ namespace BridgeCare.DataAccessLayer
                 newDataRow["Attribute"] = item.Attribute_;
                 newDataRow["Group"] = item.DeficientName;
 
-                if(yearValues.Count <= 0)
+                if (yearValues.Count <= 0)
                 {
                     continue;
                 }

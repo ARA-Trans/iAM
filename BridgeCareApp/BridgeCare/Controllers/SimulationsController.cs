@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
+using BridgeCare.Models;
+using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using BridgeCare.Models;
-using BridgeCare.EntityClasses;
-using BridgeCare.Interfaces;
 
 namespace BridgeCare.Controllers
 {

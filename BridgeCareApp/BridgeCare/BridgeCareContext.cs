@@ -1,9 +1,7 @@
 namespace BridgeCare
 {
-    using System;
-    using System.Data.Entity;
-    using System.Linq;
     using BridgeCare.EntityClasses;
+    using System.Data.Entity;
 
     public partial class BridgeCareContext : DbContext
     {
@@ -15,6 +13,7 @@ namespace BridgeCare
 
         //public virtual DbSet<DetailedReportModel> DetailedReportModels { get; set; }
         public virtual DbSet<NETWORK> NETWORKS { get; set; }
+
         public virtual DbSet<SIMULATION> SIMULATIONS { get; set; }
         public virtual DbSet<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
         public virtual DbSet<INVESTMENTS> INVESTMENTs { get; set; }

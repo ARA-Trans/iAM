@@ -4,7 +4,6 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace BridgeCare.Services
 {
@@ -22,6 +21,7 @@ namespace BridgeCare.Services
             ExcelValues.Add(true, fillWorkSheet.OnCommittedTrue);
             ExcelValues.Add(false, fillWorkSheet.OnCommittedFalse);
         }
+
         public void Fill(ExcelWorksheet worksheet, int[] totalYears, SimulationModel data, BridgeCareContext dbContext)
         {
             var totalYearsCount = totalYears.Count();
