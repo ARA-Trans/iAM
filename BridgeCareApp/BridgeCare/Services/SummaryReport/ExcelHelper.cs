@@ -52,16 +52,21 @@ namespace BridgeCare.Services
         /// <param name="cells"></param>
         public static void SetCurrencyFormat(ExcelRange cells)
         {
-            cells.Style.Numberformat.Format = "$###,###,##0.00";
+            cells.Style.Numberformat.Format = "_-$* #,##0.00_-;_-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
         }
                 
         /// <summary>
-        /// Set custom currency format for given cells
+        /// Set custom format for given cells
         /// </summary>
         /// <param name="cells"></param>
-        public static void SetCustomCurrencyFormat(ExcelRange cells)
+        public static void SetCustomFormat(ExcelRange cells, string type)
         {
-            cells.Style.Numberformat.Format = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
+            switch (type)
+            {                
+                case "NegativeCurrency":
+                    cells.Style.Numberformat.Format = "_-$* #,##0_-;$* (#,##0)_-;_-$* \"-\"??_-;_-@_-";
+                    break;
+            }
         }
     }
 }

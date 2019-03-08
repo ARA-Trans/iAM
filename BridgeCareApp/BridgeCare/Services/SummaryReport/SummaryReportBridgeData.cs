@@ -119,14 +119,16 @@ namespace BridgeCare.Services
 
         private static int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId)
         {
+            var familyIdLessThanEleven = Convert.ToInt32(familyId) < 11;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Deck;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Sub;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) < 11 ? "N" : yearData.Culv;
+            worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.Culv;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.DeckD;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SuperD;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SubD;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) < 11 ? "N" : yearData.CulvD;
+            worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.CulvD;
+            yearData.CulvD = familyIdLessThanEleven ? "N" : yearData.CulvD;
             worksheet.Cells[row, ++column].Value = yearData.MinC;
             worksheet.Cells[row, ++column].Value = yearData.SD;
             if (yearData.Year != 0)
