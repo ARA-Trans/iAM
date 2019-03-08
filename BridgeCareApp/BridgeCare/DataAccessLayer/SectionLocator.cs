@@ -13,28 +13,25 @@ namespace BridgeCare.DataAccessLayer
         {
         }
 
-        public IQueryable<SectionLocationModel> Locate(int NetworkId, BridgeCareContext db)
+        public IQueryable<SectionLocationModel> Locate(SectionModel section, BridgeCareContext db)
         {
-            IQueryable<SectionLocationModel> rawQueryForData = null;
-
-            // Including isnull statments to change these to '0' to avoid an exception
-            // as  mapping a null to a non nullable data type crashes the entity framwork
-
-            var select = String.Format("SELECT Sectionid,isnull(Lat,0) as Latitude,isnull(Long,0) as Longitude FROM Segment_{0}_NS0", NetworkId);
-
             try
             {
-                rawQueryForData = db.Database.SqlQuery<SectionLocationModel>(select).AsQueryable();
+                // Including isnull statments to change these to '0' to avoid an exception
+                // as  mapping a null to a non nullable data type crashes the entity framwork
+                var select = String.Format("SELECT Sectionid,isnull(Lat,0) as Latitude,isnull(Long,0) as Longitude FROM Segment_{0}_NS0 WHERE SectionId = {1}", section.NetworkId, section.SectionId);
+                var rawQueryForData = db.Database.SqlQuery<SectionLocationModel>(select).AsQueryable();
+                return rawQueryForData;
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Section_");
+                HandleException.SqlError(ex, "SectionLocator_");
             }
             catch (OutOfMemoryException ex)
             {
                 HandleException.OutOfMemoryError(ex);
             }
-            return rawQueryForData;
+            return EmptyResult.AsQueryable<SectionLocationModel>();
         }
     }
 }

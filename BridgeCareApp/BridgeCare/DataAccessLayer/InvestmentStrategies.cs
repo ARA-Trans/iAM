@@ -37,7 +37,7 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.SqlError(ex, "Investment Strategies");
             }
-            return null;
+            return EmptyResult.AsQueryable<InvestmentStrategyModel>();
         }
     }
 }

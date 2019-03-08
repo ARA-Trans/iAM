@@ -3,6 +3,8 @@ using BridgeCare.Models;
 using System;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Filters;
+using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Controllers
 {
@@ -23,7 +25,7 @@ namespace BridgeCare.Controllers
         }
 
         // Get: api/InvestmentStrategies
-
+        [ModelValidation]
         public IQueryable<InvestmentStrategyModel> Get(NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
         
     }

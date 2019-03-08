@@ -1,8 +1,10 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.DataAccessLayer;
 using System;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
@@ -17,7 +19,8 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // Get: api/LatitudeLongitudesection
-        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) => SectionLocator.Locate(sectionModel.NetworkId, db);
+        // Get: api/SectionLocator
+        [ModelValidation]
+        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) =>  SectionLocator.Locate(sectionModel, db);
     }
 }

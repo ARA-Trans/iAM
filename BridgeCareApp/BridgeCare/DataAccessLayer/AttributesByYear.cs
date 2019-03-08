@@ -21,29 +21,34 @@ namespace BridgeCare.DataAccessLayer
 
         public List<AttributeByYearModel> GetProjectedAttributes(SimulatedSegmentIdsModel segmentAddressModel, BridgeCareContext db)
         {
-            if (segmentAddressModel == null)
+            try
             {
-                return new List<AttributeByYearModel>();
-            }
-
-            var selectStatement = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}",
+                var selectStatement = String.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}",
                 segmentAddressModel.NetworkId, segmentAddressModel.SimulationId, segmentAddressModel.SectionId);
-
-            return GeneralAttributeValueQuery(selectStatement);
+                return GeneralAttributeValueQuery(selectStatement);
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "ProjectedAttributes");
+            }
+            return EmptyResult.AsList<AttributeByYearModel>();
         }
 
         public List<AttributeByYearModel> GetHistoricalAttributes(SectionModel sectionModel, BridgeCareContext db)
         {
-            if (sectionModel == null)
+            try
             {
-                return new List<AttributeByYearModel>();
+                var selectStatement = String.Format(
+                    "SELECT * FROM SEGMENT_{0}_NS0 WHERE SectionID={1}",
+                    sectionModel.NetworkId, sectionModel.SectionId);
+
+                return GeneralAttributeValueQuery(selectStatement);
             }
-
-            var selectStatement = String.Format(
-                "SELECT * FROM SEGMENT_{0}_NS0 WHERE SectionID={1}",
-                sectionModel.NetworkId, sectionModel.SectionId);
-
-            return GeneralAttributeValueQuery(selectStatement);
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "HistoricalAttributes");
+            }
+            return EmptyResult.AsList<AttributeByYearModel>();
         }
 
         public List<AttributeByYearModel> GeneralAttributeValueQuery(string selectStatement)
