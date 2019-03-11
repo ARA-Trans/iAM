@@ -25,7 +25,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/models/iAM/criteria';
+    import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/shared/models/iAM/criteria';
     import {parseQueryBuilderJson} from '@/shared/utils/criteria-editor-parsers';
     import {hasValue} from '@/shared/utils/has-value';
 

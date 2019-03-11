@@ -1,5 +1,6 @@
-import {Scenario} from '@/models/iAM/scenario';
+import {Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '../services/scenario.service';
+import * as R from 'ramda';
 
 const state = {
     scenarios: [] as Scenario[]
@@ -7,7 +8,7 @@ const state = {
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
-        state.scenarios = scenarios;
+        state.scenarios = R.clone(scenarios);
     }
 };
 

@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/models/iAM/criteria';
+import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/shared/models/iAM/criteria';
 import {hasValue} from '@/shared/utils/has-value';
 
 /**

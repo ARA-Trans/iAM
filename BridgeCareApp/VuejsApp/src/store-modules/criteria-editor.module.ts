@@ -1,6 +1,7 @@
-import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/models/iAM/criteria';
+import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/shared/models/iAM/criteria';
 import CriteriaEditorService from '@/services/criteria-editor.service';
 import {parseCriteriaString} from '@/shared/utils/criteria-editor-parsers';
+import * as R from 'ramda';
 
 const state = {
     criteriaEditorAttributes: [] as CriteriaEditorAttribute[],
@@ -9,10 +10,10 @@ const state = {
 
 const mutations = {
     criteriaEditorAttributesMutator(state: any, criteriaEditorAttributes: CriteriaEditorAttribute[]) {
-        state.criteriaEditorAttributes = criteriaEditorAttributes;
+        state.criteriaEditorAttributes = R.clone(criteriaEditorAttributes);
     },
     criteriaMutator(state: any, criteria: Criteria) {
-        state.criteria = criteria;
+        state.criteria = R.clone(criteria);
     }
 };
 

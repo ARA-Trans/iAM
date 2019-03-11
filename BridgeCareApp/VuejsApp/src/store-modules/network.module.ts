@@ -1,4 +1,4 @@
-import {Network} from '@/models/iAM/network';
+import {Network} from '@/shared/models/iAM/network';
 import NetworkService from '../services/network.service';
 
 const state = {

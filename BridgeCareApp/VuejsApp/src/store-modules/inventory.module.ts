@@ -1,5 +1,6 @@
-import {Section} from '@/models/iAM/section';
+import {Section} from '@/shared/models/iAM/section';
 import InventoryService from '@/services/inventory.service';
+import * as R from 'ramda';
 
 const state = {
     sections: [] as Section[],
@@ -7,7 +8,7 @@ const state = {
 
 const mutations = {
     sectionsMutator(state: any, sections: Section) {
-        state.sections = sections;
+        state.sections = R.clone(sections);
     }
 };
 

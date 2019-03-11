@@ -53,10 +53,10 @@
     import axios from 'axios';
 
     import AppSpinner from '../shared/AppSpinner.vue';
-    import {Network} from '@/models/iAM/network';
-    import {Simulation} from '@/models/iAM/simulation';
+    import {Network} from '@/shared/models/iAM/network';
+    import {Simulation} from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
-    import {Alert} from '@/models/iAM/alert';
+    import {Alert} from '@/shared/models/iAM/alert';
     import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;

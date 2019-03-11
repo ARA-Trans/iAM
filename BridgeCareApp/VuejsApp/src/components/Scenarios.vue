@@ -82,7 +82,7 @@
 
     import AppSpinner from '../shared/AppSpinner.vue';
     import * as moment from 'moment';
-    import {Scenario} from '@/models/iAM/scenario';
+    import {Scenario} from '@/shared/models/iAM/scenario';
     import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;

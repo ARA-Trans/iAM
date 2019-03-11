@@ -1,4 +1,4 @@
-import {Simulation} from '@/models/iAM/simulation';
+import {Simulation} from '@/shared/models/iAM/simulation';
 import SimulationService from '../services/simulation.service';
 
 const state = {
