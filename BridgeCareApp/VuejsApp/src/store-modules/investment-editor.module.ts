@@ -29,15 +29,15 @@ const mutations = {
 };
 
 const actions = {
-    getInvestmentStrategies({commit}: any) {
-        new InvestmentEditorService().getInvestmentStrategies()
+    async getInvestmentStrategies({commit}: any) {
+        await new InvestmentEditorService().getInvestmentStrategies()
             .then((investmentStrategies: InvestmentStrategy[]) =>
                 commit('investmentStrategiesMutator', investmentStrategies)
             )
             .catch((error: any) => console.log(error));
     },
-    saveInvestmentStrategy({commit}: any, payload: any) {
-        new InvestmentEditorService().saveInvestmentStrategy(payload.savedInvestmentStrategy)
+    async saveInvestmentStrategy({commit}: any, payload: any) {
+        await new InvestmentEditorService().saveInvestmentStrategy(payload.savedInvestmentStrategy)
             .then((investmentStrategy: InvestmentStrategy) =>
                 commit('savedInvestmentStrategyMutator', investmentStrategy)
             )

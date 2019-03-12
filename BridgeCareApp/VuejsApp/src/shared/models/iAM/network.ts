@@ -1,6 +1,6 @@
 ﻿export interface Network {
-    networkId: number
-    networkName: string
+    networkId: number;
+    networkName: string;
 }
 
 export const emptyNetwork: Network = {

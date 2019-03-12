@@ -157,8 +157,7 @@
     import moment from 'moment';
     import EditBudgetsDialog from './investment-editor-dialogs/EditBudgetsDialog.vue';
     import {BudgetNames, EditBudgetsDialogResult} from '@/shared/models/dialogs/edit-budgets-dialog-result';
-    import CreateInvestmentStrategyDialog
-        from '@/components/investment-editor/investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
+    import CreateInvestmentStrategyDialog from '@/components/investment-editor/investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
     import {CreateInvestmentStrategyDialogResult} from '@/shared/models/dialogs/create-investment-strategy-dialog-result';
 
     @Component({
@@ -218,7 +217,7 @@
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});
                     console.log(error);
-                })
+                });
         }
 
         onShowCreateInvestmentStrategyDialog() {
@@ -409,12 +408,12 @@
                                             budget.name === budgetNames.previousName
                                         ) as InvestmentStrategyBudget;
                                     // return the budget's new name with its current amount
-                                    return {name: budgetNames.name, amount: budget.amount}
+                                    return {name: budgetNames.name, amount: budget.amount};
                                 }
                                 // if no budget was found with the budgetNames.previousName, then return as a new budget
                                 return {name: budgetNames.name, amount: 0};
                             })
-                        }
+                        };
                     });
                 // update the selectedInvestmentStrategy.budgetOrder list using the name values from the result.budgets list
                 this.selectedInvestmentStrategy.budgetOrder = result.budgets

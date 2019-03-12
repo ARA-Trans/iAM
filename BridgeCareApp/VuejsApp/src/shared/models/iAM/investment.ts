@@ -5,7 +5,7 @@ export interface InvestmentStrategy {
     inflationRate: number;
     discountRate: number;
     budgetYears: InvestmentStrategyBudgetYear[];
-    budgetOrder: string[]
+    budgetOrder: string[];
     description: string;
 }
 
@@ -26,7 +26,7 @@ export interface SavedInvestmentStrategy {
     inflationRate: number;
     discountRate: number;
     budgetYears: InvestmentStrategyBudgetYear[];
-    budgetOrder: string[]
+    budgetOrder: string[];
     description: string;
     deletedBudgetYears: number[];
     deletedBudgets: string[];
