@@ -220,6 +220,7 @@
     <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
     <Compile Include="Models\SummaryReport\CurrentCell.cs" />
     <Compile Include="Models\SummaryReport\ReportProjectCost.cs" />
+    <Compile Include="Models\SummaryReport\ProjectRowNumberModel.cs" />
     <Compile Include="Models\SummaryReport\Section.cs" />
     <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />

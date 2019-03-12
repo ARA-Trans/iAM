@@ -45,9 +45,8 @@ namespace BridgeCare.Services.SummaryReport
                 // Bridge Work Summary tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
                 summaryReportBridgeWorkSummary.Fill(worksheet, simulationDataModels, simulationYears, dbContext);
-
-                
-
+                                
+                excelPackage.Workbook.Calculate();
                 return excelPackage.GetAsByteArray();
             }
         }

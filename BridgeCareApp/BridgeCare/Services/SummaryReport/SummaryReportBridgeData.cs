@@ -124,6 +124,7 @@ namespace BridgeCare.Services
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Sub;
             worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.Culv;
+            yearData.Culv = familyIdLessThanEleven ? "N" : yearData.Culv;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.DeckD;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SuperD;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SubD;
@@ -157,12 +158,12 @@ namespace BridgeCare.Services
 
         private static void AddDynamicHeadersCells(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears)
         {
-            const string headerConstText = "Work Done in ";
+            const string HeaderConstText = "Work Done in ";
             var column = currentCell.Column;
             var row = currentCell.Row;
             foreach (var year in simulationYears)
             {
-                worksheet.Cells[row, ++column].Value = headerConstText + year;
+                worksheet.Cells[row, ++column].Value = HeaderConstText + year;
                 worksheet.Cells[row + 2, column].Value = year;
                 ExcelHelper.ApplyStyle(worksheet.Cells[row + 2, column]);
             }

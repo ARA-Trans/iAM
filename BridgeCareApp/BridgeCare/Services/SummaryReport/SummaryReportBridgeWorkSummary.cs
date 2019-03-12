@@ -7,6 +7,25 @@ namespace BridgeCare.Services
 {
     public class SummaryReportBridgeWorkSummary
     {
+        const string NoTreatment = "No Treatment";
+        const string Preservation = "Preservation";
+        const string Rehabilitation = "Rehabilitation";
+        const string Replacement = "Replacement";
+        const string Latex = "Latex";
+        const string Epoxy = "Epoxy";
+        const string LargeBridgePreservation = "Large Bridge Preservation";
+        const string DeckReplacement = "Deck Replacement";
+        const string SubRehab = "Sub Rehab";
+        const string SuperReplacement = "Super Replacement";
+        const string LargeBridgeRehab = "Large Bridge Rehab";
+        const string Total = "Total";
+        const string Construction = "Construction";
+        const string BridgeReplacement = "Bridge Replacement";
+        const string SuperstructureReplacement = "Superstructure Replacement";
+        const string CulvertPreservation = "Culvert Preservation";
+        const string CulvertRehabilitation = "Culvert Rehabilitation";
+        const string CulvertReplacement = "Culvert Replacement";
+
         public void Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, BridgeCareContext dbContext)
         {
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
@@ -16,32 +35,173 @@ namespace BridgeCare.Services
             // TODO ask why Total row is with same hard coded number 30000000 in excel?
             var budgetTotalRow = FillTotalBudgetSection(worksheet, currentCell, simulationYears);
             FillRemainingBudgetSection(worksheet, simulationYears, currentCell, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
-            FillNumberOfCulvertsWorkedOnSection(worksheet, currentCell, simulationYears, simulationDataModels);
-
-
+            var projectRowNumberModel = new ProjectRowNumberModel();
+            FillNumberOfCulvertsWorkedOnSection(worksheet, currentCell, simulationYears, simulationDataModels, projectRowNumberModel);
+            FillNumberOfBridgesWorkedOnSection(worksheet, currentCell, simulationYears, simulationDataModels, projectRowNumberModel);
+            FillNumberOfBridgesCulvertsWorkedOnSection(worksheet, currentCell, simulationYears, projectRowNumberModel);
+            
+            worksheet.Calculate();
             worksheet.Cells.AutoFitColumns();
         }
 
-        private void FillNumberOfCulvertsWorkedOnSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
+        private void FillNumberOfBridgesCulvertsWorkedOnSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, ProjectRowNumberModel projectRowNumberModel)
+        {
+            currentCell.Column = 1;
+            AddHeaders(worksheet, currentCell, simulationYears, "# of Bridges and Culverts Worked on");
+            AddDetailsForNumberOfBridgesCulvertsWorkedOn(worksheet, currentCell, simulationYears, projectRowNumberModel);
+        }
+
+        private void AddDetailsForNumberOfBridgesCulvertsWorkedOn(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, ProjectRowNumberModel projectRowNumberModel)
+        {
+            var startRow = ++currentCell.Row;
+            var row = startRow;
+            // Headers in column 1
+            var startColumn = 1;
+            var column = startColumn;
+            worksheet.Cells[row++, column].Value = NoTreatment;
+            worksheet.Cells[row++, column].Value = Preservation;
+            worksheet.Cells[row++, column].Value = Rehabilitation;
+            worksheet.Cells[row++, column].Value = Replacement;
+            worksheet.Cells[row++, column].Value = Total;
+
+            column++;
+            var fromColumn = column + 1;
+            foreach (var year in simulationYears)
+            {
+                row = startRow;
+                column = ++column;
+
+                // No Treatment                
+                worksheet.Cells[row, column].Value = Convert.ToInt32(worksheet.Cells[projectRowNumberModel.CulvertsNoTreatmentRow, column].Value) + Convert.ToInt32(worksheet.Cells[projectRowNumberModel.BridgesNoTreatmentRow, column].Value);
+
+                // Preservation  
+                var bridgesRow = projectRowNumberModel.BridgesPreservationRow;
+                var culvertsRow = projectRowNumberModel.CulvertsPreservationRow;
+                worksheet.Cells[++row, column].Formula = "SUM(" + worksheet.Cells[bridgesRow, column, bridgesRow + 2, column] + "," + worksheet.Cells[culvertsRow, column, culvertsRow + 1, column] + ")";
+
+                // Rehabilitation  
+                bridgesRow = projectRowNumberModel.BridgesRehabilitationRow;
+                worksheet.Cells[++row, column].Formula = "SUM(" + worksheet.Cells[projectRowNumberModel.CulvertsRehabilitationRow, column] + "," + worksheet.Cells[bridgesRow, column, bridgesRow + 3, column] + ")";
+
+                // Replacement                
+                worksheet.Cells[++row, column].Value = Convert.ToInt32(worksheet.Cells[projectRowNumberModel.CulvertsReplacementRow, column].Value) + Convert.ToInt32(worksheet.Cells[projectRowNumberModel.BridgesReplacementRow, column].Value);
+
+                // Total
+                worksheet.Cells[++row, column].Formula = "SUM(" + worksheet.Cells[startRow + 1, column, startRow + 3, column] + ")";
+            }
+            ExcelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);            
+
+            // Empty row
+            currentCell.Row = ++row;
+            currentCell.Column = column;
+        }
+
+        private void FillNumberOfBridgesWorkedOnSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, ProjectRowNumberModel projectRowNumberModel)
+        {
+            currentCell.Column = 1;
+            AddHeaders(worksheet, currentCell, simulationYears, "# of Bridges Worked on");
+            AddCountsOfBridgesWorkedOn(worksheet, simulationDataModels, simulationYears, currentCell, projectRowNumberModel);
+        }
+
+        private void AddCountsOfBridgesWorkedOn(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell, ProjectRowNumberModel projectRowNumberModel)
+        {
+            var startRow = ++currentCell.Row;
+            var row = startRow;
+            // Headers in column 1
+            var startColumn = 1;
+            var column = startColumn;
+            worksheet.Cells[row++, column].Value = NoTreatment;
+            worksheet.Cells[row++, column].Value = Latex;
+            worksheet.Cells[row++, column].Value = Epoxy;
+            worksheet.Cells[row++, column].Value = LargeBridgePreservation;
+            worksheet.Cells[row++, column].Value = DeckReplacement;
+            worksheet.Cells[row++, column].Value = SubRehab;
+            worksheet.Cells[row++, column].Value = SuperReplacement;
+            worksheet.Cells[row++, column].Value = LargeBridgeRehab;
+            worksheet.Cells[row++, column].Value = Replacement;
+            worksheet.Cells[row++, column].Value = Total;
+            column++;
+            var fromColumn = column + 1;
+            foreach (var year in simulationYears)
+            {
+                row = startRow;
+                column = ++column;
+
+                // No Treatment
+                var noTreatmentCount = CalculateNoTreatmentCountForBridges(simulationDataModels, year);
+                worksheet.Cells[row, column].Value = noTreatmentCount;
+                projectRowNumberModel.BridgesNoTreatmentRow = row;
+
+                // Latex
+                var latexCount = CalculateCountByProject(simulationDataModels, year, Latex);
+                worksheet.Cells[++row, column].Value = latexCount;
+                projectRowNumberModel.BridgesPreservationRow = row;
+
+                // Epoxy                
+                var epoxyCount = CalculateCountByProject(simulationDataModels, year, Epoxy);
+                worksheet.Cells[++row, column].Value = epoxyCount;
+
+                // Large Bridge Preservation                
+                var largeBridgePreservationCount = CalculateCountByProject(simulationDataModels, year, LargeBridgePreservation);
+                worksheet.Cells[++row, column].Value = largeBridgePreservationCount;
+
+                // Deck Replacement           
+                var deckReplacementCount = CalculateCountByProject(simulationDataModels, year, DeckReplacement);
+                worksheet.Cells[++row, column].Value = deckReplacementCount;
+                projectRowNumberModel.BridgesRehabilitationRow = row;
+
+                // Sub Rehab                
+                var subRehabCount = CalculateCountByProject(simulationDataModels, year, SubRehab);
+                worksheet.Cells[++row, column].Value = subRehabCount;
+
+                // Super Replacement                
+                var superReplacementCount = CalculateCountByProject(simulationDataModels, year, SuperstructureReplacement);
+                worksheet.Cells[++row, column].Value = superReplacementCount;
+
+                // Large Bridge Rehab                
+                var largeBridgeRehabCount = CalculateCountByProject(simulationDataModels, year, LargeBridgeRehab);
+                worksheet.Cells[++row, column].Value = largeBridgeRehabCount;
+
+                // Replacement                
+                var replacementCount = CalculateCountByProject(simulationDataModels, year, BridgeReplacement);
+                worksheet.Cells[++row, column].Value = replacementCount;
+                projectRowNumberModel.BridgesReplacementRow = row;
+
+                // Total
+                worksheet.Cells[++row, column].Value = latexCount + epoxyCount + largeBridgePreservationCount + deckReplacementCount + subRehabCount + superReplacementCount + largeBridgeRehabCount + replacementCount;
+            }
+            ExcelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
+
+            // Empty row
+            currentCell.Row = ++row;
+            currentCell.Column = column;
+        }
+
+        private int CalculateNoTreatmentCountForBridges(List<SimulationDataModel> simulationDataModels, int year)
+        {
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.Project == NoTreatment && y.CulvD.Equals("N"))).Count;
+        }
+
+        private void FillNumberOfCulvertsWorkedOnSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, ProjectRowNumberModel projectRowNumberModel)
         {
             currentCell.Column = 1;
             AddHeaders(worksheet, currentCell, simulationYears, "# of Culverts Worked on");
-            AddCountsOfCulvertsWorkedOn(worksheet, simulationDataModels, simulationYears, currentCell);            
+            AddCountsOfCulvertsWorkedOn(worksheet, simulationDataModels, simulationYears, currentCell, projectRowNumberModel);            
         }
 
-        private void AddCountsOfCulvertsWorkedOn(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell)
+        private void AddCountsOfCulvertsWorkedOn(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell, ProjectRowNumberModel projectRowNumberModel)
         {
             var startRow = ++currentCell.Row;
             var row = startRow;
             // Headers in column 1
             var startColumn = 1;
             var column = startColumn;            
-            worksheet.Cells[row++, column].Value = "No Treatment";
-            worksheet.Cells[row++, column].Value = "Preservation";
+            worksheet.Cells[row++, column].Value = NoTreatment;
+            worksheet.Cells[row++, column].Value = Preservation;
             worksheet.Cells[row++, column].Value = "Preservation Poor Fix";
-            worksheet.Cells[row++, column].Value = "Rehabilitation";
-            worksheet.Cells[row++, column].Value = "Replacement";
-            worksheet.Cells[row++, column].Value = "Total";
+            worksheet.Cells[row++, column].Value = Rehabilitation;
+            worksheet.Cells[row++, column].Value = Replacement;
+            worksheet.Cells[row++, column].Value = Total;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
@@ -52,23 +212,28 @@ namespace BridgeCare.Services
                 // No Treatment
                 var noTreatmentCount = CalculateNoTreatmentCountForCulverts(simulationDataModels, year);
                 worksheet.Cells[row, column].Value = noTreatmentCount;
+                projectRowNumberModel.CulvertsNoTreatmentRow = row;
 
                 // Preservation Poor Fix
                 int preservationPoorFixrow = row + 2;
-                double preservationPoorFixCount = 0;// TODO
+                var preservationPoorFixCount = CalculatePreservationPoorFixCount(simulationDataModels, year);
+                worksheet.Cells[preservationPoorFixrow, column].Value = preservationPoorFixCount;
 
                 // Preservation
-                var preservationCount = CalculateProjectCount(simulationDataModels, year, "Culvert Preservation");
-                worksheet.Cells[++row, column].Value = preservationCount - Convert.ToInt32(worksheet.Cells[preservationPoorFixrow, column].Value);
+                var preservationCount = CalculateCountByProject(simulationDataModels, year, CulvertPreservation) - preservationPoorFixCount;
+                worksheet.Cells[++row, column].Value = preservationCount;
+                projectRowNumberModel.CulvertsPreservationRow = row;
 
                 // Rehabilitation
                 row = preservationPoorFixrow + 1;
-                var rehabilitationCount = CalculateProjectCount(simulationDataModels, year, "Culvert Rehabilitation");
+                var rehabilitationCount = CalculateCountByProject(simulationDataModels, year, CulvertRehabilitation);
                 worksheet.Cells[row, column].Value = rehabilitationCount;
+                projectRowNumberModel.CulvertsRehabilitationRow = row;
 
                 // Replacement
-                 var replacementCount = CalculateProjectCount(simulationDataModels, year, "Culvert Replacement");
+                 var replacementCount = CalculateCountByProject(simulationDataModels, year, CulvertReplacement);
                 worksheet.Cells[++row, column].Value = replacementCount;
+                projectRowNumberModel.CulvertsReplacementRow = row;
 
                 // Total
                 worksheet.Cells[++row, column].Value = preservationCount + preservationPoorFixCount + rehabilitationCount + replacementCount;
@@ -80,12 +245,17 @@ namespace BridgeCare.Services
             currentCell.Column = column;            
         }
 
-        private int CalculateNoTreatmentCountForCulverts(List<SimulationDataModel> simulationDataModels, int year)
+        private int CalculatePreservationPoorFixCount(List<SimulationDataModel> simulationDataModels, int year)
         {
-            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.Project == "No Treatment" && !y.CulvD.Equals("N"))).Count;
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.Culv == "Y" && y.SD == "N")).Count;
         }
 
-        private int CalculateProjectCount(List<SimulationDataModel> simulationDataModels, int year, string project)
+        private int CalculateNoTreatmentCountForCulverts(List<SimulationDataModel> simulationDataModels, int year)
+        {
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.Project == NoTreatment && !y.CulvD.Equals("N"))).Count;
+        }
+
+        private int CalculateCountByProject(List<SimulationDataModel> simulationDataModels, int year, string project)
         {
             return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.Project == project)).Count;
         }
@@ -104,9 +274,9 @@ namespace BridgeCare.Services
             // Headers in column 1
             var startColumn = 1;
             var column = startColumn;            
-            worksheet.Cells[row++, column].Value = "Preservation";
-            worksheet.Cells[row++, column].Value = "Construction";
-            worksheet.Cells[row++, column].Value = "Total";
+            worksheet.Cells[row++, column].Value = Preservation;
+            worksheet.Cells[row++, column].Value = Construction;
+            worksheet.Cells[row++, column].Value = Total;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
@@ -147,9 +317,9 @@ namespace BridgeCare.Services
             var startColumn = 1;
             var column = startColumn;
             int budgetTotalRow = 0;
-            worksheet.Cells[row++, column].Value = "Preservation";
-            worksheet.Cells[row++, column].Value = "Construction";
-            worksheet.Cells[row++, column].Value = "Total";
+            worksheet.Cells[row++, column].Value = Preservation;
+            worksheet.Cells[row++, column].Value = Construction;
+            worksheet.Cells[row++, column].Value = Total;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
@@ -192,14 +362,14 @@ namespace BridgeCare.Services
             var startColumn = 1;
             var column = startColumn;
             int bridgeTotalRow = 0;
-            worksheet.Cells[row++, column].Value = "Latex";
-            worksheet.Cells[row++, column].Value = "Epoxy";
-            worksheet.Cells[row++, column].Value = "Large Bridge Preservation";
-            worksheet.Cells[row++, column].Value = "Deck Replacement";
-            worksheet.Cells[row++, column].Value = "Sub Rehab";
-            worksheet.Cells[row++, column].Value = "Super Replacement";
-            worksheet.Cells[row++, column].Value = "Large Bridge Rehab";
-            worksheet.Cells[row++, column].Value = "Replacement";
+            worksheet.Cells[row++, column].Value = Latex;
+            worksheet.Cells[row++, column].Value = Epoxy;
+            worksheet.Cells[row++, column].Value = LargeBridgePreservation;
+            worksheet.Cells[row++, column].Value = DeckReplacement;
+            worksheet.Cells[row++, column].Value = SubRehab;
+            worksheet.Cells[row++, column].Value = SuperReplacement;
+            worksheet.Cells[row++, column].Value = LargeBridgeRehab;
+            worksheet.Cells[row++, column].Value = Replacement;
             worksheet.Cells[row++, column].Value = "Bridge Total";
             column++;
             var fromColumn = column + 1;
@@ -209,35 +379,35 @@ namespace BridgeCare.Services
                 column = ++column;
 
                 // Latex
-                var latexCost = CalculateCost(simulationDataModels, year, "Latex");
+                var latexCost = CalculateCost(simulationDataModels, year, Latex);
                 worksheet.Cells[row, column].Value = latexCost;
 
                 // Epoxy
-                var epoxyCost = CalculateCost(simulationDataModels, year, "Epoxy");
+                var epoxyCost = CalculateCost(simulationDataModels, year, Epoxy);
                 worksheet.Cells[++row, column].Value = epoxyCost;
 
                 // Large Bridge Preservation
-                var largeBridgePreservationCost = CalculateCost(simulationDataModels, year, "Large Bridge Preservation");
+                var largeBridgePreservationCost = CalculateCost(simulationDataModels, year, LargeBridgePreservation);
                 worksheet.Cells[++row, column].Value = largeBridgePreservationCost;
 
                 // Deck Replacement
-                var deckReplacementCost = CalculateCost(simulationDataModels, year, "Deck Replacement");
+                var deckReplacementCost = CalculateCost(simulationDataModels, year, DeckReplacement);
                 worksheet.Cells[++row, column].Value = deckReplacementCost;
 
                 // Sub Rehab
-                var subRehabCost = CalculateCost(simulationDataModels, year, "Sub Rehab");
+                var subRehabCost = CalculateCost(simulationDataModels, year, SubRehab);
                 worksheet.Cells[++row, column].Value = subRehabCost;
 
                 // Super Replacement
-                var superReplacementCost = CalculateCost(simulationDataModels, year, "Superstructure Replacement");
+                var superReplacementCost = CalculateCost(simulationDataModels, year, SuperstructureReplacement);
                 worksheet.Cells[++row, column].Value = superReplacementCost;
 
                 // Large Bridge Rehab
-                var largeBridgeRehabCost = CalculateCost(simulationDataModels, year, "Large Bridge Rehab");
+                var largeBridgeRehabCost = CalculateCost(simulationDataModels, year, LargeBridgeRehab);
                 worksheet.Cells[++row, column].Value = largeBridgeRehabCost;
 
                 // Replacement
-                var replacementCost = CalculateCost(simulationDataModels, year, "Bridge Replacement");
+                var replacementCost = CalculateCost(simulationDataModels, year, BridgeReplacement);
                 worksheet.Cells[++row, column].Value = replacementCost;
 
                 // Bridge Total
@@ -268,9 +438,9 @@ namespace BridgeCare.Services
             var startColumn = 1;
             var column = startColumn;
             int culvertTotalRow = 0;
-            worksheet.Cells[row++, column].Value = "Preservation";
-            worksheet.Cells[row++, column].Value = "Rehabilitation";
-            worksheet.Cells[row++, column].Value = "Replacement";
+            worksheet.Cells[row++, column].Value = Preservation;
+            worksheet.Cells[row++, column].Value = Rehabilitation;
+            worksheet.Cells[row++, column].Value = Replacement;
             worksheet.Cells[row++, column].Value = "Culvert Total";
             column++;
             var fromColumn = column + 1;
@@ -280,15 +450,15 @@ namespace BridgeCare.Services
                 column = ++column;
 
                 // Preservation
-                var preservationCost = CalculateCost(simulationDataModels, year, "Culvert Preservation");
+                var preservationCost = CalculateCost(simulationDataModels, year, CulvertPreservation);
                 worksheet.Cells[row, column].Value = preservationCost;
 
                 // Rehabilitation
-                var rehabilitationCost = CalculateCost(simulationDataModels, year, "Culvert Rehabilitation");
+                var rehabilitationCost = CalculateCost(simulationDataModels, year, CulvertRehabilitation);
                 worksheet.Cells[++row, column].Value = rehabilitationCost;
 
                 // Replacement
-                var replacementCost = CalculateCost(simulationDataModels, year, "Culvert Replacement");
+                var replacementCost = CalculateCost(simulationDataModels, year, CulvertReplacement);
                 worksheet.Cells[++row, column].Value = replacementCost;
 
                 // Culvert Total
@@ -354,10 +524,10 @@ namespace BridgeCare.Services
 
         private void AddWorkTypeHeader(ExcelWorksheet worksheet, CurrentCell currentCell)
         {
-            const string workTypeHeader = "Work Type";
+            const string WorkTypeHeader = "Work Type";
             var row = currentCell.Row;
             var column = currentCell.Column;
-            worksheet.Cells[++row, column].Value = workTypeHeader;
+            worksheet.Cells[++row, column].Value = WorkTypeHeader;
             var cells = worksheet.Cells[row, column, row + 1, column];
             ExcelHelper.ApplyStyle(cells);
             ExcelHelper.ApplyBorder(cells);
