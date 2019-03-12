@@ -240,9 +240,10 @@
     <Compile Include="Services\Simulations.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
-    <Compile Include="Services\SummaryReport\SummaryReportBridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummaryHelper.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportGenerator.cs" />
-    <Compile Include="Services\SummaryReport\SummaryReportHelper.cs" />
+    <Compile Include="Services\SummaryReport\BridgeDataHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dpendencies\CalculateEvaluate.dll" />

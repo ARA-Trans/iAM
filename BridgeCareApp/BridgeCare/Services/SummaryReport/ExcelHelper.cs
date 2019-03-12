@@ -66,6 +66,9 @@ namespace BridgeCare.Services
                 case "NegativeCurrency":
                     cells.Style.Numberformat.Format = "_-$* #,##0_-;$* (#,##0)_-;_-$* \"-\"??_-;_-@_-";
                     break;
+                case "Number":
+                    cells.Style.Numberformat.Format = "_-* #,##0_-;* (#,##0)_-;_-* \"-\"??_-;_-@_-";
+                    break;
             }
         }
     }

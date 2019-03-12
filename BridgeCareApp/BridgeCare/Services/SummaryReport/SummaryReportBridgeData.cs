@@ -5,7 +5,6 @@ using System.Linq;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using OfficeOpenXml;
-using OfficeOpenXml.Style;
 
 namespace BridgeCare.Services
 {
@@ -38,7 +37,7 @@ namespace BridgeCare.Services
             BRKeys = sectionsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
             var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, dbContext);
                         
-            var simulationDataModels = SummaryReportHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels);
+            var simulationDataModels = BridgeDataHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels);
 
             // Add data to excel.
             var headers = GetHeaders();
@@ -74,6 +73,8 @@ namespace BridgeCare.Services
                 var workDoneMoreThanOnce = 0;
                 var section = sectionsForSummaryReport.Where(s => Convert.ToInt32(s.FACILITY) == brKey).FirstOrDefault();
                 var simulationDataModel = simulationDataModels.Where(s => s.SectionId == section.SECTIONID).FirstOrDefault();
+                // Save DeckArea for further use
+                simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 var yearsData = simulationDataModel.YearsData;
                 // Add work done cellls
                 for (var index = 1; index < yearsData.Count(); index++)
@@ -96,6 +97,7 @@ namespace BridgeCare.Services
                     var prevYrSD = yearsData[index - 1].SD;
                     var thisYrSD = yearsData[index].SD;
                     worksheet.Cells[row, ++column].Value = prevYrSD == "Y" ? (thisYrSD == "N" ? "Off" : "On") : "--";
+                    yearsData[index].PoorOnOffRate = worksheet.Cells[row, column].Value.ToString();
                 }
 
                 // Empty column

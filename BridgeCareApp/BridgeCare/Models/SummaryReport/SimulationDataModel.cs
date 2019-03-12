@@ -7,5 +7,8 @@ namespace BridgeCare.Models
         public int SectionId { get; set; }        
 
         public List<YearsData> YearsData { get; set; }
+
+        // Useful in some tab reports
+        public string DeckArea { get; set; }
     }
 }

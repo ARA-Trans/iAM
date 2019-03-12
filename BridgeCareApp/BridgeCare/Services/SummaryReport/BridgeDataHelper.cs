@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BridgeCare.Services
 {
-    public static class SummaryReportHelper
+    public static class BridgeDataHelper
     {
         public static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears, IQueryable<ReportProjectCost> projectCostModels)
         {
