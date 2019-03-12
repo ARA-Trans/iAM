@@ -156,7 +156,7 @@
     import {hasValue} from '@/shared/utils/has-value';
     import moment from 'moment';
     import EditBudgetsDialog from './investment-editor-dialogs/EditBudgetsDialog.vue';
-    import {BudgetNames, EditBudgetsDialogResult} from "@/shared/models/dialogs/edit-budgets-dialog-result";
+    import {BudgetNames, EditBudgetsDialogResult} from '@/shared/models/dialogs/edit-budgets-dialog-result';
     import CreateInvestmentStrategyDialog
         from '@/components/investment-editor/investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
     import {CreateInvestmentStrategyDialogResult} from '@/shared/models/dialogs/create-investment-strategy-dialog-result';
