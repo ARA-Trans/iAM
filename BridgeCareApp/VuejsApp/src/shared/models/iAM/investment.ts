@@ -40,6 +40,7 @@ export interface InvestmentStrategyGridData {
 export interface EditBudgetsDialogGridData {
     name: string;
     index: number;
+    previousName: string;
 }
 
 export const emptyInvestmentStrategy: InvestmentStrategy = {

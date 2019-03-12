@@ -11,10 +11,10 @@
                     <v-btn fab icon v-on:click="onMoveBudgetDown" :disabled="disableMoveDownButton()">
                         <v-icon>arrow_downward</v-icon>
                     </v-btn>
-                    <v-btn fab icon color="green">
+                    <v-btn fab icon color="green" v-on:click="onAddBudget">
                         <v-icon>add</v-icon>
                     </v-btn>
-                    <v-btn fab icon color="red" v-on:click="onDeleteBudget()" :disabled="disableDeleteButton()">
+                    <v-btn fab icon color="red" v-on:click="onDeleteBudget" :disabled="disableDeleteButton()">
                         <v-icon>delete</v-icon>
                     </v-btn>
                 </v-toolbar>
@@ -82,7 +82,8 @@
         onStateBudgetsChanged(budgets: string[]) {
             this.editBudgetsDialogGridData = budgets.map((budget: string, index: number) => ({
                 name: budget,
-                index: index
+                index: index,
+                previousName: budget
             }));
         }
 
@@ -154,7 +155,11 @@
             const unnamedBudgets = this.editBudgetsDialogGridData
                 .filter((budget: EditBudgetsDialogGridData) => budget.name.match(/Unnamed Budget/));
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
-
+            this.editBudgetsDialogGridData.push({
+                name: newBudget,
+                index: this.editBudgetsDialogGridData.length,
+                previousName: newBudget
+            });
         }
 
         /**
@@ -175,7 +180,8 @@
                 )
                 .map((budget: EditBudgetsDialogGridData, index: number) => ({
                     name: budget.name,
-                    index: index
+                    index: index,
+                    previousName: budget.previousName
                 }));
             // reset selectedBudget as defaultBudgetListItem
             this.selectedGridRows = [];
@@ -185,11 +191,18 @@
          * 'Save'/'Cancel' button has been clicked
          */
         onSubmit(isCanceled: boolean) {
+            // create dialog result
             const result: EditBudgetsDialogResult = {
                 canceled: isCanceled,
                 budgets: this.editBudgetsDialogGridData
-                    .map((budget: EditBudgetsDialogGridData) => budget.name)
+                    .map((budget: EditBudgetsDialogGridData) => ({
+                        name: budget.name,
+                        previousName: budget.previousName
+                    }))
             };
+            // reset selectedGridRows property
+            this.selectedGridRows = [];
+            // emit dialog result
             this.$emit('result', result);
         }
     }

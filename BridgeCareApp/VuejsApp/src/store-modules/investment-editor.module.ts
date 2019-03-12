@@ -4,7 +4,6 @@ import * as R from 'ramda';
 
 const state = {
     investmentStrategies: [] as InvestmentStrategy[],
-    isDrty: false as boolean,
     budgets: [] as string[]
 };
 
@@ -22,11 +21,6 @@ const mutations = {
             });
         } else {
             state.investmentStrategies = R.append(savedInvestmentStrategy);
-        }
-    },
-    isDirtyMutator(state: any, isDirty: boolean) {
-        if (state.isDirty !== isDirty) {
-            state.isDirty = isDirty;
         }
     },
     budgetsMutator(state: any, budgets: string[]) {
@@ -48,9 +42,6 @@ const actions = {
                 commit('savedInvestmentStrategyMutator', investmentStrategy)
             )
             .catch((error: any) => console.log(error));
-    },
-    setIsDirty({commit}: any, payload: any) {
-        commit('isDirtyMutator', payload.isDirty);
     },
     setBudgets({commit}: any, payload: any) {
         commit('budgetsMutator', payload.budgets);
