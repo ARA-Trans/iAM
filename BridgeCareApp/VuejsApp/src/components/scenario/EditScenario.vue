@@ -78,15 +78,15 @@
 
     @Component
     export default class EditScenario extends Vue {
-        marker: boolean = true
-        message: string = ''
+        marker: boolean = true;
+        message: string = '';
 
         created() {
-            this.marker = true
+            this.marker = true;
         }
 
         toggleMarker() {
-            this.marker = !this.marker
+            this.marker = !this.marker;
         }
         editAnalysis() {
             this.$router.push('EditAnalysis');

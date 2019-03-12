@@ -12,8 +12,8 @@ const mutations = {
 };
 
 const actions = {
-    getSimulations({commit}: any, payload: any) {
-        new SimulationService().getSimulations(payload.networkId)
+    async getSimulations({commit}: any, payload: any) {
+        await new SimulationService().getSimulations(payload.networkId)
             .then((simulations: Simulation[]) => commit('simulationsMutator', simulations))
             .catch((error: any) => console.log(error));
     },

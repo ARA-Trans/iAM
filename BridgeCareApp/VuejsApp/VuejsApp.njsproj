@@ -44,6 +44,8 @@
     <Content Include=".env.production">
       <SubType>Code</SubType>
     </Content>
+    <Content Include=".fimbullinter.yaml" />
+    <Content Include=".wotanrc.yaml" />
     <Content Include="libman.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
@@ -57,12 +59,12 @@
     <Content Include="src\assets\images\inventory_mock_bridge_images\7.jpg" />
     <Content Include="src\assets\images\inventory_mock_bridge_images\8.jpg" />
     <Content Include="src\assets\logo.svg" />
+    <Content Include="src\components\Criteria.vue" />
     <Content Include="src\components\DetailedReport.vue">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\components\HelloWorld.vue" />
     <Content Include="src\components\Inventory.vue" />
-    <Content Include="src\components\Scenario.vue" />
+    <Content Include="src\components\Scenarios.vue" />
     <Content Include="src\components\scenario\EditAnalysis.vue">
       <SubType>Code</SubType>
     </Content>
@@ -83,7 +85,9 @@
     <Content Include="src\shared\AppModalPopup.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\shared\CriteriaEditor.vue" />
     <Content Include="tsconfig.json" />
+    <Content Include="tslint.json" />
     <Content Include="Web.config" />
     <None Include="Web.Debug.config">
       <SubType>Code</SubType>
@@ -98,26 +102,54 @@
     <Folder Include="src\components\" />
     <Folder Include="src\components\scenario\" />
     <Folder Include="src\models\" />
+    <Folder Include="src\plugins\" />
+    <Folder Include="src\services\" />
     <Folder Include="src\shared\" />
+    <Folder Include="src\shared\utils\" />
+    <Folder Include="src\store-modules\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="src\firebase.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\main.ts" />
-    <TypeScriptCompile Include="src\models\IAlert.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\models\INetwork.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\models\alert.ts" />
+    <TypeScriptCompile Include="src\models\criteria.ts" />
+    <TypeScriptCompile Include="src\models\network.ts" />
     <TypeScriptCompile Include="src\models\scenario.ts" />
     <TypeScriptCompile Include="src\models\section.ts" />
     <TypeScriptCompile Include="src\models\Simulation.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\plugins\vuetify.ts" />
     <TypeScriptCompile Include="src\router.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\detailed-report.service.ts" />
+    <TypeScriptCompile Include="src\services\inventory.service.ts" />
+    <TypeScriptCompile Include="src\services\network.service.ts" />
+    <TypeScriptCompile Include="src\services\scenario.service.ts" />
+    <TypeScriptCompile Include="src\services\simulation.service.ts" />
+    <TypeScriptCompile Include="src\shared\utils\criteria-editor-parsers.ts" />
+    <TypeScriptCompile Include="src\shared\utils\has-value.ts" />
+    <TypeScriptCompile Include="src\shared\utils\mock-data.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
+    <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\shims-vuefire.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\criteria-editor.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\detailed-report.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\network.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\security.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\simulation.module.ts" />
     <TypeScriptCompile Include="src\store.ts" />
   </ItemGroup>
   <ItemGroup>

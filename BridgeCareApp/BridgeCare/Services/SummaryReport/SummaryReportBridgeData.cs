@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using BridgeCare.Interfaces;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace BridgeCare.Services
 {
@@ -37,14 +37,15 @@ namespace BridgeCare.Services
             var sectionsForSummaryReport = sections.Where(sm => sectionIdsFromSimulationTable.Contains(sm.SECTIONID)).ToList();
             BRKeys = sectionsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
             var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, dbContext);
-                        
+
             var simulationDataModels = SummaryReportHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels);
 
             // Add data to excel.
             var headers = GetHeaders();
             var currentCell = AddHeadersCells(worksheet, headers, simulationYears);
 
-            // Add row next to headers for filters and year numbers for dynamic data. Cover from top, left to right, and bottom set of data.
+            // Add row next to headers for filters and year numbers for dynamic
+            // data. Cover from top, left to right, and bottom set of data.
             using (ExcelRange autoFilterCells = worksheet.Cells[3, 1, currentCell.Row, currentCell.Column - 1])
             {
                 autoFilterCells.AutoFilter = true;
@@ -52,14 +53,16 @@ namespace BridgeCare.Services
 
             AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
             AddDynamicDataCells(worksheet, sectionsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
-            // TODO The line below currently hangs Postman in testing. It will be required for final production.
-            // ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
+            // TODO The line below currently hangs Postman in testing. It will be
+            // required for final production. ApplyBorder(worksheet.Cells[1, 1,
+            // currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
         }
 
         #region Private Methods
+
         private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
-        {            
+        {
             var row = 4; // Data starts here
             var column = currentCell.Column;
             foreach (var bridgeDataModel in bridgeDataModels)
@@ -83,8 +86,9 @@ namespace BridgeCare.Services
                 // Empty Total column
                 column++;
 
-                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"
-                // TODO Ask if previous year formula is wrong in report, not matching with other years formulae.
+                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr
+                // yr SD=="N")?"Off":"On":"--" TODO Ask if previous year formula
+                // is wrong in report, not matching with other years formulae.
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     var prevYrSD = yearsData[index - 1].SD;
@@ -108,7 +112,6 @@ namespace BridgeCare.Services
             }
             currentCell.Row = row - 1;
             currentCell.Column = column - 1;
-
         }
 
         private static int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId)
@@ -298,6 +301,7 @@ namespace BridgeCare.Services
                 "Risk Score"
             };
         }
-        #endregion
+
+        #endregion Private Methods
     }
 }

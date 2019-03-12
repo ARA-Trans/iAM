@@ -60,7 +60,7 @@
     import Vue from 'vue';
     import {Component} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import * as Msal from 'msal'
+    import * as Msal from 'msal';
 
     @Component
     export default class TopNavbar extends Vue {
@@ -124,7 +124,7 @@
                     {navigation: 'Criteria', name: 'Criteria'}
                 ],
                 drawer: true
-            }
+            };
         }
 
         routing(routeName: string) {
@@ -151,7 +151,7 @@
                     this.updateUI();
                 },
                 (error) => {
-                    this.redirectOnErrors(error)
+                    this.redirectOnErrors(error);
                 }
             );
         }

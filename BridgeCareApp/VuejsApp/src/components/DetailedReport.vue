@@ -30,7 +30,7 @@
                 </v-btn>
                 <v-btn color="blue-grey"
                        class="white--text"
-                       :disabled="isBusy || simulationId === 0"
+                       :disabled="simulationId === 0 || isBusy"
                        v-on:click="onRunSimulation">
                     Run Simulation
                     <v-icon right dark>cloud_download</v-icon>
@@ -54,10 +54,13 @@
 
     import AppSpinner from '../shared/AppSpinner.vue';
     import {Network} from '@/shared/models/iAM/network';
-    import {Simulation} from '@/shared/models/iAM/simulation';
+    import { Simulation } from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
     import {Alert} from '@/shared/models/iAM/alert';
-    import {hasValue} from '@/shared/utils/has-value';
+    import { hasValue } from '@/shared/utils/has-value';
+
+
+    import { statusReference } from '@/firebase';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -79,10 +82,25 @@
 
         @Prop({
             default: function () {
-                return {showModal: false}
+                return {showModal: false};
             }
         })
         warning: Alert;
+        created() {
+            statusReference.on('value', (snapshot: any) => {
+                let simulationStatus = [];
+                const results = snapshot.val();
+                for (let key in results) {
+                    simulationStatus.push({
+                        id: key,
+                        status: results[key].Status
+                    });
+                }
+                console.log(simulationStatus);
+            }, (error: any) => {
+
+            });
+        }
 
         networkId: number = 0;
         networkName: string = '';
@@ -128,8 +146,7 @@
          */
         onSelectNetwork(networkId: number) {
             this.networkId = networkId;
-            // @ts-ignore
-            const selectedNetwork: Network = this.networks.find(t => t.networkId === networkId);
+            const selectedNetwork: Network = this.networks.find(t => t.networkId === networkId) as Network;
             this.networkName = hasValue(selectedNetwork) ? selectedNetwork.networkName : '';
             // dispatch action to get simulations
             this.setIsBusyAction({isBusy: true});
@@ -147,8 +164,7 @@
          */
         onSelectSimulation(simulationId: number) {
             this.simulationId = simulationId;
-            // @ts-ignore
-            const selectedSimulation: Simulation = this.simulations.find((s: Simulation) => s.simulationId == simulationId);
+            const selectedSimulation: Simulation = this.simulations.find((s: Simulation) => s.simulationId == simulationId) as Simulation;
             this.simulationName = hasValue(selectedSimulation) ? selectedSimulation.simulationName : '';
         }
 
@@ -196,14 +212,15 @@
         runSimulation() {
             // dispatch action to run simulation
             this.runSimulationAction({
-                NetworkId: this.networkId,
-                SimulationId: this.simulationId,
-                NetworkName: this.networkName,
-                SimulationName: this.simulationName
+                networkId: this.networkId,
+                simulationId: this.simulationId,
+                networkName: this.networkName,
+                simulationName: this.simulationName
             }).then(() =>
                 this.setIsBusyAction({isBusy: false})
             ).catch((error: any) => {
-                this.setIsBusyAction({isBusy: false});
+                this.setIsBusyAction({ isBusy: false });
+                this.setSimulationStatusAction({ status: false })
                 console.log(error);
             });
         }

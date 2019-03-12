@@ -11,8 +11,8 @@ const mutations = {
 };
 
 const actions = {
-    getDetailedReport({commit}: any, payload: any) {
-        new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
+    async getDetailedReport({commit}: any, payload: any) {
+        await new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
             .then((reportBlob: Blob) => commit('reportBlobMutator', reportBlob))
             .catch((error: any) => console.log(error));
     },
