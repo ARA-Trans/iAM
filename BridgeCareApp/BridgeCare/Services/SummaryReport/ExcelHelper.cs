@@ -1,4 +1,6 @@
-﻿using OfficeOpenXml;
+﻿using System;
+using System.Drawing;
+using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
 namespace BridgeCare.Services
@@ -70,6 +72,12 @@ namespace BridgeCare.Services
                     cells.Style.Numberformat.Format = "_-* #,##0_-;* (#,##0)_-;_-* \"-\"??_-;_-@_-";
                     break;
             }
+        }
+
+        public static void ApplyColor(ExcelRange cells, Color color)
+        {
+            cells.Style.Fill.PatternType = ExcelFillStyle.Solid;
+            cells.Style.Fill.BackgroundColor.SetColor(color);
         }
     }
 }

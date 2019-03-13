@@ -61,5 +61,50 @@ namespace BridgeCare.Services
 
             return sum;
         }
+
+        public  static int CalculateTotalBridgeGoodCount(List<SimulationDataModel> simulationDataModels, int year)
+        {
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) >= 7)).Count;
+        }
+
+        public static int CalculateTotalBridgePoorCount(List<SimulationDataModel> simulationDataModels, int year)
+        {
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) < 5)).Count;
+        }
+
+        public static double CalculateTotalGoodDeckArea(List<SimulationDataModel> simulationDataModels, int year)
+        {
+            double sum = 0;
+            foreach (var simulationDataModel in simulationDataModels)
+            {
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) >= 7);
+                sum = sum + (yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0);
+            }
+
+            return sum;
+        }
+
+        public static double CalculateTotalPoorDeckArea(List<SimulationDataModel> simulationDataModels, int year)
+        {
+            double sum = 0;
+            foreach (var simulationDataModel in simulationDataModels)
+            {
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) < 5);
+                sum = sum + (yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0);
+            }
+
+            return sum;
+        }
+
+        public static double CalculateTotalDeckArea(List<SimulationDataModel> simulationDataModels)
+        {
+            double sum = 0;
+            foreach (var simulationDataModel in simulationDataModels)
+            {
+                sum = sum + Convert.ToDouble(simulationDataModel.DeckArea);
+            }
+
+            return sum;
+        }
     }
 }
