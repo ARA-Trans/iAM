@@ -1,11 +1,12 @@
-﻿import Vue from 'vue'
-import Router from 'vue-router'
+﻿import Vue from 'vue';
+import Router from 'vue-router';
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
-import Scenario from '@/components/Scenario.vue';
+import Scenario from '@/components/Scenarios.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
+import Criteria from '@/components/Criteria.vue';
 
 Vue.use(Router);
 
@@ -37,6 +38,11 @@ export default new Router({
             name: 'EditAnalysis',
             component: EditAnalysis
         },
+        {
+            path: '/Criteria',
+            name: 'Criteria',
+            component: Criteria
+        },
         { path: '*', redirect: '/Inventory' }
         //{
         //    path: '/about',
@@ -47,4 +53,4 @@ export default new Router({
         //    component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
         //}
     ]
-})
+});

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using BridgeCare.Interfaces;
+using BridgeCare.Models;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using BridgeCare.Interfaces;
-using BridgeCare.Models;
-using OfficeOpenXml;
 
 namespace BridgeCare.Services
 {
@@ -59,8 +60,9 @@ namespace BridgeCare.Services
         }
 
         #region Private Methods
+
         private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
-        {            
+        {
             var row = 4; // Data starts here
             var column = currentCell.Column;
             int totalColumn = 0;
@@ -285,6 +287,7 @@ namespace BridgeCare.Services
                 "Risk Score"
             };
         }
-        #endregion
+
+        #endregion Private Methods
     }
 }

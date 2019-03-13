@@ -25,6 +25,7 @@ namespace BridgeCare.Services
         }
 
         #region Private methods
+
         private static SimulationDataModel CreatePrevYearSimulationMdel(DataRow simulationRow)
         {
             YearsData yearsData = AddYearsData(simulationRow, null, 0);
@@ -68,6 +69,7 @@ namespace BridgeCare.Services
             yearsData.Project = yearsData.Cost == 0 ? "No Treatment" : yearsData.Project;
             return yearsData;
         }
-        #endregion
+
+        #endregion Private methods
     }
 }

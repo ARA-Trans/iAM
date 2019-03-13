@@ -75,59 +75,68 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component} from "vue-property-decorator";
-    import axios from "axios";
+    import Vue from 'vue';
+    import {Component, Watch} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import axios from 'axios';
 
-    import AppSpinner from "../shared/AppSpinner.vue";
-    import * as moment from "moment";
-    import {IScenario} from "@/models/scenario";
+    import AppSpinner from '../shared/AppSpinner.vue';
+    import * as moment from 'moment';
+    import {Scenario} from '@/models/scenario';
+    import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
     @Component({
         components: {AppSpinner}
     })
-    export default class Scenario extends Vue {
-        scenarioGridHeaders: object[] = [
-            {text: "Scenario Name", align: "left", sortable: false, value: "name"},
-            {text: "Date Created", sortable: false, value: "createdDate"},
-            {text: "Date Last Modified", sortable: false, value: "lastModifiedDate"},
-            {text: "Status", sortable: false, value: "status"},
-            {text: "", sortable: false, value: "actions"}
-        ];
-        userScenarios: IScenario[] = [];
-        sharedScenarios: IScenario[] = [];
-        searchMine = "";
-        searchShared = "";
+    export default class Scenarios extends Vue {
+        @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.scenario.scenarios) scenarios: Scenario[];
 
-        /**
-         * Vue component before creation
-         */
-        beforeCreate() {
-            // TODO: get user id (from store?), for now just mock user id
-            // get the user scenarios
-            this.$store.dispatch({
-                type: "getUserScenarios",
-                userId: 1234
-            });
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getUserScenarios') getUserScenariosAction: any;
+
+        scenarioGridHeaders: object[] = [
+            {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
+            {text: 'Date Created', sortable: false, value: 'createdDate'},
+            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate'},
+            {text: 'Status', sortable: false, value: 'status'},
+            {text: '', sortable: false, value: 'actions'}
+        ];
+        userScenarios: Scenario[] = [];
+        sharedScenarios: Scenario[] = [];
+        searchMine = '';
+        searchShared = '';
+
+        @Watch('scenarios')
+        onScenariosChanged(val: Scenario[]) {
+            if (hasValue(val)) {
+                // filter scenarios that are the user's
+                this.userScenarios = val.filter((s: Scenario) => s.shared === false);
+                // filter scenarios that are shared with the user
+                this.sharedScenarios = val.filter((s: Scenario) => s.shared === true);
+            }
+
         }
 
         /**
-         * Vue component has been created
+         * Component has been mounted
          */
-        created() {
-            // get the scenarios in state
-            const scenarios: IScenario[] = this.$store.getters.scenarios;
-            // filter scenarios that are the user's
-            this.userScenarios = scenarios.filter((s: IScenario) => s.shared === false);
-            // filter scenarios that are shared with the user
-            this.sharedScenarios = scenarios.filter((s: IScenario) => s.shared === true);
+        mounted() {
+            this.setIsBusyAction({isBusy: true});
+            this.getUserScenariosAction({userId: 0})
+                .then(() => this.setIsBusyAction({isBusy: false}))
+                .catch((error: any) => {
+                    this.setIsBusyAction({isBusy: false});
+                    console.log(error);
+                });
+
         }
 
         //TODO: need to replace this with something that will actually get the status of scenario from server
         getStatus(isCompleted: boolean) {
-            return isCompleted ? "Completed" : "Running";
+            return isCompleted ? 'Completed' : 'Running';
         }
 
         /**
@@ -136,7 +145,7 @@
          */
         formatDate(unformattedDate: Date) {
             //@ts-ignore
-            return moment(unformattedDate).format("M/D/YYYY");
+            return moment(unformattedDate).format('M/D/YYYY');
         }
 
         editScenario() {

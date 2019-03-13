@@ -22,7 +22,7 @@ namespace BridgeCare.Services
             var totalYearsCount = totalYears.Count();
             var deficientResults = deficientResult.GetData(data, totalYears);
 
-            if(deficientResults.Deficients.Rows.Count > 0)
+            if (deficientResults.Deficients.Rows.Count > 0)
             {
                 deficientReport.Cells[2, 3, deficientResults.Deficients.Rows.Count + 1, deficientResults.Deficients.Columns.Count]
                         .Style.Fill.PatternType = ExcelFillStyle.Solid;

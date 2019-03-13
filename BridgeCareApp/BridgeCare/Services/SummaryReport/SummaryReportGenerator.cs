@@ -35,7 +35,7 @@ namespace BridgeCare.Services.SummaryReport
             var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationModel.SimulationId);
             var simulationYears = simulationYearsModel.Years;
             var dbContext = new BridgeCareContext();
-                        
+
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
                 // Bridge Data tab

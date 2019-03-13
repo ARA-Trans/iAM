@@ -4,7 +4,7 @@ namespace BridgeCare.Models
 {
     public class SimulationDataModel
     {
-        public int SectionId { get; set; }        
+        public int SectionId { get; set; }
 
         public List<YearsData> YearsData { get; set; }
 

@@ -1,46 +1,47 @@
 ﻿<template>
     <nav>
         <v-toolbar flat app>
-            <v-toolbar-side-icon v-if="loginFailed==false" class="grey--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+            <v-toolbar-side-icon @click="drawer = !drawer" class="grey--text"
+                                 v-if="!loginFailed"></v-toolbar-side-icon>
             <v-toolbar-title class="grey--text">
                 <span class="font-weight-light">iAM</span>
                 <span>BridgeCare</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-toolbar-title v-if="loginFailed==false">
+            <v-toolbar-title v-if="!loginFailed">
                 <span class="font-weight-light">Hello </span>
                 <span>{{userName}}</span>
             </v-toolbar-title>
             <v-toolbar-items>
-                <v-btn v-if="loginFailed==true" flat color="grey" @click="login">
+                <v-btn @click="login" color="grey" flat v-if="loginFailed">
                     <v-icon left class="material-icons">account_circle</v-icon>
                     <span>Login or Sign-up</span>
                 </v-btn>
-                <v-btn flat color="grey" v-if="loginFailed==false" @click="logout">
+                <v-btn @click="logout" color="grey" flat v-if="!loginFailed">
                     <span>Sign Out</span>
                     <v-icon right>exit_to_app</v-icon>
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>
 
-        <v-navigation-drawer class="grey lighten-3" v-if="loginFailed==false" app v-model="drawer">
+        <v-navigation-drawer app class="grey lighten-3" v-if="!loginFailed" v-model="drawer">
             <v-divider></v-divider>
             <v-list dense class="pt-0">
                 <v-list-tile v-for="item in routes"
                              :key="item.title"
                              @click="routing(item.navigation)">
                     <v-list-tile-action>
-                        <v-icon>{{ item.icon }}</v-icon>
+                        <v-icon>{{item.icon}}</v-icon>
                     </v-list-tile-action>
 
                     <v-list-tile-content>
-                        <v-list-tile-title>{{ item.name }}</v-list-tile-title>
-                        <v-list-tile-title hidden>{{ item.navigation }}</v-list-tile-title>
+                        <v-list-tile-title>{{item.name}}</v-list-tile-title>
+                        <v-list-tile-title hidden>{{item.navigation}}</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
-        <v-parallax dark style="height:720px" v-if="loginFailed==true"
+        <v-parallax dark style="height:720px" v-if="loginFailed"
                     src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg">
             <v-layout align-center
                       column
@@ -49,21 +50,25 @@
                 <h4 class="subheading">Build your projects today!</h4>
             </v-layout>
         </v-parallax>
-        <v-content v-if="loginFailed==false">
+        <v-content v-if="!loginFailed">
             <router-view></router-view>
         </v-content>
     </nav>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component} from "vue-property-decorator";
-    import * as Msal from "msal"
+    import Vue from 'vue';
+    import {Component} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import * as Msal from 'msal';
 
     @Component
     export default class TopNavbar extends Vue {
-        loginFailed: boolean = true;
-        userName: string = "";
+        @State(state => state.security.loginFailed) loginFailed: boolean;
+        @State(state => state.security.userName) userName: string;
+
+        @Action('setLoginStatus') setLoginStatusAction: any;
+        @Action('setUsername') setUsernameAction: any;
 
         applicationConfig: {
             clientID: string; graphScopes: string[]; authority: string;
@@ -83,15 +88,14 @@
                 redirectUri = PROD_REDIRECT_URI;
             }
 
-            if (process.env.VUE_APP_IS_PRODUCTION == "false") {
+            if (process.env.VUE_APP_IS_PRODUCTION == 'false') {
                 this.applicationConfig = {
                     clientID: '6abd6916-ce43-4cb1-9189-5749fc544e78',
                     graphScopes: ['https://aratranstest.onmicrosoft.com/user/user_impersonation'],
                     authority: this.signupSignInPolicy,
                     authorityPR: this.passwordResetPolicy
                 };
-            }
-            else {
+            } else {
                 this.applicationConfig = {
                     clientID: 'c4132c6f-fbb2-489c-bdf5-dda2ce009af8',
                     graphScopes: ['https://aratranstest.onmicrosoft.com/userStage/user_impersonation'],
@@ -106,7 +110,6 @@
                 },
                 {
                     cacheLocation: 'localStorage',
-                    //redirectUri: redirectUri
                 }
             );
         }
@@ -114,51 +117,40 @@
         data() {
             return {
                 routes: [
-                    { navigation: "Inventory", icon: "home", name: "Inventory" },
-                    {navigation: "Scenarios", icon: "assignment", name: "Scenarios"},
-                    { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' },
+                    {navigation: 'Inventory', icon: 'home', name: 'Inventory'},
+                    {navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios'},
+                    {navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report'},
+                    {navigation: 'Criteria', name: 'Criteria'}
                 ],
                 drawer: true
-            }
+            };
         }
 
         routing(routeName: string) {
             this.$router.push(routeName);
         }
 
-        created() {
-
-            this.loginFailed = this.$store.getters.loginStatus;
+        mounted() {
             let user = this.clientApp.getUser();
             if (!user) {
-            }
-            else {
-                this.$store.dispatch({
-                    type: 'login',
-                    status: false
-                });
-                this.loginFailed = this.$store.getters.loginStatus;
+                this.setLoginStatusAction({status: true});
+                this.setUsernameAction({userName: ''});
+            } else {
+                this.setLoginStatusAction({status: false});
+                this.setUsernameAction({userName: user.name});
                 this.updateUI();
             }
         }
 
         login() {
-            this.$store.dispatch({
-                type: 'login',
-                status: true
-            });
-            this.loginFailed = this.$store.getters.loginStatus;
+            this.setLoginStatusAction({status: true});
             this.clientApp.loginPopup(this.applicationConfig.graphScopes).then(
                 idToken => {
-                    this.$store.dispatch({
-                        type: 'login',
-                        status: false
-                    });
-                    this.loginFailed = this.$store.getters.loginStatus;
+                    this.setLoginStatusAction({status: false});
                     this.updateUI();
                 },
                 (error) => {
-                    this.redirectOnErrors(error)
+                    this.redirectOnErrors(error);
                 }
             );
         }
@@ -174,20 +166,18 @@
                     (errorDesc, token, error, tokenType) => {
                         // callback for login redirect
                     },
-                    { cacheLocation: 'localStorage' });
+                    {cacheLocation: 'localStorage'});
                 this.login();
-            }
-            else if (error.indexOf('AADB2C90091') > -1) {
+            } else if (error.indexOf('AADB2C90091') > -1) {
                 this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
                     this.applicationConfig.authority,
                     (errorDesc, token, error, tokenType) => {
                         // callback for login redirect
                     },
-                    { cacheLocation: 'localStorage' });
+                    {cacheLocation: 'localStorage'});
                 this.login();
-            }
-            else {
-                this.logMessage("Error during login:\n" + error);
+            } else {
+                this.logMessage('Error during login:\n' + error);
             }
         }
 
@@ -196,13 +186,10 @@
         }
 
         updateUI() {
-            this.$store.dispatch({
-                type: 'userName',
-                name: this.clientApp.getUser().name
-            });
-            this.userName = this.$store.getters.userName;
-            this.logMessage("User '" + this.userName + "' logged-in");
+            this.setUsernameAction({userName: this.clientApp.getUser().name});
+            this.logMessage('User \'' + this.userName + '\' logged-in');
         }
+
         logMessage(s: string) {
             console.log(s);
         }
