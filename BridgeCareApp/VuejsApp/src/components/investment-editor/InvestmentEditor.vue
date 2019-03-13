@@ -151,8 +151,8 @@
     } from '@/shared/models/iAM/investment';
     import {emptyNetwork} from '@/shared/models/iAM/network';
     import * as R from 'ramda';
-    import {VueSelectItem, vueSelectDefault} from '@/shared/models/vue/vue-select-item';
-    import {VueDataTableHeader} from '@/shared/models/vue/vue-data-table-header';
+    import {SelectItem, defaultSelectItem} from '@/shared/models/vue/select-item';
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value';
     import moment from 'moment';
     import EditBudgetsDialog from './investment-editor-dialogs/EditBudgetsDialog.vue';
@@ -171,11 +171,11 @@
         @Action('saveInvestmentStrategy') saveInvestmentStrategyAction: any;
         @Action('setBudgets') setBudgetsAction: any;
 
-        investmentStrategyGridHeaders: VueDataTableHeader[] = [
+        investmentStrategyGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
-        investmentStrategiesSelectList: VueSelectItem[] = [{...vueSelectDefault}];
-        investmentStrategiesSelectItem: VueSelectItem = {...vueSelectDefault};
+        investmentStrategiesSelectList: SelectItem[] = [{...defaultSelectItem}];
+        investmentStrategiesSelectItem: SelectItem = {...defaultSelectItem};
         selectedInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
         investmentStrategyGridData: InvestmentStrategyGridData[] = [];
         selectedGridRows: InvestmentStrategyGridData[] = [];
@@ -196,7 +196,7 @@
          */
         @Watch('investmentStrategies')
         onInvestmentStrategiesChanged(investmentStrategies: InvestmentStrategy[]) {
-            // set the investmentStrategiesSelectList by mapping the investmentStrategies as a VueSelectItem list
+            // set the investmentStrategiesSelectList by mapping the investmentStrategies as a SelectItem list
             this.investmentStrategiesSelectList = investmentStrategies.map((investmentStrategy: InvestmentStrategy) => (
                 {
                     text: investmentStrategy.name,
@@ -230,7 +230,7 @@
             this.showCreateInvestmentStrategyDialog = false;
             if (!result.canceled) {
                 // add new select options for new investment strategy
-                const newInvestmentStrategiesSelectItem: VueSelectItem = {
+                const newInvestmentStrategiesSelectItem: SelectItem = {
                     text: result.newInvestmentStrategy.name,
                     value: result.newInvestmentStrategy.simulationId.toString()
                 };
@@ -259,7 +259,7 @@
         onSelectInvestmentStrategy(value: string) {
             // set the investmentStrategiesSelectItem
             this.investmentStrategiesSelectItem = this.investmentStrategiesSelectList
-                .find((selectItem: VueSelectItem) => selectItem.value === value) as VueSelectItem;
+                .find((selectItem: SelectItem) => selectItem.value === value) as SelectItem;
             // parse the value as an integer
             const simulationId = parseInt(value);
             // find the selected investment strategy in the investmentStrategies list and set it to the
@@ -469,7 +469,7 @@
                     return gridData;
                 });
             // create headers with the budget order string list
-            const budgetHeaders: VueDataTableHeader[] = this.selectedInvestmentStrategy.budgetOrder
+            const budgetHeaders: DataTableHeader[] = this.selectedInvestmentStrategy.budgetOrder
                 .map((budgetName: string) => ({
                     text: budgetName,
                     value: budgetName,
@@ -477,7 +477,7 @@
                     align: 'left',
                     class: '',
                     width: ''
-                }) as VueDataTableHeader);
+                }) as DataTableHeader);
             // add the new headers to the investmentStrategyGridHeaders list
             this.investmentStrategyGridHeaders = [this.investmentStrategyGridHeaders[0], ...budgetHeaders];
         }
@@ -557,7 +557,7 @@
          * Resets the InvestmentEditor component properties
          */
         resetComponentProperties() {
-            this.investmentStrategiesSelectItem = {...vueSelectDefault};
+            this.investmentStrategiesSelectItem = {...defaultSelectItem};
             this.selectedInvestmentStrategy = {...emptyInvestmentStrategy};
             this.investmentStrategyGridData = [];
             this.selectedGridRows = [];

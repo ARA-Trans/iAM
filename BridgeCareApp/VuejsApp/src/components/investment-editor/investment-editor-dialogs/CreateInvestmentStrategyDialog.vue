@@ -41,7 +41,7 @@
     import {Simulation} from '@/shared/models/iAM/simulation';
     import {InvestmentStrategy, emptyInvestmentStrategy} from '@/shared/models/iAM/investment';
     import {CreateInvestmentStrategyDialogResult} from '@/shared/models/dialogs/create-investment-strategy-dialog-result';
-    import {VueSelectItem, vueSelectDefault} from '@/shared/models/vue/vue-select-item';
+    import {SelectItem, defaultSelectItem} from '@/shared/models/vue/select-item';
     import moment from 'moment';
     import {hasValue} from '@/shared/utils/has-value';
     import * as R from 'ramda';
@@ -58,10 +58,10 @@
         @Action('getNetworks') getNetworksAction: any;
         @Action('getSimulations') getSimulationsAction: any;
 
-        networksSelect: VueSelectItem[] = [{...vueSelectDefault}];
-        networksSelectItem: VueSelectItem = {...vueSelectDefault};
-        simulationsSelect: VueSelectItem[] = [{...vueSelectDefault}];
-        simulationsSelectItem: VueSelectItem = {...vueSelectDefault};
+        networksSelect: SelectItem[] = [{...defaultSelectItem}];
+        networksSelectItem: SelectItem = {...defaultSelectItem};
+        simulationsSelect: SelectItem[] = [{...defaultSelectItem}];
+        simulationsSelectItem: SelectItem = {...defaultSelectItem};
         newInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
 
         /**
@@ -112,7 +112,7 @@
         onSelectNetwork(value: string) {
             // set the networks select item
             this.networksSelectItem = this.networksSelect
-                .find((selectItem: VueSelectItem) => selectItem.value === value) as VueSelectItem;
+                .find((selectItem: SelectItem) => selectItem.value === value) as SelectItem;
             // parse the incoming value as an integer
             this.newInvestmentStrategy.networkId = parseInt(value);
             // set app as busy and call the server to get all simulations for the selected network
@@ -128,7 +128,7 @@
         onSelectSimulation(value: string) {
             // set the simulations select item
             this.simulationsSelectItem = this.simulationsSelect
-                .find((selectItem: VueSelectItem) => selectItem.value === value) as VueSelectItem;
+                .find((selectItem: SelectItem) => selectItem.value === value) as SelectItem;
             // parse the incoming value as an integer
             this.newInvestmentStrategy.simulationId = parseInt(value);
         }
@@ -177,8 +177,8 @@
          * Resets this dialog's properties
          */
         resetDialogProperties() {
-            this.networksSelectItem = {...vueSelectDefault};
-            this.simulationsSelectItem = {...vueSelectDefault};
+            this.networksSelectItem = {...defaultSelectItem};
+            this.simulationsSelectItem = {...defaultSelectItem};
             this.newInvestmentStrategy = {...emptyInvestmentStrategy};
         }
     }

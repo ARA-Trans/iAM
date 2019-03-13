@@ -1,4 +1,4 @@
-export interface VueDataTableHeader {
+export interface DataTableHeader {
     text: string;
     value: string;
     align: 'left' | 'center' | 'right';

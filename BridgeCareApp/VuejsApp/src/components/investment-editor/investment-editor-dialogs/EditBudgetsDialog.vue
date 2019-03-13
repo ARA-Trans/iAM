@@ -58,7 +58,7 @@
     import {hasValue} from '@/shared/utils/has-value';
     import {EditBudgetsDialogResult} from '@/shared/models/dialogs/edit-budgets-dialog-result';
     import * as R from 'ramda';
-    import {VueDataTableHeader} from '@/shared/models/vue/vue-data-table-header';
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {EditBudgetsDialogGridData} from '@/shared/models/iAM/investment';
 
     interface BudgetListItem {
@@ -72,7 +72,7 @@
 
         @State(state => state.investmentEditor.budgets) stateBudgets: string[];
 
-        editBudgetsDialogGridHeaders: VueDataTableHeader[] = [
+        editBudgetsDialogGridHeaders: DataTableHeader[] = [
             {text: 'Budget', value: 'name', sortable: false, align: 'left', class: '', width: ''}
         ];
         editBudgetsDialogGridData: EditBudgetsDialogGridData[] = [];
