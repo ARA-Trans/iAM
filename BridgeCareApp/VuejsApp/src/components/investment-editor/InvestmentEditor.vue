@@ -1,6 +1,6 @@
 <template>
     <v-container fluid grid-list-xl>
-        <div style="height: 850px; overflow-x: hidden; overflow-y: auto;">
+        <div class="investment-editor-container">
             <v-layout row justify-center align-end>
                 <v-flex xs3>
                     <v-btn color="info" v-on:click="onShowCreateInvestmentStrategyDialog">
@@ -61,9 +61,9 @@
                 </v-flex>
 
                 <v-flex>
-                    <v-layout justify-center style="margin: 10px;">
+                    <v-layout justify-center class="investment-strategy-grid-layout">
                         <div v-if="onCheckItemHasValue(investmentStrategyGridData)"
-                             style="height: 500px; overflow: auto;">
+                             class="investment-strategy-grid-container">
                             <v-data-table :headers="investmentStrategyGridHeaders"
                                           :items="investmentStrategyGridData"
                                           v-model="selectedGridRows"
@@ -108,7 +108,7 @@
                 <v-dialog v-model="showBudgetYearRangeEditDialog" persistent max-width="200px">
                     <v-card>
                         <v-card-title>Add Range</v-card-title>
-                        <v-card-text style="height: 100px">
+                        <v-card-text class="budget-year-range-edit-dialog-card-text">
                             <v-text-field v-model="budgetYearRange" label="Edit" single-line :mask="'####'"></v-text-field>
                         </v-card-text>
                         <v-card-actions>
@@ -572,8 +572,22 @@
 </script>
 
 <style>
-    .layout-center {
-        width: 50%;
-        margin: 0 auto;
+    .investment-editor-container {
+        height: 850px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .investment-strategy-grid-layout {
+        margin: 10px;
+    }
+
+    .investment-strategy-grid-container {
+        height: 500px;
+        overflow: auto;
+    }
+
+    .budget-year-range-edit-dialog-card-text {
+        height: 100px;
     }
 </style>
