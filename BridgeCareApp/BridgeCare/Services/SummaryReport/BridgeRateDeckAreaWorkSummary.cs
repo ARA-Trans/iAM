@@ -26,7 +26,7 @@ namespace BridgeCare.Services
         /// <param name="simulationDataModels"></param>
         public static void FillBridgeRateDeckAreaWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
-            FillPoorBridgeOnOfRateSection(worksheet, currentCell, simulationYears, simulationDataModels);
+            FillPoorBridgeOnOffRateSection(worksheet, currentCell, simulationYears, simulationDataModels);
             FillTotalPoorBridgesCountSection(worksheet, currentCell, simulationYears, simulationDataModels);
             FillTotalPoorBridgesDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels);
             FillTotalBridgeCountSection(worksheet, currentCell, simulationYears, simulationDataModels);
@@ -150,7 +150,7 @@ namespace BridgeCare.Services
             BridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
         }
 
-        private static void FillPoorBridgeOnOfRateSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
+        private static void FillPoorBridgeOnOffRateSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
             currentCell.Row = currentCell.Row + 2;
             BridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Poor Bridge On and Off Rate", false);
