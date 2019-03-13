@@ -14,8 +14,7 @@ namespace BridgeCare.Services
             var projectCostsList = projectCostModels.ToList();
             foreach (DataRow simulationRow in simulationDataTable.Rows)
             {
-                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);
-                // TODO take list and then fetch by year
+                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);                
                 var projectCostEntries = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).ToList();
                 AddAllYearsData(simulationRow, simulationYears, projectCostEntries, simulationDM);
                 simulationDataModels.Add(simulationDM);
