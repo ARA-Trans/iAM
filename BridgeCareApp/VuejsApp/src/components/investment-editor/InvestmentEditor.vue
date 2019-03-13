@@ -567,31 +567,6 @@
                 deletedBudgets: []
             };
             this.hasNoSelectedInvestmentStrategy = true;
-        /*@State(state => state.investmentEditor.investmentStrategies) investmentStrategies: InvestmentStrategy[];
-
-        @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getInvestmentStrategies') getInvestmentStrategiesAction: any;
-        @Action('saveInvestmentStrategy') saveInvestmentStrategyAction: any;
-        @Action('setBudgets') setBudgetsAction: any;
-
-            investmentStrategyGridHeaders: VueDataTableHeader[] = [
-                {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
-            ];
-            investmentStrategiesSelectList: VueSelectItem[] = [{...vueSelectDefault}];
-            investmentStrategiesSelectItem: VueSelectItem = {...vueSelectDefault};
-            selectedInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
-            investmentStrategyGridData: InvestmentStrategyGridData[] = [];
-            selectedGridRows: InvestmentStrategyGridData[] = [];
-            savedInvestmentStrategy: SavedInvestmentStrategy = {
-                ...emptyInvestmentStrategy,
-                deletedBudgetYears: [],
-                deletedBudgets: []
-            };
-            hasNoSelectedInvestmentStrategy: boolean = true;
-            showCreateInvestmentStrategyDialog: boolean = false;
-            showEditBudgetsDialog: boolean = false;
-            showBudgetYearRangeEditDialog: boolean = false;
-            budgetYearRange: number = 0;*/
         }
     }
 </script>
