@@ -1,5 +1,7 @@
 ﻿import Vue from 'vue';
-import Router from 'vue-router';
+import VueRouter from 'vue-router';
+import Component from 'vue-class-component';
+import './register-hooks';
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
@@ -8,9 +10,9 @@ import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import Criteria from '@/components/Criteria.vue';
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
-export default new Router({
+const router = new VueRouter({
     mode: 'history',
     routes: [
         {
@@ -21,7 +23,15 @@ export default new Router({
         {
             path: '/DetailedReport',
             name: 'DetailedReport',
-            component: DetailedReport
+            component: DetailedReport,
+            beforeEnter: (to, from, next) => {
+                if (from.name == null) {
+                    next('/Inventory');
+                }
+                else {
+                    next();
+                }
+            }
         },
         {
             path: '/Scenarios',
@@ -54,3 +64,5 @@ export default new Router({
         //}
     ]
 });
+
+export default router;

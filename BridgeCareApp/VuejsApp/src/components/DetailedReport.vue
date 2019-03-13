@@ -47,8 +47,9 @@
 </template>
 
 <script lang="ts">
+    import { Prop, Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import Vue from 'vue';
-    import {Component, Prop, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
@@ -63,10 +64,11 @@
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
     @Component({
-        components: {AppSpinner, AppModalPopup}
+        components: { AppSpinner, AppModalPopup }
     })
     export default class DetailedReport extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.userAuthorization.isAdmin) isAdmin: boolean;
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.simulation.simulations) simulations: Simulation[];
         @State(state => state.detailedReport.reportBlob) reportBlob: Blob;
@@ -85,6 +87,7 @@
             }
         })
         warning: Alert;
+
         created() {
             statusReference.on('value', (snapshot: any) => {
                 let simulationStatus = [];
@@ -136,9 +139,13 @@
             ).catch((error: any) => {
                 this.setIsBusyAction({isBusy: false});
                 console.log(error);
-            });
+                });
         }
-
+        //@ts-ignore
+        //beforeRouteEnter(to, from, next) {
+        //    console.log('entering Bootstrap#beforeRouteEnter');
+        //    next();
+        //}
         /**
          * A network has been selected
          * @param networkId The selected network id
