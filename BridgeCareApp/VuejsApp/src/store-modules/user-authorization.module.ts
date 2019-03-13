@@ -3,15 +3,13 @@
 };
 
 const mutations = {
-    // @ts-ignore
-    isAdminMutator(state, isAdmin) {
+    isAdminMutator(state: any, isAdmin: boolean) {
         state.isAdmin = isAdmin;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    setIsAdmin({ commit }, payload) {
+    setIsAdmin({ commit }: any, payload: any) {
         commit('isAdminMutator', payload.isAdmin);
     }
 };
