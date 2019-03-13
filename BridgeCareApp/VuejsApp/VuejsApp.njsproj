@@ -121,9 +121,6 @@
     <TypeScriptCompile Include="src\models\Simulation.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\models\user.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\plugins\vuetify.ts" />
     <TypeScriptCompile Include="src\register-hooks.ts">
       <SubType>Code</SubType>
