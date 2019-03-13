@@ -80,16 +80,13 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import AppSpinner from '../shared/AppSpinner.vue';
     import * as moment from 'moment';
     import {Scenario} from '@/models/scenario';
     import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
-    @Component({
-        components: {AppSpinner}
-    })
+    @Component
     export default class Scenarios extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.scenario.scenarios) scenarios: Scenario[];

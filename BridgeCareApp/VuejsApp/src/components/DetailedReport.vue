@@ -37,9 +37,6 @@
                 </v-btn>
             </v-flex>
             <v-flex xs12>
-                <AppSpinner/>
-            </v-flex>
-            <v-flex xs12>
                 <AppModalPopup :modalData="warning" @decision="onWarningModalDecision"/>
             </v-flex>
         </v-layout>
@@ -53,7 +50,6 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import AppSpinner from '../shared/AppSpinner.vue';
     import {Network} from '@/models/network';
     import { Simulation } from '@/models/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
@@ -64,7 +60,7 @@
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
     @Component({
-        components: { AppSpinner, AppModalPopup }
+        components: { AppModalPopup }
     })
     export default class DetailedReport extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
@@ -141,11 +137,7 @@
                 console.log(error);
                 });
         }
-        //@ts-ignore
-        //beforeRouteEnter(to, from, next) {
-        //    console.log('entering Bootstrap#beforeRouteEnter');
-        //    next();
-        //}
+
         /**
          * A network has been selected
          * @param networkId The selected network id

@@ -65,9 +65,7 @@
     import {Action, State} from 'vuex-class';
     import * as Msal from 'msal';
     import { usersReference, db } from '@/firebase';
-    import ifElse from 'ramda/es/ifElse';
-    import equals from 'ramda/es/equals';
-    import append from 'ramda/es/append';
+    import { ifElse, equals, append } from 'ramda';
 
     import AppSpinner from '../shared/AppSpinner.vue';
 
