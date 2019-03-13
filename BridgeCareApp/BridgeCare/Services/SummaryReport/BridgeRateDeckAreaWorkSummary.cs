@@ -51,6 +51,7 @@ namespace BridgeCare.Services
                 AddTotalDeckArea(worksheet, simulationDataModels, row, column, year);
             }
             ExcelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 2, column]);
+            ExcelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, row + 2, column], "Number");
             ExcelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn + 1, row + 2, column], Color.Khaki);
             BridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 2, column);
         }
