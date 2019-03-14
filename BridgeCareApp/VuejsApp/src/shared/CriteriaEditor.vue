@@ -94,9 +94,8 @@
         }
 
         @Watch('stateCriteria')
-        onStateCriteriaChanged(val: Criteria) {
-            this.criteria = val;
-            this.setCurrentCriteriaOutput();
+        onStateCriteriaChanged(criteria: Criteria) {
+            this.criteria = criteria;
         }
 
         @Watch('criteria')
