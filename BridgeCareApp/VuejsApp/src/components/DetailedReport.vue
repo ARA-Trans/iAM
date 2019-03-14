@@ -37,9 +37,6 @@
                 </v-btn>
             </v-flex>
             <v-flex xs12>
-                <AppSpinner/>
-            </v-flex>
-            <v-flex xs12>
                 <AppModalPopup :modalData="warning" @decision="onWarningModalDecision"/>
             </v-flex>
         </v-layout>
@@ -47,28 +44,27 @@
 </template>
 
 <script lang="ts">
+    import { Prop, Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import Vue from 'vue';
-    import {Component, Prop, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import AppSpinner from '../shared/AppSpinner.vue';
-    import {Network} from '@/shared/models/iAM/network';
+    import { Network } from '@/models/network';
     import { Simulation } from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
-    import {Alert} from '@/shared/models/iAM/alert';
+    import { Alert } from '@/shared/models/iAM/alert';
     import { hasValue } from '@/shared/utils/has-value';
-
-
     import { statusReference } from '@/firebase';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
     @Component({
-        components: {AppSpinner, AppModalPopup}
+        components: { AppModalPopup }
     })
     export default class DetailedReport extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.userAuthorization.isAdmin) isAdmin: boolean;
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.simulation.simulations) simulations: Simulation[];
         @State(state => state.detailedReport.reportBlob) reportBlob: Blob;
@@ -86,6 +82,7 @@
             }
         })
         warning: Alert;
+
         created() {
             statusReference.on('value', (snapshot: any) => {
                 let simulationStatus = [];
@@ -137,7 +134,7 @@
             ).catch((error: any) => {
                 this.setIsBusyAction({isBusy: false});
                 console.log(error);
-            });
+                });
         }
 
         /**
