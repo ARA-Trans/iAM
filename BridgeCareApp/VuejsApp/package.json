@@ -9,8 +9,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "wotan 'src/**' -e '**/*.vue.js'",
-    "lint-fix": "wotan --fix 'src/**' -e '**/*.vue.js'"
+    "lint": "wotan 'src/**'",
+    "lint-fix": "wotan --fix 'src/**'"
   },
   "dependencies": {
     "@types/ramda": "0.25.48",

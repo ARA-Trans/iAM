@@ -53,12 +53,12 @@
     import axios from 'axios';
 
     import AppSpinner from '../shared/AppSpinner.vue';
-    import {Network} from '@/models/network';
-    import { Simulation } from '@/models/simulation';
+    import {Network} from '@/shared/models/iAM/network';
+    import { Simulation } from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
-    import {Alert} from '@/models/alert';
+    import {Alert} from '@/shared/models/iAM/alert';
     import { hasValue } from '@/shared/utils/has-value';
-    
+
 
     import { statusReference } from '@/firebase';
 
@@ -79,7 +79,6 @@
         @Action('getDetailedReport') getDetailedReportAction: any;
         @Action('clearReportBlob') clearReportBlobAction: any;
         @Action('runSimulation') runSimulationAction: any;
-
 
         @Prop({
             default: function () {

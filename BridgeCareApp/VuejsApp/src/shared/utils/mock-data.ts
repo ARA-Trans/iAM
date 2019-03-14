@@ -1,5 +1,7 @@
-import {Scenario} from '@/models/scenario';
-import {Attribute, AttributesWithYearlyValues, Section} from '@/models/section';
+import {Scenario} from '@/shared/models/iAM/scenario';
+import {Attribute, AttributesWithYearlyValues, Section} from '@/shared/models/iAM/section';
+import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/shared/models/iAM/investment';
+import moment from 'moment';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
 export const attributes: string[] = [
@@ -282,5 +284,89 @@ export const mockSections: Section[] = [
             mockConditionIndexAttribute,
             mockFamilyIdAttribute
         ]
+    }
+];
+/*******************************************INVESTMENT EDITOR MOCK DATA************************************************/
+export const mockBudgetOrder: string[] = [
+    'Budget A',
+    'Budget B',
+    'Budget C',
+    'Budget D',
+    'Budget E',
+    'Budget F',
+    'Budget G',
+    'Budget H',
+    'Budget I',
+    'Budget J',
+    'Budget K',
+    'Budget L'
+];
+
+function createBudgetYearMockData() {
+    const budgetYears: InvestmentStrategyBudgetYear[] = [];
+    let budgetAAmount = 100000000;
+    let budgetBAmount = 200000000;
+    let budgetCAmount = 300000000;
+    const currentDate = moment();
+    const startYear = parseInt(currentDate.clone().format('YYYY'));
+    const endYear = parseInt(currentDate.clone().add(20, 'years').format('YYYY'));
+    for (let i = startYear; i <= endYear; i++) {
+        budgetYears.push({
+            year: i,
+            budgets:  mockBudgetOrder.map((budget: string) => {
+                switch (budget) {
+                    case 'Budget A':
+                        return {
+                            name: budget,
+                            amount: budgetAAmount
+                        };
+                    case 'Budget B':
+                        return {
+                            name: budget,
+                            amount: budgetBAmount
+                        };
+                    case 'Budget C':
+                        return {
+                            name: budget,
+                            amount: budgetCAmount
+                        };
+                    default:
+                        return {
+                            name: budget,
+                            amount: 0
+                        };
+                }
+            })
+        });
+        budgetAAmount += 500000;
+        budgetBAmount += 500000;
+        budgetCAmount += 500000;
+    }
+    return budgetYears;
+}
+
+export const mockInvestmentBudgetYears: InvestmentStrategyBudgetYear[] = createBudgetYearMockData();
+
+
+export const mockInvestmentStrategies: InvestmentStrategy[] = [
+    {
+        networkId: 9876543210,
+        simulationId: 1234567890,
+        name: 'Investment Strategy 1',
+        inflationRate: 3,
+        discountRate: 2,
+        budgetYears: mockInvestmentBudgetYears,
+        budgetOrder: mockBudgetOrder,
+        description: ''
+    },
+    {
+        networkId: 9876543210,
+        simulationId: 1234567891,
+        name: 'Investment Strategy 2',
+        inflationRate: 2,
+        discountRate: 3,
+        budgetYears: mockInvestmentBudgetYears,
+        budgetOrder: mockBudgetOrder,
+        description: ''
     }
 ];

@@ -7,6 +7,7 @@ import Scenario from '@/components/Scenarios.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import Criteria from '@/components/Criteria.vue';
+import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vue';
 
 Vue.use(Router);
 
@@ -27,6 +28,11 @@ export default new Router({
             path: '/Scenarios',
             name: 'Scenarios',
             component: Scenario
+        },
+        {
+            path: '/InvestmentEditor',
+            name: 'InvestmentEditor',
+            component: InvestmentEditor
         },
         {
             path: '/EditScenario',

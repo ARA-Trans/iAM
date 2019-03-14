@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {Network} from '@/models/network';
-import {Section} from '@/models/section';
+import {Network} from '@/shared/models/iAM/network';
+import {Section} from '@/shared/models/iAM/section';
 import {mockSections} from '@/shared/utils/mock-data';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;

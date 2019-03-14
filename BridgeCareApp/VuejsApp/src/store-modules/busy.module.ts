@@ -3,15 +3,13 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    isBusyMutator(state, isBusy) {
+    isBusyMutator(state: any, isBusy: boolean) {
         state.isBusy = isBusy;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    setIsBusy({commit}, payload) {
+    setIsBusy({commit}: any, payload: any) {
         commit('isBusyMutator', payload.isBusy);
     }
 };

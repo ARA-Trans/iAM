@@ -119,7 +119,8 @@
                 routes: [
                     {navigation: 'Inventory', icon: 'home', name: 'Inventory'},
                     {navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios'},
-                    {navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report'},
+                    {navigation: 'InvestmentEditor', icon: 'insert_chart', name: 'Investment Editor'},
+                    {navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed Report'},
                     {navigation: 'Criteria', name: 'Criteria'}
                 ],
                 drawer: true

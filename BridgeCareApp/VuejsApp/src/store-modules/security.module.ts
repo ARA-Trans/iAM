@@ -4,23 +4,19 @@ const state = {
 };
 
 const mutations = {
-    // @ts-ignore
-    loginMutator(state, status) {
+    loginMutator(state: any, status: boolean) {
         state.loginFailed = status;
     },
-    // @ts-ignore
-    userNameMutator(state, userName) {
+    userNameMutator(state: any, userName: string) {
         state.userName = userName;
     }
 };
 
 const actions = {
-    // @ts-ignore
-    setLoginStatus({commit}, payload) {
+    setLoginStatus({commit}: any, payload: any) {
         commit('loginMutator', payload.status);
     },
-    // @ts-ignore
-    setUsername({commit}, payload) {
+    setUsername({commit}: any, payload: any) {
         commit('userNameMutator', payload.userName);
     }
 };
