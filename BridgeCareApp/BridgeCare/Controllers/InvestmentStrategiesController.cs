@@ -22,10 +22,19 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // Get: api/InvestmentStrategies
+        ///<summary> Get: api/InvestmentStrategies
+        ///argument: NetworkModel
+        ///</summary>
         [ModelValidation("Given network data is not valid")]
         public IQueryable<InvestmentStrategyModel> Get(NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
 
+        ///<summary> Post: api/InvestmentStrategies
+        ///argument: InvestmentStrategyModel
+        ///return : 200 sucess
+        ///         400 for bad input argument
+        ///         500 internal server error (uncaught exception)
+        ///</summary>
+        [ModelValidation("Given investment strategy data is not valid")]
         public IHttpActionResult Post(InvestmentStrategyModel data)
         {
             bool getResults = investmentStrategies.SetInvestmentStrategies(data, db);

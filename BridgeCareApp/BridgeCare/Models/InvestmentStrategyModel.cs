@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
@@ -11,8 +12,11 @@ namespace BridgeCare.Models
             YearlyBudget = new List<InvestmentStrategyYearlyBudgetModel>();
         }
 
+        [Required]
         public int SimulationId { get; set; }
+        [Required]
         public int NetworkId { get; set; }
+        [Required]
         public string Name { get; set; }
 
         ///<remarks>Ignore, as it is agreed that years from the YearlyBudget
@@ -24,7 +28,9 @@ namespace BridgeCare.Models
         [IgnoreDataMember]
         public int NumberYears { get; set; }
 
+        [Required]
         public double InflationRate { get; set; }
+        [Required]
         public double DiscountRate { get; set; }
         public string Description { get; set; }
         public List<string> Budgets { get; set; }
