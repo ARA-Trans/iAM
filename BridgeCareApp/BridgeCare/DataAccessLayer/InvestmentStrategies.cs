@@ -50,7 +50,7 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).ToList();
 
-                //Wish we could do this inside the linq query
+                //Cannot do this inside the linq query, would be nice
                 foreach (InvestmentStrategyModel model in simulation)
                 {
                     model.SetBudgets();
@@ -67,19 +67,20 @@ namespace BridgeCare.DataAccessLayer
 
         public bool SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db)
         {
+            //Ensures budget order is transferred from array storage as it comes in from json to
+            //the databse format, comma delimited
+            string budgetOrder = data.GetBudgetOrder();
+
+            //Derive FirstYear and NumberYears from the YearlyBudget list.
+            data.FirstYear = data.YearlyBudget.Min(r => r.Year);
+            data.NumberYears = data.YearlyBudget.Max(r => r.Year) - data.FirstYear;
+
             try
             {
                 var simulation = db.SIMULATIONS
                     .Include(d => d.INVESTMENTS)
+                    .Include(d => d.YEARLYINVESTMENTs)
                     .Single(_ => _.SIMULATIONID == data.SimulationId);
-
-                //Ensures budget order is transferred from array storage as it comes in from json to
-                //the databse format, comma delimited
-                string budgetOrder = data.GetBudgetOrder();
-
-                //Derive FirstYear and NumberYears from the YearlyBudget list.
-                data.FirstYear = data.YearlyBudget.Min(r => r.Year);
-                data.NumberYears = data.YearlyBudget.Max(r => r.Year) - data.FirstYear;
 
                 if (simulation != null)
                 {
@@ -90,24 +91,25 @@ namespace BridgeCare.DataAccessLayer
                     simulation.INVESTMENTS.INFLATIONRATE = data.InflationRate;
                     simulation.INVESTMENTS.DISCOUNTRATE = data.DiscountRate;
                     simulation.INVESTMENTS.BUDGETORDER = budgetOrder;
-                }
-                var yearly = db.YEARLYINVESTMENTs
-                    .Where(_ => _.SIMULATIONID == data.SimulationId).First();
-                db.YEARLYINVESTMENTs.Remove(yearly);
 
-                List<YEARLYINVESTMENT> investments = new List<YEARLYINVESTMENT>();
+                    // var yearly = simulation.YEARLYINVESTMENTs
+                    //     .Where(_ => _.SIMULATIONID == data.SimulationId);
+                    db.YEARLYINVESTMENTs.RemoveRange(simulation.YEARLYINVESTMENTs);
 
-                foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudget)
-                {
-                    foreach (InvestmentStrategyBudgetModel budget in year.Budget)
+                    List<YEARLYINVESTMENT> investments = new List<YEARLYINVESTMENT>();
+
+                    foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudget)
                     {
-                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
+                        foreach (InvestmentStrategyBudgetModel budget in year.Budget)
+                        {
+                            investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
+                        }
                     }
-                }
-                db.YEARLYINVESTMENTs.AddRange(investments);
+                    db.YEARLYINVESTMENTs.AddRange(investments);
 
-                db.SaveChanges();
-                return true;
+                    db.SaveChanges();
+                    return true;
+                }
             }
             catch (SqlException ex)
             {

@@ -14,6 +14,9 @@ namespace BridgeCare.EntityClasses
             SIMULATIONID = simulationID;
         }
 
+        public YEARLYINVESTMENT()
+        { }
+
         [Key]
         public int YEARID { get; set; }
 
