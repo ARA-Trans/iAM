@@ -59,8 +59,6 @@ namespace BridgeCare.Services
             return simulationDataModels;
         }
 
-        #region Private Methods
-
         private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
         {
             var row = 4; // Data starts here
@@ -286,8 +284,6 @@ namespace BridgeCare.Services
                 "ADT Over 10,000",
                 "Risk Score"
             };
-        }
-
-        #endregion Private Methods
+        }        
     }
 }
