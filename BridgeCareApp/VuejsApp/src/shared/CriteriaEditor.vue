@@ -5,7 +5,7 @@
                 <v-card-title>Criteria Editor</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text style="height: 700px;">
-                    <vue-query-builder :labels="labels" :rules="rules" :maxDepth="25" :styled="true"
+                    <vue-query-builder :labels="queryBuildLabels" :rules="rules" :maxDepth="25" :styled="true"
                                        v-model="criteria"></vue-query-builder>
                 </v-card-text>
                 <v-divider></v-divider>
@@ -28,6 +28,7 @@
     import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/shared/models/iAM/criteria';
     import {parseQueryBuilderJson} from '@/shared/utils/criteria-editor-parsers';
     import {hasValue} from '@/shared/utils/has-value';
+    import {CriteriaEditorDialogResult} from '@/shared/models/dialogs/criteria-editor-dialog-result';
 
     @Component({
         components: {VueQueryBuilder}
@@ -42,7 +43,7 @@
 
         criteria: Criteria = emptyCriteria;
         rules: any[] = [];
-        labels: object = {
+        queryBuildLabels: object = {
             'matchType': '',
             'matchTypes': [
                 {'id': 'AND', 'label': 'AND'},
@@ -55,9 +56,13 @@
             'textInputPlaceholder': 'value'
         };
 
+        /**
+         * CriteriaEditorDialog attributes list has changed
+         * @param criteriaEditorAttributes CriteriaEditorAttribute object list
+         */
         @Watch('criteriaEditorAttributes')
-        onCriteriaEditorAttributesChanged(val: CriteriaEditorAttribute[]) {
-            this.rules = val.map((cea: CriteriaEditorAttribute) => ({
+        onCriteriaEditorAttributesChanged(criteriaEditorAttributes: CriteriaEditorAttribute[]) {
+            this.rules = criteriaEditorAttributes.map((cea: CriteriaEditorAttribute) => ({
                 // TODO: implement select when we have web service that returns predetermined values
                 /*type: 'select',
                 label: ca.name,
@@ -74,25 +79,37 @@
             }));
         }
 
+        /**
+         * Criteria in state has changed
+         * @criteria Criteria object
+         */
         @Watch('stateCriteria')
-        onStateCriteriaChanged(val: Criteria) {
-            this.criteria = val;
+        onStateCriteriaChanged(criteria: Criteria) {
+            this.criteria = criteria;
         }
 
+        /**
+         * Component has been mounted
+         */
         mounted() {
             this.setCriteriaEditorAttributesAction();
         }
 
+        /**
+         * Whether or not the current criteria is valid
+         */
         isNotValidCriteria() {
             return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
         }
 
-        onSubmit(notCanceled: boolean) {
-            if (notCanceled) {
-                this.$emit('applyCriteria', parseQueryBuilderJson(this.criteria).join(''));
-            } else {
-                this.$emit('applyCriteria', '');
-            }
+        onSubmit(isCanceled: boolean) {
+            // create dialog result
+            const result: CriteriaEditorDialogResult = {
+                canceled: isCanceled,
+                criteria: parseQueryBuilderJson(this.criteria).join('')
+            };
+            // emit dialog result
+            this.$emit('result', result);
         }
     }
 </script>

@@ -125,5 +125,29 @@
             // set showPerformanceEquationEditorDialog = false to hide PerformanceEquationEditorDialog
             this.showPerformanceEquationEditorDialog = false
         }
+
+        /**
+         * 'Edit Critieria' button has been clicked
+         */
+        onShowCriteriaEditorDialog() {
+            // set showCriteriaEditorDialog = true to show CriteriaEditorDialog
+            this.showCriteriaEditorDialog = true;
+        }
+
+        /**
+         * User has submitted CriteriaEditorDialog result
+         * @param result CriteriaEditorDialogResult object
+         */
+        onSubmitCriteriaEditorDialogResult(result: CriteriaEditorDialogResult) {
+            // set showCriteriaEditorDialog = false to hide CriteriaEditorDialog
+            this.showCriteriaEditorDialog = false;
+        }
+
+        /**
+         * 'Apply Shift' button has been clicked
+         */
+        onApplyShift() {
+
+        }
     }
 </script>
