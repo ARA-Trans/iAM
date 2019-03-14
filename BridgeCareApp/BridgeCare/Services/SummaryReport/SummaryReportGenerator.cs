@@ -12,13 +12,13 @@ namespace BridgeCare.Services.SummaryReport
     {
         private readonly ICommonSummaryReportData commonSummaryReportData;
         private readonly SummaryReportBridgeData summaryReportBridgeData;        
-        private readonly BridgeWorkSummary BridgeWorkSummary;
+        private readonly BridgeWorkSummary bridgeWorkSummary;
 
         public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary summaryReportBridgeWorkSummary)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
-            this.BridgeWorkSummary=summaryReportBridgeWorkSummary?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
+            this.bridgeWorkSummary=summaryReportBridgeWorkSummary?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Bridge Work Summary tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                BridgeWorkSummary.Fill(worksheet, simulationDataModels, simulationYears, dbContext);                             
+                bridgeWorkSummary.Fill(worksheet, simulationDataModels, simulationYears, dbContext);                             
                 
                 return excelPackage.GetAsByteArray();
             }
