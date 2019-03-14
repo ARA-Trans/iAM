@@ -276,6 +276,14 @@
     <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
     <Content Include="Dependencies\Simulation.dll" />
     <Content Include="Dependencies\SimulationDataAccess.dll" />
+    <Content Include="Dpendencies\CalculateEvaluate.pdb" />
+    <Content Include="Dpendencies\DatabaseManager.pdb" />
+    <Content Include="Dpendencies\FireSharp.dll" />
+    <Content Include="Dpendencies\RestSharp.dll" />
+    <Content Include="Dpendencies\RestSharp.xml" />
+    <Content Include="Dpendencies\RoadCareGlobalOperations.pdb" />
+    <Content Include="Dpendencies\Simulation.pdb" />
+    <Content Include="Dpendencies\SimulationDataAccess.pdb" />
     <Content Include="Global.asax" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -74,7 +74,7 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import {Attribute, AttributesWithYearlyValues, Section} from '@/models/section';
+    import { Attribute, AttributesWithYearlyValues, Section } from '@/shared/models/iAM/section';
     import * as R from 'ramda';
     import * as moment from 'moment';
     import {hasValue} from '@/shared/utils/has-value';

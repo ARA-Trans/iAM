@@ -64,6 +64,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\Inventory.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentStrategyDialog.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-dialogs\EditBudgetsDialog.vue" />
+    <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
     <Content Include="src\components\Scenarios.vue" />
     <Content Include="src\components\scenario\EditAnalysis.vue">
       <SubType>Code</SubType>
@@ -100,11 +103,17 @@
     <Folder Include="src\assets\images\" />
     <Folder Include="src\assets\images\inventory_mock_bridge_images\" />
     <Folder Include="src\components\" />
+    <Folder Include="src\components\investment-editor\" />
+    <Folder Include="src\components\investment-editor\investment-editor-dialogs\" />
     <Folder Include="src\components\scenario\" />
     <Folder Include="src\models\" />
     <Folder Include="src\plugins\" />
     <Folder Include="src\services\" />
     <Folder Include="src\shared\" />
+    <Folder Include="src\shared\models\" />
+    <Folder Include="src\shared\models\dialogs\" />
+    <Folder Include="src\shared\models\iAM\" />
+    <Folder Include="src\shared\models\vue\" />
     <Folder Include="src\shared\utils\" />
     <Folder Include="src\store-modules\" />
   </ItemGroup>
@@ -131,9 +140,21 @@
     <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
     <TypeScriptCompile Include="src\services\detailed-report.service.ts" />
     <TypeScriptCompile Include="src\services\inventory.service.ts" />
+    <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
     <TypeScriptCompile Include="src\services\network.service.ts" />
     <TypeScriptCompile Include="src\services\scenario.service.ts" />
     <TypeScriptCompile Include="src\services\simulation.service.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\create-investment-strategy-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\edit-budgets-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\alert.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\criteria.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\investment.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\network.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\section.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
+    <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
+    <TypeScriptCompile Include="src\shared\models\vue\select-item.ts" />
     <TypeScriptCompile Include="src\shared\utils\criteria-editor-parsers.ts" />
     <TypeScriptCompile Include="src\shared\utils\has-value.ts" />
     <TypeScriptCompile Include="src\shared\utils\mock-data.ts" />
@@ -149,6 +170,7 @@
     <TypeScriptCompile Include="src\store-modules\criteria-editor.module.ts" />
     <TypeScriptCompile Include="src\store-modules\detailed-report.module.ts" />
     <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\investment-editor.module.ts" />
     <TypeScriptCompile Include="src\store-modules\network.module.ts" />
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\security.module.ts" />

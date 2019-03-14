@@ -24,7 +24,7 @@ export default new Vuex.Store({
         scenario,
         criteriaEditor,
         inventory,
-        investmentEditor
+        investmentEditor,
         userAuthorization
     }
 });

@@ -50,10 +50,10 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import {Network} from '@/models/network';
-    import { Simulation } from '@/models/simulation';
+    import { Network } from '@/models/network';
+    import { Simulation } from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
-    import {Alert} from '@/models/alert';
+    import { Alert } from '@/shared/models/iAM/alert';
     import { hasValue } from '@/shared/utils/has-value';
     import { statusReference } from '@/firebase';
 
