@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
@@ -19,12 +20,9 @@ namespace BridgeCare.Controllers
 
         // POST: api/DetailedReport
         [HttpPost]
+        [ModelValidation("Given Network Id and/or Simulation Id are not valid")]
         public HttpResponseMessage Post([FromBody] SimulationModel data)
         {
-            if (!ModelState.IsValid)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Given Network Id and/or Simulation Id are not valid");
-            }
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
             MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
             try

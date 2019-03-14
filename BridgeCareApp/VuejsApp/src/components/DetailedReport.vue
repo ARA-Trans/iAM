@@ -221,7 +221,7 @@
                 this.setIsBusyAction({isBusy: false})
             ).catch((error: any) => {
                 this.setIsBusyAction({ isBusy: false });
-                this.setSimulationStatusAction({ status: false })
+                this.setSimulationStatusAction({ status: false });
                 console.log(error);
             });
         }
