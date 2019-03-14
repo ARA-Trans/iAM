@@ -112,14 +112,15 @@
                             <v-text-field v-model="budgetYearRange" label="Edit" single-line :mask="'####'"></v-text-field>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="info" v-on:click="onSaveBudgetYearRange(true)">Save</v-btn>
-                            <v-btn v-on:click="onSaveBudgetYearRange(false)">Cancel</v-btn>
+                            <v-btn color="info" v-on:click="onSubmitBudgetYearRange(true)">Save</v-btn>
+                            <v-btn v-on:click="onSubmitBudgetYearRange(false)">Cancel</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
                 <AppSpinner />
-                <CreateInvestmentStrategyDialog :showDialog="showCreateInvestmentStrategyDialog" @result="onCreateInvestmentStrategy" />
-                <EditBudgetsDialog :showDialog="showEditBudgetsDialog" @result="onEditBudgets" />
+                <CreateInvestmentStrategyDialog :showDialog="showCreateInvestmentStrategyDialog"
+                                                @result="onSubmitCreateInvestmentStrategyDialogResult" />
+                <EditBudgetsDialog :showDialog="showEditBudgetsDialog" @result="onSubmitEditBudgetsDialogResult" />
             </v-layout>
         </div>
 
@@ -220,12 +221,19 @@
                 });
         }
 
+        /**
+         * 'New Investment Strategy' button has been clicked
+         */
         onShowCreateInvestmentStrategyDialog() {
             // show the CreateInvestmentStrategyDialog
             this.showCreateInvestmentStrategyDialog = true;
         }
 
-        onCreateInvestmentStrategy(result: CreateInvestmentStrategyDialogResult) {
+        /**
+         * User has submitted CreateInvestmentStrategyDialog result
+         * @param result CreateInvestmentStrategyDialogResult object
+         */
+        onSubmitCreateInvestmentStrategyDialogResult(result: CreateInvestmentStrategyDialogResult) {
             // hide the CreateInvestmentStrategyDialog
             this.showCreateInvestmentStrategyDialog = false;
             if (!result.canceled) {
@@ -320,9 +328,9 @@
         }
 
         /**
-         * 'Add Range' dialog 'Save'/'Cancel' button has been clicked
+         * User has submitted an 'Add Range' dialog result
          */
-        onSaveBudgetYearRange(notCanceled: boolean) {
+        onSubmitBudgetYearRange(notCanceled: boolean) {
             // hide the budget year range edit dialog
             this.showBudgetYearRangeEditDialog = false;
             if (this.budgetYearRange > 0 && notCanceled) {
@@ -389,7 +397,7 @@
          * EditBudgetsDialog 'Save' button has been clicked
          * @param budgets The EditBudgetsDialog budgets list return value
          */
-        onEditBudgets(result: EditBudgetsDialogResult) {
+        onSubmitEditBudgetsDialogResult(result: EditBudgetsDialogResult) {
             // hide EditBudgetsDialog
             this.showEditBudgetsDialog = false;
             if (!result.canceled) {
@@ -423,6 +431,9 @@
             }
         }
 
+        /**
+         * User has submitted an inline edit for a budget year's budget's amount
+         */
         onEditBudgetYearAmount(year: number, budgetName: string, amount: number) {
             if (R.any(R.propEq('year', year), this.selectedInvestmentStrategy.budgetYears)) {
                 const budgetYearIndex = R.findIndex(
