@@ -25,5 +25,17 @@ namespace BridgeCare.Controllers
         // Get: api/InvestmentStrategies
         [ModelValidation]
         public IQueryable<InvestmentStrategyModel> Get(NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
+
+        public IHttpActionResult Post(InvestmentStrategyModel data)
+        {
+            bool getResults = investmentStrategies.SetInvestmentStrategies(data, db);
+
+            if (getResults)
+            {
+                return Ok();
+            }
+
+            return NotFound();
+        }
     }
 }

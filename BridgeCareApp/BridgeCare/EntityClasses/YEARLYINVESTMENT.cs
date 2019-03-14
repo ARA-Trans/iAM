@@ -1,14 +1,19 @@
 namespace BridgeCare.EntityClasses
 {
-    using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
     [Table("YEARLYINVESTMENT")]
     public partial class YEARLYINVESTMENT
     {
+        public YEARLYINVESTMENT(int simulationID, int year, string budgetName, double? amount)
+        {
+            AMOUNT = amount;
+            BUDGETNAME = budgetName;
+            YEAR_ = year;
+            SIMULATIONID = simulationID;
+        }
+
         [Key]
         public int YEARID { get; set; }
 

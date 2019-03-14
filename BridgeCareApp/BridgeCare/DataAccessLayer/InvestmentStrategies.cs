@@ -1,7 +1,10 @@
 ﻿using BridgeCare.ApplicationLog;
+using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -18,25 +21,99 @@ namespace BridgeCare.DataAccessLayer
 
         public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(NetworkModel network, BridgeCareContext db)
         {
-            var investmentStrategies = Enumerable.Empty<InvestmentStrategyModel>();
             try
             {
-                investmentStrategies = db.INVESTMENTs
-                    .Select(p => new InvestmentStrategyModel
+                var simulation = db.SIMULATIONS
+                    .Include(d => d.INVESTMENTS)
+                    .Include(d => d.YEARLYINVESTMENTs)
+                    .Select(p => new InvestmentStrategyModel()
                     {
-                        Id = p.SIMULATIONID,
-                        BudgetOrder = p.BUDGETORDER,
-                        FirstYear = p.FIRSTYEAR ?? 0,
-                        NumberYears = p.NUMBERYEARS ?? 0,
-                        InflationRate = p.INFLATIONRATE ?? 0,
-                        DiscountRate = p.DISCOUNTRATE ?? 0
-                    });
+                        Name = p.SIMULATION1,
+                        Description = p.COMMENTS,
+                        SimulationId = p.SIMULATIONID,
+                        NetworkId = p.NETWORKID ?? 0,
+                        FirstYear = p.INVESTMENTS.FIRSTYEAR ?? 0,
+                        NumberYears = p.INVESTMENTS.NUMBERYEARS ?? 0,
+                        InflationRate = p.INVESTMENTS.INFLATIONRATE ?? 0,
+                        DiscountRate = p.INVESTMENTS.DISCOUNTRATE ?? 0,
+                        BudgetOrder = p.INVESTMENTS.BUDGETORDER,
+                        YearlyBudget = p.YEARLYINVESTMENTs.Select(m => new InvestmentStrategyYearlyBudgetModel
+                        {
+                            Year = m.YEAR_,
+                            Budget = p.YEARLYINVESTMENTs
+                            .Where(n => n.YEAR_ == m.YEAR_)
+                            .Select(f => new InvestmentStrategyBudgetModel()
+                            {
+                                Amount = f.AMOUNT,
+                                Name = f.BUDGETNAME
+                            }).ToList()
+                        }).ToList()
+                    }).ToList();
+
+                //Wish we could do this inside the linq query
+                foreach (InvestmentStrategyModel model in simulation)
+                {
+                    model.SetBudgets();
+                }
+
+                return simulation.AsQueryable();
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "Investment Strategies");
             }
-            return investmentStrategies.AsQueryable();
+            return Enumerable.Empty<InvestmentStrategyModel>().AsQueryable();
+        }
+
+        public bool SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db)
+        {
+            try
+            {
+                var simulation = db.SIMULATIONS
+                    .Include(d => d.INVESTMENTS)
+                    .Single(_ => _.SIMULATIONID == data.SimulationId);
+
+                //Ensures budget order is transferred from array storage as it comes in from json to
+                //the databse format, comma delimited
+                string budgetOrder = data.GetBudgetOrder();
+
+                //Derive FirstYear and NumberYears from the YearlyBudget list.
+                data.FirstYear = data.YearlyBudget.Min(r => r.Year);
+                data.NumberYears = data.YearlyBudget.Max(r => r.Year) - data.FirstYear;
+
+                if (simulation != null)
+                {
+                    simulation.COMMENTS = data.Description;
+                    simulation.SIMULATION1 = data.Name;
+                    simulation.INVESTMENTS.FIRSTYEAR = data.FirstYear;
+                    simulation.INVESTMENTS.NUMBERYEARS = data.NumberYears;
+                    simulation.INVESTMENTS.INFLATIONRATE = data.InflationRate;
+                    simulation.INVESTMENTS.DISCOUNTRATE = data.DiscountRate;
+                    simulation.INVESTMENTS.BUDGETORDER = budgetOrder;
+                }
+                var yearly = db.YEARLYINVESTMENTs
+                    .Where(_ => _.SIMULATIONID == data.SimulationId).First();
+                db.YEARLYINVESTMENTs.Remove(yearly);
+
+                List<YEARLYINVESTMENT> investments = new List<YEARLYINVESTMENT>();
+
+                foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudget)
+                {
+                    foreach (InvestmentStrategyBudgetModel budget in year.Budget)
+                    {
+                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
+                    }
+                }
+                db.YEARLYINVESTMENTs.AddRange(investments);
+
+                db.SaveChanges();
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "Investment Strategies");
+            }
+            return false;
         }
     }
 }
