@@ -9,7 +9,7 @@ namespace BridgeCare.Services.SummaryReport
     /// This class utilizes services classes for each tab to fill report data.
     /// </summary>
     public class SummaryReportGenerator : ISummaryReportGenerator
-    {        
+    {
         private readonly SummaryReportBridgeData summaryReportBridgeData;
         private readonly ICommonSummaryReportData commonSummaryReportData;
 
@@ -33,16 +33,12 @@ namespace BridgeCare.Services.SummaryReport
             var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationModel.SimulationId);
             var simulationYears = simulationYearsModel.Years;
             var dbContext = new BridgeCareContext();
-                        
+
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
                 // Bridge Data tab
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
-
-
-
-                
 
                 return excelPackage.GetAsByteArray();
             }

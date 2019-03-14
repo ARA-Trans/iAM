@@ -14,20 +14,20 @@
         public string NHS { get; set; }
 
         public string BPN { get; set; }
-                
+
         public string FunctionalClass { get; set; }
-                
+
         public string YearBuilt { get; set; }
 
-        //Below data fetched from table PENNDOT_BRIDGE_DATA        
+        //Below data fetched from table PENNDOT_BRIDGE_DATA
         public string BridgeFamily { get; set; }
-                
+
         public string Age { get; set; }
 
-        //Computed  
+        //Computed
         public string ADTOverTenThousand { get; set; }
 
-        //Below data fetched from table SD_RISK        
+        //Below data fetched from table SD_RISK
         public double RiskScore { get; set; }
     }
 }

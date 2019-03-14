@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+﻿using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
+using BridgeCare.Models;
+using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using BridgeCare;
-using BridgeCare.Models;
-using BridgeCare.Services;
-using BridgeCare.EntityClasses;
-using BridgeCare.Interfaces;
 
 namespace BridgeCare.Controllers
 {
@@ -20,6 +12,7 @@ namespace BridgeCare.Controllers
     {
         private readonly BridgeCareContext db;
         private readonly INetwork networks;
+
         public NetworksController(INetwork networkRepository, BridgeCareContext context)
         {
             networks = networkRepository ?? throw new ArgumentNullException(nameof(networkRepository));

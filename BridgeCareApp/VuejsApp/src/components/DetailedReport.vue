@@ -76,7 +76,6 @@
         @Action('clearReportBlob') clearReportBlobAction: any;
         @Action('runSimulation') runSimulationAction: any;
 
-
         @Prop({
             default: function () {
                 return {showModal: false};

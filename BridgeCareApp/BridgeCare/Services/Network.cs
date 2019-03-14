@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using BridgeCare.ApplicationLog;
+﻿using BridgeCare.ApplicationLog;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using System;
+using System.Data.SqlClient;
+using System.Linq;
 
 namespace BridgeCare.Services
 {

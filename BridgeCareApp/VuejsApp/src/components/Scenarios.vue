@@ -81,7 +81,7 @@
     import axios from 'axios';
 
     import * as moment from 'moment';
-    import {Scenario} from '@/models/scenario';
+    import {Scenario} from '@/shared/models/iAM/scenario';
     import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;

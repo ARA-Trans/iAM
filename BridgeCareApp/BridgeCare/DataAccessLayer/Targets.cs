@@ -22,6 +22,7 @@ namespace BridgeCare.DataAccessLayer
             this.targets = targets ?? throw new ArgumentNullException(nameof(targets));
             targetCells = result ?? throw new ArgumentNullException(nameof(result));
         }
+
         public TargetModel GetTarget(SimulationModel data, int[] totalYears)
         {
             IQueryable<DeficientModel> results = null;
@@ -55,10 +56,10 @@ namespace BridgeCare.DataAccessLayer
             }
             return target;
         }
+
         private TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
         {
             var targetData = db.Target.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
-            
 
             var listRows = new List<string>();
             var idTargets = new Hashtable();

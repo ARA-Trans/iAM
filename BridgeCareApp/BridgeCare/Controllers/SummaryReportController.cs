@@ -1,10 +1,11 @@
 ﻿using BridgeCare.Interfaces;
+using BridgeCare.Models;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
-using BridgeCare.Models;
+using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
@@ -19,13 +20,9 @@ namespace BridgeCare.Controllers
 
         // POST: api/SummaryReport
         [HttpPost]
+        [ModelValidation("Given simulation data is not valid")]
         public HttpResponseMessage Post([FromBody] SimulationModel simulationModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Given Network Id and/or Simulation Id are not valid.");
-            }
-
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
             MediaTypeHeaderValue mediaTypeHeaderValue = new MediaTypeHeaderValue("application/octet-stream");
 

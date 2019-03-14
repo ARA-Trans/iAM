@@ -2,7 +2,6 @@
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -16,6 +15,7 @@ namespace BridgeCare.DataAccessLayer
         {
             dbContext = bridgeCareContext ?? throw new ArgumentNullException(nameof(bridgeCareContext));
         }
+
         public SimulationYearsModel GetSimulationYearsData(int simulationId)
         {
             try

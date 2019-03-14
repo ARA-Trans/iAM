@@ -9,6 +9,7 @@ import scenario from '@/store-modules/scenario.module';
 import detailedReport from '@/store-modules/detailed-report.module';
 import criteriaEditor from '@/store-modules/criteria-editor.module';
 import inventory from '@/store-modules/inventory.module';
+import investmentEditor from '@/store-modules/investment-editor.module';
 import userAuthorization from '@/store-modules/user-authorization.module';
 
 Vue.use(Vuex);
@@ -23,6 +24,7 @@ export default new Vuex.Store({
         scenario,
         criteriaEditor,
         inventory,
+        investmentEditor
         userAuthorization
     }
 });
