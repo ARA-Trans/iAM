@@ -23,7 +23,7 @@ namespace BridgeCare.Controllers
         }
 
         // Get: api/InvestmentStrategies
-        [ModelValidation]
+        [ModelValidation("Given network data is not valid")]
         public IQueryable<InvestmentStrategyModel> Get(NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
 
         public IHttpActionResult Post(InvestmentStrategyModel data)

@@ -27,7 +27,7 @@ namespace BridgeCare.Controllers
         /// "networkId": 13 }
         /// </summary>
         [HttpGet]
-        [ModelValidation]
+        [ModelValidation("Given section data is not valid")]
         public List<AttributeByYearModel> Get([FromBody]SectionModel sectionModel) => attributes.GetHistoricalAttributes(sectionModel, db);
     }
 }

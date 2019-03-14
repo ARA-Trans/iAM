@@ -18,14 +18,19 @@ namespace System.Web.Http.Filters
             if (!actionContext.ModelState.IsValid)
             {
                 actionContext.Response = actionContext.Request.CreateErrorResponse(
-                HttpStatusCode.BadRequest, actionContext.ModelState);
+                HttpStatusCode.BadRequest, Message);
             }
         }
 
         private readonly Func<Dictionary<string, object>, bool> _validate;
+        private string Message { get; set; }
 
         public ModelValidationAttribute() : this(arguments => arguments.ContainsValue(null))
         { }
+        public ModelValidationAttribute(string message) : this(arguments => arguments.ContainsValue(null))
+        {
+            Message = message;
+        }
 
         public ModelValidationAttribute(Func<Dictionary<string, object>, bool> checkCondition)
         {

@@ -52,6 +52,9 @@
         </v-parallax>
         <v-content v-if="!loginFailed">
             <router-view></router-view>
+            <v-flex xs12>
+                <AppSpinner />
+            </v-flex>
         </v-content>
     </nav>
 </template>
@@ -61,12 +64,22 @@
     import {Component} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import * as Msal from 'msal';
+    import { usersReference, db } from '@/firebase';
+    import { ifElse, equals, append } from 'ramda';
 
-    @Component
+    import AppSpinner from '../shared/AppSpinner.vue';
+
+    @Component({
+        components: { AppSpinner }
+    })
     export default class TopNavbar extends Vue {
         @State(state => state.security.loginFailed) loginFailed: boolean;
         @State(state => state.security.userName) userName: string;
+        @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.userAuthorization.isAdmin) isAdmin: boolean;
 
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('setIsAdmin') setIsAdminAction: any;
         @Action('setLoginStatus') setLoginStatusAction: any;
         @Action('setUsername') setUsernameAction: any;
 
@@ -76,6 +89,9 @@
         };
 
         clientApp: Msal.UserAgentApplication;
+        routes: any[];
+        filteredRoutes: any[];
+        totalRoutes: any[];
 
         signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_su-si-pol';
         passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_pr-pol';
@@ -116,30 +132,36 @@
 
         data() {
             return {
-                routes: [
-                    {navigation: 'Inventory', icon: 'home', name: 'Inventory'},
-                    {navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios'},
-                    {navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report'},
-                    {navigation: 'Criteria', name: 'Criteria'}
-                ],
                 drawer: true
             };
         }
 
-        routing(routeName: string) {
-            this.$router.push(routeName);
+        beforeCreate() {
+            this.filteredRoutes = [
+                { navigation: 'Inventory', icon: 'home', name: 'Inventory' },
+                { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios' },
+                { navigation: 'Criteria', icon: 'assignment', name: 'Criteria' }
+            ];
+            this.totalRoutes = append({ navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }, this.filteredRoutes);
+            this.routes = [];
         }
 
-        mounted() {
+        created() {
             let user = this.clientApp.getUser();
+            this.setIsBusyAction({ isBusy: true });
             if (!user) {
-                this.setLoginStatusAction({status: true});
-                this.setUsernameAction({userName: ''});
+                this.setLoginStatusAction({ status: true });
+                this.setUsernameAction({ userName: '' });
+                this.setIsBusyAction({ isBusy: false });
             } else {
-                this.setLoginStatusAction({status: false});
-                this.setUsernameAction({userName: user.name});
+                this.setLoginStatusAction({ status: false });
+                this.setUsernameAction({ userName: user.name });
                 this.updateUI();
             }
+        }
+
+        routing(routeName: string) {
+            this.$router.push(routeName);
         }
 
         login() {
@@ -177,7 +199,7 @@
                     {cacheLocation: 'localStorage'});
                 this.login();
             } else {
-                this.logMessage('Error during login:\n' + error);
+                console.log('Error during login:\n' + error);
             }
         }
 
@@ -186,12 +208,32 @@
         }
 
         updateUI() {
-            this.setUsernameAction({userName: this.clientApp.getUser().name});
-            this.logMessage('User \'' + this.userName + '\' logged-in');
-        }
-
-        logMessage(s: string) {
-            console.log(s);
+            this.setUsernameAction({ userName: this.clientApp.getUser().name });
+            usersReference.once('value', (snapshot: any) => {
+                //@ts-ignore
+                const userId = this.clientApp.getUser().idToken.sub;
+                if (snapshot.hasChild(userId)) {
+                    this.setIsAdminAction({ isAdmin: snapshot.child(userId).val().roles.admin });
+                    this.routes = ifElse(() => equals(this.isAdmin, true), () => this.totalRoutes, () => this.filteredRoutes)(this.routes);
+                    this.$forceUpdate();
+                }
+                else {
+                    console.log('user not found');
+                    const newUser = {
+                        //@ts-ignore
+                        email: this.clientApp.getUser().idToken.emails[0],
+                        roles: { owner: true, admin: false }
+                    };
+                    db.ref('users/' + userId).update(newUser);
+                    this.setIsAdminAction({ isAdmin: false });
+                    this.routes = this.filteredRoutes;
+                    this.$forceUpdate();
+                }
+                this.setIsBusyAction({ isBusy: false });
+            }).catch(error => {
+                this.setIsBusyAction({ isBusy: false });
+                });
+            
         }
     }
 </script>

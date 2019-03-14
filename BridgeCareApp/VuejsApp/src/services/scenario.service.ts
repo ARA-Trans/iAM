@@ -1,9 +1,8 @@
 import Vue from 'vue';
 import axios from 'axios';
-import {Scenario} from '@/models/scenario';
+import {Scenario} from '@/shared/models/iAM/scenario';
 import {sharedScenarios, userScenarios} from '@/shared/utils/mock-data';
 import * as moment from 'moment';
-
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 

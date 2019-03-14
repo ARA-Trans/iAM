@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {CriteriaEditorAttribute} from '../models/criteria';
+import {CriteriaEditorAttribute} from '../shared/models/iAM/criteria';
 import {attributes} from '../shared/utils/mock-data';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;

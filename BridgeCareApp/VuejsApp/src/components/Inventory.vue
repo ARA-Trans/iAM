@@ -65,11 +65,6 @@
                 <v-img :src="img.src" aspect-ratio="1"></v-img>
             </v-flex>
         </v-layout>
-        <v-layout row wrap>
-            <v-flex xs12>
-                <AppSpinner/>
-            </v-flex>
-        </v-layout>
     </v-container>
 </template>
 
@@ -79,17 +74,14 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import AppSpinner from '../shared/AppSpinner.vue';
-    import {Attribute, AttributesWithYearlyValues, Section} from '@/models/section';
+    import { Attribute, AttributesWithYearlyValues, Section } from '@/shared/models/iAM/section';
     import * as R from 'ramda';
     import * as moment from 'moment';
     import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
-    @Component({
-        components: {AppSpinner}
-    })
+    @Component
     export default class Inventory extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.inventory.sections) sections: Section[];
