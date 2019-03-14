@@ -19,7 +19,7 @@ namespace BridgeCare.Controllers
         }
 
         // Get: api/section
-        [ModelValidation]
+        [ModelValidation("Given network data is not valid")]
         public IQueryable<SectionModel> Get(NetworkModel data) => section.GetSections(data, db);
     }
 }

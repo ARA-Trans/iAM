@@ -23,7 +23,7 @@ namespace BridgeCare.Controllers
         /// "sectionId":1000012, "networkId":13, "simulationId":9 }
         /// </summary>
         [HttpGet]
-        [ModelValidation]
+        [ModelValidation("Given simulated segment data is not valid")]
         public List<AttributeByYearModel> Get([FromBody]SimulatedSegmentIdsModel segmentAddressModel) =>
            attributes.GetProjectedAttributes(segmentAddressModel, db);
     }
