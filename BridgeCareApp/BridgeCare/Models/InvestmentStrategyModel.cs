@@ -9,7 +9,7 @@ namespace BridgeCare.Models
     {
         public InvestmentStrategyModel()
         {
-            YearlyBudget = new List<InvestmentStrategyYearlyBudgetModel>();
+            YearlyBudgets = new List<InvestmentStrategyYearlyBudgetModel>();
         }
 
         [Required]
@@ -33,7 +33,7 @@ namespace BridgeCare.Models
         [Required]
         public double? DiscountRate { get; set; }
         public string Description { get; set; }
-        public List<string> Budgets { get; set; }
+        public List<string> BudgetNamesByOrder { get; set; }
 
         ///<remarks>this is a variable which is uses to receive the
         ///comma delimited list of budget types, it is ignored so to
@@ -41,14 +41,20 @@ namespace BridgeCare.Models
         [IgnoreDataMember]
         public string BudgetOrder;
 
-        public List<InvestmentStrategyYearlyBudgetModel> YearlyBudget { get; set; }
+        [IgnoreDataMember]
+        public List<string> DeletedBudgetNames { get; set; }
+
+        public List<InvestmentStrategyYearlyBudgetModel> YearlyBudgets { get; set; }
+
+        [IgnoreDataMember]
+        public List<InvestmentStrategyYearlyBudgetModel> DeletedYearlyBudgets { get; set; }
 
         /// <summary>
         /// The one and only means to convert from BudgetOrder to Budgets
         /// </summary>
         public void SetBudgets()
         {
-            Budgets = BudgetOrder.Split(',').ToList<string>();
+            BudgetNamesByOrder = BudgetOrder.Split(',').ToList<string>();
         }
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace BridgeCare.Models
         /// </summary>
         public string GetBudgetOrder()
         {
-            return string.Join(",", Budgets);
+            return string.Join(",", BudgetNamesByOrder);
         }
     }
 }

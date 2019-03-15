@@ -37,7 +37,7 @@ namespace BridgeCare.DataAccessLayer
                         InflationRate = p.INVESTMENTS.INFLATIONRATE ?? 0,
                         DiscountRate = p.INVESTMENTS.DISCOUNTRATE ?? 0,
                         BudgetOrder = p.INVESTMENTS.BUDGETORDER,
-                        YearlyBudget = p.YEARLYINVESTMENTs.Select(m => new InvestmentStrategyYearlyBudgetModel
+                        YearlyBudgets = p.YEARLYINVESTMENTs.Select(m => new InvestmentStrategyYearlyBudgetModel
                         {
                             Year = m.YEAR_,
                             Budget = p.YEARLYINVESTMENTs
@@ -72,8 +72,8 @@ namespace BridgeCare.DataAccessLayer
             string budgetOrder = data.GetBudgetOrder();
 
             //Derive FirstYear and NumberYears from the YearlyBudget list.
-            data.FirstYear = data.YearlyBudget.Min(r => r.Year);
-            data.NumberYears = data.YearlyBudget.Max(r => r.Year) - data.FirstYear;
+            data.FirstYear = data.YearlyBudgets.Min(r => r.Year);
+            data.NumberYears = data.YearlyBudgets.Max(r => r.Year) - data.FirstYear;
 
             try
             {
@@ -82,34 +82,29 @@ namespace BridgeCare.DataAccessLayer
                     .Include(d => d.YEARLYINVESTMENTs)
                     .Single(_ => _.SIMULATIONID == data.SimulationId);
 
-                if (simulation != null)
+                simulation.COMMENTS = data.Description;
+                simulation.SIMULATION1 = data.Name;
+                simulation.INVESTMENTS.FIRSTYEAR = data.FirstYear;
+                simulation.INVESTMENTS.NUMBERYEARS = data.NumberYears;
+                simulation.INVESTMENTS.INFLATIONRATE = data.InflationRate;
+                simulation.INVESTMENTS.DISCOUNTRATE = data.DiscountRate;
+                simulation.INVESTMENTS.BUDGETORDER = budgetOrder;
+
+                db.YEARLYINVESTMENTs.RemoveRange(simulation.YEARLYINVESTMENTs);
+
+                List<YEARLYINVESTMENT> investments = new List<YEARLYINVESTMENT>();
+
+                foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudgets)
                 {
-                    simulation.COMMENTS = data.Description;
-                    simulation.SIMULATION1 = data.Name;
-                    simulation.INVESTMENTS.FIRSTYEAR = data.FirstYear;
-                    simulation.INVESTMENTS.NUMBERYEARS = data.NumberYears;
-                    simulation.INVESTMENTS.INFLATIONRATE = data.InflationRate;
-                    simulation.INVESTMENTS.DISCOUNTRATE = data.DiscountRate;
-                    simulation.INVESTMENTS.BUDGETORDER = budgetOrder;
-
-                    // var yearly = simulation.YEARLYINVESTMENTs
-                    //     .Where(_ => _.SIMULATIONID == data.SimulationId);
-                    db.YEARLYINVESTMENTs.RemoveRange(simulation.YEARLYINVESTMENTs);
-
-                    List<YEARLYINVESTMENT> investments = new List<YEARLYINVESTMENT>();
-
-                    foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudget)
+                    foreach (InvestmentStrategyBudgetModel budget in year.Budget)
                     {
-                        foreach (InvestmentStrategyBudgetModel budget in year.Budget)
-                        {
-                            investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
-                        }
+                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
                     }
-                    db.YEARLYINVESTMENTs.AddRange(investments);
-
-                    db.SaveChanges();
-                    return true;
                 }
+                db.YEARLYINVESTMENTs.AddRange(investments);
+
+                db.SaveChanges();
+                return true;
             }
             catch (SqlException ex)
             {
