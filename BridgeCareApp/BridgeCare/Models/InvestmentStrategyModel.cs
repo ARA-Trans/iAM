@@ -29,9 +29,9 @@ namespace BridgeCare.Models
         public int NumberYears { get; set; }
 
         [Required]
-        public double InflationRate { get; set; }
+        public double? InflationRate { get; set; }
         [Required]
-        public double DiscountRate { get; set; }
+        public double? DiscountRate { get; set; }
         public string Description { get; set; }
         public List<string> Budgets { get; set; }
 
