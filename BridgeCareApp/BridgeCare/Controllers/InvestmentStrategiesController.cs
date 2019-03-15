@@ -30,14 +30,14 @@ namespace BridgeCare.Controllers
         [HttpGet]
         public IQueryable<InvestmentStrategyModel> Get([FromBody]NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
 
-        ///<summary> Post: api/SaveInvestmentStrategies
+        ///<summary> Post: api/SaveInvestmentStrategy
         ///argument: InvestmentStrategyModel
         ///return : 200 sucess
         ///         400 for bad input argument
         ///         500 internal server error (uncaught exception)
         ///</summary>
         [ModelValidation("Given investment strategy data is not valid")]
-        [Route("api/SaveInvestmentStrategies")]
+        [Route("api/SaveInvestmentStrategy")]
         [HttpPost]
         public IHttpActionResult Post([FromBody]InvestmentStrategyModel data)
         {
@@ -50,7 +50,6 @@ namespace BridgeCare.Controllers
 
             return NotFound();
         }
-
 
     }
 }
