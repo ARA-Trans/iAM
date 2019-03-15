@@ -68,6 +68,7 @@
     import { ifElse, equals, append } from 'ramda';
 
     import AppSpinner from '../shared/AppSpinner.vue';
+    import {Route} from '@/shared/models/iAM/route';
 
     @Component({
         components: { AppSpinner }
@@ -89,9 +90,9 @@
         };
 
         clientApp: Msal.UserAgentApplication;
-        routes: any[];
-        filteredRoutes: any[];
-        totalRoutes: any[];
+        routes: Route[];
+        filteredRoutes: Route[];
+        totalRoutes: Route[];
 
         signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_su-si-pol';
         passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_pr-pol';
@@ -138,11 +139,15 @@
 
         beforeCreate() {
             this.filteredRoutes = [
-                { navigation: 'Inventory', icon: 'home', name: 'Inventory' },
-                { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios' },
-                { navigation: 'Criteria', icon: 'assignment', name: 'Criteria' }
+                { navigation: 'Inventory', icon: 'home', name: 'Inventory', linkGroup: '' },
+                { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios', linkGroup: '' },
+                { navigation: ''}
+                { navigation: 'Criteria', icon: 'assignment', name: 'Criteria', linkGroup: '' }
             ];
-            this.totalRoutes = append({ navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }, this.filteredRoutes);
+            this.totalRoutes = append(
+                { navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' },
+                this.filteredRoutes
+            );
             this.routes = [];
         }
 

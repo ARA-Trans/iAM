@@ -5,7 +5,7 @@ import './register-hooks';
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
-import Scenario from '@/components/Scenarios.vue';
+import Scenario from '@/components/scenarios/Scenarios.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import Criteria from '@/components/Criteria.vue';
