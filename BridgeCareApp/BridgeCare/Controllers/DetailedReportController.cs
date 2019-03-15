@@ -1,18 +1,18 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.Services;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
     public class DetailedReportController : ApiController
     {
         private readonly IReportCreator detailedReport;
+
         public DetailedReportController(IReportCreator detailedReport)
         {
             this.detailedReport = detailedReport ?? throw new ArgumentNullException(nameof(detailedReport));
@@ -20,17 +20,14 @@ namespace BridgeCare.Controllers
 
         // POST: api/DetailedReport
         [HttpPost]
+        [ModelValidation("Given Network Id and/or Simulation Id are not valid")]
         public HttpResponseMessage Post([FromBody] SimulationModel data)
         {
-            if (!ModelState.IsValid)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Given Network Id and/or Simulation Id are not valid");
-            }
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
             MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
             try
             {
-                response.Content = new ByteArrayContent(detailedReport.CreateExcelReport(data));
+                response.Content = new  ByteArrayContent(detailedReport.CreateExcelReport(data));
             }
             catch (TimeoutException)
             {

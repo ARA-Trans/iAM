@@ -83,32 +83,31 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {Component, Watch} from "vue-property-decorator";
-    import {State} from "vuex-class";
-    import axios from "axios";
+    import Vue from 'vue';
+    import {Component, Watch} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import axios from 'axios';
 
-    import AppSpinner from "../shared/AppSpinner.vue";
-    import {Attribute, AttributeYearlyValue, Section, SectionDetail} from "@/models/section";
-    import * as R from "ramda";
-    import * as moment from "moment";
+    import { Attribute, AttributesWithYearlyValues, Section } from '@/shared/models/iAM/section';
+    import * as R from 'ramda';
+    import * as moment from 'moment';
+    import {hasValue} from '@/shared/utils/has-value';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
-    @Component({
-        components: {AppSpinner}
-    })
+    @Component
     export default class Inventory extends Vue {
-        @State("sections") stateSections: Section[];
-        @State("sectionDetail") stateSectionDetail: SectionDetail;
+        @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.inventory.sections) sections: Section[];
 
-        sectionKeyTypes: number = 0;
-        sectionKeyTypesLabels = ["BMS ID", "BR KEY"];
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getNetworkInventory') getNetworkInventoryAction: any;
+
         sectionGridHeaders: object[] = [{text: 'Attribute', align: 'left', sortable: false, value: 'name'}];
         sections: Section[] = [];
         referenceIds: number[] = [];
         referenceKeys: number[] = [];
-        selectedSection: SectionDetail;
+        selectedSection: Section;
         sectionAttributes: string[] = [];
         selectedAttributes: string[] = [];
         selectAllAttrIcon = 'check_box_outline_blank';
@@ -118,43 +117,34 @@
         endYear: number = new Date().getFullYear();
         selectedSectionGridData: any[] = [];
         images: object[] = [
-            {src: require("@/assets/images/inventory_mock_bridge_images/1.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/2.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/3.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/4.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/5.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/6.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/7.jpg")},
-            {src: require("@/assets/images/inventory_mock_bridge_images/8.jpg")}
+            {src: require('@/assets/images/inventory_mock_bridge_images/1.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/2.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/3.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/4.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/5.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/6.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/7.jpg')},
+            {src: require('@/assets/images/inventory_mock_bridge_images/8.jpg')}
         ];
-        downloadProgress = false;
-        loading = false;
 
-        @Watch("stateSections")
-        onStateSectionsChanged(val: Section[]) {
+        @Watch('sections')
+        onSectionsChanged(val: Section[]) {
             this.sections = val;
             this.referenceIds = this.sections.map((s: Section) => s.referenceId);
             this.referenceKeys = this.sections.map((s: Section) => s.referenceKey);
-        }
-
-        @Watch("stateSectionDetail")
-        onStateSectionDetailChanged(val: SectionDetail) {
-            this.selectedSection = val;
-            this.onGotSectionDetail();
         }
         /**
          * Vue component has been mounted
          */
         mounted() {
-            this.$store.dispatch({
-                type: "getNetworkInventory"
-            });
-        }
-
-        onToggleSectionTypeSelect() {
-            this.$store.dispatch({
-                type: "getInventoryItemDetail",
-                section: null
+            this.setIsBusyAction({isBusy: true});
+            this.getNetworkInventoryAction({
+                network: {}
+            }).then(() =>
+                this.setIsBusyAction({isBusy: false})
+            ).catch((error: any) => {
+                this.setIsBusyAction({isBusy: false});
+                console.log(error);
             });
         }
         /**
@@ -186,7 +176,7 @@
          * filters and the initial data grid headers
          */
         onGotSectionDetail() {
-            if (this.hasValue(this.selectedSection)) {
+            if (hasValue(this.selectedSection)) {
                 // reset the list of attributes and create a placeholder list for the years
                 this.sectionAttributes = [];
                 const years: number[] = [];
@@ -199,7 +189,9 @@
                     // sort the yearly values for the given attribute in ascending order
                     const sortedYearlyValuesAsc = sortByYear(a.yearlyValues);
                     // for each sorted yearly value push the yearly value year onto the years list
-                    sortedYearlyValuesAsc.forEach((val: AttributeYearlyValue) => years.push(val.year));
+                    sortedYearlyValuesAsc.forEach((attributesWithYearlyValues: AttributesWithYearlyValues) =>
+                        years.push(attributesWithYearlyValues.year)
+                    );
 
                 });
                 // set all section attributes as selected by default
@@ -208,10 +200,10 @@
                 this.setAttributeSelectAllIcon();
                 // set the start years list while removing any duplicate years
                 this.startYears = R.uniq(years);
-                this.startYear = this.hasValue(this.startYears) ? this.startYears[0] : 0;
+                this.startYear = hasValue(this.startYears) ? this.startYears[0] : 0;
                 // set the end years list with a copy of the start years list in desc order
                 this.endYears = R.reverse(this.startYears);
-                this.endYear = this.hasValue(this.endYears) ? this.endYears[0] : 0;
+                this.endYear = hasValue(this.endYears) ? this.endYears[0] : 0;
                 // set the selected section's grid data
                 this.setSelectedSectionGridData();
             }
@@ -226,15 +218,15 @@
             );
             // get the selected year range
             const yearRange = this.getYearRange();
-            if (this.hasValue(filteredAttributes) && this.hasValue(yearRange)) {
+            if (hasValue(filteredAttributes) && hasValue(yearRange)) {
                 //reset the sectionGridHeaders list
-                this.sectionGridHeaders = R.filter(h => R.propEq("value", "name", h), this.sectionGridHeaders);
+                this.sectionGridHeaders = R.filter(h => R.propEq('value', 'name', h), this.sectionGridHeaders);
                 // for each of the years in the yearRange list add a new header to the sectionGridHeaders list using
                 // the years as the text/value properties
                 yearRange.forEach((year: number) => {
                     this.sectionGridHeaders.push(
                         {text: year.toString(), sortable: false, value: year.toString()}
-                    )
+                    );
                 });
                 // set the selected section grid data
                 this.selectedSectionGridData = filteredAttributes.map((a: Attribute) => {
@@ -242,12 +234,12 @@
                         name: a.name
                     };
                     yearRange.forEach((n: number) => {
-                        if (R.any(R.propEq("year", n), a.yearlyValues)) {
+                        if (R.any(R.propEq('year', n), a.yearlyValues)) {
                             //@ts-ignore
-                            row[`${n}`] = a.yearlyValues.find((val: AttributeYearlyValue) => val.year === n).value;
+                            row[`${n}`] = a.yearlyValues.find((val: AttributesWithYearlyValues) => val.year === n).value;
                         } else {
                             //@ts-ignore
-                            row[`${n}`] = "N/A";
+                            row[`${n}`] = 'N/A';
                         }
                     });
                     return row;
@@ -262,11 +254,11 @@
          */
         setAttributeSelectAllIcon() {
             if (this.selectedAllAttributes()) {
-                this.selectAllAttrIcon = "check_box";
+                this.selectAllAttrIcon = 'check_box';
             } else if (this.selectedSomeAttributes()) {
-                this.selectAllAttrIcon = "indeterminate_check_box";
+                this.selectAllAttrIcon = 'indeterminate_check_box';
             } else {
-                this.selectAllAttrIcon = "check_box_outline_blank";
+                this.selectAllAttrIcon = 'check_box_outline_blank';
             }
         }
         /**
@@ -306,7 +298,7 @@
          * which start year has been selected
          */
         onChangeStartYear() {
-            if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
+            if (hasValue(this.startYear) && hasValue(this.endYear)) {
                 if (this.startYear > this.endYear) {
                     if (this.startYear === this.endYears[0]) {
                         this.endYear = this.startYear;
@@ -329,7 +321,7 @@
          * which end year has been selected
          */
         onChangeEndYear() {
-            if (this.hasValue(this.startYear) && this.hasValue(this.endYear)) {
+            if (hasValue(this.startYear) && hasValue(this.endYear)) {
                 if (this.endYear < this.startYear) {
                     if (this.endYear === this.startYears[0]) {
                         this.startYear = this.endYear;
@@ -357,31 +349,18 @@
                 while (currentYear >= this.startYear) {
                     range.push(currentYear);
                     //@ts-ignore
-                    currentYear = parseInt(moment().year(currentYear).subtract(1, "year").format("YYYY"));
+                    currentYear = parseInt(moment().year(currentYear).subtract(1, 'year').format('YYYY'));
                 }
                 return range;
             }
         }
+
         /**
-         * Sets downloadProgress & loading properties to true
-         */
-        startProgressStatus() {
-            this.downloadProgress = true;
-            this.loading = true;
-        }
-        /**
-         * Sets downloadProgress & loading properties to false
-         */
-        stopProgressStatus() {
-            this.downloadProgress = false;
-            this.loading = false;
-        }
-        /**
-         * Whether or not the specified item has a value (is not null, is not undefined, and is not considered empty)
+         * Calls the utility hasValue function
          * @param item
          */
         hasValue(item: any) {
-            return !R.isNil(item) && !R.isEmpty(item);
+            return hasValue(item);
         }
     }
 </script>

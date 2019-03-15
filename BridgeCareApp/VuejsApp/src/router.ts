@@ -1,15 +1,19 @@
-﻿import Vue from 'vue'
-import Router from 'vue-router'
+﻿import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Component from 'vue-class-component';
+import './register-hooks';
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
-import Scenario from '@/components/Scenario.vue';
+import Scenario from '@/components/Scenarios.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
+import Criteria from '@/components/Criteria.vue';
+import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vue';
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
-export default new Router({
+const router = new VueRouter({
     mode: 'history',
     routes: [
         {
@@ -20,12 +24,25 @@ export default new Router({
         {
             path: '/DetailedReport',
             name: 'DetailedReport',
-            component: DetailedReport
+            component: DetailedReport,
+            beforeEnter: (to, from, next) => {
+                if (from.name == null) {
+                    next('/Inventory');
+                }
+                else {
+                    next();
+                }
+            }
         },
         {
             path: '/Scenarios',
             name: 'Scenarios',
             component: Scenario
+        },
+        {
+            path: '/InvestmentEditor',
+            name: 'InvestmentEditor',
+            component: InvestmentEditor
         },
         {
             path: '/EditScenario',
@@ -37,6 +54,11 @@ export default new Router({
             name: 'EditAnalysis',
             component: EditAnalysis
         },
+        {
+            path: '/Criteria',
+            name: 'Criteria',
+            component: Criteria
+        },
         { path: '*', redirect: '/Inventory' }
         //{
         //    path: '/about',
@@ -47,4 +69,6 @@ export default new Router({
         //    component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
         //}
     ]
-})
+});
+
+export default router;

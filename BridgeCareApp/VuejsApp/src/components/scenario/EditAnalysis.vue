@@ -72,9 +72,9 @@
 
     @Component
     export default class EditAnalysis extends Vue {
-        menu: boolean = false
-        date: string = ''
-        maxDate: string = moment().year().toString()
+        menu: boolean = false;
+        date: string = '';
+        maxDate: string = moment().year().toString();
 
         data() {
             return {
@@ -82,22 +82,22 @@
                 benefitLimit: 0,
                 optimizationType: ['Incremental benefit/cost', 'Another one', 'The better one'],
                 budgetType: ['As budget permits', 'Another one', 'The better one'],
-            }
+            };
         }
         
         @Watch('menu')
         onDateChanged(val: string) {
             //@ts-ignore
-            val && this.$nextTick(() => (this.$refs.picker.activePicker = 'YEAR'))
+            val && this.$nextTick(() => (this.$refs.picker.activePicker = 'YEAR'));
         }
         save(date: string) {
-            this.date = date.substring(0, 4)
+            this.date = date.substring(0, 4);
             //@ts-ignore
-            this.$refs.picker.activePicker = 'YEAR'
+            this.$refs.picker.activePicker = 'YEAR';
             this.menu = false;
         }
         cancel() {
-            this.$router.push('EditScenario')
+            this.$router.push('EditScenario');
         }
     }
 </script>

@@ -8,17 +8,18 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Web;
 
 namespace BridgeCare.Services
 {
     public class Budget
     {
         private readonly IBudgetReport budget;
+
         public Budget(IBudgetReport report)
         {
             budget = report ?? throw new ArgumentNullException(nameof(report));
         }
+
         public void Fill(ExcelWorksheet budgetReport, int[] totalYears, SimulationModel data, List<YearlyDataModel> yearlyInvestment)
         {
             var budgetTypes = budget.InvestmentData(data);
@@ -65,7 +66,7 @@ namespace BridgeCare.Services
                 viewTable.Rows.Add(viewRow);
             }
             viewTable.Rows.Add(totalViewRow);
-            
+
             budgetReport.Cells[2, 1].LoadFromDataTable(viewTable, false);
             var lastRecord = budgetReport.Dimension.End;
             budgetReport.Cells[2, 3, lastRecord.Row, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
@@ -117,7 +118,7 @@ namespace BridgeCare.Services
                 budgetReport.Cells[lastRow + 1, 1].LoadFromDataTable(viewTable, false);
                 budgetReport.Cells[lastRow + 1, 1, lastRow + 1, totalYearsCount + 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 budgetReport.Cells[lastRow + 1, 1, lastRow + 1, totalYearsCount + 2].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                
+
                 // creating row for spend amount
                 DataRow spentRow = viewTable.NewRow();
                 spentRow[0] = budget;
@@ -149,7 +150,7 @@ namespace BridgeCare.Services
                 viewTable.Rows.Remove(spentRow);
             }
             budgetReport.InsertRow(lastRow + 1, 2);
-            
+
             viewTable.Rows.Add(totalTargetRow);
             viewTable.Rows.Add(totalSpentRow);
             budgetReport.Cells[lastRow + 1, 1].LoadFromDataTable(viewTable, false);
@@ -164,7 +165,7 @@ namespace BridgeCare.Services
                 }
             }
             budgetReport.Cells[lastRow + 1, 3, budgetReport.Dimension.End.Row, totalYearsCount + 2].Style.Numberformat.Format = currencyFormat;
-         
+
             budgetReport.Cells.AutoFitColumns();
         }
     }

@@ -1,8 +1,4 @@
-﻿using BridgeCare.Interfaces;
-using System;
-using System.Collections.Generic;
-
-namespace BridgeCare.Models
+﻿namespace BridgeCare.Models
 {
     public class CostDetails
     {

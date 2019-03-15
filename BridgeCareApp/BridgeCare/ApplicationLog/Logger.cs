@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Web;
 
 namespace BridgeCare.ApplicationLog
 {
@@ -21,7 +18,6 @@ namespace BridgeCare.ApplicationLog
                                   type,
                                   module,
                                   message));
-            Trace.Flush();
             Trace.Close();
         }
     }

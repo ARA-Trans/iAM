@@ -2,10 +2,10 @@ using BridgeCare.DataAccessLayer;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Services;
+using BridgeCare.Services.SummaryReport;
 using System;
 
 using Unity;
-using Unity.Lifetime;
 
 namespace BridgeCare
 {
@@ -15,6 +15,7 @@ namespace BridgeCare
     public static class UnityConfig
     {
         #region Unity Container
+
         private static Lazy<IUnityContainer> container =
           new Lazy<IUnityContainer>(() =>
           {
@@ -27,7 +28,8 @@ namespace BridgeCare
         /// Configured Unity Container.
         /// </summary>
         public static IUnityContainer Container => container.Value;
-        #endregion
+
+        #endregion Unity Container
 
         /// <summary>
         /// Registers the type mappings with the Unity container.
@@ -36,22 +38,24 @@ namespace BridgeCare
         /// <remarks>
         /// There is no need to register concrete types such as controllers or
         /// API controllers (unless you want to change the defaults), as Unity
-        /// allows resolving a concrete type even if it was not previously
-        /// registered.
+        /// allows resolving a concrete type even if it was not previously registered.
         /// </remarks>
         public static void RegisterTypes(IUnityContainer container)
         {
-            // NOTE: To load from web.config uncomment the line below.
-            // Make sure to add a Unity.Configuration to the using statements.
-            // container.LoadConfiguration();
+            // NOTE: To load from web.config uncomment the line below. Make sure
+            // to add a Unity.Configuration to the using statements. container.LoadConfiguration();
 
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
             container.RegisterType<ISections, Sections>();
+            container.RegisterType<ISectionLocator, SectionLocator>();
             container.RegisterType<IDetailedReport, DetailedReport>();
+            container.RegisterType<IAttributeNames, AttributeNames>();
+            container.RegisterType<IAttributesByYear, AttributesByYear>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
             container.RegisterType<IDeficientReport, DeficientReport>();
+            container.RegisterType<IInvestmentStrategies, InvestmentStrategies>();
             container.RegisterType<CostDetails>();
             container.RegisterType<ITarget, Targets>();
             container.RegisterType<IReportCreator, ReportCreator>();
@@ -64,6 +68,12 @@ namespace BridgeCare
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
             container.RegisterType<IRunSimulation, RunSimulation>();
+
+            //Summary Report types
+            container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();
+            container.RegisterType<IBridgeData, BridgeData>();
+            container.RegisterType<SummaryReportBridgeData>();
+            container.RegisterType<ICommonSummaryReportData, CommonSummaryReportData>();
         }
     }
 }
