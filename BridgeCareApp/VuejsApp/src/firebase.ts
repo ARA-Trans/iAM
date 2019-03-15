@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app';
 
 // These imports load individual services into the firebase namespace.
 import 'firebase/database';
+import 'firebase/auth';
 
 const firebaseApp = firebase.initializeApp({
     apiKey: 'AIzaSyAEw-O3t5gVEwh37pXYkBzN1pSiEVc7BYM',
@@ -14,4 +15,5 @@ const firebaseApp = firebase.initializeApp({
 });
 export const db = firebaseApp.database();
 export const statusReference = db.ref('simulationStatus');
+export const usersReference = db.ref('users');
 export default firebaseApp;
