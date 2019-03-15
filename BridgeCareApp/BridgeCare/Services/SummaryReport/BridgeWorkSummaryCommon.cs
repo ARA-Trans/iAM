@@ -4,8 +4,15 @@ using System.Collections.Generic;
 
 namespace BridgeCare.Services
 {
-    public static class BridgeWorkSummaryCommon
+    public class BridgeWorkSummaryCommon
     {
+        private readonly ExcelHelper excelHelper;
+
+        public BridgeWorkSummaryCommon(ExcelHelper excelHelper)
+        {
+            this.excelHelper = excelHelper;
+        }
+
         /// <summary>
         /// Add headers for sections
         /// </summary>
@@ -13,7 +20,7 @@ namespace BridgeCare.Services
         /// <param name="currentCell"></param>
         /// <param name="simulationYears"></param>
         /// <param name="sectionName"></param>
-        public static void AddHeaders(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, string sectionName)
+        public void AddHeaders(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, string sectionName)
         {
             AddWorkTypeHeader(worksheet, currentCell);
             AddMergeSectionHeader(worksheet, sectionName, simulationYears.Count, currentCell);
@@ -26,7 +33,7 @@ namespace BridgeCare.Services
         /// <param name="currentCell"></param>
         /// <param name="row"></param>
         /// <param name="column"></param>
-        public static void UpdateCurrentCell(CurrentCell currentCell, int row, int column)
+        public void UpdateCurrentCell(CurrentCell currentCell, int row, int column)
         {
             currentCell.Row = row;
             currentCell.Column = column;
@@ -40,7 +47,7 @@ namespace BridgeCare.Services
         /// <param name="startColumn"></param>
         /// <param name="row"></param>
         /// <param name="column"></param>
-        public static void SetRowColumns(CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
+        public void SetRowColumns(CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
         {
             startRow = ++currentCell.Row;
             startColumn = 1;
@@ -56,27 +63,27 @@ namespace BridgeCare.Services
         /// <param name="simulationYears"></param>
         /// <param name="sectionName"></param>
         /// <param name="showPrevYearHeader"></param>
-        public static void AddBridgeHeaders(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, string sectionName, bool showPrevYearHeader)
+        public void AddBridgeHeaders(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, string sectionName, bool showPrevYearHeader)
         {
             AddMergeBridgeSectionHeader(worksheet, sectionName, simulationYears.Count + 1, currentCell);
             AddBridgeYearsHeaderRow(worksheet, simulationYears, currentCell, showPrevYearHeader);
         }
 
-        private static void AddMergeSectionHeader(ExcelWorksheet worksheet, string headerText, int yearsCount, CurrentCell currentCell)
+        private void AddMergeSectionHeader(ExcelWorksheet worksheet, string headerText, int yearsCount, CurrentCell currentCell)
         {
             var row = currentCell.Row;
             var column = currentCell.Column;
             worksheet.Cells[row, ++column].Value = headerText;
             var cells = worksheet.Cells[row, column];
-            ExcelHelper.ApplyStyle(cells);
-            ExcelHelper.MergeCells(worksheet, row, column, row, column + yearsCount - 1);
+            excelHelper.ApplyStyle(cells);
+            excelHelper.MergeCells(worksheet, row, column, row, column + yearsCount - 1);
             cells = worksheet.Cells[row, column, row, column + yearsCount - 1];
-            ExcelHelper.ApplyBorder(cells);
+            excelHelper.ApplyBorder(cells);
             ++row;
             UpdateCurrentCell(currentCell, row, column);
         }
 
-        private static void AddYearsHeaderRow(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell)
+        private void AddYearsHeaderRow(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell)
         {
             var row = currentCell.Row;
             var column = currentCell.Column;
@@ -84,44 +91,44 @@ namespace BridgeCare.Services
             {
                 worksheet.Cells[row, column].Value = year;
                 var cells = worksheet.Cells[row, column];
-                ExcelHelper.ApplyStyle(cells);
-                ExcelHelper.ApplyBorder(cells);
+                excelHelper.ApplyStyle(cells);
+                excelHelper.ApplyBorder(cells);
                 column++;
             }
             currentCell.Column = column - 1;
         }
 
-        private static void AddWorkTypeHeader(ExcelWorksheet worksheet, CurrentCell currentCell)
+        private void AddWorkTypeHeader(ExcelWorksheet worksheet, CurrentCell currentCell)
         {
             const string WorkTypeHeader = "Work Type";
             var row = currentCell.Row;
             var column = 1;
             worksheet.Cells[++row, column].Value = WorkTypeHeader;
             var cells = worksheet.Cells[row, column, row + 1, column];
-            ExcelHelper.ApplyStyle(cells);
-            ExcelHelper.ApplyBorder(cells);
-            ExcelHelper.MergeCells(worksheet, row, column, row + 1, column);
+            excelHelper.ApplyStyle(cells);
+            excelHelper.ApplyBorder(cells);
+            excelHelper.MergeCells(worksheet, row, column, row + 1, column);
 
             // Empty column
             column++;
             UpdateCurrentCell(currentCell, row, column);
         }
         
-        private static void AddMergeBridgeSectionHeader(ExcelWorksheet worksheet, string headerText, int mergeColumns, CurrentCell currentCell)
+        private void AddMergeBridgeSectionHeader(ExcelWorksheet worksheet, string headerText, int mergeColumns, CurrentCell currentCell)
         {
             var row = currentCell.Row + 1;
             var column = 1;
             worksheet.Cells[row, column].Value = headerText;
             var cells = worksheet.Cells[row, column];
-            ExcelHelper.ApplyStyle(cells);
-            ExcelHelper.MergeCells(worksheet, row, column, row, column + mergeColumns);
+            excelHelper.ApplyStyle(cells);
+            excelHelper.MergeCells(worksheet, row, column, row, column + mergeColumns);
             cells = worksheet.Cells[row, column, row, column + mergeColumns];
-            ExcelHelper.ApplyBorder(cells);
+            excelHelper.ApplyBorder(cells);
             ++row;
             UpdateCurrentCell(currentCell, row, column);
         }
 
-        private static void AddBridgeYearsHeaderRow(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, bool showPrevYearHeader)
+        private void AddBridgeYearsHeaderRow(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, bool showPrevYearHeader)
         {
             var row = currentCell.Row;
             var startColumn = currentCell.Column + 1;
@@ -138,8 +145,8 @@ namespace BridgeCare.Services
             }
             currentCell.Column = column - 1;
             var cells = worksheet.Cells[row, startColumn, row, currentCell.Column];
-            ExcelHelper.ApplyStyle(cells);
-            ExcelHelper.ApplyBorder(cells);
+            excelHelper.ApplyStyle(cells);
+            excelHelper.ApplyBorder(cells);
         }
     }
 }

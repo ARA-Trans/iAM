@@ -97,6 +97,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CULV_DURATION_N_.
+        /// </summary>
+        internal static string CulvDurationN {
+            get {
+                return ResourceManager.GetString("CulvDurationN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Culvert Preservation.
         /// </summary>
         internal static string CulvertPreservation {
@@ -133,11 +142,38 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CULV_SEEDED_.
+        /// </summary>
+        internal static string CulvSeeded {
+            get {
+                return ResourceManager.GetString("CulvSeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DECK_DURATION_N_.
+        /// </summary>
+        internal static string DeckDurationN {
+            get {
+                return ResourceManager.GetString("DeckDurationN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deck Replacement.
         /// </summary>
         internal static string DeckReplacement {
             get {
                 return ResourceManager.GetString("DeckReplacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DECK_SEEDED_.
+        /// </summary>
+        internal static string DeckSeeded {
+            get {
+                return ResourceManager.GetString("DeckSeeded", resourceCulture);
             }
         }
         
@@ -223,11 +259,38 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SUB_DURATION_N_.
+        /// </summary>
+        internal static string SubDurationN {
+            get {
+                return ResourceManager.GetString("SubDurationN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sub Rehab.
         /// </summary>
         internal static string SubRehab {
             get {
                 return ResourceManager.GetString("SubRehab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SUB_SEEDED_.
+        /// </summary>
+        internal static string SubSeeded {
+            get {
+                return ResourceManager.GetString("SubSeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SUP_DURATION_N_.
+        /// </summary>
+        internal static string SupDurationN {
+            get {
+                return ResourceManager.GetString("SupDurationN", resourceCulture);
             }
         }
         
@@ -246,6 +309,15 @@ namespace BridgeCare.Properties {
         internal static string SuperstructureReplacement {
             get {
                 return ResourceManager.GetString("SuperstructureReplacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SUP_SEEDED_.
+        /// </summary>
+        internal static string SupSeeded {
+            get {
+                return ResourceManager.GetString("SupSeeded", resourceCulture);
             }
         }
         

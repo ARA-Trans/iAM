@@ -12,15 +12,6 @@ namespace BridgeCare.DataAccessLayer
 {
     public class BridgeData : IBridgeData
     {
-        const string DeckSeeded= "DECK_SEEDED_";
-        const string SupSeeded = "SUP_SEEDED_";
-        const string SubSeeded = "SUB_SEEDED_";
-        const string CulvSeeded = "CULV_SEEDED_";
-        const string DeckDurationN = "DECK_DURATION_N_";
-        const string SupDurationN = "SUP_DURATION_N_";
-        const string SubDurationN = "SUB_DURATION_N_";
-        const string CulvDurationN = "CULV_DURATION_N_";
-
         /// <summary>
         /// Get and create BridgeDataModels from Constant tables for summary report. 
         /// </summary>
@@ -97,7 +88,7 @@ namespace BridgeCare.DataAccessLayer
             var simulationDataTable = new DataTable();
             dynamicColumns = GetDynamicColumns(simulationYears, dynamicColumns);
 
-            var selectSimulationStatement = "SELECT SECTIONID, " + DeckSeeded + "0, " + SupSeeded + "0, " + SubSeeded + "0, " + CulvSeeded + "0, " + DeckDurationN + "0, " + SupDurationN + "0, " + SubDurationN + "0, " + CulvDurationN + "0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
+            var selectSimulationStatement = "SELECT SECTIONID, " + Properties.Resources.DeckSeeded + "0, " + Properties.Resources.SupSeeded + "0, " + Properties.Resources.SubSeeded + "0, " + Properties.Resources.CulvSeeded + "0, " + Properties.Resources.DeckDurationN + "0, " + Properties.Resources.SupDurationN + "0, " + Properties.Resources.SubDurationN + "0, " + Properties.Resources.CulvDurationN + "0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
             try
             {   
                 var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString);
@@ -150,17 +141,17 @@ namespace BridgeCare.DataAccessLayer
         }
 
         #region private methods
-        private static string GetDynamicColumns(List<int> simulationYears, string dynamicColumns)
+        private string GetDynamicColumns(List<int> simulationYears, string dynamicColumns)
         {
             foreach (var year in simulationYears)
             {
-                dynamicColumns = dynamicColumns + ", " + DeckSeeded + year + ", " + SupSeeded + year + ", " + SubSeeded + year + ", " + CulvSeeded + year + ", " + DeckDurationN + year + ", " + SupDurationN + year + ", " + SubDurationN + year + ", " + CulvDurationN + year;
+                dynamicColumns = dynamicColumns + ", " + Properties.Resources.DeckSeeded + year + ", " + Properties.Resources.SupSeeded + year + ", " + Properties.Resources.SubSeeded + year + ", " + Properties.Resources.CulvSeeded + year + ", " + Properties.Resources.DeckDurationN + year + ", " + Properties.Resources.SupDurationN + year + ", " + Properties.Resources.SubDurationN + year + ", " + Properties.Resources.CulvDurationN + year;
             }
 
             return dynamicColumns;
         }
 
-        private static BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
+        private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
         {           
             return new BridgeDataModel
             {

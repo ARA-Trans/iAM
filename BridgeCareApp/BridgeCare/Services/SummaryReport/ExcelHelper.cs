@@ -5,7 +5,7 @@ using OfficeOpenXml.Style;
 
 namespace BridgeCare.Services
 {
-    public static class ExcelHelper
+    public class ExcelHelper
     {
         /// <summary>
         /// Merge given cells
@@ -15,7 +15,7 @@ namespace BridgeCare.Services
         /// <param name="fromColumn"></param>
         /// <param name="toRow"></param>
         /// <param name="toColumn"></param>
-        public static void MergeCells(ExcelWorksheet worksheet, int fromRow, int fromColumn, int toRow, int toColumn)
+        public void MergeCells(ExcelWorksheet worksheet, int fromRow, int fromColumn, int toRow, int toColumn)
         {
             using (var cells = worksheet.Cells[fromRow, fromColumn, toRow, toColumn])
             {
@@ -28,7 +28,7 @@ namespace BridgeCare.Services
         /// Apply style to given cells
         /// </summary>
         /// <param name="cells"></param>
-        public static void ApplyStyle(ExcelRange cells)
+        public void ApplyStyle(ExcelRange cells)
         {
             cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             cells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -40,7 +40,7 @@ namespace BridgeCare.Services
         /// Apply border to given cells
         /// </summary>
         /// <param name="cells"></param>
-        public static void ApplyBorder(ExcelRange cells)
+        public void ApplyBorder(ExcelRange cells)
         {
             cells.Style.Border.Top.Style = ExcelBorderStyle.Thin;
             cells.Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -52,7 +52,7 @@ namespace BridgeCare.Services
         /// Set currency format for given cells
         /// </summary>
         /// <param name="cells"></param>
-        public static void SetCurrencyFormat(ExcelRange cells)
+        public void SetCurrencyFormat(ExcelRange cells)
         {
             cells.Style.Numberformat.Format = "_-$* #,##0.00_-;_-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
         }
@@ -61,7 +61,7 @@ namespace BridgeCare.Services
         /// Set custom format for given cells
         /// </summary>
         /// <param name="cells"></param>
-        public static void SetCustomFormat(ExcelRange cells, string type)
+        public void SetCustomFormat(ExcelRange cells, string type)
         {
             switch (type)
             {                
@@ -74,7 +74,7 @@ namespace BridgeCare.Services
             }
         }
 
-        public static void ApplyColor(ExcelRange cells, Color color)
+        public void ApplyColor(ExcelRange cells, Color color)
         {
             cells.Style.Fill.PatternType = ExcelFillStyle.Solid;
             cells.Style.Fill.BackgroundColor.SetColor(color);

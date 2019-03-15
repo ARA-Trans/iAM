@@ -129,6 +129,9 @@
   <data name="Construction" xml:space="preserve">
     <value>Construction</value>
   </data>
+  <data name="CulvDurationN" xml:space="preserve">
+    <value>CULV_DURATION_N_</value>
+  </data>
   <data name="CulvertPreservation" xml:space="preserve">
     <value>Culvert Preservation</value>
   </data>
@@ -141,8 +144,17 @@
   <data name="CulvertTotal" xml:space="preserve">
     <value>Culvert Total</value>
   </data>
+  <data name="CulvSeeded" xml:space="preserve">
+    <value>CULV_SEEDED_</value>
+  </data>
+  <data name="DeckDurationN" xml:space="preserve">
+    <value>DECK_DURATION_N_</value>
+  </data>
   <data name="DeckReplacement" xml:space="preserve">
     <value>Deck Replacement</value>
+  </data>
+  <data name="DeckSeeded" xml:space="preserve">
+    <value>DECK_SEEDED_</value>
   </data>
   <data name="Epoxy" xml:space="preserve">
     <value>Epoxy</value>
@@ -171,14 +183,26 @@
   <data name="Replacement" xml:space="preserve">
     <value>Replacement</value>
   </data>
+  <data name="SubDurationN" xml:space="preserve">
+    <value>SUB_DURATION_N_</value>
+  </data>
   <data name="SubRehab" xml:space="preserve">
     <value>Sub Rehab</value>
+  </data>
+  <data name="SubSeeded" xml:space="preserve">
+    <value>SUB_SEEDED_</value>
+  </data>
+  <data name="SupDurationN" xml:space="preserve">
+    <value>SUP_DURATION_N_</value>
   </data>
   <data name="SuperReplacement" xml:space="preserve">
     <value>Super Replacement</value>
   </data>
   <data name="SuperstructureReplacement" xml:space="preserve">
     <value>Superstructure Replacement</value>
+  </data>
+  <data name="SupSeeded" xml:space="preserve">
+    <value>SUP_SEEDED_</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>
