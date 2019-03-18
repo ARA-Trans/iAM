@@ -50,7 +50,6 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).ToList();
 
-                //Cannot do this inside the linq query, would be nice
                 foreach (InvestmentStrategyModel model in simulation)
                 {
                     model.SetBudgets();
@@ -67,11 +66,11 @@ namespace BridgeCare.DataAccessLayer
 
         public bool SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db)
         {
-            //Ensures budget order is transferred from array storage as it comes in from json to
-            //the databse format, comma delimited
+            // Ensures budget order is transferred from array storage as it comes in from json to the
+            // databse format, comma delimited
             string budgetOrder = data.GetBudgetOrder();
 
-            //Derive FirstYear and NumberYears from the YearlyBudget list.
+            // Derive FirstYear and NumberYears from the YearlyBudget list.
             data.FirstYear = data.YearlyBudgets.Min(r => r.Year);
             data.NumberYears = data.YearlyBudgets.Max(r => r.Year) - data.FirstYear;
 

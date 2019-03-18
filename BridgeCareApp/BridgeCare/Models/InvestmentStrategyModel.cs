@@ -50,7 +50,7 @@ namespace BridgeCare.Models
         public List<InvestmentStrategyYearlyBudgetModel> DeletedYearlyBudgets { get; set; }
 
         /// <summary>
-        /// The one and only means to convert from BudgetOrder to Budgets
+        /// The one and only means to convert from BudgetOrder to BudgetNamesByOrder
         /// </summary>
         public void SetBudgets()
         {
@@ -58,7 +58,7 @@ namespace BridgeCare.Models
         }
 
         /// <summary>
-        /// The one and only means to convert from Budgets to BudgetOrder
+        /// The one and only means to convert from BudgetNamesByOrder to BudgetOrder
         /// </summary>
         public string GetBudgetOrder()
         {

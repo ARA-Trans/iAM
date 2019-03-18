@@ -28,7 +28,8 @@ namespace BridgeCare.Controllers
         [ModelValidation("Given network data is not valid")]
         [Route("api/GetInvestmentStrategies")]
         [HttpGet]
-        public IQueryable<InvestmentStrategyModel> Get([FromBody]NetworkModel network) => investmentStrategies.GetInvestmentStrategies(network, db);
+        public IQueryable<InvestmentStrategyModel> Get([FromBody]NetworkModel network) 
+            => investmentStrategies.GetInvestmentStrategies(network, db);
 
         ///<summary> Post: api/SaveInvestmentStrategy
         ///argument: InvestmentStrategyModel
@@ -39,17 +40,9 @@ namespace BridgeCare.Controllers
         [ModelValidation("Given investment strategy data is not valid")]
         [Route("api/SaveInvestmentStrategy")]
         [HttpPost]
-        public IHttpActionResult Post([FromBody]InvestmentStrategyModel data)
-        {
-            bool getResults = investmentStrategies.SetInvestmentStrategies(data, db);
+        public IHttpActionResult Post([FromBody]InvestmentStrategyModel data) 
+            => investmentStrategies.SetInvestmentStrategies(data, db) ? (IHttpActionResult) Ok() : NotFound();
 
-            if (getResults)
-            {
-                return Ok();
-            }
-
-            return NotFound();
-        }
-
+        
     }
 }
