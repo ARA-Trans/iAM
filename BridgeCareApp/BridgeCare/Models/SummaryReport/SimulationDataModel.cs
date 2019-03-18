@@ -8,7 +8,7 @@ namespace BridgeCare.Models
 
         public List<YearsData> YearsData { get; set; }
 
-        // Useful in some tab reports
+        // Used in some tab reports
         public string DeckArea { get; set; }
     }
 }
