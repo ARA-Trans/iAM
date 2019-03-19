@@ -242,6 +242,7 @@
     <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
     <Compile Include="Models\SummaryReport\CurrentCell.cs" />
     <Compile Include="Models\SummaryReport\ReportProjectCost.cs" />
+    <Compile Include="Models\SummaryReport\ProjectRowNumberModel.cs" />
     <Compile Include="Models\SummaryReport\Section.cs" />
     <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />
@@ -251,6 +252,11 @@
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
     <Compile Include="Models\YearlyDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\DetailedReport\Budget.cs" />
     <Compile Include="Services\DetailedReport\Deficient.cs" />
     <Compile Include="Services\DetailedReport\Detailed.cs" />
@@ -259,10 +265,17 @@
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\Network.cs" />
     <Compile Include="Services\Simulations.cs" />
+    <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
+    <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="UtilityFunctions.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummaryHelper.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportGenerator.cs" />
-    <Compile Include="Services\SummaryReport\SummaryReportHelper.cs" />
+    <Compile Include="Services\SummaryReport\BridgeDataHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\CalculateEvaluate.dll" />
@@ -306,6 +319,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
