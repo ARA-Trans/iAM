@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Models;
 using System.Linq;
+using System.Web.Http;
 
 namespace BridgeCare.Interfaces
 {
@@ -7,6 +8,6 @@ namespace BridgeCare.Interfaces
     {
         IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(NetworkModel data, BridgeCareContext db);
 
-        bool SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db);
+        void SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db);
     }
 }

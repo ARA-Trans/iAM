@@ -40,9 +40,10 @@ namespace BridgeCare.Controllers
         [ModelValidation("Given investment strategy data is not valid")]
         [Route("api/SaveInvestmentStrategy")]
         [HttpPost]
-        public IHttpActionResult Post([FromBody]InvestmentStrategyModel data) 
-            => investmentStrategies.SetInvestmentStrategies(data, db) ? (IHttpActionResult) Ok() : NotFound();
-
-        
+        public IHttpActionResult Post([FromBody]InvestmentStrategyModel data)
+        { 
+            investmentStrategies.SetInvestmentStrategies(data, db);
+            return Ok();
+        }
     }
 }

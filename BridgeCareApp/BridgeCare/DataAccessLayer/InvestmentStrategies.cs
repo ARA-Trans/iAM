@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Web.Http;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -64,7 +65,7 @@ namespace BridgeCare.DataAccessLayer
             return Enumerable.Empty<InvestmentStrategyModel>().AsQueryable();
         }
 
-        public bool SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db)
+        public void SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db)
         {
             // Ensures budget order is transferred from array storage as it comes in from json to the
             // databse format, comma delimited
@@ -103,13 +104,13 @@ namespace BridgeCare.DataAccessLayer
                 db.YEARLYINVESTMENTs.AddRange(investments);
 
                 db.SaveChanges();
-                return true;
+                return;
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "Investment Strategies");
             }
-            return false;
+            return;
         }
     }
 }
