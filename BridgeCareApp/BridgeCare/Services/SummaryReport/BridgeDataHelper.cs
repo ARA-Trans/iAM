@@ -6,26 +6,24 @@ using System.Linq;
 
 namespace BridgeCare.Services
 {
-    public static class SummaryReportHelper
+    public class BridgeDataHelper
     {
-        public static List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears, IQueryable<ReportProjectCost> projectCostModels)
+        public List<SimulationDataModel> GetSimulationDataModels(DataTable simulationDataTable, List<int> simulationYears, IQueryable<ReportProjectCost> projectCostModels)
         {
             var simulationDataModels = new List<SimulationDataModel>();
             var projectCostsList = projectCostModels.ToList();
             foreach (DataRow simulationRow in simulationDataTable.Rows)
             {
-                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);
-                var projectCostEntry = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).FirstOrDefault();
-                AddAllYearsData(simulationRow, simulationYears, projectCostEntry, simulationDM);
+                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);                
+                var projectCostEntries = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).ToList();
+                AddAllYearsData(simulationRow, simulationYears, projectCostEntries, simulationDM);
                 simulationDataModels.Add(simulationDM);
             }
 
             return simulationDataModels;
-        }
+        }        
 
-        #region Private methods
-
-        private static SimulationDataModel CreatePrevYearSimulationMdel(DataRow simulationRow)
+        private SimulationDataModel CreatePrevYearSimulationMdel(DataRow simulationRow)
         {
             YearsData yearsData = AddYearsData(simulationRow, null, 0);
             return new SimulationDataModel
@@ -35,17 +33,18 @@ namespace BridgeCare.Services
             };
         }
 
-        private static void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, ReportProjectCost projectCostEntry, SimulationDataModel simulationDM)
+        private void AddAllYearsData(DataRow simulationRow, List<int> simulationYears, List<ReportProjectCost> projectCostEntries, SimulationDataModel simulationDM)
         {
             var yearsDataModels = new List<YearsData>();
             foreach (int year in simulationYears)
             {
+                var projectCostEntry = projectCostEntries.Where(p => p.YEARS == year).FirstOrDefault();
                 yearsDataModels.Add(AddYearsData(simulationRow, projectCostEntry, year));
             }
             simulationDM.YearsData.AddRange(yearsDataModels.OrderBy(y => y.Year).ToList());
         }
 
-        private static YearsData AddYearsData(DataRow simulationRow, ReportProjectCost projectCostEntry, int year)
+        private YearsData AddYearsData(DataRow simulationRow, ReportProjectCost projectCostEntry, int year)
         {
             var yearsData = new YearsData
             {
@@ -66,8 +65,6 @@ namespace BridgeCare.Services
             yearsData.Cost = year != 0 ? (projectCostEntry == null ? 0 : projectCostEntry.COST_) : 0;
             yearsData.Project = yearsData.Cost == 0 ? "No Treatment" : yearsData.Project;
             return yearsData;
-        }
-
-        #endregion Private methods
+        }        
     }
 }
