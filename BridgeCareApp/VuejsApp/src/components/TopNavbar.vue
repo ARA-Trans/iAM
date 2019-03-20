@@ -83,7 +83,7 @@
             this.routes = [];
         }
 
-        async created() {
+        created() {
             this.setIsBusyAction({ isBusy: true });
             this.getAuthenticationAction().then(() => {
                 this.setIsBusyAction({ isBusy: false });
