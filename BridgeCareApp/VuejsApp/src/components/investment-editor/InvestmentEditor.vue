@@ -128,7 +128,7 @@
             <v-layout row justify-end>
                 <v-btn v-on:click="resetComponentProperties" :disabled="hasNoSelectedInvestmentStrategy">Cancel</v-btn>
                 <v-btn color="info lighten-2" v-on:click="onSaveToLibrary" :disabled="hasNoSelectedInvestmentStrategy">
-                    Save to Library
+                    Create as New Library
                 </v-btn>
                 <v-btn color="info" v-on:click="onApplyToScenario" :disabled="hasNoSelectedInvestmentStrategy">
                     Apply
