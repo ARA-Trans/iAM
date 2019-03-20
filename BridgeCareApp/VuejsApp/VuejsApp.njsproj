@@ -175,9 +175,6 @@
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\security.module.ts" />
     <TypeScriptCompile Include="src\store-modules\simulation.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\user-authorization.module.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store.ts" />
   </ItemGroup>
   <ItemGroup>

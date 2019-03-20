@@ -20,7 +20,6 @@ namespace BridgeCare.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 return Ok($"{User.Identity.Name}");
-                //return Ok("Authenticated: yourdomain\\yourUserName");
             }
             else
             {

@@ -59,10 +59,8 @@
         @State(state => state.security.loginFailed) loginFailed: boolean;
         @State(state => state.security.userName) userName: string;
         @State(state => state.busy.isBusy) isBusy: boolean;
-        @State(state => state.userAuthorization.isAdmin) isAdmin: boolean;
 
         @Action('setIsBusy') setIsBusyAction: any;
-        @Action('setIsAdmin') setIsAdminAction: any;
         @Action('setLoginStatus') setLoginStatusAction: any;
         @Action('setUsername') setUsernameAction: any;
 
@@ -98,9 +96,9 @@
                     this.authenticationDetail = response.data;
                 }).then(() => {
                     db.ref('roles').once('value', (snapshot: any) => {
-                        let obj = snapshot.val();
-                        for (let key in obj) {
-                            if (this.usersData.includes(obj[key])) {
+                        let data = snapshot.val();
+                        for (let key in data) {
+                            if (this.usersData.includes(data[key])) {
                                 this.userRoles.push(key);
                             }
                         }
