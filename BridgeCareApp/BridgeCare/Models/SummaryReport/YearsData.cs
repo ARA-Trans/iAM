@@ -10,7 +10,7 @@
 
         public string Sub { get; set; }
 
-        public string Culv { get; set; }
+        public string Culv { get; set; }        
 
         public string DeckD { get; set; }
 
@@ -24,9 +24,11 @@
 
         public string SD { get; set; }
 
+        public string PoorOnOffRate { get; set; }
+
         // Below will be fetched from REPORT_x_y table
         public string Project { get; set; }
 
-        public double Cost { get; set; }
+        public double Cost { get; set; }        
     }
 }

@@ -81,6 +81,7 @@
             this.filteredRoutes = [
                 { navigation: 'Inventory', icon: 'home', name: 'Inventory' },
                 { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios' },
+                { navigation: 'InvestmentEditor', icon: 'pie_chart', name: 'Investment Editor'},
                 { navigation: 'Criteria', icon: 'assignment', name: 'Criteria' }
             ];
             this.totalRoutes = append({ navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }, this.filteredRoutes);
