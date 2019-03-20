@@ -10,6 +10,7 @@ import detailedReport from '@/store-modules/detailed-report.module';
 import criteriaEditor from '@/store-modules/criteria-editor.module';
 import inventory from '@/store-modules/inventory.module';
 import investmentEditor from '@/store-modules/investment-editor.module';
+import userAuthorization from '@/store-modules/user-authorization.module';
 import performanceEditor from '@/store-modules/performance-editor.module';
 
 Vue.use(Vuex);
@@ -25,6 +26,7 @@ export default new Vuex.Store({
         criteriaEditor,
         inventory,
         investmentEditor,
+        userAuthorization,
         performanceEditor
     }
 });

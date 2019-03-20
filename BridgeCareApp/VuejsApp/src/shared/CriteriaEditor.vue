@@ -2,11 +2,29 @@
     <v-layout row justify-center>
         <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="700px">
             <v-card>
-                <v-card-title>Criteria Editor</v-card-title>
+                <v-card-title>
+                    <v-layout column>
+                        <v-flex>
+                            <h3>Criteria Editor</h3>
+                        </v-flex>
+
+                        <v-flex>
+                            Current Criteria Output
+                            <v-textarea class="criteria-output-textarea"
+                                        no-resize
+                                        outline
+                                        readonly
+                                        full-width
+                                        :value="currentCriteriaOutput">
+                            </v-textarea>
+                        </v-flex>
+                    </v-layout>
+                </v-card-title>
                 <v-divider></v-divider>
-                <v-card-text style="height: 700px;">
+                <v-card-text class="query-builder-card-text">
                     <vue-query-builder :labels="queryBuildLabels" :rules="rules" :maxDepth="25" :styled="true"
-                                       v-model="criteria"></vue-query-builder>
+                                       v-model="criteria">
+                    </vue-query-builder>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
@@ -55,6 +73,7 @@
             'removeGroup': '&times;',
             'textInputPlaceholder': 'value'
         };
+        currentCriteriaOutput = '';
 
         /**
          * CriteriaEditorDialog attributes list has changed
@@ -88,11 +107,24 @@
             this.criteria = criteria;
         }
 
+        @Watch('criteria')
+        onCriteriaChanged() {
+            this.setCurrentCriteriaOutput();
+        }
+
         /**
          * Component has been mounted
          */
         mounted() {
             this.setCriteriaEditorAttributesAction();
+        }
+
+        setCurrentCriteriaOutput() {
+            if (this.isNotValidCriteria()) {
+                this.currentCriteriaOutput = 'Could Not Parse Current Criteria';
+            } else {
+                this.currentCriteriaOutput = parseQueryBuilderJson(this.criteria).join('');
+            }
         }
 
         /**
@@ -113,3 +145,13 @@
         }
     }
 </script>
+
+<style>
+    .criteria-output-textarea {
+        height: 100px;
+    }
+
+    .query-builder-card-text {
+        height: 700px;
+    }
+</style>
