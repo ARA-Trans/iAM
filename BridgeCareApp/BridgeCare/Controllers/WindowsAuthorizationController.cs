@@ -10,7 +10,7 @@ namespace BridgeCare.Controllers
 {
     [Authorize]
     [RoutePrefix("auth")]
-    public class WinAuthController : ApiController
+    public class WindowsAuthorizationController : ApiController
     {
         [HttpGet]
         [Route("getuser")]

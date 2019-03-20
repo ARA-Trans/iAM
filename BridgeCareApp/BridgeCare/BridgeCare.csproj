@@ -177,7 +177,7 @@
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
-    <Compile Include="Controllers\WinAuthController.cs" />
+    <Compile Include="Controllers\WindowsAuthorizationController.cs" />
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
