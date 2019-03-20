@@ -19,8 +19,8 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -177,6 +177,7 @@
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
+    <Compile Include="Controllers\WinAuthController.cs" />
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
