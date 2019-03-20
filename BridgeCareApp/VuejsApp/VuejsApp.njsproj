@@ -137,6 +137,9 @@
     <TypeScriptCompile Include="src\router.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\authentication.service.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
     <TypeScriptCompile Include="src\services\detailed-report.service.ts" />
     <TypeScriptCompile Include="src\services\inventory.service.ts" />

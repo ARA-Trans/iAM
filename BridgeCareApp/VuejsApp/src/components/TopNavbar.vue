@@ -42,15 +42,11 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component} from 'vue-property-decorator';
+    import { Component } from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import { db } from '@/firebase';
     import { append } from 'ramda';
-    import axios from 'axios';
 
     import AppSpinner from '../shared/AppSpinner.vue';
-
-    axios.defaults.baseURL = process.env.VUE_APP_URL;
 
     @Component({
         components: { AppSpinner }
@@ -59,17 +55,16 @@
         @State(state => state.security.loginFailed) loginFailed: boolean;
         @State(state => state.security.userName) userName: string;
         @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.security.userRoles) userRoles: Array<string>;
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('setLoginStatus') setLoginStatusAction: any;
         @Action('setUsername') setUsernameAction: any;
+        @Action('getAuthentication') getAuthenticationAction: any;
 
         routes: any[];
         filteredRoutes: any[];
         totalRoutes: any[];
-        authenticationDetail: any;
-        usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
-        userRoles = [] as Array<string>;
 
         data() {
             return {
@@ -90,37 +85,19 @@
 
         async created() {
             this.setIsBusyAction({ isBusy: true });
-            await axios.get('/auth/getuser', { withCredentials: true })
-                .then(response => {
-                    this.setLoginStatusAction({ status: false });
-                    this.setUsernameAction({ userName: response.data });
-                    this.authenticationDetail = response.data;
-                }).then(() => {
-                    db.ref('roles').once('value', (snapshot: any) => {
-                        let data = snapshot.val();
-                        for (let key in data) {
-                            if (this.usersData.includes(data[key])) {
-                                this.userRoles.push(key);
-                            }
-                        }
-                        console.log(this.userRoles);
-                        this.updateUI();
-                        this.routes = this.totalRoutes;
-                        this.$forceUpdate();
-                        this.setIsBusyAction({ isBusy: false });
-                    });
-                }).catch(error => {
-                    this.setLoginStatusAction({ status: true });
-                    this.setIsBusyAction({ isBusy: false });
-                    console.log(error);
-                });
+            this.getAuthenticationAction().then(() => {
+                this.setIsBusyAction({ isBusy: false });
+                this.routes = this.totalRoutes;
+                console.log(this.userRoles);
+                this.$forceUpdate();
+            }).catch((error: any) => {
+                this.setIsBusyAction({ isBusy: false });
+                console.log(error);
+            });
         }
 
         routing(routeName: string) {
             this.$router.push(routeName);
-        }
-        updateUI() {
-            this.setUsernameAction({ userName: this.authenticationDetail });          
         }
     }
 </script>
