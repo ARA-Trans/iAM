@@ -278,12 +278,6 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <!--<v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0" row wrap>
-            <v-flex v-for="img in images">
-                <v-img :src="img.src" aspect-ratio="1"></v-img>
-            </v-flex>
-        </v-layout>-->
     </v-container>
 </template>
 
@@ -296,11 +290,9 @@
     import {
         InventoryItem,
         InventoryItemDetail,
-        LabelValue,
-        OperatingRatingInventoryRatingRow
+        LabelValue
     } from '@/shared/models/iAM/inventory';
-    import * as R from 'ramda';
-    import * as moment from 'moment';
+    import {uniq, groupBy} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {DataTableRow} from '@/shared/models/vue/data-table-row';
@@ -330,16 +322,6 @@
         nbiLoadRatingTableRows: DataTableRow[] = [];
         postingTableHeaders: DataTableHeader[] = [];
         postingTableRows: DataTableRow[] = [];
-        /*images: object[] = [
-            {src: require('@/assets/images/inventory_mock_bridge_images/1.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/2.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/3.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/4.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/5.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/6.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/7.jpg')},
-            {src: require('@/assets/images/inventory_mock_bridge_images/8.jpg')}
-        ];*/
 
         /**
          * inventoryItems state has changed
@@ -353,7 +335,7 @@
         @Watch('inventoryItemDetail')
         onInventoryItemDetailChanged(inventoryItemDetail: InventoryItemDetail) {
             // get the nbiLoadRating column names using the inventoryItemDetail.nbiLoadRating LabelValue list
-            const nbiLoadRatingColumns: string[] = R.uniq(inventoryItemDetail.nbiLoadRating
+            const nbiLoadRatingColumns: string[] = uniq(inventoryItemDetail.nbiLoadRating
                 .map((labelValue: LabelValue) => labelValue.label) as string[]
             );
             // set nbiLoadRatingTableHeaders using nbiLoadRatingColumns
@@ -363,7 +345,7 @@
             // set the nbiLoadRatingTableRows using the inventoryItemDetail.nbiLoadRating LabelValue list
             this.nbiLoadRatingTableRows = this.createDataTableRowFromGrouping(inventoryItemDetail.nbiLoadRating);
             // get the posting column names using the inventoryItemDetail.posting LabelValue list
-            const postingColumns: string[] = R.uniq(inventoryItemDetail.posting
+            const postingColumns: string[] = uniq(inventoryItemDetail.posting
                 .map((labelValue: LabelValue) => labelValue.label) as string[]
             );
             // set postingTableHeaders using postingColumns
@@ -377,7 +359,7 @@
 
         createDataTableRowFromGrouping(labelValueList: LabelValue[]) {
             // group the LabelValue list by the label prop
-            const groups = R.groupBy((labelValue: LabelValue) => labelValue.label, labelValueList);
+            const groups = groupBy((labelValue: LabelValue) => labelValue.label, labelValueList);
             // get the list of group keys
             const keys = Object.keys(groups);
             // get the length of the first LabelValue group using the first key in keys if keys has a value
