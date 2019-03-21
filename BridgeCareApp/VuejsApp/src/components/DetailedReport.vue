@@ -50,7 +50,7 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import { Network } from '@/models/network';
+    import { Network } from '@/shared/models/iAM/network';
     import { Simulation } from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
     import { Alert } from '@/shared/models/iAM/alert';
