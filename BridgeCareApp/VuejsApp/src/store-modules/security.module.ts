@@ -51,7 +51,7 @@ const actions = {
                     return results;
                 }
             })
-            .catch((error: any) => { return error.response });
+            .catch((error: any) => { return error.response; });
     }
 };
 
