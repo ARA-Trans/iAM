@@ -36,6 +36,7 @@
         </v-content>
         <v-flex xs12>
             <AppSpinner />
+            <AppModalPopup :modalData="warning" @decision="onWarningModalDecision" />
         </v-flex>
     </nav>
 </template>
@@ -43,13 +44,15 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component } from 'vue-property-decorator';
-    import {Action, State} from 'vuex-class';
+    import { Action, State } from 'vuex-class';
     import { append } from 'ramda';
 
+    import { Alert } from '@/shared/models/iAM/alert';
     import AppSpinner from '../shared/AppSpinner.vue';
+    import AppModalPopup from '../shared/AppModalPopup.vue';
 
     @Component({
-        components: { AppSpinner }
+        components: { AppSpinner, AppModalPopup }
     })
     export default class TopNavbar extends Vue {
         @State(state => state.security.loginFailed) loginFailed: boolean;
@@ -65,6 +68,7 @@
         routes: any[];
         filteredRoutes: any[];
         totalRoutes: any[];
+        warning: Alert = { showModal: false, heading: '', message: '', choice: false };
 
         data() {
             return {
@@ -76,20 +80,29 @@
             this.filteredRoutes = [
                 { navigation: 'Inventory', icon: 'home', name: 'Inventory' },
                 { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios' },
-                { navigation: 'InvestmentEditor', icon: 'pie_chart', name: 'Investment Editor'},
+                { navigation: 'InvestmentEditor', icon: 'pie_chart', name: 'Investment Editor' },
                 { navigation: 'Criteria', icon: 'assignment', name: 'Criteria' }
             ];
             this.totalRoutes = append({ navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }, this.filteredRoutes);
             this.routes = [];
         }
 
-        created() {
+        mounted() {
             this.setIsBusyAction({ isBusy: true });
-            this.getAuthenticationAction().then(() => {
+            this.getAuthenticationAction().then((result: any) => {
                 this.setIsBusyAction({ isBusy: false });
                 this.routes = this.totalRoutes;
                 console.log(this.userRoles);
-                this.$forceUpdate();
+                if (result.status == '401') {
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Error';
+                    this.warning.choice = false;
+                    this.warning.message = result.data.message;
+                    console.log(result.data.message);
+                }
+                else {
+                    this.$forceUpdate();
+                }
             }).catch((error: any) => {
                 this.setIsBusyAction({ isBusy: false });
                 console.log(error);
@@ -98,6 +111,10 @@
 
         routing(routeName: string) {
             this.$router.push(routeName);
+        }
+
+        onWarningModalDecision(value: boolean) {
+            this.warning.showModal = false;
         }
     }
 </script>

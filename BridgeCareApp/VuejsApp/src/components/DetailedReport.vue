@@ -187,6 +187,7 @@
         onRunSimulation() {
             this.warning.showModal = true;
             this.warning.heading = 'Warning';
+            this.warning.choice = true;
             this.warning.message = 'The simulation can take around five minutes to finish. ' +
                 'Are you sure that you want to continue?';
         }
