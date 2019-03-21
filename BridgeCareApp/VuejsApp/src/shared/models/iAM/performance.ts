@@ -12,6 +12,7 @@ export interface PerformanceEquation {
 export interface PerformanceStrategy {
     networkId: number;
     simulationId: number;
+    name: string;
     performanceEquations: PerformanceEquation[];
 }
 
@@ -22,6 +23,7 @@ export interface SavedPerformanceStrategy extends PerformanceStrategy{
 export const emptyPerformanceStrategy: PerformanceStrategy = {
     networkId: 0,
     simulationId: 0,
+    name: '',
     performanceEquations: []
 };
 

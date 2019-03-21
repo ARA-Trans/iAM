@@ -169,7 +169,7 @@
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInvestmentStrategies') getInvestmentStrategiesAction: any;
-        @Action('saveInvestmentStrategy') saveInvestmentStrategyAction: any;
+        @Action('saveInvestmentStrategyToLibrary') saveInvestmentStrategyAction: any;
         @Action('setBudgets') setBudgetsAction: any;
 
         investmentStrategyGridHeaders: DataTableHeader[] = [

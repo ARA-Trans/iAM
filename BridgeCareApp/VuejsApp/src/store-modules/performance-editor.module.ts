@@ -1,18 +1,27 @@
-import {emptyPerformanceEquation, PerformanceEquation, PerformanceStrategy} from '@/shared/models/iAM/performance';
-import {clone} from 'ramda';
+import {PerformanceStrategy} from '@/shared/models/iAM/performance';
+import {clone, any, propEq, merge, append} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 
 const state = {
-    performanceStrategies: [] as PerformanceStrategy[],
-    performanceEquation: {...emptyPerformanceEquation} as PerformanceEquation
+    performanceStrategies: [] as PerformanceStrategy[]
 };
 
 const mutations = {
     performanceStrategiesMutator(state: any, performanceStrategies: PerformanceStrategy[]) {
         state.performanceStrategies = clone(performanceStrategies);
     },
-    performanceEquationMutator(state: any, performanceEquation: PerformanceEquation) {
-        state.performanceEquation = performanceEquation;
+    savedPerformanceStrategyMutator(state: any, savedPerformanceStrategy: PerformanceStrategy) {
+        if (any(propEq('simulationId', savedPerformanceStrategy.simulationId), state.performanceStrategies)) {
+            state.performanceStrategies = state.performanceStrategies
+                .map((existingPerformanceStrategy: PerformanceStrategy) => {
+                    if (existingPerformanceStrategy.simulationId === savedPerformanceStrategy.simulationId) {
+                        return merge(existingPerformanceStrategy, savedPerformanceStrategy);
+                    }
+                    return existingPerformanceStrategy;
+                });
+        } else {
+            state.performanceStrategies = append(savedPerformanceStrategy, state.performanceStrategies);
+        }
     }
 };
 
@@ -24,8 +33,12 @@ const actions = {
             )
             .catch((error: any) => console.log(error));
     },
-    setPerformanceEquation({commit}: any, payload: any) {
-        commit('performanceEquationMutator', payload.performanceEquation);
+    async savePerformanceStrategyToLibrary({commit}: any, payload: any) {
+        await new PerformanceEditorService().savePerformanceStrategyToLibrary(payload.savedPerformanceStrategy)
+            .then((performanceStrategy: PerformanceStrategy) =>
+                commit('savedPerformanceStrategyMutator', performanceStrategy)
+            )
+            .catch((error: any) => console.log(error));
     }
 };
 

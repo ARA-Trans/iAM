@@ -1,6 +1,27 @@
 <template>
     <v-container fluid grid-list-xl>
+        <v-layout column>
+            <v-flex xs12>
+                <v-layout justify-center column>
+                    <div class="performance-strategy-select-div">
+                        <v-btn color="info" v-on:click="onShowCreatePerformanceStrategyDialog">
+                            New Performance Strategy
+                        </v-btn>
+                        <v-select :items="performanceStrategiesSelectListItems"
+                                  label="Select a Performance Strategy"
+                                  outline
+                                  v-on:change="onSelectPerformanceStrategy"
+                                  v-model="performanceStrategiesSelectItem">
+                        </v-select>
+                    </div>
+                </v-layout>
+            </v-flex>
+            <v-flex xs12>
+                <div class="container-div">
 
+                </div>
+            </v-flex>
+        </v-layout>
     </v-container>
 </template>
 
@@ -8,7 +29,6 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import AppSpinner from '../../shared/AppSpinner.vue';
     import {
         emptyPerformanceStrategy,
         PerformanceEquation,
@@ -20,6 +40,7 @@
     import {CreatePerformanceStrategyDialogResult} from '@/shared/models/dialogs/create-performance-strategy-dialog-result';
     import {CreatePerformanceEquationDialogResult} from '@/shared/models/dialogs/create-performance-equation-dialog-result';
     import {PerformanceEquationEditorDialogResult} from '@/shared/models/dialogs/performance-equation-editor-dialog-result';
+    import {CriteriaEditorDialogResult} from '@/shared/models/dialogs/criteria-editor-dialog-result';
 
     @Component
     export default class PerformanceEditor extends Vue {
@@ -53,7 +74,11 @@
         @Watch('performanceStrategies')
         onPerformanceStrategiesChanged(performanceStrategies: PerformanceStrategy[]) {
             // set the performanceStrategiesSelectListeItems list using performanceStrategies list
-            this.performanceStrategiesSelectListItems
+            this.performanceStrategiesSelectListItems = performanceStrategies
+                .map((performanceStrategy: PerformanceStrategy) => ({
+                    text: performanceStrategy.name,
+                    value: performanceStrategy.simulationId.toString()
+                }));
         }
 
         mounted() {
@@ -149,5 +174,32 @@
         onApplyShift() {
 
         }
+
+        /**
+         * 'Create as New Library' button has been clicked
+         */
+        onCreateAsNewLibrary() {
+
+        }
+
+        /**
+         * 'Apply' button has been clicked
+         */
+        onApplyToScenario() {
+
+        }
+
+        /**
+         * Resets the PerformanceEditor component properties
+         */
+        resetComponentProperties() {
+
+        }
     }
 </script>
+
+<style>
+    .performance-strategy-select {
+        width: 50%;
+    }
+</style>

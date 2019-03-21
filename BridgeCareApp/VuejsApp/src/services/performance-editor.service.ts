@@ -16,11 +16,12 @@ export default class PerformanceEditorService {
      * Creates/updates a performance strategy
      * @param savedPerformanceStrategy
      */
-    savePerformanceStrategy(savedPerformanceStrategy: SavedPerformanceStrategy): Promise<PerformanceStrategy> {
+    savePerformanceStrategyToLibrary(savedPerformanceStrategy: SavedPerformanceStrategy): Promise<PerformanceStrategy> {
         return Promise.resolve<PerformanceStrategy>({
-           networkId: savedPerformanceStrategy.networkId,
-           simulationId: savedPerformanceStrategy.simulationId,
-           performanceEquations: savedPerformanceStrategy.performanceEquations
+            networkId: savedPerformanceStrategy.networkId,
+            simulationId: savedPerformanceStrategy.simulationId,
+            name: savedPerformanceStrategy.name,
+            performanceEquations: savedPerformanceStrategy.performanceEquations
         });
         // TODO: add axios web service for saving performance strategy changes (create/update)
     }

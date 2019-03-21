@@ -17,7 +17,7 @@ export default class InvestmentEditorService {
      * Creates/updates an investment strategy
      * @param savedInvestmentStrategy The investment strategy for creating/updating
      */
-    saveInvestmentStrategy(savedInvestmentStrategy: SavedInvestmentStrategy): Promise<InvestmentStrategy> {
+    saveInvestmentStrategyToLibrary(savedInvestmentStrategy: SavedInvestmentStrategy): Promise<InvestmentStrategy> {
         return Promise.resolve<InvestmentStrategy>({
             networkId: savedInvestmentStrategy.networkId,
             simulationId: savedInvestmentStrategy.simulationId,
