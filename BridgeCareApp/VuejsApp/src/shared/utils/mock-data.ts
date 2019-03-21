@@ -1,5 +1,5 @@
 import {Scenario} from '@/shared/models/iAM/scenario';
-import {Attribute, AttributesWithYearlyValues, Section} from '@/shared/models/iAM/section';
+import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
 
@@ -150,142 +150,132 @@ export const sharedScenarios: Scenario[] = [
     }
 ];
 /*******************************************INVENTORY MOCK DATA********************************************************/
-export const mockLengthValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 100,
-    },
-    {
-        year: 2018,
-        value: 100,
-    },
-    {
-        year: 2017,
-        value: 100,
-    }
-];
-export const mockLengthAttribute: Attribute = {
-    name: 'LENGTH',
-    yearlyValues: mockLengthValues
-};
 
-export const mockAttrDeckAreaValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 4781.25,
-    },
-    {
-        year: 2018,
-        value: 4781.25,
-    },
-    {
-        year: 2017,
-        value: 4781.25,
-    }
-];
-export const mockDeckAreaAttribute: Attribute = {
-    name: 'DECK_AREA',
-    yearlyValues: mockAttrDeckAreaValues
-};
+export const mockInventory: InventoryItem[] = [{
+    networkId: 1111,
+    simulationId: 2222,
+    referenceId: 1234567890,
+    referenceKey: 19876,
+}];
 
-export const mockAdtTotalValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 1065,
-    },
-    {
-        year: 2018,
-        value: 1060
-    },
-    {
-        year: 2017,
-        value: 1055
-    }
-];
-export const mockAdtTotalAttribute: Attribute = {
-    name: 'ADTTOTAL',
-    yearlyValues: mockAdtTotalValues
-};
+export const mockInventoryItemDetail: InventoryItemDetail = {
+    simulationId: 2222,
+    label: '5A02',
+    name: 'Ben Franklin Bridge',
+    location: [
+        {label: '5A04 District', value: ''},
+        {label: '5A05 County', value: ''},
+        {label: '5A06 City/Town Place', value: ''},
+        {label: '5A07 Feature Intersected', value: ''},
+        {label: '5A08 Facility Carried', value: ''},
+        {label: '5A09 Location', value: ''}
+    ],
+    ageAndService: [
+        {label: '5A15 Year Built', value: ''},
+        {label: '5A16 Year Reconstruction', value: ''},
+        {label: '5A17 Type of Service On', value: ''},
+        {label: '5A18 Type of Service Under', value: ''}
+    ],
+    management: [
+        {label: '5A20 Maint Resp', value: ''},
+        {label: '5A21 Owner', value: ''},
+        {label: '5A23 Agency Admin Area', value: ''},
+        {label: '5A24 Reporting Group', value: ''},
+        {label: '6A06 Submitting Agency Classification', value: ''},
+        {label: 'SE01 NBIS Bridge Length', value: ''},
+        {label: 'SE04 Hist Significance', value: ''},
+        {label: 'SE05 SHP Key Number', value: ''},
+        {label: '6A19 Business Plan Network', value: ''}
+    ],
+    deckInformation: [
+        {label: '5B01 Deck Structure Type', value: ''},
+        {label: '6A38 Deck Sheet Type (PennDOT)', value: ''},
+        {label: '5B02 Deck Surface Type', value: ''},
+        {label: '5B03 Deck Membrane Type', value: ''},
+        {label: '5B04 Deck Protection', value: ''},
+        {label: '5B07 Deck Width (0/0)', value: ''},
+        {label: '5B09 Skew', value: ''}
+    ],
+    spanInformation: [
+        {label: '5B11 Number of Main Spans', value: ''},
+        {label: '5B12 Main Span Material', value: ''},
+        {label: '5B13 Main Span Design', value: ''},
+        {label: '5B14 Number of Approach Spans', value: ''},
+        {label: '5B15 Approach Span Material', value: ''},
+        {label: '5B16 Approach Span Design', value: ''},
+        {label: '5B17 Maximum Span Length', value: ''},
+        {label: '5B18 Structure Length', value: ''},
+        {label: '5B19 Deck Area', value: ''},
+        {label: '5B20 Total Length', value: ''},
+        {label: '6A44 FC Group Number (Main)', value: ''},
+        {label: '6A44 FC Group Number (Approach)', value: ''}
 
-export const mockBusPlanNetworkValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 2,
+    ],
+    currentConditionDuration: [
+        {name: 'DECK', condition: '', duration: 0},
+        {name: 'SUPER', condition: '', duration: 0},
+        {name: 'SUB', condition: '', duration: 0},
+        {name: 'CULV', condition: '', duration: 0}
+    ],
+    previousConditionDuration: [
+        {name: 'DECK', condition: '', duration: 0},
+        {name: 'SUPER', condition: '', duration: 0},
+        {name: 'SUB', condition: '', duration: 0},
+        {name: 'CULV', condition: '', duration: 0}
+    ],
+    riskScores: {
+        new: 0,
+        old: 0
     },
-    {
-        year: 2018,
-        value: 2
+    operatingRatingInventoryRatingGrouping: {
+        ratingRows: [
+            {
+                operatingRating: {label: '4B05 NBI OR', value: ''},
+                inventoryRating: {label: '4B07 NBI IR', value: ''},
+                ratioLegalLoad: {label: 'Ratio OR / Max Legal Load', value: ''}
+            },
+            {
+                operatingRating: {label: '4B09 H20 (OR)', value: ''},
+                inventoryRating: {label: '4B11 H20 (IR)', value: ''},
+                ratioLegalLoad: {label: 'Ratio OR / Max Legal Load', value: ''}
+            },
+            {
+                operatingRating: {label: '4B12 ML80 (OR)', value: ''},
+                inventoryRating: {label: '4B12 ML80 (IR)', value: ''},
+                ratioLegalLoad: {label: 'Ratio OR / Max Legal Load', value: ''}
+            },
+            {
+                operatingRating: {label: '4B13 TK527 (OR)', value: ''},
+                inventoryRating: {label: '4B13 TK527 (IR)', value: ''},
+                ratioLegalLoad: {label: 'Ratio OR / Max Legal Load', value: ''}
+            }
+        ],
+        minRatioLegalLoad: {label: 'Min Ratio OR / Max Legal Load', value: ''}
     },
-    {
-        year: 2017,
-        value: 1
-    }
-];
-export const mockBusPlanNetworkAttribute: Attribute = {
-    name: 'BUS_PLAN_NETWORK',
-    yearlyValues: mockBusPlanNetworkValues
+    nbiLoadRating: [
+        {label: 'IR04 Load Type', value: ''},
+        {label: 'IR05 NBI', value: ''},
+        {label: 'IR010 Inv Rating Ton', value: ''},
+        {label: 'IR11 Opr Rating Ton', value: ''},
+        {label: 'IR11a SLC Rating Factor', value: ''},
+        {label: 'IR20 IR Rating Factor', value: ''},
+        {label: 'IR21 OR Rating Factor', value: ''},
+        {label: 'IR17 Rating Dataset', value: ''}
+    ],
+    posting: [
+        {label: 'VP01 Status Date', value: ''},
+        {label: 'VP02 Posting Status', value: ''},
+        {label: 'VP03 Special Restrictive Posting', value: ''},
+        {label: 'VP04 Posted Weight Limit', value: ''},
+    ],
+    roadwayInfo: [
+        {label: '5C10 ADT', value: ''},
+        {label: '5C22 Func. Class', value: ''},
+        {label: '4A15 Over Street Clearance', value: ''},
+        {label: '4A17 Under Clearance', value: ''},
+        {label: '5C29 NHS', value: ''}
+    ]
 };
-
-export const mockBridgeTypeValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 'B',
-    },
-    {
-        year: 2018,
-        value: 'B'
-    }
-];
-export const mockBridgeTypeAttribute: Attribute = {
-    name: 'BRIDGE_TYPE',
-    yearlyValues: mockBridgeTypeValues
-};
-
-export const mockConditionIndexValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 10,
-    }
-];
-export const mockConditionIndexAttribute: Attribute = {
-    name: 'CONDITIONINDEX',
-    yearlyValues: mockConditionIndexValues
-};
-
-export const mockFamilyIdValues: AttributesWithYearlyValues[] = [
-    {
-        year: 2019,
-        value: 3,
-    },
-    {
-        year: 2018,
-        value: 3
-    },
-    {
-        year: 2017,
-        value: 3
-    }
-];
-export const mockFamilyIdAttribute: Attribute = {
-    name: 'FAMILY_ID',
-    yearlyValues: mockFamilyIdValues
-};
-
-export const mockSections: Section[] = [
-    {
-        sectionId: 60006206001408,
-        location: {lat: 39.949, long: -75.139},
-        attributes: [
-            mockLengthAttribute,
-            mockDeckAreaAttribute,
-            mockAdtTotalAttribute,
-            mockBusPlanNetworkAttribute,
-            mockBridgeTypeAttribute,
-            mockConditionIndexAttribute,
-            mockFamilyIdAttribute
-        ]
-    }
-];
 /*******************************************INVESTMENT EDITOR MOCK DATA************************************************/
 export const mockBudgetOrder: string[] = [
     'Budget A',

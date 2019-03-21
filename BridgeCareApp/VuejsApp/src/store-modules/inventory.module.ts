@@ -1,22 +1,33 @@
-import {Section} from '@/shared/models/iAM/section';
+import {emptyInventoryItemDetail, InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import InventoryService from '@/services/inventory.service';
 import * as R from 'ramda';
 
 const state = {
-    sections: [] as Section[],
+    inventoryItems: [] as InventoryItem[],
+    inventoryItemDetail: emptyInventoryItemDetail as InventoryItemDetail
 };
 
 const mutations = {
-    sectionsMutator(state: any, sections: Section) {
-        state.sections = R.clone(sections);
+    inventoryItemsMutator(state: any, inventoryItems: InventoryItem[]) {
+        state.inventoryItems = R.clone(inventoryItems);
+    },
+    inventoryItemDetailMutator(state: any, inventoryItemDetail: InventoryItemDetail) {
+        state.inventoryItemDetail = R.merge(state.inventoryItemDetail, inventoryItemDetail);
     }
 };
 
 const actions = {
-    getNetworkInventory({commit}: any, payload: any) {
-        new InventoryService().getNetworkInventory(payload.network)
-            .then((sections: Section[]) =>
-                commit('sectionsMutator', sections)
+    async getInventory({commit}: any, payload: any) {
+        await new InventoryService().getInventory(payload.network)
+            .then((inventoryItems: InventoryItem[]) =>
+                commit('inventoryItemsMutator', inventoryItems)
+            )
+            .catch((error: any) => console.log(error));
+    },
+    async getInventoryItemDetail({commit}: any, payload: any) {
+        await new InventoryService().getInventoryItemDetail(payload.inventoryItem)
+            .then((inventoryItemDetail: InventoryItemDetail) =>
+                commit('inventoryItemDetailMutator', inventoryItemDetail)
             )
             .catch((error: any) => console.log(error));
     }
