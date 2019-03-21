@@ -50,7 +50,7 @@
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
-    import { Network } from '@/models/network';
+    import { Network } from '@/shared/models/iAM/network';
     import { Simulation } from '@/shared/models/iAM/simulation';
     import AppModalPopup from '../shared/AppModalPopup.vue';
     import { Alert } from '@/shared/models/iAM/alert';
@@ -64,7 +64,6 @@
     })
     export default class DetailedReport extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
-        @State(state => state.userAuthorization.isAdmin) isAdmin: boolean;
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.simulation.simulations) simulations: Simulation[];
         @State(state => state.detailedReport.reportBlob) reportBlob: Blob;
