@@ -1,13 +1,18 @@
 import axios from 'axios';
 import {Network} from '@/shared/models/iAM/network';
-import {Section} from '@/shared/models/iAM/section';
-import {mockSections} from '@/shared/utils/mock-data';
+import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
+import {mockInventory, mockInventoryItemDetail} from '@/shared/utils/mock-data';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InventoryService {
-    getNetworkInventory(network: Network): Promise<Section[]> {
-        return Promise.resolve<Section[]>(mockSections);
-        // TODO: integrate axios web service call for network inventory
+    getInventory(network: Network): Promise<InventoryItem[]> {
+        return Promise.resolve<InventoryItem[]>(mockInventory);
+        // TODO: integrate axios web service call for inventory
+    }
+
+    getInventoryItemDetail(inventoryItem: InventoryItem): Promise<InventoryItemDetail> {
+        return Promise.resolve<InventoryItemDetail>(mockInventoryItemDetail);
+        // TODO: integrate axios web service call for inventory item detail
     }
 }
