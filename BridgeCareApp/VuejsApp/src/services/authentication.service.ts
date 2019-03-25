@@ -6,10 +6,10 @@ export default class AuthenticationService {
     getAuthentication(): Promise<any> {
         return axios.get('/auth/getuser', { withCredentials: true })
             .then(response => {
-                return response.data;
+                return response;
             })
             .catch(error => {
-                console.log(error);
+                return error.response;
             });
     }
 }

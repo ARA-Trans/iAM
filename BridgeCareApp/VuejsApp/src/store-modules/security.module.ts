@@ -31,20 +31,27 @@ const actions = {
         commit('userNameMutator', payload.userName);
     },
     async getAuthentication({ commit }: any) {
-        await new AuthenticationService().getAuthentication()
-            .then((data: any) => commit('userNameMutator', data))
-            .then(() => commit('loginMutator', false))
-            .then(() => {
-                db.ref('roles').once('value', (snapshot: any) => {
-                    let data = snapshot.val();
-                    for (let key in data) {
-                        if (usersData.includes(data[key])) {
-                            commit('userRoleMutator', key);
+        return await new AuthenticationService().getAuthentication()
+            .then((results: any) => {
+                if (results.status == '200') {
+                    commit('userNameMutator', results.data);
+                    commit('loginMutator', false);
+
+                    db.ref('roles').once('value', (snapshot: any) => {
+                        let data = snapshot.val();
+                        for (let key in data) {
+                            if (usersData.includes(data[key])) {
+                                commit('userRoleMutator', key);
+                            }
                         }
-                    }
-                });
+                    });
+                    return results;
+                }
+                else {
+                    return results;
+                }
             })
-            .catch((error: any) => console.log(error));
+            .catch((error: any) => { return error.response; });
     }
 };
 
