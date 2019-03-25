@@ -19,8 +19,10 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -170,6 +172,7 @@
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
+    <Compile Include="Controllers\PerformanceController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
     <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
@@ -182,6 +185,7 @@
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
+    <Compile Include="DataAccessLayer\PerformanceData.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
@@ -198,6 +202,7 @@
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="EntityClasses\PERFORMANCE.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
     <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
@@ -211,6 +216,7 @@
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
     <Compile Include="Interfaces\IInvestmentStrategies.cs" />
+    <Compile Include="Interfaces\IPerformance.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
     <Compile Include="Interfaces\IDetailedReport.cs" />
@@ -231,6 +237,7 @@
     <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
+    <Compile Include="Models\PerformanceModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
     <Compile Include="Models\SimulatedSegmentIdsModel.cs" />
     <Compile Include="Models\CostDetails.cs" />
