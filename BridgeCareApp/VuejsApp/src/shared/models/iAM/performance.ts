@@ -1,5 +1,4 @@
-export interface PerformanceEquation {
-    performanceId: number;
+export interface Equation {
     attribute: string;
     equationName: string;
     equation: string;
@@ -9,26 +8,60 @@ export interface PerformanceEquation {
     isFunction: boolean;
 }
 
-export interface PerformanceStrategy {
-    networkId: number;
-    simulationId: number;
-    name: string;
-    performanceEquations: PerformanceEquation[];
+export interface PerformanceStrategyEquation extends Equation{
+    performanceStrategyId: number;
+    performanceStrategyEquationId: number;
 }
 
-export interface SavedPerformanceStrategy extends PerformanceStrategy{
-    deletedPerformanceEquations: number[];
+export interface ScenarioEquation extends Equation {
+    scenarioId: number;
+    scenarioEquationId: number;
+}
+
+export interface CreatedPerformanceStrategyEquation {
+    performanceStrategyId: number;
+    attribute: string;
+    equationName: string;
+}
+
+export interface DeletedPerformanceStrategyEquations {
+    performanceStrategyId: number;
+    deletedEquationIds: number[];
+}
+
+export interface PerformanceStrategy {
+    id: number;
+    name: string;
+    description: string;
+    performanceStrategyEquations: PerformanceStrategyEquation[];
+}
+
+export interface CreatedPerformanceStrategy {
+    name: string;
+    description: string;
+    performanceStrategyEquations: PerformanceStrategyEquation[];
+}
+
+export interface UpdatedPerformanceStrategy extends PerformanceStrategy{
+    deletedPerformanceStrategyEquations: number[];
 }
 
 export const emptyPerformanceStrategy: PerformanceStrategy = {
-    networkId: 0,
-    simulationId: 0,
+    id: 0,
     name: '',
-    performanceEquations: []
+    description: '',
+    performanceStrategyEquations: []
 };
 
-export const emptyPerformanceEquation: PerformanceEquation = {
-    performanceId: 0,
+export const emptyCreatedPerformanceStrategy: CreatedPerformanceStrategy = {
+    name: '',
+    description: '',
+    performanceStrategyEquations: []
+};
+
+export const emptyPerformanceStrategyEquation: PerformanceStrategyEquation = {
+    performanceStrategyId: 0,
+    performanceStrategyEquationId: 0,
     attribute: '',
     equationName: '',
     equation: '',

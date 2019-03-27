@@ -11,7 +11,7 @@
                 <div v-show="afterParsing !== ''">After Parsing: {{afterParsing}}</div>
             </v-flex>
             <v-flex xs12>
-                <CriteriaEditor :showCriteriaEditor="showCriteriaEditor" @applyCriteria="onApplyCriteria"/>
+                <CriteriaEditor :showCriteriaEditor="showCriteriaEditor" @result="onApplyCriteria"/>
             </v-flex>
         </v-layout>
     </v-container>
@@ -22,6 +22,7 @@
     import {Component} from 'vue-property-decorator';
     import {Action} from 'vuex-class';
     import CriteriaEditor from '../shared/CriteriaEditor.vue';
+    import {CriteriaEditorDialogResult} from '@/shared/models/dialogs/criteria-editor-dialog-result';
 
     @Component({
         components: {CriteriaEditor}
@@ -39,9 +40,11 @@
             this.showCriteriaEditor = true;
         }
 
-        onApplyCriteria(clause: string) {
-            this.afterParsing = clause;
-            this.setCriteriaAction({clause: ''});
+        onApplyCriteria(result: CriteriaEditorDialogResult) {
+            if (!result.canceled) {
+                this.afterParsing = result.criteria;
+                this.setCriteriaAction({clause: ''});
+            }
             this.showCriteriaEditor = false;
         }
     }

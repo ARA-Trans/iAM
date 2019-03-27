@@ -10,6 +10,7 @@ import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import Criteria from '@/components/Criteria.vue';
 import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vue';
+import PerformanceEditor from '@/components/performance-editor/PerformanceEditor.vue';
 
 Vue.use(VueRouter);
 
@@ -43,6 +44,11 @@ const router = new VueRouter({
             path: '/InvestmentEditor',
             name: 'InvestmentEditor',
             component: InvestmentEditor
+        },
+        {
+            path: '/PerformanceEditor',
+            name: 'PerformanceEditor',
+            component: PerformanceEditor
         },
         {
             path: '/EditScenario',
