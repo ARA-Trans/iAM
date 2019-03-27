@@ -2,4 +2,5 @@
     showModal: boolean;
     heading: string;
     message: string;
+    choice: boolean;
 }

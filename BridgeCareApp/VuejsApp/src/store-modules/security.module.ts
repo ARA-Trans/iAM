@@ -1,6 +1,12 @@
+import AuthenticationService from '../services/authentication.service';
+import { db } from '@/firebase';
+
+const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
+
 const state = {
     loginFailed: true,
-    userName: ''
+    userName: '',
+    userRoles: [] as Array<string>
 };
 
 const mutations = {
@@ -9,6 +15,11 @@ const mutations = {
     },
     userNameMutator(state: any, userName: string) {
         state.userName = userName;
+    },
+    userRoleMutator(state: any, role: string) {
+        if (!state.userRoles.includes(role)) {
+            state.userRoles.push(role);
+        }
     }
 };
 
@@ -18,6 +29,29 @@ const actions = {
     },
     setUsername({commit}: any, payload: any) {
         commit('userNameMutator', payload.userName);
+    },
+    async getAuthentication({ commit }: any) {
+        return await new AuthenticationService().getAuthentication()
+            .then((results: any) => {
+                if (results.status == '200') {
+                    commit('userNameMutator', results.data);
+                    commit('loginMutator', false);
+
+                    db.ref('roles').once('value', (snapshot: any) => {
+                        let data = snapshot.val();
+                        for (let key in data) {
+                            if (usersData.includes(data[key])) {
+                                commit('userRoleMutator', key);
+                            }
+                        }
+                    });
+                    return results;
+                }
+                else {
+                    return results;
+                }
+            })
+            .catch((error: any) => { return error.response; });
     }
 };
 

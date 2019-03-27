@@ -12,16 +12,6 @@
                 <span class="font-weight-light">Hello </span>
                 <span>{{userName}}</span>
             </v-toolbar-title>
-            <v-toolbar-items>
-                <v-btn @click="login" color="grey" flat v-if="loginFailed">
-                    <v-icon left class="material-icons">account_circle</v-icon>
-                    <span>Login or Sign-up</span>
-                </v-btn>
-                <v-btn @click="logout" color="grey" flat v-if="!loginFailed">
-                    <span>Sign Out</span>
-                    <v-icon right>exit_to_app</v-icon>
-                </v-btn>
-            </v-toolbar-items>
         </v-toolbar>
 
         <v-navigation-drawer app class="grey lighten-3" v-if="!loginFailed" v-model="drawer">
@@ -41,95 +31,45 @@
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
-        <v-parallax dark style="height:720px" v-if="loginFailed"
-                    src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg">
-            <v-layout align-center
-                      column
-                      justify-center>
-                <h1 class="display-2 font-weight-thin mb-3">Bridge Care application</h1>
-                <h4 class="subheading">Build your projects today!</h4>
-            </v-layout>
-        </v-parallax>
         <v-content v-if="!loginFailed">
             <router-view></router-view>
-            <v-flex xs12>
-                <AppSpinner />
-            </v-flex>
         </v-content>
+        <v-flex xs12>
+            <AppSpinner />
+            <AppModalPopup :modalData="warning" @decision="onWarningModalDecision" />
+        </v-flex>
     </nav>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component} from 'vue-property-decorator';
-    import {Action, State} from 'vuex-class';
-    import * as Msal from 'msal';
-    import { usersReference, db } from '@/firebase';
-    import { ifElse, equals, append } from 'ramda';
+    import { Component } from 'vue-property-decorator';
+    import { Action, State } from 'vuex-class';
+    import { append } from 'ramda';
 
+    import { Alert } from '@/shared/models/iAM/alert';
     import AppSpinner from '../shared/AppSpinner.vue';
+    import AppModalPopup from '../shared/AppModalPopup.vue';
     import {Route} from '@/shared/models/iAM/route';
 
     @Component({
-        components: { AppSpinner }
+        components: { AppSpinner, AppModalPopup }
     })
     export default class TopNavbar extends Vue {
         @State(state => state.security.loginFailed) loginFailed: boolean;
         @State(state => state.security.userName) userName: string;
         @State(state => state.busy.isBusy) isBusy: boolean;
-        @State(state => state.userAuthorization.isAdmin) isAdmin: boolean;
+        @State(state => state.security.userRoles) userRoles: Array<string>;
 
         @Action('setIsBusy') setIsBusyAction: any;
-        @Action('setIsAdmin') setIsAdminAction: any;
         @Action('setLoginStatus') setLoginStatusAction: any;
         @Action('setUsername') setUsernameAction: any;
+        @Action('getAuthentication') getAuthenticationAction: any;
 
-        applicationConfig: {
-            clientID: string; graphScopes: string[]; authority: string;
-            authorityPR: string;
-        };
-
-        clientApp: Msal.UserAgentApplication;
         routes: Route[];
         filteredRoutes: Route[];
         totalRoutes: Route[];
-
-        signupSignInPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_su-si-pol';
-        passwordResetPolicy: string = 'https://login.microsoftonline.com/tfp/aratranstest.onmicrosoft.com/b2c_1_pr-pol';
-
-        constructor() {
-            super();
-            let PROD_REDIRECT_URI = process.env.VUE_APP_CLIENT_APP_URL;
-            let redirectUri = window.location.origin;
-            if (window.location.hostname !== '127.0.0.1') {
-                redirectUri = PROD_REDIRECT_URI;
-            }
-
-            if (process.env.VUE_APP_IS_PRODUCTION == 'false') {
-                this.applicationConfig = {
-                    clientID: '6abd6916-ce43-4cb1-9189-5749fc544e78',
-                    graphScopes: ['https://aratranstest.onmicrosoft.com/user/user_impersonation'],
-                    authority: this.signupSignInPolicy,
-                    authorityPR: this.passwordResetPolicy
-                };
-            } else {
-                this.applicationConfig = {
-                    clientID: 'c4132c6f-fbb2-489c-bdf5-dda2ce009af8',
-                    graphScopes: ['https://aratranstest.onmicrosoft.com/userStage/user_impersonation'],
-                    authority: this.signupSignInPolicy,
-                    authorityPR: this.passwordResetPolicy
-                };
-            }
-            this.clientApp = new Msal.UserAgentApplication(
-                this.applicationConfig.clientID, this.applicationConfig.authority,
-                (errorDesc, token, error, tokenType) => {
-                    console.log(token);
-                },
-                {
-                    cacheLocation: 'localStorage',
-                }
-            );
-        }
+        warning: Alert = { showModal: false, heading: '', message: '', choice: false };
 
         data() {
             return {
@@ -142,6 +82,7 @@
                 { navigation: 'Inventory', icon: 'home', name: 'Inventory', linkGroup: '' },
                 { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios', linkGroup: '' },
                 { navigation: ''}
+                { navigation: 'InvestmentEditor', icon: 'pie_chart', name: 'Investment Editor' },
                 { navigation: 'Criteria', icon: 'assignment', name: 'Criteria', linkGroup: '' }
             ];
             this.totalRoutes = append(
@@ -151,94 +92,34 @@
             this.routes = [];
         }
 
-        created() {
-            let user = this.clientApp.getUser();
+        mounted() {
             this.setIsBusyAction({ isBusy: true });
-            if (!user) {
-                this.setLoginStatusAction({ status: true });
-                this.setUsernameAction({ userName: '' });
+            this.getAuthenticationAction().then((result: any) => {
                 this.setIsBusyAction({ isBusy: false });
-            } else {
-                this.setLoginStatusAction({ status: false });
-                this.setUsernameAction({ userName: user.name });
-                this.updateUI();
-            }
+                this.routes = this.totalRoutes;
+                console.log(this.userRoles);
+                if (result.status == '401') {
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Error';
+                    this.warning.choice = false;
+                    this.warning.message = result.data.message;
+                    console.log(result.data.message);
+                }
+                else {
+                    this.$forceUpdate();
+                }
+            }).catch((error: any) => {
+                this.setIsBusyAction({ isBusy: false });
+                console.log(error);
+            });
         }
 
         routing(routeName: string) {
             this.$router.push(routeName);
         }
 
-        login() {
-            this.setLoginStatusAction({status: true});
-            this.clientApp.loginPopup(this.applicationConfig.graphScopes).then(
-                idToken => {
-                    this.setLoginStatusAction({status: false});
-                    this.updateUI();
-                },
-                (error) => {
-                    this.redirectOnErrors(error);
-                }
-            );
-        }
-
-        redirectOnErrors(error: any) {
-            // [HACK] : Msal.js has not provided a feature to add multiple policies from Azure AD B2C.
-            // To add Forget Password policy, when a user clicks on `forget password` link.
-            // We are catching the error thrown by Azure AD B2C and repopulating the `clientApp` object with new policy
-            // and calling the `login()` method again.
-            if (error.indexOf('AADB2C90118') > -1) {
-                this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
-                    this.applicationConfig.authorityPR,
-                    (errorDesc, token, error, tokenType) => {
-                        // callback for login redirect
-                    },
-                    {cacheLocation: 'localStorage'});
-                this.login();
-            } else if (error.indexOf('AADB2C90091') > -1) {
-                this.clientApp = new Msal.UserAgentApplication(this.applicationConfig.clientID,
-                    this.applicationConfig.authority,
-                    (errorDesc, token, error, tokenType) => {
-                        // callback for login redirect
-                    },
-                    {cacheLocation: 'localStorage'});
-                this.login();
-            } else {
-                console.log('Error during login:\n' + error);
-            }
-        }
-
-        logout() {
-            this.clientApp.logout();
-        }
-
-        updateUI() {
-            this.setUsernameAction({ userName: this.clientApp.getUser().name });
-            usersReference.once('value', (snapshot: any) => {
-                //@ts-ignore
-                const userId = this.clientApp.getUser().idToken.sub;
-                if (snapshot.hasChild(userId)) {
-                    this.setIsAdminAction({ isAdmin: snapshot.child(userId).val().roles.admin });
-                    this.routes = ifElse(() => equals(this.isAdmin, true), () => this.totalRoutes, () => this.filteredRoutes)(this.routes);
-                    this.$forceUpdate();
-                }
-                else {
-                    console.log('user not found');
-                    const newUser = {
-                        //@ts-ignore
-                        email: this.clientApp.getUser().idToken.emails[0],
-                        roles: { owner: true, admin: false }
-                    };
-                    db.ref('users/' + userId).update(newUser);
-                    this.setIsAdminAction({ isAdmin: false });
-                    this.routes = this.filteredRoutes;
-                    this.$forceUpdate();
-                }
-                this.setIsBusyAction({ isBusy: false });
-            }).catch(error => {
-                this.setIsBusyAction({ isBusy: false });
-                });
-            
+        onWarningModalDecision(value: boolean) {
+            this.warning.showModal = false;
         }
     }
 </script>

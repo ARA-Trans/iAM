@@ -8,6 +8,7 @@ namespace BridgeCare.EntityClasses
     public class INVESTMENTS
     {
         [Key]
+        [ForeignKey("SIMULATION")]
         public int SIMULATIONID { get; set; }
 
         public Nullable<int> FIRSTYEAR { get; set; }
