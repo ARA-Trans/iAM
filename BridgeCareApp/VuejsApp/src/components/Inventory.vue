@@ -296,7 +296,6 @@
     import {hasValue} from '@/shared/utils/has-value';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import { DataTableRow } from '@/shared/models/vue/data-table-row';
-    import { Network } from '@/shared/models/iAM/network';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -305,12 +304,10 @@
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.inventory.inventoryItems) inventoryItems: InventoryItem[];
         @State(state => state.inventory.inventoryItemDetail) inventoryItemDetail: InventoryItemDetail;
-        @State(state => state.network.networks) networks: Network[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInventory') getInventoryAction: any;
         @Action('getInventoryItemDetail') getInventoryItemDetailAction: any;
-        @Action('getNetworks') getNetworksAction: any;
 
         referenceIndexTypes: number = 0;
         referenceIndexTypesLabels = ['BMS ID', 'BR KEY'];

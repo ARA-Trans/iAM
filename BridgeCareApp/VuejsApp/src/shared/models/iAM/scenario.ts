@@ -3,6 +3,6 @@ export interface Scenario {
     name: string;
     createdDate: Date;
     lastModifiedDate: Date;
-    status: boolean;
+    status: string;
     shared: boolean;
 }

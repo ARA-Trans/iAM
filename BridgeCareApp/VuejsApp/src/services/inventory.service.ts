@@ -7,18 +7,8 @@ axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InventoryService {
     getInventory(network: Network): Promise<InventoryItem[]> {
-        //return Promise.resolve<InventoryItem[]>(mockInventory);
+        return Promise.resolve<InventoryItem[]>(mockInventory);
         // TODO: integrate axios web service call for inventory
-        return axios.get('/api/section', {
-            params: {
-                NetworkId: network.networkId,
-                NetworkName: network.networkName,
-            }
-        }).then((response) => {
-            return response;
-            }).catch(error => {
-                return error.response;
-            });
     }
 
     getInventoryItemDetail(inventoryItem: InventoryItem): Promise<InventoryItemDetail> {

@@ -15,7 +15,7 @@
                             <td>{{props.item.name}}</td>
                             <td>{{formatDate(props.item.createdDate)}}</td>
                             <td>{{formatDate(props.item.lastModifiedDate)}}</td>
-                            <td>{{getStatus(props.item.status)}}</td>
+                            <td>{{props.item.status}}</td>
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
@@ -90,6 +90,7 @@
     export default class Scenarios extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
+        @State(state => state.security.userId) userId: string;
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getUserScenarios') getUserScenariosAction: any;
@@ -122,7 +123,7 @@
          */
         mounted() {
             this.setIsBusyAction({isBusy: true});
-            this.getUserScenariosAction({userId: 0})
+            this.getUserScenariosAction({ userId: this.userId })
                 .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});

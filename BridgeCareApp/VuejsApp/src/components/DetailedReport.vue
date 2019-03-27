@@ -67,6 +67,7 @@
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.simulation.simulations) simulations: Simulation[];
         @State(state => state.detailedReport.reportBlob) reportBlob: Blob;
+        @State(state => state.security.userId) userId: string;
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getNetworks') getNetworksAction: any;
@@ -89,7 +90,7 @@
                 for (let key in results) {
                     simulationStatus.push({
                         id: key,
-                        status: results[key].Status
+                        status: results[key].status
                     });
                 }
                 console.log(simulationStatus);
@@ -212,7 +213,8 @@
                 networkId: this.networkId,
                 simulationId: this.simulationId,
                 networkName: this.networkName,
-                simulationName: this.simulationName
+                simulationName: this.simulationName,
+                userId: this.userId
             }).then(() =>
                 this.setIsBusyAction({isBusy: false})
             ).catch((error: any) => {
