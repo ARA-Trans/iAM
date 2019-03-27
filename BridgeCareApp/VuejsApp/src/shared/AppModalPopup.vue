@@ -12,16 +12,21 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
 
-                    <v-btn color="green darken-1"
+                    <v-btn v-if="modalData.choice" color="green darken-1"
                            flat="flat"
                            @click="sendUserSelection(false)">
                         Cancel
                     </v-btn>
 
-                    <v-btn color="green darken-1"
+                    <v-btn v-if="modalData.choice" color="green darken-1"
                            flat="flat"
                            @click="sendUserSelection(true)">
                         Proceed
+                    </v-btn>
+                    <v-btn v-if="!modalData.choice" color="green darken-1"
+                           flat="flat"
+                           @click="sendUserSelection(true)">
+                        Ok
                     </v-btn>
                 </v-card-actions>
             </v-card>
