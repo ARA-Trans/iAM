@@ -138,6 +138,9 @@
     <TypeScriptCompile Include="src\router.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\authentication.service.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
     <TypeScriptCompile Include="src\services\detailed-report.service.ts" />
     <TypeScriptCompile Include="src\services\inventory.service.ts" />
@@ -176,9 +179,6 @@
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\security.module.ts" />
     <TypeScriptCompile Include="src\store-modules\simulation.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\user-authorization.module.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store\root-store.ts" />
   </ItemGroup>
   <ItemGroup>

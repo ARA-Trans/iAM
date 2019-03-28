@@ -19,9 +19,11 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -170,6 +172,7 @@
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
+    <Compile Include="Controllers\PerformanceController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
     <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
@@ -177,10 +180,12 @@
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
+    <Compile Include="Controllers\WindowsAuthorizationController.cs" />
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
+    <Compile Include="DataAccessLayer\PerformanceData.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
@@ -197,6 +202,7 @@
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="EntityClasses\PERFORMANCE.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
     <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
@@ -210,6 +216,7 @@
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
     <Compile Include="Interfaces\IInvestmentStrategies.cs" />
+    <Compile Include="Interfaces\IPerformance.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
     <Compile Include="Interfaces\IDetailedReport.cs" />
@@ -230,6 +237,7 @@
     <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
+    <Compile Include="Models\PerformanceModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
     <Compile Include="Models\SimulatedSegmentIdsModel.cs" />
     <Compile Include="Models\CostDetails.cs" />
@@ -242,6 +250,7 @@
     <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
     <Compile Include="Models\SummaryReport\CurrentCell.cs" />
     <Compile Include="Models\SummaryReport\ReportProjectCost.cs" />
+    <Compile Include="Models\SummaryReport\ProjectRowNumberModel.cs" />
     <Compile Include="Models\SummaryReport\Section.cs" />
     <Compile Include="Models\SummaryReport\SimulationDataModel.cs" />
     <Compile Include="Models\SummaryReport\SimulationYearsModel.cs" />
@@ -251,6 +260,11 @@
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
     <Compile Include="Models\YearlyDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\DetailedReport\Budget.cs" />
     <Compile Include="Services\DetailedReport\Deficient.cs" />
     <Compile Include="Services\DetailedReport\Detailed.cs" />
@@ -259,10 +273,17 @@
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\Network.cs" />
     <Compile Include="Services\Simulations.cs" />
+    <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
+    <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="UtilityFunctions.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummaryHelper.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportGenerator.cs" />
-    <Compile Include="Services\SummaryReport\SummaryReportHelper.cs" />
+    <Compile Include="Services\SummaryReport\BridgeDataHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\CalculateEvaluate.dll" />
@@ -276,6 +297,14 @@
     <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
     <Content Include="Dependencies\Simulation.dll" />
     <Content Include="Dependencies\SimulationDataAccess.dll" />
+    <Content Include="Dependencies\CalculateEvaluate.pdb" />
+    <Content Include="Dependencies\DatabaseManager.pdb" />
+    <Content Include="Dependencies\FireSharp.dll" />
+    <Content Include="Dependencies\RestSharp.dll" />
+    <Content Include="Dependencies\RestSharp.xml" />
+    <Content Include="Dependencies\RoadCareGlobalOperations.pdb" />
+    <Content Include="Dependencies\Simulation.pdb" />
+    <Content Include="Dependencies\SimulationDataAccess.pdb" />
     <Content Include="Global.asax" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -298,6 +327,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
