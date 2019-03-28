@@ -79,7 +79,7 @@ export const userScenarios: Scenario[] = [
         name: 'Scenario A-1',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: false
     },
     {
@@ -87,7 +87,7 @@ export const userScenarios: Scenario[] = [
         name: 'Scenario A-2',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: false
     },
     {
@@ -95,7 +95,7 @@ export const userScenarios: Scenario[] = [
         name: 'Scenario A-3',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: false,
+        status: 'success',
         shared: false
     },
     {
@@ -103,7 +103,7 @@ export const userScenarios: Scenario[] = [
         name: 'Scenario B-1',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: false
     },
     {
@@ -111,7 +111,7 @@ export const userScenarios: Scenario[] = [
         name: 'Scenario B-2',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: false
     },
     {
@@ -119,7 +119,7 @@ export const userScenarios: Scenario[] = [
         name: 'Scenario B-3',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: false
     }
 ];
@@ -130,7 +130,7 @@ export const sharedScenarios: Scenario[] = [
         name: 'Scenario C-1',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: true
     },
     {
@@ -138,7 +138,7 @@ export const sharedScenarios: Scenario[] = [
         name: 'Scenario C-2',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: true,
+        status: 'success',
         shared: true
     },
     {
@@ -146,7 +146,7 @@ export const sharedScenarios: Scenario[] = [
         name: 'Scenario C-3',
         createdDate: new Date(),
         lastModifiedDate: new Date(),
-        status: false,
+        status: 'success',
         shared: true
     }
 ];

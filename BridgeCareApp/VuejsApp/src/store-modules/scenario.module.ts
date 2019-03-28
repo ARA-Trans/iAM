@@ -1,6 +1,6 @@
 import {Scenario} from '@/shared/models/iAM/scenario';
-import ScenarioService from '../services/scenario.service';
 import * as R from 'ramda';
+import { statusReference } from '@/firebase';
 
 const state = {
     scenarios: [] as Scenario[]
@@ -8,15 +8,30 @@ const state = {
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
-        state.scenarios = R.clone(scenarios);
+            state.scenarios = R.clone(scenarios);
     }
 };
 
 const actions = {
-    getUserScenarios({commit}: any, payload: any) {
-        new ScenarioService().getUserScenarios(payload.userId)
-            .then((scenarios: Scenario[]) => commit('scenariosMutator', scenarios))
-            .catch((error: any) => console.log(error));
+    getUserScenarios({ commit }: any, payload: any) {
+
+        statusReference.on('value', (snapshot: any) => {
+            const results = snapshot.val();
+            let scenarios: Scenario[] = [];
+            for (let key in results) {
+                scenarios.push({
+                    scenarioId: 0,
+                    name: key,
+                    createdDate: results[key].created,
+                    lastModifiedDate: results[key].lastModified,
+                    status: results[key].status,
+                    shared: false
+                });
+            }
+            commit('scenariosMutator', scenarios);
+        }, (error: any) => {
+            console.log('error in fetching scenarios', error);
+        });
     }
 };
 

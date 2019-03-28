@@ -295,7 +295,7 @@
     import {uniq, groupBy} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {DataTableRow} from '@/shared/models/vue/data-table-row';
+    import { DataTableRow } from '@/shared/models/vue/data-table-row';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
