@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -19,7 +21,13 @@ namespace BridgeCare.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return Ok($"{User.Identity.Name}");
+                WindowsIdentity identity = HttpContext.Current.Request.LogonUserIdentity;
+                List<string> userInformation = new List<string>
+                {
+                    $"{identity.Name}",
+                    $"{identity.User}"
+                };
+                return Ok(userInformation);
             }
             else
             {

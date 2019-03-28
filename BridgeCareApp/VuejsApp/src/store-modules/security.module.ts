@@ -6,6 +6,7 @@ const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
 const state = {
     loginFailed: true,
     userName: '',
+    userId: '',
     userRoles: [] as Array<string>
 };
 
@@ -20,7 +21,10 @@ const mutations = {
         if (!state.userRoles.includes(role)) {
             state.userRoles.push(role);
         }
-    }
+    },
+    userIdMutator(state: any, userId: string) {
+        state.userId = userId;
+    },
 };
 
 const actions = {
@@ -34,7 +38,8 @@ const actions = {
         return await new AuthenticationService().getAuthentication()
             .then((results: any) => {
                 if (results.status == '200') {
-                    commit('userNameMutator', results.data);
+                    commit('userNameMutator', results.data[0]);
+                    commit('userIdMutator', results.data[1]);
                     commit('loginMutator', false);
 
                     db.ref('roles').once('value', (snapshot: any) => {

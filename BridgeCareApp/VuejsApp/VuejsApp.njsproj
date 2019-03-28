@@ -116,6 +116,7 @@
     <Folder Include="src\shared\models\vue\" />
     <Folder Include="src\shared\utils\" />
     <Folder Include="src\store-modules\" />
+    <Folder Include="src\store\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\firebase.ts">
@@ -142,18 +143,18 @@
     <TypeScriptCompile Include="src\services\inventory.service.ts" />
     <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
     <TypeScriptCompile Include="src\services\network.service.ts" />
-    <TypeScriptCompile Include="src\services\scenario.service.ts" />
     <TypeScriptCompile Include="src\services\simulation.service.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\create-investment-strategy-dialog-result.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\edit-budgets-dialog-result.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\alert.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\criteria.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\inventory.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\investment.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\network.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
-    <TypeScriptCompile Include="src\shared\models\iAM\section.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
+    <TypeScriptCompile Include="src\shared\models\vue\data-table-row.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\select-item.ts" />
     <TypeScriptCompile Include="src\shared\utils\criteria-editor-parsers.ts" />
     <TypeScriptCompile Include="src\shared\utils\has-value.ts" />
@@ -178,7 +179,7 @@
     <TypeScriptCompile Include="src\store-modules\user-authorization.module.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\store.ts" />
+    <TypeScriptCompile Include="src\store\root-store.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="babel.config.js" />
