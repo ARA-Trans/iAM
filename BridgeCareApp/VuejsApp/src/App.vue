@@ -19,6 +19,7 @@
 
 <style>
     html {
-        overflow: hidden;
+        overflow: auto;
+        overflow-x: hidden;
     }
 </style>
