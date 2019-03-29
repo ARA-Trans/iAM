@@ -16,3 +16,10 @@
     export default class AppComponent extends Vue {
     }
 </script>
+
+<style>
+    html {
+        overflow: auto;
+        overflow-x: hidden;
+    }
+</style>
