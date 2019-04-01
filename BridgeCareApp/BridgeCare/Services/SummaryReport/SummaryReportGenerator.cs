@@ -13,12 +13,14 @@ namespace BridgeCare.Services.SummaryReport
         private readonly ICommonSummaryReportData commonSummaryReportData;
         private readonly SummaryReportBridgeData summaryReportBridgeData;        
         private readonly BridgeWorkSummary bridgeWorkSummary;
+        private readonly ConditionBridgeCount conditionBridgeCount;
 
-        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary summaryReportBridgeWorkSummary)
+        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary summaryReportBridgeWorkSummary, ConditionBridgeCount conditionBridgeCount)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
-            this.bridgeWorkSummary=summaryReportBridgeWorkSummary?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
+            this.bridgeWorkSummary = summaryReportBridgeWorkSummary ?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
+            this.conditionBridgeCount = conditionBridgeCount ?? throw new ArgumentNullException(nameof(conditionBridgeCount));
         }
 
         /// <summary>
@@ -43,9 +45,13 @@ namespace BridgeCare.Services.SummaryReport
                 var simulationDataModels = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
                 // Bridge Work Summary tab
-                worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                bridgeWorkSummary.Fill(worksheet, simulationDataModels, simulationYears, dbContext);                             
-                
+                var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, simulationDataModels, simulationYears, dbContext);
+
+                // Condition Bridge Cnt tab
+                worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
+                conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYears.Count);
+
                 return excelPackage.GetAsByteArray();
             }
         }
