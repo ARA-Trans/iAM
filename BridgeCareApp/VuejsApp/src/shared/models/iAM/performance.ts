@@ -8,7 +8,7 @@ export interface Equation {
     isFunction: boolean;
 }
 
-export interface PerformanceStrategyEquation extends Equation{
+export interface PerformanceStrategyEquation extends Equation {
     performanceStrategyId: number;
     performanceStrategyEquationId: number;
 }
@@ -42,8 +42,10 @@ export interface CreatedPerformanceStrategy {
     performanceStrategyEquations: PerformanceStrategyEquation[];
 }
 
-export interface UpdatedPerformanceStrategy extends PerformanceStrategy{
-    deletedPerformanceStrategyEquations: number[];
+export interface UpdatedPerformanceStrategy {
+    id: number;
+    name: string;
+    description: string;
 }
 
 export const emptyPerformanceStrategy: PerformanceStrategy = {
@@ -70,3 +72,10 @@ export const emptyPerformanceStrategyEquation: PerformanceStrategyEquation = {
     piecewise: false,
     isFunction: false
 };
+
+export const emptyCreatedPerformanceStrategyEquation: CreatedPerformanceStrategyEquation = {
+    performanceStrategyId: 0,
+    attribute: '',
+    equationName: ''
+};
+

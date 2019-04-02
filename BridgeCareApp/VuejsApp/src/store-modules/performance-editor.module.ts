@@ -1,19 +1,30 @@
 import {
-    DeletedPerformanceStrategyEquations,
+    DeletedPerformanceStrategyEquations, emptyPerformanceStrategy,
     PerformanceStrategy,
     PerformanceStrategyEquation
 } from '@/shared/models/iAM/performance';
-import {clone, merge, append, sortBy, prop, contains, last} from 'ramda';
+import {clone, merge, append, sortBy, prop, contains, last, any, propEq} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {hasValue} from '@/shared/utils/has-value';
 
 const state = {
-    performanceStrategies: [] as PerformanceStrategy[]
+    performanceStrategies: [] as PerformanceStrategy[],
+    selectedPerformanceStrategy: {...emptyPerformanceStrategy} as PerformanceStrategy
 };
 
 const mutations = {
     performanceStrategiesMutator(state: any, performanceStrategies: PerformanceStrategy[]) {
         state.performanceStrategies = clone(performanceStrategies);
+    },
+    selectedPerformanceStrategyMutator(state: any, performanceStrategyId: number) {
+        if (any(propEq('id', performanceStrategyId), state.performanceStrategies)) {
+            state.selectedPerformanceStrategy = clone(state.performanceStrategies
+                .find((performanceStrategy: PerformanceStrategy) =>
+                    performanceStrategy.id === performanceStrategyId
+                ) as PerformanceStrategy);
+        } else {
+            state.selectedPerformanceStrategy = {...emptyPerformanceStrategy};
+        }
     },
     createdPerformanceStrategyMutator(state: any, createdPerformanceStrategy: PerformanceStrategy) {
         // TODO: remove code to add a mock id to a created performance strategy when services become available
@@ -28,7 +39,10 @@ const mutations = {
     updatedPerformanceStrategyMutator(state: any, updatedPerformanceStrategy: PerformanceStrategy) {
         state.performanceStrategies = state.performanceStrategies.map((performanceStrategy: PerformanceStrategy) => {
             if (performanceStrategy.id === updatedPerformanceStrategy.id) {
-                return merge(performanceStrategy, updatedPerformanceStrategy);
+                return {
+                    ...updatedPerformanceStrategy,
+                    performanceStrategyEquations: performanceStrategy.performanceStrategyEquations
+                } as PerformanceStrategy;
             }
             return performanceStrategy;
         });
@@ -47,12 +61,17 @@ const mutations = {
            return performanceStrategy;
         });
     },
-    updatedEquationMutator(state: any, updatedEquation: PerformanceStrategyEquation) {
+    updatedEquationsMutator(state: any, updatedEquations: PerformanceStrategyEquation[]) {
         state.performanceStrategies = state.performanceStrategies.map((performanceStrategy: PerformanceStrategy) => {
-            if (performanceStrategy.id === updatedEquation.performanceStrategyId) {
+            const performanceStrategyId = updatedEquations[0].performanceStrategyId;
+            if (performanceStrategy.id === performanceStrategyId) {
                 performanceStrategy.performanceStrategyEquations = performanceStrategy.performanceStrategyEquations
                     .map((equation: PerformanceStrategyEquation) => {
-                        if (equation.performanceStrategyEquationId === updatedEquation.performanceStrategyEquationId) {
+                        if (any(propEq('performanceStrategyEquationId', equation.performanceStrategyEquationId), updatedEquations)) {
+                            const updatedEquation = updatedEquations
+                                .find((e: PerformanceStrategyEquation) =>
+                                    e.performanceStrategyEquationId === equation.performanceStrategyEquationId
+                                ) as PerformanceStrategyEquation;
                             return merge(equation, updatedEquation);
                         }
                         return equation;
@@ -82,32 +101,47 @@ const actions = {
             )
             .catch((error: any) => console.log(error));
     },
+    selectPerformanceStrategy({commit}: any, payload: any) {
+        commit('selectedPerformanceStrategyMutator', payload.performanceStrategyId);
+    },
     async createPerformanceStrategy({commit}: any, payload: any) {
         await new PerformanceEditorService().createPerformanceStrategy(payload.createdPerformanceStrategy)
-            .then((createdPerformanceStrategy: PerformanceStrategy) =>
-                commit('createdPerformanceStrategyMutator', createdPerformanceStrategy)
-            )
+            .then((createdPerformanceStrategy: PerformanceStrategy) => {
+                commit('createdPerformanceStrategyMutator', createdPerformanceStrategy);
+                commit('selectedPerformanceStrategyMutator', createdPerformanceStrategy.id);
+            })
             .catch((error: any) => console.log(error));
     },
     async updatePerformanceStrategy({commit}: any, payload: any) {
         await new PerformanceEditorService().updatePerformanceStrategy(payload.updatedPerformanceStrategy)
-            .then((updatedPerformanceStrategy: PerformanceStrategy) =>
-                commit('updatedPerformanceStrategyMutator', updatedPerformanceStrategy)
-            )
+            .then((updatedPerformanceStrategy: PerformanceStrategy) => {
+                commit('updatedPerformanceStrategyMutator', updatedPerformanceStrategy);
+                commit('selectedPerformanceStrategyMutator', updatedPerformanceStrategy.id);
+            })
             .catch((error: any) => console.log(error));
     },
     async createEquation({commit}: any, payload: any) {
         await new PerformanceEditorService().createEquation(payload.createdEquation)
-            .then((createdEquation: PerformanceStrategyEquation) =>
-                commit('createdEquationMutator', createdEquation)
-            )
+            .then((createdEquation: PerformanceStrategyEquation) => {
+                commit('createdEquationMutator', createdEquation);
+                commit('selectedPerformanceStrategyMutator', createdEquation.performanceStrategyId);
+            })
             .catch((error: any) => console.log(error));
     },
-    async updateEquation({commit}: any, payload: any) {
-        await new PerformanceEditorService().updateEquation(payload.updatedEquation)
-            .then((updatedEquation: PerformanceStrategyEquation) =>
-                commit('updatedEquationMutator', updatedEquation)
-            )
+    async updateEquations({commit}: any, payload: any) {
+        await new PerformanceEditorService().updateEquations(payload.updatedEquations)
+            .then((updatedEquations: PerformanceStrategyEquation[]) => {
+                commit('updatedEquationsMutator', updatedEquations);
+                commit('selectedPerformanceStrategyMutator', updatedEquations[0].performanceStrategyId);
+            })
+            .catch((error: any) => console.log(error));
+    },
+    async deleteEquations({commit}: any, payload: any) {
+        await new PerformanceEditorService().deleteEquations(payload.deletedEquations)
+            .then((deletedEquations: DeletedPerformanceStrategyEquations) => {
+                commit('deletedEquationsMutator', deletedEquations);
+                commit('selectedPerformanceStrategyMutator', deletedEquations.performanceStrategyId);
+            })
             .catch((error: any) => console.log(error));
     }
 };

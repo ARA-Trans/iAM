@@ -5,7 +5,7 @@ import moment from 'moment';
 import {emptyPerformanceStrategy, PerformanceStrategy} from '@/shared/models/iAM/performance';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
-export const attributes: string[] = [
+export const mockAttributes: string[] = [
     'ADTTOTAL',
     'ADTYEAR',
     'AGE',

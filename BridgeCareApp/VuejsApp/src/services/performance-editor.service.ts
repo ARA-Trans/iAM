@@ -27,8 +27,8 @@ export default class PerformanceEditorService {
      */
     createPerformanceStrategy(createdPerformanceStrategy: CreatedPerformanceStrategy): Promise<PerformanceStrategy> {
         return Promise.resolve<PerformanceStrategy>({
-           ...emptyPerformanceStrategy,
-           name: createdPerformanceStrategy.name
+           ...createdPerformanceStrategy,
+            id: 0
         });
         // TODO: add axios web service call for creating performance strategy
     }
@@ -42,7 +42,7 @@ export default class PerformanceEditorService {
             id: updatedPerformanceStrategy.id,
             name: updatedPerformanceStrategy.name,
             description: updatedPerformanceStrategy.description,
-            performanceStrategyEquations: updatedPerformanceStrategy.performanceStrategyEquations
+            performanceStrategyEquations: []
         });
         // TODO: add axios web service call for updating performance strategy
     }
@@ -65,11 +65,11 @@ export default class PerformanceEditorService {
     }
 
     /**
-     * Updates a performance strategy equation
-     * @param updatedEquation The performance strategy equation update data
+     * Updates a list of performance strategy equations
+     * @param updatedEquations The performance strategy equations' update data
      */
-    updateEquation(updatedEquation: PerformanceStrategyEquation): Promise<PerformanceStrategyEquation> {
-        return Promise.resolve<PerformanceStrategyEquation>(updatedEquation);
+    updateEquations(updatedEquations: PerformanceStrategyEquation[]): Promise<PerformanceStrategyEquation[]> {
+        return Promise.resolve<PerformanceStrategyEquation[]>(updatedEquations);
         // TODO: add axios web service call for updating performance strategy equation
     }
 
