@@ -12,32 +12,60 @@ namespace BridgeCare.DataAccessLayer
         {
         }
 
-        public IQueryable<PerformanceModel> GetPerformance(SimulationModel data, BridgeCareContext db)
+        public IQueryable<PerformanceScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db)
         {
             try
             {
                 return (db.PERFORMANCE
                     .Where(d => d.SIMULATIONID == data.SimulationId)
-                    .Select(p => new PerformanceModel()
+                    .Select(p => new PerformanceScenarioModel()
                     {
                         PerformanceId = p.PERFORMANCEID,
                         SimulationId = p.SIMULATIONID,
-                        Attribute = p.ATTRIBUTE_,
-                        EquationName = p.EQUATIONNAME,
-                        Criteria = p.CRITERIA,
-                        Equation = p.EQUATION,
-                        Shift = p.SHIFT,
-                        BinaryEquation = p.BINARY_EQUATION,
-                        BinaryCriteria = p.BINARY_CRITERIA,
-                        Piecwise = p.PIECEWISE,
-                        IsFunction = p.ISFUNCTION
+                        Performance = new PerformanceModel()
+                        {
+                            Attribute = p.ATTRIBUTE_,
+                            EquationName = p.EQUATIONNAME,
+                            Criteria = p.CRITERIA,
+                            Equation = p.EQUATION,
+                            Shift = p.SHIFT,
+                            BinaryEquation = p.BINARY_EQUATION,
+                            BinaryCriteria = p.BINARY_CRITERIA,
+                            Piecwise = p.PIECEWISE,
+                            IsFunction = p.ISFUNCTION
+                        }
                     }).ToList()).AsQueryable();
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "Performance");
             }
-            return Enumerable.Empty<PerformanceModel>().AsQueryable();
+            return Enumerable.Empty<PerformanceScenarioModel>().AsQueryable();
+        }
+        public void UpdatePerformanceScenario(PerformanceScenarioModel data, BridgeCareContext db)
+        {
+            try
+            {
+                var performance = db.PERFORMANCE
+                    .Single(_ => _.PERFORMANCEID == data.PerformanceId);
+
+                performance.ATTRIBUTE_ = data.Performance.Attribute;
+                performance.EQUATIONNAME = data.Performance.EquationName;
+                performance.CRITERIA = data.Performance.Criteria;
+                performance.EQUATION = data.Performance.Equation;
+                performance.SHIFT = data.Performance.Shift;
+                performance.BINARY_EQUATION = data.Performance.BinaryEquation;
+                performance.BINARY_CRITERIA = data.Performance.BinaryCriteria;
+                performance.PIECEWISE = data.Performance.Piecwise;
+                performance.ISFUNCTION = data.Performance.IsFunction;
+
+                db.SaveChanges();
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "Performance Scenario");
+            }
+            return;
         }
     }
 }

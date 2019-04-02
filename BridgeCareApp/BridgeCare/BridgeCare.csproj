@@ -238,6 +238,7 @@
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\PerformanceScenarioModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
     <Compile Include="Models\SimulatedSegmentIdsModel.cs" />
     <Compile Include="Models\CostDetails.cs" />

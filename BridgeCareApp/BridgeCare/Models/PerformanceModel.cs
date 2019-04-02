@@ -4,8 +4,7 @@ namespace BridgeCare.Models
 {
     public class PerformanceModel
     {
-        public int PerformanceId { get; set; }
-        public int SimulationId { get; set; }
+       
         public string Attribute { get; set; }
         public string EquationName { get; set; }
         public string Criteria { get; set; }
