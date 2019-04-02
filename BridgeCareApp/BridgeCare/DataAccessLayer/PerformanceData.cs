@@ -29,8 +29,6 @@ namespace BridgeCare.DataAccessLayer
                             Criteria = p.CRITERIA,
                             Equation = p.EQUATION,
                             Shift = p.SHIFT,
-                            BinaryEquation = p.BINARY_EQUATION,
-                            BinaryCriteria = p.BINARY_CRITERIA,
                             Piecwise = p.PIECEWISE,
                             IsFunction = p.ISFUNCTION
                         }
@@ -42,6 +40,7 @@ namespace BridgeCare.DataAccessLayer
             }
             return Enumerable.Empty<PerformanceScenarioModel>().AsQueryable();
         }
+
         public void UpdatePerformanceScenario(PerformanceScenarioModel data, BridgeCareContext db)
         {
             try
@@ -54,8 +53,6 @@ namespace BridgeCare.DataAccessLayer
                 performance.CRITERIA = data.Performance.Criteria;
                 performance.EQUATION = data.Performance.Equation;
                 performance.SHIFT = data.Performance.Shift;
-                performance.BINARY_EQUATION = data.Performance.BinaryEquation;
-                performance.BINARY_CRITERIA = data.Performance.BinaryCriteria;
                 performance.PIECEWISE = data.Performance.Piecwise;
                 performance.ISFUNCTION = data.Performance.IsFunction;
 
