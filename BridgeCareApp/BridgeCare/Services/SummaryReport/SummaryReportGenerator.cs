@@ -51,7 +51,8 @@ namespace BridgeCare.Services.SummaryReport
                 // Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
                 conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYears.Count);
-
+                
+                
                 return excelPackage.GetAsByteArray();
             }
         }
