@@ -75,8 +75,8 @@
     import { Action, State } from 'vuex-class';
 
     import { Alert } from '@/shared/models/iAM/alert';
-    import AppSpinner from '../shared/AppSpinner.vue';
-    import AppModalPopup from '../shared/AppModalPopup.vue';
+    import AppSpinner from '../shared/dialogs/AppSpinner.vue';
+    import AppModalPopup from '../shared/dialogs/AppModalPopup.vue';
     import {Route} from '@/shared/models/iAM/route';
 
     @Component({

@@ -42,10 +42,10 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, emptyCriteria} from '@/shared/models/iAM/criteria';
-    import {parseCriteriaString, parseQueryBuilderJson} from '@/shared/utils/criteria-editor-parsers';
-    import {hasValue} from '@/shared/utils/has-value';
-    import {CriteriaEditorDialogData} from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
+    import {Criteria, emptyCriteria} from '../models/iAM/criteria';
+    import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
+    import {hasValue} from '../utils/has-value';
+    import {CriteriaEditorDialogData} from '../models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
     import {isEmpty} from 'ramda';
 
     @Component({

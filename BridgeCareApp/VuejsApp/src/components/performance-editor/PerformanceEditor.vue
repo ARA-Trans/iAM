@@ -183,7 +183,7 @@
     import {State, Action} from 'vuex-class';
     import CreatePerformanceStrategyDialog from './performance-editor-dialogs/CreatePerformanceStrategyDialog.vue';
     import CreatePerformanceStrategyEquationDialog from './performance-editor-dialogs/CreatePerformanceStrategyEquationDialog.vue';
-    import CriteriaEditor from '../../shared/CriteriaEditor.vue';
+    import CriteriaEditor from '../../shared/dialogs/CriteriaEditor.vue';
     import {
         PerformanceStrategyEquation,
         PerformanceStrategy,

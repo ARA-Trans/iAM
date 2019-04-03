@@ -52,7 +52,7 @@
 
     import { Network } from '@/shared/models/iAM/network';
     import { Simulation } from '@/shared/models/iAM/simulation';
-    import AppModalPopup from '../shared/AppModalPopup.vue';
+    import AppModalPopup from '../shared/dialogs/AppModalPopup.vue';
     import { Alert } from '@/shared/models/iAM/alert';
     import { hasValue } from '@/shared/utils/has-value';
     import { statusReference } from '@/firebase';
