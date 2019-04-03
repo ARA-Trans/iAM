@@ -248,6 +248,7 @@
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
     <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
+    <Compile Include="Models\SummaryReport\ChartRowsModel.cs" />
     <Compile Include="Models\SummaryReport\CurrentCell.cs" />
     <Compile Include="Models\SummaryReport\ReportProjectCost.cs" />
     <Compile Include="Models\SummaryReport\ProjectRowNumberModel.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
+    <Compile Include="Services\SummaryReport\ConditionBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="UtilityFunctions.cs" />
