@@ -34,31 +34,33 @@
             <v-divider></v-divider>
 
             <v-layout column justify-center>
-                <v-flex>
-                    <v-layout justify-center>
-                        <div>
-                            <v-layout justify-space-between>
-                                <v-btn color="info" v-on:click="onAddBudgetYear"
-                                       :disabled="hasNoSelectedInvestmentStrategy">
-                                    Add Budget Year
-                                </v-btn>
-                                <v-btn color="info" v-on:click="onAddBudgetYearRange"
-                                       :disabled="hasNoSelectedInvestmentStrategy">
-                                    Add Range
+                <v-layout row justify-center>
+                    <v-flex xs2>
+                        <v-btn color="info" v-on:click="onAddBudgetYear"
+                               :disabled="hasNoSelectedInvestmentStrategy">
+                            Add Budget Year
+                        </v-btn>
+                    </v-flex>
+                    <v-flex xs2>
+                        <v-btn color="info" v-on:click="onAddBudgetYearRange"
+                               :disabled="hasNoSelectedInvestmentStrategy">
+                            Add Range
 
-                                </v-btn>
-                                <v-btn color="info" v-on:click="onShowEditBudgetsDialog"
-                                       :disabled="hasNoSelectedInvestmentStrategy">
-                                    Edit Budgets
-                                </v-btn>
-                                <v-btn color="error" v-on:click="onDeleteBudgetYears"
-                                       :disabled="selectedGridRows.length === 0">
-                                    Delete Budget Year(s)
-                                </v-btn>
-                            </v-layout>
-                        </div>
-                    </v-layout>
-                </v-flex>
+                        </v-btn>
+                    </v-flex>
+                    <v-flex xs2>
+                        <v-btn color="info" v-on:click="onShowEditBudgetsDialog"
+                               :disabled="hasNoSelectedInvestmentStrategy">
+                            Edit Budgets
+                        </v-btn>
+                    </v-flex>
+                    <v-flex xs2>
+                        <v-btn color="error" v-on:click="onDeleteBudgetYears"
+                               :disabled="selectedGridRows.length === 0">
+                            Delete Budget Year(s)
+                        </v-btn>
+                    </v-flex>
+                </v-layout>
 
                 <v-flex>
                     <v-layout justify-center class="investment-strategy-grid-layout">
@@ -69,7 +71,7 @@
                                           v-model="selectedGridRows"
                                           select-all
                                           item-key="year"
-                                          class="elevation-1"
+                                          class="elevation-1 fixed-header v-table__overflow"
                                           hide-actions>
                                 <template slot="items" slot-scope="props">
                                     <td>
@@ -584,7 +586,7 @@
 
 <style>
     .investment-editor-container {
-        height: 850px;
+        height: 820px;
         overflow-x: hidden;
         overflow-y: auto;
     }
@@ -601,4 +603,60 @@
     .budget-year-range-edit-dialog-card-text {
         height: 100px;
     }
+
+    .theme--dark.v-table thead th {
+        background-color: #424242;
+    }
+
+    .theme--light.v-table thead th {
+        background-color: #fff;
+    }
+    /* Theme */
+    .fixed-header {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+        .fixed-header table {
+            table-layout: fixed;
+        }
+
+        .fixed-header th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+            .fixed-header th:after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+            }
+
+        .fixed-header tr.v-datatable__progress th {
+            height: 1px;
+        }
+
+        .fixed-header .v-table__overflow {
+            flex-grow: 1;
+            flex-shrink: 1;
+            overflow-x: auto;
+            overflow-y: auto;
+        }
+
+        .fixed-header .v-datatable.v-table {
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+            .fixed-header .v-datatable.v-table .v-datatable__actions {
+                flex-wrap: nowrap;
+            }
+
+                .fixed-header .v-datatable.v-table .v-datatable__actions .v-datatable__actions__pagination {
+                    white-space: nowrap;
+                }
 </style>

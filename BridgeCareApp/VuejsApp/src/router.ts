@@ -5,11 +5,12 @@ import './register-hooks';
 
 import DetailedReport from '@/components/DetailedReport.vue';
 import Inventory from '@/components/Inventory.vue';
-import Scenario from '@/components/Scenarios.vue';
+import Scenario from '@/components/scenarios/Scenarios.vue';
 import EditScenario from '@/components/scenario/EditScenario.vue';
 import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import Criteria from '@/components/Criteria.vue';
 import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vue';
+import UnderConstruction from '@/components/UnderConstruction.vue';
 
 Vue.use(VueRouter);
 
@@ -58,6 +59,11 @@ const router = new VueRouter({
             path: '/Criteria',
             name: 'Criteria',
             component: Criteria
+        },
+        {
+            path: '/UnderConstruction',
+            name: 'UnderConstruction',
+            component: UnderConstruction
         },
         { path: '*', redirect: '/Inventory' }
         //{

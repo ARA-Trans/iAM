@@ -15,20 +15,48 @@
         </v-toolbar>
 
         <v-navigation-drawer app class="grey lighten-3" v-if="!loginFailed" v-model="drawer">
-            <v-divider></v-divider>
             <v-list dense class="pt-0">
-                <v-list-tile v-for="item in routes"
-                             :key="item.title"
-                             @click="routing(item.navigation)">
-                    <v-list-tile-action>
-                        <v-icon>{{item.icon}}</v-icon>
-                    </v-list-tile-action>
-
-                    <v-list-tile-content>
-                        <v-list-tile-title>{{item.name}}</v-list-tile-title>
-                        <v-list-tile-title hidden>{{item.navigation}}</v-list-tile-title>
-                    </v-list-tile-content>
+                <v-list-tile @click="routing('Inventory')">
+                    <v-list-tile-action><v-icon>home</v-icon></v-list-tile-action>
+                    <v-list-tile-title>Inventory</v-list-tile-title>
                 </v-list-tile>
+                <v-list-tile @click="routing('Scenarios')">
+                    <v-list-tile-action><v-icon>list</v-icon></v-list-tile-action>
+                    <v-list-tile-title>Scenarios</v-list-tile-title>
+                </v-list-tile>
+                <v-list-group prepend-icon="library_books">
+                    <template slot="activator">
+                        <v-list-tile>
+                            <v-list-tile-title>Libraries</v-list-tile-title>
+                        </v-list-tile>
+                    </template>
+                    <v-list-tile @click="routing('InvestmentEditor')">
+                        <v-list-tile-title>Investment Editor</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="routing('UnderConstruction')">
+                        <v-list-tile-title>Performance Editor</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="routing('UnderConstruction')">
+                        <v-list-tile-title>Committed Projects Editor</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="routing('UnderConstruction')">
+                        <v-list-tile-title>Treatments Editor</v-list-tile-title>
+                    </v-list-tile>
+                </v-list-group>
+                <v-list-tile @click="routing('UnderConstruction')">
+                    <v-list-tile-action><v-icon>lock</v-icon></v-list-tile-action>
+                    <v-list-tile-title>Security</v-list-tile-title>
+                </v-list-tile>
+                <v-list-group prepend-icon="trending_up">
+                    <template slot="activator">
+                        <v-list-tile>
+                            <v-list-tile-title>Reports</v-list-tile-title>
+                        </v-list-tile>
+                    </template>
+                    <v-list-tile @click="routing('DetailedReport')">
+                        <v-list-tile-title>Detailed report</v-list-tile-title>
+                    </v-list-tile>
+                </v-list-group>
             </v-list>
         </v-navigation-drawer>
         <v-content v-if="!loginFailed">
@@ -45,11 +73,11 @@
     import Vue from 'vue';
     import { Component } from 'vue-property-decorator';
     import { Action, State } from 'vuex-class';
-    import { append } from 'ramda';
 
     import { Alert } from '@/shared/models/iAM/alert';
     import AppSpinner from '../shared/AppSpinner.vue';
     import AppModalPopup from '../shared/AppModalPopup.vue';
+    import {Route} from '@/shared/models/iAM/route';
 
     @Component({
         components: { AppSpinner, AppModalPopup }
@@ -65,9 +93,6 @@
         @Action('setUsername') setUsernameAction: any;
         @Action('getAuthentication') getAuthenticationAction: any;
 
-        routes: any[];
-        filteredRoutes: any[];
-        totalRoutes: any[];
         warning: Alert = { showModal: false, heading: '', message: '', choice: false };
 
         data() {
@@ -76,22 +101,10 @@
             };
         }
 
-        beforeCreate() {
-            this.filteredRoutes = [
-                { navigation: 'Inventory', icon: 'home', name: 'Inventory' },
-                { navigation: 'Scenarios', icon: 'assignment', name: 'Scenarios' },
-                { navigation: 'InvestmentEditor', icon: 'pie_chart', name: 'Investment Editor' },
-                { navigation: 'Criteria', icon: 'assignment', name: 'Criteria' }
-            ];
-            this.totalRoutes = append({ navigation: 'DetailedReport', icon: 'receipt', name: 'Detailed report' }, this.filteredRoutes);
-            this.routes = [];
-        }
-
         mounted() {
             this.setIsBusyAction({ isBusy: true });
             this.getAuthenticationAction().then((result: any) => {
                 this.setIsBusyAction({ isBusy: false });
-                this.routes = this.totalRoutes;
                 console.log(this.userRoles);
                 if (result.status == '401') {
                     this.warning.showModal = true;
