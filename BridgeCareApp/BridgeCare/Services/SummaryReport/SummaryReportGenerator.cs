@@ -14,13 +14,15 @@ namespace BridgeCare.Services.SummaryReport
         private readonly SummaryReportBridgeData summaryReportBridgeData;        
         private readonly BridgeWorkSummary bridgeWorkSummary;
         private readonly ConditionBridgeCount conditionBridgeCount;
+        private readonly ConditionDeckArea conditionDeckArea;
 
-        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary summaryReportBridgeWorkSummary, ConditionBridgeCount conditionBridgeCount)
+        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary summaryReportBridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
             this.bridgeWorkSummary = summaryReportBridgeWorkSummary ?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
             this.conditionBridgeCount = conditionBridgeCount ?? throw new ArgumentNullException(nameof(conditionBridgeCount));
+            this.conditionDeckArea = conditionDeckArea ?? throw new ArgumentNullException(nameof(conditionDeckArea));
         }
 
         /// <summary>
@@ -51,8 +53,11 @@ namespace BridgeCare.Services.SummaryReport
                 // Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
                 conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYears.Count);
-                
-                
+
+                // Condition DA tab
+                worksheet = excelPackage.Workbook.Worksheets.Add("Condition DA");
+                conditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalDeckAreaSectionYearsRow, simulationYears.Count);
+
                 return excelPackage.GetAsByteArray();
             }
         }

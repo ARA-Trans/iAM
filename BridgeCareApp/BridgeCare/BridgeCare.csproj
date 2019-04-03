@@ -278,6 +278,7 @@
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
     <Compile Include="Services\SummaryReport\ConditionBridgeCount.cs" />
+    <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="UtilityFunctions.cs" />
