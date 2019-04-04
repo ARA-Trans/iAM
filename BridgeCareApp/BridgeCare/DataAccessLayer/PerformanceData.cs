@@ -36,7 +36,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Performance");
+                HandleException.SqlError(ex, "Performance Scenario select failed");
             }
             return Enumerable.Empty<PerformanceScenarioModel>().AsQueryable();
         }
@@ -60,7 +60,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Performance Scenario");
+                HandleException.SqlError(ex, "Performance Scenario update failed");
             }
             return;
         }
