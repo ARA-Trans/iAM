@@ -1,37 +1,36 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="showCriteriaEditor" persistent scrollable max-width="700px">
+        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
             <v-card>
                 <v-card-title>
-                    <v-layout column>
+                    <v-layout column fill-height>
                         <v-flex>
-                            <h3>Criteria Editor</h3>
+                            <v-layout justify-center fill-height>
+                                <h3>Criteria Editor</h3>
+                            </v-layout>
                         </v-flex>
 
                         <v-flex>
                             Current Criteria Output
-                            <v-textarea class="criteria-output-textarea"
-                                        no-resize
-                                        outline
-                                        readonly
-                                        full-width
-                                        :value="currentCriteriaOutput">
+                            <v-textarea rows="5" no-resize outline readonly full-width :value="currentCriteriaOutput">
                             </v-textarea>
                         </v-flex>
                     </v-layout>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="query-builder-card-text">
-                    <vue-query-builder :labels="labels" :rules="rules" :maxDepth="25" :styled="true"
+                    <vue-query-builder v-if="rules.length > 0" :labels="queryBuilderLabels" :rules="rules" :maxDepth="25" :styled="true"
                                        v-model="criteria">
                     </vue-query-builder>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                    <v-btn color="blue darken-1" v-on:click="onSubmit(true)" v-bind:disabled="isNotValidCriteria()">
-                        Apply
-                    </v-btn>
-                    <v-btn color="red darken-1" v-on:click="onSubmit(false)">Cancel</v-btn>
+                    <v-layout justify-space-between row fill-height>
+                        <v-btn v-on:click="onCancel">Cancel</v-btn>
+                        <v-btn color="info" v-on:click="onSubmit">
+                            Apply
+                        </v-btn>
+                    </v-layout>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -41,26 +40,28 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {Action, State} from 'vuex-class';
+    import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, CriteriaEditorAttribute, emptyCriteria} from '@/shared/models/iAM/criteria';
-    import {parseQueryBuilderJson} from '@/shared/utils/criteria-editor-parsers';
+    import {Criteria, emptyCriteria} from '@/shared/models/iAM/criteria';
+    import {parseCriteriaString, parseQueryBuilderJson} from '@/shared/utils/criteria-editor-parsers';
     import {hasValue} from '@/shared/utils/has-value';
+    import {CriteriaEditorDialogData} from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
+    import {isEmpty} from 'ramda';
 
     @Component({
         components: {VueQueryBuilder}
     })
     export default class CriteriaEditor extends Vue {
-        @Prop() showCriteriaEditor: boolean;
+        @Prop() dialogData: CriteriaEditorDialogData;
 
-        @State(state => state.criteriaEditor.criteriaEditorAttributes) criteriaEditorAttributes: CriteriaEditorAttribute[];
-        @State(state => state.criteriaEditor.criteria) stateCriteria: Criteria;
+        @State(state => state.attribute.attributes) attributes: string[];
 
-        @Action('getCriteriaEditorAttributes') setCriteriaEditorAttributesAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getAttributes') getAttributesAction: any;
 
-        criteria: Criteria = emptyCriteria;
+        criteria: Criteria = {...emptyCriteria};
         rules: any[] = [];
-        labels: object = {
+        queryBuilderLabels: object = {
             'matchType': '',
             'matchTypes': [
                 {'id': 'AND', 'label': 'AND'},
@@ -74,39 +75,44 @@
         };
         currentCriteriaOutput = '';
 
-        @Watch('criteriaEditorAttributes')
-        onCriteriaEditorAttributesChanged(val: CriteriaEditorAttribute[]) {
-            this.rules = val.map((cea: CriteriaEditorAttribute) => ({
-                // TODO: implement select when we have web service that returns predetermined values
-                /*type: 'select',
-                label: ca.name,
-                id: ca.name,
-                operators: ['=', '<>', '<', '<=', '>', '>='],
-                choices: ca.values.map((val: string) => ({
-                    label: val,
-                    value: val
-                }))*/
-                type: 'text',
-                label: cea.name,
-                id: cea.name,
-                operators: ['=', '<>', '<', '<=', '>', '>=']
-            }));
+        @Watch('dialogData')
+        onDialogDataChanged() {
+            // set the criteria string
+            this.criteria = parseCriteriaString(this.dialogData.criteria);
+            // get attributes if the dialog is being shown and the state attributes list is empty
+            if (this.dialogData.showDialog && !hasValue(this.attributes)) {
+                this.setIsBusyAction({isBusy: true});
+                this.getAttributesAction()
+                    .then(() => this.setIsBusyAction({isBusy: false}))
+                    .catch((error: any) => console.log(error));
+            }
         }
 
-        @Watch('stateCriteria')
-        onStateCriteriaChanged(criteria: Criteria) {
-            this.criteria = criteria;
+        @Watch('attributes')
+        onAttributesChanged() {
+            if (hasValue(this.attributes)) {
+                // set rules using the state attributes list
+                this.rules = this.attributes.map((attribute: string) => ({
+                    type: 'text',
+                    label: attribute,
+                    id: attribute,
+                    operators: ['=', '<>', '<', '<=', '>', '>=']
+                }));
+            }
+
         }
 
+        /**
+         * Criteria in dialog has changed
+         */
         @Watch('criteria')
         onCriteriaChanged() {
             this.setCurrentCriteriaOutput();
         }
 
-        mounted() {
-            this.setCriteriaEditorAttributesAction();
-        }
-
+        /**
+         * Sets the currentCriteriaOutput based on if the current criteria is valid or not
+         */
         setCurrentCriteriaOutput() {
             if (this.isNotValidCriteria()) {
                 this.currentCriteriaOutput = 'Could Not Parse Current Criteria';
@@ -115,25 +121,32 @@
             }
         }
 
+        /**
+         * Whether or not the current criteria is valid
+         */
         isNotValidCriteria() {
             return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
         }
 
-        onSubmit(notCanceled: boolean) {
-            if (notCanceled) {
-                this.$emit('applyCriteria', parseQueryBuilderJson(this.criteria).join(''));
-            } else {
-                this.$emit('applyCriteria', '');
-            }
+        /**
+         * 'Apply' button was clicked
+         */
+        onSubmit() {
+            // emit dialog result
+            this.$emit('submit', parseQueryBuilderJson(this.criteria).join(''));
+        }
+
+        /**
+         * 'Cancel' button was clicked
+         */
+        onCancel() {
+            // emit null result
+            this.$emit('submit', null);
         }
     }
 </script>
 
 <style>
-    .criteria-output-textarea {
-        height: 100px;
-    }
-
     .query-builder-card-text {
         height: 700px;
     }

@@ -1,6 +1,6 @@
 import {InvestmentStrategy} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import * as R from 'ramda';
+import {clone, any, propEq, merge, append} from 'ramda';
 
 const state = {
     investmentStrategies: [] as InvestmentStrategy[],
@@ -9,22 +9,22 @@ const state = {
 
 const mutations = {
     investmentStrategiesMutator(state: any, investmentStrategies: InvestmentStrategy[]) {
-        state.investmentStrategies = R.clone(investmentStrategies);
+        state.investmentStrategies = clone(investmentStrategies);
     },
     savedInvestmentStrategyMutator(state: any, savedInvestmentStrategy: InvestmentStrategy) {
-        if (R.any(R.propEq('simulationId', savedInvestmentStrategy.simulationId), state.investmentStrategies)) {
+        if (any(propEq('simulationId', savedInvestmentStrategy.simulationId), state.investmentStrategies)) {
             state.investmentStrategies = state.investmentStrategies.map((existingInvestmentStrategy: InvestmentStrategy) => {
                 if (existingInvestmentStrategy.simulationId === savedInvestmentStrategy.simulationId) {
-                    return R.merge(existingInvestmentStrategy, savedInvestmentStrategy);
+                    return merge(existingInvestmentStrategy, savedInvestmentStrategy);
                 }
                 return existingInvestmentStrategy;
             });
         } else {
-            state.investmentStrategies = R.append(savedInvestmentStrategy);
+            state.investmentStrategies = append(savedInvestmentStrategy, state.investmentStrategies);
         }
     },
     budgetsMutator(state: any, budgets: string[]) {
-        state.budgets = R.clone(budgets);
+        state.budgets = clone(budgets);
     }
 };
 
@@ -36,8 +36,8 @@ const actions = {
             )
             .catch((error: any) => console.log(error));
     },
-    async saveInvestmentStrategy({commit}: any, payload: any) {
-        await new InvestmentEditorService().saveInvestmentStrategy(payload.savedInvestmentStrategy)
+    async saveInvestmentStrategyToLibrary({commit}: any, payload: any) {
+        await new InvestmentEditorService().saveInvestmentStrategyToLibrary(payload.savedInvestmentStrategy)
             .then((investmentStrategy: InvestmentStrategy) =>
                 commit('savedInvestmentStrategyMutator', investmentStrategy)
             )
