@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class PerformanceData : IPerformance
+    public class TreatemntData : ITreatment
     {
-        public PerformanceData()
+        public TreatmentData()
         {
         }
 
-        public IQueryable<PerformanceScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db)
+        public IQueryable<TreatmentScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace BridgeCare.DataAccessLayer
                     {
                         PerformanceId = p.PERFORMANCEID,
                         SimulationId = p.SIMULATIONID,
-                        Performance = new PerformanceModel()
+                        Performance = new TreatmentModel()
                         {
                             Attribute = p.ATTRIBUTE_,
                             EquationName = p.EQUATIONNAME,
@@ -36,12 +36,12 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Performance Scenario select failed");
+                HandleException.SqlError(ex, "Treatment");
             }
-            return Enumerable.Empty<PerformanceScenarioModel>().AsQueryable();
+            return Enumerable.Empty<TreatmentScenarioModel>().AsQueryable();
         }
 
-        public void UpdatePerformanceScenario(PerformanceScenarioModel data, BridgeCareContext db)
+        public void UpdateTreatmentScenario(TreatmentScenarioModel data, BridgeCareContext db)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Performance Scenario update failed");
+                HandleException.SqlError(ex, "Treatment Scenario");
             }
             return;
         }
