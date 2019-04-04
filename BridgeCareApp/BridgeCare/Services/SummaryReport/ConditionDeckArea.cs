@@ -36,7 +36,7 @@ namespace BridgeCare.Services
             chart.Locked = true;
         }
 
-        private static void SetWorksheetProperties(ExcelWorksheet worksheet)
+        private void SetWorksheetProperties(ExcelWorksheet worksheet)
         {
             var excelFill = worksheet.Cells.Style.Fill;
             excelFill.PatternType = ExcelFillStyle.Solid;
@@ -45,7 +45,7 @@ namespace BridgeCare.Services
             worksheet.View.ShowHeaders = false;
         }
 
-        private static void AddSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count, ExcelChart chart)
+        private void AddSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count, ExcelChart chart)
         {
             CreateSeries(bridgeWorkSummaryWorkSheet, totalDeckAreaSectionYearsRow, count, chart, totalDeckAreaSectionYearsRow + 3, Properties.Resources.Poor, Color.Red);
 
@@ -54,7 +54,7 @@ namespace BridgeCare.Services
             CreateSeries(bridgeWorkSummaryWorkSheet, totalDeckAreaSectionYearsRow, count, chart, totalDeckAreaSectionYearsRow + 1, Properties.Resources.Good, Color.Green);
         }
 
-        private static void CreateSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count, ExcelChart chart, int fromRow, string header, Color color)
+        private void CreateSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count, ExcelChart chart, int fromRow, string header, Color color)
         {
             var serie = bridgeWorkSummaryWorkSheet.Cells[fromRow, 2, fromRow, count + 2];
             var xSerie = bridgeWorkSummaryWorkSheet.Cells[totalDeckAreaSectionYearsRow, 2, totalDeckAreaSectionYearsRow, count + 2];
