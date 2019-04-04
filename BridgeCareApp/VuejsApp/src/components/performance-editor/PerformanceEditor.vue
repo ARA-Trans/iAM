@@ -32,15 +32,10 @@
                                        :disabled="selectedGridRows.length === 0">
                                     Toggle Shift
                                 </v-btn>
-                                <v-tooltip top>
-                                    <template slot="activator">
-                                        <v-btn color="info lighten-2" v-on:click="onShowEquationEditorDialog"
-                                               :disabled="true">
-                                            Edit Equation
-                                        </v-btn>
-                                    </template>
-                                    <span>Feature not ready</span>
-                                </v-tooltip>
+                                <v-btn color="info lighten-2" v-on:click="onShowEquationEditorDialog"
+                                       :disabled="selectedGridRows.length !== 1">
+                                    Edit Equation
+                                </v-btn>
                                 <v-btn color="info lighten-2" v-on:click="onShowCriteriaEditorDialog"
                                        :disabled="selectedGridRows.length !== 1">
                                     Edit Criteria
@@ -150,6 +145,9 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
+                <v-btn color="info lighten-2" v-on:click="onShowEquationEditorDialog">
+                    Edit Equation
+                </v-btn>
                 <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedPerformanceStrategy">
                     Create as New Library
                 </v-btn>
@@ -173,6 +171,8 @@
         <CreatePerformanceStrategyEquationDialog :showDialog="showCreatePerformanceStrategyEquationDialog"
                                                  @submit="onCreatePerformanceStrategyEquation" />
 
+        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult"/>
+
         <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteriaEditorDialogResult" />
     </v-container>
 </template>
@@ -183,6 +183,7 @@
     import {State, Action} from 'vuex-class';
     import CreatePerformanceStrategyDialog from './performance-editor-dialogs/CreatePerformanceStrategyDialog.vue';
     import CreatePerformanceStrategyEquationDialog from './performance-editor-dialogs/CreatePerformanceStrategyEquationDialog.vue';
+    import EquationEditor from '../../shared/dialogs/EquationEditor.vue';
     import CriteriaEditor from '../../shared/dialogs/CriteriaEditor.vue';
     import {
         PerformanceStrategyEquation,
@@ -205,10 +206,11 @@
     import {
         emptyEquationEditorDialogData,
         EquationEditorDialogData
-    } from "@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data";
+    } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
+    import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
 
     @Component({
-        components: {CreatePerformanceStrategyDialog, CreatePerformanceStrategyEquationDialog, CriteriaEditor}
+        components: {CreatePerformanceStrategyDialog, CreatePerformanceStrategyEquationDialog, EquationEditor, CriteriaEditor}
     })
     export default class PerformanceEditor extends Vue {
         @State(state => state.performanceEditor.performanceStrategies) performanceStrategies: PerformanceStrategy[];
@@ -362,31 +364,51 @@
          */
         onToggleShift() {
             // get the selected equation ids from selectedGridRows
-            const selectedEquationIds: number[] = this.selectedGridRows
-                .map((equation: PerformanceStrategyEquation) => equation.performanceStrategyEquationId);
+            /*const selectedEquationIds: number[] = this.selectedGridRows
+                .map((equation: PerformanceStrategyEquation) => equation.performanceStrategyEquationId);*/
             // get the equations to update from selectedPerformanceStrategy.performanceStrategyEquations
             // and negate their current shift values
-            const equations: PerformanceStrategyEquation[] = this.selectedPerformanceStrategy.performanceStrategyEquations
+            /*const equations: PerformanceStrategyEquation[] = this.selectedPerformanceStrategy.performanceStrategyEquations
                 .filter((equation: PerformanceStrategyEquation) => contains(equation.performanceStrategyEquationId, selectedEquationIds))
-                .map((equation: PerformanceStrategyEquation) => ({...equation, shift: !equation.shift}));
+                .map((equation: PerformanceStrategyEquation) => ({...equation, shift: !equation.shift}));*/
+            const updatedEquations = this.selectedGridRows.map((equation: PerformanceStrategyEquation) => ({
+                ...equation,
+                shift: !equation.shift
+            }));
             // dispatch updateEquations action to update the performance strategy equations in state
-            this.updateEquationsAction({updatedEquations: equations});
+            this.updateEquationsAction({updatedEquations: updatedEquations});
         }
 
         /**
          * 'Edit Equation' button has been clicked
          */
         onShowEquationEditorDialog() {
+            // create a new equationEditorDialogData object
+            this.equationEditorDialogData = {
+                showDialog: true,
+                equation: this.selectedGridRows[0].equation,
+                isPiecewise: this.selectedGridRows[0].piecewise,
+                isFunction: this.selectedGridRows[0].isFunction
+            };
         }
 
         /**
          * User has submitted PerformanceEquationEditorDialog result
-         * @param equation The submitted equation string
+         * @param result The submitted equation editor dialog result
          */
-        onSubmitEquationEditorResult(equation: string) {
+        onSubmitEquationEditorDialogResult(result: EquationEditorDialogResult) {
             // reset equationEditorDialogData
             this.equationEditorDialogData = {...emptyEquationEditorDialogData};
-            if (!isNil(equation)) {
+            // check that a result was submitted
+            if (!isNil(result)) {
+                // get the selected equation from selectedGridRows
+                const selectedEquation = this.selectedGridRows[0] as PerformanceStrategyEquation;
+                // update the selected equation with the equation editor dialog result
+                selectedEquation.equation = result.equation;
+                selectedEquation.piecewise = result.isPiecewise;
+                selectedEquation.isFunction = result.isFunction;
+                // dispatch an action to update the selected equation on the server
+                this.updateEquationsAction({updatedEquations: [selectedEquation]});
             }
         }
 
@@ -394,17 +416,10 @@
          * 'Edit Criteria' button has been clicked
          */
         onShowCriteriaEditorDialog() {
-            // get selected equation id from selectedGridRows
-            const selectedEquationId: number = this.selectedGridRows[0].performanceStrategyEquationId;
-            // get the selected equation from the selected performance strategies equations list
-            const selectedEquation: PerformanceStrategyEquation = this.selectedPerformanceStrategy.performanceStrategyEquations
-                .find((equation: PerformanceStrategyEquation) =>
-                    equation.performanceStrategyEquationId === selectedEquationId
-                ) as PerformanceStrategyEquation;
             // create a new criteriaEditorDialogData object and set the criteria using selectedEquation
             this.criteriaEditorDialogData = {
                 showDialog: true,
-                criteria: selectedEquation.criteria
+                criteria: this.selectedGridRows[0].criteria
             };
         }
 
@@ -415,14 +430,10 @@
         onSubmitCriteriaEditorDialogResult(criteria: string) {
             // reset criteriaEditorDialogData
             this.criteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
+            // check that a result submitted
             if (!isNil(criteria)) {
-                // get selected equation id from selectedGridRows
-                const selectedEquationId: number = this.selectedGridRows[0].performanceStrategyEquationId;
-                // get the selected equation from the selected performance strategies equations list
-                const selectedEquation: PerformanceStrategyEquation = this.selectedPerformanceStrategy.performanceStrategyEquations
-                    .find((equation: PerformanceStrategyEquation) =>
-                        equation.performanceStrategyEquationId === selectedEquationId
-                    ) as PerformanceStrategyEquation;
+                // get the selected equation from selectedGridRows
+                const selectedEquation = this.selectedGridRows[0] as PerformanceStrategyEquation;
                 // set the selected performance strategy equation criteria with the given criteria
                 selectedEquation.criteria = criteria;
                 // dispatch updateEquations action to update the performance strategy equation
