@@ -3,7 +3,7 @@ export interface SelectItem {
     value: string;
 }
 
-export const defaultSelectItem: SelectItem = {
+export const emptySelectItem: SelectItem = {
     text: '',
     value: ''
 };

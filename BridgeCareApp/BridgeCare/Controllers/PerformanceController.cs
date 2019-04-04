@@ -22,6 +22,16 @@ namespace BridgeCare.Controllers
         /// Get: api/performance
         /// </summary>
         [ModelValidation("Given simulation data is not valid")]
-        public IQueryable<PerformanceModel> Get(SimulationModel data) => performance.GetPerformance(data, db);
+        [HttpGet]
+        public IQueryable<PerformanceScenarioModel> Get(SimulationModel data) => performance.GetPerformance(data, db);
+
+        [ModelValidation("Given performance scenario data is not valid")]
+        [Route("api/UpdatePerformance")]
+        [HttpPost]
+        public IHttpActionResult Post([FromBody]PerformanceScenarioModel data)
+        {
+            performance.UpdatePerformanceScenario(data, db);
+            return Ok();
+        }
     }
 }
