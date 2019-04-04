@@ -12,28 +12,34 @@
                         <v-flex xs12>
                             <v-layout justify-space-between row fill-height>
                                 <v-flex xs5>
-                                    <v-card class="list-card">
-                                        <v-list>
-                                            <v-list-tile v-for="attribute in attributes" :key="attribute" class="list-tile"
-                                                         ripple @click="onAddAttributeToEquation(attribute)">
-                                                <v-list-tile-content>
-                                                    <v-list-tile-title>{{attribute}}</v-list-tile-title>
-                                                </v-list-tile-content>
-                                            </v-list-tile>
-                                        </v-list>
+                                    <v-card>
+                                        <v-card-title>Attributes: Click once to add</v-card-title>
+                                        <v-card-text class="list-card-text">
+                                            <v-list>
+                                                <v-list-tile v-for="attribute in attributes" :key="attribute" class="list-tile"
+                                                             ripple @click="onAddAttributeToEquation(attribute)">
+                                                    <v-list-tile-content>
+                                                        <v-list-tile-title>{{attribute}}</v-list-tile-title>
+                                                    </v-list-tile-content>
+                                                </v-list-tile>
+                                            </v-list>
+                                        </v-card-text>
                                     </v-card>
                                 </v-flex>
 
                                 <v-flex xs5>
-                                    <v-card class="list-card">
-                                        <v-list>
-                                            <v-list-tile v-for="formula in formulas" :key="formula" class="list-tile"
-                                                         ripple @click="onAddFormulaToEquation(formula)">
-                                                <v-list-tile-content>
-                                                    <v-list-tile-title>{{formula}}</v-list-tile-title>
-                                                </v-list-tile-content>
-                                            </v-list-tile>
-                                        </v-list>
+                                    <v-card>
+                                        <v-card-title>Formulas: Click once to add</v-card-title>
+                                        <v-card-text class="list-card-text">
+                                            <v-list>
+                                                <v-list-tile v-for="formula in formulas" :key="formula" class="list-tile"
+                                                             ripple @click="onAddFormulaToEquation(formula)">
+                                                    <v-list-tile-content>
+                                                        <v-list-tile-title>{{formula}}</v-list-tile-title>
+                                                    </v-list-tile-content>
+                                                </v-list-tile>
+                                            </v-list>
+                                        </v-card-text>
                                     </v-card>
                                 </v-flex>
                             </v-layout>
@@ -81,6 +87,12 @@
                                     <v-textarea id="equation_textarea" rows="5" outline full-width no-resize spellcheck="false"
                                                 v-model="equation" v-on:blur="setCursorPosition" v-on:focus="setTextareaCursorPosition">
                                     </v-textarea>
+                                    <div class="validation-message-div">
+                                        <v-layout justify-end fill-height>
+                                            <p class="invalid-message" v-if="showInvalidMessage">Equation is invalid.</p>
+                                            <p class="valid-message" v-if="showValidMessage">Equation is valid</p>
+                                        </v-layout>
+                                    </div>
                                 </v-flex>
                             </v-layout>
                         </v-flex>
@@ -88,8 +100,15 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit">Submit</v-btn>
+                        <v-flex xs6>
+                            <v-btn v-on:click="onCancel">Cancel</v-btn>
+                        </v-flex>
+                        <v-flex xs4>
+                            <v-layout justify-end row fill-height>
+                                <v-btn color="info lighten-1" v-on:click="onCheckEquation">Check</v-btn>
+                                <v-btn color="info" v-on:click="onSubmit" :disabled="cannotSubmit">Submit</v-btn>
+                            </v-layout>
+                        </v-flex>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -104,6 +123,7 @@
     import {EquationEditorDialogData} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
     import {hasValue} from '@/shared/utils/has-value';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
+    import EquationEditorService from '@/services/equation-editor.service';
 
     @Component
     export default class EquationEditor extends Vue {
@@ -145,8 +165,11 @@
             'Tanh()',
 
         ];
-        cursorPosition: number = 0;
         textareaInput: HTMLTextAreaElement = null;
+        cursorPosition: number = 0;
+        showInvalidMessage: boolean = false;
+        showValidMessage: boolean = false;
+        cannotSubmit: boolean = false;
 
         @Watch('dialogData')
         onDialogDataChanged() {
@@ -164,6 +187,22 @@
                         this.setIsBusyAction({isBusy: false});
                         console.log(error);
                     });
+            }
+        }
+
+        /**
+         * Watcher: equation
+         */
+        @Watch('equation')
+        onEquationChanged() {
+            // reset showInvalidMessage & showValidMessage
+            this.showInvalidMessage = false;
+            this.showValidMessage = false;
+            // if equation is an empty string, then allow submission of results
+            if (this.equation === '' || this.dialogData.equation === this.equation) {
+                this.cannotSubmit = false;
+            } else {
+                this.cannotSubmit = true;
             }
         }
 
@@ -252,14 +291,45 @@
         }
 
         /**
+         * 'Check' button has been clicked
+         */
+        onCheckEquation() {
+            // set isBusy to true, then dispatch request to check equation validity
+            this.setIsBusyAction({isBusy: true});
+            new EquationEditorService().checkEquationValidity(this.equation)
+                .then((valid: boolean) => {
+                    this.setIsBusyAction({isBusy: false});
+                    // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
+                    if (valid) {
+                        this.showValidMessage = true;
+                        this.cannotSubmit = false;
+                        this.showInvalidMessage = false;
+                    } else {
+                    // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
+                        this.showInvalidMessage = true;
+                        this.cannotSubmit = true;
+                        this.showValidMessage = false;
+                    }
+                })
+                .catch((error: any) => {
+                    this.setIsBusyAction({isBusy: false});
+                    console.log(error);
+                })
+        }
+
+        /**
          * 'Submit' button has been clicked
          */
         onSubmit() {
+            // reset component's calculated properties
+            this.resetComponentCalculatedProperties();
+            // create equation editor dialog result
             const result: EquationEditorDialogResult = {
                 equation: this.equation,
                 isPiecewise: this.isPiecewise,
                 isFunction: this.isFunction
             };
+            // submit result
             this.$emit('submit', result);
         }
 
@@ -267,15 +337,24 @@
          * 'Cancel' button has been clicked
          */
         onCancel() {
-            // submit a null value
+            // reset component's calculated properties
+            this.resetComponentCalculatedProperties();
+            // submit a null result
             this.$emit('submit', null);
+        }
+
+        resetComponentCalculatedProperties() {
+            this.cursorPosition = 0;
+            this.showInvalidMessage = false;
+            this.showValidMessage = false;
+            this.cannotSubmit = false;
         }
     }
 </script>
 
 <style>
     .equation-container-card {
-        height: 768px;
+        height: 800px;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -284,9 +363,9 @@
         max-height: 60px;
     }
 
-    .list-card {
+    .list-card-text {
         height: 300px;
-        border: 1px solid black !important;
+        /*border: 1px solid black !important;*/
         margin: 10px;
         overflow-y: auto;
         overflow-x: hidden;
@@ -319,5 +398,17 @@
 
     .right-checkbox {
         margin-left: 40px;
+    }
+
+    .validation-message-div {
+        height: 21px;
+    }
+
+    .invalid-message {
+        color: red;
+    }
+
+    .valid-message {
+        color: green;
     }
 </style>
