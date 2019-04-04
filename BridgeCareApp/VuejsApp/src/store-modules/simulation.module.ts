@@ -22,14 +22,13 @@ const actions = {
     runSimulation({ commit }: any, payload: any) {
         statusReference.once('value', (snapshot) => {
             if (snapshot.hasChild(payload.networkId.toString() + '_' + payload.simulationId.toString())) {
-                console.log('Simulation exists in the firebase');
                 const simulationData = {
                     status: 'Started',
                     lastModified: moment().toISOString(),
                     //[Note]: this will be removed
                     owner: payload.userId
                 };
-                statusReference.child(payload.networkId.toString() + '_' + payload.simulationId.toString()).update(simulationData)
+                statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString()).update(simulationData)
                     .then(() => {
                         new SimulationService().runSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
                             .then((simulation: any) => console.log(simulation))
@@ -47,7 +46,7 @@ const actions = {
                     created: moment().toISOString(),
                     lastModified: moment().toISOString()
                 };
-                statusReference.child(payload.networkId.toString() + '_' + payload.simulationId.toString()).set(simulationData)
+                statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString()).set(simulationData)
                     .then(() => {
                         new SimulationService().runSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
                             .then((simulation: any) => console.log(simulation))

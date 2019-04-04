@@ -17,14 +17,13 @@ namespace BridgeCare.DataAccessLayer
             {
                 var connectionString = ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString;
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
-                var start = new Simulation.Simulation(data.SimulationName, data.NetworkName,
-                    data.SimulationId.ToString(), data.NetworkId.ToString());
-                Thread simulationThread = new Thread(new ParameterizedThreadStart(start.CompileSimulation));
-                simulationThread.Start(true);
-                if (!simulationThread.IsAlive)
-                {
-                    DBMgr.CloseConnection();
-                }
+
+                var start = new RollupSegmentation.RollupSegmentation(data.SimulationName, data.NetworkName,
+                    data.SimulationId.ToString(), data.NetworkId.ToString(), true);
+                start.strNetwork = data.NetworkName;
+
+                Thread rollUpandSimulation = new Thread(new ThreadStart(start.DoRollup));
+                rollUpandSimulation.Start();
                 return Task.FromResult("Simulation running...");
             }
             catch (Exception ex)
