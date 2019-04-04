@@ -97,6 +97,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Condition By Deck Area.
+        /// </summary>
+        internal static string ConditionByDeckArea {
+            get {
+                return ResourceManager.GetString("ConditionByDeckArea", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Construction.
         /// </summary>
         internal static string Construction {

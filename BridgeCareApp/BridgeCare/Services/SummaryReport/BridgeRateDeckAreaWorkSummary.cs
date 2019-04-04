@@ -36,14 +36,16 @@ namespace BridgeCare.Services
             FillTotalPoorBridgesCountSection(worksheet, currentCell, simulationYears, simulationDataModels);
             FillTotalPoorBridgesDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels);
             chartRowsModel.TotalBridgeCountSectionYearsRow = FillTotalBridgeCountSection(worksheet, currentCell, simulationYears, simulationDataModels);
-            FillTotalDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels);
+            chartRowsModel.TotalDeckAreaSectionYearsRow = FillTotalDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels);
             return chartRowsModel;
         }
 
-        private void FillTotalDeckAreaSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
+        private int FillTotalDeckAreaSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Deck Area", true);
+            var totalDeckAreaSectionYearsRow = currentCell.Row;
             AddDetailsForTotalDeckArea(worksheet, currentCell, simulationYears, simulationDataModels);
+            return totalDeckAreaSectionYearsRow;
         }
 
         private void AddDetailsForTotalDeckArea(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
