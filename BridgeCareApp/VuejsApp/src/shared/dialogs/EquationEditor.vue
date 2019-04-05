@@ -165,7 +165,7 @@
             'Tanh()',
 
         ];
-        textareaInput: HTMLTextAreaElement = null;
+        textareaInput: HTMLTextAreaElement = {} as HTMLTextAreaElement;
         cursorPosition: number = 0;
         showInvalidMessage: boolean = false;
         showValidMessage: boolean = false;
@@ -314,7 +314,7 @@
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});
                     console.log(error);
-                })
+                });
         }
 
         /**
