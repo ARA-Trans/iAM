@@ -145,7 +145,7 @@
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
 
-    import AppSpinner from '../../shared/AppSpinner.vue';
+    import AppSpinner from '../../shared/dialogs/AppSpinner.vue';
     import {
         InvestmentStrategy,
         emptyInvestmentStrategy,
