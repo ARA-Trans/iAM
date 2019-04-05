@@ -219,4 +219,7 @@
   <data name="Poor" xml:space="preserve">
     <value>Poor</value>
   </data>
+  <data name="ConditionByDeckArea" xml:space="preserve">
+    <value>Condition By Deck Area</value>
+  </data>
 </root>
