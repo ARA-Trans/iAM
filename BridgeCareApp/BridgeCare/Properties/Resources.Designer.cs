@@ -19,7 +19,7 @@ namespace BridgeCare.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -264,6 +264,24 @@ namespace BridgeCare.Properties {
         internal static string Poor {
             get {
                 return ResourceManager.GetString("Poor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Poor Bridge Compare Bridge Count.
+        /// </summary>
+        internal static string PoorBridgeCompareBridgeCount {
+            get {
+                return ResourceManager.GetString("PoorBridgeCompareBridgeCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Poor Bridge Compare Deck Area.
+        /// </summary>
+        internal static string PoorBridgeCompareDeckArea {
+            get {
+                return ResourceManager.GetString("PoorBridgeCompareDeckArea", resourceCulture);
             }
         }
         

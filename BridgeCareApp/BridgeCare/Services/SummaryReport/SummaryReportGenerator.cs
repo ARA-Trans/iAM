@@ -15,14 +15,18 @@ namespace BridgeCare.Services.SummaryReport
         private readonly BridgeWorkSummary bridgeWorkSummary;
         private readonly ConditionBridgeCount conditionBridgeCount;
         private readonly ConditionDeckArea conditionDeckArea;
+        private readonly PoorBridgeCount poorBridgeCount;
+        private readonly PoorBridgeDeckArea poorBridgeDeckArea;
 
-        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary summaryReportBridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea)
+        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount, PoorBridgeDeckArea poorBridgeDeckArea)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
-            this.bridgeWorkSummary = summaryReportBridgeWorkSummary ?? throw new ArgumentNullException(nameof(summaryReportBridgeWorkSummary));
+            this.bridgeWorkSummary = bridgeWorkSummary ?? throw new ArgumentNullException(nameof(bridgeWorkSummary));
             this.conditionBridgeCount = conditionBridgeCount ?? throw new ArgumentNullException(nameof(conditionBridgeCount));
             this.conditionDeckArea = conditionDeckArea ?? throw new ArgumentNullException(nameof(conditionDeckArea));
+            this.poorBridgeCount = poorBridgeCount ?? throw new ArgumentNullException(nameof(poorBridgeCount));
+            this.poorBridgeDeckArea = poorBridgeDeckArea ?? throw new ArgumentNullException(nameof(poorBridgeDeckArea));
         }
 
         /// <summary>
@@ -31,8 +35,8 @@ namespace BridgeCare.Services.SummaryReport
         /// <param name="simulationModel"></param>
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
-        {            
-           // simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 24 };
+        {              
+            // simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 24 };
 
             // Get data
             var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationModel.SimulationId);
@@ -56,6 +60,14 @@ namespace BridgeCare.Services.SummaryReport
                 // Condition DA tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition DA");
                 conditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalDeckAreaSectionYearsRow, simulationYears.Count);
+
+                // Poor Bridge Cnt
+                worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge Cnt");
+                poorBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesCountSectionYearsRow, simulationYears.Count);
+
+                // Poor Bridge DA
+                worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge DA");
+                poorBridgeDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow, simulationYears.Count);
 
                 return excelPackage.GetAsByteArray();
             }
