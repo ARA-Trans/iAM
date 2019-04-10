@@ -41,7 +41,7 @@
     import {Simulation} from '@/shared/models/iAM/simulation';
     import {InvestmentStrategy, emptyInvestmentStrategy} from '@/shared/models/iAM/investment';
     import {CreateInvestmentStrategyDialogResult} from '@/shared/models/dialogs/create-investment-strategy-dialog-result';
-    import {SelectItem, defaultSelectItem} from '@/shared/models/vue/select-item';
+    import {SelectItem, emptySelectItem} from '@/shared/models/vue/select-item';
     import moment from 'moment';
     import {hasValue} from '@/shared/utils/has-value';
     import * as R from 'ramda';
@@ -58,10 +58,10 @@
         @Action('getNetworks') getNetworksAction: any;
         @Action('getSimulations') getSimulationsAction: any;
 
-        networksSelect: SelectItem[] = [{...defaultSelectItem}];
-        networksSelectItem: SelectItem = {...defaultSelectItem};
-        simulationsSelect: SelectItem[] = [{...defaultSelectItem}];
-        simulationsSelectItem: SelectItem = {...defaultSelectItem};
+        networksSelect: SelectItem[] = [{...emptySelectItem}];
+        networksSelectItem: SelectItem = {...emptySelectItem};
+        simulationsSelect: SelectItem[] = [{...emptySelectItem}];
+        simulationsSelectItem: SelectItem = {...emptySelectItem};
         newInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
 
         /**
@@ -177,8 +177,8 @@
          * Resets this dialog's properties
          */
         resetDialogProperties() {
-            this.networksSelectItem = {...defaultSelectItem};
-            this.simulationsSelectItem = {...defaultSelectItem};
+            this.networksSelectItem = {...emptySelectItem};
+            this.simulationsSelectItem = {...emptySelectItem};
             this.newInvestmentStrategy = {...emptyInvestmentStrategy};
         }
     }

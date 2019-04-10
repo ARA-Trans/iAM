@@ -19,10 +19,8 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -59,9 +57,13 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
+    <Reference Include="RollupSegmentation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\RollupSegmentation.dll</HintPath>
+    </Reference>
     <Reference Include="Simulation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\BridgeCareCodeFirst\Dpendencies\Simulation.dll</HintPath>
+      <HintPath>..\BridgeCareCodeFirst\Dependencies\Simulation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -263,6 +265,7 @@
     <Compile Include="Models\SectionModel.cs" />
     <Compile Include="Models\SimulationModel.cs" />
     <Compile Include="Models\SummaryReport\BridgeDataModel.cs" />
+    <Compile Include="Models\SummaryReport\ChartRowsModel.cs" />
     <Compile Include="Models\SummaryReport\CurrentCell.cs" />
     <Compile Include="Models\SummaryReport\ReportProjectCost.cs" />
     <Compile Include="Models\SummaryReport\ProjectRowNumberModel.cs" />
@@ -292,8 +295,11 @@
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
+    <Compile Include="Services\SummaryReport\ConditionBridgeCount.cs" />
+    <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
+    <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />
     <Compile Include="UtilityFunctions.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummary.cs" />
@@ -304,13 +310,21 @@
   <ItemGroup>
     <Content Include="Dependencies\CalculateEvaluate.dll" />
     <Content Include="Dependencies\DatabaseManager.dll" />
+    <Content Include="Dependencies\IntegrationOMS.dll" />
+    <Content Include="Dependencies\IntegrationOMS.pdb" />
     <Content Include="Dependencies\Microsoft.SqlServer.ConnectionInfo.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.Dmf.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.ServiceBrokerEnum.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.Smo.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.SqlEnum.dll" />
+    <Content Include="Dependencies\OpenGISExtension.dll" />
+    <Content Include="Dependencies\OpenGISExtension.pdb" />
     <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
+    <Content Include="Dependencies\RollupSegmentation.dll" />
+    <Content Include="Dependencies\RollupSegmentation.pdb" />
+    <Content Include="Dependencies\SharpMap.dll" />
+    <Content Include="Dependencies\SharpMap.pdb" />
     <Content Include="Dependencies\Simulation.dll" />
     <Content Include="Dependencies\SimulationDataAccess.dll" />
     <Content Include="Dependencies\CalculateEvaluate.pdb" />
@@ -340,6 +354,8 @@
     <Content Include="connection.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Dependencies\RollupSegmentation.dll.config" />
+    <Content Include="Dependencies\IntegrationOMS.dll.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

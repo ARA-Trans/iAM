@@ -37,7 +37,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
-    import {Alert} from '@/shared/models/iAM/alert';
+    import {Alert} from '../models/iAM/alert';
 
     @Component
     export default class AppModalPopup extends Vue {

@@ -145,7 +145,7 @@
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
 
-    import AppSpinner from '../../shared/AppSpinner.vue';
+    import AppSpinner from '../../shared/dialogs/AppSpinner.vue';
     import {
         InvestmentStrategy,
         emptyInvestmentStrategy,
@@ -154,7 +154,7 @@
     } from '@/shared/models/iAM/investment';
     import {emptyNetwork} from '@/shared/models/iAM/network';
     import * as R from 'ramda';
-    import {SelectItem, defaultSelectItem} from '@/shared/models/vue/select-item';
+    import {SelectItem, emptySelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value';
     import moment from 'moment';
@@ -171,14 +171,14 @@
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInvestmentStrategies') getInvestmentStrategiesAction: any;
-        @Action('saveInvestmentStrategy') saveInvestmentStrategyAction: any;
+        @Action('saveInvestmentStrategyToLibrary') saveInvestmentStrategyAction: any;
         @Action('setBudgets') setBudgetsAction: any;
 
         investmentStrategyGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
-        investmentStrategiesSelectList: SelectItem[] = [{...defaultSelectItem}];
-        investmentStrategiesSelectItem: SelectItem = {...defaultSelectItem};
+        investmentStrategiesSelectList: SelectItem[] = [{...emptySelectItem}];
+        investmentStrategiesSelectItem: SelectItem = {...emptySelectItem};
         selectedInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
         investmentStrategyGridData: InvestmentStrategyGridData[] = [];
         selectedGridRows: InvestmentStrategyGridData[] = [];
@@ -570,7 +570,7 @@
          * Resets the InvestmentEditor component properties
          */
         resetComponentProperties() {
-            this.investmentStrategiesSelectItem = {...defaultSelectItem};
+            this.investmentStrategiesSelectItem = {...emptySelectItem};
             this.selectedInvestmentStrategy = {...emptyInvestmentStrategy};
             this.investmentStrategyGridData = [];
             this.selectedGridRows = [];

@@ -88,6 +88,24 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Condition By Bridge Count.
+        /// </summary>
+        internal static string ConditionByBridgeCount {
+            get {
+                return ResourceManager.GetString("ConditionByBridgeCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition By Deck Area.
+        /// </summary>
+        internal static string ConditionByDeckArea {
+            get {
+                return ResourceManager.GetString("ConditionByDeckArea", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Construction.
         /// </summary>
         internal static string Construction {
@@ -187,6 +205,24 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fair.
+        /// </summary>
+        internal static string Fair {
+            get {
+                return ResourceManager.GetString("Fair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Good.
+        /// </summary>
+        internal static string Good {
+            get {
+                return ResourceManager.GetString("Good", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Large Bridge Preservation.
         /// </summary>
         internal static string LargeBridgePreservation {
@@ -219,6 +255,15 @@ namespace BridgeCare.Properties {
         internal static string NoTreatment {
             get {
                 return ResourceManager.GetString("NoTreatment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Poor.
+        /// </summary>
+        internal static string Poor {
+            get {
+                return ResourceManager.GetString("Poor", resourceCulture);
             }
         }
         
