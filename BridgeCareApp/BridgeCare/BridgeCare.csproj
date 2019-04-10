@@ -172,7 +172,7 @@
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
-    <Compile Include="Controllers\TreatmentController.cs" />
+    <Compile Include="Controllers\TreatmentsController.cs" />
     <Compile Include="Controllers\PerformanceController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
     <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
@@ -200,16 +200,22 @@
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
     <Compile Include="EntityClasses\Attributes.cs" />
+    <Compile Include="EntityClasses\CONSEQUENCE.cs" />
+    <Compile Include="EntityClasses\COST.cs" />
     <Compile Include="EntityClasses\Deficients.cs" />
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
+    <Compile Include="EntityClasses\FEASIBILITY.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
     <Compile Include="EntityClasses\PERFORMANCE.cs" />
+    <Compile Include="EntityClasses\SCHEDULED.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
     <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
     <Compile Include="EntityClasses\Targets.cs" />
+    <Compile Include="EntityClasses\TREATMENT.cs" />
+    <Compile Include="EntityClasses\TREATMENT_CONSEQUENCES.cs" />
     <Compile Include="EntityClasses\YEARLYINVESTMENT.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -237,10 +243,14 @@
     <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\CellAddress.cs" />
+    <Compile Include="Models\ConsequenceModel.cs" />
+    <Compile Include="Models\CostModel.cs" />
+    <Compile Include="Models\FeasibilityModel.cs" />
     <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\TreatmentModel.cs" />
     <Compile Include="Models\TreatmentScenarioModel.cs" />
     <Compile Include="Models\PerformanceScenarioModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
@@ -270,6 +280,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\CheckEquations.cs" />
     <Compile Include="Services\DetailedReport\Budget.cs" />
     <Compile Include="Services\DetailedReport\Deficient.cs" />
     <Compile Include="Services\DetailedReport\Detailed.cs" />

@@ -3,10 +3,9 @@ using System.Linq;
 
 namespace BridgeCare.Interfaces
 {
-    public interface ITreatment
+    public interface ITreatments
     {
-        IQueryable<TreatmentScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db);
-
-        void UpdatePerformanceScenario(TreatmentScenarioModel data, BridgeCareContext db);
+        IQueryable<TreatmentScenarioModel> GetTreatment(SimulationModel data, BridgeCareContext db);
+        
     }
 }

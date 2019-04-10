@@ -23,6 +23,10 @@ namespace BridgeCare
         public virtual DbSet<PennDotBridgeData> PennDotBridgeData { get; set; }
         public virtual DbSet<PennDotReportAData> PennDotReportAData { get; set; }
         public virtual DbSet<SdRisk> SdRisks { get; set; }
+        public virtual DbSet<TREATMENT> Treatments { get; set; }
+        public virtual DbSet<COST> Costs { get; set; }
+        public virtual DbSet<FEASIBILITY> Feasibilities { get; set; }
+        public virtual DbSet<CONSEQUENCE> Consequences { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

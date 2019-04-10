@@ -1,68 +1,76 @@
 ﻿using BridgeCare.ApplicationLog;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class TreatemntData : ITreatment
+    public class TreatmentData : ITreatments
     {
         public TreatmentData()
         {
         }
 
-        public IQueryable<TreatmentScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db)
+        public IQueryable<TreatmentScenarioModel> GetTreatment(SimulationModel data, BridgeCareContext db)
         {
+            /// Query will fetch all data with data.Simulationid and fill each TreatmentScenarioModel
+            /// object from four tables based on a common TreatmentId
             try
             {
-                return (db.PERFORMANCE
-                    .Where(d => d.SIMULATIONID == data.SimulationId)
-                    .Select(p => new PerformanceScenarioModel()
+                var treatment = db.Treatments
+                    .Include(d => d.CONSEQUENCES)
+                    .Include(d => d.COST)
+                    .Include(d => d.FEASIBILITY)
+                    .Where(p => p.SIMULATIONID == data.SimulationId)
+                    .Select(p => new TreatmentScenarioModel()
                     {
-                        PerformanceId = p.PERFORMANCEID,
                         SimulationId = p.SIMULATIONID,
-                        Performance = new TreatmentModel()
+                        TreatementId = p.TREATMENTID,
+                        Treatement = new TreatmentModel
                         {
-                            Attribute = p.ATTRIBUTE_,
-                            EquationName = p.EQUATIONNAME,
-                            Criteria = p.CRITERIA,
-                            Equation = p.EQUATION,
-                            Shift = p.SHIFT,
-                            Piecwise = p.PIECEWISE,
-                            IsFunction = p.ISFUNCTION
-                        }
-                    }).ToList()).AsQueryable();
+                            Treatment = p.TREATMENT1,
+                            BeforeAny = p.BEFOREANY,
+                            BeforeSame = p.BEFORESAME,
+                            Budget = p.BUDGET,
+                            Description = p.DESCRIPTION,
+                            OMS_IS_EXCLUSIVE = p.OMS_IS_EXCLUSIVE,
+                            OMS_IS_REPEAT = p.OMS_IS_REPEAT,
+                            OMS_REPEAT_START = p.OMS_REPEAT_START,
+                            OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
+                        },
+                        Cost = new CostModel
+                        {
+                            CostId = p.COST.COSTID,
+                            Cost = p.COST.COST_,
+                            Unit = p.COST.UNIT,
+                            Criteria = p.COST.CRITERIA,
+                            IsFunction = p.COST.ISFUNCTION,
+                        },
+                        Feasibilities = p.FEASIBILITY.Select(m => new FeasibilityModel
+                        {
+                            Criteria = m.CRITERIA,
+                            FeasibilityId = m.FEASIBILITYID,
+                        }).ToList(),
+                        Consequences = p.CONSEQUENCES.Select(n => new ConsequenceModel
+                        {
+                            ConsequenceId = n.CONSEQUENCEID,
+                            Criteria = n.CRITERIA,
+                            Attribute_ = n.ATTRIBUTE_,
+                            Change = n.CHANGE_,
+                            IsFunction = n.ISFUNCTION,
+                            Equation = n.EQUATION,
+                        }).ToList()
+                    }).ToList();
+
+                return treatment.AsQueryable();
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Treatment");
+                HandleException.SqlError(ex, "Get Treatment Failed");
             }
             return Enumerable.Empty<TreatmentScenarioModel>().AsQueryable();
-        }
-
-        public void UpdateTreatmentScenario(TreatmentScenarioModel data, BridgeCareContext db)
-        {
-            try
-            {
-                var performance = db.PERFORMANCE
-                    .Single(_ => _.PERFORMANCEID == data.PerformanceId);
-
-                performance.ATTRIBUTE_ = data.Performance.Attribute;
-                performance.EQUATIONNAME = data.Performance.EquationName;
-                performance.CRITERIA = data.Performance.Criteria;
-                performance.EQUATION = data.Performance.Equation;
-                performance.SHIFT = data.Performance.Shift;
-                performance.PIECEWISE = data.Performance.Piecwise;
-                performance.ISFUNCTION = data.Performance.IsFunction;
-
-                db.SaveChanges();
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Treatment Scenario");
-            }
-            return;
         }
     }
 }
