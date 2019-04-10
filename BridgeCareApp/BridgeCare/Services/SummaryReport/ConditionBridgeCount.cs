@@ -24,26 +24,17 @@ namespace BridgeCare.Services
         /// <param name="count"></param>
         public void Fill(ExcelWorksheet worksheet, ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalBridgeCountSectionYearsRow, int count)
         {
-            SetWorksheetProperties(worksheet);
+            stackedColumnChartCommon.SetWorksheetProperties(worksheet);
             var title = Properties.Resources.ConditionByBridgeCount;
             var chart = worksheet.Drawings.AddChart(title, eChartType.ColumnStacked);
-            stackedColumnChartCommon.SetChartProperties(chart, title);
+            stackedColumnChartCommon.SetChartProperties(chart, title, 950, 700, 6, 7);
 
             stackedColumnChartCommon.SetChartAxes(chart);
             AddSeries(bridgeWorkSummaryWorkSheet, totalBridgeCountSectionYearsRow, count, chart);
 
             chart.AdjustPositionAndSize();
             chart.Locked = true;
-        }
-
-        private void SetWorksheetProperties(ExcelWorksheet worksheet)
-        {
-            var excelFill = worksheet.Cells.Style.Fill;
-            excelFill.PatternType = ExcelFillStyle.Solid;
-            excelFill.BackgroundColor.SetColor(Color.LightGray);
-            worksheet.Protection.IsProtected = true;
-            worksheet.View.ShowHeaders = false;
-        }
+        }        
 
         private void AddSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalBridgeCountSectionYearsRow, int count, ExcelChart chart)
         {

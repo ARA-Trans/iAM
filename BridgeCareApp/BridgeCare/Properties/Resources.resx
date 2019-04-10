@@ -222,4 +222,10 @@
   <data name="ConditionByDeckArea" xml:space="preserve">
     <value>Condition By Deck Area</value>
   </data>
+  <data name="PoorBridgeCompareBridgeCount" xml:space="preserve">
+    <value>Poor Bridge Compare Bridge Count</value>
+  </data>
+  <data name="PoorBridgeCompareDeckArea" xml:space="preserve">
+    <value>Poor Bridge Compare Deck Area</value>
+  </data>
 </root>
