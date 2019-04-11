@@ -4,6 +4,6 @@ namespace BridgeCare.Interfaces
 {
     public interface ICommonSummaryReportData
     {
-        SimulationYearsModel GetSimulationYearsData(int simulationId);
+        SimulationYearsModel GetSimulationYearsData(int simulationId);        
     }
 }

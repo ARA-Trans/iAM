@@ -35,14 +35,16 @@ namespace BridgeCare.Services.SummaryReport
         /// <param name="simulationModel"></param>
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
-        {              
+        { 
             // simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 24 };
 
             // Get data
-            var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationModel.SimulationId);
+            var simulationId = simulationModel.SimulationId;
+            var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationId);
             var simulationYears = simulationYearsModel.Years;
+            var simulationYearsCount = simulationYears.Count;            
             var dbContext = new BridgeCareContext();
-
+            
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
                 // Bridge Data tab
@@ -51,23 +53,23 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, simulationDataModels, simulationYears, dbContext);
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, simulationDataModels, simulationYears, dbContext, simulationId);
 
                 // Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
-                conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYears.Count);
+                conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYearsCount);
 
                 // Condition DA tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition DA");
-                conditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalDeckAreaSectionYearsRow, simulationYears.Count);
+                conditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalDeckAreaSectionYearsRow, simulationYearsCount);
 
                 // Poor Bridge Cnt
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge Cnt");
-                poorBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesCountSectionYearsRow, simulationYears.Count);
+                poorBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesCountSectionYearsRow, simulationYearsCount);
 
                 // Poor Bridge DA
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge DA");
-                poorBridgeDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow, simulationYears.Count);
+                poorBridgeDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow, simulationYearsCount);
 
                 return excelPackage.GetAsByteArray();
             }
