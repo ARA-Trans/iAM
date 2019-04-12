@@ -10,5 +10,9 @@ namespace BridgeCare.Models
         public int TotalBridgeCountSectionYearsRow { get; set; }
 
         public int TotalDeckAreaSectionYearsRow { get; set; }
+
+        public int TotalPoorBridgesCountSectionYearsRow { get; set; }
+
+        public int TotalPoorBridgesDeckAreaSectionYearsRow { get; set; }
     }
 }

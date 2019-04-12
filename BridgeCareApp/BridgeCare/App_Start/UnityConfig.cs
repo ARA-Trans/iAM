@@ -57,6 +57,7 @@ namespace BridgeCare
             container.RegisterType<IBudgetReport, BudgetReport>();
             container.RegisterType<IDeficientReport, DeficientReport>();
             container.RegisterType<IInvestmentStrategies, InvestmentStrategies>();
+            container.RegisterType<ITreatments, TreatmentData>();
             container.RegisterType<CostDetails>();
             container.RegisterType<ITarget, Targets>();
             container.RegisterType<IReportCreator, ReportCreator>();

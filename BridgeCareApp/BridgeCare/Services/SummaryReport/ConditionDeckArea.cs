@@ -24,26 +24,17 @@ namespace BridgeCare.Services
         /// <param name="count"></param>
         public void Fill(ExcelWorksheet worksheet, ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count)
         {
-            SetWorksheetProperties(worksheet);
+            stackedColumnChartCommon.SetWorksheetProperties(worksheet);
             var title = Properties.Resources.ConditionByDeckArea;
             var chart = worksheet.Drawings.AddChart(title, eChartType.ColumnStacked);
-            stackedColumnChartCommon.SetChartProperties(chart, title);
+            stackedColumnChartCommon.SetChartProperties(chart, title, 950, 700, 6, 7);
 
             SetChartAxes(chart);
             AddSeries(bridgeWorkSummaryWorkSheet, totalDeckAreaSectionYearsRow, count, chart);
 
             chart.AdjustPositionAndSize();
             chart.Locked = true;
-        }
-
-        private void SetWorksheetProperties(ExcelWorksheet worksheet)
-        {
-            var excelFill = worksheet.Cells.Style.Fill;
-            excelFill.PatternType = ExcelFillStyle.Solid;
-            excelFill.BackgroundColor.SetColor(Color.LightGray);
-            worksheet.Protection.IsProtected = true;
-            worksheet.View.ShowHeaders = false;
-        }
+        }       
 
         private void AddSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count, ExcelChart chart)
         {
@@ -68,10 +59,10 @@ namespace BridgeCare.Services
             stackedColumnChartCommon.SetChartAxes(chart);
             var yAxis = chart.YAxis;
             yAxis.DisplayUnit = 1000000;
-            yAxis.Format = "_(* #,##0.00_);_(* (#,##0.00);_(* '-'??_);_(@_)";
+            yAxis.Format = "_(* #,##0.00_);_(* (#,##0.00);_(* -??_);_(@_)";
             yAxis.Title.TextVertical = OfficeOpenXml.Drawing.eTextVerticalType.Vertical;
             yAxis.Title.Font.Size = 10;
             yAxis.Title.Text = "Millions sqft";
         }
-    }
+    }    
 }
