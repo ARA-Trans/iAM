@@ -1,22 +1,27 @@
 <template>
     <v-layout>
-        <v-dialog v-model="showDialog" persistent scrollable max-width="300px">
+        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="300px">
             <v-card>
+                <v-card-title>
+                    <v-layout justify-center fill-height>
+                        <h3>Edit Budgets</h3>
+                    </v-layout>
+                </v-card-title>
                 <v-toolbar>
-                    <v-toolbar-title>Budgets</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn fab icon v-on:click="onMoveBudgetUp" :disabled="disableMoveUpButton()">
-                        <v-icon>arrow_upward</v-icon>
-                    </v-btn>
-                    <v-btn fab icon v-on:click="onMoveBudgetDown" :disabled="disableMoveDownButton()">
-                        <v-icon>arrow_downward</v-icon>
-                    </v-btn>
-                    <v-btn fab icon color="green" v-on:click="onAddBudget">
-                        <v-icon>add</v-icon>
-                    </v-btn>
-                    <v-btn fab icon color="red" v-on:click="onDeleteBudget" :disabled="disableDeleteButton()">
-                        <v-icon>delete</v-icon>
-                    </v-btn>
+                    <v-layout justify-center row fill-height>
+                        <v-btn fab small icon v-on:click="onMoveBudgetUp" :disabled="disableMoveUpButton()">
+                            <v-icon>arrow_upward</v-icon>
+                        </v-btn>
+                        <v-btn fab small icon v-on:click="onMoveBudgetDown" :disabled="disableMoveDownButton()">
+                            <v-icon>arrow_downward</v-icon>
+                        </v-btn>
+                        <v-btn fab small icon color="green" v-on:click="onAddBudget">
+                            <v-icon>add</v-icon>
+                        </v-btn>
+                        <v-btn fab small icon color="red" v-on:click="onDeleteBudget" :disabled="disableDeleteButton()">
+                            <v-icon>delete</v-icon>
+                        </v-btn>
+                    </v-layout>
                 </v-toolbar>
                 <v-card-text style="height: 500px;">
                     <v-data-table :headers="editBudgetsDialogGridHeaders"
@@ -43,8 +48,8 @@
                     </v-data-table>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn v-on:click="onSubmit(false)" color="info">Save</v-btn>
-                    <v-btn v-on:click="onSubmit(true)">Cancel</v-btn>
+                    <v-btn v-on:click="onCancel">Cancel</v-btn>
+                    <v-btn v-on:click="onSubmit" color="info">Submit</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -54,36 +59,33 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State} from 'vuex-class';
     import {hasValue} from '@/shared/utils/has-value';
-    import {EditBudgetsDialogResult} from '@/shared/models/dialogs/edit-budgets-dialog-result';
-    import * as R from 'ramda';
+    import {any, propEq, clone} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {EditBudgetsDialogGridData} from '@/shared/models/iAM/investment';
-
-    interface BudgetListItem {
-        name: string;
-        index: number;
-    }
+    import {EditBudgetsDialogGridData, EditedBudget} from '@/shared/models/iAM/investment';
+    import {EditBudgetsDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
 
     @Component
     export default class EditBudgetsDialog extends Vue {
-        @Prop() showDialog: boolean;
+        @Prop() dialogData: EditBudgetsDialogData;
 
-        @State(state => state.investmentEditor.budgets) stateBudgets: string[];
 
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
-            {text: 'Budget', value: 'name', sortable: false, align: 'left', class: '', width: ''}
+            {text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: ''}
         ];
         editBudgetsDialogGridData: EditBudgetsDialogGridData[] = [];
         selectedGridRows: EditBudgetsDialogGridData[] = [];
 
-        @Watch('stateBudgets')
-        onStateBudgetsChanged(budgets: string[]) {
-            this.editBudgetsDialogGridData = budgets.map((budget: string, index: number) => ({
+        /**
+         * Watcher: dialogData
+         */
+        @Watch('dialogData')
+        onDialogDataChanged() {
+            this.editBudgetsDialogGridData = this.dialogData.budgets.map((budget: string, index: number) => ({
                 name: budget,
                 index: index,
-                previousName: budget
+                previousName: budget,
+                isNew: false
             }));
         }
 
@@ -114,7 +116,7 @@
             this.editBudgetsDialogGridData[previousIndex] = this.selectedGridRows[0];
             // moved previous index budget to current index in budgets list
             this.editBudgetsDialogGridData[currentIndex] = previousIndexBudget;
-            this.editBudgetsDialogGridData = R.clone(this.editBudgetsDialogGridData);
+            this.editBudgetsDialogGridData = clone(this.editBudgetsDialogGridData);
         }
 
         /**
@@ -144,7 +146,7 @@
             this.editBudgetsDialogGridData[nextIndex] = this.selectedGridRows[0];
             // move next index budget to current index in budgets list
             this.editBudgetsDialogGridData[currentIndex] = nextIndexBudget;
-            this.editBudgetsDialogGridData = R.clone(this.editBudgetsDialogGridData);
+            this.editBudgetsDialogGridData = clone(this.editBudgetsDialogGridData);
         }
 
         /**
@@ -158,7 +160,8 @@
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
                 index: this.editBudgetsDialogGridData.length,
-                previousName: newBudget
+                previousName: newBudget,
+                isNew: true
             });
         }
 
@@ -176,34 +179,51 @@
             // filter selected budget from budgets list
             this.editBudgetsDialogGridData = this.editBudgetsDialogGridData
                 .filter((budget: EditBudgetsDialogGridData) =>
-                    !R.any(R.propEq('name', budget.name), this.selectedGridRows)
+                    !any(propEq('name', budget.name), this.selectedGridRows)
                 )
                 .map((budget: EditBudgetsDialogGridData, index: number) => ({
                     name: budget.name,
                     index: index,
-                    previousName: budget.previousName
+                    previousName: budget.previousName,
+                    isNew: budget.isNew
                 }));
             // reset selectedBudget as defaultBudgetListItem
             this.selectedGridRows = [];
         }
 
         /**
-         * 'Save'/'Cancel' button has been clicked
+         * 'Submit' button has been clicked
          */
-        onSubmit(isCanceled: boolean) {
-            // create dialog result
-            const result: EditBudgetsDialogResult = {
-                canceled: isCanceled,
-                budgets: this.editBudgetsDialogGridData
-                    .map((budget: EditBudgetsDialogGridData) => ({
-                        name: budget.name,
-                        previousName: budget.previousName
-                    }))
-            };
-            // reset selectedGridRows property
+        onSubmit() {
+            // create a list of EditedBudget objects using editBudgetsDialogGridData
+            const editedBudgets: EditedBudget[] = this.editBudgetsDialogGridData
+                .map((budget: EditBudgetsDialogGridData) => ({
+                    name: budget.name,
+                    previousName: budget.previousName,
+                    isNew: budget.isNew
+                }));
+            // submit editedBudgets result
+            this.$emit('submit', editedBudgets);
+            // reset the data table properties
+            this.resetsDialogDataTableProperties();
+        }
+
+        /**
+         * 'Cancel' button has been clicked
+         */
+        onCancel() {
+            // submit null result
+            this.$emit('submit', null);
+            // reset the data table properties
+            this.resetsDialogDataTableProperties();
+        }
+
+        /**
+         * Resets the data table properties of this component
+         */
+        resetsDialogDataTableProperties() {
+            this.editBudgetsDialogGridData = [];
             this.selectedGridRows = [];
-            // emit dialog result
-            this.$emit('result', result);
         }
     }
 </script>
