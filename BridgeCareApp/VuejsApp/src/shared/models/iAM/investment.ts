@@ -1,38 +1,23 @@
-export interface InvestmentStrategy {
-    networkId: number;
-    simulationId: number;
-    name: string;
-    inflationRate: number;
-    discountRate: number;
-    budgetYears: InvestmentStrategyBudgetYear[];
-    budgetOrder: string[];
-    description: string;
-}
-
 export interface InvestmentStrategyBudgetYear {
+    investmentStrategyId: number;
+    id: number;
     year: number;
-    budgets: InvestmentStrategyBudget[];
+    budgetName: string;
+    budgetAmount: number;
 }
 
-export interface InvestmentStrategyBudget {
-    name: string;
-    amount: number;
-}
-
-export interface SavedInvestmentStrategy {
-    networkId: number;
-    simulationId: number;
+export interface InvestmentStrategy {
+    id: number;
     name: string;
     inflationRate: number;
     discountRate: number;
-    budgetYears: InvestmentStrategyBudgetYear[];
-    budgetOrder: string[];
     description: string;
-    deletedBudgetYears: number[];
-    deletedBudgets: string[];
+    budgetOrder: string[];
+    budgetYears: InvestmentStrategyBudgetYear[];
+    deletedBudgetYearIds: number[];
 }
 
-export interface InvestmentStrategyGridData {
+export interface BudgetYearsGridData {
     year: number;
     [budgetName: string]: number;
 }
@@ -41,15 +26,22 @@ export interface EditBudgetsDialogGridData {
     name: string;
     index: number;
     previousName: string;
+    isNew: boolean;
+}
+
+export interface EditedBudget {
+    name: string;
+    previousName: string;
+    isNew: boolean;
 }
 
 export const emptyInvestmentStrategy: InvestmentStrategy = {
-    networkId: 0,
-    simulationId: 0,
+    id: 0,
     name: '',
     inflationRate: 0,
     discountRate: 0,
-    budgetYears: [],
-    budgetOrder: [],
     description: '',
+    budgetOrder: [],
+    budgetYears: [],
+    deletedBudgetYearIds: []
 };

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {InvestmentStrategy, SavedInvestmentStrategy} from '@/shared/models/iAM/investment';
+import {InvestmentStrategy} from '@/shared/models/iAM/investment';
 import {mockInvestmentStrategies} from '@/shared/utils/mock-data';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
@@ -14,20 +14,20 @@ export default class InvestmentEditorService {
     }
 
     /**
-     * Creates/updates an investment strategy
-     * @param savedInvestmentStrategy The investment strategy for creating/updating
+     * Creates an investment strategy
+     * @param createdInvestmentStrategy The investment strategy create data
      */
-    saveInvestmentStrategyToLibrary(savedInvestmentStrategy: SavedInvestmentStrategy): Promise<InvestmentStrategy> {
-        return Promise.resolve<InvestmentStrategy>({
-            networkId: savedInvestmentStrategy.networkId,
-            simulationId: savedInvestmentStrategy.simulationId,
-            name: savedInvestmentStrategy.name,
-            inflationRate: savedInvestmentStrategy.inflationRate,
-            discountRate: savedInvestmentStrategy.discountRate,
-            budgetYears: savedInvestmentStrategy.budgetYears,
-            budgetOrder: savedInvestmentStrategy.budgetOrder,
-            description: savedInvestmentStrategy.description
-        });
-        // TODO: add axios web service call for saving investment strategy changes (create/update)
+    createInvestmentStrategy(createdInvestmentStrategy: InvestmentStrategy): Promise<InvestmentStrategy> {
+        return Promise.resolve<InvestmentStrategy>(createdInvestmentStrategy);
+        // TODO: add axios web service call for creating an investment strategy
+    }
+
+    /**
+     * Updates an investment strategy
+     * @param updatedInvestmentStrategy The investment strategy update data
+     */
+    updateInvestmentStrategy(updatedInvestmentStrategy: InvestmentStrategy): Promise<InvestmentStrategy> {
+        return Promise.resolve<InvestmentStrategy>(updatedInvestmentStrategy);
+        // TODO: add axios web service call for updating an investment strategy
     }
 }
