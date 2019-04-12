@@ -58,7 +58,7 @@
                                       hide-details>
                         </v-text-field>
                     </v-card-title>
-                    <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared" hide-actions>
+                    <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                         <template slot="items" slot-scope="props">
                             <td>{{props.item.name}}</td>
                             <td>{{formatDate(props.item.createdDate)}}</td>
@@ -147,7 +147,7 @@
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
             { text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
-            { text: 'Status', sortable: false, value: 'status', hide: true },
+            { text: 'Status', sortable: false, value: 'status' },
             {text: '', sortable: false, value: 'actions'}
         ];
         userScenarios: Scenario[] = [];
@@ -159,7 +159,7 @@
         networkName: string = '';
         simulationId: number = 0;
         simulationName: string = '';
-        currentItem: any;
+        currentItem: Scenario;
 
         @Watch('scenarios')
         onScenariosChanged(val: Scenario[]) {

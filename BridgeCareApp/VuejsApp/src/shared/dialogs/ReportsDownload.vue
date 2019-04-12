@@ -25,7 +25,7 @@
                             <v-list-tile-title>{{ item }}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
-                            <v-checkbox :value="item" color="primary" v-model="selectedReports"></v-checkbox>
+                            <v-checkbox :value="item" color="primary lighten-1" v-model="selectedReports"></v-checkbox>
                         </v-list-tile-action>
                     </v-list-tile>
                     <v-alert :value="showError"
@@ -36,10 +36,10 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn color="error" :disabled="isReportDownloading" v-on:click="onCancel">
+                        <v-btn color="error lighten-1" :disabled="isReportDownloading" v-on:click="onCancel">
                             Cancel
                         </v-btn>
-                        <v-btn color="info" :disabled="isReportDownloading" v-on:click="onSubmit">
+                        <v-btn color="info lighten-1" :disabled="isReportDownloading" v-on:click="onSubmit">
                             Download
                         </v-btn>
                     </v-layout>
