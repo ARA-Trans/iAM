@@ -105,7 +105,7 @@
 
         async onSubmit() {
             if (this.selectedReports.length === 0) {
-                this.errorMessage = 'Please select atleast one report to download';
+                this.errorMessage = 'Please select at least one report to download';
                 this.showError = true;
                 return;
             }

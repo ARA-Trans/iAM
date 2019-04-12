@@ -241,11 +241,7 @@
                 networkName: this.currentItem.networkName,
                 simulationName: this.currentItem.simulationName,
                 userId: this.userId
-            }).then(() =>
-                this.setIsBusyAction({ isBusy: false })
-            ).catch((error: any) => {
-                this.setIsBusyAction({ isBusy: false });
-                this.setSimulationStatusAction({ status: false });
+            }).catch((error: any) => {
                 console.log(error);
             });
         }
