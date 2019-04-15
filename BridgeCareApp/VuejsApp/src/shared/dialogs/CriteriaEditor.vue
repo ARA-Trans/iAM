@@ -40,13 +40,12 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
     import {Criteria, emptyCriteria} from '../models/iAM/criteria';
     import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value';
     import {CriteriaEditorDialogData} from '../models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
-    import {isEmpty} from 'ramda';
+    import {attributes} from '@/shared/utils/attributes';
 
     @Component({
         components: {VueQueryBuilder}
@@ -54,13 +53,13 @@
     export default class CriteriaEditor extends Vue {
         @Prop() dialogData: CriteriaEditorDialogData;
 
-        @State(state => state.attribute.attributes) attributes: string[];
-
-        @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getAttributes') getAttributesAction: any;
-
         criteria: Criteria = {...emptyCriteria};
-        rules: any[] = [];
+        rules: any[] = attributes.map((attribute: string) => ({
+            type: 'text',
+            label: attribute,
+            id: attribute,
+            operators: ['=', '<>', '<', '<=', '>', '>=']
+        }));
         queryBuilderLabels: object = {
             'matchType': '',
             'matchTypes': [
@@ -79,27 +78,6 @@
         onDialogDataChanged() {
             // set the criteria string
             this.criteria = parseCriteriaString(this.dialogData.criteria);
-            // get attributes if the dialog is being shown and the state attributes list is empty
-            if (this.dialogData.showDialog && !hasValue(this.attributes)) {
-                this.setIsBusyAction({isBusy: true});
-                this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => console.log(error));
-            }
-        }
-
-        @Watch('attributes')
-        onAttributesChanged() {
-            if (hasValue(this.attributes)) {
-                // set rules using the state attributes list
-                this.rules = this.attributes.map((attribute: string) => ({
-                    type: 'text',
-                    label: attribute,
-                    id: attribute,
-                    operators: ['=', '<>', '<', '<=', '>', '>=']
-                }));
-            }
-
         }
 
         /**

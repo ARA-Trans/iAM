@@ -16,7 +16,7 @@
                                         <v-card-title>Attributes: Click once to add</v-card-title>
                                         <v-card-text class="list-card-text">
                                             <v-list>
-                                                <v-list-tile v-for="attribute in attributes" :key="attribute" class="list-tile"
+                                                <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
                                                              ripple @click="onAddAttributeToEquation(attribute)">
                                                     <v-list-tile-content>
                                                         <v-list-tile-title>{{attribute}}</v-list-tile-title>
@@ -32,7 +32,7 @@
                                         <v-card-title>Formulas: Click once to add</v-card-title>
                                         <v-card-text class="list-card-text">
                                             <v-list>
-                                                <v-list-tile v-for="formula in formulas" :key="formula" class="list-tile"
+                                                <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
                                                              ripple @click="onAddFormulaToEquation(formula)">
                                                     <v-list-tile-content>
                                                         <v-list-tile-title>{{formula}}</v-list-tile-title>
@@ -119,52 +119,25 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {Action} from 'vuex-class';
     import {EquationEditorDialogData} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
-    import {hasValue} from '@/shared/utils/has-value';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
+    import {attributes} from '@/shared/utils/attributes';
+    import {formulas} from '@/shared/utils/formulas';
+    import {clone} from 'ramda';
 
     @Component
     export default class EquationEditor extends Vue {
         @Prop() dialogData: EquationEditorDialogData;
 
-        @State(state => state.attribute.attributes) attributes: string[];
-
         @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getAttributes') getAttributesAction: any;
 
+        attributesList = clone(attributes);
+        formulasList = clone(formulas);
         equation: string = '';
         isPiecewise: boolean = false;
         isFunction: boolean = false;
-        formulas: string[] = [
-            'Abs()',
-            'Acos()',
-            'Asin()',
-            'Atan()',
-            'Atan(,)',
-            'Ceiling()',
-            'Cos()',
-            'Cosh()',
-            'E',
-            'Exp()',
-            'Floor()',
-            'IEEERemain(,)',
-            'Log()',
-            'Log10()',
-            'Max(,)',
-            'Min(,)',
-            'PI',
-            'Pow(,)',
-            'Round()',
-            'Sign()',
-            'Sin()',
-            'Sinh()',
-            'Sqrt()',
-            'Tan()',
-            'Tanh()',
-
-        ];
         textareaInput: HTMLTextAreaElement = {} as HTMLTextAreaElement;
         cursorPosition: number = 0;
         showInvalidMessage: boolean = false;
@@ -177,17 +150,6 @@
             this.equation = this.dialogData.equation;
             this.isPiecewise = this.dialogData.isPiecewise;
             this.isFunction = this.dialogData.isFunction;
-            // if the dialog is shown but there are no attributes in state...
-            if (this.dialogData.showDialog && !hasValue(this.attributes)) {
-                // dispatch isBusy action and dispatch getAttributes action
-                this.setIsBusyAction({isBusy: true});
-                this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => {
-                        this.setIsBusyAction({isBusy: false});
-                        console.log(error);
-                    });
-            }
         }
 
         /**
@@ -199,11 +161,7 @@
             this.showInvalidMessage = false;
             this.showValidMessage = false;
             // if equation is an empty string, then allow submission of results
-            if (this.equation === '' || this.dialogData.equation === this.equation) {
-                this.cannotSubmit = false;
-            } else {
-                this.cannotSubmit = true;
-            }
+            this.cannotSubmit = !(this.equation === '' || this.dialogData.equation === this.equation);
         }
 
         mounted() {
