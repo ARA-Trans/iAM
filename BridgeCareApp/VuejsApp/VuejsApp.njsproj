@@ -50,6 +50,7 @@
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
+    <Content Include="src\assets\css\main.css" />
     <Content Include="src\assets\images\inventory_mock_bridge_images\1.jpg" />
     <Content Include="src\assets\images\inventory_mock_bridge_images\2.jpg" />
     <Content Include="src\assets\images\inventory_mock_bridge_images\3.jpg" />
@@ -58,8 +59,8 @@
     <Content Include="src\assets\images\inventory_mock_bridge_images\6.jpg" />
     <Content Include="src\assets\images\inventory_mock_bridge_images\7.jpg" />
     <Content Include="src\assets\images\inventory_mock_bridge_images\8.jpg" />
+    <Content Include="src\assets\images\under-construction.png" />
     <Content Include="src\assets\logo.svg" />
-    <Content Include="src\components\Criteria.vue" />
     <Content Include="src\components\DetailedReport.vue">
       <SubType>Code</SubType>
     </Content>
@@ -67,17 +68,18 @@
     <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentStrategyDialog.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\EditBudgetsDialog.vue" />
     <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
-    <Content Include="src\components\Scenarios.vue" />
+    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyDialog.vue" />
+    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyEquationDialog.vue" />
+    <Content Include="src\components\performance-editor\PerformanceEditor.vue" />
+    <Content Include="src\components\scenarios\Scenarios.vue" />
     <Content Include="src\components\scenario\EditAnalysis.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\scenario\EditScenario.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\UnderConstruction.vue" />
     <Content Include="src\shared\AppShowProgress.vue">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="src\shared\AppSpinner.vue">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\TopNavbar.vue">
@@ -85,10 +87,14 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="src\shared\AppModalPopup.vue">
+    <Content Include="src\shared\CriteriaEditor.vue" />
+    <Content Include="src\shared\dialogs\AppModalPopup.vue" />
+    <Content Include="src\shared\dialogs\AppSpinner.vue" />
+    <Content Include="src\shared\dialogs\CriteriaEditor.vue" />
+    <Content Include="src\shared\dialogs\EquationEditor.vue" />
+    <Content Include="src\shared\dialogs\ReportsDownload.vue">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\shared\CriteriaEditor.vue" />
     <Content Include="tsconfig.json" />
     <Content Include="tslint.json" />
     <Content Include="Web.config" />
@@ -100,22 +106,30 @@
     <Folder Include="public\" />
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
+    <Folder Include="src\assets\css\" />
     <Folder Include="src\assets\images\" />
     <Folder Include="src\assets\images\inventory_mock_bridge_images\" />
     <Folder Include="src\components\" />
     <Folder Include="src\components\investment-editor\" />
     <Folder Include="src\components\investment-editor\investment-editor-dialogs\" />
+    <Folder Include="src\components\performance-editor\" />
+    <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
+    <Folder Include="src\components\scenarios\" />
     <Folder Include="src\components\scenario\" />
-    <Folder Include="src\models\" />
     <Folder Include="src\plugins\" />
     <Folder Include="src\services\" />
     <Folder Include="src\shared\" />
+    <Folder Include="src\shared\dialogs\" />
     <Folder Include="src\shared\models\" />
     <Folder Include="src\shared\models\dialogs\" />
+    <Folder Include="src\shared\models\dialogs\criteria-editor-dialog\" />
+    <Folder Include="src\shared\models\dialogs\equation-editor-dialog\" />
+    <Folder Include="src\shared\models\dialogs\performance-editor-dialogs\" />
     <Folder Include="src\shared\models\iAM\" />
     <Folder Include="src\shared\models\vue\" />
     <Folder Include="src\shared\utils\" />
     <Folder Include="src\store-modules\" />
+    <Folder Include="src\store-modules\reports\" />
     <Folder Include="src\store\" />
   </ItemGroup>
   <ItemGroup>
@@ -123,14 +137,6 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\main.ts" />
-    <TypeScriptCompile Include="src\models\alert.ts" />
-    <TypeScriptCompile Include="src\models\criteria.ts" />
-    <TypeScriptCompile Include="src\models\network.ts" />
-    <TypeScriptCompile Include="src\models\scenario.ts" />
-    <TypeScriptCompile Include="src\models\section.ts" />
-    <TypeScriptCompile Include="src\models\Simulation.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\plugins\vuetify.ts" />
     <TypeScriptCompile Include="src\register-hooks.ts">
       <SubType>Code</SubType>
@@ -138,22 +144,36 @@
     <TypeScriptCompile Include="src\router.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\attribute.service.ts" />
     <TypeScriptCompile Include="src\services\authentication.service.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
     <TypeScriptCompile Include="src\services\detailed-report.service.ts" />
+    <TypeScriptCompile Include="src\services\equation-editor.service.ts" />
     <TypeScriptCompile Include="src\services\inventory.service.ts" />
     <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
     <TypeScriptCompile Include="src\services\network.service.ts" />
+    <TypeScriptCompile Include="src\services\performance-editor.service.ts" />
     <TypeScriptCompile Include="src\services\simulation.service.ts" />
+    <TypeScriptCompile Include="src\services\summary-report.service.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\shared\models\dialogs\create-investment-strategy-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\criteria-editor-dialog\criteria-editor-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\download-reports-dialog.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\shared\models\dialogs\edit-budgets-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\performance-editor-dialogs\create-performance-strategy-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\alert.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\criteria.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\inventory.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\investment.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\network.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\performance.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\route.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
@@ -170,12 +190,16 @@
     <TypeScriptCompile Include="src\shims-vuefire.d.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\store-modules\attribute.module.ts" />
     <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\criteria-editor.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\detailed-report.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\reports\detailed-report.module.ts" />
     <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />
     <TypeScriptCompile Include="src\store-modules\investment-editor.module.ts" />
     <TypeScriptCompile Include="src\store-modules\network.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\performance-editor.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\reports\reports.module.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\security.module.ts" />
     <TypeScriptCompile Include="src\store-modules\simulation.module.ts" />
