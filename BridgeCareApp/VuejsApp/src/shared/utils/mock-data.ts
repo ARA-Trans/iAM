@@ -211,8 +211,6 @@ export const mockBudgetOrder: string[] = [
     'Budget H',
     'Budget I',
     'Budget J',
-    'Budget K',
-    'Budget L'
 ];
 
 function createBudgetYearMockData() {
@@ -222,34 +220,30 @@ function createBudgetYearMockData() {
     let budgetCAmount = 300000000;
     const currentDate = moment();
     const startYear = parseInt(currentDate.clone().format('YYYY'));
-    const endYear = parseInt(currentDate.clone().add(20, 'years').format('YYYY'));
-    for (let i = startYear; i <= endYear; i++) {
-        budgetYears.push({
-            year: i,
-            budgets:  mockBudgetOrder.map((budget: string) => {
-                switch (budget) {
-                    case 'Budget A':
-                        return {
-                            name: budget,
-                            amount: budgetAAmount
-                        };
-                    case 'Budget B':
-                        return {
-                            name: budget,
-                            amount: budgetBAmount
-                        };
-                    case 'Budget C':
-                        return {
-                            name: budget,
-                            amount: budgetCAmount
-                        };
-                    default:
-                        return {
-                            name: budget,
-                            amount: 0
-                        };
-                }
-            })
+    const endYear = parseInt(currentDate.clone().add(10, 'years').format('YYYY'));
+    let nextId = 1;
+    for (let nextYear = startYear; nextYear <= endYear; nextYear++) {
+        mockBudgetOrder.forEach((mockBudgetName: string) => {
+            let mockBudgetAmount = 0;
+            switch (mockBudgetName) {
+                case 'Budget A':
+                    mockBudgetAmount = budgetAAmount;
+                    break;
+                case 'Budget B':
+                    mockBudgetAmount = budgetBAmount;
+                    break;
+                case 'Budget C':
+                    mockBudgetAmount = budgetCAmount;
+                    break;
+            }
+            budgetYears.push({
+                investmentStrategyId: 1234567890,
+                id: nextId,
+                year: nextYear,
+                budgetName: mockBudgetName,
+                budgetAmount: mockBudgetAmount
+            });
+            nextId++;
         });
         budgetAAmount += 500000;
         budgetBAmount += 500000;
@@ -263,24 +257,14 @@ export const mockInvestmentBudgetYears: InvestmentStrategyBudgetYear[] = createB
 
 export const mockInvestmentStrategies: InvestmentStrategy[] = [
     {
-        networkId: 9876543210,
-        simulationId: 1234567890,
+        id: 1234567890,
         name: 'Investment Strategy 1',
         inflationRate: 3,
         discountRate: 2,
         budgetYears: mockInvestmentBudgetYears,
         budgetOrder: mockBudgetOrder,
-        description: ''
-    },
-    {
-        networkId: 9876543210,
-        simulationId: 1234567891,
-        name: 'Investment Strategy 2',
-        inflationRate: 2,
-        discountRate: 3,
-        budgetYears: mockInvestmentBudgetYears,
-        budgetOrder: mockBudgetOrder,
-        description: ''
+        description: '',
+        deletedBudgetYearIds: []
     }
 ];
 /*******************************************PERFORMANCE EDITOR MOCK DATA***********************************************/
