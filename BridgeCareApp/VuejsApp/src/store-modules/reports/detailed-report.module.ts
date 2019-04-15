@@ -1,4 +1,4 @@
-import DetailedReportService from '../services/detailed-report.service';
+import DetailedReportService from '@/services/detailed-report.service';
 
 const state = {
     reportBlob: null

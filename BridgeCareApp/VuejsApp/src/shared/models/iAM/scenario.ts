@@ -1,5 +1,8 @@
 export interface Scenario {
-    scenarioId: number;
+    networkId: number;
+    simulationId: number;
+    networkName: string;
+    simulationName: string;
     name: string;
     createdDate: Date;
     lastModifiedDate: Date;
