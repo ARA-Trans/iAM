@@ -20,7 +20,10 @@ const actions = {
             let scenarios: Scenario[] = [];
             for (let key in results) {
                 scenarios.push({
-                    scenarioId: 0,
+                    networkId: results[key].networkId,
+                    simulationId: results[key].simulationId,
+                    networkName: results[key].networkName,
+                    simulationName: results[key].simulationName,
                     name: key,
                     createdDate: results[key].created,
                     lastModifiedDate: results[key].lastModified,

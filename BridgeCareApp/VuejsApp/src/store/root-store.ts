@@ -6,10 +6,11 @@ import security from '@/store-modules/security.module';
 import network from '../store-modules/network.module';
 import simulation from '../store-modules/simulation.module';
 import scenario from '../store-modules/scenario.module';
-import detailedReport from '@/store-modules/detailed-report.module';
+import detailedReport from '@/store-modules/reports/detailed-report.module';
 import inventory from '@/store-modules/inventory.module';
 import investmentEditor from '@/store-modules/investment-editor.module';
 import performanceEditor from '@/store-modules/performance-editor.module';
+import reports from '@/store-modules/reports/reports.module';
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default new Vuex.Store({
         security,
         network,
         simulation,
+        reports,
         detailedReport,
         scenario,
         inventory,

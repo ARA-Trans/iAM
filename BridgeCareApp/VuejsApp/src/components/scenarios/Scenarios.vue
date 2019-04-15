@@ -19,6 +19,16 @@
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
+                                        <v-btn flat icon color="blue" v-on:click="onRunSimulation(props.item)">
+                                            <v-icon>fas fa-play</v-icon>
+                                        </v-btn>
+                                    </v-flex>
+                                    <v-flex>
+                                        <v-btn flat icon color="info" v-on:click="openReportDialog(props.item)">
+                                            <v-icon>fas fa-chart-line</v-icon>
+                                        </v-btn>
+                                    </v-flex>
+                                    <v-flex>
                                         <v-btn flat icon color="green" v-on:click="editScenario">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
@@ -57,6 +67,16 @@
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
+                                        <v-btn flat icon color="blue" v-on:click="onRunSimulation(props.item)">
+                                            <v-icon>fas fa-play</v-icon>
+                                        </v-btn>
+                                    </v-flex>
+                                    <v-flex>
+                                        <v-btn flat icon color="green" v-on:click="openReportDialog(props.item)">
+                                            <v-icon>fas fa-chart-line</v-icon>
+                                        </v-btn>
+                                    </v-flex>
+                                    <v-flex>
                                         <v-btn flat icon color="green" v-on:click="editSharedScenario">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
@@ -71,41 +91,75 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <v-flex xs12>
+            <AppModalPopup :modalData="warning" @decision="onWarningModalDecision" />
+        </v-flex>
+        <v-flex xs12>
+            <ReportsDownload :dialogData="reportData" />
+        </v-flex>
     </v-container>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Component, Watch, Prop } from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import axios from 'axios';
 
     import * as moment from 'moment';
     import {Scenario} from '../../shared/models/iAM/scenario';
-    import {hasValue} from '../../shared/utils/has-value';
+    import { hasValue } from '../../shared/utils/has-value';
+    import { Alert } from '@/shared/models/iAM/alert';
+    import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
+    import ReportsDownload from '@/shared/dialogs/ReportsDownload.vue';
+    import { ShowAvailableReports } from '@/shared/models/dialogs/download-reports-dialog';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
-    @Component
+    @Component({
+        components: { AppModalPopup, ReportsDownload }
+    })
     export default class Scenarios extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
         @State(state => state.security.userId) userId: string;
+        @State(state => state.reports.names) reportNames: string[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getUserScenarios') getUserScenariosAction: any;
+        @Action('runSimulation') runSimulationAction: any;
+
+        @Prop({
+            default: function () {
+                return { showModal: false };
+            }
+        })
+        warning: Alert;
+
+        @Prop({
+            default: function () {
+                return { showModal: false };
+            }
+        })
+        reportData: ShowAvailableReports;
 
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
-            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate'},
-            {text: 'Status', sortable: false, value: 'status'},
+            { text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
+            { text: 'Status', sortable: false, value: 'status' },
             {text: '', sortable: false, value: 'actions'}
         ];
         userScenarios: Scenario[] = [];
         sharedScenarios: Scenario[] = [];
         searchMine = '';
         searchShared = '';
+
+        networkId: number = 0;
+        networkName: string = '';
+        simulationId: number = 0;
+        simulationName: string = '';
+        currentItem: Scenario;
 
         @Watch('scenarios')
         onScenariosChanged(val: Scenario[]) {
@@ -151,6 +205,54 @@
         }
         editSharedScenario() {
             this.$router.push({ path: 'EditScenario' });
+        }
+
+        /**
+         * 'Run Simulation' button has been clicked
+         */
+        onRunSimulation(item: any) {
+            this.warning.showModal = true;
+            this.warning.heading = 'Warning';
+            this.warning.choice = true;
+            this.warning.message = 'The simulation can take around five minutes to finish. ' +
+                'Are you sure that you want to continue?';
+            this.currentItem = item;
+        }
+
+        /**
+         * A 'warning' modal decision has been made by the user
+         * @param value The user decision
+         */
+        onWarningModalDecision(value: boolean) {
+            this.warning.showModal = false;
+            if (value == true) {
+                this.runSimulation();
+            }
+        }
+
+        /**
+         * User has chosen to run a simulation
+         */
+        runSimulation() {
+            // dispatch action to run simulation
+            this.runSimulationAction({
+                networkId: this.currentItem.networkId,
+                simulationId: this.currentItem.simulationId,
+                networkName: this.currentItem.networkName,
+                simulationName: this.currentItem.simulationName,
+                userId: this.userId
+            }).catch((error: any) => {
+                console.log(error);
+            });
+        }
+
+        openReportDialog(item: any) {
+            this.reportData.showModal = true;
+            this.reportData.names = this.reportNames;
+            this.reportData.networkId = item.networkId;
+            this.reportData.networkName = item.networkName;
+            this.reportData.simulationId = item.simulationId;
+            this.reportData.simulationName = item.simulationName;
         }
     }
 </script>
