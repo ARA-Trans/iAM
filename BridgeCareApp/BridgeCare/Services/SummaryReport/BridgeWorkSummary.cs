@@ -23,7 +23,17 @@ namespace BridgeCare.Services
             this.nhsBridgeDeckAreaWorkSummary = nhsBridgeDeckAreaWorkSummary ?? throw new ArgumentNullException(nameof(nhsBridgeDeckAreaWorkSummary));
         }
 
-        public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, BridgeCareContext dbContext, int simulationId)
+        /// <summary>
+        /// Fill Work Summary report
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="simulationDataModels"></param>
+        /// <param name="bridgeDataModels"></param>
+        /// <param name="simulationYears"></param>
+        /// <param name="dbContext"></param>
+        /// <param name="simulationId"></param>
+        /// <returns></returns>
+        public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, List<int> simulationYears, BridgeCareContext dbContext, int simulationId)
         {
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
             var yearlyBudgetModels = bridgeWorkSummaryData.GetYearlyBudgetModels(simulationId, dbContext);
@@ -34,7 +44,7 @@ namespace BridgeCare.Services
 
             var chartRowsModel = bridgeRateDeckAreaWorkSummary.FillBridgeRateDeckAreaWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels);
 
-            nhsBridgeDeckAreaWorkSummary.FillNHSBridgeDeckAreaWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, chartRowsModel);
+            nhsBridgeDeckAreaWorkSummary.FillNHSBridgeDeckAreaWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
             worksheet.Calculate();
             worksheet.Cells.AutoFitColumns();

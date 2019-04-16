@@ -10,5 +10,8 @@ namespace BridgeCare.Models
 
         // Used in some tab reports
         public string DeckArea { get; set; }
+
+        // Added to simplify further usage
+        public int BRKey { get; set; }
     }
 }

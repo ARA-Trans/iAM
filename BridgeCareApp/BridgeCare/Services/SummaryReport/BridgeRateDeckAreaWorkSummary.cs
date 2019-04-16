@@ -1,10 +1,7 @@
 ﻿using BridgeCare.Models;
 using OfficeOpenXml;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Web;
 
 namespace BridgeCare.Services
 {
@@ -51,7 +48,7 @@ namespace BridgeCare.Services
         private void AddDetailsForTotalDeckArea(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
             int startRow, startColumn, row, column;
-            InitializeCommonCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
+            bridgeWorkSummaryCommon.InitializeLabelCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
             AddTotalDeckArea(worksheet, simulationDataModels, startRow, column, 0);
             foreach (var year in simulationYears)
             {
@@ -62,16 +59,8 @@ namespace BridgeCare.Services
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 2, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, row + 2, column], "Number");
             excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn + 1, row + 2, column], Color.Khaki);
-            bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 2, column);
-        }
-
-        private void InitializeCommonCells(ExcelWorksheet worksheet, CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
-        {
-            bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[row++, column].Value = HeaderLabel.Good;
-            worksheet.Cells[row++, column].Value = HeaderLabel.Fair;
-            worksheet.Cells[row++, column++].Value = HeaderLabel.Poor;
-        }
+            bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
+        }        
 
         private void AddTotalDeckArea(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, int row, int column, int year)
         {
@@ -96,7 +85,7 @@ namespace BridgeCare.Services
         {
             var totalSimulationDataModelCount = simulationDataModels.Count;
             int startRow, startColumn, row, column;
-            InitializeCommonCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
+            bridgeWorkSummaryCommon.InitializeLabelCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
             AddTotalBridgeCount(worksheet, simulationDataModels, totalSimulationDataModelCount, startRow, column, 0);
             foreach (var year in simulationYears)
             {

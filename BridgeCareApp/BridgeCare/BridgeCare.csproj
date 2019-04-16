@@ -256,6 +256,7 @@
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
     <Compile Include="Models\TreatmentScenarioModel.cs" />
     <Compile Include="Models\PerformanceScenarioModel.cs" />
