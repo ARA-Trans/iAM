@@ -1,5 +1,15 @@
 ﻿<template>
     <v-form>
+        <v-flex xs12>
+            <v-breadcrumbs :items="navigation" divider=">">
+                <v-breadcrumbs-item slot="item"
+                                    slot-scope="{ item }"
+                                    exact
+                                    :to="item.to">
+                    {{ item.text }}
+                </v-breadcrumbs-item>
+            </v-breadcrumbs>
+        </v-flex>
         <v-card>
             <v-container>
                 <v-flex xs12>
@@ -19,7 +29,7 @@
                                       readonly></v-text-field>
                         <v-date-picker ref="picker"
                                        v-model="date"
-                                        min="1950"
+                                       min="1950"
                                        reactive
                                        no-title
                                        @input="save"></v-date-picker>
@@ -27,24 +37,24 @@
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model.number="analysisPeriod"
-                                    label="Analysis period"
-                                    type="number"></v-text-field>
+                                  label="Analysis period"
+                                  type="number"></v-text-field>
                 </v-flex>
                 <v-divider inset></v-divider>
                 <v-flex xs12>
                     <v-select :items="optimizationType"
-                                label="Optimization type"
-                                outline></v-select>
+                              label="Optimization type"
+                              outline></v-select>
                 </v-flex>
                 <v-flex xs12>
                     <v-select :items="budgetType"
-                                label="Budget type"
-                                outline></v-select>
+                              label="Budget type"
+                              outline></v-select>
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model.number="benefitLimit"
-                                    label="Benefit limit" outline
-                                    type="number"></v-text-field>
+                                  label="Benefit limit" outline
+                                  type="number"></v-text-field>
                 </v-flex>
                 <v-divider inset></v-divider>
                 <v-flex xs12>
@@ -75,6 +85,21 @@
         menu: boolean = false;
         date: string = '';
         maxDate: string = moment().year().toString();
+
+        navigation: any[] = [
+            {
+                text: 'Scenario dashboard',
+                to: '/Scenarios'
+            },
+            {
+                text: 'Scenario editor',
+                to: '/EditScenario'
+            },
+            {
+                text: 'Analysis editor',
+                to: '/EditAnalysis'
+            }
+        ];
 
         data() {
             return {

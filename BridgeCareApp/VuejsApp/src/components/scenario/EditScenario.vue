@@ -1,5 +1,15 @@
 ﻿<template>
     <v-form>
+        <v-flex xs12>
+            <v-breadcrumbs :items="navigation" divider=">">
+                <v-breadcrumbs-item slot="item"
+                                    slot-scope="{ item }"
+                                    exact
+                                    :to="item.to">
+                    {{ item.text }}
+                </v-breadcrumbs-item>
+            </v-breadcrumbs>
+        </v-flex>
         <v-container>
             <v-layout row wrap>
 
@@ -23,21 +33,21 @@
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
-                                  :append-icon="marker ? 'info' : 'home'"
+                                  :append-icon="'fas fa-dollar-sign'"
                                   box
                                   readonly
                                   label="Investment"
                                   type="text"
-                                  @click:append="toggleMarker"></v-text-field>
+                                  @click:append="editInvestment"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
-                                  :append-icon="marker ? 'info' : 'home'"
+                                  :append-icon="'fas fa-chart-line'"
                                   box
                                   readonly
                                   label="Performance"
                                   type="text"
-                                  @click:append="toggleMarker"></v-text-field>
+                                  @click:append="editPerformance"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
@@ -81,6 +91,18 @@
         marker: boolean = true;
         message: string = '';
 
+        navigation: any[] = [
+            {
+                text: 'Scenario dashboard',
+                disabled: false,
+                to: '/Scenarios'
+            },
+            {
+                text: 'Scenario editor',
+                to: '/EditScenario'
+            }
+        ];
+
         created() {
             this.marker = true;
         }
@@ -90,6 +112,12 @@
         }
         editAnalysis() {
             this.$router.push('EditAnalysis');
+        }
+        editInvestment() {
+            this.$router.push('/InvestmentEditor');
+        }
+        editPerformance() {
+            this.$router.push('/PerformanceEditor');
         }
     }
 </script>

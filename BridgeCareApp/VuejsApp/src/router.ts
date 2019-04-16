@@ -37,7 +37,7 @@ const router = new VueRouter({
         {
             path: '/Scenarios',
             name: 'Scenarios',
-            component: Scenario
+            component: Scenario,
         },
         {
             path: '/InvestmentEditor',
@@ -52,12 +52,12 @@ const router = new VueRouter({
         {
             path: '/EditScenario',
             name: 'EditScenario',
-            component: EditScenario
+            component: EditScenario,
         },
         {
             path: '/EditAnalysis',
             name: 'EditAnalysis',
-            component: EditAnalysis
+            component: EditAnalysis,
         },
         {
             path: '/UnderConstruction',

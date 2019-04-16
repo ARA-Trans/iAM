@@ -1,5 +1,15 @@
 <template>
     <v-container fluid grid-list-xl>
+        <v-flex xs12 v-show="showBreadcrumb">
+            <v-breadcrumbs :items="navigation" divider=">">
+                <v-breadcrumbs-item slot="item"
+                                    slot-scope="{ item }"
+                                    exact
+                                    :to="item.to">
+                    {{ item.text }}
+                </v-breadcrumbs-item>
+            </v-breadcrumbs>
+        </v-flex>
         <div class="performance-editor-container">
             <v-layout column>
                 <v-flex xs12>
@@ -88,7 +98,7 @@
                                                 <v-menu v-if="props.item.equation !== ''" left min-width="500px"
                                                         min-height="500px">
                                                     <template slot="activator">
-                                                        <v-btn flat icon >
+                                                        <v-btn flat icon>
                                                             <v-icon>visibility</v-icon>
                                                         </v-btn>
                                                     </template>
@@ -105,7 +115,7 @@
                                                 <v-menu v-if="props.item.criteria !== ''" right min-width="500px"
                                                         min-height="500px">
                                                     <template slot="activator">
-                                                        <v-btn flat icon >
+                                                        <v-btn flat icon>
                                                             <v-icon>visibility</v-icon>
                                                         </v-btn>
                                                     </template>
@@ -168,7 +178,7 @@
         <CreatePerformanceStrategyEquationDialog :showDialog="showCreatePerformanceStrategyEquationDialog"
                                                  @submit="onCreatePerformanceStrategyEquation" />
 
-        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult"/>
+        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult" />
 
         <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteriaEditorDialogResult" />
     </v-container>
@@ -176,7 +186,8 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
     import CreatePerformanceStrategyDialog from './performance-editor-dialogs/CreatePerformanceStrategyDialog.vue';
     import CreatePerformanceStrategyEquationDialog from './performance-editor-dialogs/CreatePerformanceStrategyEquationDialog.vue';
@@ -243,6 +254,35 @@
         equationEditorDialogData: EquationEditorDialogData = {...emptyEquationEditorDialogData};
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
         showCreatePerformanceStrategyEquationDialog = false;
+
+        showBreadcrumb: boolean = false;
+        navigation: any[] = [
+            {
+                text: 'Scenario dashboard',
+                to: '/Scenarios'
+            },
+            {
+                text: 'Scenario editor',
+                to: '/EditScenario'
+            },
+            {
+                text: 'Performance editor',
+                to: '/PerformanceEditor'
+            }
+        ];
+
+        beforeRouteEnter(to: any, from: any, next: any) {
+            if (from.name === 'EditScenario') {
+                next((vm: any) => {
+                    vm.showBreadcrumb = true;
+                });
+            }
+            else {
+                next((vm: any) => {
+                    vm.showBreadcrumb = false;
+                });
+            }
+        }
 
         /**
          * Watcher: performanceStrategies

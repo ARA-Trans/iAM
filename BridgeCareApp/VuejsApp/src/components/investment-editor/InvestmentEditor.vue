@@ -1,5 +1,15 @@
 <template>
     <v-container fluid grid-list-xl>
+        <v-flex xs12 v-show="showBreadcrumb">
+            <v-breadcrumbs :items="navigation" divider=">">
+                <v-breadcrumbs-item slot="item"
+                                    slot-scope="{ item }"
+                                    exact
+                                    :to="item.to">
+                    {{ item.text }}
+                </v-breadcrumbs-item>
+            </v-breadcrumbs>
+        </v-flex>
         <div class="investment-editor-container">
             <v-layout column>
                 <v-flex xs12>
@@ -136,7 +146,8 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
     import AppSpinner from '../../shared/dialogs/AppSpinner.vue';
     import CreateInvestmentStrategyDialog from './investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
@@ -190,6 +201,35 @@
         createInvestmentStrategyDialogData: CreateInvestmentStrategyDialogData = {...emptyCreateInvestmentStrategyDialogData};
         editBudgetsDialogData: EditBudgetsDialogData = {...emptyEditBudgetsDialogData};
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
+
+        showBreadcrumb: boolean = false;
+        navigation: any[] = [
+            {
+                text: 'Scenario dashboard',
+                to: '/Scenarios'
+            },
+            {
+                text: 'Scenario editor',
+                to: '/EditScenario'
+            },
+            {
+                text: 'Investment editor',
+                to: '/InvestmentEditor'
+            }
+        ];
+
+        beforeRouteEnter(to: any, from: any, next: any) {
+            if (from.name === 'EditScenario') {
+                next((vm: any) => {
+                    vm.showBreadcrumb = true;
+                });
+            }
+            else {
+                next((vm: any) => {
+                    vm.showBreadcrumb = false;
+                });
+            }
+        }
 
         /**
          * Watcher: investmentStrategies
