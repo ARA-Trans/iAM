@@ -20,12 +20,21 @@ namespace BridgeCare.Services
             this.bridgeWorkSummaryComputationHelper = bridgeWorkSummaryComputationHelper ?? throw new ArgumentNullException(nameof(bridgeWorkSummaryComputationHelper));
         }
 
+        /// <summary>
+        /// Fill NHS sections.
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="currentCell"></param>
+        /// <param name="simulationYears"></param>
+        /// <param name="simulationDataModels"></param>
+        /// <param name="bridgeDataModels"></param>
+        /// <param name="chartRowsModel"></param>
         public void FillNHSBridgeDeckAreaWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
-            var nhsBridgeCountDataStartRow = FillNHSBridgeCountSection(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
-            FillNHSBridgeCountPercentSection(worksheet, currentCell, simulationYears, nhsBridgeCountDataStartRow, chartRowsModel);
-          // FillNHSBridgeDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
-          // FillNHSBridgeDeckAreaPercentSection(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+            var dataStartRow = FillNHSBridgeCountSection(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            FillNHSBridgeCountPercentSection(worksheet, currentCell, simulationYears, dataStartRow, chartRowsModel);
+            dataStartRow = FillNHSBridgeDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            // FillNHSBridgeDeckAreaPercentSection(worksheet, currentCell, simulationYears, dataStartRow, chartRowsModel);
         }
 
         private void FillNHSBridgeDeckAreaPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
@@ -33,28 +42,59 @@ namespace BridgeCare.Services
             throw new NotImplementedException();
         }
 
-        private void FillNHSBridgeDeckAreaSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
+        private int FillNHSBridgeDeckAreaSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
         {
-            throw new NotImplementedException();
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Deck Area", true);
+            var dataStartRow = currentCell.Row + 1;
+            AddDetailsForNHSBridgeDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            return dataStartRow;
         }
 
-        private void FillNHSBridgeCountPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int nhsBridgeCountDataStartRow, ChartRowsModel chartRowsModel)
+        private void AddDetailsForNHSBridgeDeckArea(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
+        {
+            int startRow, startColumn, row, column;
+            bridgeWorkSummaryCommon.InitializeLabelCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
+            AddNHSBridgeDeckArea(worksheet, simulationDataModels, bridgeDataModels, startRow, column, 0);
+            foreach (var year in simulationYears)
+            {
+                row = startRow;
+                column = ++column;
+                AddNHSBridgeDeckArea(worksheet, simulationDataModels, bridgeDataModels, row, column, year);
+            }
+            excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 2, column]);
+            excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, row + 2, column], "Number");
+            bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
+        }
+
+        private void AddNHSBridgeDeckArea(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int row, int column, int year)
+        {
+            var goodDeckArea = bridgeWorkSummaryComputationHelper.CalculateNHSBridgeGoodDeckArea(simulationDataModels, bridgeDataModels, year);
+            worksheet.Cells[row, column].Value = goodDeckArea;
+
+            var poorDeckArea = bridgeWorkSummaryComputationHelper.CalculateNHSBridgePoorDeckArea(simulationDataModels, bridgeDataModels, year);
+            worksheet.Cells[row + 2, column].Value = poorDeckArea;
+
+            var filteredModels = bridgeDataModels.FindAll(b => b.NHS == "Y");
+            worksheet.Cells[row + 1, column].Value = filteredModels.Sum(f => Convert.ToDouble(f.DeckArea)) - (goodDeckArea + poorDeckArea);
+        }
+
+        private void FillNHSBridgeCountPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow, ChartRowsModel chartRowsModel)
         {
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Count %", true);
             chartRowsModel.NHSBridgeCountPercentRow = currentCell.Row;
-            AddDetailsForNHSBridgeCountPercent(worksheet, currentCell, simulationYears, nhsBridgeCountDataStartRow);
+            AddDetailsForNHSBridgeCountPercent(worksheet, currentCell, simulationYears, dataStartRow);
         }
 
-        private void AddDetailsForNHSBridgeCountPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int nhsBridgeCountDataStartRow)
+        private void AddDetailsForNHSBridgeCountPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow)
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.InitializeLabelCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
             for (var index = 0; index <= simulationYears.Count; index++)
             {
-                var sumFormula = "SUM(" + worksheet.Cells[nhsBridgeCountDataStartRow, column, nhsBridgeCountDataStartRow + 2, column] + ")";
-                worksheet.Cells[startRow, column].Formula = worksheet.Cells[nhsBridgeCountDataStartRow, column] + "/" + sumFormula;
-                worksheet.Cells[startRow + 1, column].Formula = worksheet.Cells[nhsBridgeCountDataStartRow + 1, column] + "/" + sumFormula;
-                worksheet.Cells[startRow + 2, column].Formula = worksheet.Cells[nhsBridgeCountDataStartRow + 2, column] + "/" + sumFormula;
+                var sumFormula = "SUM(" + worksheet.Cells[dataStartRow, column, dataStartRow + 2, column] + ")";
+                worksheet.Cells[startRow, column].Formula = worksheet.Cells[dataStartRow, column] + "/" + sumFormula;
+                worksheet.Cells[startRow + 1, column].Formula = worksheet.Cells[dataStartRow + 1, column] + "/" + sumFormula;
+                worksheet.Cells[startRow + 2, column].Formula = worksheet.Cells[dataStartRow + 2, column] + "/" + sumFormula;
                 column++;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, startRow + 2, column - 1]);
@@ -65,9 +105,9 @@ namespace BridgeCare.Services
         private int FillNHSBridgeCountSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
         {
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Count", true);
-            var nhsBridgeCountDataStartRow = currentCell.Row + 1;
+            var dataStartRow = currentCell.Row + 1;
             AddDetailsForNHSBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
-            return nhsBridgeCountDataStartRow;
+            return dataStartRow;
         }
 
         private void AddDetailsForNHSBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
