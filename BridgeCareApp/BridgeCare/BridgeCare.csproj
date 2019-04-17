@@ -305,6 +305,7 @@
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
     <Compile Include="Services\SummaryReport\NHSBridgeDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\NHSConditionBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
     <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />

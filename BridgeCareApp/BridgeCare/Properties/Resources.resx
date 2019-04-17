@@ -228,4 +228,7 @@
   <data name="PoorBridgeCompareDeckArea" xml:space="preserve">
     <value>Poor Bridge Compare Deck Area</value>
   </data>
+  <data name="NHSConditionByBridgeCountLLCC" xml:space="preserve">
+    <value>NHS Condition By Bridge Count LLCC</value>
+  </data>
 </root>
