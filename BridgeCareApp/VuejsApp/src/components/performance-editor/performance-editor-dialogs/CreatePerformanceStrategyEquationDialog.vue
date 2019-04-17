@@ -33,19 +33,54 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Prop} from 'vue-property-decorator';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
+    import {State, Action} from 'vuex-class';
     import {emptyEquation, PerformanceStrategyEquation} from '@/shared/models/iAM/performance';
-    import {attributes} from '@/shared/utils/attributes';
+    import {isEmpty} from 'ramda';
+    import {SelectItem} from '@/shared/models/vue/select-item';
 
     @Component
     export default class CreatePerformanceStrategyDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        attributesSelectListItems = attributes.map((attribute: string) => ({
-            text: attribute,
-            value: attribute
-        }));
+        @State(state => state.attribute.attributes) attributes: string[];
+
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getAttributes') getAttributesAction: any;
+
+        attributesSelectListItems: SelectItem[] = [];
         createdPerformanceStrategyEquation: PerformanceStrategyEquation = {...emptyEquation};
+
+        /**
+         * Watcher: showDialog
+         */
+        @Watch('showDialog')
+        onShowDialogChanged() {
+            if (this.showDialog && isEmpty(this.attributes)) {
+                // set isBusy to true, then dispatch action to get attributes
+                this.setIsBusyAction({isBusy: true});
+                this.getAttributesAction()
+                    .then(() => this.setIsBusyAction({isBusy: false}))
+                    .catch((error: any) => {
+                        this.setIsBusyAction({isBusy: false});
+                        console.log(error);
+                    });
+            }
+        }
+
+        /**
+         * Watcher: attributes
+         */
+        @Watch('attributes')
+        onAttributesChanged() {
+            if (!isEmpty(this.attributes)) {
+                // set the attributesSelectListItems property using the list of attributes
+                this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
+                    text: attribute,
+                    value: attribute
+                }));
+            }
+        }
 
         /**
          * 'Submit' button has been clicked

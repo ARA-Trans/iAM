@@ -175,7 +175,7 @@
     } from '@/shared/models/iAM/performance';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {any, propEq, clone, isNil, findIndex, append, contains} from 'ramda';
+    import {any, propEq, clone, isNil, findIndex, append, contains, isEmpty} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value';
     import {
         CreatePerformanceStrategyDialogData,
@@ -191,7 +191,6 @@
     } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
-    import {attributes} from '@/shared/utils/attributes';
 
     @Component({
         components: {CreatePerformanceStrategyDialog, CreatePerformanceStrategyEquationDialog, EquationEditor, CriteriaEditor}
@@ -199,6 +198,7 @@
     export default class PerformanceEditor extends Vue {
         @State(state => state.performanceEditor.performanceStrategies) performanceStrategies: PerformanceStrategy[];
         @State(state => state.performanceEditor.selectedPerformanceStrategy) selectedPerformanceStrategy: PerformanceStrategy;
+        @State(state => state.attribute.attributes) attributes: string[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getPerformanceStrategies') getPerformanceStrategiesAction: any;
@@ -206,6 +206,7 @@
         @Action('createPerformanceStrategy') createPerformanceStrategyAction: any;
         @Action('updatePerformanceStrategy') updatePerformanceStrategyAction: any;
         @Action('updateSelectedPerformanceStrategy') updateSelectedPerformanceStrategyAction: any;
+        @Action('getAttributes') getAttributesAction: any;
 
         performanceStrategiesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -218,10 +219,7 @@
             {text: '', value: '', align: 'center', sortable: false, class: '', width: ''}
         ];
         equationsGridData: PerformanceStrategyEquation[] = [];
-        attributesSelectListItems = attributes.map((attribute: string) => ({
-            text: attribute,
-            value: attribute
-        }));
+        attributesSelectListItems: SelectItem[] = [];
         selectedEquation: PerformanceStrategyEquation = {...emptyEquation};
         createPerformanceStrategyDialogData: CreatePerformanceStrategyDialogData = {
             ...emptyCreatePerformanceStrategyDialogData
@@ -271,12 +269,35 @@
                 }
                 this.hasSelectedPerformanceStrategy = true;
                 this.equationsGridData = clone(this.selectedPerformanceStrategy.equations);
-
+                if (isEmpty(this.attributes)) {
+                    // set isBusy to true, then dispatch action to get attributes
+                    this.setIsBusyAction({isBusy: true});
+                    this.getAttributesAction()
+                        .then(() => this.setIsBusyAction({isBusy: false}))
+                        .catch((error: any) => {
+                            this.setIsBusyAction({isBusy: false});
+                            console.log(error);
+                        });
+                }
             } else {
                 // reset ui specific properties
                 this.selectItemValue = '';
                 this.hasSelectedPerformanceStrategy = false;
                 this.equationsGridData = [];
+            }
+        }
+
+        /**
+         * Watcher: attributes
+         */
+        @Watch('attributes')
+        onAttributesChanged() {
+            if (!isEmpty(this.attributes)) {
+                // set the attributesSelectListItems property using the list of attributes
+                this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
+                    text: attribute,
+                    value: attribute
+                }));
             }
         }
 

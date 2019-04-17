@@ -11,6 +11,7 @@ import inventory from '@/store-modules/inventory.module';
 import investmentEditor from '@/store-modules/investment-editor.module';
 import performanceEditor from '@/store-modules/performance-editor.module';
 import reports from '@/store-modules/reports/reports.module';
+import attribute from '@/store-modules/attribute.module';
 
 Vue.use(Vuex);
 
@@ -25,6 +26,7 @@ export default new Vuex.Store({
         scenario,
         inventory,
         investmentEditor,
-        performanceEditor
+        performanceEditor,
+        attribute
     }
 });

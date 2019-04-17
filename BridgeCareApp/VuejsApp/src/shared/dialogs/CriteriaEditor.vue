@@ -40,12 +40,13 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
+    import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
     import {Criteria, emptyCriteria} from '../models/iAM/criteria';
     import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value';
     import {CriteriaEditorDialogData} from '../models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
-    import {attributes} from '@/shared/utils/attributes';
+    import {isEmpty} from 'ramda';
 
     @Component({
         components: {VueQueryBuilder}
@@ -53,13 +54,13 @@
     export default class CriteriaEditor extends Vue {
         @Prop() dialogData: CriteriaEditorDialogData;
 
+        @State(state => state.attribute.attributes) attributes: string[];
+
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getAttributes') getAttributesAction: any;
+
         criteria: Criteria = {...emptyCriteria};
-        rules: any[] = attributes.map((attribute: string) => ({
-            type: 'text',
-            label: attribute,
-            id: attribute,
-            operators: ['=', '<>', '<', '<=', '>', '>=']
-        }));
+        rules: any[] = [];
         queryBuilderLabels: object = {
             'matchType': '',
             'matchTypes': [
@@ -78,6 +79,32 @@
         onDialogDataChanged() {
             // set the criteria string
             this.criteria = parseCriteriaString(this.dialogData.criteria);
+            if (this.dialogData.showDialog && isEmpty(this.attributes)) {
+                // set isBusy to true, then dispatch action to get attributes
+                this.setIsBusyAction({isBusy: true});
+                this.getAttributesAction()
+                    .then(() => this.setIsBusyAction({isBusy: false}))
+                    .catch((error: any) => {
+                        this.setIsBusyAction({isBusy: false});
+                        console.log(error);
+                    });
+            }
+        }
+
+        /**
+         * Watcher: attributes
+         */
+        @Watch('attributes')
+        onAttributesChanged() {
+            if (!isEmpty(this.attributes)) {
+                // set the rules property using the list of attributes
+                this.rules = this.attributes.map((attribute: string) => ({
+                    type: 'text',
+                    label: attribute,
+                    id: attribute,
+                    operators: ['=', '<>', '<', '<=', '>', '>=']
+                }));
+            }
         }
 
         /**

@@ -23,7 +23,7 @@ const actions = {
                  await new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
                      .then((reportsBlob: Blob) => {
                         commit('reportsBlobMutator', reportsBlob);
-                        commit('currentReportNameMutator', 'Detailed report.xlsx')
+                        commit('currentReportNameMutator', 'Detailed report.xlsx');
                     })                    
                     .catch((error: any) => console.log(error));
                 break;
@@ -32,7 +32,7 @@ const actions = {
                 await new SummaryReportService().getSummaryReport(payload.networkId, payload.simulationId, payload.networkName, payload.simulationName)
                     .then((reportsBlob: Blob) => {
                         commit('reportsBlobMutator', reportsBlob),
-                        commit('currentReportNameMutator', 'Summary report.xlsx')
+                        commit('currentReportNameMutator', 'Summary report.xlsx');
                         })
                     .catch((error: any) => console.log(error));
                 break;

@@ -119,22 +119,24 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {Action} from 'vuex-class';
+    import {State, Action} from 'vuex-class';
     import {EquationEditorDialogData} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
-    import {attributes} from '@/shared/utils/attributes';
     import {formulas} from '@/shared/utils/formulas';
-    import {clone} from 'ramda';
+    import {isEmpty} from 'ramda';
 
     @Component
     export default class EquationEditor extends Vue {
         @Prop() dialogData: EquationEditorDialogData;
 
-        @Action('setIsBusy') setIsBusyAction: any;
+        @State(state => state.attribute.attributes) attributes: string[];
 
-        attributesList = clone(attributes);
-        formulasList = clone(formulas);
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('getAttributes') getAttributesAction: any;
+
+        attributesList: string[] = [];
+        formulasList: string[] = formulas;
         equation: string = '';
         isPiecewise: boolean = false;
         isFunction: boolean = false;
@@ -144,12 +146,34 @@
         showValidMessage: boolean = false;
         cannotSubmit: boolean = false;
 
+        /**
+         * Watcher: dialogData
+         */
         @Watch('dialogData')
         onDialogDataChanged() {
             // set the equation, isPiecewise, and isFunction properties with the dialog data equation
             this.equation = this.dialogData.equation;
             this.isPiecewise = this.dialogData.isPiecewise;
             this.isFunction = this.dialogData.isFunction;
+            if (this.dialogData.showDialog && isEmpty(this.attributes)) {
+                // set isBusy to true, then dispatch action to get attributes
+                this.setIsBusyAction({isBusy: true});
+                this.getAttributesAction()
+                    .then(() => this.setIsBusyAction({isBusy: false}))
+                    .catch((error: any) => {
+                        this.setIsBusyAction({isBusy: false});
+                        console.log(error);
+                    });
+            }
+        }
+
+        /**
+         * Watcher: attributes
+         */
+        @Watch('attributes')
+        onAttributesChanged() {
+            // set attributesList = attributes
+            this.attributesList = this.attributes;
         }
 
         /**
@@ -164,6 +188,9 @@
             this.cannotSubmit = !(this.equation === '' || this.dialogData.equation === this.equation);
         }
 
+        /**
+         * Component has been mounted
+         */
         mounted() {
             this.textareaInput = document.getElementById('equation_textarea') as HTMLTextAreaElement;
             this.cursorPosition = this.textareaInput.selectionStart;
@@ -301,6 +328,9 @@
             this.$emit('submit', null);
         }
 
+        /**
+         * Resets component's calculated properties
+         */
         resetComponentCalculatedProperties() {
             this.cursorPosition = 0;
             this.showInvalidMessage = false;
