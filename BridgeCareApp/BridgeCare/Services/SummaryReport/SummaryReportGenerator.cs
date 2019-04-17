@@ -2,6 +2,7 @@
 using BridgeCare.Models;
 using OfficeOpenXml;
 using System;
+using System.Collections.Generic;
 
 namespace BridgeCare.Services.SummaryReport
 {
@@ -35,8 +36,9 @@ namespace BridgeCare.Services.SummaryReport
         /// <param name="simulationModel"></param>
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
-        { 
-            // simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 24 };
+        {
+            // TODO comment later
+            simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 24 };
 
             // Get data
             var simulationId = simulationModel.SimulationId;
@@ -48,12 +50,13 @@ namespace BridgeCare.Services.SummaryReport
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
                 // Bridge Data tab
+                var bridgeDataModels = new List<BridgeDataModel>();
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
-                var simulationDataModels = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
+                var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, simulationDataModels, simulationYears, dbContext, simulationId);
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationId);
 
                 // Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
