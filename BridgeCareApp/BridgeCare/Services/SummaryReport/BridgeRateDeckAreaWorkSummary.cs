@@ -20,7 +20,7 @@ namespace BridgeCare.Services
         }
 
         /// <summary>
-        /// /// Fill work summary bridge poor on off rate and deck area sections
+        /// Fill work summary bridge poor on off rate and deck area sections
         /// </summary>
         /// <param name="worksheet"></param>
         /// <param name="currentCell"></param>
