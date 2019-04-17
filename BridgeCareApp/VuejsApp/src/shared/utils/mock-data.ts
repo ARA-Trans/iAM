@@ -3,6 +3,7 @@ import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory'
 import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
 import {emptyPerformanceStrategy, PerformanceStrategy} from '@/shared/models/iAM/performance';
+import {Consequence, Cost, Feasibility, Treatment, TreatmentStrategy} from '@/shared/models/iAM/treatment';
 
 /******************************************CRITERIA EDITOR MOCK DATA***************************************************/
 export const mockAttributes: string[] = [
@@ -287,5 +288,72 @@ export const mockPerformanceStrategies: PerformanceStrategy[] = [
 
             }
         ]
+    }
+];
+/*******************************************TREATMENT EDITOR MOCK DATA*************************************************/
+export const mockFeasibility: Feasibility = {
+    treatmentId: 1,
+    id: 1,
+    criteria: '[PCI] >= \'60\' AND [PCI] < \'75\' AND [TRUCKPCT] = \'Low\' AND [UNDERCLR] < \'75\' AND [SUFF_RATE] < \'2\'',
+    yearsBeforeAny: 5,
+    yearsBeforeSame: 7
+};
+
+export const mockCost: Cost = {
+    treatmentId: 1,
+    id: 1,
+    equation: '[DECK_AREA]*1.99',
+    isFunction: false,
+    criteria: '[DISTRICT]=\'1\''
+};
+
+export const mockConsequences: Consequence[] = [
+    {
+        treatmentId: 1,
+        id: 1,
+        attribute: 'PCI',
+        change: '+15%',
+        equation: '',
+        isFunction: false,
+        criteria: '[DISTRICT]=1'
+    },
+    {
+        treatmentId: 1,
+        id: 2,
+        attribute: 'AGE',
+        change: '+1',
+        equation: '',
+        isFunction: false,
+        criteria: ''
+    }
+];
+
+export const mockTreatments: Treatment[] = [
+    {
+        treatmentStrategyId: 1,
+        id: 1,
+        name: 'Chip Seal',
+        feasibility: mockFeasibility,
+        costs: [mockCost],
+        consequences: mockConsequences,
+        budgets: []
+    },
+    {
+        treatmentStrategyId: 1,
+        id: 2,
+        name: '2\'\' Mill 2\'\' Fill',
+        feasibility: null,
+        costs: [],
+        consequences: [],
+        budgets: []
+    }
+];
+
+export const mockTreatmentStrategies: TreatmentStrategy[] = [
+    {
+        id: 1,
+        name: 'Treatment Strategy 1',
+        description: 'This is a mock treatment strategy',
+        treatments: mockTreatments
     }
 ];
