@@ -191,6 +191,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\attribute.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\breadcrumb.module.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
     <TypeScriptCompile Include="src\store-modules\reports\detailed-report.module.ts" />
     <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />

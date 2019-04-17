@@ -1,15 +1,5 @@
 ﻿<template>
     <v-form>
-        <v-flex xs12>
-            <v-breadcrumbs :items="navigation" divider=">">
-                <v-breadcrumbs-item slot="item"
-                                    slot-scope="{ item }"
-                                    exact
-                                    :to="item.to">
-                    {{ item.text }}
-                </v-breadcrumbs-item>
-            </v-breadcrumbs>
-        </v-flex>
         <v-card>
             <v-container>
                 <v-flex xs12>
@@ -77,29 +67,19 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component, Watch } from 'vue-property-decorator';
+    import { Action, State } from 'vuex-class';
 
     import moment from 'moment';
 
     @Component
     export default class EditAnalysis extends Vue {
+
+        @State(state => state.breadcrumb.navigation) navigation: any[];
+        @Action('setNavigation') setNavigationAction: any;
+
         menu: boolean = false;
         date: string = '';
         maxDate: string = moment().year().toString();
-
-        navigation: any[] = [
-            {
-                text: 'Scenario dashboard',
-                to: '/Scenarios'
-            },
-            {
-                text: 'Scenario editor',
-                to: '/EditScenario'
-            },
-            {
-                text: 'Analysis editor',
-                to: '/EditAnalysis'
-            }
-        ];
 
         data() {
             return {
@@ -108,6 +88,23 @@
                 optimizationType: ['Incremental benefit/cost', 'Another one', 'The better one'],
                 budgetType: ['As budget permits', 'Another one', 'The better one'],
             };
+        }
+
+        created() {
+            this.setNavigationAction([
+                {
+                    text: 'Scenario dashboard',
+                    to: '/Scenarios/'
+                },
+                {
+                    text: 'Scenario editor',
+                    to: '/EditScenario/'
+                },
+                {
+                  text: 'Analysis editor',
+                  to: '/EditAnalysis/'
+                }
+            ]);
         }
         
         @Watch('menu')
@@ -122,7 +119,7 @@
             this.menu = false;
         }
         cancel() {
-            this.$router.push('EditScenario');
+            this.$router.push('/EditScenario/');
         }
     }
 </script>

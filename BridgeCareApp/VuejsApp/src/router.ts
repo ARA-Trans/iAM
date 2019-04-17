@@ -17,7 +17,7 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         {
-            path: '/Inventory',
+            path: '/Inventory/',
             name: 'Inventory',
             component: Inventory
         },
@@ -27,7 +27,7 @@ const router = new VueRouter({
             component: DetailedReport,
             beforeEnter: (to, from, next) => {
                 if (from.name == null) {
-                    next('/Inventory');
+                    next('/Inventory/');
                 }
                 else {
                     next();
@@ -35,36 +35,48 @@ const router = new VueRouter({
             }
         },
         {
-            path: '/Scenarios',
+            path: '/Scenarios/',
             name: 'Scenarios',
             component: Scenario,
         },
         {
-            path: '/InvestmentEditor',
+            path: '/InvestmentEditor/',
             name: 'InvestmentEditor',
-            component: InvestmentEditor
+            component: InvestmentEditor,
+            alias: '/InvestmentEditor/Library/',
         },
         {
-            path: '/PerformanceEditor',
+            path: '/PerformanceEditor/',
             name: 'PerformanceEditor',
             component: PerformanceEditor
         },
         {
-            path: '/EditScenario',
+            path: '/PerformanceEditor/',
+            component: PerformanceEditor,
+            alias: '/PerformanceEditor/FromScenario/'
+        },
+        {
+            path: '/InvestmentEditor/',
+            component: InvestmentEditor,
+            alias: '/InvestmentEditor/FromScenario/'
+        },
+        
+        {
+            path: '/EditScenario/',
             name: 'EditScenario',
             component: EditScenario,
         },
         {
-            path: '/EditAnalysis',
+            path: '/EditAnalysis/',
             name: 'EditAnalysis',
             component: EditAnalysis,
         },
         {
-            path: '/UnderConstruction',
+            path: '/UnderConstruction/',
             name: 'UnderConstruction',
             component: UnderConstruction
         },
-        { path: '*', redirect: '/Inventory' }
+        { path: '*', redirect: '/Inventory/' }
         //{
         //    path: '/about',
         //    name: 'about',

@@ -1,15 +1,5 @@
 <template>
     <v-container fluid grid-list-xl>
-        <v-flex xs12 v-show="showBreadcrumb">
-            <v-breadcrumbs :items="navigation" divider=">">
-                <v-breadcrumbs-item slot="item"
-                                    slot-scope="{ item }"
-                                    exact
-                                    :to="item.to">
-                    {{ item.text }}
-                </v-breadcrumbs-item>
-            </v-breadcrumbs>
-        </v-flex>
         <div class="performance-editor-container">
             <v-layout column>
                 <v-flex xs12>
@@ -224,6 +214,7 @@
         @State(state => state.performanceEditor.performanceStrategies) performanceStrategies: PerformanceStrategy[];
         @State(state => state.performanceEditor.selectedPerformanceStrategy) selectedPerformanceStrategy: PerformanceStrategy;
         @State(state => state.attribute.attributes) attributes: string[];
+        @State(state => state.breadcrumb.navigation) navigation: any[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getPerformanceStrategies') getPerformanceStrategiesAction: any;
@@ -234,6 +225,7 @@
         @Action('updateEquations') updateEquationsAction: any;
         @Action('deleteEquations') deleteEquationsAction: any;
         @Action('getAttributes') getAttributesAction: any;
+        @Action('setNavigation') setNavigationAction: any;
 
         performanceStrategiesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -255,33 +247,41 @@
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
         showCreatePerformanceStrategyEquationDialog = false;
 
-        showBreadcrumb: boolean = false;
-        navigation: any[] = [
-            {
-                text: 'Scenario dashboard',
-                to: '/Scenarios'
-            },
-            {
-                text: 'Scenario editor',
-                to: '/EditScenario'
-            },
-            {
-                text: 'Performance editor',
-                to: '/PerformanceEditor'
-            }
-        ];
-
         beforeRouteEnter(to: any, from: any, next: any) {
             if (from.name === 'EditScenario') {
                 next((vm: any) => {
-                    vm.showBreadcrumb = true;
+                    vm.setNavigationAction([
+                        {
+                            text: 'Scenario dashboard',
+                            to: '/Scenarios/'
+                        },
+                        {
+                            text: 'Scenario editor',
+                            to: '/EditScenario/'
+                        },
+                        {
+                            text: 'Performance editor',
+                            to: '/PerformanceEditor/FromScenario/'
+                        }
+                    ]);
                 });
             }
             else {
                 next((vm: any) => {
-                    vm.showBreadcrumb = false;
+                    vm.setNavigationAction([]);
                 });
             }
+        }
+
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            console.log('Router rerendered');
+            next();
+            // called when the route that renders this component has changed,
+            // but this component is reused in the new route.
+            // For example, for a route with dynamic params `/foo/:id`, when we
+            // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
+            // will be reused, and this hook will be called when that happens.
+            // has access to `this` component instance.
         }
 
         /**

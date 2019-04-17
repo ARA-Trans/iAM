@@ -12,6 +12,7 @@ import investmentEditor from '@/store-modules/investment-editor.module';
 import performanceEditor from '@/store-modules/performance-editor.module';
 import attribute from '@/store-modules/attribute.module';
 import reports from '@/store-modules/reports/reports.module';
+import breadcrumb from '@/store-modules/breadcrumb.module';
 
 Vue.use(Vuex);
 
@@ -27,6 +28,7 @@ export default new Vuex.Store({
         inventory,
         investmentEditor,
         performanceEditor,
-        attribute
+        attribute,
+        breadcrumb
     }
 });

@@ -1,6 +1,6 @@
 ﻿<template>
     <v-form>
-        <v-flex xs12>
+        <!--<v-flex xs12>
             <v-breadcrumbs :items="navigation" divider=">">
                 <v-breadcrumbs-item slot="item"
                                     slot-scope="{ item }"
@@ -9,7 +9,7 @@
                     {{ item.text }}
                 </v-breadcrumbs-item>
             </v-breadcrumbs>
-        </v-flex>
+        </v-flex>-->
         <v-container>
             <v-layout row wrap>
 
@@ -85,39 +85,41 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component } from 'vue-property-decorator';
+    import { Action, State } from 'vuex-class';
 
     @Component
     export default class EditScenario extends Vue {
         marker: boolean = true;
         message: string = '';
 
-        navigation: any[] = [
-            {
-                text: 'Scenario dashboard',
-                disabled: false,
-                to: '/Scenarios'
-            },
-            {
-                text: 'Scenario editor',
-                to: '/EditScenario'
-            }
-        ];
+        @State(state => state.breadcrumb.navigation) navigation: any[];
+        @Action('setNavigation') setNavigationAction: any;
 
         created() {
             this.marker = true;
+            this.setNavigationAction([
+                {
+                    text: 'Scenario dashboard',
+                    to: '/Scenarios/'
+                },
+                {
+                    text: 'Scenario editor',
+                    to: '/EditScenario/'
+                }
+            ]);
         }
 
         toggleMarker() {
             this.marker = !this.marker;
         }
         editAnalysis() {
-            this.$router.push('EditAnalysis');
+            this.$router.push('/EditAnalysis/');
         }
         editInvestment() {
-            this.$router.push('/InvestmentEditor');
+            this.$router.push({ path: '/InvestmentEditor/FromScenario/' });
         }
         editPerformance() {
-            this.$router.push('/PerformanceEditor');
+            this.$router.push('/PerformanceEditor/FromScenario/');
         }
     }
 </script>
