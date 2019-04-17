@@ -19,7 +19,7 @@
                                       readonly></v-text-field>
                         <v-date-picker ref="picker"
                                        v-model="date"
-                                        min="1950"
+                                       min="1950"
                                        reactive
                                        no-title
                                        @input="save"></v-date-picker>
@@ -27,24 +27,24 @@
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model.number="analysisPeriod"
-                                    label="Analysis period"
-                                    type="number"></v-text-field>
+                                  label="Analysis period"
+                                  type="number"></v-text-field>
                 </v-flex>
                 <v-divider inset></v-divider>
                 <v-flex xs12>
                     <v-select :items="optimizationType"
-                                label="Optimization type"
-                                outline></v-select>
+                              label="Optimization type"
+                              outline></v-select>
                 </v-flex>
                 <v-flex xs12>
                     <v-select :items="budgetType"
-                                label="Budget type"
-                                outline></v-select>
+                              label="Budget type"
+                              outline></v-select>
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model.number="benefitLimit"
-                                    label="Benefit limit" outline
-                                    type="number"></v-text-field>
+                                  label="Benefit limit" outline
+                                  type="number"></v-text-field>
                 </v-flex>
                 <v-divider inset></v-divider>
                 <v-flex xs12>
@@ -67,11 +67,16 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component, Watch } from 'vue-property-decorator';
+    import { Action, State } from 'vuex-class';
 
     import moment from 'moment';
 
     @Component
     export default class EditAnalysis extends Vue {
+
+        @State(state => state.breadcrumb.navigation) navigation: any[];
+        @Action('setNavigation') setNavigationAction: any;
+
         menu: boolean = false;
         date: string = '';
         maxDate: string = moment().year().toString();
@@ -83,6 +88,23 @@
                 optimizationType: ['Incremental benefit/cost', 'Another one', 'The better one'],
                 budgetType: ['As budget permits', 'Another one', 'The better one'],
             };
+        }
+
+        created() {
+            this.setNavigationAction([
+                {
+                    text: 'Scenario dashboard',
+                    to: '/Scenarios/'
+                },
+                {
+                    text: 'Scenario editor',
+                    to: '/EditScenario/'
+                },
+                {
+                  text: 'Analysis editor',
+                  to: '/EditAnalysis/'
+                }
+            ]);
         }
         
         @Watch('menu')
@@ -97,7 +119,7 @@
             this.menu = false;
         }
         cancel() {
-            this.$router.push('EditScenario');
+            this.$router.push('/EditScenario/');
         }
     }
 </script>
