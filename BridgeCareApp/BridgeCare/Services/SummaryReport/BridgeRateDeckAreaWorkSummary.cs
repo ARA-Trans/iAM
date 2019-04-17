@@ -20,12 +20,13 @@ namespace BridgeCare.Services
         }
 
         /// <summary>
-        /// Fill work summary bridge poor on off rate and deck area sections
+        /// /// Fill work summary bridge poor on off rate and deck area sections
         /// </summary>
         /// <param name="worksheet"></param>
         /// <param name="currentCell"></param>
         /// <param name="simulationYears"></param>
         /// <param name="simulationDataModels"></param>
+        /// <returns>ChartRowsModel object for usage in other tab reports.</returns>
         public ChartRowsModel FillBridgeRateDeckAreaWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
         {
             var chartRowsModel = new ChartRowsModel();
