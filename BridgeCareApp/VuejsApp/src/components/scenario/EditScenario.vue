@@ -1,15 +1,5 @@
 ﻿<template>
     <v-form>
-        <!--<v-flex xs12>
-            <v-breadcrumbs :items="navigation" divider=">">
-                <v-breadcrumbs-item slot="item"
-                                    slot-scope="{ item }"
-                                    exact
-                                    :to="item.to">
-                    {{ item.text }}
-                </v-breadcrumbs-item>
-            </v-breadcrumbs>
-        </v-flex>-->
         <v-container>
             <v-layout row wrap>
 
