@@ -259,6 +259,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NHS Condition By Deck Area LLCC.
+        /// </summary>
+        internal static string NHSConditionByDeckAreaLLCC {
+            get {
+                return ResourceManager.GetString("NHSConditionByDeckAreaLLCC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Treatment.
         /// </summary>
         internal static string NoTreatment {

@@ -231,4 +231,7 @@
   <data name="NHSConditionByBridgeCountLLCC" xml:space="preserve">
     <value>NHS Condition By Bridge Count LLCC</value>
   </data>
+  <data name="NHSConditionByDeckAreaLLCC" xml:space="preserve">
+    <value>NHS Condition By Deck Area LLCC</value>
+  </data>
 </root>

@@ -18,9 +18,9 @@ namespace BridgeCare.Services.SummaryReport
         private readonly ConditionDeckArea conditionDeckArea;
         private readonly PoorBridgeCount poorBridgeCount;
         private readonly PoorBridgeDeckArea poorBridgeDeckArea;
-        private readonly NHSConditionBridgeCount nhsConditionBridgeCount;
+        private readonly NHSConditionChart nhsConditionChart;        
 
-        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount, PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionBridgeCount nhsConditionBridgeCount)
+        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount, PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
@@ -29,7 +29,7 @@ namespace BridgeCare.Services.SummaryReport
             this.conditionDeckArea = conditionDeckArea ?? throw new ArgumentNullException(nameof(conditionDeckArea));
             this.poorBridgeCount = poorBridgeCount ?? throw new ArgumentNullException(nameof(poorBridgeCount));
             this.poorBridgeDeckArea = poorBridgeDeckArea ?? throw new ArgumentNullException(nameof(poorBridgeDeckArea));
-            this.nhsConditionBridgeCount = nhsConditionBridgeCount ?? throw new ArgumentNullException(nameof(nhsConditionBridgeCount));
+            this.nhsConditionChart = nhsConditionBridgeCount ?? throw new ArgumentNullException(nameof(nhsConditionBridgeCount));
         }
 
         /// <summary>
@@ -62,10 +62,11 @@ namespace BridgeCare.Services.SummaryReport
 
                 // NHS Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition Bridge Cnt");
-                nhsConditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NHSBridgeCountPercentSectionYearsRow, simulationYearsCount);
+                nhsConditionChart.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NHSBridgeCountPercentSectionYearsRow, Properties.Resources.NHSConditionByBridgeCountLLCC, simulationYearsCount);
 
                 // NHS Condition DA tab
-
+                worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition DA");
+                nhsConditionChart.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NHSBridgeDeckAreaPercentSectionYearsRow, Properties.Resources.NHSConditionByDeckAreaLLCC, simulationYearsCount);
 
                 // Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
