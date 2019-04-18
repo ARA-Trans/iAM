@@ -537,10 +537,8 @@
             // reset editBudgetsDialogData
             this.editBudgetsDialogData = {...emptyEditBudgetsDialogData};
             if (!isNil(editedBudgets)) {
-                // get the updated budget order
-                const editedBudgetOrder = getPropertyValues('name', editedBudgets);
                 // get the previous budgets
-                const previousBudgets = getPropertyValues('name', editedBudgets.filter((budget: EditedBudget) => !budget.isNew));
+                const previousBudgets = getPropertyValues('previousName', editedBudgets.filter((budget: EditedBudget) => !budget.isNew));
                 // set the deleted budget year ids based on each budget year's budget that is not present in previousBudgets
                 const editedDeletedBudgetYearIds = [
                     ...this.selectedInvestmentStrategy.deletedBudgetYearIds,
@@ -601,7 +599,7 @@
                 this.updateSelectedInvestmentStrategyAction({
                     updatedInvestmentStrategy: {
                         ...this.selectedInvestmentStrategy,
-                        budgetOrder: editedBudgetOrder,
+                        budgetOrder: getPropertyValues('name', editedBudgets),
                         budgetYears: editedBudgetYears,
                         deletedBudgetYearIds: editedDeletedBudgetYearIds
                     }
