@@ -57,3 +57,11 @@ export const emptyTreatment: Treatment = {
     consequences: [],
     budgets: []
 };
+
+export const emptyFeasibility: Feasibility = {
+    treatmentId: 0,
+    id: 0,
+    criteria: '',
+    yearsBeforeAny: 0,
+    yearsBeforeSame: 0,
+};

@@ -563,7 +563,7 @@
 
 <style>
     .performance-editor-container {
-        height: 768px;
+        height: 785px;
         overflow-x: hidden;
         overflow-y: auto;
     }

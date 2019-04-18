@@ -4,7 +4,8 @@ import TreatmentEditorService from '@/services/treatment-editor.service';
 
 const state = {
     treatmentStrategies: [] as TreatmentStrategy[],
-    selectedTreatmentStrategy: {...emptyTreatmentStrategy} as TreatmentStrategy
+    selectedTreatmentStrategy: {...emptyTreatmentStrategy} as TreatmentStrategy,
+    selectedTreatment: {...emptyTreatment} as Treatment
 };
 
 const mutations = {
@@ -27,6 +28,20 @@ const mutations = {
     updatedSelectedTreatmentStrategyMutator(state: any, updatedSelectedTreatmentStrategy: TreatmentStrategy) {
         // update state.selectedTreatmentStrategy with the updated selected treatment strategy
         state.selectedTreatmentStrategy = updatedSelectedTreatmentStrategy;
+    },
+    selectedTreatmentMutator(state: any, treatmentId: number) {
+        if (any(propEq('id', treatmentId), state.selectedTreatmentStrategy.treatments)) {
+            state.selectedTreatment = clone(state.selectedTreatmentStrategy.treatments
+                .find((treatment: Treatment) => treatment.id === treatmentId) as Treatment
+            );
+        } else if (treatmentId === null) {
+            // update state.selectedTreatment with an empty treatment object
+            state.selectedTreatment = {...emptyTreatment};
+        }
+    },
+    updatedSelectedTreatmentMutator(state: any, updatedSelectedTreatment: Treatment) {
+        // update state.selectedTreatment with the updated selected treatment
+        state.selectedTreatment = updatedSelectedTreatment;
     },
     createdTreatmentStrategyMutator(state: any, createdTreatmentStrategy: TreatmentStrategy) {
         // append the created treatment strategy to a copy of state.treatmentStrategies, then update state.treatmentStrategies
@@ -61,6 +76,12 @@ const actions = {
     },
     updateSelectedTreatmentStrategy({commit}: any, payload: any) {
         commit('updatedSelectedTreatmentStrategyMutator', payload.updatedSelectedTreatmentStrategy);
+    },
+    selectTreatment({commit}: any, payload: any) {
+        commit('selectedTreatmentMutator', payload.treatmentId);
+    },
+    updateSelectedTreatment({commit}: any, payload: any) {
+        commit('updatedSelectedTreatmentMutator', payload.updatedSelectedTreatment);
     },
     async createTreatmentStrategy({commit}: any, payload: any) {
         await new TreatmentEditorService().createTreatmentStrategy(payload.createdTreatmentStrategy)

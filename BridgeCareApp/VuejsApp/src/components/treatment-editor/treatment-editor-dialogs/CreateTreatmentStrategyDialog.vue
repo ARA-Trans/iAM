@@ -37,7 +37,7 @@
     import {
         CreateTreatmentStrategyDialogData
     } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-strategy-dialog-data';
-    import {emptyTreatmentStrategy, TreatmentStrategy} from "@/shared/models/iAM/treatment";
+    import {emptyTreatmentStrategy, TreatmentStrategy} from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value';
 
     @Component

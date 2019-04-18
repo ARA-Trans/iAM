@@ -10,6 +10,7 @@ import EditAnalysis from '@/components/scenario/EditAnalysis.vue';
 import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import PerformanceEditor from '@/components/performance-editor/PerformanceEditor.vue';
+import TreatmentEditor from '@/components/treatment-editor/TreatmentEditor.vue';
 
 Vue.use(VueRouter);
 
@@ -48,6 +49,11 @@ const router = new VueRouter({
             path: '/PerformanceEditor',
             name: 'PerformanceEditor',
             component: PerformanceEditor
+        },
+        {
+            path: '/TreatmentEditor',
+            name: 'TreatmentEditor',
+            component: TreatmentEditor
         },
         {
             path: '/EditScenario',

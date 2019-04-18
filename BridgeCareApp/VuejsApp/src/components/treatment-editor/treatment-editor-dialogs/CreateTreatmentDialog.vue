@@ -26,7 +26,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
-    import {emptyTreatment, Treatment} from "@/shared/models/iAM/treatment";
+    import {emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
 
     @Component
     export default class CreateTreatmentDialog extends Vue {
