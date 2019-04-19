@@ -1,7 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
-using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Filters;
 
@@ -21,8 +20,9 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Get: api/Inventory
         /// </summary>
+        [Route("api/Inventory")]
         [ModelValidation("Given simulation data is not valid")]
         [HttpGet]
-        public IQueryable<InventoryModel> Get(SectionModel data) => inventory.GetInventory(data, db);
+        public InventoryModel Get(SectionModel data) => inventory.GetInventory(data, db);
     }
 }

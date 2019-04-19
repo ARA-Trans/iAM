@@ -1,14 +1,18 @@
-﻿using BridgeCare.Models;
-using System.Linq;
-using System.Web.Http;
-
-namespace BridgeCare.Models
+﻿namespace BridgeCare.Models
 {
     public class InventoryItemModel
     {
-        string DataTableName { get; set; }
-        string ViewName { get; set; }
+        public InventoryItemModel(string columnKey, string AlphaNumericId, string IdName)
+        {
+            ColumnName = columnKey;
+            Id = AlphaNumericId;
+            ViewName = IdName;
+        }
 
-        dynamic Value { get; set; }
+        public string ColumnName { get; set; }
+        public string Id { get; set; }
+        public string ViewName { get; set; }
+
+        public dynamic Value { get; set; }
     }
 }

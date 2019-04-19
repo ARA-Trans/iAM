@@ -191,8 +191,7 @@
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryData.cs" />
-    <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
-    <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
+    <Compile Include="DataAccessLayer\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
     <Compile Include="DataAccessLayer\TreatmentData.cs" />
     <Compile Include="DataAccessLayer\PerformanceData.cs" />
