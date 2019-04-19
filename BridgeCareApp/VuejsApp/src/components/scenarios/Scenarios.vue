@@ -124,10 +124,12 @@
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
         @State(state => state.security.userId) userId: string;
         @State(state => state.reports.names) reportNames: string[];
+        @State(state => state.breadcrumb.navigation) navigation: any[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
+        @Action('setNavigation') setNavigationAction: any;
 
         @Prop({
             default: function () {
@@ -172,6 +174,10 @@
 
         }
 
+        created() {
+            this.setNavigationAction([]);
+        }
+
         /**
          * Component has been mounted
          */
@@ -201,10 +207,10 @@
         }
 
         editScenario() {
-            this.$router.push({path: 'EditScenario'});
+            this.$router.push({path: '/EditScenario/'});
         }
         editSharedScenario() {
-            this.$router.push({ path: 'EditScenario' });
+            this.$router.push({ path: '/EditScenario/' });
         }
 
         /**

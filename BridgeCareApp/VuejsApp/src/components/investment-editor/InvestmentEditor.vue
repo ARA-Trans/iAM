@@ -136,7 +136,8 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
     import AppSpinner from '../../shared/dialogs/AppSpinner.vue';
     import CreateInvestmentStrategyDialog from './investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
@@ -170,6 +171,7 @@
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentStrategies) investmentStrategies: InvestmentStrategy[];
         @State(state => state.investmentEditor.selectedInvestmentStrategy) selectedInvestmentStrategy: InvestmentStrategy;
+        @State(state => state.breadcrumb.navigation) navigation: any[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInvestmentStrategies') getInvestmentStrategiesAction: any;
@@ -177,6 +179,7 @@
         @Action('createInvestmentStrategy') createInvestmentStrategyAction: any;
         @Action('updateInvestmentStrategy') updateInvestmentStrategyAction: any;
         @Action('updateSelectedInvestmentStrategy') updateSelectedInvestmentStrategyAction: any;
+        @Action('setNavigation') setNavigationAction: any;
 
         investmentStrategiesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -190,6 +193,42 @@
         createInvestmentStrategyDialogData: CreateInvestmentStrategyDialogData = {...emptyCreateInvestmentStrategyDialogData};
         editBudgetsDialogData: EditBudgetsDialogData = {...emptyEditBudgetsDialogData};
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
+
+        beforeRouteEnter(to: any, from: any, next: any) {
+            if (from.name === 'EditScenario') {
+                next((vm: any) => {
+                    vm.setNavigationAction([
+                        {
+                            text: 'Scenario dashboard',
+                            to: '/Scenarios/'
+                        },
+                        {
+                            text: 'Scenario editor',
+                            to: '/EditScenario/'
+                        },
+                        {
+                            text: 'Investment editor',
+                            to: '/InvestmentEditor/FromScenario/'
+                        }
+                    ]);
+                });
+            }
+            else {
+                next((vm: any) => {
+                    vm.setNavigationAction([]);
+                });
+            }
+        }
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            console.log('Router rerendered');
+            next();
+            // called when the route that renders this component has changed,
+            // but this component is reused in the new route.
+            // For example, for a route with dynamic params `/foo/:id`, when we
+            // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
+            // will be reused, and this hook will be called when that happens.
+            // has access to `this` component instance.
+        }
 
         /**
          * Watcher: investmentStrategies
@@ -498,10 +537,8 @@
             // reset editBudgetsDialogData
             this.editBudgetsDialogData = {...emptyEditBudgetsDialogData};
             if (!isNil(editedBudgets)) {
-                // get the updated budget order
-                const editedBudgetOrder = getPropertyValues('name', editedBudgets);
                 // get the previous budgets
-                const previousBudgets = getPropertyValues('name', editedBudgets.filter((budget: EditedBudget) => !budget.isNew));
+                const previousBudgets = getPropertyValues('previousName', editedBudgets.filter((budget: EditedBudget) => !budget.isNew));
                 // set the deleted budget year ids based on each budget year's budget that is not present in previousBudgets
                 const editedDeletedBudgetYearIds = [
                     ...this.selectedInvestmentStrategy.deletedBudgetYearIds,
@@ -562,7 +599,7 @@
                 this.updateSelectedInvestmentStrategyAction({
                     updatedInvestmentStrategy: {
                         ...this.selectedInvestmentStrategy,
-                        budgetOrder: editedBudgetOrder,
+                        budgetOrder: getPropertyValues('name', editedBudgets),
                         budgetYears: editedBudgetYears,
                         deletedBudgetYearIds: editedDeletedBudgetYearIds
                     }
