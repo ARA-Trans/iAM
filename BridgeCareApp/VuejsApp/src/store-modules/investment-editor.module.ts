@@ -3,7 +3,8 @@ import {
     InvestmentStrategy, InvestmentStrategyBudgetYear
 } from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex, merge} from 'ramda';
+import { clone, any, propEq, append, findIndex, merge, isNil } from 'ramda';
+import { db } from '@/firebase';
 
 const state = {
     investmentStrategies: [] as InvestmentStrategy[],
@@ -52,12 +53,40 @@ const mutations = {
 };
 
 const actions = {
-    async getInvestmentStrategies({commit}: any) {
-        await new InvestmentEditorService().getInvestmentStrategies()
-            .then((investmentStrategies: InvestmentStrategy[]) =>
-                commit('investmentStrategiesMutator', investmentStrategies)
-            )
-            .catch((error: any) => console.log(error));
+    async getInvestmentStrategies({ commit }: any) {
+        await db.ref('investmentLibraries').on('value', (snapshot: any) => {
+            const results = snapshot.val();
+            let investmentStrategies: InvestmentStrategy[] = [];
+            for (let key in results) {
+                if (isNil(results[key].budgetOrder)) {
+                    results[key].budgetOrder = [];
+                }
+                if (isNil(results[key].budgetYears)) {
+                    results[key].budgetYears = [];
+                }
+                if (isNil(results[key].deletedBudgetYearIds)) {
+                    results[key].deletedBudgetYearIds = [];
+                }
+                investmentStrategies.push({
+                    id: results[key].id,
+                    name: results[key].name,
+                    inflationRate: results[key].inflationRate,
+                    discountRate: results[key].discountRate,
+                    description: results[key].description,
+                    budgetOrder: results[key].budgetOrder,
+                    budgetYears: results[key].budgetYears,
+                    deletedBudgetYearIds: results[key].deletedBudgetYearIds
+                });
+            }
+            commit('investmentStrategiesMutator', investmentStrategies);
+        }, (error: any) => {
+            console.log('error in fetching investment libraries', error);
+        });
+        //await new InvestmentEditorService().getInvestmentStrategies()
+        //    .then((investmentStrategies: InvestmentStrategy[]) =>
+        //        commit('investmentStrategiesMutator', investmentStrategies)
+        //    )
+        //    .catch((error: any) => console.log(error));
     },
     selectInvestmentStrategy({commit}: any, payload: any) {
         commit('selectedInvestmentStrategyMutator', payload.investmentStrategyId);
@@ -66,21 +95,33 @@ const actions = {
     updateSelectedInvestmentStrategy({commit}: any, payload: any) {
         commit('updateSelectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy);
     },
-    async createInvestmentStrategy({commit}: any, payload: any) {
-        await new InvestmentEditorService().createInvestmentStrategy(payload.createdInvestmentStrategy)
-            .then((createdInvestmentStrategy: InvestmentStrategy) => {
-                commit('createdInvestmentStrategyMutator', createdInvestmentStrategy);
-                commit('selectedInvestmentStrategyMutator', createdInvestmentStrategy.id);
+    async createInvestmentStrategy({ commit }: any, payload: any) {
+        await db.ref('investmentLibraries').child('Investment_' + payload.createdInvestmentStrategy.id).set(payload.createdInvestmentStrategy)
+            .then(() => {
+                commit('createdInvestmentStrategyMutator', payload.createdInvestmentStrategy);
+                commit('selectedInvestmentStrategyMutator', payload.createdInvestmentStrategy.id);
             })
             .catch((error: any) => console.log(error));
+        //await new InvestmentEditorService().createInvestmentStrategy(payload.createdInvestmentStrategy)
+        //    .then((createdInvestmentStrategy: InvestmentStrategy) => {
+        //        commit('createdInvestmentStrategyMutator', createdInvestmentStrategy);
+        //        commit('selectedInvestmentStrategyMutator', createdInvestmentStrategy.id);
+        //    })
+        //    .catch((error: any) => console.log(error));
     },
-    async updateInvestmentStrategy({commit}: any, payload: any) {
-        await new InvestmentEditorService().updateInvestmentStrategy(payload.updatedInvestmentStrategy)
-            .then((updatedInvestmentStrategy: InvestmentStrategy) => {
-                commit('updatedInvestmentStrategyMutator', updatedInvestmentStrategy);
-                commit('selectedInvestmentStrategyMutator', updatedInvestmentStrategy.id);
+    async updateInvestmentStrategy({ commit }: any, payload: any) {
+        await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentStrategy.id).update(payload.updatedInvestmentStrategy)
+            .then(() => {
+                commit('updatedInvestmentStrategyMutator', payload.updatedInvestmentStrategy);
+                commit('selectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy.id);
             })
             .catch((error: any) => console.log(error));
+        //await new InvestmentEditorService().updateInvestmentStrategy(payload.updatedInvestmentStrategy)
+        //    .then((updatedInvestmentStrategy: InvestmentStrategy) => {
+        //        commit('updatedInvestmentStrategyMutator', updatedInvestmentStrategy);
+        //        commit('selectedInvestmentStrategyMutator', updatedInvestmentStrategy.id);
+        //    })
+        //    .catch((error: any) => console.log(error));
     }
 };
 

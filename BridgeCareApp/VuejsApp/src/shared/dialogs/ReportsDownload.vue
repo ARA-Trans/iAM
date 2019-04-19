@@ -128,7 +128,7 @@
         }
 
         onCancel() {
-            this.dialogData.showModal = false
+            this.dialogData.showModal = false;
         }
     }
 </script>
