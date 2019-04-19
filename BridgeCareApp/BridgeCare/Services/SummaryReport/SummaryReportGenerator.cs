@@ -38,10 +38,7 @@ namespace BridgeCare.Services.SummaryReport
         /// <param name="simulationModel"></param>
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
-        {
-            // TODO comment later
-            simulationModel = new SimulationModel { NetworkId = 13, SimulationId = 24 };
-
+        {   
             // Get data
             var simulationId = simulationModel.SimulationId;
             var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationId);
