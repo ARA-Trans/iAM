@@ -54,7 +54,7 @@ const mutations = {
 
 const actions = {
     async getInvestmentStrategies({ commit }: any) {
-        db.ref('investmentLibraries').on('value', (snapshot: any) => {
+        await db.ref('investmentLibraries').on('value', (snapshot: any) => {
             const results = snapshot.val();
             let investmentStrategies: InvestmentStrategy[] = [];
             for (let key in results) {
@@ -96,7 +96,7 @@ const actions = {
         commit('updateSelectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy);
     },
     async createInvestmentStrategy({ commit }: any, payload: any) {
-        db.ref('investmentLibraries').child('Investment_' + payload.createdInvestmentStrategy.id).set(payload.createdInvestmentStrategy)
+        await db.ref('investmentLibraries').child('Investment_' + payload.createdInvestmentStrategy.id).set(payload.createdInvestmentStrategy)
             .then(() => {
                 commit('createdInvestmentStrategyMutator', payload.createdInvestmentStrategy);
                 commit('selectedInvestmentStrategyMutator', payload.createdInvestmentStrategy.id);
@@ -110,7 +110,7 @@ const actions = {
         //    .catch((error: any) => console.log(error));
     },
     async updateInvestmentStrategy({ commit }: any, payload: any) {
-        db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentStrategy.id).update(payload.updatedInvestmentStrategy)
+        await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentStrategy.id).update(payload.updatedInvestmentStrategy)
             .then(() => {
                 commit('updatedInvestmentStrategyMutator', payload.updatedInvestmentStrategy);
                 commit('selectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy.id);

@@ -131,6 +131,9 @@
                                             @submit="onSubmitBudgetYearRange" />
 
         <EditBudgetsDialog :dialogData="editBudgetsDialogData" @submit="onSubmitEditedBudgets" />
+        <v-flex xs12>
+            <AppModalPopup :modalData="warning" @decision="onWarningModalDecision" />
+        </v-flex>
     </v-container>
 </template>
 
@@ -163,10 +166,12 @@
         emptyEditBudgetsDialogData
     } from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
-    import {sorter} from '@/shared/utils/sorter';
+    import { sorter } from '@/shared/utils/sorter';
+    import { Alert } from '@/shared/models/iAM/alert';
+    import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
 
     @Component({
-        components: {AppSpinner, CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog}
+        components: { AppSpinner, CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
     })
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentStrategies) investmentStrategies: InvestmentStrategy[];
@@ -194,6 +199,8 @@
         editBudgetsDialogData: EditBudgetsDialogData = {...emptyEditBudgetsDialogData};
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
 
+        warning: Alert = { showModal: false, heading: '', message: '', choice: false };
+
         beforeRouteEnter(to: any, from: any, next: any) {
             if (from.name === 'EditScenario') {
                 next((vm: any) => {
@@ -220,7 +227,6 @@
             }
         }
         beforeRouteUpdate(to: any, from: any, next: any) {
-            console.log('Router rerendered');
             next();
             // called when the route that renders this component has changed,
             // but this component is reused in the new route.
@@ -312,7 +318,10 @@
                 .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});
-                    console.log(error);
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Error';
+                    this.warning.choice = false;
+                    this.warning.message = 'Failed to load the libraries';
                 });
         }
 
@@ -663,12 +672,21 @@
                 // set the created investment strategy's id by adding 1 to latestId (if present), otherwise use 1
                 createdInvestmentStrategy.id = hasValue(latestId) ? latestId + 1 : 1;
                 // set isBusy to true, then dispatch action to create investment strategy
-                this.setIsBusyAction({isBusy: true});
-                this.createInvestmentStrategyAction({createdInvestmentStrategy: createdInvestmentStrategy})
-                    .then(() => this.setIsBusyAction({isBusy: false}))
+                this.setIsBusyAction({ isBusy: true });
+                this.createInvestmentStrategyAction({ createdInvestmentStrategy: createdInvestmentStrategy })
+                    .then(() => {
+                        this.setIsBusyAction({ isBusy: false });
+                        this.warning.showModal = true;
+                        this.warning.heading = 'Success';
+                        this.warning.choice = false;
+                        this.warning.message = 'New library created successfully';
+                    })
                     .catch((error: any) => {
                         this.setIsBusyAction({isBusy: false});
-                        console.log(error);
+                        this.warning.showModal = true;
+                        this.warning.heading = 'Error';
+                        this.warning.choice = false;
+                        this.warning.message = 'Could not create the new library';
                     });
             }
         }
@@ -677,8 +695,23 @@
          * 'Update Library' button has been clicked
          */
         onUpdateLibrary() {
+            this.setIsBusyAction({ isBusy: true });
             // dispatch action to update selected investment strategy on the server
-            this.updateInvestmentStrategyAction({updatedInvestmentStrategy: this.selectedInvestmentStrategy});
+            this.updateInvestmentStrategyAction({ updatedInvestmentStrategy: this.selectedInvestmentStrategy })
+                .then(() => {
+                    this.setIsBusyAction({ isBusy: false });
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Success';
+                    this.warning.choice = false;
+                    this.warning.message = 'Library updated successfully';
+                })
+                .catch(() => {
+                    this.setIsBusyAction({ isBusy: false });
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Error';
+                    this.warning.choice = false;
+                    this.warning.message = 'Library failed to update';
+                });
         }
 
         /**
@@ -691,6 +724,10 @@
         onClearInvestmentStrategySelection() {
             // dispatch an action to unselect the selected investment strategy
             this.selectInvestmentStrategyAction({investmentStrategyId: null});
+        }
+
+        onWarningModalDecision(value: boolean) {
+            this.warning.showModal = false;
         }
     }
 </script>

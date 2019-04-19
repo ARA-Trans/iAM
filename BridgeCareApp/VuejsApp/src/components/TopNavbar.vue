@@ -123,7 +123,6 @@
                     this.warning.heading = 'Error';
                     this.warning.choice = false;
                     this.warning.message = result.data.message;
-                    console.log(result.data.message);
                 }
                 else {
                     this.$forceUpdate();
