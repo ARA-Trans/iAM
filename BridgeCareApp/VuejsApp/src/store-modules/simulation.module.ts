@@ -24,6 +24,10 @@ const actions = {
             if (snapshot.hasChild(payload.networkId.toString() + '_' + payload.simulationId.toString())) {
                 const simulationData = {
                     status: 'Started',
+                    networkId: payload.networkId,
+                    simulationId: payload.simulationId,
+                    networkName: payload.networkName,
+                    simulationName: payload.simulationName,
                     lastModified: moment().toISOString(),
                     //[Note]: this will be removed
                     owner: payload.userId
@@ -43,6 +47,10 @@ const actions = {
                     status: 'Started',
                     owner: payload.userId,
                     sharedWith: [],
+                    networkId: payload.networkId,
+                    simulationId: payload.simulationId,
+                    networkName: payload.networkName,
+                    simulationName: payload.simulationName,
                     created: moment().toISOString(),
                     lastModified: moment().toISOString()
                 };

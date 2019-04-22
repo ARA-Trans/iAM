@@ -256,6 +256,7 @@
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
     <Compile Include="Models\TreatmentScenarioModel.cs" />
     <Compile Include="Models\PerformanceScenarioModel.cs" />
@@ -303,6 +304,8 @@
     <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
+    <Compile Include="Services\SummaryReport\NHSBridgeDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\NHSConditionChart.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
     <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />

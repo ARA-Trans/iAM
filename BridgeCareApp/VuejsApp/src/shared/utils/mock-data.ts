@@ -72,84 +72,6 @@ export const mockAttributes: string[] = [
     'YEAR_RECON'
 ];
 
-/********************************************SCENARIOS MOCK DATA*******************************************************/
-export const userScenarios: Scenario[] = [
-    {
-        scenarioId: 1,
-        name: 'Scenario A-1',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: false
-    },
-    {
-        scenarioId: 2,
-        name: 'Scenario A-2',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: false
-    },
-    {
-        scenarioId: 3,
-        name: 'Scenario A-3',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: false
-    },
-    {
-        scenarioId: 4,
-        name: 'Scenario B-1',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: false
-    },
-    {
-        scenarioId: 5,
-        name: 'Scenario B-2',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: false
-    },
-    {
-        scenarioId: 6,
-        name: 'Scenario B-3',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: false
-    }
-];
-
-export const sharedScenarios: Scenario[] = [
-    {
-        scenarioId: 7,
-        name: 'Scenario C-1',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: true
-    },
-    {
-        scenarioId: 8,
-        name: 'Scenario C-2',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: true
-    },
-    {
-        scenarioId: 9,
-        name: 'Scenario C-3',
-        createdDate: new Date(),
-        lastModifiedDate: new Date(),
-        status: 'success',
-        shared: true
-    }
-];
 /*******************************************INVENTORY MOCK DATA********************************************************/
 
 export const mockInventory: InventoryItem[] = [{
@@ -289,8 +211,6 @@ export const mockBudgetOrder: string[] = [
     'Budget H',
     'Budget I',
     'Budget J',
-    'Budget K',
-    'Budget L'
 ];
 
 function createBudgetYearMockData() {
@@ -300,34 +220,30 @@ function createBudgetYearMockData() {
     let budgetCAmount = 300000000;
     const currentDate = moment();
     const startYear = parseInt(currentDate.clone().format('YYYY'));
-    const endYear = parseInt(currentDate.clone().add(20, 'years').format('YYYY'));
-    for (let i = startYear; i <= endYear; i++) {
-        budgetYears.push({
-            year: i,
-            budgets:  mockBudgetOrder.map((budget: string) => {
-                switch (budget) {
-                    case 'Budget A':
-                        return {
-                            name: budget,
-                            amount: budgetAAmount
-                        };
-                    case 'Budget B':
-                        return {
-                            name: budget,
-                            amount: budgetBAmount
-                        };
-                    case 'Budget C':
-                        return {
-                            name: budget,
-                            amount: budgetCAmount
-                        };
-                    default:
-                        return {
-                            name: budget,
-                            amount: 0
-                        };
-                }
-            })
+    const endYear = parseInt(currentDate.clone().add(10, 'years').format('YYYY'));
+    let nextId = 1;
+    for (let nextYear = startYear; nextYear <= endYear; nextYear++) {
+        mockBudgetOrder.forEach((mockBudgetName: string) => {
+            let mockBudgetAmount = 0;
+            switch (mockBudgetName) {
+                case 'Budget A':
+                    mockBudgetAmount = budgetAAmount;
+                    break;
+                case 'Budget B':
+                    mockBudgetAmount = budgetBAmount;
+                    break;
+                case 'Budget C':
+                    mockBudgetAmount = budgetCAmount;
+                    break;
+            }
+            budgetYears.push({
+                investmentStrategyId: 1234567890,
+                id: nextId,
+                year: nextYear,
+                budgetName: mockBudgetName,
+                budgetAmount: mockBudgetAmount
+            });
+            nextId++;
         });
         budgetAAmount += 500000;
         budgetBAmount += 500000;
@@ -341,24 +257,14 @@ export const mockInvestmentBudgetYears: InvestmentStrategyBudgetYear[] = createB
 
 export const mockInvestmentStrategies: InvestmentStrategy[] = [
     {
-        networkId: 9876543210,
-        simulationId: 1234567890,
+        id: 1234567890,
         name: 'Investment Strategy 1',
         inflationRate: 3,
         discountRate: 2,
         budgetYears: mockInvestmentBudgetYears,
         budgetOrder: mockBudgetOrder,
-        description: ''
-    },
-    {
-        networkId: 9876543210,
-        simulationId: 1234567891,
-        name: 'Investment Strategy 2',
-        inflationRate: 2,
-        discountRate: 3,
-        budgetYears: mockInvestmentBudgetYears,
-        budgetOrder: mockBudgetOrder,
-        description: ''
+        description: '',
+        deletedBudgetYearIds: []
     }
 ];
 /*******************************************PERFORMANCE EDITOR MOCK DATA***********************************************/
