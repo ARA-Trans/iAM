@@ -41,7 +41,7 @@ namespace BridgeCare.Services
         private void FillNHSBridgeDeckAreaPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow, ChartRowsModel chartRowsModel)
         {
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Deck Area %", true);
-            chartRowsModel.NHSBridgeDeckAreaPercentRow = currentCell.Row;
+            chartRowsModel.NHSBridgeDeckAreaPercentSectionYearsRow = currentCell.Row;
             AddDetailsForNHSPercentSection(worksheet, currentCell, simulationYears, dataStartRow);
         }       
 
@@ -85,7 +85,7 @@ namespace BridgeCare.Services
         private void FillNHSBridgeCountPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow, ChartRowsModel chartRowsModel)
         {
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Count %", true);
-            chartRowsModel.NHSBridgeCountPercentRow = currentCell.Row;
+            chartRowsModel.NHSBridgeCountPercentSectionYearsRow = currentCell.Row;
             AddDetailsForNHSPercentSection(worksheet, currentCell, simulationYears, dataStartRow);
         }
 
@@ -102,7 +102,7 @@ namespace BridgeCare.Services
                 column++;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, startRow + 2, column - 1]);
-            excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, startRow + 2, column], "Percent");
+            excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, startRow + 2, column], "Percentage");
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row, column - 1);
         }
 
