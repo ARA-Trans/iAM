@@ -116,7 +116,7 @@ namespace BridgeCare.Services
 
                 worksheet.Cells[++row, column].Value = string.Empty;
 
-                worksheet.Cells[++row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.Amount ?? 0);
+                worksheet.Cells[++row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.budgetAmount ?? 0);
                 budgetTotalRow = row;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
