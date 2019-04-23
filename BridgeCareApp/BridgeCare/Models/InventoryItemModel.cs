@@ -7,12 +7,13 @@
             ColumnName = columnKey;
             Id = AlphaNumericId;
             ViewName = IdName;
+            DisplayValue = "-";
         }
 
         public string ColumnName { get; set; }
         public string Id { get; set; }
         public string ViewName { get; set; }
 
-        public dynamic Value { get; set; }
+        public string DisplayValue { get; set; }
     }
 }

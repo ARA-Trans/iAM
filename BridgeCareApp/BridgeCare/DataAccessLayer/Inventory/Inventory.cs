@@ -23,7 +23,7 @@ namespace BridgeCare.DataAccessLayer
 
             String query = "SELECT ";
             String separator = " ";
-            foreach (InventoryItemModel p in BridgeData.InventoryItems)
+            foreach (InventoryItemModel p in PennDotCrosswalk.InventoryItems)
             {
                 query += separator + p.ColumnName;
                 separator = ",";
@@ -33,9 +33,9 @@ namespace BridgeCare.DataAccessLayer
             try
             {
                 DataTable dt = UtilityFunctions.NonEntitySQLQuery(query, db);
-                foreach (InventoryItemModel p in BridgeData.InventoryItems)
+                foreach (InventoryItemModel p in PennDotCrosswalk.InventoryItems)
                 {
-                    p.Value = dt.Rows[0][p.ColumnName];
+                    BridgeData.AddModel(p, dt.Rows[0][p.ColumnName].ToString());
                 }
             }
             catch (SqlException ex)
