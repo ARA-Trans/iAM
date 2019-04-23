@@ -399,6 +399,7 @@
                 this.equationEditorDialogData = {
                     showDialog: true,
                     equation: selectedEquation.equation,
+                    canBePiecewise: true,
                     isPiecewise: selectedEquation.piecewise,
                     isFunction: selectedEquation.isFunction
                 };

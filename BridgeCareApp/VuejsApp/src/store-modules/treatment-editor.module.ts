@@ -1,25 +1,25 @@
-import {emptyTreatment, emptyTreatmentStrategy, Treatment, TreatmentStrategy} from '@/shared/models/iAM/treatment';
-import {clone, any, propEq, append, findIndex} from 'ramda';
+import {emptyTreatmentStrategy, TreatmentStrategy} from '@/shared/models/iAM/treatment';
+import {any, propEq, findIndex} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
+import {hasValue} from '@/shared/utils/has-value';
 
 const state = {
     treatmentStrategies: [] as TreatmentStrategy[],
-    selectedTreatmentStrategy: {...emptyTreatmentStrategy} as TreatmentStrategy,
-    selectedTreatment: {...emptyTreatment} as Treatment
+    selectedTreatmentStrategy: {...emptyTreatmentStrategy} as TreatmentStrategy
 };
 
 const mutations = {
     treatmentStrategiesMutator(state: any, treatmentStrategies: TreatmentStrategy[]) {
-        state.treatmentStrategies = clone(treatmentStrategies);
+        state.treatmentStrategies = [...treatmentStrategies];
     },
     selectedTreatmentStrategyMutator(state: any, treatmentStrategyId: number) {
         if (any(propEq('id', treatmentStrategyId), state.treatmentStrategies)) {
             // find the existing treatment strategy in state.treatmentStrategies where the id matches treatmentStrategyId,
             // copy it, then update state.selectedTreatmentStrategy with the copy
-            state.selectedTreatmentStrategy = clone(state.treatmentStrategies
+            state.selectedTreatmentStrategy = {...state.treatmentStrategies
                 .find((treatmentStrategy: TreatmentStrategy) =>
                     treatmentStrategy.id === treatmentStrategyId
-                ) as TreatmentStrategy);
+                ) as TreatmentStrategy};
         } else if (treatmentStrategyId === null) {
             // update state.selectedTreatmentStrategy with an empty treatment strategy object
             state.selectedTreatmentStrategy = {...emptyTreatmentStrategy};
@@ -27,31 +27,17 @@ const mutations = {
     },
     updatedSelectedTreatmentStrategyMutator(state: any, updatedSelectedTreatmentStrategy: TreatmentStrategy) {
         // update state.selectedTreatmentStrategy with the updated selected treatment strategy
-        state.selectedTreatmentStrategy = updatedSelectedTreatmentStrategy;
-    },
-    selectedTreatmentMutator(state: any, treatmentId: number) {
-        if (any(propEq('id', treatmentId), state.selectedTreatmentStrategy.treatments)) {
-            state.selectedTreatment = clone(state.selectedTreatmentStrategy.treatments
-                .find((treatment: Treatment) => treatment.id === treatmentId) as Treatment
-            );
-        } else if (treatmentId === null) {
-            // update state.selectedTreatment with an empty treatment object
-            state.selectedTreatment = {...emptyTreatment};
-        }
-    },
-    updatedSelectedTreatmentMutator(state: any, updatedSelectedTreatment: Treatment) {
-        // update state.selectedTreatment with the updated selected treatment
-        state.selectedTreatment = updatedSelectedTreatment;
+        state.selectedTreatmentStrategy = {...updatedSelectedTreatmentStrategy};
     },
     createdTreatmentStrategyMutator(state: any, createdTreatmentStrategy: TreatmentStrategy) {
         // append the created treatment strategy to a copy of state.treatmentStrategies, then update state.treatmentStrategies
         // with the copy
-        state.treatmentStrategies = append(createdTreatmentStrategy, clone(state.treatmentStrategies));
+        state.treatmentStrategies = [...state.treatmentStrategies, createdTreatmentStrategy];
     },
     updatedTreatmentStrategyMutator(state: any, updatedTreatmentStrategy: TreatmentStrategy) {
         if (any(propEq('id', updatedTreatmentStrategy.id), state.treatmentStrategies)) {
             // make a copy of state.treatmentStrategies
-            const treatmentStrategies: TreatmentStrategy[] = clone(state.treatmentStrategies);
+            const treatmentStrategies: TreatmentStrategy[] = [...state.treatmentStrategies];
             // find the index of the existing treatment strategy in the copy that has a matching id with the updated
             // treatment strategy
             const index: number = findIndex(propEq('id', updatedTreatmentStrategy.id), treatmentStrategies);
@@ -76,12 +62,6 @@ const actions = {
     },
     updateSelectedTreatmentStrategy({commit}: any, payload: any) {
         commit('updatedSelectedTreatmentStrategyMutator', payload.updatedSelectedTreatmentStrategy);
-    },
-    selectTreatment({commit}: any, payload: any) {
-        commit('selectedTreatmentMutator', payload.treatmentId);
-    },
-    updateSelectedTreatment({commit}: any, payload: any) {
-        commit('updatedSelectedTreatmentMutator', payload.updatedSelectedTreatment);
     },
     async createTreatmentStrategy({commit}: any, payload: any) {
         await new TreatmentEditorService().createTreatmentStrategy(payload.createdTreatmentStrategy)

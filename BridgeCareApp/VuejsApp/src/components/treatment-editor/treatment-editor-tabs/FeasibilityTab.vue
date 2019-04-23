@@ -5,18 +5,30 @@
                 <v-layout justify-center fill-height v-if="feasibility.id === 0">
                     <v-btn color="info" v-on:click="onCreateFeasibility">Create Feasibility</v-btn>
                 </v-layout>
-                <v-layout column fill-height v-if="feasibility.id !== 0">
-                    <v-textarea no-resize full-width outline readonly append-out-icon="edit" @click:append-outer="onEditFeasibilityCriteria"
+                <v-layout v-if="feasibility.id !== 0" justify-center column fill-height>
+                    <v-btn color="error" icon v-on:click="onDeleteFeasibility"><v-icon>delete</v-icon></v-btn>
+                    <v-textarea no-resize full-width outline readonly append-outer-icon="edit"
+                                @click:append-outer="onEditFeasibilityCriteria"
                                 v-model="feasibility.criteria">
                     </v-textarea>
-                    <v-flex xs3>
-                        <v-layout justify-start column fill-height>
-                            <v-text-field label="Years Before Any" :mask="'####'" v-model="feasibility.yearsBeforeAny">
-                            </v-text-field>
-                            <v-text-field label="Years Before Same" :mask="'####'" v-model="feasibility.yearsBeforeSame">
-                            </v-text-field>
+                    <v-layout>
+                        <v-spacer></v-spacer>
+                        <v-layout justify-space-between row fill-height>
+                            <v-flex xs5>
+                                <v-text-field label="Years Before Any" :mask="'####'" outline
+                                              v-model="feasibility.yearsBeforeAny"
+                                              v-on:change="onChangeYears">
+                                </v-text-field>
+                            </v-flex>
+                            <v-flex xs5>
+                                <v-text-field label="Years Before Same" :mask="'####'" outline
+                                              v-model="feasibility.yearsBeforeSame"
+                                              v-on:change="onChangeYears">
+                                </v-text-field>
+                            </v-flex>
                         </v-layout>
-                    </v-flex>
+                        <v-spacer></v-spacer>
+                    </v-layout>
                 </v-layout>
             </v-flex>
         </v-layout>
@@ -27,11 +39,9 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {Component, Watch, Prop} from 'vue-property-decorator';
     import {
         emptyFeasibility,
-        emptyTreatment,
         Feasibility,
         Treatment,
         TreatmentStrategy
@@ -43,31 +53,42 @@
     } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value';
-    import {findIndex, propEq, isNil} from 'ramda';
+    import {findIndex, isNil} from 'ramda';
+    import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
 
     @Component({
         components: {CriteriaEditor}
     })
     export default class FeasibilityTab extends Vue {
-        @Prop() feasibilityTreatmentStrategies: TreatmentStrategy[];
-        @Prop() selectedFeasibilityTreatmentStrategy: TreatmentStrategy;
-        @Prop() selectedFeasibilityTreatment: Treatment;
+        @Prop() feasibilityTabData: TabData;
 
-        @Action('updateSelectedTreatmentStrategy') updateSelectedTreatmentStrategyAction: any;
-
+        feasibilityTabTreatmentStrategies: TreatmentStrategy[];
+        feasibilityTabSelectedTreatmentStrategy: TreatmentStrategy;
+        feasibilityTabSelectedTreatment: Treatment;
         feasibility: Feasibility = {...emptyFeasibility};
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
         /**
-         * Watcher: selectedTreatment
+         * Sets the FeasibilityTab required UI functionality properties
          */
-        @Watch('selectedTreatment')
-        onSelectedTreatmentChanged() {
-            if (this.selectedTreatment.id !== 0) {
-                if (!isNil(this.selectedTreatment.feasibility) && this.selectedTreatment.feasibility.id !== 0) {
-                    // set feasibility = selectedTreatment.feasibility
-                    this.feasibility = {...this.selectedTreatment.feasibility} as Feasibility;
-                }
+        @Watch('feasibilityTabData')
+        onFeasibilityTabDataChanged() {
+            this.feasibilityTabTreatmentStrategies = this.feasibilityTabData.tabTreatmentStrategies;
+            this.feasibilityTabSelectedTreatmentStrategy = this.feasibilityTabData.tabSelectedTreatmentStrategy;
+            this.feasibilityTabSelectedTreatment = this.feasibilityTabData.tabSelectedTreatment;
+            this.setFeasibility();
+        }
+
+        /**
+         * Sets the feasibility property based on feasibilitySelectedTreatment
+         */
+        setFeasibility() {
+            if (this.feasibilityTabSelectedTreatment.id !== 0 &&
+                !isNil(this.feasibilityTabSelectedTreatment.feasibility) &&
+                this.feasibilityTabSelectedTreatment.feasibility.id !== 0) {
+                    this.feasibility = {...this.feasibilityTabSelectedTreatment.feasibility};
+            } else {
+                this.feasibility = {...emptyFeasibility};
             }
         }
 
@@ -76,10 +97,10 @@
          */
         onCreateFeasibility() {
             // create a new, empty feasibility object
-            const createdFeasibility: Feasibility = {...emptyFeasibility, treatmentId: this.selectedTreatment.id};
+            const createdFeasibility: Feasibility = {...emptyFeasibility, treatmentId: this.feasibilityTabSelectedTreatment.id};
             // get all feasibilities from treatmentStrategies' treatments
             const allFeasibilities: Feasibility[] = [];
-            this.treatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
+            this.feasibilityTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
                 allFeasibilities.push(...getPropertyValues('feasibility', treatmentStrategy.treatments));
             });
             // get the latest feasibility id from allFeasibilities
@@ -88,19 +109,7 @@
             );
             // set createdFeasibility.id = latestId + 1 (if present), otherwise set as 1
             createdFeasibility.id = hasValue(latestId) ? latestId + 1 : 1;
-            // create a copy of selectedTreatment.treatments
-            const updatedTreatments: Treatment[] = [...this.selectedTreatmentStrategy.treatments];
-            // find the index of the selected treatment in updatedTreatments
-            const index: number = findIndex(propEq('id', this.selectedTreatment.id), updatedTreatments);
-            // update the treatment at the given index in updatedTreatments
-            updatedTreatments[index] = {...this.selectedTreatment, feasibility: createdFeasibility};
-            // dispatch action to update the selected treatment strategy's treatments
-            this.updateSelectedTreatmentStrategyAction({
-                updatedSelectedTreatmentStrategy: {
-                    ...this.selectedTreatmentStrategy,
-                    treatments: updatedTreatments
-                }
-            });
+            this.submitChanges(createdFeasibility);
         }
 
         /**
@@ -122,20 +131,36 @@
             // hide the CriteriaEditor
             this.criteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
             if (!isNil(criteria)) {
-                // create a copy of selectedTreatment.treatments
-                const updatedTreatments: Treatment[] = [...this.selectedTreatmentStrategy.treatments];
-                // find the index of the selected treatment in updatedTreatments
-                const index: number = findIndex(propEq('id', this.selectedTreatment.id), updatedTreatments);
-                // update the treatment's feasibility's criteria at the given index in updatedTreatments
-                updatedTreatments[index] = {...this.selectedTreatment, feasibility: {...this.feasibility, criteria: criteria}};
-                // dispatch action to update the selected treatment strategy's treatments
-                this.updateSelectedTreatmentStrategyAction({
-                    updatedSelectedTreatmentStrategy: {
-                        ...this.selectedTreatmentStrategy,
-                        treatments: updatedTreatments
-                    }
-                });
+                this.submitChanges({...this.feasibility, criteria: criteria});
             }
+        }
+
+        /**
+         * User has changed one of 'Years Before Any' or 'Years Before Same' inputs
+         */
+        onChangeYears() {
+            this.submitChanges({...this.feasibility});
+        }
+
+        /**
+         * 'Delete' button has been clicked
+         */
+        onDeleteFeasibility() {
+            this.submitChanges(null);
+        }
+
+        /**
+         * Submits feasibility data changes
+         * @param feasibilityData The feasibility data to submit changes on
+         */
+        submitChanges(feasibilityData: Feasibility | null) {
+            const updatedTreatmentStrategy = {...this.feasibilityTabSelectedTreatmentStrategy};
+            const updatedTreatment: Treatment = {...this.feasibilityTabSelectedTreatment, feasibility: feasibilityData};
+            const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
+                treatment.id === updatedTreatment.id, updatedTreatmentStrategy.treatments
+            );
+            updatedTreatmentStrategy.treatments[updatedTreatmentIndex] = updatedTreatment;
+            this.$emit('submit', updatedTreatmentStrategy);
         }
     }
 </script>

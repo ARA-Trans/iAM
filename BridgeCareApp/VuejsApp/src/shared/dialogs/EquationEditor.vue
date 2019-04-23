@@ -77,7 +77,9 @@
                                         <v-layout justify-center fill-height>
                                             <v-flex xs5>
                                                 <v-layout justify-space-between row fill-height>
-                                                    <v-checkbox label="Is piecewise?" v-model="isPiecewise"></v-checkbox>
+                                                    <v-checkbox v-show="dialogData.canBePiecewise" label="Is piecewise?"
+                                                                v-model="isPiecewise">
+                                                    </v-checkbox>
                                                     <v-checkbox class="right-checkbox" label="Is function?" v-model="isFunction">
                                                     </v-checkbox>
                                                 </v-layout>

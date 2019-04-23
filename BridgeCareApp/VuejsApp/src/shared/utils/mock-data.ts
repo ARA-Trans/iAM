@@ -294,7 +294,7 @@ export const mockPerformanceStrategies: PerformanceStrategy[] = [
 export const mockFeasibility: Feasibility = {
     treatmentId: 1,
     id: 1,
-    criteria: '[PCI] >= \'60\' AND [PCI] < \'75\' AND [TRUCKPCT] = \'Low\' AND [UNDERCLR] < \'75\' AND [SUFF_RATE] < \'2\'',
+    criteria: '[ROADWIDTH]>=\'60\' AND [ROADWIDTH]<\'75\' AND [TRUCKPCT]=\'Low\' AND [UNDERCLR]<\'75\' AND [SUFF_RATE]<\'2\'',
     yearsBeforeAny: 5,
     yearsBeforeSame: 7
 };

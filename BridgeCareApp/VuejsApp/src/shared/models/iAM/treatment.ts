@@ -65,3 +65,21 @@ export const emptyFeasibility: Feasibility = {
     yearsBeforeAny: 0,
     yearsBeforeSame: 0,
 };
+
+export const emptyCost: Cost = {
+    treatmentId: 0,
+    id: 0,
+    equation: '',
+    isFunction: false,
+    criteria: ''
+};
+
+export const emptyConsequence: Consequence = {
+    treatmentId: 0,
+    id: 0,
+    attribute: '',
+    change: '',
+    equation: '',
+    isFunction: false,
+    criteria: ''
+};
