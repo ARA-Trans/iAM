@@ -505,13 +505,13 @@
 
 <style>
     .treatment-editor-container {
-        height: 785px;
+        height: 750px;
         overflow-x: hidden;
         overflow-y: auto;
     }
 
     .treatments-div {
-        height: 425px;
+        height: 390px;
     }
 
     .card-tab-content {
