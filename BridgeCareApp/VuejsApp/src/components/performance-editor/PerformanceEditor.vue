@@ -155,7 +155,7 @@
         <CreatePerformanceStrategyEquationDialog :showDialog="showCreatePerformanceStrategyEquationDialog"
                                                  @submit="onCreatePerformanceStrategyEquation" />
 
-        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult"/>
+        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult" />
 
         <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteriaEditorDialogResult" />
     </v-container>
@@ -163,7 +163,8 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
     import CreatePerformanceStrategyDialog from './performance-editor-dialogs/CreatePerformanceStrategyDialog.vue';
     import CreatePerformanceStrategyEquationDialog from './performance-editor-dialogs/CreatePerformanceStrategyEquationDialog.vue';
@@ -199,6 +200,7 @@
         @State(state => state.performanceEditor.performanceStrategies) performanceStrategies: PerformanceStrategy[];
         @State(state => state.performanceEditor.selectedPerformanceStrategy) selectedPerformanceStrategy: PerformanceStrategy;
         @State(state => state.attribute.attributes) attributes: string[];
+        @State(state => state.breadcrumb.navigation) navigation: any[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getPerformanceStrategies') getPerformanceStrategiesAction: any;
@@ -207,6 +209,7 @@
         @Action('updatePerformanceStrategy') updatePerformanceStrategyAction: any;
         @Action('updateSelectedPerformanceStrategy') updateSelectedPerformanceStrategyAction: any;
         @Action('getAttributes') getAttributesAction: any;
+        @Action('setNavigation') setNavigationAction: any;
 
         performanceStrategiesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -227,6 +230,43 @@
         equationEditorDialogData: EquationEditorDialogData = {...emptyEquationEditorDialogData};
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
         showCreatePerformanceStrategyEquationDialog = false;
+
+        beforeRouteEnter(to: any, from: any, next: any) {
+            if (from.name === 'EditScenario') {
+                next((vm: any) => {
+                    vm.setNavigationAction([
+                        {
+                            text: 'Scenario dashboard',
+                            to: '/Scenarios/'
+                        },
+                        {
+                            text: 'Scenario editor',
+                            to: '/EditScenario/'
+                        },
+                        {
+                            text: 'Performance editor',
+                            to: '/PerformanceEditor/FromScenario/'
+                        }
+                    ]);
+                });
+            }
+            else {
+                next((vm: any) => {
+                    vm.setNavigationAction([]);
+                });
+            }
+        }
+
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            console.log('Router rerendered');
+            next();
+            // called when the route that renders this component has changed,
+            // but this component is reused in the new route.
+            // For example, for a route with dynamic params `/foo/:id`, when we
+            // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
+            // will be reused, and this hook will be called when that happens.
+            // has access to `this` component instance.
+        }
 
         /**
          * Watcher: performanceStrategies

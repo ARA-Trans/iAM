@@ -28,7 +28,8 @@ namespace BridgeCare.Services
         /// <param name="simulationModel"></param>
         /// <param name="simulationYears"></param>
         /// <param name="dbContext"></param>
-        public List<SimulationDataModel> Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
+        /// <returns>WorkSummaryModel with simulation and bridge data models</returns>
+        public WorkSummaryModel Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
         {
             var BRKeys = new List<int>();
 
@@ -59,7 +60,8 @@ namespace BridgeCare.Services
             // ExcelHelper.ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
 
-            return simulationDataModels;
+            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels };            
+            return workSummaryModel;
         }
 
         private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
@@ -78,6 +80,7 @@ namespace BridgeCare.Services
                 var simulationDataModel = simulationDataModels.Where(s => s.SectionId == section.SECTIONID).FirstOrDefault();
                 // Save DeckArea for further use
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
+                simulationDataModel.BRKey = brKey;
                 var yearsData = simulationDataModel.YearsData;
                 // Add work done cellls
                 for (var index = 1; index < yearsData.Count(); index++)
@@ -94,7 +97,7 @@ namespace BridgeCare.Services
                 // Add Total of count of Work done more than once column cells if "Yes"
                 totalColumn = column;                
 
-                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"                
+                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"   
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     var prevYrSD = yearsData[index - 1].SD;

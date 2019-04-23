@@ -3,6 +3,7 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace BridgeCare.Services
 {
@@ -26,12 +27,11 @@ namespace BridgeCare.Services
         /// <param name="currentCell"></param>
         /// <param name="simulationYears"></param>
         /// <param name="simulationDataModels"></param>
-        public void FillCostBudgetWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
+        public void FillCostBudgetWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<InvestmentStrategyYearlyBudgetModel> yearlyBudgetModels)
         {
             var culvertTotalRow = FillCostOfCulvertWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);
-            var bridgeTotalRow = FillCostOfBridgeWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);
-            // TODO ask why Total row is with same hard coded number 30000000 in excel?
-            var budgetTotalRow = FillTotalBudgetSection(worksheet, currentCell, simulationYears);
+            var bridgeTotalRow = FillCostOfBridgeWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);            
+            var budgetTotalRow = FillTotalBudgetSection(worksheet, currentCell, simulationYears, yearlyBudgetModels);
             FillRemainingBudgetSection(worksheet, simulationYears, currentCell, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
@@ -49,10 +49,10 @@ namespace BridgeCare.Services
             return bridgeTotalRow;
         }
 
-        private int FillTotalBudgetSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears)
+        private int FillTotalBudgetSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<InvestmentStrategyYearlyBudgetModel> yearlyBudgetModels)
         {
             bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget");
-            var budgetTotalRow = AddDetailsForTotalBudget(worksheet, simulationYears, currentCell);
+            var budgetTotalRow = AddDetailsForTotalBudget(worksheet, simulationYears, currentCell, yearlyBudgetModels);
             return budgetTotalRow;
         }
 
@@ -97,26 +97,20 @@ namespace BridgeCare.Services
             return culvertTotalRow;
         }              
 
-        private int AddDetailsForTotalBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell)
+        private int AddDetailsForTotalBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, List<InvestmentStrategyYearlyBudgetModel> yearlyBudgetModels)
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            int budgetTotalRow = 0;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Preservation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Construction;
+            int budgetTotalRow = 0;           
             worksheet.Cells[row++, column].Value = Properties.Resources.Total;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
             {
                 row = startRow;
-                column = ++column;
+                column = ++column;              
 
-                worksheet.Cells[row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = 3000000;
+                worksheet.Cells[row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.budgetAmount ?? 0);
                 budgetTotalRow = row;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
@@ -130,8 +124,6 @@ namespace BridgeCare.Services
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[row++, column].Value = Properties.Resources.Preservation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Construction;
             worksheet.Cells[row++, column].Value = Properties.Resources.Total;
             column++;
             var fromColumn = column + 1;
@@ -139,12 +131,8 @@ namespace BridgeCare.Services
             {
                 row = startRow;
                 column = ++column;
-
-                worksheet.Cells[row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) - (Convert.ToDouble(worksheet.Cells[culvertTotalRow, column].Value) + Convert.ToDouble(worksheet.Cells[bridgeTotalRow, column].Value));
+                
+                worksheet.Cells[row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) - (Convert.ToDouble(worksheet.Cells[culvertTotalRow, column].Value) + Convert.ToDouble(worksheet.Cells[bridgeTotalRow, column].Value));
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");

@@ -71,6 +71,9 @@ namespace BridgeCare.Services
                 case "Number":
                     cells.Style.Numberformat.Format = "_-* #,##0_-;* (#,##0)_-;_-* \"-\"??_-;_-@_-";
                     break;
+                case "Percentage":
+                    cells.Style.Numberformat.Format = "#0%";
+                    break;
             }
         }
 

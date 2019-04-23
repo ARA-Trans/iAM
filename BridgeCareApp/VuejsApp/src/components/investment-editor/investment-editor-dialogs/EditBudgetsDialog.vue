@@ -36,7 +36,8 @@
                                 <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
                             </td>
                             <td>
-                                <v-edit-dialog :return-value.sync="props.item.name" large lazy persistent>
+                                <v-edit-dialog :return-value.sync="props.item.name" large lazy persistent
+                                               @save="onEditBudgetName(props.item.index)">
                                     {{props.item.name}}
                                     <template slot="input">
                                         <v-text-field v-model="props.item.name" label="Edit" single-line>
@@ -102,21 +103,26 @@
          * 'Move Up' button has been clicked
          */
         onMoveBudgetUp() {
-            // get current index of selected budget
-            const currentIndex = this.selectedGridRows[0].index;
-            // get previous index
-            const previousIndex = currentIndex - 1;
-            // get previous index budget
-            const previousIndexBudget = this.editBudgetsDialogGridData[previousIndex];
+            // create a copy of the budgets grid data
+            const budgets: EditBudgetsDialogGridData[] = [...this.editBudgetsDialogGridData];
+            // get the current budget index
+            const currentBudgetIndex = this.selectedGridRows[0].index;
+            // set the previous budget index
+            const previousBudgetIndex = currentBudgetIndex - 1;
+            // get the current budget
+            const currentBudget: EditBudgetsDialogGridData = budgets[currentBudgetIndex];
+            // get the previous budget
+            const previousBudget: EditBudgetsDialogGridData = budgets[previousBudgetIndex];
             // update selected budget index as previous index
-            this.selectedGridRows[0].index = previousIndex;
-            // update previous index budget index as current index
-            previousIndexBudget.index = currentIndex;
+            currentBudget.index = previousBudgetIndex;
+            // update previous budget index as current index
+            previousBudget.index = currentBudgetIndex;
             // move selected budget to previous index in budgets list
-            this.editBudgetsDialogGridData[previousIndex] = this.selectedGridRows[0];
-            // moved previous index budget to current index in budgets list
-            this.editBudgetsDialogGridData[currentIndex] = previousIndexBudget;
-            this.editBudgetsDialogGridData = clone(this.editBudgetsDialogGridData);
+            budgets[previousBudgetIndex] = currentBudget;
+            // moved previous budget to current index in budgets list
+            budgets[currentBudgetIndex] = previousBudget;
+            // update editBudgetsDialogGridData with copy
+            this.editBudgetsDialogGridData = budgets;
         }
 
         /**
@@ -132,21 +138,26 @@
          * 'Move Down' button has been clicked
          */
         onMoveBudgetDown() {
-            // get current index of selected budget
-            const currentIndex = this.selectedGridRows[0].index;
-            // get next index
-            const nextIndex = currentIndex + 1;
-            // get next index budget
-            const nextIndexBudget = this.editBudgetsDialogGridData[nextIndex];
-            // update selected budget index as next index
-            this.selectedGridRows[0].index = nextIndex;
-            // update next index budget index as current index
-            nextIndexBudget.index = currentIndex;
+            // create a copy of the budgets grid data
+            const budgets: EditBudgetsDialogGridData[] = [...this.editBudgetsDialogGridData];
+            // get the current budget index
+            const currentBudgetIndex = this.selectedGridRows[0].index;
+            // set the next budget index
+            const nextBudgetIndex = currentBudgetIndex + 1;
+            // get the current budget
+            const currentBudget: EditBudgetsDialogGridData = budgets[currentBudgetIndex];
+            // get the next budget
+            const nextBudget: EditBudgetsDialogGridData = budgets[nextBudgetIndex];
+            // update selected budget index as previous index
+            currentBudget.index = nextBudgetIndex;
+            // update next budget index as current index
+            nextBudget.index = currentBudgetIndex;
             // move selected budget to next index in budgets list
-            this.editBudgetsDialogGridData[nextIndex] = this.selectedGridRows[0];
-            // move next index budget to current index in budgets list
-            this.editBudgetsDialogGridData[currentIndex] = nextIndexBudget;
-            this.editBudgetsDialogGridData = clone(this.editBudgetsDialogGridData);
+            budgets[nextBudgetIndex] = currentBudget;
+            // move next budget to current index in budgets list
+            budgets[currentBudgetIndex] = nextBudget;
+            // update editBudgetsDialogGridData with copy
+            this.editBudgetsDialogGridData = budgets;
         }
 
         /**
@@ -160,9 +171,21 @@
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
                 index: this.editBudgetsDialogGridData.length,
-                previousName: newBudget,
+                previousName: '',
                 isNew: true
             });
+        }
+
+        onEditBudgetName(newName: string, index: number) {
+            // create a copy of the grid data
+            const budgets = [...this.editBudgetsDialogGridData];
+            // updated the name of the budget in the copy at the specified index
+            budgets[index] = {
+                ...this.editBudgetsDialogGridData[index],
+                name: newName
+            };
+            // update the grid data with its copy
+            this.editBudgetsDialogGridData = budgets;
         }
 
         /**
@@ -187,7 +210,7 @@
                     previousName: budget.previousName,
                     isNew: budget.isNew
                 }));
-            // reset selectedBudget as defaultBudgetListItem
+            // reset selectedGridRows
             this.selectedGridRows = [];
         }
 
@@ -205,7 +228,7 @@
             // submit editedBudgets result
             this.$emit('submit', editedBudgets);
             // reset the data table properties
-            this.resetsDialogDataTableProperties();
+            this.resetDialogDataTableProperties();
         }
 
         /**
@@ -215,13 +238,13 @@
             // submit null result
             this.$emit('submit', null);
             // reset the data table properties
-            this.resetsDialogDataTableProperties();
+            this.resetDialogDataTableProperties();
         }
 
         /**
          * Resets the data table properties of this component
          */
-        resetsDialogDataTableProperties() {
+        resetDialogDataTableProperties() {
             this.editBudgetsDialogGridData = [];
             this.selectedGridRows = [];
         }

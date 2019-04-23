@@ -55,6 +55,7 @@ namespace BridgeCare
             container.RegisterType<IPerformance, PerformanceData>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
+            container.RegisterType<IInventory, Inventory>();
             container.RegisterType<IDeficientReport, DeficientReport>();
             container.RegisterType<IInvestmentStrategies, InvestmentStrategies>();
             container.RegisterType<ITreatments, TreatmentData>();
@@ -76,6 +77,7 @@ namespace BridgeCare
             container.RegisterType<IBridgeData, BridgeData>();
             container.RegisterType<SummaryReportBridgeData>();
             container.RegisterType<ICommonSummaryReportData, CommonSummaryReportData>();
+            container.RegisterType<IBridgeWorkSummaryData, BridgeWorkSummaryData>();
         }
     }
 }

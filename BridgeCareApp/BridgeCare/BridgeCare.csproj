@@ -175,6 +175,7 @@
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
+    <Compile Include="Controllers\InventoryControler.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
     <Compile Include="Controllers\TreatmentsController.cs" />
     <Compile Include="Controllers\PerformanceController.cs" />
@@ -189,7 +190,10 @@
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
+    <Compile Include="DataAccessLayer\BridgeWorkSummaryData.cs" />
+    <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
+    <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
     <Compile Include="DataAccessLayer\TreatmentData.cs" />
     <Compile Include="DataAccessLayer\PerformanceData.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
@@ -227,9 +231,11 @@
     <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentStrategies.cs" />
     <Compile Include="Interfaces\ITreatment.cs" />
     <Compile Include="Interfaces\IPerformance.cs" />
+    <Compile Include="Interfaces\SummaryReport\IBridgeWorkSummaryData.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
     <Compile Include="Interfaces\IDetailedReport.cs" />
@@ -250,10 +256,13 @@
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
+    <Compile Include="Models\InventoryItemModel.cs" />
+    <Compile Include="Models\InventoryModel.cs" />
     <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
     <Compile Include="Models\TreatmentScenarioModel.cs" />
     <Compile Include="Models\PerformanceScenarioModel.cs" />
@@ -301,6 +310,8 @@
     <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
+    <Compile Include="Services\SummaryReport\NHSBridgeDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\NHSConditionChart.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
     <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />

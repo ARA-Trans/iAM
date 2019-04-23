@@ -304,6 +304,7 @@
         @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.inventory.inventoryItems) inventoryItems: InventoryItem[];
         @State(state => state.inventory.inventoryItemDetail) inventoryItemDetail: InventoryItemDetail;
+        
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInventory') getInventoryAction: any;
