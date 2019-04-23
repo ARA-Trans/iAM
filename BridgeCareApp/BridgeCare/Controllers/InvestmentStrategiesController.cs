@@ -8,8 +8,8 @@ using System.Web.Http.Filters;
 namespace BridgeCare.Controllers
 {
     /// <summary>
-    /// Http interface to get a list of investment strategies which are text
-    /// descriptions and a corresponding index for each one
+    /// Http interface to get a list of investment strategies which are text descriptions and a
+    /// corresponding index for each one
     /// </summary>
     public class InvestmentStrategiesController : ApiController
     {
@@ -26,10 +26,10 @@ namespace BridgeCare.Controllers
         ///argument: NetworkModel
         ///</summary>
         [ModelValidation("Given network data is not valid")]
-        [Route("api/GetInvestmentStrategies")]
+        [Route("api/GetInvestmentStrategies/{simulationId}")]
         [HttpGet]
-        public IQueryable<InvestmentStrategyModel> Get([FromBody]NetworkModel network) 
-            => investmentStrategies.GetInvestmentStrategies(network, db);
+        public IQueryable<InvestmentStrategyModel> Get(int simulationId)
+             => investmentStrategies.GetInvestmentStrategies(simulationId, db);
 
         ///<summary> Post: api/SaveInvestmentStrategy
         ///argument: InvestmentStrategyModel
@@ -41,7 +41,7 @@ namespace BridgeCare.Controllers
         [Route("api/SaveInvestmentStrategy")]
         [HttpPost]
         public IHttpActionResult Post([FromBody]InvestmentStrategyModel data)
-        { 
+        {
             investmentStrategies.SetInvestmentStrategies(data, db);
             return Ok();
         }

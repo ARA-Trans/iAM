@@ -23,8 +23,8 @@ namespace BridgeCare.DataAccessLayer
                             .Where(n => n.YEAR_ == m.YEAR_)
                             .Select(f => new InvestmentStrategyBudgetModel()
                             {
-                                Amount = f.AMOUNT,
-                                Name = f.BUDGETNAME
+                                budgetAmount = f.AMOUNT,
+                                budgetName = f.BUDGETNAME
                             }).ToList()
             }).ToList();
             return yearlyBudgetModels;
