@@ -20,13 +20,14 @@ namespace BridgeCare.DataAccessLayer
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(NetworkModel network, BridgeCareContext db)
+        public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(int simulationId, BridgeCareContext db)
         {
             try
             {
                 var simulation = db.SIMULATIONS
                     .Include(d => d.INVESTMENTS)
                     .Include(d => d.YEARLYINVESTMENTs)
+                    .Where(d => d.SIMULATIONID == simulationId )
                     .Select(p => new InvestmentStrategyModel()
                     {
                         Name = p.SIMULATION1,
