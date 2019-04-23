@@ -10,9 +10,9 @@ import detailedReport from '@/store-modules/reports/detailed-report.module';
 import inventory from '@/store-modules/inventory.module';
 import investmentEditor from '@/store-modules/investment-editor.module';
 import performanceEditor from '@/store-modules/performance-editor.module';
-import attribute from '@/store-modules/attribute.module';
 import reports from '@/store-modules/reports/reports.module';
 import breadcrumb from '@/store-modules/breadcrumb.module';
+import attribute from '@/store-modules/attribute.module';
 
 Vue.use(Vuex);
 

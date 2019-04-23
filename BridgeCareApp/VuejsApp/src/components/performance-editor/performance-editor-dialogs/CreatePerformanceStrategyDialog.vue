@@ -33,7 +33,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {CreatedPerformanceStrategy, emptyCreatedPerformanceStrategy} from '@/shared/models/iAM/performance';
+    import {emptyPerformanceStrategy, PerformanceStrategy} from '@/shared/models/iAM/performance';
     import {hasValue} from '@/shared/utils/has-value';
     import {
         CreatePerformanceStrategyDialogData
@@ -43,7 +43,7 @@
     export default class CreatePerformanceStrategyDialog extends Vue {
         @Prop() dialogData: CreatePerformanceStrategyDialogData;
 
-        createdPerformanceStrategy: CreatedPerformanceStrategy = {...emptyCreatedPerformanceStrategy};
+        createdPerformanceStrategy: PerformanceStrategy = {...emptyPerformanceStrategy};
 
         /**
          * Watcher: CreatePerformanceStrategyDialogData
@@ -58,7 +58,7 @@
             // if dialog data has selectedPerformanceStrategyEquations for created performance strategy...
             if (hasValue(this.dialogData.selectedPerformanceStrategyEquations)) {
                 // set the created performance strategy with dialog data's selectedPerformanceStrategyEquations
-                this.createdPerformanceStrategy.performanceStrategyEquations = this.dialogData.selectedPerformanceStrategyEquations;
+                this.createdPerformanceStrategy.equations = this.dialogData.selectedPerformanceStrategyEquations;
             }
         }
 
@@ -67,7 +67,7 @@
          */
         onSubmit() {
             this.$emit('submit', this.createdPerformanceStrategy);
-            this.createdPerformanceStrategy = {...emptyCreatedPerformanceStrategy};
+            this.createdPerformanceStrategy = {...emptyPerformanceStrategy};
         }
 
         /**
@@ -75,7 +75,7 @@
          */
         onCancel() {
             this.$emit('submit', null);
-            this.createdPerformanceStrategy = {...emptyCreatedPerformanceStrategy};
+            this.createdPerformanceStrategy = {...emptyPerformanceStrategy};
         }
     }
 </script>
