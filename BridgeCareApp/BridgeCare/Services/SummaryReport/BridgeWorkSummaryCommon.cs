@@ -148,5 +148,22 @@ namespace BridgeCare.Services
             excelHelper.ApplyStyle(cells);
             excelHelper.ApplyBorder(cells);
         }
+
+        /// <summary>
+        /// Initialize Good, Fair, Poor label cells (common to some sections.)
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="currentCell"></param>
+        /// <param name="startRow"></param>
+        /// <param name="startColumn"></param>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        public void InitializeLabelCells(ExcelWorksheet worksheet, CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
+        {
+            SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
+            worksheet.Cells[row++, column].Value = Properties.Resources.Good;
+            worksheet.Cells[row++, column].Value = Properties.Resources.Fair;
+            worksheet.Cells[row++, column++].Value = Properties.Resources.Poor;
+        }
     }
 }

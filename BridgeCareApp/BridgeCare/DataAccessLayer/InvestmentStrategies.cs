@@ -20,13 +20,14 @@ namespace BridgeCare.DataAccessLayer
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(NetworkModel network, BridgeCareContext db)
+        public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(int simulationId, BridgeCareContext db)
         {
             try
             {
                 var simulation = db.SIMULATIONS
                     .Include(d => d.INVESTMENTS)
                     .Include(d => d.YEARLYINVESTMENTs)
+                    .Where(d => d.SIMULATIONID == simulationId )
                     .Select(p => new InvestmentStrategyModel()
                     {
                         Name = p.SIMULATION1,
@@ -45,8 +46,8 @@ namespace BridgeCare.DataAccessLayer
                             .Where(n => n.YEAR_ == m.YEAR_)
                             .Select(f => new InvestmentStrategyBudgetModel()
                             {
-                                Amount = f.AMOUNT,
-                                Name = f.BUDGETNAME
+                                budgetAmount = f.AMOUNT,
+                                budgetName = f.BUDGETNAME
                             }).ToList()
                         }).ToList()
                     }).ToList();
@@ -98,7 +99,7 @@ namespace BridgeCare.DataAccessLayer
                 {
                     foreach (InvestmentStrategyBudgetModel budget in year.Budget)
                     {
-                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
+                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.budgetName, budget.budgetAmount));
                     }
                 }
                 db.YEARLYINVESTMENTs.AddRange(investments);
