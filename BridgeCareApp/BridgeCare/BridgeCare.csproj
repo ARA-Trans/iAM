@@ -175,6 +175,7 @@
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
+    <Compile Include="Controllers\InventoryControler.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
     <Compile Include="Controllers\TreatmentsController.cs" />
     <Compile Include="Controllers\PerformanceController.cs" />
@@ -190,7 +191,9 @@
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryData.cs" />
+    <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
+    <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
     <Compile Include="DataAccessLayer\TreatmentData.cs" />
     <Compile Include="DataAccessLayer\PerformanceData.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
@@ -228,6 +231,7 @@
     <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentStrategies.cs" />
     <Compile Include="Interfaces\ITreatment.cs" />
     <Compile Include="Interfaces\IPerformance.cs" />
@@ -252,6 +256,8 @@
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
+    <Compile Include="Models\InventoryItemModel.cs" />
+    <Compile Include="Models\InventoryModel.cs" />
     <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
