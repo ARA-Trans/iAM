@@ -101,22 +101,16 @@ namespace BridgeCare.Services
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            int budgetTotalRow = 0;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Preservation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Construction;
+            int budgetTotalRow = 0;           
             worksheet.Cells[row++, column].Value = Properties.Resources.Total;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
             {
                 row = startRow;
-                column = ++column;
+                column = ++column;              
 
-                worksheet.Cells[row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.budgetAmount ?? 0);
+                worksheet.Cells[row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.Amount ?? 0);
                 budgetTotalRow = row;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
@@ -130,8 +124,6 @@ namespace BridgeCare.Services
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[row++, column].Value = Properties.Resources.Preservation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Construction;
             worksheet.Cells[row++, column].Value = Properties.Resources.Total;
             column++;
             var fromColumn = column + 1;
@@ -139,12 +131,8 @@ namespace BridgeCare.Services
             {
                 row = startRow;
                 column = ++column;
-
-                worksheet.Cells[row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = string.Empty;
-
-                worksheet.Cells[++row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) - (Convert.ToDouble(worksheet.Cells[culvertTotalRow, column].Value) + Convert.ToDouble(worksheet.Cells[bridgeTotalRow, column].Value));
+                
+                worksheet.Cells[row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) - (Convert.ToDouble(worksheet.Cells[culvertTotalRow, column].Value) + Convert.ToDouble(worksheet.Cells[bridgeTotalRow, column].Value));
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
