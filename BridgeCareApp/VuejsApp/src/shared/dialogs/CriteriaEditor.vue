@@ -79,19 +79,25 @@
         onDialogDataChanged() {
             // set the criteria string
             this.criteria = parseCriteriaString(this.dialogData.criteria);
-            // get attributes if the dialog is being shown and the state attributes list is empty
-            if (this.dialogData.showDialog && !hasValue(this.attributes)) {
+            if (this.dialogData.showDialog && isEmpty(this.attributes)) {
+                // set isBusy to true, then dispatch action to get attributes
                 this.setIsBusyAction({isBusy: true});
                 this.getAttributesAction()
                     .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => console.log(error));
+                    .catch((error: any) => {
+                        this.setIsBusyAction({isBusy: false});
+                        console.log(error);
+                    });
             }
         }
 
+        /**
+         * Watcher: attributes
+         */
         @Watch('attributes')
         onAttributesChanged() {
-            if (hasValue(this.attributes)) {
-                // set rules using the state attributes list
+            if (!isEmpty(this.attributes)) {
+                // set the rules property using the list of attributes
                 this.rules = this.attributes.map((attribute: string) => ({
                     type: 'text',
                     label: attribute,
@@ -99,7 +105,6 @@
                     operators: ['=', '<>', '<', '<=', '>', '>=']
                 }));
             }
-
         }
 
         /**
