@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
@@ -50,6 +51,15 @@ namespace BridgeCare.Controllers
         private bool SimulationExists(int id)
         {
             return db.SIMULATIONS.Count(e => e.SIMULATIONID == id) > 0;
+        }
+
+        [ModelValidation("Given simulation is not valid")]
+        [Route("api/UpdateSimulationName")]
+        [HttpPost]
+        public IHttpActionResult UpdateSimulationName([FromBody]SimulationModel data)
+        {
+            simulations.UpdateName(data, db);
+            return Ok();
         }
     }
 }
