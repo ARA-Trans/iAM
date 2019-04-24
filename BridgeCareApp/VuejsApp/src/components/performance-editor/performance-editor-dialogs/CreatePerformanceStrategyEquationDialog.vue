@@ -35,11 +35,9 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {
-        CreatedPerformanceStrategyEquation, emptyCreatedPerformanceStrategyEquation} from '@/shared/models/iAM/performance';
-    import {hasValue} from '@/shared/utils/has-value';
-    import {SelectItem} from '@/shared/models/vue/select-item';
+    import {emptyEquation, PerformanceStrategyEquation} from '@/shared/models/iAM/performance';
     import {isEmpty} from 'ramda';
+    import {SelectItem} from '@/shared/models/vue/select-item';
 
     @Component
     export default class CreatePerformanceStrategyDialog extends Vue {
@@ -51,24 +49,32 @@
         @Action('getAttributes') getAttributesAction: any;
 
         attributesSelectListItems: SelectItem[] = [];
-        createdPerformanceStrategyEquation: CreatedPerformanceStrategyEquation = {...emptyCreatedPerformanceStrategyEquation};
+        createdPerformanceStrategyEquation: PerformanceStrategyEquation = {...emptyEquation};
 
+        /**
+         * Watcher: showDialog
+         */
         @Watch('showDialog')
         onShowDialogChanged() {
-            if (this.showDialog && !hasValue(this.attributes)) {
+            if (this.showDialog && isEmpty(this.attributes)) {
+                // set isBusy to true, then dispatch action to get attributes
                 this.setIsBusyAction({isBusy: true});
                 this.getAttributesAction()
                     .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => console.log(error));
+                    .catch((error: any) => {
+                        this.setIsBusyAction({isBusy: false});
+                        console.log(error);
+                    });
             }
         }
+
         /**
          * Watcher: attributes
          */
         @Watch('attributes')
         onAttributesChanged() {
-            if (hasValue(this.attributes)) {
-                // set the attributesSelectListItems using attributes list from state
+            if (!isEmpty(this.attributes)) {
+                // set the attributesSelectListItems property using the list of attributes
                 this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
                     text: attribute,
                     value: attribute
@@ -81,7 +87,7 @@
          */
         onSubmit() {
             this.$emit('submit', this.createdPerformanceStrategyEquation);
-            this.createdPerformanceStrategyEquation = {...emptyCreatedPerformanceStrategyEquation};
+            this.createdPerformanceStrategyEquation = {...emptyEquation};
         }
 
         /**
@@ -89,7 +95,7 @@
          */
         onCancel() {
             this.$emit('submit', null);
-            this.createdPerformanceStrategyEquation = {...emptyCreatedPerformanceStrategyEquation};
+            this.createdPerformanceStrategyEquation = {...emptyEquation};
         }
     }
 </script>

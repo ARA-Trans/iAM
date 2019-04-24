@@ -1,3 +1,5 @@
+import {PerformanceStrategyEquation} from '@/shared/models/iAM/performance';
+
 export interface EquationEditorDialogData {
     showDialog: boolean;
     equation: string;
