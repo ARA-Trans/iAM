@@ -78,7 +78,7 @@ export const parseCriteriaString = (clause: string) => {
             return parseQueryBuilderClause(clause, newCriteria);
         }
     }
-    return emptyCriteria;
+    return {...emptyCriteria};
 };
 
 /**

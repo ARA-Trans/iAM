@@ -19,9 +19,11 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="query-builder-card-text">
-                    <vue-query-builder v-if="rules.length > 0" :labels="queryBuilderLabels" :rules="rules" :maxDepth="25" :styled="true"
-                                       v-model="criteria">
-                    </vue-query-builder>
+                    <div v-if="editorRules.length > 0">
+                        <vue-query-builder :labels="queryBuilderLabels" :rules="editorRules" :maxDepth="25" :styled="true"
+                                           v-model="criteria">
+                        </vue-query-builder>
+                    </div>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
@@ -46,7 +48,6 @@
     import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value';
     import {CriteriaEditorDialogData} from '../models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
-    import {isEmpty} from 'ramda';
 
     @Component({
         components: {VueQueryBuilder}
@@ -60,7 +61,7 @@
         @Action('getAttributes') getAttributesAction: any;
 
         criteria: Criteria = {...emptyCriteria};
-        rules: any[] = [];
+        editorRules: any[] = [];
         queryBuilderLabels: object = {
             'matchType': '',
             'matchTypes': [
@@ -98,7 +99,7 @@
         onAttributesChanged() {
             if (!isEmpty(this.attributes)) {
                 // set the rules property using the list of attributes
-                this.rules = this.attributes.map((attribute: string) => ({
+                this.editorRules = this.attributes.map((attribute: string) => ({
                     type: 'text',
                     label: attribute,
                     id: attribute,

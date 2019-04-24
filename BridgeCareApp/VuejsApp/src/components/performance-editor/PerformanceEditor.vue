@@ -420,6 +420,7 @@
                 this.equationEditorDialogData = {
                     showDialog: true,
                     equation: this.selectedEquation.equation,
+                    canBePiecewise: true,
                     isPiecewise: this.selectedEquation.piecewise,
                     isFunction: this.selectedEquation.isFunction
                 };
@@ -618,7 +619,7 @@
 
 <style>
     .performance-editor-container {
-        height: 768px;
+        height: 785px;
         overflow-x: hidden;
         overflow-y: auto;
     }
