@@ -48,6 +48,7 @@
     import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value';
     import {CriteriaEditorDialogData} from '../models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
+    import {isEmpty} from 'ramda';
 
     @Component({
         components: {VueQueryBuilder}
