@@ -14,15 +14,6 @@
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
-                                  :append-icon="marker ? 'fas fa-address-book' : 'home'"
-                                  box
-                                  readonly
-                                  label="Scope"
-                                  type="text"
-                                  @click:append="toggleMarker"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
                                   :append-icon="'fas fa-dollar-sign'"
                                   box
                                   readonly
