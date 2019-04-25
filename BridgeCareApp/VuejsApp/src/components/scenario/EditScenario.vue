@@ -74,8 +74,9 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import { Action, State } from 'vuex-class';
+    import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component
     export default class EditScenario extends Vue {
@@ -85,31 +86,67 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @Action('setNavigation') setNavigationAction: any;
 
+        currentScenario: Simulation = { networkId: 0, networkName: '', simulationId: 0, simulationName: '' };
+
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                vm.currentScenario = to.query;
+
+                vm.setNavigationAction([
+                    {
+                        text: 'Scenario dashboard',
+                        to: '/Scenarios/'
+                    },
+                    {
+                        text: 'Scenario editor',
+                        to: {
+                            path: '/EditScenario/', query: {
+                                networkId: to.query.networkId,
+                                simulationId: to.query.simulationId,
+                                networkName: to.query.networkName,
+                                simulationName: to.query.simulationName
+                            }
+                        }
+                    }
+                ]);
+            });
+        }
+
         created() {
             this.marker = true;
-            this.setNavigationAction([
-                {
-                    text: 'Scenario dashboard',
-                    to: '/Scenarios/'
-                },
-                {
-                    text: 'Scenario editor',
-                    to: '/EditScenario/'
-                }
-            ]);
         }
 
         toggleMarker() {
             this.marker = !this.marker;
         }
         editAnalysis() {
-            this.$router.push('/EditAnalysis/');
+            this.$router.push({
+                path: '/EditAnalysis/', query: {
+                    networkId: this.currentScenario.networkId.toString(),
+                    simulationId: this.currentScenario.simulationId.toString(),
+                    networkName: this.currentScenario.networkName,
+                    simulationName: this.currentScenario.simulationName
+                } });
         }
         editInvestment() {
-            this.$router.push({ path: '/InvestmentEditor/FromScenario/' });
+            this.$router.push({
+                path: '/InvestmentEditor/FromScenario/', query: {
+                    networkId: this.currentScenario.networkId.toString(),
+                    simulationId: this.currentScenario.simulationId.toString(),
+                    networkName: this.currentScenario.networkName,
+                    simulationName: this.currentScenario.simulationName
+                }
+            });
         }
         editPerformance() {
-            this.$router.push('/PerformanceEditor/FromScenario/');
+            this.$router.push({
+                path: '/PerformanceEditor/FromScenario/', query: {
+                    networkId: this.currentScenario.networkId.toString(),
+                    simulationId: this.currentScenario.simulationId.toString(),
+                    networkName: this.currentScenario.networkName,
+                    simulationName: this.currentScenario.simulationName
+                }
+            });
         }
     }
 </script>

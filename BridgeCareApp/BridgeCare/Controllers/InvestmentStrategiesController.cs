@@ -26,10 +26,10 @@ namespace BridgeCare.Controllers
         ///argument: NetworkModel
         ///</summary>
         [ModelValidation("Given network data is not valid")]
-        [Route("api/GetInvestmentStrategies")]
+        [Route("api/GetInvestmentStrategies/{simulationId}")]
         [HttpGet]
-        public IQueryable<InvestmentStrategyModel> Get([FromBody]NetworkModel network) 
-            => investmentStrategies.GetInvestmentStrategies(network, db);
+        public IQueryable<InvestmentStrategyModel> Get(int simulationId) 
+            => investmentStrategies.GetInvestmentStrategies(simulationId, db);
 
         ///<summary> Post: api/SaveInvestmentStrategy
         ///argument: InvestmentStrategyModel

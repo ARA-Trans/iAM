@@ -12,7 +12,7 @@
                     </v-card-title>
                     <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
                         <template slot="items" slot-scope="props">
-                            <td>{{props.item.name}}</td>
+                            <td>{{props.item.simulationName}}</td>
                             <td>{{formatDate(props.item.createdDate)}}</td>
                             <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                             <td>{{props.item.status}}</td>
@@ -29,7 +29,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="editScenario">
+                                        <v-btn flat icon color="green" v-on:click="editScenario(props.item)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -130,6 +130,7 @@
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('setSelectedScenario') setSelectedScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -206,8 +207,26 @@
             return moment(unformattedDate).format('M/D/YYYY');
         }
 
-        editScenario() {
-            this.$router.push({path: '/EditScenario/'});
+        editScenario(item: any) {
+            let selectedScenario = {
+                networkId: item.networkId,
+                simulationId: item.simulationId,
+                networkName: item.networkName,
+                simulationName: item.simulationName
+            }
+            // dispatch action to run simulation
+            this.setSelectedScenarioAction({ selectedScenario })
+                .catch((error: any) => {
+                console.log(error);
+            });
+            this.$router.push({
+                path: '/EditScenario/', query: {
+                    networkId: item.networkId,
+                    simulationId: item.simulationId,
+                    networkName: item.networkName,
+                    simulationName: item.simulationName
+                }
+            });
         }
         editSharedScenario() {
             this.$router.push({ path: '/EditScenario/' });

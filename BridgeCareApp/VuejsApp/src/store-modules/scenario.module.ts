@@ -1,14 +1,19 @@
-import {Scenario} from '@/shared/models/iAM/scenario';
+import { Scenario } from '@/shared/models/iAM/scenario';
+import { Simulation } from '@/shared/models/iAM/simulation';
 import * as R from 'ramda';
 import { statusReference } from '@/firebase';
 
 const state = {
-    scenarios: [] as Scenario[]
+    scenarios: [] as Scenario[],
+    selectedScenario: {} as Simulation
 };
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
             state.scenarios = R.clone(scenarios);
+    },
+    selectedScenarioMutator(state: any, selectedScenario: Simulation) {
+        state.selectedScenario = R.clone(selectedScenario);
     }
 };
 
@@ -35,6 +40,10 @@ const actions = {
         }, (error: any) => {
             console.log('error in fetching scenarios', error);
         });
+    },
+
+    setSelectedScenario({ commit }: any, payload: any) {
+        commit('selectedScenarioMutator', payload.selectedScenario)
     }
 };
 

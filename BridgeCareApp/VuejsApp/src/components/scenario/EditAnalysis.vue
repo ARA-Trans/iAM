@@ -66,10 +66,12 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import { Action, State } from 'vuex-class';
 
     import moment from 'moment';
+    import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component
     export default class EditAnalysis extends Vue {
@@ -80,6 +82,7 @@
         menu: boolean = false;
         date: string = '';
         maxDate: string = moment().year().toString();
+        currentScenario: Simulation = { networkId: 0, networkName: '', simulationId: 0, simulationName: '' };
 
         data() {
             return {
@@ -90,22 +93,64 @@
             };
         }
 
-        created() {
-            this.setNavigationAction([
-                {
-                    text: 'Scenario dashboard',
-                    to: '/Scenarios/'
-                },
-                {
-                    text: 'Scenario editor',
-                    to: '/EditScenario/'
-                },
-                {
-                  text: 'Analysis editor',
-                  to: '/EditAnalysis/'
-                }
-            ]);
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                vm.currentScenario = to.query;
+                vm.fromScenario = true;
+                vm.setNavigationAction([
+                    {
+                        text: 'Scenario dashboard',
+                        to: '/Scenarios/'
+                    },
+                    {
+                        text: 'Scenario editor',
+                        to: {
+                            path: '/EditScenario/', query: {
+                                networkId: to.query.networkId,
+                                simulationId: to.query.simulationId,
+                                networkName: to.query.networkName,
+                                simulationName: to.query.simulationName
+                            }
+                        }
+                    },
+                    {
+                        text: 'Analysis editor',
+                        to: {
+                            path: '/EditAnalysis/', query: {
+                                networkId: to.query.networkId,
+                                simulationId: to.query.simulationId,
+                                networkName: to.query.networkName,
+                                simulationName: to.query.simulationName
+                            }
+                        }
+                    }
+                ]);
+            });
         }
+
+        //created() {
+        //    this.setNavigationAction([
+        //        {
+        //            text: 'Scenario dashboard',
+        //            to: '/Scenarios/'
+        //        },
+        //        {
+        //            text: 'Scenario editor',
+        //            to: {
+        //                path: '/EditScenario/', query: {
+        //                    networkId: to.query.networkId,
+        //                    simulationId: to.query.simulationId,
+        //                    networkName: to.query.networkName,
+        //                    simulationName: to.query.simulationName
+        //                }
+        //            }
+        //        },
+        //        {
+        //          text: 'Analysis editor',
+        //          to: '/EditAnalysis/'
+        //        }
+        //    ]);
+        //}
         
         @Watch('menu')
         onDateChanged(val: string) {
@@ -119,7 +164,13 @@
             this.menu = false;
         }
         cancel() {
-            this.$router.push('/EditScenario/');
+            this.$router.push({
+                path: '/EditScenario/', query: {
+                    networkId: this.currentScenario.networkId.toString(),
+                    simulationId: this.currentScenario.simulationId.toString(),
+                    networkName: this.currentScenario.networkName,
+                    simulationName: this.currentScenario.simulationName
+                } });
         }
     }
 </script>

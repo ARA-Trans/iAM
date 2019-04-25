@@ -43,6 +43,7 @@ const router = new VueRouter({
             path: '/InvestmentEditor/',
             name: 'InvestmentEditor',
             component: InvestmentEditor,
+            props: true,
             alias: '/InvestmentEditor/Library/',
         },
         {
@@ -58,6 +59,7 @@ const router = new VueRouter({
         {
             path: '/InvestmentEditor/',
             component: InvestmentEditor,
+            props: true,
             alias: '/InvestmentEditor/FromScenario/'
         },
         

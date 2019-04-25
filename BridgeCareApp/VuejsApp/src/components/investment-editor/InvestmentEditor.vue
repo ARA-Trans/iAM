@@ -3,16 +3,20 @@
         <div class="investment-editor-container">
             <v-layout column>
                 <v-flex xs12>
+                    <v-chip label v-show="fromScenario" color="indigo" text-color="white">
+                        <v-icon left v-model="scenarioName">label</v-icon>Scenario name:
+                        {{scenarioName}}
+                    </v-chip>
                     <v-layout justify-center fill-height>
                         <v-flex xs3>
-                            <v-btn color="info" v-on:click="onNewLibrary">
+                            <v-btn v-if="!fromScenario" color="info" v-on:click="onNewLibrary">
                                 New Library
                             </v-btn>
-                            <v-select v-if="!hasSelectedInvestmentStrategy"
+                            <v-select v-if="!hasSelectedInvestmentStrategy || !showLibrary"
                                       :items="investmentStrategiesSelectListItems"
-                                      label="Select an Investment Strategy" outline v-model="selectItemValue">
+                                      label="Select an Investment library" outline v-model="selectItemValue">
                             </v-select>
-                            <v-text-field v-if="hasSelectedInvestmentStrategy" label="Strategy Name" append-icon="clear"
+                            <v-text-field v-if="hasSelectedInvestmentStrategy && showLibrary" label="Strategy Name" append-icon="clear"
                                           v-model="selectedInvestmentStrategy.name"
                                           @click:append="onClearInvestmentStrategySelection">
                             </v-text-field>
@@ -107,20 +111,18 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
-                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentStrategy">
+                <v-btn v-show="fromScenario" color="error lighten-1" v-on:click="onDiscardChanges" :disabled="!hasSelectedInvestmentStrategy">
+                    Discard changes
+                </v-btn>
+                <v-btn v-show="fromScenario" color="info" v-on:click="onApplyToScenario" :disabled="!hasSelectedInvestmentStrategy">
+                    Apply
+                </v-btn>
+                <v-btn v-show="!fromScenario" color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentStrategy">
                     Create as New Library
                 </v-btn>
-                <v-btn color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedInvestmentStrategy">
+                <v-btn v-show="!fromScenario" color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedInvestmentStrategy">
                     Update Library
                 </v-btn>
-                <v-tooltip top>
-                    <template slot="activator">
-                        <v-btn color="info" v-on:click="onApplyToScenario" :disabled="true">
-                            Apply
-                        </v-btn>
-                    </template>
-                    <span>Feature not ready</span>
-                </v-tooltip>
             </v-layout>
         </v-footer>
 
@@ -169,6 +171,7 @@
     import { sorter } from '@/shared/utils/sorter';
     import { Alert } from '@/shared/models/iAM/alert';
     import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
+    import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component({
         components: { AppSpinner, CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
@@ -176,15 +179,21 @@
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentStrategies) investmentStrategies: InvestmentStrategy[];
         @State(state => state.investmentEditor.selectedInvestmentStrategy) selectedInvestmentStrategy: InvestmentStrategy;
+        @State(state => state.investmentEditor.loadedInvestmentStrategy) loadedInvestmentStrategy: InvestmentStrategy;
         @State(state => state.breadcrumb.navigation) navigation: any[];
+        @State(state => state.scenario.selectedScenario) selectedScenario: Simulation;
+        @State(state => state.investmentEditor.investmentForScenario) investmentForScenario: InvestmentStrategy[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInvestmentStrategies') getInvestmentStrategiesAction: any;
         @Action('selectInvestmentStrategy') selectInvestmentStrategyAction: any;
+        @Action('selectInvestmentForScenario') selectInvestmentForScenarioAction: any;
         @Action('createInvestmentStrategy') createInvestmentStrategyAction: any;
         @Action('updateInvestmentStrategy') updateInvestmentStrategyAction: any;
+        @Action('updateInvestmentScenario') updateInvestmentScenarioAction: any;
         @Action('updateSelectedInvestmentStrategy') updateSelectedInvestmentStrategyAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('getInvestmentForScenario') getInvestmentForScenarioAction: any;
 
         investmentStrategiesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -198,42 +207,75 @@
         createInvestmentStrategyDialogData: CreateInvestmentStrategyDialogData = {...emptyCreateInvestmentStrategyDialogData};
         editBudgetsDialogData: EditBudgetsDialogData = {...emptyEditBudgetsDialogData};
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
+        currentScenario: Simulation = { networkId: 0, networkName: '', simulationId: 0, simulationName: '' };
 
         warning: Alert = { showModal: false, heading: '', message: '', choice: false };
+        fromScenario: boolean = false;
+        showLibrary: boolean = false;
+        scenarioName: string = '';
 
         beforeRouteEnter(to: any, from: any, next: any) {
-            if (from.name === 'EditScenario') {
+            if (to.path === '/InvestmentEditor/FromScenario/') {
                 next((vm: any) => {
+                    vm.currentScenario = to.query;
+                    vm.fromScenario = true;
                     vm.setNavigationAction([
                         {
                             text: 'Scenario dashboard',
-                            to: '/Scenarios/'
+                            to: {
+                                path: '/Scenarios/', query: {}
+                            }
                         },
                         {
                             text: 'Scenario editor',
-                            to: '/EditScenario/'
+                            to: {
+                                path: '/EditScenario/', query: {
+                                    networkId: to.query.networkId,
+                                    simulationId: to.query.simulationId,
+                                    networkName: to.query.networkName,
+                                    simulationName: to.query.simulationName
+                                }
+                            }
                         },
                         {
                             text: 'Investment editor',
-                            to: '/InvestmentEditor/FromScenario/'
+                            to: {
+                                path: '/InvestmentEditor/FromScenario/', query: {
+                                    networkId: to.query.networkId,
+                                    simulationId: to.query.simulationId,
+                                    networkName: to.query.networkName,
+                                    simulationName: to.query.simulationName
+                                }
+                            }
                         }
                     ]);
+                    vm.getInvestmentForScenario();
+                    vm.getInvestmentLibraries();
+                    //vm.hasSelectedInvestmentStrategy = true;
                 });
             }
             else {
                 next((vm: any) => {
+                    vm.fromScenario = false;
+                    vm.showLibrary = true;
                     vm.setNavigationAction([]);
+                    vm.onClearInvestmentStrategySelection();
+                    vm.getInvestmentLibraries();
                 });
             }
         }
         beforeRouteUpdate(to: any, from: any, next: any) {
+            if (to.path === '/InvestmentEditor/Library/') {
+                this.fromScenario = false;
+                this.showLibrary = true;
+                this.hasSelectedInvestmentStrategy = false;
+                this.onClearInvestmentStrategySelection();
+                this.getInvestmentLibraries();
+            }
             next();
-            // called when the route that renders this component has changed,
-            // but this component is reused in the new route.
-            // For example, for a route with dynamic params `/foo/:id`, when we
-            // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
-            // will be reused, and this hook will be called when that happens.
-            // has access to `this` component instance.
+        }
+
+        created() {
         }
 
         /**
@@ -254,14 +296,24 @@
          */
         @Watch('selectItemValue')
         onInvestmentStrategiesSelectItemChanged() {
-            if (hasValue(this.selectItemValue) && this.selectedInvestmentStrategy.id === 0) {
-                // parse selectItemValue as an integer
-                const id: number = parseInt(this.selectItemValue);
-                // dispatch selectInvestmentStrategyAction with id
-                this.selectInvestmentStrategyAction({investmentStrategyId: id});
-            } else if (!hasValue(this.selectItemValue) && this.selectedInvestmentStrategy.id !== 0) {
-                // dispatch selectInvestmentStrategyAction with null
-                this.selectInvestmentStrategyAction({investmentStrategyId: null});
+            if (this.fromScenario === true) {
+                if (hasValue(this.selectItemValue)) {
+                    // parse selectItemValue as an integer
+                    const id: number = parseInt(this.selectItemValue);
+                    // dispatch selectInvestmentStrategyAction with id
+                    this.selectInvestmentStrategyAction({ investmentStrategyId: id });
+                }
+            }
+            else {
+                if (hasValue(this.selectItemValue) && this.selectedInvestmentStrategy.id === 0) {
+                    // parse selectItemValue as an integer
+                    const id: number = parseInt(this.selectItemValue);
+                    // dispatch selectInvestmentStrategyAction with id
+                    this.selectInvestmentStrategyAction({ investmentStrategyId: id });
+                } else if (!hasValue(this.selectItemValue) && this.selectedInvestmentStrategy.id !== 0) {
+                    // dispatch selectInvestmentStrategyAction with null
+                    this.selectInvestmentStrategyAction({ investmentStrategyId: null });
+                }
             }
         }
 
@@ -272,30 +324,41 @@
         onSelectedInvestmentStrategyChanged() {
             // reset the selected grid rows
             this.selectedGridRows = [];
-            if (this.selectedInvestmentStrategy.id !== 0) {
-                if (!hasValue(this.selectItemValue)) {
-                    // set selectItemValue with the id of selectedInvestmentStrategy
-                    this.selectItemValue = this.selectedInvestmentStrategy.id.toString();
-                }
-                // set hasSelectedInvestmentStrategy to true
-                this.hasSelectedInvestmentStrategy = true;
-                if (!hasValue(this.selectedInvestmentStrategy.budgetOrder) && hasValue(this.selectedInvestmentStrategy.budgetYears)) {
-                    // set the budget order for the selected investment strategy using the it's list of budget years
-                    this.setSelectedInvestmentStrategyBudgetOrder();
-                } else {
-                    // set the grid headers
-                    this.setGridHeaders();
-                    // set the grid data
-                    this.setGridData();
-                }
+            if (this.fromScenario === false) {
+                if (this.selectedInvestmentStrategy.id !== 0) {
+                    if (!hasValue(this.selectItemValue)) {
+                        // set selectItemValue with the id of selectedInvestmentStrategy
+                        this.selectItemValue = this.selectedInvestmentStrategy.id.toString();
+                    }
+                    // set hasSelectedInvestmentStrategy to true
+                    this.hasSelectedInvestmentStrategy = true;
+                    this.showLibrary = true;
+                    if (!hasValue(this.selectedInvestmentStrategy.budgetOrder) && hasValue(this.selectedInvestmentStrategy.budgetYears)) {
+                        // set the budget order for the selected investment strategy using the it's list of budget years
+                        this.setSelectedInvestmentStrategyBudgetOrder();
+                    } else {
+                        // set the grid headers
+                        this.setGridHeaders();
+                        // set the grid data
+                        this.setGridData();
+                    }
 
-            } else {
-                // reset selectItemValue
-                this.selectItemValue = '';
-                // reset hasSelectedInvestmentStrategy
-                this.hasSelectedInvestmentStrategy = false;
-                // reset grid data
-                this.budgetYearsGridData = [];
+                } else {
+                    // reset selectItemValue
+                    this.selectItemValue = '';
+                    // reset hasSelectedInvestmentStrategy
+                    this.hasSelectedInvestmentStrategy = false;
+                    this.showLibrary = false;
+                    // reset grid data
+                    this.budgetYearsGridData = [];
+                }
+            }
+            else {
+                this.hasSelectedInvestmentStrategy = true;
+                this.showLibrary = false;
+                this.setGridHeaders();
+                // set the grid data
+                this.setGridData();
             }
         }
 
@@ -308,10 +371,8 @@
             this.selectedBudgetYears = getPropertyValues('year', this.selectedGridRows) as number[];
         }
 
-        /**
-         * Component has been mounted
-         */
-        mounted() {
+
+        getInvestmentLibraries() {
             // set isBusy to true, then dispatch action to get all investment strategies
             this.setIsBusyAction({isBusy: true});
             this.getInvestmentStrategiesAction()
@@ -718,7 +779,23 @@
          * 'Apply' button has been clicked
          */
         onApplyToScenario() {
-            // TODO: add scenario pathway after defined
+            this.setIsBusyAction({ isBusy: true });
+            // dispatch action to update selected investment strategy on the server
+            this.updateInvestmentScenarioAction({ updatedInvestmentScenario: this.selectedInvestmentStrategy })
+                .then(() => {
+                    this.setIsBusyAction({ isBusy: false });
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Success';
+                    this.warning.choice = false;
+                    this.warning.message = 'Library updated successfully';
+                })
+                .catch(() => {
+                    this.setIsBusyAction({ isBusy: false });
+                    this.warning.showModal = true;
+                    this.warning.heading = 'Error';
+                    this.warning.choice = false;
+                    this.warning.message = 'Library failed to update';
+                });
         }
 
         onClearInvestmentStrategySelection() {
@@ -729,18 +806,32 @@
         onWarningModalDecision(value: boolean) {
             this.warning.showModal = false;
         }
+
+        onDiscardChanges() {
+            this.selectItemValue = '';
+            this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id });
+        }
+
+        getInvestmentForScenario() {
+
+            this.getInvestmentForScenarioAction({ selectedScenario: this.currentScenario })
+                .then(() => {
+                    this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id });
+                    this.scenarioName = this.investmentForScenario[0].name;
+                });
+        }
     }
 </script>
 
 <style>
     .investment-editor-container {
-        height: 785px;
+        height: 775px;
         overflow-x: hidden;
         overflow-y: auto;
     }
 
     .investment-editor-data-table {
-        height: 280px;
+        height: 300px;
         overflow-y: auto;
     }
 </style>
