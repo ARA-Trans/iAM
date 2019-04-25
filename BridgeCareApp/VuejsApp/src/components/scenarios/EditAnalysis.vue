@@ -117,7 +117,9 @@
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
+                // set selectedScenarioId
                 vm.selectedScenarioId = parseInt(to.query.simulationId);
+                // set the breadcrumbs
                 vm.setNavigationAction([
                     {
                         text: 'Scenario dashboard',
@@ -131,30 +133,30 @@
                     },
                     {
                         text: 'Analysis editor',
-                        to: '/EditAnalysis/'
+                        to: {
+                            path: '/EditAnalysis/', query: {simulationId: to.query.simulationId}
+                        }
                     }
                 ]);
+                // check that selectedScenarioId is set
+                if (vm.selectedScenarioId > 0) {
+                    // set isBusy to true
+                    vm.setIsBusyAction({isBusy: true});
+                    // get the selected scenario's analysis data
+                    new ScenarioService().getScenarioAnalysisData(vm.selectedScenarioId)
+                        .then((analysis: Analysis) => {
+                            vm.setIsBusyAction({isBusy: false});
+                            vm.analysis = {
+                                ...analysis,
+                                startYear: analysis.startYear > 0 ? analysis.startYear : moment().year()
+                            };
+                        });
+                } else {
+                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
+                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                    vm.$router.push('/Scenarios/');
+                }
             });
-        }
-
-        /**
-         * Component has been mounted
-         */
-        mounted() {
-            if (this.selectedScenarioId > 0) {
-                // set isBusy to true
-                this.setIsBusyAction({isBusy: true});
-                // get the selected scenario's analysis data
-                new ScenarioService().getScenarioAnalysisData(this.selectedScenarioId)
-                    .then((analysis: Analysis) => {
-                        this.setIsBusyAction({isBusy: false});
-                        this.analysis = analysis;
-                    });
-            } else {
-                // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                this.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                this.$router.push('/Scenarios/');
-            }
         }
 
         /**

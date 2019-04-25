@@ -83,7 +83,9 @@
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
+                // set selectedScenarioId
                 vm.selectedScenarioId = parseInt(to.query.simulationId);
+                // set breadcrumbs
                 vm.setNavigationAction([
                     {
                         text: 'Scenario dashboard',
@@ -96,6 +98,12 @@
                         }
                     }
                 ]);
+                // check that selectedScenarioId is set
+                if (vm.selectedScenarioId === 0) {
+                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
+                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                    vm.$router.push('/Scenarios/');
+                }
             });
         }
 
@@ -104,18 +112,16 @@
         }
 
         mounted() {
-            if (this.selectedScenarioId === 0) {
-                // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                this.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                this.$router.push('/Scenarios/');
-            }
+
         }
 
         toggleMarker() {
             this.marker = !this.marker;
         }
         editAnalysis() {
-            this.$router.push('/EditAnalysis/');
+            this.$router.push({
+                path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
+            });
         }
         editInvestment() {
             this.$router.push({ path: '/InvestmentEditor/FromScenario/' });
