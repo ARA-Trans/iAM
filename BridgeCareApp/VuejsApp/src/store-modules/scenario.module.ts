@@ -68,9 +68,10 @@ const actions = {
     },
     async applyAnalysisToScenario({commit}: any, payload: any) {
         await new ScenarioService().applyAnalysisToScenario(payload.scenarioAnalysisUpsertData)
-            .then((analysis: Analysis) =>
-                commit('scenarioAnalysisMutator', analysis)
-            )
+            .then((analysis: Analysis) => {
+                commit('scenarioAnalysisMutator', analysis);
+                commit('selectedScenarioMutator', payload.scenarioAnalysisUpsertData.id);
+            })
             .catch((error: any) => console.log(error));
     }
 };

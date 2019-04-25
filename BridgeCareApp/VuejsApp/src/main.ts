@@ -11,6 +11,8 @@ import App from './App.vue';
 import router from './router';
 import store from './store/root-store';
 import './assets/css/main.css';
+import 'izitoast/dist/css/iziToast.min.css';
+import 'izitoast/dist/js/iziToast.min';
 
 Vue.use(Vuetify, {
     iconfont: 'fa'

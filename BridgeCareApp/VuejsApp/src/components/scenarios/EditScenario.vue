@@ -65,8 +65,9 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
-    import { Action, State } from 'vuex-class';
+    import {Component} from 'vue-property-decorator';
+    import {State, Action} from 'vuex-class';
+    import {Scenario} from '@/shared/models/iAM/scenario';
 
     @Component
     export default class EditScenario extends Vue {
@@ -74,7 +75,10 @@
         message: string = '';
 
         @State(state => state.breadcrumb.navigation) navigation: any[];
+        @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
+
         @Action('setNavigation') setNavigationAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         created() {
             this.marker = true;
@@ -88,6 +92,14 @@
                     to: '/EditScenario/'
                 }
             ]);
+        }
+
+        mounted() {
+            if (this.selectedScenario.simulationId === 0) {
+                // set 'no selected scenario' error message, then redirect user to Scenarios UI
+                this.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                this.$router.push('/Scenarios/');
+            }
         }
 
         toggleMarker() {
