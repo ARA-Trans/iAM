@@ -15,14 +15,24 @@ namespace BridgeCare.Controllers
         {
             inventory = inventoryInterface ?? throw new ArgumentNullException(nameof(inventoryInterface));
             db = context ?? throw new ArgumentNullException(nameof(context));
-        }
+        }        
 
         /// <summary>
-        /// Get: api/Inventory
+        /// Get: api/InventoryItemDetail
         /// </summary>
-        [Route("api/Inventory")]
-        [ModelValidation("Given simulation data is not valid")]
+        [Route("api/InventoryItemDetail")]
+        [ModelValidation("Given referenceKey is not valid")]
         [HttpGet]
-        public InventoryModel Get(SectionModel data) => inventory.GetInventory(data, db);
+        public InventoryItemDetailModel Get(SectionModel data)
+        {
+            var inventoryModel = inventory.GetInventory(data, db);
+            var inventoryItemDetailModel = MakeInventoryItemDetailModel(inventoryModel);
+            return inventoryItemDetailModel;
+        }
+
+        private InventoryItemDetailModel MakeInventoryItemDetailModel(InventoryModel inventoryModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

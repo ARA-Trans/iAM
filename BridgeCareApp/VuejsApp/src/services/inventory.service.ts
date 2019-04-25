@@ -9,10 +9,14 @@ export default class InventoryService {
     getInventory(network: Network): Promise<InventoryItem[]> {
         return Promise.resolve<InventoryItem[]>(mockInventory);
         // TODO: integrate axios web service call for inventory
-    }
+    }   
 
-    getInventoryItemDetail(inventoryItem: InventoryItem): Promise<InventoryItemDetail> {
-        return Promise.resolve<InventoryItemDetail>(mockInventoryItemDetail);
-        // TODO: integrate axios web service call for inventory item detail
+    getInventoryItemDetail(referenceKey: number): Promise<InventoryItemDetail> {
+        // return Promise.resolve<InventoryItemDetail>(mockInventoryItemDetail);        
+
+        return axios.get(`/api/Inventory/${referenceKey}`)
+            .then((response: any) => {
+                return response.data as Promise<InventoryItemDetail>;
+            });
     }
 }
