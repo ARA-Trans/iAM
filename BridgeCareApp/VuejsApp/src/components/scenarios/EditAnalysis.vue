@@ -84,74 +84,72 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component, Watch } from 'vue-property-decorator';
-    import { Action, State } from 'vuex-class';
+    import {Watch} from 'vue-property-decorator';
+    import Component from 'vue-class-component';
+    import {Action} from 'vuex-class';
 
     import moment from 'moment';
-    import {Analysis, emptyAnalysis, Scenario, ScenarioAnalysisUpsertData} from '@/shared/models/iAM/scenario';
+    import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
     import CriteriaEditor from '@/shared/dialogs/CriteriaEditor.vue';
-    import {hasValue} from '@/shared/utils/has-value';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
     import {isNil} from 'ramda';
+    import ScenarioService from '@/services/scenario.service';
 
     @Component({
         components: {CriteriaEditor}
     })
     export default class EditAnalysis extends Vue {
-        @State(state => state.breadcrumb.navigation) navigation: any[];
-        @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
-
         @Action('setNavigation') setNavigationAction: any;
-        @Action('applyAnalysisToScenario') applyAnalysisToScenarioAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
+        selectedScenarioId: number = 0;
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
-        maxYear: string = moment().add(49, 'years').year().toString();
         optimizationType: string[] = ['Incremental benefit/cost', 'Another one', 'The better one'];
         budgetType: string[] =  ['As budget permits', 'Another one', 'The better one'];
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
-        /**
-         * Component has been created
-         */
-        created() {
-            // set the breadcrumbs for this component ui
-            this.setNavigationAction([
-                {
-                    text: 'Scenario dashboard',
-                    to: '/Scenarios/'
-                },
-                {
-                    text: 'Scenario editor',
-                    to: '/EditScenario/'
-                },
-                {
-                    text: 'Analysis editor',
-                    to: '/EditAnalysis/'
-                }
-            ]);
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                vm.selectedScenarioId = parseInt(to.query.simulationId);
+                vm.setNavigationAction([
+                    {
+                        text: 'Scenario dashboard',
+                        to: '/Scenarios/'
+                    },
+                    {
+                        text: 'Scenario editor',
+                        to: {
+                            path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                        }
+                    },
+                    {
+                        text: 'Analysis editor',
+                        to: '/EditAnalysis/'
+                    }
+                ]);
+            });
         }
 
         /**
          * Component has been mounted
          */
         mounted() {
-            if (this.selectedScenario.simulationId > 0 && hasValue(this.selectedScenario.analysis)) {
-                // set the initial start year to the selected scenario's start year if present, otherwise use current year
-                const startYear: number = this.selectedScenario.analysis.startYear > 0
-                    ? this.selectedScenario.analysis.startYear
-                    : moment().year();
-                this.year = startYear.toString();
-                this.analysis = {
-                    ...this.selectedScenario.analysis,
-                    startYear: startYear
-                };
+            if (this.selectedScenarioId > 0) {
+                // set isBusy to true
+                this.setIsBusyAction({isBusy: true});
+                // get the selected scenario's analysis data
+                new ScenarioService().getScenarioAnalysisData(this.selectedScenarioId)
+                    .then((analysis: Analysis) => {
+                        this.setIsBusyAction({isBusy: false});
+                        this.analysis = analysis;
+                    });
             } else {
                 // set 'no selected scenario' error message, then redirect user to Scenarios UI
                 this.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -204,15 +202,15 @@
          * selected scenario (will redirect user to EditScenario on a success)
          */
         onApplyAnalysisToScenario() {
-            const scenarioAnalysisUpsertData: ScenarioAnalysisUpsertData = {
-                id: this.selectedScenario.simulationId,
-                analysis: this.analysis
-            };
-            this.applyAnalysisToScenarioAction({scenarioAnalysisUpsertData: scenarioAnalysisUpsertData})
-                .then(() => {
-                    // set 'analysis applied' success message, then redirect user to EditScenario UI
-                    this.setSuccessMessageAction({message: 'Analysis was applied to selected scenario'});
-                    this.$router.push('/EditScenario/');
+            new ScenarioService().applyAnalysisDataToScenario(this.analysis)
+                .then((dataUpserted: boolean) => {
+                    if (dataUpserted) {
+                        // set 'analysis applied' success message, then redirect user to EditScenario UI
+                        this.setSuccessMessageAction({message: 'Analysis was applied to selected scenario'});
+                        this.$router.push('/EditScenario/');
+                    } else {
+                        this.setErrorMessageAction({message: 'Failed to apply analysis data to scenario'});
+                    }
                 });
         }
 
@@ -220,7 +218,9 @@
          * Returns user to EditScenario UI
          */
         onCancelAnalysisEdit() {
-            this.$router.push('/EditScenario/');
+            this.$router.push({
+                path: '/EditScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+            });
         }
     }
 </script>

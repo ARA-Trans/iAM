@@ -208,8 +208,9 @@
         }
 
         editScenario(id: number) {
-            this.setSelectedScenarioAction({simulationId: id});
-            this.$router.push({path: '/EditScenario/'});
+            this.$router.push({
+                path: '/EditScenario/', query: {simulationId: id.toString()}
+            });
         }
         editSharedScenario(id: number) {
             this.setSelectedScenarioAction({simulationId: id});

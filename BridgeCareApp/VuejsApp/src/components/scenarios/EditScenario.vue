@@ -65,12 +65,13 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component} from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
     import {Scenario} from '@/shared/models/iAM/scenario';
 
     @Component
     export default class EditScenario extends Vue {
+        selectedScenarioId: number = 0;
         marker: boolean = true;
         message: string = '';
 
@@ -80,22 +81,30 @@
         @Action('setNavigation') setNavigationAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                vm.selectedScenarioId = parseInt(to.query.simulationId);
+                vm.setNavigationAction([
+                    {
+                        text: 'Scenario dashboard',
+                        to: '/Scenarios/'
+                    },
+                    {
+                        text: 'Scenario editor',
+                        to: {
+                            path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                        }
+                    }
+                ]);
+            });
+        }
+
         created() {
             this.marker = true;
-            this.setNavigationAction([
-                {
-                    text: 'Scenario dashboard',
-                    to: '/Scenarios/'
-                },
-                {
-                    text: 'Scenario editor',
-                    to: '/EditScenario/'
-                }
-            ]);
         }
 
         mounted() {
-            if (this.selectedScenario.simulationId === 0) {
+            if (this.selectedScenarioId === 0) {
                 // set 'no selected scenario' error message, then redirect user to Scenarios UI
                 this.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                 this.$router.push('/Scenarios/');

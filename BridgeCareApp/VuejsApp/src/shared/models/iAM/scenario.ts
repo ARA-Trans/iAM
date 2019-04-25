@@ -1,4 +1,5 @@
 export interface Analysis {
+    scenarioId: number;
     startYear: number;
     analysisPeriod: number;
     optimizationType: string;
@@ -9,6 +10,7 @@ export interface Analysis {
 }
 
 export const emptyAnalysis: Analysis = {
+    scenarioId: 0,
     startYear: 0,
     analysisPeriod: 0,
     optimizationType: '',
@@ -28,23 +30,4 @@ export interface Scenario {
     lastModifiedDate: Date;
     status: string;
     shared: boolean;
-    analysis: Analysis;
-}
-
-export const emptyScenario: Scenario = {
-    networkId: 0,
-    simulationId: 0,
-    networkName: '',
-    simulationName: '',
-    name: '',
-    createdDate: new Date(),
-    lastModifiedDate: new Date(),
-    status: '',
-    shared: false,
-    analysis: {...emptyAnalysis} as Analysis
-};
-
-export interface ScenarioAnalysisUpsertData {
-    id: number;
-    analysis: Analysis;
 }
