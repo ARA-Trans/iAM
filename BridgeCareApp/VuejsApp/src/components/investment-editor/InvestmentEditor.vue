@@ -809,7 +809,7 @@
 
         onDiscardChanges() {
             this.selectItemValue = '';
-            this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id });
+            this.getInvestmentForScenario();
         }
 
         getInvestmentForScenario() {
