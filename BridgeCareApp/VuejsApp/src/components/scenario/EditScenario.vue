@@ -86,11 +86,11 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @Action('setNavigation') setNavigationAction: any;
 
-        currentScenario: Simulation = { networkId: 0, networkName: '', simulationId: 0, simulationName: '' };
+        selectedScenarioId: number = 0 ;
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                vm.currentScenario = to.query;
+                vm.selectedScenarioId = to.query.simulationId;
 
                 vm.setNavigationAction([
                     {
@@ -101,10 +101,7 @@
                         text: 'Scenario editor',
                         to: {
                             path: '/EditScenario/', query: {
-                                networkId: to.query.networkId,
-                                simulationId: to.query.simulationId,
-                                networkName: to.query.networkName,
-                                simulationName: to.query.simulationName
+                                simulationId: to.query.simulationId
                             }
                         }
                     }
@@ -122,29 +119,20 @@
         editAnalysis() {
             this.$router.push({
                 path: '/EditAnalysis/', query: {
-                    networkId: this.currentScenario.networkId.toString(),
-                    simulationId: this.currentScenario.simulationId.toString(),
-                    networkName: this.currentScenario.networkName,
-                    simulationName: this.currentScenario.simulationName
+                    simulationId: this.selectedScenarioId.toString()
                 } });
         }
         editInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
-                    networkId: this.currentScenario.networkId.toString(),
-                    simulationId: this.currentScenario.simulationId.toString(),
-                    networkName: this.currentScenario.networkName,
-                    simulationName: this.currentScenario.simulationName
+                    simulationId: this.selectedScenarioId.toString()
                 }
             });
         }
         editPerformance() {
             this.$router.push({
                 path: '/PerformanceEditor/FromScenario/', query: {
-                    networkId: this.currentScenario.networkId.toString(),
-                    simulationId: this.currentScenario.simulationId.toString(),
-                    networkName: this.currentScenario.networkName,
-                    simulationName: this.currentScenario.simulationName
+                    simulationId: this.selectedScenarioId.toString()
                 }
             });
         }

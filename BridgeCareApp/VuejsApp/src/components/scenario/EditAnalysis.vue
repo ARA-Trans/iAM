@@ -82,7 +82,7 @@
         menu: boolean = false;
         date: string = '';
         maxDate: string = moment().year().toString();
-        currentScenario: Simulation = { networkId: 0, networkName: '', simulationId: 0, simulationName: '' };
+        selectedScenarioId: number = 0;
 
         data() {
             return {
@@ -95,7 +95,7 @@
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                vm.currentScenario = to.query;
+                vm.selectedScenarioId = to.query.simulationId;
                 vm.fromScenario = true;
                 vm.setNavigationAction([
                     {
@@ -106,10 +106,7 @@
                         text: 'Scenario editor',
                         to: {
                             path: '/EditScenario/', query: {
-                                networkId: to.query.networkId,
-                                simulationId: to.query.simulationId,
-                                networkName: to.query.networkName,
-                                simulationName: to.query.simulationName
+                                simulationId: to.query.simulationId
                             }
                         }
                     },
@@ -117,10 +114,7 @@
                         text: 'Analysis editor',
                         to: {
                             path: '/EditAnalysis/', query: {
-                                networkId: to.query.networkId,
-                                simulationId: to.query.simulationId,
-                                networkName: to.query.networkName,
-                                simulationName: to.query.simulationName
+                                simulationId: to.query.simulationId
                             }
                         }
                     }
@@ -142,10 +136,7 @@
         cancel() {
             this.$router.push({
                 path: '/EditScenario/', query: {
-                    networkId: this.currentScenario.networkId.toString(),
-                    simulationId: this.currentScenario.simulationId.toString(),
-                    networkName: this.currentScenario.networkName,
-                    simulationName: this.currentScenario.simulationName
+                    simulationId: this.selectedScenarioId.toString(),
                 } });
         }
     }

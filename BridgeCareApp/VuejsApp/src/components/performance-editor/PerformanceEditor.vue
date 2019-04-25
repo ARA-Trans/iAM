@@ -243,10 +243,7 @@
                             text: 'Scenario editor',
                             to: {
                                 path: '/EditScenario/', query: {
-                                    networkId: to.query.networkId,
-                                    simulationId: to.query.simulationId,
-                                    networkName: to.query.networkName,
-                                    simulationName: to.query.simulationName
+                                    simulationId: to.query.simulationId
                                 }
                             }
                         },
@@ -254,10 +251,7 @@
                             text: 'Performance editor',
                             to: {
                                 path: '/PerformanceEditor/FromScenario/', query: {
-                                    networkId: to.query.networkId,
-                                    simulationId: to.query.simulationId,
-                                    networkName: to.query.networkName,
-                                    simulationName: to.query.simulationName
+                                    simulationId: to.query.simulationId
                                 }
                             }
                         }

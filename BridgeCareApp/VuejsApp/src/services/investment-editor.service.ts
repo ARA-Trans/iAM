@@ -1,15 +1,13 @@
 import axios from 'axios';
 import {InvestmentStrategy} from '@/shared/models/iAM/investment';
-import {mockInvestmentStrategies} from '@/shared/utils/mock-data';
 import { Simulation } from '@/shared/models/iAM/simulation';
-import concat from 'ramda/es/concat';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InvestmentEditorService {
 
-    getInvestmentForScenario(selectedScenario: Simulation): Promise<InvestmentStrategy> {
-        return axios.get(`/api/GetInvestmentStrategies/${selectedScenario.simulationId}`)
+    getInvestmentForScenario(selectedScenario: number): Promise<InvestmentStrategy> {
+        return axios.get(`/api/GetInvestmentStrategies/${selectedScenario}`)
             .then((response: any) => {
                 return response.data as Promise<InvestmentStrategy>;
             });

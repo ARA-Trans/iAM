@@ -206,7 +206,7 @@
         createInvestmentStrategyDialogData: CreateInvestmentStrategyDialogData = {...emptyCreateInvestmentStrategyDialogData};
         editBudgetsDialogData: EditBudgetsDialogData = {...emptyEditBudgetsDialogData};
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
-        currentScenario: Simulation = { networkId: 0, networkName: '', simulationId: 0, simulationName: '' };
+        selectedScenarioId: number =  0;
 
         warning: Alert = { showModal: false, heading: '', message: '', choice: false };
         fromScenario: boolean = false;
@@ -216,7 +216,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             if (to.path === '/InvestmentEditor/FromScenario/') {
                 next((vm: any) => {
-                    vm.currentScenario = to.query;
+                    vm.selectedScenarioId = to.query.simulationId;
                     vm.fromScenario = true;
                     vm.setNavigationAction([
                         {
@@ -229,10 +229,7 @@
                             text: 'Scenario editor',
                             to: {
                                 path: '/EditScenario/', query: {
-                                    networkId: to.query.networkId,
-                                    simulationId: to.query.simulationId,
-                                    networkName: to.query.networkName,
-                                    simulationName: to.query.simulationName
+                                    simulationId: to.query.simulationId
                                 }
                             }
                         },
@@ -240,10 +237,7 @@
                             text: 'Investment editor',
                             to: {
                                 path: '/InvestmentEditor/FromScenario/', query: {
-                                    networkId: to.query.networkId,
-                                    simulationId: to.query.simulationId,
-                                    networkName: to.query.networkName,
-                                    simulationName: to.query.simulationName
+                                    simulationId: to.query.simulationId
                                 }
                             }
                         }
@@ -811,7 +805,7 @@
 
         getInvestmentForScenario() {
             this.setIsBusyAction({ isBusy: true });
-            this.getInvestmentForScenarioAction({ selectedScenario: this.currentScenario })
+            this.getInvestmentForScenarioAction({ selectedScenario: this.selectedScenarioId })
                 .then(() => {
 
                     this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id })

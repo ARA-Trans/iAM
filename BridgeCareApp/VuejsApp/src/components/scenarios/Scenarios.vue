@@ -130,7 +130,6 @@
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('setSelectedScenario') setSelectedScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -208,23 +207,9 @@
         }
 
         editScenario(item: any) {
-            let selectedScenario = {
-                networkId: item.networkId,
-                simulationId: item.simulationId,
-                networkName: item.networkName,
-                simulationName: item.simulationName
-            }
-            // dispatch action to run simulation
-            this.setSelectedScenarioAction({ selectedScenario })
-                .catch((error: any) => {
-                console.log(error);
-            });
             this.$router.push({
                 path: '/EditScenario/', query: {
-                    networkId: item.networkId,
-                    simulationId: item.simulationId,
-                    networkName: item.networkName,
-                    simulationName: item.simulationName
+                    simulationId: item.simulationId
                 }
             });
         }
