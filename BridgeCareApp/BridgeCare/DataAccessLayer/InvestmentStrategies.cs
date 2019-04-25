@@ -92,10 +92,7 @@ namespace BridgeCare.DataAccessLayer
 
                 foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudgets)
                 {
-                    foreach (InvestmentStrategyBudgetModel budget in year.Budget)
-                    {
-                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.Name, budget.Amount));
-                    }
+                    investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, year.BudgetName, year.BudgetAmount));
                 }
                 db.YEARLYINVESTMENTs.AddRange(investments);
 

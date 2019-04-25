@@ -114,11 +114,11 @@
                 <v-btn v-show="fromScenario" color="error lighten-1" v-on:click="onDiscardChanges" :disabled="!hasSelectedInvestmentStrategy">
                     Discard changes
                 </v-btn>
+                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentStrategy">
+                    Create as New Library
+                </v-btn>
                 <v-btn v-show="fromScenario" color="info" v-on:click="onApplyToScenario" :disabled="!hasSelectedInvestmentStrategy">
                     Apply
-                </v-btn>
-                <v-btn v-show="!fromScenario" color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentStrategy">
-                    Create as New Library
                 </v-btn>
                 <v-btn v-show="!fromScenario" color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedInvestmentStrategy">
                     Update Library
@@ -144,7 +144,6 @@
     import { Watch } from 'vue-property-decorator';
     import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
-    import AppSpinner from '../../shared/dialogs/AppSpinner.vue';
     import CreateInvestmentStrategyDialog from './investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
     import SetRangeForAddingBudgetYearsDialog from './investment-editor-dialogs/SetRangeForAddingBudgetYearsDialog.vue';
     import EditBudgetsDialog from './investment-editor-dialogs/EditBudgetsDialog.vue';
@@ -174,7 +173,7 @@
     import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component({
-        components: { AppSpinner, CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
+        components: { CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
     })
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentStrategies) investmentStrategies: InvestmentStrategy[];
@@ -249,8 +248,8 @@
                             }
                         }
                     ]);
-                    vm.getInvestmentForScenario();
                     vm.getInvestmentLibraries();
+                    vm.getInvestmentForScenario();
                     //vm.hasSelectedInvestmentStrategy = true;
                 });
             }
@@ -273,9 +272,6 @@
                 this.getInvestmentLibraries();
             }
             next();
-        }
-
-        created() {
         }
 
         /**
@@ -301,7 +297,7 @@
                     // parse selectItemValue as an integer
                     const id: number = parseInt(this.selectItemValue);
                     // dispatch selectInvestmentStrategyAction with id
-                    this.selectInvestmentStrategyAction({ investmentStrategyId: id });
+                    this.selectInvestmentStrategyAction({ investmentStrategyId: id })
                 }
             }
             else {
@@ -358,7 +354,9 @@
                 this.showLibrary = false;
                 this.setGridHeaders();
                 // set the grid data
+                this.setIsBusyAction({ isBusy: true });
                 this.setGridData();
+                this.setIsBusyAction({ isBusy: false });
             }
         }
 
@@ -374,11 +372,8 @@
 
         getInvestmentLibraries() {
             // set isBusy to true, then dispatch action to get all investment strategies
-            this.setIsBusyAction({isBusy: true});
             this.getInvestmentStrategiesAction()
-                .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
                     this.warning.showModal = true;
                     this.warning.heading = 'Error';
                     this.warning.choice = false;
@@ -782,19 +777,24 @@
             this.setIsBusyAction({ isBusy: true });
             // dispatch action to update selected investment strategy on the server
             this.updateInvestmentScenarioAction({ updatedInvestmentScenario: this.selectedInvestmentStrategy })
-                .then(() => {
+                .then((response: any) => {
                     this.setIsBusyAction({ isBusy: false });
                     this.warning.showModal = true;
                     this.warning.heading = 'Success';
                     this.warning.choice = false;
-                    this.warning.message = 'Library updated successfully';
+                    if (response == 200) {
+                        this.warning.message = 'Investment scenario updated successfully';
+                    }
+                    else {
+                        this.warning.message = 'Failed to update investment scenario';
+                    }
                 })
                 .catch(() => {
                     this.setIsBusyAction({ isBusy: false });
                     this.warning.showModal = true;
                     this.warning.heading = 'Error';
                     this.warning.choice = false;
-                    this.warning.message = 'Library failed to update';
+                    this.warning.message = 'Failed to update the investment scenario';
                 });
         }
 
@@ -813,10 +813,14 @@
         }
 
         getInvestmentForScenario() {
-
+            this.setIsBusyAction({ isBusy: true });
             this.getInvestmentForScenarioAction({ selectedScenario: this.currentScenario })
                 .then(() => {
-                    this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id });
+
+                    this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id })
+                        .then(() => {
+                            this.setIsBusyAction({ isBusy: false });
+                        });
                     this.scenarioName = this.investmentForScenario[0].name;
                 });
         }

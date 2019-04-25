@@ -117,7 +117,6 @@
             this.setIsBusyAction({ isBusy: true });
             this.getAuthenticationAction().then((result: any) => {
                 this.setIsBusyAction({ isBusy: false });
-                console.log(this.userRoles);
                 if (result.status == '401') {
                     this.warning.showModal = true;
                     this.warning.heading = 'Error';

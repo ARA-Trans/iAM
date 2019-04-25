@@ -1,11 +1,10 @@
 import {
     emptyInvestmentStrategy,
-    InvestmentStrategy, InvestmentStrategyBudgetYear
+    InvestmentStrategy
 } from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import { clone, any, propEq, append, findIndex, merge, isNil } from 'ramda';
+import { clone, any, propEq, append, findIndex, isNil } from 'ramda';
 import { db } from '@/firebase';
-import concat from 'ramda/es/concat';
 
 const state = {
     investmentStrategies: [] as InvestmentStrategy[],
@@ -122,12 +121,6 @@ const actions = {
                 commit('selectedInvestmentStrategyMutator', payload.createdInvestmentStrategy.id);
             })
             .catch((error: any) => console.log(error));
-        //await new InvestmentEditorService().createInvestmentStrategy(payload.createdInvestmentStrategy)
-        //    .then((createdInvestmentStrategy: InvestmentStrategy) => {
-        //        commit('createdInvestmentStrategyMutator', createdInvestmentStrategy);
-        //        commit('selectedInvestmentStrategyMutator', createdInvestmentStrategy.id);
-        //    })
-        //    .catch((error: any) => console.log(error));
     },
     async updateInvestmentStrategy({ commit }: any, payload: any) {
         await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentStrategy.id).update(payload.updatedInvestmentStrategy)
@@ -138,12 +131,11 @@ const actions = {
             .catch((error: any) => console.log(error));
     },
     async updateInvestmentScenario({ commit }: any, payload: any) {
-        await new InvestmentEditorService().updateInvestmentStrategy(payload.updatedInvestmentScenario)
-            .then((updatedInvestmentStrategy: InvestmentStrategy) => {
-                commit('updatedInvestmentStrategyMutator', updatedInvestmentStrategy);
-                commit('selectedInvestmentStrategyMutator', updatedInvestmentStrategy.id);
+        return await new InvestmentEditorService().updateInvestmentScenario(payload.updatedInvestmentScenario)
+            .then((results: any) => {
+                return results.status;
             })
-            .catch((error: any) => console.log(error));
+            .catch((error: any) => { return error.response.status; });
     },
 
     async getInvestmentForScenario({ commit }: any, payload: any) {
