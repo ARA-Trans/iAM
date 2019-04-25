@@ -76,7 +76,6 @@
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import { Action, State } from 'vuex-class';
-    import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component
     export default class EditScenario extends Vue {

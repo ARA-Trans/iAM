@@ -71,7 +71,6 @@
     import { Action, State } from 'vuex-class';
 
     import moment from 'moment';
-    import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component
     export default class EditAnalysis extends Vue {

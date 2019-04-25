@@ -170,7 +170,6 @@
     import { sorter } from '@/shared/utils/sorter';
     import { Alert } from '@/shared/models/iAM/alert';
     import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
-    import { Simulation } from '@/shared/models/iAM/simulation';
 
     @Component({
         components: { CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
@@ -180,7 +179,6 @@
         @State(state => state.investmentEditor.selectedInvestmentStrategy) selectedInvestmentStrategy: InvestmentStrategy;
         @State(state => state.investmentEditor.loadedInvestmentStrategy) loadedInvestmentStrategy: InvestmentStrategy;
         @State(state => state.breadcrumb.navigation) navigation: any[];
-        @State(state => state.scenario.selectedScenario) selectedScenario: Simulation;
         @State(state => state.investmentEditor.investmentForScenario) investmentForScenario: InvestmentStrategy[];
 
         @Action('setIsBusy') setIsBusyAction: any;
