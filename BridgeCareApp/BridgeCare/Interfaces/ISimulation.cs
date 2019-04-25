@@ -9,5 +9,7 @@ namespace BridgeCare.Interfaces
         IQueryable<SimulationModel> GetAllSimulations();
 
         IEnumerable<SimulationModel> GetSelectedSimulation(int id);
+
+        void UpdateName(SimulationModel model, BridgeCareContext db);
     }
 }

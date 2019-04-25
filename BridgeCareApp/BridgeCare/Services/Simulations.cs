@@ -60,5 +60,20 @@ namespace BridgeCare.Services
         {
             return db.SIMULATIONS.Find(id);
         }
+
+        public void UpdateName(SimulationModel model, BridgeCareContext db)
+        {
+            try
+            {
+                var result = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == model.SimulationId);
+                result.SIMULATION1 = model.SimulationName;
+                db.SaveChanges();
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "Update Simulation Name");
+            }
+            return;
+        }
     }
 }

@@ -31,7 +31,7 @@ const actions = {
             case 'Summary report': {
                 await new SummaryReportService().getSummaryReport(payload.networkId, payload.simulationId, payload.networkName, payload.simulationName)
                     .then((reportsBlob: Blob) => {
-                        commit('reportsBlobMutator', reportsBlob),
+                        commit('reportsBlobMutator', reportsBlob);
                         commit('currentReportNameMutator', 'Summary report.xlsx');
                         })
                     .catch((error: any) => console.log(error));
