@@ -16,7 +16,7 @@
                                         <v-card-title>Attributes: Click once to add</v-card-title>
                                         <v-card-text class="list-card-text">
                                             <v-list>
-                                                <v-list-tile v-for="attribute in attributes" :key="attribute" class="list-tile"
+                                                <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
                                                              ripple @click="onAddAttributeToEquation(attribute)">
                                                     <v-list-tile-content>
                                                         <v-list-tile-title>{{attribute}}</v-list-tile-title>
@@ -32,7 +32,7 @@
                                         <v-card-title>Formulas: Click once to add</v-card-title>
                                         <v-card-text class="list-card-text">
                                             <v-list>
-                                                <v-list-tile v-for="formula in formulas" :key="formula" class="list-tile"
+                                                <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
                                                              ripple @click="onAddFormulaToEquation(formula)">
                                                     <v-list-tile-content>
                                                         <v-list-tile-title>{{formula}}</v-list-tile-title>
@@ -77,7 +77,9 @@
                                         <v-layout justify-center fill-height>
                                             <v-flex xs5>
                                                 <v-layout justify-space-between row fill-height>
-                                                    <v-checkbox label="Is piecewise?" v-model="isPiecewise"></v-checkbox>
+                                                    <v-checkbox v-show="dialogData.canBePiecewise" label="Is piecewise?"
+                                                                v-model="isPiecewise">
+                                                    </v-checkbox>
                                                     <v-checkbox class="right-checkbox" label="Is function?" v-model="isFunction">
                                                     </v-checkbox>
                                                 </v-layout>
@@ -121,9 +123,10 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {EquationEditorDialogData} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
-    import {hasValue} from '@/shared/utils/has-value';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
+    import {formulas} from '@/shared/utils/formulas';
+    import {isEmpty} from 'ramda';
 
     @Component
     export default class EquationEditor extends Vue {
@@ -134,52 +137,28 @@
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
+        attributesList: string[] = [];
+        formulasList: string[] = formulas;
         equation: string = '';
         isPiecewise: boolean = false;
         isFunction: boolean = false;
-        formulas: string[] = [
-            'Abs()',
-            'Acos()',
-            'Asin()',
-            'Atan()',
-            'Atan(,)',
-            'Ceiling()',
-            'Cos()',
-            'Cosh()',
-            'E',
-            'Exp()',
-            'Floor()',
-            'IEEERemain(,)',
-            'Log()',
-            'Log10()',
-            'Max(,)',
-            'Min(,)',
-            'PI',
-            'Pow(,)',
-            'Round()',
-            'Sign()',
-            'Sin()',
-            'Sinh()',
-            'Sqrt()',
-            'Tan()',
-            'Tanh()',
-
-        ];
         textareaInput: HTMLTextAreaElement = {} as HTMLTextAreaElement;
         cursorPosition: number = 0;
         showInvalidMessage: boolean = false;
         showValidMessage: boolean = false;
         cannotSubmit: boolean = false;
 
+        /**
+         * Watcher: dialogData
+         */
         @Watch('dialogData')
         onDialogDataChanged() {
             // set the equation, isPiecewise, and isFunction properties with the dialog data equation
             this.equation = this.dialogData.equation;
             this.isPiecewise = this.dialogData.isPiecewise;
             this.isFunction = this.dialogData.isFunction;
-            // if the dialog is shown but there are no attributes in state...
-            if (this.dialogData.showDialog && !hasValue(this.attributes)) {
-                // dispatch isBusy action and dispatch getAttributes action
+            if (this.dialogData.showDialog && isEmpty(this.attributes)) {
+                // set isBusy to true, then dispatch action to get attributes
                 this.setIsBusyAction({isBusy: true});
                 this.getAttributesAction()
                     .then(() => this.setIsBusyAction({isBusy: false}))
@@ -191,6 +170,15 @@
         }
 
         /**
+         * Watcher: attributes
+         */
+        @Watch('attributes')
+        onAttributesChanged() {
+            // set attributesList = attributes
+            this.attributesList = this.attributes;
+        }
+
+        /**
          * Watcher: equation
          */
         @Watch('equation')
@@ -199,13 +187,12 @@
             this.showInvalidMessage = false;
             this.showValidMessage = false;
             // if equation is an empty string, then allow submission of results
-            if (this.equation === '' || this.dialogData.equation === this.equation) {
-                this.cannotSubmit = false;
-            } else {
-                this.cannotSubmit = true;
-            }
+            this.cannotSubmit = !(this.equation === '' || this.dialogData.equation === this.equation);
         }
 
+        /**
+         * Component has been mounted
+         */
         mounted() {
             this.textareaInput = document.getElementById('equation_textarea') as HTMLTextAreaElement;
             this.cursorPosition = this.textareaInput.selectionStart;
@@ -343,6 +330,9 @@
             this.$emit('submit', null);
         }
 
+        /**
+         * Resets component's calculated properties
+         */
         resetComponentCalculatedProperties() {
             this.cursorPosition = 0;
             this.showInvalidMessage = false;

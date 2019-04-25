@@ -1,4 +1,6 @@
-export interface Equation {
+export interface PerformanceStrategyEquation {
+    performanceStrategyId: number;
+    id: number;
     attribute: string;
     equationName: string;
     equation: string;
@@ -8,74 +10,30 @@ export interface Equation {
     isFunction: boolean;
 }
 
-export interface PerformanceStrategyEquation extends Equation {
-    performanceStrategyId: number;
-    performanceStrategyEquationId: number;
-}
-
-export interface ScenarioEquation extends Equation {
-    scenarioId: number;
-    scenarioEquationId: number;
-}
-
-export interface CreatedPerformanceStrategyEquation {
-    performanceStrategyId: number;
-    attribute: string;
-    equationName: string;
-}
-
-export interface DeletedPerformanceStrategyEquations {
-    performanceStrategyId: number;
-    deletedEquationIds: number[];
-}
-
 export interface PerformanceStrategy {
     id: number;
     name: string;
     description: string;
-    performanceStrategyEquations: PerformanceStrategyEquation[];
+    equations: PerformanceStrategyEquation[];
+    deletedEquationIds: number[];
 }
 
-export interface CreatedPerformanceStrategy {
-    name: string;
-    description: string;
-    performanceStrategyEquations: PerformanceStrategyEquation[];
-}
-
-export interface UpdatedPerformanceStrategy {
-    id: number;
-    name: string;
-    description: string;
-}
-
-export const emptyPerformanceStrategy: PerformanceStrategy = {
-    id: 0,
-    name: '',
-    description: '',
-    performanceStrategyEquations: []
-};
-
-export const emptyCreatedPerformanceStrategy: CreatedPerformanceStrategy = {
-    name: '',
-    description: '',
-    performanceStrategyEquations: []
-};
-
-export const emptyPerformanceStrategyEquation: PerformanceStrategyEquation = {
+export const emptyEquation: PerformanceStrategyEquation = {
     performanceStrategyId: 0,
-    performanceStrategyEquationId: 0,
+    id: 0,
     attribute: '',
     equationName: '',
     equation: '',
     criteria: '',
     shift: false,
     piecewise: false,
-    isFunction: false
+    isFunction: false,
 };
 
-export const emptyCreatedPerformanceStrategyEquation: CreatedPerformanceStrategyEquation = {
-    performanceStrategyId: 0,
-    attribute: '',
-    equationName: ''
+export const emptyPerformanceStrategy: PerformanceStrategy = {
+    id: 0,
+    name: '',
+    description: '',
+    equations: [],
+    deletedEquationIds: []
 };
-

@@ -1,4 +1,4 @@
-import {sort} from 'ramda';
+import {sort, sortBy, prop} from 'ramda';
 
 const isNumber = (item: any): item is number => {
     return typeof item === 'number';
@@ -28,4 +28,9 @@ export const sorter = (items: any[]) => {
     if (items.every(isDate)) {
         return sort(dateSorter, items);
     }
+};
+
+export const sortByProperty = (property: string, items: any[]): any[] => {
+    const sorter = sortBy(prop(property));
+    return sorter(items);
 };

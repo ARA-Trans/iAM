@@ -27,6 +27,7 @@ namespace BridgeCare.DataAccessLayer
                 var simulation = db.SIMULATIONS
                     .Include(d => d.INVESTMENTS)
                     .Include(d => d.YEARLYINVESTMENTs)
+                    .Where(d => d.SIMULATIONID == simulationId )
                     .Select(p => new InvestmentStrategyModel()
                     {
                         Name = p.SIMULATION1,
