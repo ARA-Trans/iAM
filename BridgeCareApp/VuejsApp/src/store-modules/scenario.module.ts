@@ -1,6 +1,7 @@
 import {Analysis, emptyAnalysis, emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
-import {any, propEq} from 'ramda';
+import {any, propEq, findIndex} from 'ramda';
 import {statusReference} from '@/firebase';
+import ScenarioService from '@/services/scenario.service';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -18,6 +19,19 @@ const mutations = {
             };
         } else {
             state.selectedScenario = {...emptyScenario};
+        }
+    },
+    scenarioAnalysisMutator(state: any, analysis: Analysis) {
+        if (state.selectedScenario.simulationId > 0) {
+            const updatedScenario: Scenario = {...state.selectedScenario, analysis: analysis};
+            const scenarios: Scenario[] = [...state.scenarios];
+            const index = findIndex(
+                (scenario: Scenario) => scenario.simulationId === updatedScenario.simulationId, scenarios
+            );
+            if (index !== -1) {
+                scenarios[index] = updatedScenario;
+                state.scenarios = scenarios;
+            }
         }
     }
 };
@@ -51,6 +65,13 @@ const actions = {
     },
     setSelectedScenario({commit}: any, payload: any) {
         commit('selectedScenarioMutator', payload.simulationId);
+    },
+    async applyAnalysisToScenario({commit}: any, payload: any) {
+        await new ScenarioService().applyAnalysisToScenario(payload.scenarioAnalysisUpsertData)
+            .then((analysis: Analysis) =>
+                commit('scenarioAnalysisMutator', analysis)
+            )
+            .catch((error: any) => console.log(error));
     }
 };
 

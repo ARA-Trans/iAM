@@ -103,23 +103,21 @@
         @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
 
         @Action('setNavigation') setNavigationAction: any;
+        @Action('applyAnalysisToScenario') applyAnalysisToScenarioAction: any;
 
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         menu: boolean = false;
         date: string = '';
         maxYear: string = moment().add(50, 'years').year().toString();
+        optimizationType: string[] = ['Incremental benefit/cost', 'Another one', 'The better one'];
+        budgetType: string[] =  ['As budget permits', 'Another one', 'The better one'];
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
-        data() {
-            return {
-                analysisPeriod: 0,
-                benefitLimit: 0,
-                optimizationType: ['Incremental benefit/cost', 'Another one', 'The better one'],
-                budgetType: ['As budget permits', 'Another one', 'The better one'],
-            };
-        }
-
+        /**
+         * Component has been created
+         */
         created() {
+            // set the breadcrumbs for this component ui
             this.setNavigationAction([
                 {
                     text: 'Scenario dashboard',
@@ -136,21 +134,35 @@
             ]);
         }
 
+        /**
+         * Component has been mounted
+         */
         mounted() {
-            if (hasValue(this.selectedScenario) && hasValue(this.selectedScenario.analysis)) {
+            if (hasValue(this.selectedScenario) && this.selectedScenario.simulationId > 0 &&
+                hasValue(this.selectedScenario.analysis)) {
+                // set the analysis start year to current year if selected scenario analysis doesn't have a start year
                 this.analysis = {
                     ...this.selectedScenario.analysis,
                     startYear: hasValue(this.selectedScenario.analysis.startYear)
                         ? this.selectedScenario.analysis.startYear
                         : moment().year()
                 };
+            } else {
+                this.$router.push('/Scenarios/');
             }
         }
 
         @Watch('selectedScenario')
         onSelectedScenarioChanged() {
             if (this.selectedScenario.simulationId > 0) {
-                this.analysis = {...this.selectedScenario.analysis, startYear: moment().year()};
+                // set the analysis data with the selected scenario analysis data (set start year to default to current
+                // year if selected scenario analysis start year is not present)
+                this.analysis = {
+                    ...this.selectedScenario.analysis,
+                    startYear: hasValue(this.selectedScenario.analysis.startYear)
+                        ? this.selectedScenario.analysis.startYear
+                        : moment().year()
+                };
             }
         }
         
@@ -167,6 +179,9 @@
             this.menu = false;
         }
 
+        /**
+         * Returns user to EditScenario UI
+         */
         cancel() {
             this.$router.push('/EditScenario/');
         }
@@ -183,6 +198,14 @@
             if (!isNil(criteria)) {
                 this.analysis.criteria = criteria;
             }
+        }
+
+        onApplyAnalysisToScenario() {
+
+        }
+
+        onCancelAnalysisEdit() {
+
         }
     }
 </script>
