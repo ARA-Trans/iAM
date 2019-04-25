@@ -250,7 +250,6 @@
                     ]);
                     vm.getInvestmentLibraries();
                     vm.getInvestmentForScenario();
-                    //vm.hasSelectedInvestmentStrategy = true;
                 });
             }
             else {
@@ -354,9 +353,7 @@
                 this.showLibrary = false;
                 this.setGridHeaders();
                 // set the grid data
-                this.setIsBusyAction({ isBusy: true });
                 this.setGridData();
-                this.setIsBusyAction({ isBusy: false });
             }
         }
 

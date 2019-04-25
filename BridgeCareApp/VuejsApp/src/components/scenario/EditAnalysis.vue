@@ -127,30 +127,6 @@
                 ]);
             });
         }
-
-        //created() {
-        //    this.setNavigationAction([
-        //        {
-        //            text: 'Scenario dashboard',
-        //            to: '/Scenarios/'
-        //        },
-        //        {
-        //            text: 'Scenario editor',
-        //            to: {
-        //                path: '/EditScenario/', query: {
-        //                    networkId: to.query.networkId,
-        //                    simulationId: to.query.simulationId,
-        //                    networkName: to.query.networkName,
-        //                    simulationName: to.query.simulationName
-        //                }
-        //            }
-        //        },
-        //        {
-        //          text: 'Analysis editor',
-        //          to: '/EditAnalysis/'
-        //        }
-        //    ]);
-        //}
         
         @Watch('menu')
         onDateChanged(val: string) {
