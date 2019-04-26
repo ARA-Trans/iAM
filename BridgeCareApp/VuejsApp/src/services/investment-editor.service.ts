@@ -32,6 +32,5 @@ export default class InvestmentEditorService {
         }).then((response: any) => {
             return response;
             })
-            .catch((error: any) => { return error.response; });
     }
 }
