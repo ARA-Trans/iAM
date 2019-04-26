@@ -14,6 +14,7 @@ import reports from '@/store-modules/reports/reports.module';
 import breadcrumb from '@/store-modules/breadcrumb.module';
 import treatmentEditor from '@/store-modules/treatment-editor.module';
 import attribute from '@/store-modules/attribute.module';
+import toastr from '@/store-modules/toastr.module';
 
 Vue.use(Vuex);
 
@@ -31,6 +32,7 @@ export default new Vuex.Store({
         performanceEditor,
         attribute,
         breadcrumb,
-        treatmentEditor
+        treatmentEditor,
+        toastr
     }
 });
