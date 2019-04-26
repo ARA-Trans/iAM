@@ -46,7 +46,7 @@ namespace BridgeCare.DataAccessLayer
                             BudgetAmount = m.AMOUNT,
                             BudgetName = m.BUDGETNAME
                         }).ToList()
-                    }).Where((t) => t.SimulationId == simulationId).ToList();
+                    }).ToList();
 
                 foreach (InvestmentStrategyModel model in simulation)
                 {
