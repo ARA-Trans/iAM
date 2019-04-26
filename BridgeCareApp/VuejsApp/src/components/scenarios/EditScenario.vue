@@ -99,7 +99,7 @@
                     }
                 ]);
                 // check that selectedScenarioId is set
-                if (vm.selectedScenarioId === 0) {
+                if (isNaN(vm.selectedScenarioId) || vm.selectedScenarioId === 0) {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
@@ -109,10 +109,6 @@
 
         created() {
             this.marker = true;
-        }
-
-        mounted() {
-
         }
 
         toggleMarker() {

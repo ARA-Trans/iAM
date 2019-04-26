@@ -139,7 +139,7 @@
                     }
                 ]);
                 // check that selectedScenarioId is set
-                if (vm.selectedScenarioId > 0) {
+                if (!isNaN(vm.selectedScenarioId) && vm.selectedScenarioId > 0) {
                     // set isBusy to true
                     vm.setIsBusyAction({isBusy: true});
                     // get the selected scenario's analysis data
