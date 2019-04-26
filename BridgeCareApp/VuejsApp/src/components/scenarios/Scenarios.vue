@@ -29,7 +29,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="editScenario">
+                                        <v-btn flat icon color="green" v-on:click="editScenario(props.item.simulationId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -77,7 +77,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="editSharedScenario">
+                                        <v-btn flat icon color="green" v-on:click="editSharedScenario(props.item.simulationId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -130,6 +130,7 @@
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('setSelectedScenario') setSelectedScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -148,8 +149,8 @@
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
-            { text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
-            { text: 'Status', sortable: false, value: 'status' },
+            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
+            {text: 'Status', sortable: false, value: 'status' },
             {text: '', sortable: false, value: 'actions'}
         ];
         userScenarios: Scenario[] = [];
@@ -206,10 +207,13 @@
             return moment(unformattedDate).format('M/D/YYYY');
         }
 
-        editScenario() {
-            this.$router.push({path: '/EditScenario/'});
+        editScenario(id: number) {
+            this.$router.push({
+                path: '/EditScenario/', query: {simulationId: id.toString()}
+            });
         }
-        editSharedScenario() {
+        editSharedScenario(id: number) {
+            this.setSelectedScenarioAction({simulationId: id});
             this.$router.push({ path: '/EditScenario/' });
         }
 

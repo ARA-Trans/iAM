@@ -4,16 +4,64 @@
     </v-app>
 </template>
 <script lang="ts">
-
     import Vue from 'vue';
-    import {Component} from 'vue-property-decorator';
-
+    import {Component, Watch} from 'vue-property-decorator';
+    import {State, Action} from 'vuex-class';
+    import axios from 'axios';
     import TopNavbar from './components/TopNavbar.vue';
+    import {isEmpty} from 'ramda';
+    import iziToast from 'izitoast';
 
     @Component({
         components: {TopNavbar}
     })
     export default class AppComponent extends Vue {
+        @State(state => state.toastr.successMessage) successMessage: string;
+        @State(state => state.toastr.errorMessage) errorMessage: string;
+
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
+
+        @Watch('successMessage')
+        onSuccessMessageChanged() {
+            if (!isEmpty(this.successMessage)) {
+                iziToast.success({
+                    title: 'Success',
+                    message: this.successMessage,
+                    position: 'topRight',
+                    closeOnClick: true,
+                    timeout: 3000
+                });
+                this.setSuccessMessageAction({message: ''});
+            }
+        }
+
+        @Watch('errorMessage')
+        onErrorMessageChanged() {
+            if (!isEmpty(this.errorMessage)) {
+                iziToast.error({
+                    title: 'Error',
+                    message: this.errorMessage,
+                    position: 'topRight',
+                    closeOnClick: true,
+                    timeout: 3000
+                });
+                this.setErrorMessageAction({message: ''});
+            }
+        }
+
+        mounted() {
+            const setErrorMessageAction = this.setErrorMessageAction;
+            axios.interceptors.response.use(
+                function(response) {
+                    return response;
+                },
+                function(error) {
+                    if (error.response) {
+                        setErrorMessageAction({message: error.response.data.message});                    }
+                }
+            );
+        }
     }
 </script>
 

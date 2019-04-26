@@ -1,6 +1,5 @@
-import {Scenario} from '@/shared/models/iAM/scenario';
-import * as R from 'ramda';
-import { statusReference } from '@/firebase';
+import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
+import {statusReference} from '@/firebase';
 
 const state = {
     scenarios: [] as Scenario[]
@@ -8,13 +7,12 @@ const state = {
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
-            state.scenarios = R.clone(scenarios);
+            state.scenarios = [...scenarios];
     }
 };
 
 const actions = {
     getUserScenarios({ commit }: any, payload: any) {
-
         statusReference.on('value', (snapshot: any) => {
             const results = snapshot.val();
             let scenarios: Scenario[] = [];
