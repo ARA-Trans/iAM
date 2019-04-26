@@ -191,6 +191,8 @@
         @Action('updateSelectedInvestmentStrategy') updateSelectedInvestmentStrategyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('getInvestmentForScenario') getInvestmentForScenarioAction: any;
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         investmentStrategiesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -721,17 +723,11 @@
                 this.createInvestmentStrategyAction({ createdInvestmentStrategy: createdInvestmentStrategy })
                     .then(() => {
                         this.setIsBusyAction({ isBusy: false });
-                        this.warning.showModal = true;
-                        this.warning.heading = 'Success';
-                        this.warning.choice = false;
-                        this.warning.message = 'New library created successfully';
+                        this.setSuccessMessageAction({ message: 'New library created successfully' });
                     })
                     .catch((error: any) => {
                         this.setIsBusyAction({isBusy: false});
-                        this.warning.showModal = true;
-                        this.warning.heading = 'Error';
-                        this.warning.choice = false;
-                        this.warning.message = 'Could not create the new library';
+                        this.setErrorMessageAction({ message: 'Could not create the new library' });
                     });
             }
         }
@@ -745,17 +741,11 @@
             this.updateInvestmentStrategyAction({ updatedInvestmentStrategy: this.selectedInvestmentStrategy })
                 .then(() => {
                     this.setIsBusyAction({ isBusy: false });
-                    this.warning.showModal = true;
-                    this.warning.heading = 'Success';
-                    this.warning.choice = false;
-                    this.warning.message = 'Library updated successfully';
+                    this.setSuccessMessageAction({ message: 'Library updated successfully' });
                 })
                 .catch(() => {
                     this.setIsBusyAction({ isBusy: false });
-                    this.warning.showModal = true;
-                    this.warning.heading = 'Error';
-                    this.warning.choice = false;
-                    this.warning.message = 'Library failed to update';
+                    this.setErrorMessageAction({ message: 'Library failed to update' });
                 });
         }
 
@@ -773,17 +763,14 @@
                     this.warning.choice = false;
                     if (response == 200) {
                         this.warning.message = 'Investment scenario updated successfully';
-                    }
+                    } 
                     else {
-                        this.warning.message = 'Failed to update investment scenario';
+                        this.setErrorMessageAction({ message: 'Failed to update investment scenario' });
                     }
                 })
                 .catch(() => {
                     this.setIsBusyAction({ isBusy: false });
-                    this.warning.showModal = true;
-                    this.warning.heading = 'Error';
-                    this.warning.choice = false;
-                    this.warning.message = 'Failed to update the investment scenario';
+                    this.setErrorMessageAction({ message: 'Failed to update investment scenario' });
                 });
         }
 
