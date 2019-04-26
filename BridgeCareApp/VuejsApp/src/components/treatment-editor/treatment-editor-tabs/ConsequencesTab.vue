@@ -70,9 +70,9 @@
         Consequence,
         emptyConsequence,
         emptyTreatment,
-        emptyTreatmentStrategy,
+        emptyTreatmentLibrary,
         Treatment,
-        TreatmentStrategy
+        TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {
@@ -98,8 +98,8 @@
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
-        consequencesTabTreatmentStrategies: TreatmentStrategy[] = [];
-        consequencesTabSelectedTreatmentStrategy: TreatmentStrategy = {...emptyTreatmentStrategy};
+        consequencesTabTreatmentStrategies: TreatmentLibrary[] = [];
+        consequencesTabSelectedTreatmentStrategy: TreatmentLibrary = {...emptyTreatmentLibrary};
         consequencesTabSelectedTreatment: Treatment = {...emptyTreatment};
 
         consequencesGridHeaders: DataTableHeader[] = [
@@ -120,8 +120,8 @@
          */
         @Watch('consequencesTabData')
         onConsequencesTabDataChanged() {
-            this.consequencesTabTreatmentStrategies = this.consequencesTabData.tabTreatmentStrategies;
-            this.consequencesTabSelectedTreatmentStrategy = this.consequencesTabData.tabSelectedTreatmentStrategy;
+            this.consequencesTabTreatmentStrategies = this.consequencesTabData.tabTreatmentLibraries;
+            this.consequencesTabSelectedTreatmentStrategy = this.consequencesTabData.tabSelectedTreatmentLibrary;
             this.consequencesTabSelectedTreatment = this.consequencesTabData.tabSelectedTreatment;
             this.setAllConsequences();
             this.setConsequencesGridData();
@@ -145,7 +145,7 @@
          * Sets allConsequences property based on costsTabTreatmentStrategies data
          */
         setAllConsequences() {
-            this.consequencesTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
+            this.consequencesTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentLibrary) => {
                 if (treatmentStrategy.id === this.consequencesTabSelectedTreatmentStrategy.id) {
                     this.consequencesTabSelectedTreatmentStrategy.treatments.forEach((treatment: Treatment) => {
                         if (hasValue(treatment.consequences)) {
@@ -284,7 +284,7 @@
                 }
             }
             // update selected treatment strategy data
-            const updatedTreatmentStrategy: TreatmentStrategy = {...this.consequencesTabSelectedTreatmentStrategy};
+            const updatedTreatmentStrategy: TreatmentLibrary = {...this.consequencesTabSelectedTreatmentStrategy};
             const updatedTreatmentIndex: number = findIndex(
                 (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentStrategy.treatments
             );

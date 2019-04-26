@@ -25,7 +25,7 @@ export interface Consequence {
 }
 
 export interface Treatment {
-    treatmentStrategyId: number;
+    treatmentLibraryId: number;
     id: number;
     name: string;
     feasibility: Feasibility | null;
@@ -34,14 +34,14 @@ export interface Treatment {
     budgets: string[];
 }
 
-export interface TreatmentStrategy {
+export interface TreatmentLibrary {
     id: number;
     name: string;
     description: string;
     treatments: Treatment[];
 }
 
-export const emptyTreatmentStrategy: TreatmentStrategy = {
+export const emptyTreatmentLibrary: TreatmentLibrary = {
     id: 0,
     name: '',
     description: '',
@@ -49,7 +49,7 @@ export const emptyTreatmentStrategy: TreatmentStrategy = {
 };
 
 export const emptyTreatment: Treatment = {
-    treatmentStrategyId: 0,
+    treatmentLibraryId: 0,
     id: 0,
     name: '',
     feasibility: null,

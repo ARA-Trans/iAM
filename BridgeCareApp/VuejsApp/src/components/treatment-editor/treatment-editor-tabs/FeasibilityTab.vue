@@ -44,7 +44,7 @@
         emptyFeasibility,
         Feasibility,
         Treatment,
-        TreatmentStrategy
+        TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
     import {
@@ -62,8 +62,8 @@
     export default class FeasibilityTab extends Vue {
         @Prop() feasibilityTabData: TabData;
 
-        feasibilityTabTreatmentStrategies: TreatmentStrategy[];
-        feasibilityTabSelectedTreatmentStrategy: TreatmentStrategy;
+        feasibilityTabTreatmentStrategies: TreatmentLibrary[];
+        feasibilityTabSelectedTreatmentStrategy: TreatmentLibrary;
         feasibilityTabSelectedTreatment: Treatment;
         feasibility: Feasibility = {...emptyFeasibility};
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
@@ -73,8 +73,8 @@
          */
         @Watch('feasibilityTabData')
         onFeasibilityTabDataChanged() {
-            this.feasibilityTabTreatmentStrategies = this.feasibilityTabData.tabTreatmentStrategies;
-            this.feasibilityTabSelectedTreatmentStrategy = this.feasibilityTabData.tabSelectedTreatmentStrategy;
+            this.feasibilityTabTreatmentStrategies = this.feasibilityTabData.tabTreatmentLibraries;
+            this.feasibilityTabSelectedTreatmentStrategy = this.feasibilityTabData.tabSelectedTreatmentLibrary;
             this.feasibilityTabSelectedTreatment = this.feasibilityTabData.tabSelectedTreatment;
             this.setFeasibility();
         }
@@ -98,9 +98,9 @@
         onCreateFeasibility() {
             // create a new, empty feasibility object
             const createdFeasibility: Feasibility = {...emptyFeasibility, treatmentId: this.feasibilityTabSelectedTreatment.id};
-            // get all feasibilities from treatmentStrategies' treatments
+            // get all feasibilities from treatmentLibraries' treatments
             const allFeasibilities: Feasibility[] = [];
-            this.feasibilityTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
+            this.feasibilityTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentLibrary) => {
                 allFeasibilities.push(...getPropertyValues('feasibility', treatmentStrategy.treatments));
             });
             // get the latest feasibility id from allFeasibilities

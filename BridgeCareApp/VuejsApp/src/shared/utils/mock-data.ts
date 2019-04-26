@@ -3,7 +3,7 @@ import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory'
 import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
 import {PerformanceStrategy} from '@/shared/models/iAM/performance';
-import {Consequence, Cost, Feasibility, Treatment, TreatmentStrategy} from '@/shared/models/iAM/treatment';
+import {Consequence, Cost, Feasibility, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 
 /*******************************************MOCK ATTRIBUTES DATA*******************************************************/
 export const mockAttributes: string[] = [
@@ -330,7 +330,7 @@ export const mockConsequences: Consequence[] = [
 
 export const mockTreatments: Treatment[] = [
     {
-        treatmentStrategyId: 1,
+        treatmentLibraryId: 1,
         id: 1,
         name: 'Chip Seal',
         feasibility: mockFeasibility,
@@ -339,7 +339,7 @@ export const mockTreatments: Treatment[] = [
         budgets: []
     },
     {
-        treatmentStrategyId: 1,
+        treatmentLibraryId: 1,
         id: 2,
         name: '2\'\' Mill 2\'\' Fill',
         feasibility: null,
@@ -349,7 +349,7 @@ export const mockTreatments: Treatment[] = [
     }
 ];
 
-export const mockTreatmentStrategies: TreatmentStrategy[] = [
+export const mockTreatmentLibraries: TreatmentLibrary[] = [
     {
         id: 1,
         name: 'Treatment Strategy 1',

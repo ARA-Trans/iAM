@@ -1,33 +1,33 @@
 import axios from 'axios';
-import {TreatmentStrategy} from '@/shared/models/iAM/treatment';
-import {mockTreatmentStrategies} from '@/shared/utils/mock-data';
+import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {mockTreatmentLibraries} from '@/shared/utils/mock-data';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class TreatmentEditorService {
     /**
-     * Gets all treatment strategies a user can read/edit
+     * Gets all treatment libraries a user can read/edit
      */
-    getTreatmentStrategies(): Promise<TreatmentStrategy[]> {
-        return Promise.resolve<TreatmentStrategy[]>(mockTreatmentStrategies);
-        // TODO: add axios web service call for treatment strategies
+    getTreatmentLibraries(): Promise<TreatmentLibrary[]> {
+        return Promise.resolve<TreatmentLibrary[]>(mockTreatmentLibraries);
+        // TODO: add axios web service call for treatment libraries
     }
 
     /**
-     * Creates a treatment strategy
-     * @param createdTreatmentStrategy The treatment strategy create data
+     * Creates a treatment library
+     * @param createdTreatmentLibrary The treatment library create data
      */
-    createTreatmentStrategy(createdTreatmentStrategy: TreatmentStrategy): Promise<TreatmentStrategy> {
-        return Promise.resolve<TreatmentStrategy>(createdTreatmentStrategy);
-        // TODO: add axios web service call for creating treatment strategy
+    createTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
+        return Promise.resolve<TreatmentLibrary>(createdTreatmentLibrary);
+        // TODO: add axios web service call for creating treatment library
     }
 
     /**
-     * Updates a treatment strategy
-     * @param updatedTreatmentStrategy The treatment strategy update data
+     * Updates a treatment library
+     * @param updatedTreatmentLibrary The treatment library update data
      */
-    updateTreatmentStrategy(updatedTreatmentStrategy: TreatmentStrategy): Promise<TreatmentStrategy> {
-        return Promise.resolve<TreatmentStrategy>(updatedTreatmentStrategy);
-        // TODO: add axios web service call for updating treatment strategy
+    updateTreatmentLibrary(updatedTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
+        return Promise.resolve<TreatmentLibrary>(updatedTreatmentLibrary);
+        // TODO: add axios web service call for updating treatment library
     }
 }

@@ -35,29 +35,29 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {
-        CreateTreatmentStrategyDialogData
-    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-strategy-dialog-data';
-    import {emptyTreatmentStrategy, TreatmentStrategy} from '@/shared/models/iAM/treatment';
+        CreateTreatmentLibraryDialogData
+    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-library-dialog-data';
+    import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value';
 
     @Component
-    export default class CreateTreatmentStrategyDialog extends Vue {
-        @Prop() dialogData: CreateTreatmentStrategyDialogData;
+    export default class CreateTreatmentLibraryDialog extends Vue {
+        @Prop() dialogData: CreateTreatmentLibraryDialogData;
 
-        createdTreatmentStrategy: TreatmentStrategy = {...emptyTreatmentStrategy};
+        createdTreatmentStrategy: TreatmentLibrary = {...emptyTreatmentLibrary};
 
         /**
          * Watcher: dialogData
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            if (hasValue(this.dialogData.selectedTreatmentStrategyDescription)) {
+            if (hasValue(this.dialogData.selectedTreatmentLibraryDescription)) {
                 // set createdTreatmentStrategy.description property with description data from dialogData
-                this.createdTreatmentStrategy.description = this.dialogData.selectedTreatmentStrategyDescription;
+                this.createdTreatmentStrategy.description = this.dialogData.selectedTreatmentLibraryDescription;
             }
-            if (hasValue(this.dialogData.selectedTreatmentStrategyTreatments)) {
+            if (hasValue(this.dialogData.selectedTreatmentLibraryTreatments)) {
                 // set createdTreatmentStrategy.description property with treatments data from dialogData
-                this.createdTreatmentStrategy.treatments = this.dialogData.selectedTreatmentStrategyTreatments;
+                this.createdTreatmentStrategy.treatments = this.dialogData.selectedTreatmentLibraryTreatments;
             }
         }
 
@@ -68,7 +68,7 @@
             // submit created treatment strategy result
             this.$emit('submit', this.createdTreatmentStrategy);
             // reset createdTreatmentStrategy property
-            this.createdTreatmentStrategy = {...emptyTreatmentStrategy};
+            this.createdTreatmentStrategy = {...emptyTreatmentLibrary};
         }
 
         /**
@@ -78,7 +78,7 @@
             // submit null result
             this.$emit('submit', null);
             // reset createdTreatmentStrategy property
-            this.createdTreatmentStrategy = {...emptyTreatmentStrategy};
+            this.createdTreatmentStrategy = {...emptyTreatmentLibrary};
         }
     }
 </script>

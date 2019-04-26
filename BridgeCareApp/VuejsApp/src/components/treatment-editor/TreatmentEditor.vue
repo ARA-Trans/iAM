@@ -8,18 +8,18 @@
                             <v-btn color="info" v-on:click="onNewLibrary">
                                 New Library
                             </v-btn>
-                            <v-select v-if="!hasSelectedTreatmentStrategy" :items="treatmentStrategiesSelectListItems"
-                                      label="Select a Treatment Strategy" outline v-model="treatmentStrategySelectItemValue">
+                            <v-select v-if="!hasSelectedTreatmentLibrary" :items="treatmentLibrariesSelectListItems"
+                                      label="Select a Treatment Library" outline v-model="treatmentLibrarySelectItemValue">
                             </v-select>
-                            <v-text-field v-if="hasSelectedTreatmentStrategy" label="Treatment Name" append-icon="clear"
-                                          v-model="selectedTreatmentStrategy.name"
-                                          @click:append="onClearTreatmentStrategySelection">
+                            <v-text-field v-if="hasSelectedTreatmentLibrary" label="Treatment Name" append-icon="clear"
+                                          v-model="selectedTreatmentLibrary.name"
+                                          @click:append="onClearTreatmentLibrarySelection">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                <v-divider v-if="hasSelectedTreatmentStrategy"></v-divider>
-                <v-flex xs12 v-if="hasSelectedTreatmentStrategy">
+                <v-divider v-if="hasSelectedTreatmentLibrary"></v-divider>
+                <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
                     <div class="treatments-div">
                         <v-layout justify-center row fill-height>
                             <v-flex xs3>
@@ -41,21 +41,21 @@
                                             <v-tab-item>
                                                 <v-card>
                                                     <v-card-text class="card-tab-content">
-                                                        <FeasibilityTab :feasibilityTabData="tabData" @submit="updateSelectedTreatmentStrategy" />
+                                                        <FeasibilityTab :feasibilityTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
                                                     </v-card-text>
                                                 </v-card>
                                             </v-tab-item>
                                             <v-tab-item>
                                                 <v-card>
                                                     <v-card-text class="card-tab-content">
-                                                        <CostsTab :costsTabData="tabData" @submit="updateSelectedTreatmentStrategy" />
+                                                        <CostsTab :costsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
                                                     </v-card-text>
                                                 </v-card>
                                             </v-tab-item>
                                             <v-tab-item>
                                                 <v-card>
                                                     <v-card-text class="card-tab-content">
-                                                        <ConsequencesTab :consequencesTabData="tabData" @submit="updateSelectedTreatmentStrategy" />
+                                                        <ConsequencesTab :consequencesTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
                                                     </v-card-text>
                                                 </v-card>
                                             </v-tab-item>
@@ -73,13 +73,13 @@
                         </v-layout>
                     </div>
                 </v-flex>
-                <v-divider v-if="hasSelectedTreatmentStrategy"></v-divider>
-                <v-flex xs12 v-if="hasSelectedTreatmentStrategy">
+                <v-divider v-if="hasSelectedTreatmentLibrary"></v-divider>
+                <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
                             <v-textarea no-resize outline full-width
-                                        :label="selectedTreatmentStrategy.description === '' ? 'Description' : ''"
-                                        v-model="selectedTreatmentStrategy.description">
+                                        :label="selectedTreatmentLibrary.description === '' ? 'Description' : ''"
+                                        v-model="selectedTreatmentLibrary.description">
                             </v-textarea>
                         </v-flex>
                     </v-layout>
@@ -89,10 +89,10 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
-                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentStrategy">
+                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedTreatmentStrategy">
+                <v-btn color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedTreatmentLibrary">
                     Update Library
                 </v-btn>
                 <v-tooltip top>
@@ -106,8 +106,8 @@
             </v-layout>
         </v-footer>
 
-        <CreateTreatmentStrategyDialog :dialogData="createTreatmentStrategyDialogData"
-                                       @submit="onCreateTreatmentStrategy" />
+        <CreateTreatmentLibraryDialog :dialogData="createTreatmentLibraryDialogData"
+                                      @submit="onCreateTreatmentLibrary" />
 
         <CreateTreatmentDialog :showDialog="showCreateTreatmentDialog" @submit="onCreateTreatment" />
     </v-container>
@@ -117,112 +117,112 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import CreateTreatmentStrategyDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentStrategyDialog.vue';
+    import CreateTreatmentLibraryDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentLibraryDialog.vue';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {
-        CreateTreatmentStrategyDialogData,
-        emptyCreateTreatmentStrategyDialogData
-    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-strategy-dialog-data';
+        CreateTreatmentLibraryDialogData,
+        emptyCreateTreatmentLibraryDialogData
+    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-library-dialog-data';
     import {
         Consequence,
         Cost,
         emptyTreatment,
         Feasibility,
         Treatment,
-        TreatmentStrategy
+        TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
     import {isNil, append, any, propEq} from 'ramda';
-    import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
+    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
     import {TabData, emptyTabData} from '@/shared/models/child-components/treatment-editor/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
     import UnderConstruction from '@/components/UnderConstruction.vue';
-    import {sortByProperty, sorter} from '@/shared/utils/sorter';
+    import {sortByProperty} from '@/shared/utils/sorter';
 
     @Component({
         components: {
             UnderConstruction,
-            ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentStrategyDialog}
+            ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentLibraryDialog}
     })
     export default class TreatmentEditor extends Vue {
-        @State(state => state.treatmentEditor.treatmentStrategies) treatmentStrategies: TreatmentStrategy[];
-        @State(state => state.treatmentEditor.selectedTreatmentStrategy) selectedTreatmentStrategy: TreatmentStrategy;
+        @State(state => state.treatmentEditor.treatmentLibraries) treatmentLibraries: TreatmentLibrary[];
+        @State(state => state.treatmentEditor.selectedTreatmentLibrary) selectedTreatmentLibrary: TreatmentLibrary;
         // @State(state => state.treatmentEditor.selectedTreatment) selectedTreatment: Treatment;
 
         @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getTreatmentStrategies') getTreatmentStrategiesAction: any;
-        @Action('selectTreatmentStrategy') selectTreatmentStrategyAction: any;
-        @Action('updateSelectedTreatmentStrategy') updateSelectedTreatmentStrategyAction: any;
+        @Action('getTreatmentLibraries') getTreatmentLibrariesAction: any;
+        @Action('selectTreatmentLibrary') selectTreatmentLibraryAction: any;
+        @Action('updateSelectedTreatmentLibrary') updateSelectedTreatmentLibraryAction: any;
         @Action('selectTreatment') selectTreatmentAction: any;
         @Action('updateSelectedTreatment') updateSelectedTreatmentAction: any;
-        @Action('createTreatmentStrategy') createTreatmentStrategyAction: any;
-        @Action('updateTreatmentStrategy') updateTreatmentStrategyAction: any;
+        @Action('createTreatmentLibrary') createTreatmentLibraryAction: any;
+        @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
 
-        hasSelectedTreatmentStrategy: boolean = false;
-        treatmentStrategiesSelectListItems: SelectItem[] = [];
-        treatmentStrategySelectItemValue: string = '';
+        hasSelectedTreatmentLibrary: boolean = false;
+        treatmentLibrariesSelectListItems: SelectItem[] = [];
+        treatmentLibrarySelectItemValue: string = '';
         treatmentsSelectListItems: SelectItem[] = [];
         treatmentSelectItemValue: string = '';
         selectedTreatment: Treatment = {...emptyTreatment};
         activeTab: number = 0;
         treatmentTabs: string[] = ['feasibility', 'costs', 'consequences', 'budgets'];
-        createTreatmentStrategyDialogData: CreateTreatmentStrategyDialogData = {...emptyCreateTreatmentStrategyDialogData};
+        createTreatmentLibraryDialogData: CreateTreatmentLibraryDialogData = {...emptyCreateTreatmentLibraryDialogData};
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = {...emptyTabData};
 
         /**
-         * Watcher: treatmentStrategies
+         * Watcher: treatmentLibraries
          */
-        @Watch('treatmentStrategies')
-        onTreatmentStrategiesChanged() {
-            // set treatmentStrategiesSelectListItems' list of SelectItems using treatmentStrategies
-            this.treatmentStrategiesSelectListItems = this.treatmentStrategies
-                .map((treatmentStrategy: TreatmentStrategy) => ({
-                    text: treatmentStrategy.name,
-                    value: treatmentStrategy.id.toString()
+        @Watch('treatmentLibraries')
+        onTreatmentLibrariesChanged() {
+            // set treatmentLibrariesSelectListItems' list of SelectItems using treatmentLibraries
+            this.treatmentLibrariesSelectListItems = this.treatmentLibraries
+                .map((treatmentLibrary: TreatmentLibrary) => ({
+                    text: treatmentLibrary.name,
+                    value: treatmentLibrary.id.toString()
                 }));
 
         }
 
         /**
-         * Watcher: treatmentStrategySelectItemValue
+         * Watcher: treatmentLibrarySelectItemValue
          */
-        @Watch('treatmentStrategySelectItemValue')
-        onTreatmentStrategySelectItemValueChanged() {
-            if (hasValue(this.treatmentStrategySelectItemValue) && this.selectedTreatmentStrategy.id === 0) {
-                // parse treatmentStrategySelectItemValue as an int, then dispatch an action with the value using
-                // selectTreatmentStrategyAction
-                const id: number = parseInt(this.treatmentStrategySelectItemValue);
-                this.selectTreatmentStrategyAction({treatmentStrategyId: id});
-            } else if (!hasValue(this.treatmentStrategySelectItemValue) && this.selectedTreatmentStrategy.id !== 0) {
-                // dispatch action to unselect the selected treatment strategy
-                this.selectTreatmentStrategyAction({treatmentStrategyId: null});
+        @Watch('treatmentLibrarySelectItemValue')
+        onTreatmentLibrarySelectItemValueChanged() {
+            if (hasValue(this.treatmentLibrarySelectItemValue) && this.selectedTreatmentLibrary.id === 0) {
+                // parse treatmentLibrarySelectItemValue as an int, then dispatch an action with the value using
+                // selectTreatmentLibraryAction
+                const id: number = parseInt(this.treatmentLibrarySelectItemValue);
+                this.selectTreatmentLibraryAction({treatmentLibraryId: id});
+            } else if (!hasValue(this.treatmentLibrarySelectItemValue) && this.selectedTreatmentLibrary.id !== 0) {
+                // dispatch action to unselect the selected treatment library
+                this.selectTreatmentLibraryAction({treatmentLibraryId: null});
             }
         }
 
         /**
-         * Watcher: selectedTreatmentStrategy
+         * Watcher: selectedTreatmentLibrary
          */
-        @Watch('selectedTreatmentStrategy')
-        onSelectedTreatmentStrategyChanged() {
-            if (this.selectedTreatmentStrategy.id !== 0) {
-                // set properties for a selected treatment strategy
-                if (!hasValue(this.treatmentStrategySelectItemValue)) {
-                    this.treatmentStrategySelectItemValue = this.selectedTreatmentStrategy.id.toString();
+        @Watch('selectedTreatmentLibrary')
+        onSelectedTreatmentLibraryChanged() {
+            if (this.selectedTreatmentLibrary.id !== 0) {
+                // set properties for a selected treatment library
+                if (!hasValue(this.treatmentLibrarySelectItemValue)) {
+                    this.treatmentLibrarySelectItemValue = this.selectedTreatmentLibrary.id.toString();
                 }
-                this.hasSelectedTreatmentStrategy = true;
-                this.treatmentsSelectListItems = this.selectedTreatmentStrategy.treatments
+                this.hasSelectedTreatmentLibrary = true;
+                this.treatmentsSelectListItems = this.selectedTreatmentLibrary.treatments
                     .map((treatment: Treatment) => ({
                         text: treatment.name,
                         value: treatment.id.toString()
                     }));
             } else {
-                // reset properties for an unselected treatment strategy
-                this.treatmentStrategySelectItemValue = '';
-                this.hasSelectedTreatmentStrategy = false;
+                // reset properties for an unselected treatment library
+                this.treatmentLibrarySelectItemValue = '';
+                this.hasSelectedTreatmentLibrary = false;
                 this.treatmentSelectItemValue = '';
                 this.treatmentsSelectListItems = [];
             }
@@ -239,7 +239,7 @@
                 // parse treatmentSelectItemValue as an int, then call setSelectedTreatment passing in the parsed value
                 this.setSelectedTreatment(parseInt(this.treatmentSelectItemValue));
             } else if (!hasValue(this.treatmentSelectItemValue) && this.selectedTreatment.id !== 0) {
-                // dispatch action to unselect the selected treatment strategy
+                // dispatch action to unselect the selected treatment library
                 this.setSelectedTreatment(0);
             }
             /*const id: number = hasValue(this.treatmentSelectItemValue) ? parseInt(this.treatmentSelectItemValue) : 0;
@@ -251,9 +251,9 @@
          * @param id The id of the selected treatment
          */
         setSelectedTreatment(id: number) {
-            if (any(propEq('id', id), this.selectedTreatmentStrategy.treatments as Treatment[])) {
+            if (any(propEq('id', id), this.selectedTreatmentLibrary.treatments as Treatment[])) {
                 this.selectedTreatment = {
-                    ...this.selectedTreatmentStrategy.treatments.find((t: Treatment) => t.id === id) as Treatment
+                    ...this.selectedTreatmentLibrary.treatments.find((t: Treatment) => t.id === id) as Treatment
                 };
                 if (!hasValue(this.treatmentSelectItemValue) || this.treatmentSelectItemValue !== id.toString()) {
                     this.treatmentSelectItemValue = id.toString();
@@ -272,8 +272,8 @@
          */
         setTabData() {
             this.tabData = {
-                tabTreatmentStrategies: hasValue(this.treatmentStrategies) ? [...this.treatmentStrategies] : [],
-                tabSelectedTreatmentStrategy: {...this.selectedTreatmentStrategy},
+                tabTreatmentLibraries: hasValue(this.treatmentLibraries) ? [...this.treatmentLibraries] : [],
+                tabSelectedTreatmentLibrary: {...this.selectedTreatmentLibrary},
                 tabSelectedTreatment: {...this.selectedTreatment}
             };
         }
@@ -282,9 +282,9 @@
          * Component has been mounted
          */
         mounted() {
-            // set isBusy to true, then dispatch action to get all treatment strategies
+            // set isBusy to true, then dispatch action to get all treatment libraries
             this.setIsBusyAction({isBusy: true});
-            this.getTreatmentStrategiesAction()
+            this.getTreatmentLibrariesAction()
                 .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});
@@ -296,27 +296,27 @@
          * Component is about to be destroyed
          */
         beforeDestroy() {
-            // clear the selected treatment strategy
-            this.onClearTreatmentStrategySelection();
+            // clear the selected treatment library
+            this.onClearTreatmentLibrarySelection();
         }
 
         /**
          * 'New Library' button has been clicked
          */
         onNewLibrary() {
-            // show the CreateTreatmentStrategyDialog component
-            this.createTreatmentStrategyDialogData = {
-                ...emptyCreateTreatmentStrategyDialogData,
+            // show the CreateTreatmentLibraryDialog component
+            this.createTreatmentLibraryDialogData = {
+                ...emptyCreateTreatmentLibraryDialogData,
                 showDialog: true
             };
         }
 
         /**
-         * Dispatch an action to clear the selected treatment strategy when a user clicks the 'Clear' button on the
-         * selected treatment strategy name text field or the component is about to be destroyed
+         * Dispatch an action to clear the selected treatment library when a user clicks the 'Clear' button on the
+         * selected treatment library name text field or the component is about to be destroyed
          */
-        onClearTreatmentStrategySelection() {
-            this.selectTreatmentStrategyAction({treatmentStrategyId: null});
+        onClearTreatmentLibrarySelection() {
+            this.selectTreatmentLibraryAction({treatmentLibraryId: null});
         }
 
         /**
@@ -335,13 +335,13 @@
         }
 
         /**
-         * Updates a selected treatment strategy by dispatching the updateSelectedTreatmentStrategyAction with the given
-         * treatment strategy parameter
-         * @param updatedSelectedTreatmentStrategy The selected treatment data to use for updating
+         * Updates a selected treatment library by dispatching the updateSelectedTreatmentLibraryAction with the given
+         * treatment library parameter
+         * @param updatedSelectedTreatmentLibrary The selected treatment data to use for updating
          */
-        updateSelectedTreatmentStrategy(updatedSelectedTreatmentStrategy: TreatmentStrategy) {
-            this.updateSelectedTreatmentStrategyAction({
-                updatedSelectedTreatmentStrategy: updatedSelectedTreatmentStrategy
+        updateSelectedTreatmentLibrary(updatedSelectedTreatmentLibrary: TreatmentLibrary) {
+            this.updateSelectedTreatmentLibraryAction({
+                updatedSelectedTreatmentLibrary: updatedSelectedTreatmentLibrary
             }).then(() => {
                 this.setSelectedTreatment(this.selectedTreatment.id);
             });
@@ -351,12 +351,12 @@
          * 'Create as New Library' button has been clicked
          */
         onCreateAsNewLibrary() {
-            // show the CreateTreatmentStrategyDialog component and include selectedTreatmentStrategy.description &
-            // selectedTreatmentStrategy.treatments
-            this.createTreatmentStrategyDialogData = {
+            // show the CreateTreatmentLibraryDialog component and include selectedTreatmentLibrary.description &
+            // selectedTreatmentLibrary.treatments
+            this.createTreatmentLibraryDialogData = {
                 showDialog: true,
-                selectedTreatmentStrategyDescription: this.selectedTreatmentStrategy.description,
-                selectedTreatmentStrategyTreatments: this.selectedTreatmentStrategy.treatments
+                selectedTreatmentLibraryDescription: this.selectedTreatmentLibrary.description,
+                selectedTreatmentLibraryTreatments: this.selectedTreatmentLibrary.treatments
             };
         }
 
@@ -364,9 +364,9 @@
          * 'Update Library' button has been clicked
          */
         onUpdateLibrary() {
-            // set isBusy to true, then dispatch action to update selected treatment strategy on the server
+            // set isBusy to true, then dispatch action to update selected treatment library on the server
             this.setIsBusyAction({isBusy: true});
-            this.updateTreatmentStrategyAction({updatedTreatmentStrategy: this.selectedTreatmentStrategy})
+            this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary})
                 .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});
@@ -381,18 +381,18 @@
             // TODO: add scenario pathway after defined
         }
 
-        onCreateTreatmentStrategy(createdTreatmentStrategy: TreatmentStrategy) {
-            // hide the CreateTreatmentStrategyDialog component
-            this.createTreatmentStrategyDialogData =  {...emptyCreateTreatmentStrategyDialogData};
-            if (!isNil(createdTreatmentStrategy)) {
-                // get the latest id of the treatment strategies
-                const latestId: number = getLatestPropertyValue('id', this.treatmentStrategies);
-                // set the createdTreatmentStrategy.id = latestId + 1 (if present), otherwise set as 1
-                createdTreatmentStrategy.id = hasValue(latestId) ? latestId + 1 : 1;
-                createdTreatmentStrategy = this.setIdsForNewTreatmentStrategyRelatedData(createdTreatmentStrategy);
-                // set isBusy to true, then dispatch action to create the new treatment strategy
+        onCreateTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary) {
+            // hide the CreateTreatmentLibraryDialog component
+            this.createTreatmentLibraryDialogData =  {...emptyCreateTreatmentLibraryDialogData};
+            if (!isNil(createdTreatmentLibrary)) {
+                // get the latest id of the treatment libraries
+                const latestId: number = getLatestPropertyValue('id', this.treatmentLibraries);
+                // set the createdTreatmentLibrary.id = latestId + 1 (if present), otherwise set as 1
+                createdTreatmentLibrary.id = hasValue(latestId) ? latestId + 1 : 1;
+                createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
+                // set isBusy to true, then dispatch action to create the new treatment library
                 this.setIsBusyAction({isBusy: true});
-                this.createTreatmentStrategyAction({createdTreatmentStrategy: createdTreatmentStrategy})
+                this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
                     .then(() => {
                         this.setIsBusyAction({isBusy: false});
                         this.setSelectedTreatment(0);
@@ -407,18 +407,18 @@
         /**
          * Sets the ids for treatments and each treatment's feasibility, costs, and consequences
          */
-        setIdsForNewTreatmentStrategyRelatedData(createdTreatmentStrategy: TreatmentStrategy) {
-            if (hasValue(createdTreatmentStrategy.treatments)) {
+        setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary: TreatmentLibrary) {
+            if (hasValue(createdTreatmentLibrary.treatments)) {
                 // create list for all treatments, feasibilities, costs, and consequences
                 const allTreatments: Treatment[] = [];
                 const allFeasibilities: Feasibility[] = [];
                 const allCosts: Cost[] = [];
                 const allConsequences: Consequence[] = [];
-                // get all treatment strategies' treatments
-                this.treatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
-                    allTreatments.push(...treatmentStrategy.treatments);
-                    // get all a treatment strategy's treatments' feasibilities, costs, and consequences
-                    treatmentStrategy.treatments.forEach((treatment: Treatment) => {
+                // get all treatment libraries' treatments
+                this.treatmentLibraries.forEach((treatmentLibrary: TreatmentLibrary) => {
+                    allTreatments.push(...treatmentLibrary.treatments);
+                    // get all a treatment library's treatments' feasibilities, costs, and consequences
+                    treatmentLibrary.treatments.forEach((treatment: Treatment) => {
                         if (hasValue(treatment.feasibility)) {
                             allFeasibilities.push(treatment.feasibility as Feasibility);
                         }
@@ -445,11 +445,11 @@
                 const latestConsequenceId: number = hasValue(allConsequences)
                     ? getLatestPropertyValue('id', allConsequences) : 0;
                 let nextConsequenceId: number = hasValue(latestConsequenceId) ? latestConsequenceId + 1 : 1;
-                // for each created treatment strategy's treatments, set the new treatment's treatmentStrategyId & id,
+                // for each created treatment library's treatments, set the new treatment's treatmentLibraryId & id,
                 // then set a new id for each of the treatment's feasibilities, costs, and consequences
-                createdTreatmentStrategy.treatments = sortByProperty('id', createdTreatmentStrategy.treatments)
+                createdTreatmentLibrary.treatments = sortByProperty('id', createdTreatmentLibrary.treatments)
                     .map((treatment: Treatment) => {
-                        treatment.treatmentStrategyId = createdTreatmentStrategy.id;
+                        treatment.treatmentLibraryId = createdTreatmentLibrary.id;
                         treatment.id = nextTreatmentId;
                         nextTreatmentId++;
                         if (hasValue(treatment.feasibility)) {
@@ -474,7 +474,7 @@
                         return treatment;
                     });
             }
-            return createdTreatmentStrategy;
+            return createdTreatmentLibrary;
         }
 
         /**
@@ -485,17 +485,17 @@
             // hide the CreateTreatmentDialog component
             this.showCreateTreatmentDialog = false;
             if (!isNil(createdTreatment)) {
-                // set createdTreatment.treatmentStrategyId = selectedTreatmentStrategy.id
-                createdTreatment.treatmentStrategyId = this.selectedTreatmentStrategy.id;
-                // get the latest id of the treatments for the selected treatment strategy
-                const latestId: number = getLatestPropertyValue('id', this.selectedTreatmentStrategy.treatments);
+                // set createdTreatment.treatmentLibraryId = selectedTreatmentLibrary.id
+                createdTreatment.treatmentLibraryId = this.selectedTreatmentLibrary.id;
+                // get the latest id of the treatments for the selected treatment library
+                const latestId: number = getLatestPropertyValue('id', this.selectedTreatmentLibrary.treatments);
                 // set the createdTreatment.id = latestId + 1 (if present), otherwise set as 1
                 createdTreatment.id = hasValue(latestId) ? latestId + 1 : 1;
-                // dispatch action to update selectedTreatmentStrategy with the created treatment
-                this.updateSelectedTreatmentStrategyAction({
-                    updatedSelectedTreatmentStrategy: {
-                        ...this.selectedTreatmentStrategy,
-                        treatments: append(createdTreatment, this.selectedTreatmentStrategy.treatments)
+                // dispatch action to update selectedTreatmentLibrary with the created treatment
+                this.updateSelectedTreatmentLibraryAction({
+                    updatedSelectedTreatmentLibrary: {
+                        ...this.selectedTreatmentLibrary,
+                        treatments: append(createdTreatment, this.selectedTreatmentLibrary.treatments)
                     }
                 }).then(() => this.setSelectedTreatment(createdTreatment.id));
             }

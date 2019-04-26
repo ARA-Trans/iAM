@@ -118,7 +118,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 // set selectedScenarioId
-                vm.selectedScenarioId = parseInt(to.query.simulationId);
+                vm.selectedScenarioId = isNaN(to.query.simulationId) ? 0 : parseInt(to.query.simulationId);
                 // set the breadcrumbs
                 vm.setNavigationAction([
                     {
@@ -139,7 +139,7 @@
                     }
                 ]);
                 // check that selectedScenarioId is set
-                if (!isNaN(vm.selectedScenarioId) && vm.selectedScenarioId > 0) {
+                if (vm.selectedScenarioId > 0) {
                     // set isBusy to true
                     vm.setIsBusyAction({isBusy: true});
                     // get the selected scenario's analysis data

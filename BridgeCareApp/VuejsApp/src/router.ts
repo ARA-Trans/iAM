@@ -41,32 +41,6 @@ const router = new VueRouter({
             component: Scenario,
         },
         {
-            path: '/InvestmentEditor/',
-            name: 'InvestmentEditor',
-            component: InvestmentEditor,
-            alias: '/InvestmentEditor/Library/',
-        },
-        {
-            path: '/PerformanceEditor/',
-            name: 'PerformanceEditor',
-            component: PerformanceEditor
-        },
-        {
-            path: '/PerformanceEditor/',
-            component: PerformanceEditor,
-            alias: '/PerformanceEditor/FromScenario/'
-        },
-        {
-            path: '/InvestmentEditor/',
-            component: InvestmentEditor,
-            alias: '/InvestmentEditor/FromScenario/'
-        },
-        {
-            path: '/TreatmentEditor/',
-            name: 'TreatmentEditor',
-            component: TreatmentEditor
-        },
-        {
             path: '/EditScenario/',
             name: 'EditScenario',
             component: EditScenario,
@@ -75,6 +49,39 @@ const router = new VueRouter({
             path: '/EditAnalysis/',
             name: 'EditAnalysis',
             component: EditAnalysis,
+        },
+        {
+            path: '/InvestmentEditor/',
+            name: 'InvestmentEditor',
+            component: InvestmentEditor,
+            alias: '/InvestmentEditor/Library/',
+        },
+        {
+            path: '/PerformanceEditor/',
+            name: 'PerformanceEditor',
+            component: PerformanceEditor,
+            alias: '/PerformanceEditor/Library/'
+        },
+        {
+            path: '/TreatmentEditor/',
+            name: 'TreatmentEditor',
+            component: TreatmentEditor,
+            alias: '/TreatmentEditor/Library/'
+        },
+        {
+            path: '/InvestmentEditor/',
+            component: InvestmentEditor,
+            alias: '/InvestmentEditor/FromScenario/'
+        },
+        {
+            path: '/PerformanceEditor/',
+            component: PerformanceEditor,
+            alias: '/PerformanceEditor/FromScenario/'
+        },
+        {
+            path: '/TreatmentEditor/',
+            component: TreatmentEditor,
+            alias: '/TreatmentEditor/FromScenario/'
         },
         {
             path: '/UnderConstruction/',

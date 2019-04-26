@@ -45,9 +45,9 @@
         Cost,
         emptyCost,
         emptyTreatment,
-        emptyTreatmentStrategy,
+        emptyTreatmentLibrary,
         Treatment,
-        TreatmentStrategy
+        TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {
         emptyEquationEditorDialogData,
@@ -74,8 +74,8 @@
     export default class CostsTab extends Vue {
         @Prop() costsTabData: TabData;
 
-        costsTabTreatmentStrategies: TreatmentStrategy[] = [];
-        costsTabSelectedTreatmentStrategy: TreatmentStrategy = {...emptyTreatmentStrategy};
+        costsTabTreatmentStrategies: TreatmentLibrary[] = [];
+        costsTabSelectedTreatmentStrategy: TreatmentLibrary = {...emptyTreatmentLibrary};
         costsTabSelectedTreatment: Treatment = {...emptyTreatment};
 
         costsGridHeaders: DataTableHeader[] = [
@@ -94,8 +94,8 @@
          */
         @Watch('costsTabData')
         onCostsTabDataChanged() {
-            this.costsTabTreatmentStrategies = this.costsTabData.tabTreatmentStrategies;
-            this.costsTabSelectedTreatmentStrategy = this.costsTabData.tabSelectedTreatmentStrategy;
+            this.costsTabTreatmentStrategies = this.costsTabData.tabTreatmentLibraries;
+            this.costsTabSelectedTreatmentStrategy = this.costsTabData.tabSelectedTreatmentLibrary;
             this.costsTabSelectedTreatment = this.costsTabData.tabSelectedTreatment;
             this.setAllCosts();
             this.setCostsGridData();
@@ -105,7 +105,7 @@
          * Sets allCosts property based on costsTabTreatmentStrategies data
          */
         setAllCosts() {
-            this.costsTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
+            this.costsTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentLibrary) => {
                 if (treatmentStrategy.id === this.costsTabSelectedTreatmentStrategy.id) {
                     this.costsTabSelectedTreatmentStrategy.treatments.forEach((treatment: Treatment) => {
                         if (hasValue(treatment.costs)) {
@@ -231,7 +231,7 @@
                 }
             }
             // update selected treatment strategy data
-            const updatedTreatmentStrategy: TreatmentStrategy = {...this.costsTabSelectedTreatmentStrategy};
+            const updatedTreatmentStrategy: TreatmentLibrary = {...this.costsTabSelectedTreatmentStrategy};
             const updatedTreatmentIndex: number = findIndex(
                 (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentStrategy.treatments
             );
