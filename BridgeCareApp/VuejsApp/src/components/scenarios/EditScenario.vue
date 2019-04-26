@@ -14,15 +14,6 @@
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
-                                  :append-icon="marker ? 'fas fa-address-book' : 'home'"
-                                  box
-                                  readonly
-                                  label="Scope"
-                                  type="text"
-                                  @click:append="toggleMarker"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
                                   :append-icon="'fas fa-dollar-sign'"
                                   box
                                   readonly
@@ -75,22 +66,26 @@
 <script lang="ts">
     import Vue from 'vue';
     import Component from 'vue-class-component';
-    import { Action, State } from 'vuex-class';
+    import {State, Action} from 'vuex-class';
+    import {Scenario} from '@/shared/models/iAM/scenario';
 
     @Component
     export default class EditScenario extends Vue {
+        selectedScenarioId: number = 0;
         marker: boolean = true;
         message: string = '';
 
         @State(state => state.breadcrumb.navigation) navigation: any[];
-        @Action('setNavigation') setNavigationAction: any;
+        @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
 
-        selectedScenarioId: number = 0 ;
+        @Action('setNavigation') setNavigationAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                vm.selectedScenarioId = to.query.simulationId;
-
+                // set selectedScenarioId
+                vm.selectedScenarioId = parseInt(to.query.simulationId);
+                // set breadcrumbs
                 vm.setNavigationAction([
                     {
                         text: 'Scenario dashboard',
@@ -99,12 +94,16 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {
-                                simulationId: to.query.simulationId
-                            }
+                            path: '/EditScenario/', query: {simulationId: to.query.simulationId}
                         }
                     }
                 ]);
+                // check that selectedScenarioId is set
+                if (isNaN(vm.selectedScenarioId) || vm.selectedScenarioId === 0) {
+                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
+                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                    vm.$router.push('/Scenarios/');
+                }
             });
         }
 
@@ -117,23 +116,14 @@
         }
         editAnalysis() {
             this.$router.push({
-                path: '/EditAnalysis/', query: {
-                    simulationId: this.selectedScenarioId.toString()
-                } });
+                path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
+            });
         }
         editInvestment() {
-            this.$router.push({
-                path: '/InvestmentEditor/FromScenario/', query: {
-                    simulationId: this.selectedScenarioId.toString()
-                }
-            });
+            this.$router.push({ path: '/InvestmentEditor/FromScenario/' });
         }
         editPerformance() {
-            this.$router.push({
-                path: '/PerformanceEditor/FromScenario/', query: {
-                    simulationId: this.selectedScenarioId.toString()
-                }
-            });
+            this.$router.push('/PerformanceEditor/FromScenario/');
         }
     }
 </script>
