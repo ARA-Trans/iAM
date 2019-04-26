@@ -232,7 +232,7 @@
         showCreatePerformanceStrategyEquationDialog = false;
 
         beforeRouteEnter(to: any, from: any, next: any) {
-            if (from.name === 'EditScenario') {
+            if (to.path === '/PerformanceEditor/FromScenario/') {
                 next((vm: any) => {
                     vm.setNavigationAction([
                         {
@@ -241,11 +241,19 @@
                         },
                         {
                             text: 'Scenario editor',
-                            to: '/EditScenario/'
+                            to: {
+                                path: '/EditScenario/', query: {
+                                    simulationId: to.query.simulationId
+                                }
+                            }
                         },
                         {
                             text: 'Performance editor',
-                            to: '/PerformanceEditor/FromScenario/'
+                            to: {
+                                path: '/PerformanceEditor/FromScenario/', query: {
+                                    simulationId: to.query.simulationId
+                                }
+                            }
                         }
                     ]);
                 });

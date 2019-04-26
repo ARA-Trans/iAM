@@ -1,13 +1,13 @@
-import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
+import {Scenario} from '@/shared/models/iAM/scenario';
 import {statusReference} from '@/firebase';
 
 const state = {
-    scenarios: [] as Scenario[]
+    scenarios: [] as Scenario[],
 };
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
-            state.scenarios = [...scenarios];
+        state.scenarios = [...scenarios];
     }
 };
 

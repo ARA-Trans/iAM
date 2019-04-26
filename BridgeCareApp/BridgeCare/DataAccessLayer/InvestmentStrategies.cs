@@ -41,14 +41,10 @@ namespace BridgeCare.DataAccessLayer
                         BudgetOrder = p.INVESTMENTS.BUDGETORDER,
                         YearlyBudgets = p.YEARLYINVESTMENTs.Select(m => new InvestmentStrategyYearlyBudgetModel
                         {
+                            Id = m.YEARID,
                             Year = m.YEAR_,
-                            Budget = p.YEARLYINVESTMENTs
-                            .Where(n => n.YEAR_ == m.YEAR_)
-                            .Select(f => new InvestmentStrategyBudgetModel()
-                            {
-                                budgetAmount = f.AMOUNT,
-                                budgetName = f.BUDGETNAME
-                            }).ToList()
+                            BudgetAmount = m.AMOUNT,
+                            BudgetName = m.BUDGETNAME
                         }).ToList()
                     }).ToList();
 
@@ -97,10 +93,7 @@ namespace BridgeCare.DataAccessLayer
 
                 foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudgets)
                 {
-                    foreach (InvestmentStrategyBudgetModel budget in year.Budget)
-                    {
-                        investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, budget.budgetName, budget.budgetAmount));
-                    }
+                    investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, year.BudgetName, year.BudgetAmount));
                 }
                 db.YEARLYINVESTMENTs.AddRange(investments);
 
