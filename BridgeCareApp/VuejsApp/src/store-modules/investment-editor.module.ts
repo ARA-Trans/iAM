@@ -1,20 +1,25 @@
 import {
     emptyInvestmentStrategy,
-    InvestmentStrategy, InvestmentStrategyBudgetYear
+    InvestmentStrategy
 } from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import { clone, any, propEq, append, findIndex, merge, isNil } from 'ramda';
+import { clone, any, propEq, append, findIndex, isNil } from 'ramda';
 import { db } from '@/firebase';
 
 const state = {
     investmentStrategies: [] as InvestmentStrategy[],
-    selectedInvestmentStrategy: {...emptyInvestmentStrategy} as InvestmentStrategy
+    selectedInvestmentStrategy: { ...emptyInvestmentStrategy } as InvestmentStrategy,
+    investmentForScenario: [] as InvestmentStrategy[],
 };
 
 const mutations = {
     investmentStrategiesMutator(state: any, investmentStrategies: InvestmentStrategy[]) {
         // update state.investmentStrategies with a clone of the incoming list of investment strategies
         state.investmentStrategies = clone(investmentStrategies);
+    },
+    investmentForScenarioMutator(state: any, investmentForScenario: InvestmentStrategy[]) {
+        // update state.investmentStrategies with a clone of the incoming list of investment strategies
+        state.investmentForScenario = clone(investmentForScenario);
     },
     selectedInvestmentStrategyMutator(state: any, investmentStrategyId: number) {
         if (any(propEq('id', investmentStrategyId), state.investmentStrategies)) {
@@ -29,6 +34,21 @@ const mutations = {
             state.selectedInvestmentStrategy = {...emptyInvestmentStrategy};
         }
     },
+
+    selectedInvestmentForScenarioMutator(state: any, investmentStrategyId: number) {
+        if (any(propEq('id', investmentStrategyId), state.investmentForScenario)) {
+            // find the existing investment strategy in state.investmentForScenario where the id matches investmentStrategyId,
+            // clone it, then update state.selectedInvestmentStrategy with the cloned, existing investment strategy
+            state.selectedInvestmentStrategy = clone(state.investmentForScenario
+                .find((investmentStrategy: InvestmentStrategy) =>
+                    investmentStrategy.id === investmentStrategyId
+                ) as InvestmentStrategy);
+        } else if (investmentStrategyId === null) {
+            // update state.selectedInvestmentStrategy with a new empty investment strategy object
+            state.selectedInvestmentStrategy = { ...emptyInvestmentStrategy };
+        }
+    },
+
     updateSelectedInvestmentStrategyMutator(state: any, updatedSelectedInvestmentStrategy: InvestmentStrategy) {
         state.selectedInvestmentStrategy = updatedSelectedInvestmentStrategy;
     },
@@ -82,14 +102,13 @@ const actions = {
         }, (error: any) => {
             console.log('error in fetching investment libraries', error);
         });
-        //await new InvestmentEditorService().getInvestmentStrategies()
-        //    .then((investmentStrategies: InvestmentStrategy[]) =>
-        //        commit('investmentStrategiesMutator', investmentStrategies)
-        //    )
-        //    .catch((error: any) => console.log(error));
     },
     selectInvestmentStrategy({commit}: any, payload: any) {
         commit('selectedInvestmentStrategyMutator', payload.investmentStrategyId);
+    },
+
+    selectInvestmentForScenario({ commit }: any, payload: any) {
+        commit('selectedInvestmentForScenarioMutator', payload.investmentStrategyId);
     },
 
     updateSelectedInvestmentStrategy({commit}: any, payload: any) {
@@ -102,12 +121,6 @@ const actions = {
                 commit('selectedInvestmentStrategyMutator', payload.createdInvestmentStrategy.id);
             })
             .catch((error: any) => console.log(error));
-        //await new InvestmentEditorService().createInvestmentStrategy(payload.createdInvestmentStrategy)
-        //    .then((createdInvestmentStrategy: InvestmentStrategy) => {
-        //        commit('createdInvestmentStrategyMutator', createdInvestmentStrategy);
-        //        commit('selectedInvestmentStrategyMutator', createdInvestmentStrategy.id);
-        //    })
-        //    .catch((error: any) => console.log(error));
     },
     async updateInvestmentStrategy({ commit }: any, payload: any) {
         await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentStrategy.id).update(payload.updatedInvestmentStrategy)
@@ -116,12 +129,32 @@ const actions = {
                 commit('selectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy.id);
             })
             .catch((error: any) => console.log(error));
-        //await new InvestmentEditorService().updateInvestmentStrategy(payload.updatedInvestmentStrategy)
-        //    .then((updatedInvestmentStrategy: InvestmentStrategy) => {
-        //        commit('updatedInvestmentStrategyMutator', updatedInvestmentStrategy);
-        //        commit('selectedInvestmentStrategyMutator', updatedInvestmentStrategy.id);
-        //    })
-        //    .catch((error: any) => console.log(error));
+    },
+    async updateInvestmentScenario({ commit }: any, payload: any) {
+        return await new InvestmentEditorService().updateInvestmentScenario(payload.updatedInvestmentScenario)
+            .then((results: any) => {
+                return results.status;
+            })
+            .catch((error: any) => { return error.response.status; });
+    },
+
+    async getInvestmentForScenario({ commit }: any, payload: any) {
+        await new InvestmentEditorService().getInvestmentForScenario(payload.selectedScenario)
+            .then((investmentForScenario: any) => {
+                let scenario: InvestmentStrategy[] = [];
+                scenario.push({
+                    id: investmentForScenario[0].simulationId,
+                    name: investmentForScenario[0].name,
+                    inflationRate: investmentForScenario[0].inflationRate,
+                    discountRate: investmentForScenario[0].discountRate,
+                    description: investmentForScenario[0].description,
+                    budgetOrder: investmentForScenario[0].budgetNamesByOrder,
+                    budgetYears: investmentForScenario[0].yearlyBudgets,
+                    deletedBudgetYearIds: []
+                });
+                commit('investmentForScenarioMutator', scenario);
+            })
+            .catch((error: any) => console.log(error));
     }
 };
 

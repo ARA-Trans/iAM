@@ -12,7 +12,7 @@
                     </v-card-title>
                     <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
                         <template slot="items" slot-scope="props">
-                            <td>{{props.item.name}}</td>
+                            <td>{{props.item.simulationName}}</td>
                             <td>{{formatDate(props.item.createdDate)}}</td>
                             <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                             <td>{{props.item.status}}</td>
@@ -130,7 +130,6 @@
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('setSelectedScenario') setSelectedScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -213,8 +212,9 @@
             });
         }
         editSharedScenario(id: number) {
-            this.setSelectedScenarioAction({simulationId: id});
-            this.$router.push({ path: '/EditScenario/' });
+            this.$router.push({
+                path: '/EditScenario/', query: { simulationId: id.toString() }
+            });
         }
 
         /**

@@ -122,11 +122,19 @@
         }
 
         editInvestment() {
-            this.$router.push({ path: '/InvestmentEditor/FromScenario/' });
+            this.$router.push({
+                path: '/InvestmentEditor/FromScenario/', query: {
+                    simulationId: this.selectedScenarioId.toString()
+                }
+            });
         }
 
         editPerformance() {
-            this.$router.push('/PerformanceEditor/FromScenario/');
+            this.$router.push({
+                path: '/PerformanceEditor/FromScenario/', query: {
+                    simulationId: this.selectedScenarioId.toString()
+                }
+            });
         }
 
         editTreatment() {
