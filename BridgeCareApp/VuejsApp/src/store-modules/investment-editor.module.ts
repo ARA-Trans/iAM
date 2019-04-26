@@ -152,7 +152,7 @@ const actions = {
                     budgetYears: investmentForScenario[0].yearlyBudgets,
                     deletedBudgetYearIds: []
                 });
-                commit('investmentForScenarioMutator', scenario)
+                commit('investmentForScenarioMutator', scenario);
             })
             .catch((error: any) => console.log(error));
     }

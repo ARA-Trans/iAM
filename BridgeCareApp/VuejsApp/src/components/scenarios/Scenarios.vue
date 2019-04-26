@@ -130,7 +130,6 @@
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('setSelectedScenario') setSelectedScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -213,8 +212,9 @@
             });
         }
         editSharedScenario(id: number) {
-            this.setSelectedScenarioAction({simulationId: id});
-            this.$router.push({ path: '/EditScenario/' });
+            this.$router.push({
+                path: '/EditScenario/', query: { simulationId: id.toString() }
+            });
         }
 
         /**

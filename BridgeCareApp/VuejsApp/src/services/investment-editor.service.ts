@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {InvestmentStrategy} from '@/shared/models/iAM/investment';
-import { Simulation } from '@/shared/models/iAM/simulation';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 

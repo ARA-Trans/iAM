@@ -1,18 +1,13 @@
-import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
+import {Scenario} from '@/shared/models/iAM/scenario';
 import {statusReference} from '@/firebase';
-import { Scenario } from '@/shared/models/iAM/scenario';
-import { Simulation } from '@/shared/models/iAM/simulation';
-import * as R from 'ramda';
-import { statusReference } from '@/firebase';
 
 const state = {
     scenarios: [] as Scenario[],
-    selectedScenario: {} as Simulation
 };
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
-            state.scenarios = [...scenarios];
+        state.scenarios = [...scenarios];
     }
 };
 
@@ -38,10 +33,6 @@ const actions = {
         }, (error: any) => {
             console.log('error in fetching scenarios', error);
         });
-    },
-
-    setSelectedScenario({ commit }: any, payload: any) {
-        commit('selectedScenarioMutator', payload.selectedScenario)
     }
 };
 
