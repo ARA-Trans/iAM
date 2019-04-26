@@ -763,12 +763,10 @@
                     this.warning.choice = false;
                     if (response == 200) {
                         this.warning.message = 'Investment scenario updated successfully';
-                    } 
-                    else {
-                        this.setErrorMessageAction({ message: 'Failed to update investment scenario' });
                     }
                 })
                 .catch(() => {
+                    // This catch will be called if something goes wrong in mutation. Even though the service call is successfull
                     this.setIsBusyAction({ isBusy: false });
                     this.setErrorMessageAction({ message: 'Failed to update investment scenario' });
                 });
