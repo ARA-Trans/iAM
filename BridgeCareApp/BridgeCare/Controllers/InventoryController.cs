@@ -10,10 +10,12 @@ namespace BridgeCare.Controllers
     {
         private readonly BridgeCareContext db;
         private readonly IInventory inventory;
+        private readonly IInventoryItemDetailModelGenerator inventoryItemDetailModelGenerator;
 
-        public InventoryController(IInventory inventoryInterface, BridgeCareContext context)
+        public InventoryController(IInventory inventoryInterface, IInventoryItemDetailModelGenerator inventoryItemDetailModelGenerator, BridgeCareContext context)
         {
             inventory = inventoryInterface ?? throw new ArgumentNullException(nameof(inventoryInterface));
+            this.inventoryItemDetailModelGenerator = inventoryItemDetailModelGenerator ?? throw new ArgumentNullException(nameof(inventoryItemDetailModelGenerator));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }        
 
@@ -21,18 +23,13 @@ namespace BridgeCare.Controllers
         /// Get: api/InventoryItemDetail
         /// </summary>
         [Route("api/InventoryItemDetail")]
-        [ModelValidation("Given referenceKey is not valid")]
+        [ModelValidation("Given SectionModel is not valid")]
         [HttpGet]
         public InventoryItemDetailModel Get(SectionModel data)
         {
             var inventoryModel = inventory.GetInventory(data, db);
-            var inventoryItemDetailModel = MakeInventoryItemDetailModel(inventoryModel);
+            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
             return inventoryItemDetailModel;
-        }
-
-        private InventoryItemDetailModel MakeInventoryItemDetailModel(InventoryModel inventoryModel)
-        {
-            throw new NotImplementedException();
-        }
+        }        
     }
 }
