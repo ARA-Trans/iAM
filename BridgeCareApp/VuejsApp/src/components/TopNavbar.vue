@@ -36,9 +36,6 @@
                     <v-list-tile @click="routing('/PerformanceEditor/')">
                         <v-list-tile-title>Performance Editor</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="routing('/UnderConstruction/')">
-                        <v-list-tile-title>Committed Projects Editor</v-list-tile-title>
-                    </v-list-tile>
                     <v-list-tile @click="routing('/TreatmentEditor/')">
                         <v-list-tile-title>Treatment Editor</v-list-tile-title>
                     </v-list-tile>
@@ -47,16 +44,6 @@
                     <v-list-tile-action><v-icon>lock</v-icon></v-list-tile-action>
                     <v-list-tile-title>Security</v-list-tile-title>
                 </v-list-tile>
-                <v-list-group prepend-icon="trending_up">
-                    <template slot="activator">
-                        <v-list-tile>
-                            <v-list-tile-title>Reports</v-list-tile-title>
-                        </v-list-tile>
-                    </template>
-                    <v-list-tile @click="routing('/DetailedReport/')">
-                        <v-list-tile-title>Detailed report</v-list-tile-title>
-                    </v-list-tile>
-                </v-list-group>
             </v-list>
         </v-navigation-drawer>
         <v-content v-if="!loginFailed">
@@ -81,13 +68,12 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component } from 'vue-property-decorator';
     import { Action, State } from 'vuex-class';
 
     import { Alert } from '@/shared/models/iAM/alert';
     import AppSpinner from '../shared/dialogs/AppSpinner.vue';
     import AppModalPopup from '../shared/dialogs/AppModalPopup.vue';
-    import {Route} from '@/shared/models/iAM/route';
 
     @Component({
         components: { AppSpinner, AppModalPopup }
