@@ -21,7 +21,5 @@ namespace BridgeCare.EntityClasses
         public string DESCRIPTION { get; set; }
 
         public virtual SIMULATION SIMULATION { get; set; }
-
-       
     }
 }

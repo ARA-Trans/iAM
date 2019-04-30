@@ -57,7 +57,7 @@ namespace BridgeCare.DataAccessLayer
 
                 foreach (TreatmentScenarioModel t in treatment)
                 {
-                    EntityClasses.COST cost= db.Costs.SingleOrDefault(p => p.TREATMENTID == t.TreatementId);
+                    EntityClasses.COST cost = db.Costs.SingleOrDefault(p => p.TREATMENTID == t.TreatementId);
                     if (cost == null) continue;
                     t.Cost = new CostModel()
                     {
@@ -68,7 +68,6 @@ namespace BridgeCare.DataAccessLayer
                         IsFunction = cost.ISFUNCTION,
                         Unit = cost.UNIT
                     };
-                           
                 }
 
                 return treatment.AsQueryable();

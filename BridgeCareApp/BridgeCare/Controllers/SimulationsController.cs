@@ -66,7 +66,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         public IHttpActionResult CreateNewSimulation(int networkID, string simulationName)
         {
-            int newSimulationId = simulations.CreateNewSimulation(networkID,simulationName, db);
+            int newSimulationId = simulations.CreateNewSimulation(networkID, simulationName, db);
             if (newSimulationId > 0)
                 return Ok(newSimulationId);
             else
