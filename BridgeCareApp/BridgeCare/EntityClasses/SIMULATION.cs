@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BridgeCare.EntityClasses
 {
-
     [Table("SIMULATIONS")]
     public partial class SIMULATION
     {
@@ -17,6 +17,21 @@ namespace BridgeCare.EntityClasses
         public int SIMULATIONID { get; set; }
 
         public int? NETWORKID { get; set; }
+
+        public DateTime? DATE_CREATED { get; set; }
+
+        [StringLength(50)]
+        public string ANALYSIS { get; set; }
+
+        [StringLength(50)]
+        public string BUDGET_CONSTRAINT { get; set; }
+
+        [StringLength(50)]
+        public string WEIGHTING { get; set; }
+
+        public int COMMITTED_START { get; set; }
+
+        public int COMMITTED_PERIOD { get; set; }
 
         [Column("COMMENTS")]
         [StringLength(8000)]
