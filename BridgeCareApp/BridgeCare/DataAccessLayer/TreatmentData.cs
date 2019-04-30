@@ -21,7 +21,6 @@ namespace BridgeCare.DataAccessLayer
             {
                 var treatment = db.Treatments
                     .Include(d => d.CONSEQUENCES)
-                    .Include(d => d.COST)
                     .Include(d => d.FEASIBILITY)
                     .Where(p => p.SIMULATIONID == data.SimulationId)
                     .Select(p => new TreatmentScenarioModel()
@@ -40,14 +39,6 @@ namespace BridgeCare.DataAccessLayer
                             OMS_REPEAT_START = p.OMS_REPEAT_START,
                             OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
                         },
-                        Cost = new CostModel
-                        {
-                            CostId = p.COST.COSTID,
-                            Cost = p.COST.COST_,
-                            Unit = p.COST.UNIT,
-                            Criteria = p.COST.CRITERIA,
-                            IsFunction = p.COST.ISFUNCTION,
-                        },
                         Feasibilities = p.FEASIBILITY.Select(m => new FeasibilityModel
                         {
                             Criteria = m.CRITERIA,
@@ -63,6 +54,22 @@ namespace BridgeCare.DataAccessLayer
                             Equation = n.EQUATION,
                         }).ToList()
                     }).ToList();
+
+                foreach (TreatmentScenarioModel t in treatment)
+                {
+                    EntityClasses.COST cost= db.Costs.SingleOrDefault(p => p.TREATMENTID == t.TreatementId);
+                    if (cost == null) continue;
+                    t.Cost = new CostModel()
+                    {
+                        TreatmentId = cost.TREATMENTID,
+                        Cost = cost.COST_,
+                        CostId = cost.COSTID,
+                        Criteria = cost.CRITERIA,
+                        IsFunction = cost.ISFUNCTION,
+                        Unit = cost.UNIT
+                    };
+                           
+                }
 
                 return treatment.AsQueryable();
             }

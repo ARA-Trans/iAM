@@ -17,6 +17,11 @@ namespace BridgeCare.EntityClasses
         public Nullable<double> DISCOUNTRATE { get; set; }
         public string BUDGETORDER { get; set; }
 
+        [StringLength(4000)]
+        public string DESCRIPTION { get; set; }
+
         public virtual SIMULATION SIMULATION { get; set; }
+
+       
     }
 }
