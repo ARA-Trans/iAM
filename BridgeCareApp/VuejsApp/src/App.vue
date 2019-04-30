@@ -21,6 +21,7 @@
 
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
@@ -52,11 +53,13 @@
 
         mounted() {
             const setErrorMessageAction = this.setErrorMessageAction;
+            const setIsBusyAction = this.setIsBusyAction;
             axios.interceptors.response.use(
                 function(response) {
                     return response;
                 },
-                function(error) {
+                function (error) {
+                    setIsBusyAction({ isBusy: false });
                     if (error.response) {
                         setErrorMessageAction({message: error.response.data.message});                    }
                 }

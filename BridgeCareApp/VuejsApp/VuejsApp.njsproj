@@ -67,10 +67,13 @@
     <Content Include="src\components\Inventory.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentStrategyDialog.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\EditBudgetsDialog.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-dialogs\SetRangeForAddingBudgetYearsDialog.vue" />
     <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyDialog.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyEquationDialog.vue" />
     <Content Include="src\components\performance-editor\PerformanceEditor.vue" />
+    <Content Include="src\components\scenarios\EditAnalysis.vue" />
+    <Content Include="src\components\scenarios\EditScenario.vue" />
     <Content Include="src\components\scenarios\Scenarios.vue" />
     <Content Include="src\components\scenario\EditAnalysis.vue">
       <SubType>Code</SubType>
@@ -78,6 +81,13 @@
     <Content Include="src\components\scenario\EditScenario.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentStrategyDialog.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\BudgetsTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\ConsequencesTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\CostsTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\FeasibilityTab.vue" />
+    <Content Include="src\components\treatment-editor\TreatmentEditor.vue" />
     <Content Include="src\components\UnderConstruction.vue" />
     <Content Include="src\shared\AppShowProgress.vue">
       <SubType>Code</SubType>
@@ -116,15 +126,22 @@
     <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
     <Folder Include="src\components\scenarios\" />
     <Folder Include="src\components\scenario\" />
+    <Folder Include="src\components\treatment-editor\" />
+    <Folder Include="src\components\treatment-editor\treatment-editor-dialogs\" />
+    <Folder Include="src\components\treatment-editor\treatment-editor-tabs\" />
     <Folder Include="src\plugins\" />
     <Folder Include="src\services\" />
     <Folder Include="src\shared\" />
     <Folder Include="src\shared\dialogs\" />
     <Folder Include="src\shared\models\" />
+    <Folder Include="src\shared\models\child-components\" />
+    <Folder Include="src\shared\models\child-components\treatment-editor\" />
     <Folder Include="src\shared\models\dialogs\" />
     <Folder Include="src\shared\models\dialogs\criteria-editor-dialog\" />
     <Folder Include="src\shared\models\dialogs\equation-editor-dialog\" />
+    <Folder Include="src\shared\models\dialogs\investment-editor-dialogs\" />
     <Folder Include="src\shared\models\dialogs\performance-editor-dialogs\" />
+    <Folder Include="src\shared\models\dialogs\treatment-editor-dialogs\" />
     <Folder Include="src\shared\models\iAM\" />
     <Folder Include="src\shared\models\vue\" />
     <Folder Include="src\shared\utils\" />
@@ -154,10 +171,13 @@
     <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
     <TypeScriptCompile Include="src\services\network.service.ts" />
     <TypeScriptCompile Include="src\services\performance-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\scenario.service.ts" />
     <TypeScriptCompile Include="src\services\simulation.service.ts" />
     <TypeScriptCompile Include="src\services\summary-report.service.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
+    <TypeScriptCompile Include="src\shared\models\child-components\treatment-editor\tab-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\create-investment-strategy-dialog-result.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\criteria-editor-dialog\criteria-editor-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\download-reports-dialog.ts">
@@ -166,7 +186,10 @@
     <TypeScriptCompile Include="src\shared\models\dialogs\edit-budgets-dialog-result.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\investment-editor-dialogs\create-investment-strategy-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\investment-editor-dialogs\edit-budgets-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\performance-editor-dialogs\create-performance-strategy-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\treatment-editor-dialogs\create-treatment-strategy-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\alert.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\criteria.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\inventory.ts" />
@@ -176,12 +199,16 @@
     <TypeScriptCompile Include="src\shared\models\iAM\route.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\treatment.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-row.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\select-item.ts" />
     <TypeScriptCompile Include="src\shared\utils\criteria-editor-parsers.ts" />
+    <TypeScriptCompile Include="src\shared\utils\formulas.ts" />
+    <TypeScriptCompile Include="src\shared\utils\getter-utils.ts" />
     <TypeScriptCompile Include="src\shared\utils\has-value.ts" />
     <TypeScriptCompile Include="src\shared\utils\mock-data.ts" />
+    <TypeScriptCompile Include="src\shared\utils\sorter.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
     <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts">
@@ -206,6 +233,8 @@
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\security.module.ts" />
     <TypeScriptCompile Include="src\store-modules\simulation.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\toastr.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\treatment-editor.module.ts" />
     <TypeScriptCompile Include="src\store\root-store.ts" />
   </ItemGroup>
   <ItemGroup>

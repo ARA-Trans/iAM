@@ -14,7 +14,6 @@ namespace BridgeCare.Models
 
         [Required]
         public int SimulationId { get; set; }
-        [Required]
         public int NetworkId { get; set; }
         [Required]
         public string Name { get; set; }
