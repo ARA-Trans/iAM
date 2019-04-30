@@ -4,6 +4,6 @@ namespace BridgeCare.Interfaces
 {
     public interface IInventoryItemDetailModelGenerator
     {
-        InventoryItemDetailModel MakeInventoryItemDetailModel(InventoryModel inventoryModel);
+        InventoryItemDetailModel MakeInventoryItemDetailModel(SectionModel sectionModel, InventoryModel inventoryModel);
     }
 }

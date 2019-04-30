@@ -11,12 +11,19 @@ export default class InventoryService {
         // TODO: integrate axios web service call for inventory
     }   
 
-    getInventoryItemDetail(referenceKey: number): Promise<InventoryItemDetail> {
+    getInventoryItemDetail(inventoryItem: InventoryItem): Promise<InventoryItemDetail> {
         // return Promise.resolve<InventoryItemDetail>(mockInventoryItemDetail);        
 
-        return axios.get(`/api/Inventory/${referenceKey}`)
-            .then((response: any) => {
-                return response.data as Promise<InventoryItemDetail>;
-            });
+        return axios.get('/api/InventoryItemDetail', {
+            headers: { 'Content-Type': 'application/json' },
+            params: {
+                "SectionId": inventoryItem.simulationId,
+                "ReferenceId": inventoryItem.referenceId,
+                "ReferenceKey": inventoryItem.referenceKey,
+                "NetworkId": inventoryItem.networkId
+            }
+        }).then((response: any) => {
+            return response.data as Promise<InventoryItemDetail>;
+        });
     }
 }

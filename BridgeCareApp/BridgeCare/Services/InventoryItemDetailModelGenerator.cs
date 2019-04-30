@@ -9,7 +9,13 @@ namespace BridgeCare.Services
 {
     public class InventoryItemDetailModelGenerator: IInventoryItemDetailModelGenerator
     {
-        public InventoryItemDetailModel MakeInventoryItemDetailModel(InventoryModel inventoryModel)
+        /// <summary>
+        /// Generate InventoryItemDetailModel
+        /// </summary>
+        /// <param name="sectionModel"></param>
+        /// <param name="inventoryModel"></param>
+        /// <returns></returns>
+        public InventoryItemDetailModel MakeInventoryItemDetailModel(SectionModel sectionModel, InventoryModel inventoryModel)
         {
             var inventoryItems = inventoryModel.InventoryItems;
             var inventoryItemDetailModel = new InventoryItemDetailModel();
@@ -18,7 +24,7 @@ namespace BridgeCare.Services
             {
                 inventoryItemDetailModel.Name = string.Empty; // Need more info.
                 inventoryItemDetailModel.Label = string.Empty; // Need more info.
-                inventoryItemDetailModel.SimulationId = 0; // Need more info.
+                inventoryItemDetailModel.SimulationId = sectionModel.SectionId;
 
                 AddLocation(inventoryItemDetailModel, inventoryItems);
                 AddAgeService(inventoryItemDetailModel, inventoryItems);

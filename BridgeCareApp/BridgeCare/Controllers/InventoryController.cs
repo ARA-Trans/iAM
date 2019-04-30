@@ -23,12 +23,12 @@ namespace BridgeCare.Controllers
         /// Get: api/InventoryItemDetail
         /// </summary>
         [Route("api/InventoryItemDetail")]
-        [ModelValidation("Given SectionModel is not valid")]
+        [ModelValidation("Given SectionModel is not valid")]        
         [HttpGet]
         public InventoryItemDetailModel Get(SectionModel data)
         {
             var inventoryModel = inventory.GetInventory(data, db);
-            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
+            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(data, inventoryModel);
             return inventoryItemDetailModel;
         }        
     }

@@ -74,10 +74,10 @@ export const mockAttributes: string[] = [
 /*******************************************INVENTORY MOCK DATA********************************************************/
 
 export const mockInventory: InventoryItem[] = [{
-    networkId: 1111,
+    networkId: 13, //1111,
     simulationId: 2222,
     referenceId: 1234567890,
-    referenceKey: 19876,
+    referenceKey: 10 //19876,
 }];
 
 export const mockInventoryItemDetail: InventoryItemDetail = {
