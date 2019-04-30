@@ -21,7 +21,7 @@ const actions = {
     },
     runSimulation({ commit }: any, payload: any) {
         statusReference.once('value', (snapshot) => {
-            if (snapshot.hasChild(payload.networkId.toString() + '_' + payload.simulationId.toString())) {
+            if (snapshot.hasChild('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString())) {
                 const simulationData = {
                     status: 'Started',
                     networkId: payload.networkId,

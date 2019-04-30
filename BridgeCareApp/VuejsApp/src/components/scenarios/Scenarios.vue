@@ -45,6 +45,9 @@
                             Your search for "{{searchMine}}" found no results.
                         </v-alert>
                     </v-data-table>
+                    <v-card-actions>
+                        <v-btn color="info lighten-1" v-on:click="onCreateScenario">Create new</v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-flex>
         </v-layout>
@@ -263,6 +266,10 @@
             this.reportData.networkName = item.networkName;
             this.reportData.simulationId = item.simulationId;
             this.reportData.simulationName = item.simulationName;
+        }
+
+        onCreateScenario() {
+
         }
     }
 </script>
