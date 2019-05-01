@@ -31,6 +31,6 @@ export default class InvestmentEditorService {
             }
         }).then((response: any) => {
             return response;
-            })
+            });
     }
 }
