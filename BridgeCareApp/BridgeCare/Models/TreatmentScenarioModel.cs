@@ -10,7 +10,7 @@ namespace BridgeCare.Models
         public int TreatementId { get; set; }
         public int SimulationId { get; set; }
         public TreatmentModel Treatement { get; set; }
-        public CostModel Cost { get; set; }
+        public List<CostModel> Cost { get; set; }
 
         public List<FeasibilityModel> Feasibilities { get; set; }
 

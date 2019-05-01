@@ -8,10 +8,8 @@ namespace BridgeCare.EntityClasses
     public partial class COST
     {
         public int COSTID { get; set; }
-
         [Key]
         public int TREATMENTID { get; set; }
-
         public string COST_ { get; set; }
         public string UNIT { get; set; }
         public string CRITERIA { get; set; }

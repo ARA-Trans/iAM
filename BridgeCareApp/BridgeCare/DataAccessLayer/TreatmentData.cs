@@ -22,6 +22,7 @@ namespace BridgeCare.DataAccessLayer
                 var treatment = db.Treatments
                     .Include(d => d.CONSEQUENCES)
                     .Include(d => d.FEASIBILITY)
+                    .Include(d => d.COST)
                     .Where(p => p.SIMULATIONID == data.SimulationId)
                     .Select(p => new TreatmentScenarioModel()
                     {
@@ -39,6 +40,15 @@ namespace BridgeCare.DataAccessLayer
                             OMS_REPEAT_START = p.OMS_REPEAT_START,
                             OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
                         },
+                        Cost = p.COST.Select(q => new CostModel
+                        {
+                            TreatmentId = p.TREATMENTID,                          
+                            Cost = q.COST_,
+                            CostId = q.COSTID,
+                            Criteria = q.CRITERIA,
+                            IsFunction = q.ISFUNCTION,
+                            Unit = q.UNIT
+                        }).ToList(),
                         Feasibilities = p.FEASIBILITY.Select(m => new FeasibilityModel
                         {
                             Criteria = m.CRITERIA,
@@ -54,21 +64,6 @@ namespace BridgeCare.DataAccessLayer
                             Equation = n.EQUATION,
                         }).ToList()
                     }).ToList();
-
-                foreach (TreatmentScenarioModel t in treatment)
-                {
-                    EntityClasses.COST cost = db.Costs.SingleOrDefault(p => p.TREATMENTID == t.TreatementId);
-                    if (cost == null) continue;
-                    t.Cost = new CostModel()
-                    {
-                        TreatmentId = cost.TREATMENTID,
-                        Cost = cost.COST_,
-                        CostId = cost.COSTID,
-                        Criteria = cost.CRITERIA,
-                        IsFunction = cost.ISFUNCTION,
-                        Unit = cost.UNIT
-                    };
-                }
 
                 return treatment.AsQueryable();
             }
