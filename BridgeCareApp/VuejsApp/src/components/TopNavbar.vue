@@ -39,7 +39,7 @@
                     <v-list-tile @click="routing('/UnderConstruction/')">
                         <v-list-tile-title>Committed Projects Editor</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="routing('/TreatmentEditor/')">
+                    <v-list-tile @click="routing('/TreatmentEditor/Library/')">
                         <v-list-tile-title>Treatment Editor</v-list-tile-title>
                     </v-list-tile>
                 </v-list-group>

@@ -67,7 +67,8 @@ const router = new VueRouter({
             path: '/TreatmentEditor/',
             name: 'TreatmentEditor',
             component: TreatmentEditor,
-            alias: '/TreatmentEditor/Library/'
+            props: true,
+            alias: '/TreatmentEditor/Library/',
         },
         {
             path: '/InvestmentEditor/',
@@ -83,6 +84,7 @@ const router = new VueRouter({
         {
             path: '/TreatmentEditor/',
             component: TreatmentEditor,
+            props: true,
             alias: '/TreatmentEditor/FromScenario/'
         },
         {

@@ -315,7 +315,7 @@ export const mockConsequences: Consequence[] = [
         change: '+15%',
         equation: '',
         isFunction: false,
-        criteria: '[DISTRICT]=1'
+        criteria: '[DISTRICT]=\'1\''
     },
     {
         treatmentId: 1,
@@ -357,3 +357,46 @@ export const mockTreatmentLibraries: TreatmentLibrary[] = [
         treatments: mockTreatments
     }
 ];
+
+export const mockScenarioFeasibility: Feasibility = {
+    treatmentId: 3,
+    id: 2,
+    criteria: '[ROADWIDTH]>=\'50\' AND [ROADWIDTH]<\'70\' AND [TRUCKPCT]=\'High\' AND [UNDERCLR]<\'80\' AND [SUFF_RATE]<\'5\'',
+    yearsBeforeAny: 8,
+    yearsBeforeSame: 10
+};
+
+export const mockScenarioCost: Cost = {
+    treatmentId: 3,
+    id: 2,
+    equation: '[DECK_AREA]*2.45',
+    isFunction: false,
+    criteria: '[DISTRICT]=\'2\''
+};
+
+export const mockScenarioConsequence: Consequence = {
+    treatmentId: 3,
+    id: 3,
+    attribute: 'BRIDGE_TYPE',
+    change: '+10%',
+    equation: '',
+    isFunction: false,
+    criteria: '[BRIDGE_TYPE]=\'2\''
+};
+
+export const mockScenarioTreatment: Treatment = {
+    treatmentLibraryId: 2,
+    id: 3,
+    name: 'Pothole Fill-in',
+    feasibility: mockScenarioFeasibility,
+    costs: [mockScenarioCost],
+    consequences: [mockScenarioConsequence],
+    budgets: []
+};
+
+export const mockScenarioTreatmentLibrary: TreatmentLibrary = {
+    id: 2,
+    name: 'Treatment Strategy 2',
+    description: 'This is another mock treatment strategy',
+    treatments: [mockScenarioTreatment]
+};
