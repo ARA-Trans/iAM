@@ -20,6 +20,8 @@ namespace BridgeCare.EntityClasses
 
         public DateTime? DATE_CREATED { get; set; }
 
+        public DateTime? DATE_LAST_RUN { get; set; }
+
         [StringLength(50)]
         public string ANALYSIS { get; set; }
 
