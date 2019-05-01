@@ -206,7 +206,7 @@
                     updatedTreatment.costs[updatedCostIndex] = costData;
                 }
             }
-            // update selected treatment strategy data
+            // update selected treatment library data
             const updatedTreatmentLibrary: TreatmentLibrary = clone(this.costsTabSelectedTreatmentLibrary);
             const updatedTreatmentIndex: number = findIndex(
                 (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentLibrary.treatments
