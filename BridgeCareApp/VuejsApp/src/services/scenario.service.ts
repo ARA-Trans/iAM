@@ -12,4 +12,14 @@ export default class ScenarioService {
         return Promise.resolve<boolean>(true);
         // TODO: add axios web service call to upsert analysis data for a scenario
     }
+
+    createNewScenario(networkId: number, simulationName: string): Promise<any> {
+        return axios({
+            method: 'post',
+            url: `/api/CreateNewSimulation/${networkId}/${simulationName}`,
+            data: {}
+        }).then((response: any) => {
+            return response;
+        });
+    }
 }

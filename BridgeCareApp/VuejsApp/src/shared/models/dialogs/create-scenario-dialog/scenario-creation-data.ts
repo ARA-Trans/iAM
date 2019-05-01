@@ -5,7 +5,7 @@
 
 export const emptyScenario: CreateScenario = {
     name: '',
-    description: ''
+    description: '',
 };
 
 export interface CreateScenarioDialogData {

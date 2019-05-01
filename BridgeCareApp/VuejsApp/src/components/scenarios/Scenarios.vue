@@ -140,6 +140,7 @@
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('createNewScenario') createNewScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -292,7 +293,12 @@
                 this.createScenarioData.showDialog = false;
                 return;
             }
-
+            this.createNewScenarioAction({
+                networkId: this.networks[0].networkId,
+                networkName: this.networks[0].networkName,
+                scenarioName: value.name
+            })
+                .then(() => this.createScenarioData.showDialog = false);
         }
     }
 </script>

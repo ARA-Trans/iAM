@@ -10,10 +10,6 @@
                 <v-card-text>
                     <v-layout column fill-height>
                         <v-text-field label="Name" v-model="createdScenario.name" outline></v-text-field>
-                        <v-textarea rows="3" no-resize outline full-width
-                                    :label="createdScenario.description === '' ? 'Description' : ''"
-                                    v-model="createdScenario.description">
-                        </v-textarea>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
