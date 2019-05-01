@@ -26,6 +26,8 @@ namespace BridgeCare.EntityClasses
 
         public virtual ICollection<CONSEQUENCE> CONSEQUENCES { get; set; }
 
+        public virtual ICollection<COST> COST { get; set; }
+
         public virtual ICollection<FEASIBILITY> FEASIBILITY { get; set; }
 
         public virtual ICollection<SCHEDULED> SCHEDULED { get; set; }
