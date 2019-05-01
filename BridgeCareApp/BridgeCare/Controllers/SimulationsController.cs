@@ -61,5 +61,16 @@ namespace BridgeCare.Controllers
             simulations.UpdateName(data, db);
             return Ok();
         }
+
+        [Route("api/CreateNewSimulation/{networkID}/{simulationName}")]
+        [HttpPost]
+        public IHttpActionResult CreateNewSimulation(int networkID, string simulationName)
+        {
+            int newSimulationId = simulations.CreateNewSimulation(networkID, simulationName, db);
+            if (newSimulationId > 0)
+                return Ok(newSimulationId);
+            else
+                return NotFound();
+        }
     }
 }
