@@ -7,17 +7,17 @@
                 </v-slider>
             </v-flex>
             <v-flex xs2>
-                <v-select v-if="referenceIndexTypes === 0" :items="referenceIds" label="Select a BMS Id"
-                          v-on:change="onSelectInventoryItemByRefId" outline>
+                <v-select v-if="referenceIndexTypes === 0" :items="bmsIds" label="Select a BMS Id"
+                          v-on:change="onSelectInventoryItemByBMSId" outline>
                 </v-select>
 
-                <v-select v-if="referenceIndexTypes === 1" :items="referenceKeys" label="Select a BR Key"
-                          v-on:change="onSelectInventoryItemsByRefKey" outline>
+                <v-select v-if="referenceIndexTypes === 1" :items="brKeys" label="Select a BR Key"
+                          v-on:change="onSelectInventoryItemsByBRKey" outline>
                 </v-select>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
@@ -49,16 +49,16 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
                         <v-layout align-center fill-height>
+                            <!-- TODO: utilize real time data -->
                             <iframe class="gmap_canvas"
                                     src="https://maps.google.com/maps?q=ben%20franklin%20bridge%20pennsylvania&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                                    frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
-                            </iframe>
+                                    frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
                         </v-layout>
                     </div>
                     <div class="grouping-div">
@@ -77,8 +77,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
@@ -110,8 +110,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
@@ -149,8 +149,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="grouping-div">
@@ -173,8 +173,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="unsized-grouping-div">
@@ -216,8 +216,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="unsized-grouping-div">
@@ -237,8 +237,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="unsized-grouping-div">
@@ -258,8 +258,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.simulationId > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.simulationId > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="grouping-div">
@@ -308,12 +308,13 @@
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInventory') getInventoryAction: any;
-        @Action('getInventoryItemDetail') getInventoryItemDetailAction: any;
+        @Action('getInventoryItemDetailByBMSId') getInventoryItemDetailByBMSIdAction: any;
+        @Action('getInventoryItemDetailByBRKey') getInventoryItemDetailByBRKeyAction: any;
 
         referenceIndexTypes: number = 0;
         referenceIndexTypesLabels = ['BMS ID', 'BR KEY'];
-        referenceIds: number[] = [];
-        referenceKeys: number[] = [];
+        bmsIds: number[] = [];
+        brKeys: number[] = [];
         conditionTableHeaders: DataTableHeader[] = [
             {text: '', value: '', align: 'center', sortable: false, class: '', width: ''},
             {text: 'Condition', value: '', align: 'center', sortable: false, class: '', width: ''},
@@ -329,8 +330,8 @@
          */
         @Watch('inventoryItems')
         onInventoryItemsChanged(inventoryItems: InventoryItem[]) {
-            this.referenceIds = inventoryItems.map((item: InventoryItem) => item.referenceId);
-            this.referenceKeys = inventoryItems.map((item: InventoryItem) => item.referenceKey);
+            this.bmsIds = inventoryItems.map((item: InventoryItem) => item.bmsId);
+            this.brKeys = inventoryItems.map((item: InventoryItem) => item.brKey);
         }
 
         @Watch('inventoryItemDetail')
@@ -403,15 +404,12 @@
         }
 
         /**
-         * Reference id has been selected
+         * BMS id has been selected
          */
-        onSelectInventoryItemByRefId(refId: number) {
-            // find the inventory item in the list of inventory items using the refId
-            const inventoryItem: InventoryItem = this.inventoryItems
-                .find((item: InventoryItem) => item.referenceId === refId) as InventoryItem;
+        onSelectInventoryItemByBMSId(bmsId: number) {            
             // dispatch action to get inventory item detail
-            this.setIsBusyAction({isBusy: true});
-            this.getInventoryItemDetailAction({inventoryItem: inventoryItem})
+            this.setIsBusyAction({ isBusy: true });
+            this.getInventoryItemDetailByBMSIdAction({ bmsId: bmsId })
                 .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});
@@ -420,15 +418,12 @@
         }
 
         /**
-         * Reference key has been selected
+         * BMS key has been selected
          */
-        onSelectInventoryItemsByRefKey(refKey: number) {
-            // find the inventory item in the list of inventory items using the refKey
-            const inventoryItem: InventoryItem = this.inventoryItems
-                .find((item: InventoryItem) => item.referenceKey === refKey) as InventoryItem;
+        onSelectInventoryItemsByBRKey(brKey: number) {          
             // dispatch action to get inventory item detail
             this.setIsBusyAction({isBusy: true});
-            this.getInventoryItemDetailAction({inventoryItem: inventoryItem})
+            this.getInventoryItemDetailByBRKeyAction({brKey: brKey})
                 .then(() => this.setIsBusyAction({isBusy: false}))
                 .catch((error: any) => {
                     this.setIsBusyAction({isBusy: false});

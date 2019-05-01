@@ -74,14 +74,13 @@ export const mockAttributes: string[] = [
 /*******************************************INVENTORY MOCK DATA********************************************************/
 
 export const mockInventory: InventoryItem[] = [{
-    networkId: 13, //1111,
-    simulationId: 2222,
-    referenceId: 1234567890,
-    referenceKey: 10 //19876,
+    bmsId: 1234567890,
+    brKey: 10 //19876,
 }];
 
 export const mockInventoryItemDetail: InventoryItemDetail = {
-    simulationId: 2222,
+    bmsId: 1234567890,
+    brKey: 10,
     label: '5A02',
     name: 'Ben Franklin Bridge',
     location: [

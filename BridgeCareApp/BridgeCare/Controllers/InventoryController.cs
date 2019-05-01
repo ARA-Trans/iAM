@@ -20,16 +20,31 @@ namespace BridgeCare.Controllers
         }        
 
         /// <summary>
-        /// Get: api/InventoryItemDetail
+        /// Get: api/InventoryItemDetailByBMSId
         /// </summary>
-        [Route("api/InventoryItemDetail")]
-        [ModelValidation("Given SectionModel is not valid")]        
+        [Route("api/InventoryItemDetailByBMSId")]
+        [ModelValidation("Given BMSId is not valid")]        
         [HttpGet]
-        public InventoryItemDetailModel Get(SectionModel data)
+        public InventoryItemDetailModel Get(string bmsId)
         {
-            var inventoryModel = inventory.GetInventory(data, db);
-            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(data, inventoryModel);
+            var inventoryModel = inventory.GetInventoryByBMSId(bmsId, db);
+            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
+            inventoryItemDetailModel.BMSId = bmsId;
             return inventoryItemDetailModel;
-        }        
+        }
+
+        /// <summary>
+        /// Get: api/InventoryItemDetailByBRKey
+        /// </summary>
+        [Route("api/InventoryItemDetailByBRKey")]
+        [ModelValidation("Given BRKey is not valid")]
+        [HttpGet]
+        public InventoryItemDetailModel Get(int brKey)
+        {
+            var inventoryModel = inventory.GetInventoryByBRKey(brKey, db);
+            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
+            inventoryItemDetailModel.BRKey = brKey;
+            return inventoryItemDetailModel;
+        }
     }
 }

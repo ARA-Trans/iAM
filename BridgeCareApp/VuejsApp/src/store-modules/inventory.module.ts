@@ -17,15 +17,22 @@ const mutations = {
 };
 
 const actions = {
-    async getInventory({commit}: any, payload: any) {
-        await new InventoryService().getInventory(payload.network)
+    async getInventory({ commit }: any) {
+        await new InventoryService().getInventory()
             .then((inventoryItems: InventoryItem[]) =>
                 commit('inventoryItemsMutator', inventoryItems)
             )
             .catch((error: any) => console.log(error));
     },
-    async getInventoryItemDetail({commit}: any, payload: any) {
-        await new InventoryService().getInventoryItemDetail(payload.inventoryItem)
+    async getInventoryItemDetailByBMSId({ commit }: any, payload: any) {
+        await new InventoryService().getInventoryItemDetailByBMSId(payload.bmsId)
+            .then((inventoryItemDetail: InventoryItemDetail) =>
+                commit('inventoryItemDetailMutator', inventoryItemDetail)
+            )
+            .catch((error: any) => console.log(error));
+    },
+    async getInventoryItemDetailByBRKey({ commit }: any, payload: any) {
+        await new InventoryService().getInventoryItemDetailByBRKey(payload.brKey)
             .then((inventoryItemDetail: InventoryItemDetail) =>
                 commit('inventoryItemDetailMutator', inventoryItemDetail)
             )

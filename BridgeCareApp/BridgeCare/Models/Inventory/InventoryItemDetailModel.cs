@@ -4,11 +4,13 @@ namespace BridgeCare.Models
 {
     public class InventoryItemDetailModel
     {
-        public int SimulationId { get; set; }
+        public int BRKey { get; set; }
 
-        public string Label { get; set; } // Currently not used in UI
+        public string BMSId { get; set; }
 
-        public string Name { get; set; } // Currently not used in UI
+        public string Label { get; set; } // Currently not used in UI: mock data 5A02 location id
+
+        public string Name { get; set; } // Currently not used in UI: mock data location?
 
         public List<LabelValue> Location { get; set; }
         public List<LabelValue> AgeAndService { get; set; }
