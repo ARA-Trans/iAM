@@ -4,16 +4,16 @@ using BridgeCare.Models;
 using DatabaseManager;
 using System;
 using System.Configuration;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class RunSimulation : IRunSimulation
     {
-        public void SetLastRunDate(int simulationId,BridgeCareContext db)
+        public void SetLastRunDate(int simulationId, BridgeCareContext db)
         {
             try
             {

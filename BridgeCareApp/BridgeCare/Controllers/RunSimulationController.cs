@@ -23,7 +23,7 @@ namespace BridgeCare.Controllers
             var result = await Task.Factory.StartNew(() => { return simulation.Start(data); });
             if (result.IsCompleted)
             {
-                simulation.SetLastRunDate(data.SimulationId,db);
+                simulation.SetLastRunDate(data.SimulationId, db);
                 return Ok(result);
             }
             return NotFound();

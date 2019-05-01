@@ -55,7 +55,7 @@ namespace BridgeCare.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Some error has occured while running query agains SIMULATIONS table");
+                throw new InvalidOperationException("Some error has occured while running query against SIMULATIONS table");
             }
 
             return filterSimulation;

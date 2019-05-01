@@ -17,7 +17,7 @@ namespace BridgeCare.Controllers
             treatment = treatmentInterface ?? throw new ArgumentNullException(nameof(treatmentInterface));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
-    
+
         /// <summary>
         /// Get: api/treatments
         /// </summary>
@@ -25,13 +25,12 @@ namespace BridgeCare.Controllers
         [HttpGet]
         public IQueryable<TreatmentScenarioModel> Get(SimulationModel data) => treatment.GetTreatment(data, db);
 
-
         [Route("api/CreateTreatment/{networkID}")]
         [HttpPost]
         public IHttpActionResult CreateTreatment([FromBody]TreatmentScenarioModel data)
-        { 
+        {
             int treatmentId = treatment.CreateTreatment(data, db);
-            return Ok(treatmentId); 
+            return Ok(treatmentId);
         }
 
         [Route("api/UpdateTreatment/{networkID}")]
@@ -49,6 +48,5 @@ namespace BridgeCare.Controllers
             int treatmentId = treatment.UpsertTreatment(data, db);
             return Ok(treatmentId);
         }
-
     }
 }
