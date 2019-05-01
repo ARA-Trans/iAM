@@ -24,5 +24,31 @@ namespace BridgeCare.Controllers
         [ModelValidation("Given simulation data is not valid")]
         [HttpGet]
         public IQueryable<TreatmentScenarioModel> Get(SimulationModel data) => treatment.GetTreatment(data, db);
+
+
+        [Route("api/CreateTreatment/{networkID}")]
+        [HttpPost]
+        public IHttpActionResult CreateTreatment([FromBody]TreatmentScenarioModel data)
+        { 
+            int treatmentId = treatment.CreateTreatment(data, db);
+            return Ok(treatmentId); 
+        }
+
+        [Route("api/UpdateTreatment/{networkID}")]
+        [HttpPost]
+        public IHttpActionResult UpdateTreatment([FromBody]TreatmentScenarioModel data)
+        {
+            int treatmentId = treatment.UpdateTreatment(data, db);
+            return Ok(treatmentId);
+        }
+
+        [Route("api/UpsertTreatment/{networkID}")]
+        [HttpPost]
+        public IHttpActionResult UpsertTreatment([FromBody]TreatmentScenarioModel data)
+        {
+            int treatmentId = treatment.UpsertTreatment(data, db);
+            return Ok(treatmentId);
+        }
+
     }
 }

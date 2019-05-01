@@ -6,11 +6,28 @@ using System;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class RunSimulation : IRunSimulation
     {
+        public void SetLastRunDate(int simulationId,BridgeCareContext db)
+        {
+            try
+            {
+                var result = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == simulationId);
+                result.DATE_LAST_RUN = DateTime.Now;
+                db.SaveChanges();
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "Update Simulation Run Date");
+            }
+            return;
+        }
+
         public Task<string> Start(SimulationModel data)
         {
             try

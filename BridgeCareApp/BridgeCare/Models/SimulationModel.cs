@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
@@ -10,5 +11,9 @@ namespace BridgeCare.Models
         public string NetworkName { get; set; }
         [Required]
         public int NetworkId { get; set; }
+
+        public DateTime? Created { get; set; }
+
+        public DateTime? LastRun { get; set; }
     }
 }

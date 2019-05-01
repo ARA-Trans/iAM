@@ -58,7 +58,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         public IHttpActionResult UpdateSimulationName([FromBody]SimulationModel data)
         {
-            simulations.UpdateName(data, db);
+            simulations.UpdateName(data);
             return Ok();
         }
 

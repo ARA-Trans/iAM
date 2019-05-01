@@ -28,7 +28,9 @@ namespace BridgeCare.Services
                                   {
                                       SimulationId = contextTable.SIMULATIONID,
                                       SimulationName = contextTable.SIMULATION1,
-                                      NetworkId = contextTable.NETWORKID.Value
+                                      NetworkId = contextTable.NETWORKID.Value,
+                                      Created = contextTable.DATE_CREATED,
+                                      LastRun = contextTable.DATE_LAST_RUN
                                   };
             return filteredColumns;
         }
@@ -37,12 +39,14 @@ namespace BridgeCare.Services
         {
             try
             {
-                filterSimulation = db.SIMULATIONS.Where(_ => _.NETWORKID == id)
+                filterSimulation = db.SIMULATIONS.Where(_ => _.SIMULATIONID == id)
                 .Select(p => new SimulationModel
                 {
                     SimulationId = p.SIMULATIONID,
                     SimulationName = p.SIMULATION1,
-                    NetworkId = p.NETWORKID.Value
+                    NetworkId = p.NETWORKID.Value,
+                    Created = p.DATE_CREATED,
+                    LastRun = p.DATE_LAST_RUN
                 });
             }
             catch (SqlException ex)
@@ -62,7 +66,7 @@ namespace BridgeCare.Services
             return db.SIMULATIONS.Find(id);
         }
 
-        public void UpdateName(SimulationModel model, BridgeCareContext db)
+        public void UpdateName(SimulationModel model)
         {
             try
             {
