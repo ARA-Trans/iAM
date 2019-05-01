@@ -121,6 +121,7 @@
     import { ShowAvailableReports } from '@/shared/models/dialogs/download-reports-dialog';
     import { CreateScenarioDialogData } from '@/shared/models/dialogs/create-scenario-dialog/scenario-creation-data';
     import ScenarioCreationDialog from '@/components/scenarios/create-scenario-dialog/ScenarioCreationDialog.vue'
+    import { Network } from '@/shared/models/iAM/network';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -133,6 +134,7 @@
         @State(state => state.security.userId) userId: string;
         @State(state => state.reports.names) reportNames: string[];
         @State(state => state.breadcrumb.navigation) navigation: any[];
+        @State(state => state.network.networks) networks: Network[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getUserScenarios') getUserScenariosAction: any;
@@ -290,6 +292,7 @@
                 this.createScenarioData.showDialog = false;
                 return;
             }
+
         }
     }
 </script>
