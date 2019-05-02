@@ -15,7 +15,7 @@ export default class InventoryService {
         return axios.get('/api/InventoryItemDetailByBMSId', {
             headers: { 'Content-Type': 'application/json' },
             params: {
-                "bmsId": bmsId
+                'bmsId': bmsId
             }
         }).then((response: any) => {
             return response.data as Promise<InventoryItemDetail>;
@@ -26,7 +26,7 @@ export default class InventoryService {
         return axios.get('/api/InventoryItemDetailByBRKey', {
             headers: { 'Content-Type': 'application/json' },
             params: {
-                "brKey": brKey
+                'brKey': brKey
             }
         }).then((response: any) => {
             return response.data as Promise<InventoryItemDetail>;

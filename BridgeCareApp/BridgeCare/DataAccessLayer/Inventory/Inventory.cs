@@ -12,19 +12,21 @@ namespace BridgeCare.DataAccessLayer
     {   
         public InventoryModel GetInventoryByBMSId(string bmsId, BridgeCareContext db)
         {
-            var query = "SELECT ";
-            var separator = " ";
-            foreach (InventoryItemModel p in PennDotCrosswalk.InventoryItems)
-            {
-                query += separator + p.ColumnName;
-                separator = ",";
-            }
-            query += " FROM PennDot_Report_A WHERE BRIDGE_ID = " + bmsId;
+            var query = GetSelectColumnsForPennDotCrosswalk();
+            query += " FROM PennDot_Report_A WHERE BRIDGE_ID = '" + bmsId + "'";
             var BridgeData = GetInventoryModelData(db, query);
             return BridgeData;
         }       
 
         public InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db)
+        {
+            var query = GetSelectColumnsForPennDotCrosswalk();
+            query += " FROM PennDot_Report_A WHERE BRKEY = " + brKey;
+            var BridgeData = GetInventoryModelData(db, query);
+            return BridgeData;
+        }
+
+        private static string GetSelectColumnsForPennDotCrosswalk()
         {
             var query = "SELECT ";
             var separator = " ";
@@ -33,9 +35,8 @@ namespace BridgeCare.DataAccessLayer
                 query += separator + p.ColumnName;
                 separator = ",";
             }
-            query += " FROM PennDot_Report_A WHERE BRKEY = " + brKey;
-            var BridgeData = GetInventoryModelData(db, query);
-            return BridgeData;
+
+            return query;
         }
 
         private InventoryModel GetInventoryModelData(BridgeCareContext db, string query)

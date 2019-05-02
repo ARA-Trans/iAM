@@ -1,5 +1,5 @@
 export interface InventoryItem {        
-    bmsId: number;
+    bmsId: string;
     brKey: number;
 }
 
@@ -54,7 +54,9 @@ export const emptyRiskScores: RiskScores = {
     old: 0
 };
 
-export const emptyInventoryItemDetail: InventoryItemDetail = {    
+export const emptyInventoryItemDetail: InventoryItemDetail = {
+    bmsId: 0,
+    brKey: 0,
     label: '',
     name: '',
     location: [],

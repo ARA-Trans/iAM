@@ -3,9 +3,11 @@
         <v-layout row>
             <v-flex xs1>
                 <v-slider v-model="referenceIndexTypes" :tick-labels="referenceIndexTypesLabels" tick-size="2" ticks="always"
-                          step="1" :max="1" v-on:change="onToggleReferenceIndexTypeSelect">
+                          step="1" :max="1" style="width:150px" v-on:change="onToggleReferenceIndexTypeSelect">
                 </v-slider>
             </v-flex>
+        </v-layout>
+        <v-layout row>
             <v-flex xs2>
                 <v-select v-if="referenceIndexTypes === 0" :items="bmsIds" label="Select a BMS Id"
                           v-on:change="onSelectInventoryItemByBMSId" outline>
@@ -16,8 +18,8 @@
                 </v-select>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
@@ -26,9 +28,8 @@
                                 <h3>Location</h3>
                             </v-layout>
                             <div v-for="locationGrouping in inventoryItemDetail.location"
-                                 class="text-field-div" >
-                                <v-text-field :label="locationGrouping.label" readonly outline>
-                                    {{locationGrouping.value}}
+                                 class="text-field-div">
+                                <v-text-field :label="locationGrouping.label" :value="locationGrouping.value" readonly outline>
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -40,8 +41,7 @@
                             </v-layout>
                             <div v-for="ageAndServiceGrouping in inventoryItemDetail.ageAndService"
                                  class="text-field-div">
-                                <v-text-field :label="ageAndServiceGrouping.label" readonly outline>
-                                    {{ageAndServiceGrouping.value}}
+                                <v-text-field :label="ageAndServiceGrouping.label" :value="ageAndServiceGrouping.value" readonly outline>
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -49,16 +49,15 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
                         <v-layout align-center fill-height>
                             <!-- TODO: utilize real time data -->
                             <iframe class="gmap_canvas"
-                                    src="https://maps.google.com/maps?q=ben%20franklin%20bridge%20pennsylvania&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                                    frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                                    src=`https://maps.google.com/maps?q={{inventoryItemDetail.name}}&t=&z=15&ie=UTF8&iwloc=&output=embed` frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
                         </v-layout>
                     </div>
                     <div class="grouping-div">
@@ -68,8 +67,7 @@
                             </v-layout>
                             <div v-for="managementGrouping in inventoryItemDetail.management"
                                  class="text-field-div">
-                                <v-text-field :label="managementGrouping.label" readonly outline>
-                                    {{managementGrouping.value}}
+                                <v-text-field :label="managementGrouping.label" :value="managementGrouping.value" readonly outline>
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -77,8 +75,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
@@ -88,8 +86,7 @@
                             </v-layout>
                             <div v-for="deckInformationGrouping in inventoryItemDetail.deckInformation"
                                  class="text-field-div">
-                                <v-text-field :label="deckInformationGrouping.label" readonly outline>
-                                    {{deckInformationGrouping.value}}
+                                <v-text-field :label="deckInformationGrouping.label" :value="deckInformationGrouping.value" readonly outline>
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -101,8 +98,7 @@
                             </v-layout>
                             <div v-for="spanInformationGrouping in inventoryItemDetail.spanInformation"
                                  class="text-field-div">
-                                <v-text-field :label="spanInformationGrouping.label" readonly outline>
-                                    {{spanInformationGrouping.value}}
+                                <v-text-field :label="spanInformationGrouping.label" :value="spanInformationGrouping.value" readonly outline>
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -110,8 +106,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
@@ -149,8 +145,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="grouping-div">
@@ -160,11 +156,9 @@
                             </v-layout>
                             <div>
                                 <v-layout justify-space-between row>
-                                    <v-text-field label="New Risk Score" readonly outline>
-                                        {{inventoryItemDetail.riskScores.new}}
+                                    <v-text-field label="New Risk Score" :value="inventoryItemDetail.riskScores.new" readonly outline>
                                     </v-text-field>
-                                    <v-text-field label="Old Risk Score" readonly outline>
-                                        {{inventoryItemDetail.riskScores.old}}
+                                    <v-text-field label="Old Risk Score" :value="inventoryItemDetail.riskScores.old" readonly outline>
                                     </v-text-field>
                                 </v-layout>
                             </div>
@@ -173,8 +167,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="unsized-grouping-div">
@@ -186,18 +180,15 @@
                                 <div v-for="ratingRow in inventoryItemDetail.operatingRatingInventoryRatingGrouping.ratingRows">
                                     <v-layout justify-space-between row>
                                         <div class="small-text-field-div">
-                                            <v-text-field :label="ratingRow.operatingRating.label" readonly outline>
-                                                {{ratingRow.operatingRating.value}}
+                                            <v-text-field :label="ratingRow.operatingRating.label" :value="ratingRow.operatingRating.value" readonly outline>                             
                                             </v-text-field>
                                         </div>
                                         <div class="small-text-field-div">
-                                            <v-text-field :label="ratingRow.inventoryRating.label" readonly outline>
-                                                {{ratingRow.inventoryRating.value}}
+                                            <v-text-field :label="ratingRow.inventoryRating.label" :value="ratingRow.inventoryRating.value" readonly outline>                                                
                                             </v-text-field>
                                         </div>
                                         <div class="small-text-field-div">
-                                            <v-text-field :label="ratingRow.ratioLegalLoad.label" readonly outline>
-                                                {{ratingRow.ratioLegalLoad.value}}
+                                            <v-text-field :label="ratingRow.ratioLegalLoad.label" :value="ratingRow.ratioLegalLoad.value" readonly outline>                                                
                                             </v-text-field>
                                         </div>
                                     </v-layout>
@@ -206,8 +197,7 @@
                             <v-layout justify-center>
                                 <div class="small-text-field-div">
                                     <v-text-field :label="inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.label"
-                                                  readonly outline>
-                                        {{inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.value}}
+                                                 :value="inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.value" readonly outline>                                        
                                     </v-text-field>
                                 </div>
                             </v-layout>
@@ -216,8 +206,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="unsized-grouping-div">
@@ -237,8 +227,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="unsized-grouping-div">
@@ -258,8 +248,8 @@
                 </v-layout>
             </v-flex>
         </v-layout>
-        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0"></v-divider>
-        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brkey > 0">
+        <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
+        <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
             <v-flex xs12>
                 <v-layout justify-center>
                     <div class="grouping-div">
@@ -269,8 +259,7 @@
                             </v-layout>
                             <div v-for="roadwayInfoGrouping in inventoryItemDetail.roadwayInfo"
                                  class="text-field-div">
-                                <v-text-field :label="roadwayInfoGrouping.label" readonly outline>
-                                    {{roadwayInfoGrouping.value}}
+                                <v-text-field :label="roadwayInfoGrouping.label" :value="roadwayInfoGrouping.value" readonly outline>                                    
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -313,7 +302,7 @@
 
         referenceIndexTypes: number = 0;
         referenceIndexTypesLabels = ['BMS ID', 'BR KEY'];
-        bmsIds: number[] = [];
+        bmsIds: string[] = [];
         brKeys: number[] = [];
         conditionTableHeaders: DataTableHeader[] = [
             {text: '', value: '', align: 'center', sortable: false, class: '', width: ''},
@@ -418,7 +407,7 @@
         }
 
         /**
-         * BMS key has been selected
+         * BR key has been selected
          */
         onSelectInventoryItemsByBRKey(brKey: number) {          
             // dispatch action to get inventory item detail

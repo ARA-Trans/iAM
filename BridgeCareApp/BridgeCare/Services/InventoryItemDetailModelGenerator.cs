@@ -11,21 +11,16 @@ namespace BridgeCare.Services
     {
         /// <summary>
         /// Generate InventoryItemDetailModel
-        /// </summary>
-        /// <param name="sectionModel"></param>
+        /// </summary>        
         /// <param name="inventoryModel"></param>
         /// <returns></returns>
-        public InventoryItemDetailModel MakeInventoryItemDetailModel(SectionModel sectionModel, InventoryModel inventoryModel)
+        public InventoryItemDetailModel MakeInventoryItemDetailModel(InventoryModel inventoryModel)
         {
             var inventoryItems = inventoryModel.InventoryItems;
             var inventoryItemDetailModel = new InventoryItemDetailModel();
 
             try
             {
-                inventoryItemDetailModel.Name = string.Empty; // Need more info.
-                inventoryItemDetailModel.Label = string.Empty; // Need more info.
-                inventoryItemDetailModel.SimulationId = sectionModel.SectionId;
-
                 AddLocation(inventoryItemDetailModel, inventoryItems);
                 AddAgeService(inventoryItemDetailModel, inventoryItems);
                 AddManagement(inventoryItemDetailModel, inventoryItems);
@@ -36,7 +31,7 @@ namespace BridgeCare.Services
                 AddRoadwayInfo(inventoryItemDetailModel, inventoryItems);
                 AddCurrentConditionDuration(inventoryItemDetailModel, inventoryItems);
                 AddRiskScores(inventoryItemDetailModel);
-                AddOperatingInventoryRating(inventoryItemDetailModel);
+                AddOperatingInventoryRating(inventoryItemDetailModel);                  
             }
             catch (Exception ex)
             {
@@ -55,7 +50,7 @@ namespace BridgeCare.Services
         private void AddRiskScores(InventoryItemDetailModel inventoryItemDetailModel)
         {
             //TODO Risk scores: currently const 0 assigned as per UI
-            inventoryItemDetailModel.RiskScores = new RiskScores();
+            inventoryItemDetailModel.RiskScores = new RiskScores { Old = 0, New = 0 };
         }
 
         private void AddCurrentConditionDuration(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
@@ -118,8 +113,10 @@ namespace BridgeCare.Services
         private void AddLocation(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
             var locationColumns = new List<string> { "DISTRICT", "COUNTY", "MUNI_CODE", "FEATURE_INTERSECTED", "FEATURE_CARRIED", "LOCATION" };
-            
+            const string locationId = "5A02";
             inventoryItemDetailModel.Location = CreateLabelValues(inventoryItems, locationColumns);
+            inventoryItemDetailModel.Name = inventoryItemDetailModel.Location.FirstOrDefault(l => l.Label.StartsWith(locationId)).Value;
+            inventoryItemDetailModel.Label = locationId;
         }
 
         private List<LabelValue> CreateLabelValues(List<InventoryItemModel> inventoryItems, List<string> columns)
