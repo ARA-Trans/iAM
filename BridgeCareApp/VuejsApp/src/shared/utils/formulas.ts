@@ -24,5 +24,4 @@ export const formulas: string[] = [
     'Sqrt()',
     'Tan()',
     'Tanh()',
-
 ];

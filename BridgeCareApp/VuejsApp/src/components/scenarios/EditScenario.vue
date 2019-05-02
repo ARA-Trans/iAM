@@ -71,8 +71,8 @@
     import {State, Action} from 'vuex-class';
     import {Scenario} from '@/shared/models/iAM/scenario';
     import CommittedProjectsFileUploaderDialog from '@/components/scenarios/scenarios-dialogs/CommittedProjectsFileUploaderDialog.vue';
-    import {hasValue} from '@/shared/utils/has-value';
     import ScenarioService from '@/services/scenario.service';
+    import {isNil} from 'ramda';
 
     @Component({
         components: {CommittedProjectsFileUploaderDialog}
@@ -148,18 +148,27 @@
             });
         }
 
+        /**
+         * Shows the CommittedProjectsFileUploaderDialog
+         */
         onShowCommittedProjectsFileUploader() {
             this.showFileUploader = true;
         }
 
+        /**
+         * Uploads the files submitted via the CommittedProjectsFileUploaderDialog (if present)
+         * @param files List of files to upload
+         */
         onUploadCommitedProjectFiles(files: File[]) {
-            if (hasValue(files)) {
+            this.showFileUploader = false;
+            if (!isNil(files)) {
                 this.setIsBusyAction({isBusy: true});
                 new ScenarioService().uploadCommittedProjectsFiles(files)
-                    .then(() =>
+                    .then(() => {
+                        this.setIsBusyAction({isBusy: false});
                         // TODO: handle server response properly
-                        this.setSuccessMessageAction({message: 'Files uploaded successfully'})
-                    );
+                        this.setSuccessMessageAction({message: 'Files uploaded successfully'});
+                    });
             }
         }
     }
