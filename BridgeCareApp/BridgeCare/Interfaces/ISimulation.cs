@@ -10,7 +10,7 @@ namespace BridgeCare.Interfaces
 
         IEnumerable<SimulationModel> GetSelectedSimulation(int id);
 
-        void UpdateName(SimulationModel model, BridgeCareContext db);
+        void UpdateName(SimulationModel model);
 
         int CreateNewSimulation(int networkId, string simulationName, BridgeCareContext db);
     }

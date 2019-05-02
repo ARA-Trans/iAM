@@ -78,5 +78,19 @@ namespace BridgeCare.DataAccessLayer
             }
             return Enumerable.Empty<TreatmentScenarioModel>().AsQueryable();
         }
+        public int CreateTreatment(TreatmentScenarioModel data, BridgeCareContext db)
+        {
+            return 0;
+        }
+
+        public int UpdateTreatment(TreatmentScenarioModel data, BridgeCareContext db)
+        {
+            return 0;
+        }
+
+        public int UpsertTreatment(TreatmentScenarioModel data, BridgeCareContext db)
+        {
+            return 0;
+        }
     }
 }
