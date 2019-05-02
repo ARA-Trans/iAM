@@ -46,7 +46,7 @@
                                   readonly
                                   label="Treatments"
                                   type="text"
-                                  @click:append="toggleMarker"></v-text-field>
+                                  @click:append="editTreatment"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
@@ -84,7 +84,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 // set selectedScenarioId
-                vm.selectedScenarioId = parseInt(to.query.simulationId);
+                vm.selectedScenarioId = isNaN(to.query.simulationId) ? 0 : parseInt(to.query.simulationId);
                 // set breadcrumbs
                 vm.setNavigationAction([
                     {
@@ -99,7 +99,7 @@
                     }
                 ]);
                 // check that selectedScenarioId is set
-                if (isNaN(vm.selectedScenarioId) || vm.selectedScenarioId === 0) {
+                if (vm.selectedScenarioId === 0) {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
@@ -114,11 +114,13 @@
         toggleMarker() {
             this.marker = !this.marker;
         }
+
         editAnalysis() {
             this.$router.push({
                 path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
             });
         }
+
         editInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
@@ -126,11 +128,18 @@
                 }
             });
         }
+
         editPerformance() {
             this.$router.push({
                 path: '/PerformanceEditor/FromScenario/', query: {
                     simulationId: this.selectedScenarioId.toString()
                 }
+            });
+        }
+
+        editTreatment() {
+            this.$router.push({
+                path: '/TreatmentEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
             });
         }
     }

@@ -1,6 +1,6 @@
 <template>
     <v-container fluid grid-list-xl>
-        <v-layout fill-height>
+        <v-layout class="costs-tab-content" fill-height>
             <v-flex xs12>
                 <v-btn color="info" v-on:click="onAddCost">Add Cost</v-btn>
                 <div class="costs-data-table">
@@ -45,9 +45,9 @@
         Cost,
         emptyCost,
         emptyTreatment,
-        emptyTreatmentStrategy,
+        emptyTreatmentLibrary,
         Treatment,
-        TreatmentStrategy
+        TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {
         emptyEquationEditorDialogData,
@@ -61,10 +61,9 @@
     import {
         EquationEditorDialogResult
     } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
-    import {isNil, findIndex, uniq} from 'ramda';
+    import {isNil, findIndex, uniq, clone, append} from 'ramda';
     import EquationEditor from '../../../shared/dialogs/EquationEditor.vue';
     import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value';
     import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
 
@@ -74,9 +73,10 @@
     export default class CostsTab extends Vue {
         @Prop() costsTabData: TabData;
 
-        costsTabTreatmentStrategies: TreatmentStrategy[] = [];
-        costsTabSelectedTreatmentStrategy: TreatmentStrategy = {...emptyTreatmentStrategy};
-        costsTabSelectedTreatment: Treatment = {...emptyTreatment};
+        costsTabTreatmentLibraries: TreatmentLibrary[] = [];
+        costsTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
+        costsTabSelectedTreatment: Treatment = clone(emptyTreatment);
+        costsTabLatestCostId: number = 0;
 
         costsGridHeaders: DataTableHeader[] = [
             {text: 'Equation', value: 'equation', align: 'left', sortable: false, class: '', width: ''},
@@ -84,43 +84,20 @@
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '100px'}
         ];
         costsGridData: Cost[] = [];
-        equationEditorDialogData: EquationEditorDialogData = {...emptyEquationEditorDialogData};
-        criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
-        selectedCost: Cost = {...emptyCost};
-        allCosts: Cost[] = [];
+        equationEditorDialogData: EquationEditorDialogData = clone(emptyEquationEditorDialogData);
+        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        selectedCost: Cost = clone(emptyCost);
 
         /**
          * Sets the CostsTab's required UI functionality properties
          */
         @Watch('costsTabData')
         onCostsTabDataChanged() {
-            this.costsTabTreatmentStrategies = this.costsTabData.tabTreatmentStrategies;
-            this.costsTabSelectedTreatmentStrategy = this.costsTabData.tabSelectedTreatmentStrategy;
+            this.costsTabTreatmentLibraries = this.costsTabData.tabTreatmentLibraries;
+            this.costsTabSelectedTreatmentLibrary = this.costsTabData.tabSelectedTreatmentLibrary;
             this.costsTabSelectedTreatment = this.costsTabData.tabSelectedTreatment;
-            this.setAllCosts();
+            this.costsTabLatestCostId = this.costsTabData.latestCostId;
             this.setCostsGridData();
-        }
-
-        /**
-         * Sets allCosts property based on costsTabTreatmentStrategies data
-         */
-        setAllCosts() {
-            this.costsTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
-                if (treatmentStrategy.id === this.costsTabSelectedTreatmentStrategy.id) {
-                    this.costsTabSelectedTreatmentStrategy.treatments.forEach((treatment: Treatment) => {
-                        if (hasValue(treatment.costs)) {
-                            this.allCosts.push(...treatment.costs);
-                        }
-                    });
-                } else {
-                    treatmentStrategy.treatments.forEach((treatment: Treatment) => {
-                        if (hasValue(treatment.costs)) {
-                            this.allCosts.push(...treatment.costs);
-                        }
-                    });
-                }
-            });
-            this.allCosts = uniq(this.allCosts);
         }
 
         /**
@@ -128,7 +105,7 @@
          */
         setCostsGridData() {
             if (this.costsTabSelectedTreatment.id !== 0 && this.costsTabSelectedTreatment.costs.length > 0) {
-                    this.costsGridData = [...this.costsTabSelectedTreatment.costs];
+                    this.costsGridData = clone(this.costsTabSelectedTreatment.costs);
             } else {
                 this.costsGridData = [];
             }
@@ -138,11 +115,10 @@
          * Creates a new Cost object to add to the selected treatment
          */
         onAddCost() {
-            const latestId: number = hasValue(this.allCosts) ? getLatestPropertyValue('id', this.allCosts) : 0;
             const newCost: Cost = {
-                ...emptyCost,
+                ...clone(emptyCost),
                 treatmentId: this.costsTabSelectedTreatment.id,
-                id: hasValue(latestId) ? latestId + 1 : 1
+                id: hasValue(this.costsTabLatestCostId) ? this.costsTabLatestCostId + 1 : 1
             };
             this.submitChanges(newCost, false);
         }
@@ -153,9 +129,9 @@
          * @param cost The cost to set as selectedCost
          */
         onEditCostEquation(cost: Cost) {
-            this.selectedCost = {...cost};
+            this.selectedCost = clone(cost);
             this.equationEditorDialogData = {
-                ...emptyEquationEditorDialogData,
+                ...clone(emptyEquationEditorDialogData),
                 showDialog: true,
                 equation: this.selectedCost.equation,
                 isFunction: this.selectedCost.isFunction
@@ -168,10 +144,10 @@
          * @param result User's submitted EquationEditor result
          */
         onSubmitEditedCostEquation(result: EquationEditorDialogResult) {
-            this.equationEditorDialogData = {...emptyEquationEditorDialogData};
+            this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
             if (!isNil(result)) {
-                const updatedCost: Cost = {...this.selectedCost};
-                this.selectedCost = {...emptyCost};
+                const updatedCost: Cost = clone(this.selectedCost);
+                this.selectedCost = clone(emptyCost);
                 updatedCost.equation = result.equation;
                 updatedCost.isFunction = result.isFunction;
                 this.submitChanges(updatedCost, false);
@@ -184,7 +160,7 @@
          * @param cost The cost to set as selectedCost
          */
         onEditCostCriteria(cost: Cost) {
-            this.selectedCost = {...cost};
+            this.selectedCost = clone(cost);
             this.criteriaEditorDialogData = {
                 showDialog: true,
                 criteria: this.selectedCost.criteria
@@ -196,10 +172,10 @@
          * @param criteria User's submitted CriteriaEditor result
          */
         onSubmitEditedCostCriteria(criteria: string) {
-            this.criteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
+            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
             if (!isNil(criteria)) {
-                const updatedCost: Cost = {...this.selectedCost};
-                this.selectedCost = {...emptyCost};
+                const updatedCost: Cost = clone(this.selectedCost);
+                this.selectedCost = clone(emptyCost);
                 updatedCost.criteria = criteria;
                 this.submitChanges(updatedCost, false);
             }
@@ -209,7 +185,7 @@
          * A Cost 'Delete' button has been clicked
          */
         onDeleteCost(cost: Cost) {
-            this.submitChanges(cost, true);
+            this.submitChanges(clone(cost), true);
         }
 
         /**
@@ -219,31 +195,35 @@
          */
         submitChanges(costData: Cost, forDelete: boolean) {
             // update selected treatment data
-            const updatedTreatment: Treatment = {...this.costsTabSelectedTreatment};
+            const updatedTreatment: Treatment = clone(this.costsTabSelectedTreatment);
             if (forDelete) {
                 updatedTreatment.costs = updatedTreatment.costs.filter((cost: Cost) => cost.id !== costData.id);
             } else {
                 const updatedCostIndex: number = findIndex((cost: Cost) => cost.id === costData.id, updatedTreatment.costs);
                 if (updatedCostIndex === -1) {
-                    updatedTreatment.costs = [...updatedTreatment.costs, costData];
+                    updatedTreatment.costs = append(costData, updatedTreatment.costs);
                 } else {
                     updatedTreatment.costs[updatedCostIndex] = costData;
                 }
             }
-            // update selected treatment strategy data
-            const updatedTreatmentStrategy: TreatmentStrategy = {...this.costsTabSelectedTreatmentStrategy};
+            // update selected treatment library data
+            const updatedTreatmentLibrary: TreatmentLibrary = clone(this.costsTabSelectedTreatmentLibrary);
             const updatedTreatmentIndex: number = findIndex(
-                (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentStrategy.treatments
+                (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentLibrary.treatments
             );
-            updatedTreatmentStrategy.treatments[updatedTreatmentIndex] = updatedTreatment;
-            this.$emit('submit', updatedTreatmentStrategy);
+            updatedTreatmentLibrary.treatments[updatedTreatmentIndex] = updatedTreatment;
+            this.$emit('submit', updatedTreatmentLibrary);
         }
     }
 </script>
 
 <style>
+    .costs-tab-content {
+        height: 185px;
+    }
+
     .costs-data-table {
-        height: 245px;
+        height: 215px;
         overflow-y: auto;
     }
 </style>
