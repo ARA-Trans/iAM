@@ -37,7 +37,7 @@
                                   readonly
                                   label="Commited"
                                   type="text"
-                                  @click:append="toggleMarker"></v-text-field>
+                                  @click:append="onShowCommittedProjectsFileUploader"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                     <v-text-field v-model="message"
@@ -59,6 +59,8 @@
                 </v-flex>
 
             </v-layout>
+
+            <CommittedProjectsFileUploaderDialog :showDialog="showFileUploader" @submit="onUploadCommitedProjectFiles" />
         </v-container>
     </v-form>
 </template>
@@ -68,8 +70,13 @@
     import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
     import {Scenario} from '@/shared/models/iAM/scenario';
+    import CommittedProjectsFileUploaderDialog from '@/components/scenarios/scenarios-dialogs/CommittedProjectsFileUploaderDialog.vue';
+    import {hasValue} from '@/shared/utils/has-value';
+    import ScenarioService from '@/services/scenario.service';
 
-    @Component
+    @Component({
+        components: {CommittedProjectsFileUploaderDialog}
+    })
     export default class EditScenario extends Vue {
         selectedScenarioId: number = 0;
         marker: boolean = true;
@@ -78,8 +85,12 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
 
+        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
+
+        showFileUploader: boolean = false;
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -114,11 +125,13 @@
         toggleMarker() {
             this.marker = !this.marker;
         }
+
         editAnalysis() {
             this.$router.push({
                 path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
             });
         }
+
         editInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
@@ -126,12 +139,28 @@
                 }
             });
         }
+
         editPerformance() {
             this.$router.push({
                 path: '/PerformanceEditor/FromScenario/', query: {
                     simulationId: this.selectedScenarioId.toString()
                 }
             });
+        }
+
+        onShowCommittedProjectsFileUploader() {
+            this.showFileUploader = true;
+        }
+
+        onUploadCommitedProjectFiles(files: File[]) {
+            if (hasValue(files)) {
+                this.setIsBusyAction({isBusy: true});
+                new ScenarioService().uploadCommittedProjectsFiles(files)
+                    .then(() =>
+                        // TODO: handle server response properly
+                        this.setSuccessMessageAction({message: 'Files uploaded successfully'})
+                    );
+            }
         }
     }
 </script>
