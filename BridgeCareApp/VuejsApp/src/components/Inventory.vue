@@ -2,8 +2,7 @@
     <v-container fluid grid-list-xl>
         <v-layout row>
             <v-flex xs1>
-                <v-slider v-model="referenceIndexTypes" :tick-labels="referenceIndexTypesLabels" tick-size="2" ticks="always"
-                          step="1" :max="1" style="width:150px" v-on:change="onToggleReferenceIndexTypeSelect">
+                <v-slider class="slider" v-model="referenceIndexTypes" :tick-labels="referenceIndexTypesLabels" tick-size="2" ticks="always" step="1" :max="1" v-on:change="onToggleReferenceIndexTypeSelect">
                 </v-slider>
             </v-flex>
         </v-layout>
@@ -450,5 +449,9 @@
 
     .text-align-center {
         text-align: center;
+    }
+
+    .slider{
+        width: 150px;
     }
 </style>

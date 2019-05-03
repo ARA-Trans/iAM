@@ -22,21 +22,18 @@ const actions = {
             .then((inventoryItems: InventoryItem[]) =>
                 commit('inventoryItemsMutator', inventoryItems)
             )
-            .catch((error: any) => console.log(error));
     },
     async getInventoryItemDetailByBMSId({ commit }: any, payload: any) {
         await new InventoryService().getInventoryItemDetailByBMSId(payload.bmsId)
             .then((inventoryItemDetail: InventoryItemDetail) =>
                 commit('inventoryItemDetailMutator', inventoryItemDetail)
             )
-            .catch((error: any) => console.log(error));
     },
     async getInventoryItemDetailByBRKey({ commit }: any, payload: any) {
         await new InventoryService().getInventoryItemDetailByBRKey(payload.brKey)
             .then((inventoryItemDetail: InventoryItemDetail) =>
                 commit('inventoryItemDetailMutator', inventoryItemDetail)
             )
-            .catch((error: any) => console.log(error));
     }
 };
 
