@@ -41,6 +41,16 @@ const router = new VueRouter({
             component: Scenario,
         },
         {
+            path: '/EditScenario/',
+            name: 'EditScenario',
+            component: EditScenario,
+        },
+        {
+            path: '/EditAnalysis/',
+            name: 'EditAnalysis',
+            component: EditAnalysis,
+        },
+        {
             path: '/InvestmentEditor/',
             name: 'InvestmentEditor',
             component: InvestmentEditor,
@@ -50,12 +60,15 @@ const router = new VueRouter({
         {
             path: '/PerformanceEditor/',
             name: 'PerformanceEditor',
-            component: PerformanceEditor
+            component: PerformanceEditor,
+            alias: '/PerformanceEditor/Library/'
         },
         {
-            path: '/PerformanceEditor/',
-            component: PerformanceEditor,
-            alias: '/PerformanceEditor/FromScenario/'
+            path: '/TreatmentEditor/',
+            name: 'TreatmentEditor',
+            component: TreatmentEditor,
+            props: true,
+            alias: '/TreatmentEditor/Library/',
         },
         {
             path: '/InvestmentEditor/',
@@ -64,19 +77,15 @@ const router = new VueRouter({
             alias: '/InvestmentEditor/FromScenario/'
         },
         {
+            path: '/PerformanceEditor/',
+            component: PerformanceEditor,
+            alias: '/PerformanceEditor/FromScenario/'
+        },
+        {
             path: '/TreatmentEditor/',
-            name: 'TreatmentEditor',
-            component: TreatmentEditor
-        },
-        {
-            path: '/EditScenario/',
-            name: 'EditScenario',
-            component: EditScenario,
-        },
-        {
-            path: '/EditAnalysis/',
-            name: 'EditAnalysis',
-            component: EditAnalysis,
+            component: TreatmentEditor,
+            props: true,
+            alias: '/TreatmentEditor/FromScenario/'
         },
         {
             path: '/UnderConstruction/',
