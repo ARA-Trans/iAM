@@ -396,11 +396,7 @@
             // dispatch action to get inventory item detail
             this.setIsBusyAction({ isBusy: true });
             this.getInventoryItemDetailByBMSIdAction({ bmsId: bmsId })
-                .then(() => this.setIsBusyAction({isBusy: false}))
-                .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
-                    console.log(error);
-                });
+                .then(() => this.setIsBusyAction({ isBusy: false }));               
         }
 
         /**
@@ -409,12 +405,8 @@
         onSelectInventoryItemsByBRKey(brKey: number) {          
             // dispatch action to get inventory item detail
             this.setIsBusyAction({isBusy: true});
-            this.getInventoryItemDetailByBRKeyAction({brKey: brKey})
-                .then(() => this.setIsBusyAction({isBusy: false}))
-                .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
-                    console.log(error);
-                });
+            this.getInventoryItemDetailByBRKeyAction({ brKey: brKey })
+                .then(() => this.setIsBusyAction({ isBusy: false }));
         }
                 
         getGMapsUrl() {

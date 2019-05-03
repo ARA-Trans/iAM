@@ -21,19 +21,19 @@ const actions = {
         await new InventoryService().getInventory()
             .then((inventoryItems: InventoryItem[]) =>
                 commit('inventoryItemsMutator', inventoryItems)
-            )
+            );
     },
     async getInventoryItemDetailByBMSId({ commit }: any, payload: any) {
         await new InventoryService().getInventoryItemDetailByBMSId(payload.bmsId)
             .then((inventoryItemDetail: InventoryItemDetail) =>
                 commit('inventoryItemDetailMutator', inventoryItemDetail)
-            )
+            );
     },
     async getInventoryItemDetailByBRKey({ commit }: any, payload: any) {
         await new InventoryService().getInventoryItemDetailByBRKey(payload.brKey)
             .then((inventoryItemDetail: InventoryItemDetail) =>
                 commit('inventoryItemDetailMutator', inventoryItemDetail)
-            )
+            );
     }
 };
 
