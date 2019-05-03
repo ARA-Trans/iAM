@@ -54,10 +54,8 @@
             <v-flex xs12>
                 <v-layout justify-space-between row>
                     <div class="grouping-div">
-                        <v-layout align-center fill-height>
-                            <!-- TODO: utilize real time data -->
-                            <iframe class="gmap_canvas"
-                                    src=`https://maps.google.com/maps?q={{inventoryItemDetail.name}}&t=&z=15&ie=UTF8&iwloc=&output=embed` frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                        <v-layout align-center fill-height>                           
+                            <iframe class="gmap_canvas" :src="getGMapsUrl()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
                         </v-layout>
                     </div>
                     <div class="grouping-div">
@@ -259,7 +257,7 @@
                             </v-layout>
                             <div v-for="roadwayInfoGrouping in inventoryItemDetail.roadwayInfo"
                                  class="text-field-div">
-                                <v-text-field :label="roadwayInfoGrouping.label" :value="roadwayInfoGrouping.value" readonly outline>                                    
+                                <v-text-field :label="roadwayInfoGrouping.label" :value="roadwayInfoGrouping.value" readonly outline> 
                                 </v-text-field>
                             </div>
                         </v-layout>
@@ -418,6 +416,11 @@
                     this.setIsBusyAction({isBusy: false});
                     console.log(error);
                 });
+        }
+                
+        getGMapsUrl() {
+            var url = `https://maps.google.com/maps?q=${this.inventoryItemDetail.name}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            return encodeURI(url);
         }
     }
 </script>

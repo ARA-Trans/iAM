@@ -76,6 +76,10 @@ export const mockAttributes: string[] = [
 export const mockInventory: InventoryItem[] = [{
     bmsId: '01202000100000', //1234567890
     brKey: 10 //19876
+},
+{
+    bmsId: '01003002100000',
+    brKey: 43
 }];
 
 export const mockInventoryItemDetail: InventoryItemDetail = {
