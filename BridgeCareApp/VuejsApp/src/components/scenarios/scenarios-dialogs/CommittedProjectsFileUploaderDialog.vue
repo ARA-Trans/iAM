@@ -56,7 +56,7 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {last, any, propEq, clone} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {bytesToMegabytes} from '@/shared/utils/math';
+    import {bytesToMegabytes} from '@/shared/utils/math-utils.ts';
 
     @Component
     export default class CommittedProjectsFileUploaderDialog extends Vue {
