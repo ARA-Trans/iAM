@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace BridgeCare.Models
 {
     public class TreatmentScenarioModel
@@ -11,7 +12,9 @@ namespace BridgeCare.Models
         public int SimulationId { get; set; }
         public TreatmentModel Treatement { get; set; }
         public List<CostModel> Cost { get; set; }
+        public FeasibilityModel Feasilbility { get; set; }
 
+        [IgnoreDataMember]
         public List<FeasibilityModel> Feasibilities { get; set; }
 
         public List<ConsequenceModel> Consequences { get; set; }

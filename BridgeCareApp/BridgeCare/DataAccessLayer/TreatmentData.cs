@@ -42,7 +42,6 @@ namespace BridgeCare.DataAccessLayer
                         },
                         Cost = p.COST.Select(q => new CostModel
                         {
-                            TreatmentId = p.TREATMENTID,                          
                             Cost = q.COST_,
                             CostId = q.COSTID,
                             Criteria = q.CRITERIA,
@@ -65,6 +64,15 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).ToList();
 
+                foreach (TreatmentScenarioModel treatementScenario in treatment)
+                {
+                    treatementScenario.Feasilbility = new FeasibilityModel();
+
+                    foreach (FeasibilityModel feasibility in treatementScenario.Feasibilities)
+                    {
+                        treatementScenario.Feasilbility.Agregate(feasibility);
+                    }
+                }
                 return treatment.AsQueryable();
             }
             catch (SqlException ex)
