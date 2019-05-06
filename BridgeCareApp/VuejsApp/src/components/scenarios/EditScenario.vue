@@ -126,12 +126,18 @@
             this.marker = !this.marker;
         }
 
+        /**
+         * Navigates to EditAnalysis UI, providing simulationId context
+         */
         editAnalysis() {
             this.$router.push({
                 path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
             });
         }
 
+        /**
+         * Navigates to InvestmentEditor UI, providing simulationId context
+         */
         editInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
@@ -140,14 +146,18 @@
             });
         }
 
+        /**
+         * Navigates to PerformanceEditor UI, providing simulationId context
+         */
         editPerformance() {
             this.$router.push({
-                path: '/PerformanceEditor/FromScenario/', query: {
-                    simulationId: this.selectedScenarioId.toString()
-                }
+                path: '/PerformanceEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
             });
         }
 
+        /**
+         * Navigates to TreatmentEditor UI, providing simulationId context
+         */
         editTreatment() {
             this.$router.push({
                 path: '/TreatmentEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
