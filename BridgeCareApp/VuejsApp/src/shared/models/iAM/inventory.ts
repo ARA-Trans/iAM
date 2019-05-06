@@ -1,8 +1,6 @@
-export interface InventoryItem {
-    networkId: number;
-    simulationId: number;
-    referenceId: number;
-    referenceKey: number;
+export interface InventoryItem {        
+    bmsId: string;
+    brKey: number;
 }
 
 export interface LabelValue {
@@ -33,9 +31,10 @@ export interface OperatingRatingInventoryRatingGrouping {
 }
 
 export interface InventoryItemDetail {
-    simulationId: number;
-    label: string;
+    bmsId: number;
+    brKey: number;
     name: string;
+    label: string;
     location: LabelValue[];
     ageAndService: LabelValue[];
     management: LabelValue[];
@@ -56,7 +55,8 @@ export const emptyRiskScores: RiskScores = {
 };
 
 export const emptyInventoryItemDetail: InventoryItemDetail = {
-    simulationId: 0,
+    bmsId: 0,
+    brKey: 0,
     label: '',
     name: '',
     location: [],
