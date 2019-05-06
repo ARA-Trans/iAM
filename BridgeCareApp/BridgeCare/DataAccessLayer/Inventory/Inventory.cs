@@ -9,27 +9,39 @@ using System.Data.SqlClient;
 namespace BridgeCare.DataAccessLayer
 {
     public class Inventory : IInventory
-    {
-        private readonly BridgeCareContext db;
-
-        public Inventory(BridgeCareContext context)
+    {   
+        public InventoryModel GetInventoryByBMSId(string bmsId, BridgeCareContext db)
         {
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            var query = GetSelectColumnsForPennDotCrosswalk();
+            query += " FROM PennDot_Report_A WHERE BRIDGE_ID = '" + bmsId + "'";
+            var BridgeData = GetInventoryModelData(db, query);
+            return BridgeData;
+        }       
+
+        public InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db)
+        {
+            var query = GetSelectColumnsForPennDotCrosswalk();
+            query += " FROM PennDot_Report_A WHERE BRKEY = " + brKey;
+            var BridgeData = GetInventoryModelData(db, query);
+            return BridgeData;
         }
 
-        public InventoryModel GetInventory(SectionModel data, BridgeCareContext db)
+        private static string GetSelectColumnsForPennDotCrosswalk()
         {
-            InventoryModel BridgeData = new InventoryModel();
-
-            String query = "SELECT ";
-            String separator = " ";
+            var query = "SELECT ";
+            var separator = " ";
             foreach (InventoryItemModel p in PennDotCrosswalk.InventoryItems)
             {
                 query += separator + p.ColumnName;
                 separator = ",";
             }
-            query += " FROM PennDot_Report_A WHERE BRKEY = " + data.ReferenceKey;
 
+            return query;
+        }
+
+        private InventoryModel GetInventoryModelData(BridgeCareContext db, string query)
+        {
+            InventoryModel BridgeData = new InventoryModel();
             try
             {
                 DataTable dt = UtilityFunctions.NonEntitySQLQuery(query, db);
