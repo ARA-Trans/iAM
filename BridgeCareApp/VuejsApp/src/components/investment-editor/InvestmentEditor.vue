@@ -12,33 +12,33 @@
                             <v-btn v-if="!fromScenario" color="info" v-on:click="onNewLibrary">
                                 New Library
                             </v-btn>
-                            <v-select v-if="!hasSelectedInvestmentStrategy || !showLibrary"
-                                      :items="investmentStrategiesSelectListItems"
+                            <v-select v-if="!hasSelectedInvestmentLibrary || !showLibrary"
+                                      :items="investmentLibrariesSelectListItems"
                                       label="Select an Investment library" outline v-model="selectItemValue">
                             </v-select>
-                            <v-text-field v-if="hasSelectedInvestmentStrategy && showLibrary" label="Strategy Name" append-icon="clear"
-                                          v-model="selectedInvestmentStrategy.name"
-                                          @click:append="onClearInvestmentStrategySelection">
+                            <v-text-field v-if="hasSelectedInvestmentLibrary && showLibrary" label="Library Name" append-icon="clear"
+                                          v-model="selectedInvestmentLibrary.name"
+                                          @click:append="onClearInvestmentLibrarySelection">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
-                    <v-layout v-if="hasSelectedInvestmentStrategy" justify-center fill-height>
+                    <v-layout v-if="hasSelectedInvestmentLibrary" justify-center fill-height>
                         <v-flex xs2>
                             <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
-                                          v-model="selectedInvestmentStrategy.inflationRate"
-                                          :disabled="!hasSelectedInvestmentStrategy">
+                                          v-model="selectedInvestmentLibrary.inflationRate"
+                                          :disabled="!hasSelectedInvestmentLibrary">
                             </v-text-field>
                         </v-flex>
                         <v-flex xs2>
                             <v-text-field label="Discount Rate (%)" outline :mask="'##########'"
-                                          v-model="selectedInvestmentStrategy.discountRate"
-                                          :disabled="!hasSelectedInvestmentStrategy">
+                                          v-model="selectedInvestmentLibrary.discountRate"
+                                          :disabled="!hasSelectedInvestmentLibrary">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                <v-divider v-if="hasSelectedInvestmentStrategy"></v-divider>
-                <v-flex xs12 v-if="hasSelectedInvestmentStrategy">
+                <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
+                <v-flex xs12 v-if="hasSelectedInvestmentLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
                             <v-layout justify-space-between fill-height>
@@ -46,11 +46,11 @@
                                     Edit Budgets
                                 </v-btn>
                                 <v-btn color="info" v-on:click="onAddBudgetYear"
-                                       :disabled="selectedInvestmentStrategy.budgetOrder.length === 0">
+                                       :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
                                     Add Year
                                 </v-btn>
                                 <v-btn color="info lighten-1" v-on:click="onAddBudgetYearsByRange"
-                                       :disabled="selectedInvestmentStrategy.budgetOrder.length === 0">
+                                       :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
                                     Add Years by Range
                                 </v-btn>
                                 <v-btn color="error" v-on:click="onDeleteBudgetYears"
@@ -95,13 +95,13 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                <v-divider v-if="hasSelectedInvestmentStrategy"></v-divider>
-                <v-flex xs12 v-if="hasSelectedInvestmentStrategy">
+                <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
+                <v-flex xs12 v-if="hasSelectedInvestmentLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
                             <v-textarea no-resize outline full-width
-                                        :label="selectedInvestmentStrategy.description === '' ? 'Description' : ''"
-                                        v-model="selectedInvestmentStrategy.description">
+                                        :label="selectedInvestmentLibrary.description === '' ? 'Description' : ''"
+                                        v-model="selectedInvestmentLibrary.description">
                             </v-textarea>
                         </v-flex>
                     </v-layout>
@@ -111,23 +111,23 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
-                <v-btn v-show="fromScenario" color="error lighten-1" v-on:click="onDiscardChanges" :disabled="!hasSelectedInvestmentStrategy">
+                <v-btn v-show="fromScenario" color="error lighten-1" v-on:click="onDiscardChanges" :disabled="!hasSelectedInvestmentLibrary">
                     Discard changes
                 </v-btn>
-                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentStrategy">
+                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="fromScenario" color="info" v-on:click="onApplyToScenario" :disabled="!hasSelectedInvestmentStrategy">
+                <v-btn v-show="fromScenario" color="info" v-on:click="onApplyToScenario" :disabled="!hasSelectedInvestmentLibrary">
                     Apply
                 </v-btn>
-                <v-btn v-show="!fromScenario" color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedInvestmentStrategy">
+                <v-btn v-show="!fromScenario" color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedInvestmentLibrary">
                     Update Library
                 </v-btn>
             </v-layout>
         </v-footer>
 
-        <CreateInvestmentStrategyDialog :dialogData="createInvestmentStrategyDialogData"
-                                        @submit="onCreateInvestmentStrategy" />
+        <CreateInvestmentLibraryDialog :dialogData="createInvestmentLibraryDialogData"
+                                        @submit="onCreateInvestmentLibrary" />
 
         <SetRangeForAddingBudgetYearsDialog :showDialog="showSetRangeForAddingBudgetYearsDialog"
                                             @submit="onSubmitBudgetYearRange" />
@@ -144,14 +144,14 @@
     import { Watch } from 'vue-property-decorator';
     import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
-    import CreateInvestmentStrategyDialog from './investment-editor-dialogs/CreateInvestmentStrategyDialog.vue';
+    import CreateInvestmentLibraryDialog from './investment-editor-dialogs/CreateInvestmentLibraryDialog.vue';
     import SetRangeForAddingBudgetYearsDialog from './investment-editor-dialogs/SetRangeForAddingBudgetYearsDialog.vue';
     import EditBudgetsDialog from './investment-editor-dialogs/EditBudgetsDialog.vue';
     import {
         BudgetYearsGridData,
         EditedBudget,
-        InvestmentStrategy,
-        InvestmentStrategyBudgetYear
+        InvestmentLibrary,
+        InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
     import {any, clone, contains, groupBy, isEmpty, isNil, keys, pluck, propEq, last, uniq, findIndex} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
@@ -159,9 +159,9 @@
     import {hasValue} from '@/shared/utils/has-value';
     import moment from 'moment';
     import {
-        CreateInvestmentStrategyDialogData,
-        emptyCreateInvestmentStrategyDialogData
-    } from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-strategy-dialog-data';
+        CreateInvestmentLibraryDialogData,
+        emptyCreateInvestmentLibraryDialogData
+    } from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-library-dialog-data';
     import {
         EditBudgetsDialogData,
         emptyEditBudgetsDialogData
@@ -172,38 +172,38 @@
     import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
 
     @Component({
-        components: { CreateInvestmentStrategyDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
+        components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, AppModalPopup}
     })
     export default class InvestmentEditor extends Vue {
-        @State(state => state.investmentEditor.investmentStrategies) investmentStrategies: InvestmentStrategy[];
-        @State(state => state.investmentEditor.selectedInvestmentStrategy) selectedInvestmentStrategy: InvestmentStrategy;
-        @State(state => state.investmentEditor.loadedInvestmentStrategy) loadedInvestmentStrategy: InvestmentStrategy;
+        @State(state => state.investmentEditor.investmentLibraries) investmentLibraries: InvestmentLibrary[];
+        @State(state => state.investmentEditor.selectedInvestmentLibrary) selectedInvestmentLibrary: InvestmentLibrary;
+        @State(state => state.investmentEditor.loadedInvestmentLibrary) loadedInvestmentLibrary: InvestmentLibrary;
         @State(state => state.breadcrumb.navigation) navigation: any[];
-        @State(state => state.investmentEditor.investmentForScenario) investmentForScenario: InvestmentStrategy[];
+        @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary[];
 
         @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getInvestmentStrategies') getInvestmentStrategiesAction: any;
-        @Action('selectInvestmentStrategy') selectInvestmentStrategyAction: any;
+        @Action('getInvestmentLibraries') getInvestmentLibrariesAction: any;
+        @Action('selectInvestmentLibrary') selectInvestmentLibraryAction: any;
         @Action('selectInvestmentForScenario') selectInvestmentForScenarioAction: any;
-        @Action('createInvestmentStrategy') createInvestmentStrategyAction: any;
-        @Action('updateInvestmentStrategy') updateInvestmentStrategyAction: any;
-        @Action('updateInvestmentScenario') updateInvestmentScenarioAction: any;
-        @Action('updateSelectedInvestmentStrategy') updateSelectedInvestmentStrategyAction: any;
+        @Action('createInvestmentLibrary') createInvestmentLibraryAction: any;
+        @Action('updateInvestmentLibrary') updateInvestmentLibraryAction: any;
+        @Action('updateScenarioInvestmentLibrary') updateInvestmentScenarioAction: any;
+        @Action('updateSelectedInvestmentLibrary') updateSelectedInvestmentLibraryAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('getInvestmentForScenario') getInvestmentForScenarioAction: any;
+        @Action('getScenarioInvestmentLibrary') getInvestmentForScenarioAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
-        investmentStrategiesSelectListItems: SelectItem[] = [];
+        investmentLibrariesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
-        hasSelectedInvestmentStrategy: boolean = false;
+        hasSelectedInvestmentLibrary: boolean = false;
         budgetYearsGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
         budgetYearsGridData: BudgetYearsGridData[] = [];
         selectedGridRows: BudgetYearsGridData[] = [];
         selectedBudgetYears: number[] = [];
-        createInvestmentStrategyDialogData: CreateInvestmentStrategyDialogData = {...emptyCreateInvestmentStrategyDialogData};
+        createInvestmentLibraryDialogData: CreateInvestmentLibraryDialogData = {...emptyCreateInvestmentLibraryDialogData};
         editBudgetsDialogData: EditBudgetsDialogData = {...emptyEditBudgetsDialogData};
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         selectedScenarioId: number =  0;
@@ -243,7 +243,7 @@
                         }
                     ]);
                     vm.getInvestmentLibraries();
-                    vm.getInvestmentForScenario();
+                    vm.getScenarioInvestmentLibrary();
                 });
             }
             else {
@@ -251,7 +251,7 @@
                     vm.fromScenario = false;
                     vm.showLibrary = true;
                     vm.setNavigationAction([]);
-                    vm.onClearInvestmentStrategySelection();
+                    vm.onClearInvestmentLibrarySelection();
                     vm.getInvestmentLibraries();
                 });
             }
@@ -260,23 +260,23 @@
             if (to.path === '/InvestmentEditor/Library/') {
                 this.fromScenario = false;
                 this.showLibrary = true;
-                this.hasSelectedInvestmentStrategy = false;
-                this.onClearInvestmentStrategySelection();
+                this.hasSelectedInvestmentLibrary = false;
+                this.onClearInvestmentLibrarySelection();
                 this.getInvestmentLibraries();
             }
             next();
         }
 
         /**
-         * Watcher: investmentStrategies
+         * Watcher: investmentLibraries
          */
-        @Watch('investmentStrategies')
-        onInvestmentStrategiesChanged(investmentStrategies: InvestmentStrategy[]) {
-            // set the investmentStrategiesSelectListItems list using investmentStrategies list
-            this.investmentStrategiesSelectListItems = investmentStrategies
-                .map((investmentStrategy: InvestmentStrategy) => ({
-                    text: investmentStrategy.name,
-                    value: investmentStrategy.id.toString()
+        @Watch('investmentLibraries')
+        onInvestmentLibrariesChanged(investmentLibraries: InvestmentLibrary[]) {
+            // set the investmentLibrariesSelectListItems list using investmentLibraries list
+            this.investmentLibrariesSelectListItems = investmentLibraries
+                .map((investmentLibrary: InvestmentLibrary) => ({
+                    text: investmentLibrary.name,
+                    value: investmentLibrary.id.toString()
                 }));
         }
 
@@ -284,47 +284,47 @@
          * Watcher: selectItemValue
          */
         @Watch('selectItemValue')
-        onInvestmentStrategiesSelectItemChanged() {
+        onInvestmentLibrariesSelectItemChanged() {
             if (this.fromScenario === true) {
                 if (hasValue(this.selectItemValue)) {
                     // parse selectItemValue as an integer
                     const id: number = parseInt(this.selectItemValue);
-                    // dispatch selectInvestmentStrategyAction with id
-                    this.selectInvestmentStrategyAction({ investmentStrategyId: id });
+                    // dispatch selectInvestmentLibraryAction with id
+                    this.selectInvestmentLibraryAction({ investmentLibraryId: id });
                 }
             }
             else {
-                if (hasValue(this.selectItemValue) && this.selectedInvestmentStrategy.id === 0) {
+                if (hasValue(this.selectItemValue) && this.selectedInvestmentLibrary.id === 0) {
                     // parse selectItemValue as an integer
                     const id: number = parseInt(this.selectItemValue);
-                    // dispatch selectInvestmentStrategyAction with id
-                    this.selectInvestmentStrategyAction({ investmentStrategyId: id });
-                } else if (!hasValue(this.selectItemValue) && this.selectedInvestmentStrategy.id !== 0) {
-                    // dispatch selectInvestmentStrategyAction with null
-                    this.selectInvestmentStrategyAction({ investmentStrategyId: null });
+                    // dispatch selectInvestmentLibraryAction with id
+                    this.selectInvestmentLibraryAction({ investmentLibraryId: id });
+                } else if (!hasValue(this.selectItemValue) && this.selectedInvestmentLibrary.id !== 0) {
+                    // dispatch selectInvestmentLibraryAction with null
+                    this.selectInvestmentLibraryAction({ investmentLibraryId: null });
                 }
             }
         }
 
         /**
-         * Watcher: selectedInvestmentStrategy
+         * Watcher: selectedInvestmentLibrary
          */
-        @Watch('selectedInvestmentStrategy')
-        onSelectedInvestmentStrategyChanged() {
+        @Watch('selectedInvestmentLibrary')
+        onSelectedInvestmentLibraryChanged() {
             // reset the selected grid rows
             this.selectedGridRows = [];
             if (this.fromScenario === false) {
-                if (this.selectedInvestmentStrategy.id !== 0) {
+                if (this.selectedInvestmentLibrary.id !== 0) {
                     if (!hasValue(this.selectItemValue)) {
-                        // set selectItemValue with the id of selectedInvestmentStrategy
-                        this.selectItemValue = this.selectedInvestmentStrategy.id.toString();
+                        // set selectItemValue with the id of selectedInvestmentLibrary
+                        this.selectItemValue = this.selectedInvestmentLibrary.id.toString();
                     }
-                    // set hasSelectedInvestmentStrategy to true
-                    this.hasSelectedInvestmentStrategy = true;
+                    // set hasSelectedInvestmentLibrary to true
+                    this.hasSelectedInvestmentLibrary = true;
                     this.showLibrary = true;
-                    if (!hasValue(this.selectedInvestmentStrategy.budgetOrder) && hasValue(this.selectedInvestmentStrategy.budgetYears)) {
-                        // set the budget order for the selected investment strategy using the it's list of budget years
-                        this.setSelectedInvestmentStrategyBudgetOrder();
+                    if (!hasValue(this.selectedInvestmentLibrary.budgetOrder) && hasValue(this.selectedInvestmentLibrary.budgetYears)) {
+                        // set the budget order for the selected investment library using the it's list of budget years
+                        this.setSelectedInvestmentLibraryBudgetOrder();
                     } else {
                         // set the grid headers
                         this.setGridHeaders();
@@ -335,15 +335,15 @@
                 } else {
                     // reset selectItemValue
                     this.selectItemValue = '';
-                    // reset hasSelectedInvestmentStrategy
-                    this.hasSelectedInvestmentStrategy = false;
+                    // reset hasSelectedInvestmentLibrary
+                    this.hasSelectedInvestmentLibrary = false;
                     this.showLibrary = false;
                     // reset grid data
                     this.budgetYearsGridData = [];
                 }
             }
             else {
-                this.hasSelectedInvestmentStrategy = true;
+                this.hasSelectedInvestmentLibrary = true;
                 this.showLibrary = false;
                 this.setGridHeaders();
                 // set the grid data
@@ -356,14 +356,14 @@
          */
         @Watch('selectedGridRows')
         onSelectedGridRowsChanged() {
-            // set the selectedBudgetYears with the years of the selected investment strategy budget years in selectedGridRows
+            // set the selectedBudgetYears with the years of the selected investment library budget years in selectedGridRows
             this.selectedBudgetYears = getPropertyValues('year', this.selectedGridRows) as number[];
         }
 
 
         getInvestmentLibraries() {
-            // set isBusy to true, then dispatch action to get all investment strategies
-            this.getInvestmentStrategiesAction()
+            // set isBusy to true, then dispatch action to get all investment libraries
+            this.getInvestmentLibrariesAction()
                 .catch((error: any) => {
                     this.warning.showModal = true;
                     this.warning.heading = 'Error';
@@ -373,22 +373,22 @@
         }
 
         beforeDestroy() {
-            // clear the selected investment strategy
-            this.onClearInvestmentStrategySelection();
+            // clear the selected investment library
+            this.onClearInvestmentLibrarySelection();
         }
 
         /**
-         * Sets the selected investment strategy's budget order using it's budget years
+         * Sets the selected investment library's budget order using it's budget years
          */
-        setSelectedInvestmentStrategyBudgetOrder() {
-            // set a new budget order for the selected investment strategy
+        setSelectedInvestmentLibraryBudgetOrder() {
+            // set a new budget order for the selected investment library
            const newBudgetOrder = sorter(
-               getPropertyValues('budgetName', this.selectedInvestmentStrategy.budgetYears)
+               getPropertyValues('budgetName', this.selectedInvestmentLibrary.budgetYears)
            ) as string[];
-            // dispatch action to update the selected investment strategy with the new budget order
-            this.updateSelectedInvestmentStrategyAction({
-                updatedInvestmentStrategy: {
-                    ...this.selectedInvestmentStrategy,
+            // dispatch action to update the selected investment library with the new budget order
+            this.updateSelectedInvestmentLibraryAction({
+                updatedInvestmentLibrary: {
+                    ...this.selectedInvestmentLibrary,
                     budgetOrder: newBudgetOrder
                 }
             });
@@ -398,8 +398,8 @@
          * Sets the data table headers
          */
         setGridHeaders() {
-            // set the grid headers for each budget in the selected investment strategy's budget order list
-            const budgetHeaders: DataTableHeader[] = this.selectedInvestmentStrategy.budgetOrder
+            // set the grid headers for each budget in the selected investment library's budget order list
+            const budgetHeaders: DataTableHeader[] = this.selectedInvestmentLibrary.budgetOrder
                 .map((budgetName: string) => ({
                     text: budgetName,
                     value: budgetName,
@@ -418,9 +418,9 @@
         setGridData() {
             // reset the budget years grid data
             this.budgetYearsGridData = [];
-            // group the selected investment strategy's budget years by year
-            const groupBudgetYearsByYear = groupBy((budgetYear: InvestmentStrategyBudgetYear) => budgetYear.year.toString());
-            const groupedBudgetYears = groupBudgetYearsByYear(this.selectedInvestmentStrategy.budgetYears);
+            // group the selected investment library's budget years by year
+            const groupBudgetYearsByYear = groupBy((budgetYear: InvestmentLibraryBudgetYear) => budgetYear.year.toString());
+            const groupedBudgetYears = groupBudgetYearsByYear(this.selectedInvestmentLibrary.budgetYears);
             // uses the group keys of the grouped budget years to loop over each group and create a grid data row for each year
             keys(groupedBudgetYears).forEach((year: any) => {
                 // create a grid data row and set the current year
@@ -428,14 +428,14 @@
                     year: parseInt(year)
                 };
                 // get the group of budget years at the given year key
-                const budgetYears: InvestmentStrategyBudgetYear[] = groupedBudgetYears[year];
-                // add the budget year budget amounts to the gridDataRow using the selected investment strategy's budget order
-                const budgetOrder = this.selectedInvestmentStrategy.budgetOrder;
+                const budgetYears: InvestmentLibraryBudgetYear[] = groupedBudgetYears[year];
+                // add the budget year budget amounts to the gridDataRow using the selected investment library's budget order
+                const budgetOrder = this.selectedInvestmentLibrary.budgetOrder;
                 for (let i = 0; i < budgetOrder.length; i++) {
-                    const budgetYear: InvestmentStrategyBudgetYear = budgetYears
-                        .find((by: InvestmentStrategyBudgetYear) =>
+                    const budgetYear: InvestmentLibraryBudgetYear = budgetYears
+                        .find((by: InvestmentLibraryBudgetYear) =>
                             by.budgetName === budgetOrder[i]
-                        ) as InvestmentStrategyBudgetYear;
+                        ) as InvestmentLibraryBudgetYear;
                     gridDataRow[budgetOrder[i]] = hasValue(budgetYear) ? budgetYear.budgetAmount : 0;
                 }
                 // add the gridDataRow to the budgetYearsGridData list
@@ -444,12 +444,12 @@
         }
 
         /**
-         * 'New Investment Strategy' button has been clicked
+         * 'New Investment Library' button has been clicked
          */
         onNewLibrary() {
-            // create new CreateInvestmentStrategyDialogData object
-            this.createInvestmentStrategyDialogData = {
-                ...emptyCreateInvestmentStrategyDialogData,
+            // create new CreateInvestmentLibraryDialogData object
+            this.createInvestmentLibraryDialogData = {
+                ...emptyCreateInvestmentLibraryDialogData,
                 showDialog: true
             };
         }
@@ -458,22 +458,22 @@
          * The 'Add Budget Year' button has been clicked
          */
         onAddBudgetYear() {
-            // get the latest year from the selected investment strategy's budget years
-            const latestYear: number = getLatestPropertyValue('year', this.selectedInvestmentStrategy.budgetYears);
+            // get the latest year from the selected investment library's budget years
+            const latestYear: number = getLatestPropertyValue('year', this.selectedInvestmentLibrary.budgetYears);
             // set next year as latestYear + 1 (if present), otherwise set it as current year
             const nextYear = hasValue(latestYear) ? latestYear + 1 : moment().year();
-            // get the latest id from the selected investment strategy's budget years & deleted budget year ids
+            // get the latest id from the selected investment library's budget years & deleted budget year ids
             const latestId: number = last(sorter([
-                ...getPropertyValues('id', this.selectedInvestmentStrategy.budgetYears),
-                ...this.selectedInvestmentStrategy.deletedBudgetYearIds
+                ...getPropertyValues('id', this.selectedInvestmentLibrary.budgetYears),
+                ...this.selectedInvestmentLibrary.deletedBudgetYearIds
             ]) as number[]) as number;
             // set nextId as latestId + 1 (if present), otherwise set it as 1
             let nextId = hasValue(latestId) ? latestId + 1 : 1;
             // create a budget year for each budget
-            const budgets = this.selectedInvestmentStrategy.budgetOrder;
-            const newBudgetYears: InvestmentStrategyBudgetYear[] = budgets.map((budget: string) => {
-                const newBudgetYear: InvestmentStrategyBudgetYear = {
-                    investmentStrategyId: this.selectedInvestmentStrategy.id,
+            const budgets = this.selectedInvestmentLibrary.budgetOrder;
+            const newBudgetYears: InvestmentLibraryBudgetYear[] = budgets.map((budget: string) => {
+                const newBudgetYear: InvestmentLibraryBudgetYear = {
+                    investmentLibraryId: this.selectedInvestmentLibrary.id,
                     id: nextId,
                     year: nextYear,
                     budgetName: budget,
@@ -482,12 +482,12 @@
                 nextId++;
                 return newBudgetYear;
             });
-            // add the new budget years to the selected investment strategy's list of budget
-            const editedBudgetYears = [...this.selectedInvestmentStrategy.budgetYears, ...newBudgetYears];
-            // dispatch action to update the selected investment strategy's budget years
-            this.updateSelectedInvestmentStrategyAction({
-                updatedInvestmentStrategy: {
-                    ...this.selectedInvestmentStrategy,
+            // add the new budget years to the selected investment library's list of budget
+            const editedBudgetYears = [...this.selectedInvestmentLibrary.budgetYears, ...newBudgetYears];
+            // dispatch action to update the selected investment library's budget years
+            this.updateSelectedInvestmentLibraryAction({
+                updatedInvestmentLibrary: {
+                    ...this.selectedInvestmentLibrary,
                     budgetYears: editedBudgetYears
                 }
             });
@@ -508,26 +508,26 @@
             // hide the SetRangeForAddingBudgetYearsDialog modal
             this.showSetRangeForAddingBudgetYearsDialog = false;
             if (range > 0) {
-                // get the latest year from the selected investment strategy's budget years
-                const latestYear = getLatestPropertyValue('year', this.selectedInvestmentStrategy.budgetYears);
+                // get the latest year from the selected investment library's budget years
+                const latestYear = getLatestPropertyValue('year', this.selectedInvestmentLibrary.budgetYears);
                 // set start year as latestYear + 1 (if present), otherwise set it as current year
                 const startYear: number = hasValue(latestYear) ? latestYear + 1 : moment().year();
                 // set end year as startYear + range
                 const endYear = moment().year(startYear).add(range, 'years').year();
-                // get the latest id from the selected investment strategy's budget years & deleted budget year ids
+                // get the latest id from the selected investment library's budget years & deleted budget year ids
                 const latestId: number = last(sorter([
-                    ...getPropertyValues('id', this.selectedInvestmentStrategy.budgetYears),
-                    ...this.selectedInvestmentStrategy.deletedBudgetYearIds
+                    ...getPropertyValues('id', this.selectedInvestmentLibrary.budgetYears),
+                    ...this.selectedInvestmentLibrary.deletedBudgetYearIds
                 ]) as number[]) as number;
                 // set next id as latestId + 1 (if present), otherwise set it as 1
                 let nextId = hasValue(latestId) ? latestId + 1 : 1;
                 // create a list for new budget years
-                const newBudgetYears: InvestmentStrategyBudgetYear[] = [];
+                const newBudgetYears: InvestmentLibraryBudgetYear[] = [];
                 for (let currentYear = startYear; currentYear < endYear; currentYear++) {
                     // for each year create budget years for each budget
-                    this.selectedInvestmentStrategy.budgetOrder.forEach((budget: string) => {
+                    this.selectedInvestmentLibrary.budgetOrder.forEach((budget: string) => {
                         newBudgetYears.push({
-                            investmentStrategyId: this.selectedInvestmentStrategy.id,
+                            investmentLibraryId: this.selectedInvestmentLibrary.id,
                             id: nextId,
                             year: currentYear,
                             budgetName: budget,
@@ -536,12 +536,12 @@
                         nextId++;
                     });
                 }
-                // add the new budget years to the selected investment strategy's list of budget
-                const editedBudgetYears = [...this.selectedInvestmentStrategy.budgetYears, ...newBudgetYears];
-                // dispatch action to update the selected investment strategy's budget years
-                this.updateSelectedInvestmentStrategyAction({
-                    updatedInvestmentStrategy: {
-                        ...this.selectedInvestmentStrategy,
+                // add the new budget years to the selected investment library's list of budget
+                const editedBudgetYears = [...this.selectedInvestmentLibrary.budgetYears, ...newBudgetYears];
+                // dispatch action to update the selected investment library's budget years
+                this.updateSelectedInvestmentLibraryAction({
+                    updatedInvestmentLibrary: {
+                        ...this.selectedInvestmentLibrary,
                         budgetYears: editedBudgetYears
                     }
                 });
@@ -553,21 +553,21 @@
          */
         onDeleteBudgetYears() {
             // get the list of budget years to delete
-            const budgetYearsToDelete: InvestmentStrategyBudgetYear[] = this.selectedInvestmentStrategy.budgetYears
-                .filter((budgetYear: InvestmentStrategyBudgetYear) => contains(budgetYear.year, this.selectedBudgetYears));
+            const budgetYearsToDelete: InvestmentLibraryBudgetYear[] = this.selectedInvestmentLibrary.budgetYears
+                .filter((budgetYear: InvestmentLibraryBudgetYear) => contains(budgetYear.year, this.selectedBudgetYears));
             // get the ids of the budget years to delete
             const deletedBudgetYearIds: number[] = getPropertyValues('id', budgetYearsToDelete);
             // add the ids of the budget years to delete to the current list of ids of budget years to delete
-            const editedDeletedBudgetYearIds = uniq([...this.selectedInvestmentStrategy.deletedBudgetYearIds, ...deletedBudgetYearIds]);
+            const editedDeletedBudgetYearIds = uniq([...this.selectedInvestmentLibrary.deletedBudgetYearIds, ...deletedBudgetYearIds]);
             // filter the copy's existing budget years, removing any budget years where they have been marked as deleted
-            const editedBudgetYears = this.selectedInvestmentStrategy.budgetYears
-                .filter((budgetYear: InvestmentStrategyBudgetYear) =>
+            const editedBudgetYears = this.selectedInvestmentLibrary.budgetYears
+                .filter((budgetYear: InvestmentLibraryBudgetYear) =>
                     !contains(budgetYear.id, editedDeletedBudgetYearIds)
                 );
-            // dispatch action to update the selected investment strategy's budget years & deleted budget year ids
-            this.updateSelectedInvestmentStrategyAction({
-                updatedInvestmentStrategy: {
-                    ...this.selectedInvestmentStrategy,
+            // dispatch action to update the selected investment library's budget years & deleted budget year ids
+            this.updateSelectedInvestmentLibraryAction({
+                updatedInvestmentLibrary: {
+                    ...this.selectedInvestmentLibrary,
                     budgetYears: editedBudgetYears,
                     deletedBudgetYearIds: editedDeletedBudgetYearIds
                 }
@@ -578,10 +578,10 @@
          * 'Edit Budgets' button has been clicked
          */
         onEditBudgets() {
-            // create new EditBudgetsDialogData object and set the budgets using selectedInvestmentStrategy.budgetOrder
+            // create new EditBudgetsDialogData object and set the budgets using selectedInvestmentLibrary.budgetOrder
             this.editBudgetsDialogData = {
                 showDialog: true,
-                budgets: this.selectedInvestmentStrategy.budgetOrder
+                budgets: this.selectedInvestmentLibrary.budgetOrder
             };
         }
 
@@ -597,23 +597,23 @@
                 const previousBudgets = getPropertyValues('previousName', editedBudgets.filter((budget: EditedBudget) => !budget.isNew));
                 // set the deleted budget year ids based on each budget year's budget that is not present in previousBudgets
                 const editedDeletedBudgetYearIds = [
-                    ...this.selectedInvestmentStrategy.deletedBudgetYearIds,
-                    ...getPropertyValues('id', this.selectedInvestmentStrategy.budgetYears
-                        .filter((budgetYear: InvestmentStrategyBudgetYear) =>
+                    ...this.selectedInvestmentLibrary.deletedBudgetYearIds,
+                    ...getPropertyValues('id', this.selectedInvestmentLibrary.budgetYears
+                        .filter((budgetYear: InvestmentLibraryBudgetYear) =>
                             !contains(budgetYear.budgetName, previousBudgets)
                         )) as number[]
                 ];
                 // get the remaining budget years by filtering out budget years that were marked as deleted
-                const remainingBudgetYears = this.selectedInvestmentStrategy.budgetYears
-                    .filter((budgetYear: InvestmentStrategyBudgetYear) =>
+                const remainingBudgetYears = this.selectedInvestmentLibrary.budgetYears
+                    .filter((budgetYear: InvestmentLibraryBudgetYear) =>
                         !contains(budgetYear.id, editedDeletedBudgetYearIds)
                     );
                 // create a list for updated budget years
-                const editedBudgetYears: InvestmentStrategyBudgetYear[] = [];
+                const editedBudgetYears: InvestmentLibraryBudgetYear[] = [];
                 if (!isEmpty(editedBudgets)) {
                     // get all budget years' year values from the remaining budget years
                     const years = getPropertyValues('year', remainingBudgetYears);
-                    // get the latest id from the selected investment strategy's budget years & deleted budget year ids
+                    // get the latest id from the selected investment library's budget years & deleted budget year ids
                     const latestId: number = last(sorter([
                         ...getPropertyValues('id', remainingBudgetYears),
                         ...editedDeletedBudgetYearIds
@@ -623,12 +623,12 @@
                     years.forEach((year: number) => {
                         // get all budget years for the current year
                         const currentYearBudgetYears = remainingBudgetYears
-                            .filter((budgetYear: InvestmentStrategyBudgetYear) => budgetYear.year === year);
+                            .filter((budgetYear: InvestmentLibraryBudgetYear) => budgetYear.year === year);
                         editedBudgets.forEach((editedBudget: EditedBudget) => {
                             if (editedBudget.isNew) {
                                 // create a new budget year for the new budget
                                 editedBudgetYears.push({
-                                    investmentStrategyId: this.selectedInvestmentStrategy.id,
+                                    investmentLibraryId: this.selectedInvestmentLibrary.id,
                                     id: nextId,
                                     year: year,
                                     budgetName: editedBudget.name,
@@ -638,9 +638,9 @@
                             } else {
                                 // find the budget year that has a matching budgetName with the editedBudget.previousName
                                 const updatedBudget = currentYearBudgetYears
-                                    .find((budgetYear: InvestmentStrategyBudgetYear) =>
+                                    .find((budgetYear: InvestmentLibraryBudgetYear) =>
                                         budgetYear.budgetName === editedBudget.previousName
-                                    ) as InvestmentStrategyBudgetYear;
+                                    ) as InvestmentLibraryBudgetYear;
                                 // update the budget year's budgetName with the editedBudget.name
                                 editedBudgetYears.push({
                                     ...updatedBudget,
@@ -650,11 +650,11 @@
                         });
                     });
                 }
-                // dispatch action to update the selected investment strategy's budget order, budget years, & deleted
+                // dispatch action to update the selected investment library's budget order, budget years, & deleted
                 // budget year ids
-                this.updateSelectedInvestmentStrategyAction({
-                    updatedInvestmentStrategy: {
-                        ...this.selectedInvestmentStrategy,
+                this.updateSelectedInvestmentLibraryAction({
+                    updatedInvestmentLibrary: {
+                        ...this.selectedInvestmentLibrary,
                         budgetOrder: getPropertyValues('name', editedBudgets),
                         budgetYears: editedBudgetYears,
                         deletedBudgetYearIds: editedDeletedBudgetYearIds
@@ -668,22 +668,22 @@
          */
         onEditBudgetYearAmount(year: number, budgetName: string, amount: number) {
 
-            if (any(propEq('year', year), this.selectedInvestmentStrategy.budgetYears) &&
-                any(propEq('budgetName', budgetName), this.selectedInvestmentStrategy.budgetYears)) {
-                // get the selected investment strategy's list of budget years
-                const updatedBudgetYears = this.selectedInvestmentStrategy.budgetYears;
+            if (any(propEq('year', year), this.selectedInvestmentLibrary.budgetYears) &&
+                any(propEq('budgetName', budgetName), this.selectedInvestmentLibrary.budgetYears)) {
+                // get the selected investment library's list of budget years
+                const updatedBudgetYears = this.selectedInvestmentLibrary.budgetYears;
                 // find the index of the updated budget year in the list of budget years
                 const index: number = findIndex(
-                    (budgetYear: InvestmentStrategyBudgetYear) =>
+                    (budgetYear: InvestmentLibraryBudgetYear) =>
                         budgetYear.year === year && budgetYear.budgetName === budgetName,
                     updatedBudgetYears
                 );
                 // update the budget year's budget amount with the specified amount at the given index of the list of budget years
                 updatedBudgetYears[index].budgetAmount = amount;
-                // dispatch action to update the selected investment strategy's budget years
-                this.updateSelectedInvestmentStrategyAction({
-                    updatedInvestmentStrategy: {
-                        ...this.selectedInvestmentStrategy,
+                // dispatch action to update the selected investment library's budget years
+                this.updateSelectedInvestmentLibraryAction({
+                    updatedInvestmentLibrary: {
+                        ...this.selectedInvestmentLibrary,
                         budgetYears: updatedBudgetYears
                     }
                 });
@@ -694,33 +694,33 @@
          * 'Create as New Library' button has been clicked
          */
         onCreateAsNewLibrary() {
-            // create a new CreateInvestmentStrategyDialogData object, setting the inflation/discount rates, description,
-            // budgetOrder, and budgetYears using the selected investment strategy's data
-            this.createInvestmentStrategyDialogData = {
+            // create a new CreateInvestmentLibraryDialogData object, setting the inflation/discount rates, description,
+            // budgetOrder, and budgetYears using the selected investment library's data
+            this.createInvestmentLibraryDialogData = {
                 showDialog: true,
-                inflationRate: this.selectedInvestmentStrategy.inflationRate,
-                discountRate: this.selectedInvestmentStrategy.discountRate,
-                description: this.selectedInvestmentStrategy.description,
-                budgetOrder: this.selectedInvestmentStrategy.budgetOrder,
-                budgetYears: this.selectedInvestmentStrategy.budgetYears
+                inflationRate: this.selectedInvestmentLibrary.inflationRate,
+                discountRate: this.selectedInvestmentLibrary.discountRate,
+                description: this.selectedInvestmentLibrary.description,
+                budgetOrder: this.selectedInvestmentLibrary.budgetOrder,
+                budgetYears: this.selectedInvestmentLibrary.budgetYears
             };
         }
 
         /**
-         * User has submitted CreateInvestmentStrategyDialog result
-         * @param createdInvestmentStrategy The created investment strategy to save
+         * User has submitted CreateInvestmentLibraryDialog result
+         * @param createdInvestmentLibrary The created investment library to save
          */
-        onCreateInvestmentStrategy(createdInvestmentStrategy: InvestmentStrategy) {
-            // reset createInvestmentStrategyDialogData
-            this.createInvestmentStrategyDialogData = {...emptyCreateInvestmentStrategyDialogData};
-            if (!isNil(createdInvestmentStrategy)) {
-                // get the latest id from the list of investment strategies
-                const latestId: number = getLatestPropertyValue('id', this.investmentStrategies);
-                // set the created investment strategy's id by adding 1 to latestId (if present), otherwise use 1
-                createdInvestmentStrategy.id = hasValue(latestId) ? latestId + 1 : 1;
-                // set isBusy to true, then dispatch action to create investment strategy
+        onCreateInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary) {
+            // reset createInvestmentLibraryDialogData
+            this.createInvestmentLibraryDialogData = {...emptyCreateInvestmentLibraryDialogData};
+            if (!isNil(createdInvestmentLibrary)) {
+                // get the latest id from the list of investment libraries
+                const latestId: number = getLatestPropertyValue('id', this.investmentLibraries);
+                // set the created investment library's id by adding 1 to latestId (if present), otherwise use 1
+                createdInvestmentLibrary.id = hasValue(latestId) ? latestId + 1 : 1;
+                // set isBusy to true, then dispatch action to create investment library
                 this.setIsBusyAction({ isBusy: true });
-                this.createInvestmentStrategyAction({ createdInvestmentStrategy: createdInvestmentStrategy })
+                this.createInvestmentLibraryAction({ createdInvestmentLibrary: createdInvestmentLibrary })
                     .then(() => {
                         this.setIsBusyAction({ isBusy: false });
                         this.setSuccessMessageAction({ message: 'New library created successfully' });
@@ -737,8 +737,8 @@
          */
         onUpdateLibrary() {
             this.setIsBusyAction({ isBusy: true });
-            // dispatch action to update selected investment strategy on the server
-            this.updateInvestmentStrategyAction({ updatedInvestmentStrategy: this.selectedInvestmentStrategy })
+            // dispatch action to update selected investment library on the server
+            this.updateInvestmentLibraryAction({ updatedInvestmentLibrary: this.selectedInvestmentLibrary })
                 .then(() => {
                     this.setIsBusyAction({ isBusy: false });
                     this.setSuccessMessageAction({ message: 'Library updated successfully' });
@@ -754,8 +754,8 @@
          */
         onApplyToScenario() {
             this.setIsBusyAction({ isBusy: true });
-            // dispatch action to update selected investment strategy on the server
-            this.updateInvestmentScenarioAction({ updatedInvestmentScenario: this.selectedInvestmentStrategy })
+            // dispatch action to update selected investment library on the server
+            this.updateInvestmentScenarioAction({ updatedInvestmentScenario: this.selectedInvestmentLibrary })
                 .then((response: any) => {
                     this.setIsBusyAction({ isBusy: false });
                     this.warning.showModal = true;
@@ -772,9 +772,9 @@
                 });
         }
 
-        onClearInvestmentStrategySelection() {
-            // dispatch an action to unselect the selected investment strategy
-            this.selectInvestmentStrategyAction({investmentStrategyId: null});
+        onClearInvestmentLibrarySelection() {
+            // dispatch an action to unselect the selected investment library
+            this.selectInvestmentLibraryAction({investmentLibraryId: null});
         }
 
         onWarningModalDecision(value: boolean) {
@@ -786,12 +786,12 @@
             this.getInvestmentForScenario();
         }
 
-        getInvestmentForScenario() {
+        getScenarioInvestmentLibrary() {
             this.setIsBusyAction({ isBusy: true });
             this.getInvestmentForScenarioAction({ selectedScenario: this.selectedScenarioId })
                 .then(() => {
 
-                    this.selectInvestmentForScenarioAction({ investmentStrategyId: this.investmentForScenario[0].id })
+                    this.selectInvestmentForScenarioAction({ investmentLibraryId: this.investmentForScenario[0].id })
                         .then(() => {
                             this.setIsBusyAction({ isBusy: false });
                         });

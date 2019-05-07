@@ -1,36 +1,39 @@
 import axios from 'axios';
-import {InvestmentStrategy} from '@/shared/models/iAM/investment';
+import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InvestmentEditorService {
-
-    getInvestmentForScenario(selectedScenario: number): Promise<InvestmentStrategy> {
-        return axios.get(`/api/GetInvestmentStrategies/${selectedScenario}`)
+    /**
+     * Gets a scenario's investment library data
+     * @param selectedScenarioId
+     */
+    getScenarioInvestmentLibrary(selectedScenarioId: number): Promise<InvestmentLibrary> {
+        return axios.get(`/api/GetInvestmentStrategies/${selectedScenarioId}`)
             .then((response: any) => {
-                return response.data as Promise<InvestmentStrategy>;
+                return response.data as Promise<InvestmentLibrary>;
             });
     }
 
     /**
-     * Updates an investment strategy
-     * @param updatedInvestmentStrategy The investment strategy update data
+     * Upserts a scenario's investment library data
+     * @param updatedScenarioInvestmentLibrary The scenario investment library update data
      */
-    updateInvestmentScenario(updatedInvestmentScenario: InvestmentStrategy): Promise<InvestmentStrategy> {
+    updateScenarioInvestmentLibrary(updatedScenarioInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
         return axios({
             method: 'post',
             url: '/api/SaveInvestmentStrategy',
             data: {
-                SimulationId: updatedInvestmentScenario.id,
-                Name: updatedInvestmentScenario.name,
-                InflationRate: updatedInvestmentScenario.inflationRate,
-                DiscountRate: updatedInvestmentScenario.discountRate,
-                Description: updatedInvestmentScenario.description,
-                BudgetNamesByOrder: updatedInvestmentScenario.budgetOrder,
-                YearlyBudgets: updatedInvestmentScenario.budgetYears
+                SimulationId: updatedScenarioInvestmentLibrary.id,
+                Name: updatedScenarioInvestmentLibrary.name,
+                InflationRate: updatedScenarioInvestmentLibrary.inflationRate,
+                DiscountRate: updatedScenarioInvestmentLibrary.discountRate,
+                Description: updatedScenarioInvestmentLibrary.description,
+                BudgetNamesByOrder: updatedScenarioInvestmentLibrary.budgetOrder,
+                YearlyBudgets: updatedScenarioInvestmentLibrary.budgetYears
             }
         }).then((response: any) => {
             return response;
-            });
+        });
     }
 }

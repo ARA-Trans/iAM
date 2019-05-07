@@ -1,82 +1,64 @@
-import {
-    emptyInvestmentStrategy,
-    InvestmentStrategy
-} from '@/shared/models/iAM/investment';
+import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import { clone, any, propEq, append, findIndex, isNil } from 'ramda';
-import { db } from '@/firebase';
+import {clone, any, propEq, append, findIndex, isNil} from 'ramda';
+import {db} from '@/firebase';
 
 const state = {
-    investmentStrategies: [] as InvestmentStrategy[],
-    selectedInvestmentStrategy: { ...emptyInvestmentStrategy } as InvestmentStrategy,
-    investmentForScenario: [] as InvestmentStrategy[],
+    investmentLibraries: [] as InvestmentLibrary[],
+    scenarioInvestmentLibrary: clone(emptyInvestmentLibrary) as InvestmentLibrary,
+    selectedInvestmentLibrary: clone(emptyInvestmentLibrary) as InvestmentLibrary
 };
 
 const mutations = {
-    investmentStrategiesMutator(state: any, investmentStrategies: InvestmentStrategy[]) {
-        // update state.investmentStrategies with a clone of the incoming list of investment strategies
-        state.investmentStrategies = clone(investmentStrategies);
+    investmentLibrariesMutator(state: any, investmentLibraries: InvestmentLibrary[]) {
+        // update state.investmentLibraries with a clone of the incoming list of investment libraries
+        state.investmentLibraries = clone(investmentLibraries);
     },
-    investmentForScenarioMutator(state: any, investmentForScenario: InvestmentStrategy[]) {
-        // update state.investmentStrategies with a clone of the incoming list of investment strategies
+    selectedInvestmentLibraryMutator(state: any, investmentLibraryId: number) {
+        if (any(propEq('id', investmentLibraryId), state.investmentLibraries)) {
+            // find the existing investment library in state.investmentLibraries where the id matches investmentLibraryId,
+            // clone it, then update state.selectedInvestmentLibrary with the cloned, existing investment library
+            state.selectedInvestmentLibrary = clone(state.investmentLibraries
+                .find((investmentLibrary: InvestmentLibrary) =>
+                    investmentLibrary.id === investmentLibraryId
+                ) as InvestmentLibrary);
+        } else if (investmentLibraryId === null) {
+            // update state.selectedInvestmentLibrary with a new empty investment library object
+            state.selectedInvestmentLibrary = {...emptyInvestmentLibrary};
+        }
+    },
+    updatedSelectedInvestmentLibraryMutator(state: any, updatedSelectedInvestmentLibrary: InvestmentLibrary) {
+        state.selectedInvestmentLibrary = updatedSelectedInvestmentLibrary;
+    },
+    createdInvestmentLibraryMutator(state: any, createdInvestmentLibrary: InvestmentLibrary) {
+        // append the created investment library to a cloned list of state.investmentLibraries, then update
+        // state.investmentLibraries with the cloned list
+        state.investmentLibraries = append(createdInvestmentLibrary, state.investmentLibraries);
+    },
+    updatedInvestmentLibraryMutator(state: any, updatedInvestmentLibrary: InvestmentLibrary) {
+        if (any(propEq('id', updatedInvestmentLibrary.id), state.investmentLibraries)) {
+            // clone the list of investment libraries in state
+            const investmentLibraries: InvestmentLibrary[] = clone(state.investmentLibraries);
+            // find the index of the existing investment library in the cloned list of investment libraries that has
+            // a matching id with the updated investment library
+            const index: number = findIndex(propEq('id', updatedInvestmentLibrary.id), investmentLibraries);
+            // set the investment libraries at the specified index with the updated investment library
+            investmentLibraries[index] = updatedInvestmentLibrary;
+            // update state.investmentLibraries with the cloned list of investment libraries
+            state.investmentLibraries = investmentLibraries;
+        }
+    },
+    scenarioInvestmentLibraryMutator(state: any, investmentForScenario: InvestmentLibrary[]) {
+        // update state.investmentLibraries with a clone of the incoming list of investment libraries
         state.investmentForScenario = clone(investmentForScenario);
-    },
-    selectedInvestmentStrategyMutator(state: any, investmentStrategyId: number) {
-        if (any(propEq('id', investmentStrategyId), state.investmentStrategies)) {
-            // find the existing investment strategy in state.investmentStrategies where the id matches investmentStrategyId,
-            // clone it, then update state.selectedInvestmentStrategy with the cloned, existing investment strategy
-            state.selectedInvestmentStrategy = clone(state.investmentStrategies
-                .find((investmentStrategy: InvestmentStrategy) =>
-                    investmentStrategy.id === investmentStrategyId
-                ) as InvestmentStrategy);
-        } else if (investmentStrategyId === null) {
-            // update state.selectedInvestmentStrategy with a new empty investment strategy object
-            state.selectedInvestmentStrategy = {...emptyInvestmentStrategy};
-        }
-    },
-
-    selectedInvestmentForScenarioMutator(state: any, investmentStrategyId: number) {
-        if (any(propEq('id', investmentStrategyId), state.investmentForScenario)) {
-            // find the existing investment strategy in state.investmentForScenario where the id matches investmentStrategyId,
-            // clone it, then update state.selectedInvestmentStrategy with the cloned, existing investment strategy
-            state.selectedInvestmentStrategy = clone(state.investmentForScenario
-                .find((investmentStrategy: InvestmentStrategy) =>
-                    investmentStrategy.id === investmentStrategyId
-                ) as InvestmentStrategy);
-        } else if (investmentStrategyId === null) {
-            // update state.selectedInvestmentStrategy with a new empty investment strategy object
-            state.selectedInvestmentStrategy = { ...emptyInvestmentStrategy };
-        }
-    },
-
-    updateSelectedInvestmentStrategyMutator(state: any, updatedSelectedInvestmentStrategy: InvestmentStrategy) {
-        state.selectedInvestmentStrategy = updatedSelectedInvestmentStrategy;
-    },
-    createdInvestmentStrategyMutator(state: any, createdInvestmentStrategy: InvestmentStrategy) {
-        // append the created investment strategy to a cloned list of state.investmentStrategies, then update
-        // state.investmentStrategies with the cloned list
-        state.investmentStrategies = append(createdInvestmentStrategy, state.investmentStrategies);
-    },
-    updatedInvestmentStrategyMutator(state: any, updatedInvestmentStrategy: InvestmentStrategy) {
-        if (any(propEq('id', updatedInvestmentStrategy.id), state.investmentStrategies)) {
-            // clone the list of investment strategies in state
-            const investmentStrategies: InvestmentStrategy[] = clone(state.investmentStrategies);
-            // find the index of the existing investment strategy in the cloned list of investment strategies that has
-            // a matching id with the updated investment strategy
-            const index: number = findIndex(propEq('id', updatedInvestmentStrategy.id), investmentStrategies);
-            // set the investment strategies at the specified index with the updated investment strategy
-            investmentStrategies[index] = updatedInvestmentStrategy;
-            // update state.investmentStrategies with the cloned list of investment strategies
-            state.investmentStrategies = investmentStrategies;
-        }
     }
 };
 
 const actions = {
-    async getInvestmentStrategies({ commit }: any) {
+    async getInvestmentLibraries({ commit }: any) {
         await db.ref('investmentLibraries').on('value', (snapshot: any) => {
             const results = snapshot.val();
-            let investmentStrategies: InvestmentStrategy[] = [];
+            let investmentLibraries: InvestmentLibrary[] = [];
             for (let key in results) {
                 if (isNil(results[key].budgetOrder)) {
                     results[key].budgetOrder = [];
@@ -87,74 +69,65 @@ const actions = {
                 if (isNil(results[key].deletedBudgetYearIds)) {
                     results[key].deletedBudgetYearIds = [];
                 }
-                investmentStrategies.push({
+                investmentLibraries.push({
                     id: results[key].id,
                     name: results[key].name,
                     inflationRate: results[key].inflationRate,
                     discountRate: results[key].discountRate,
                     description: results[key].description,
                     budgetOrder: results[key].budgetOrder,
-                    budgetYears: results[key].budgetYears,
-                    deletedBudgetYearIds: results[key].deletedBudgetYearIds
+                    budgetYears: results[key].budgetYears
                 });
             }
-            commit('investmentStrategiesMutator', investmentStrategies);
+            commit('investmentLibrariesMutator', investmentLibraries);
         }, (error: any) => {
             console.log('error in fetching investment libraries', error);
         });
     },
-    selectInvestmentStrategy({commit}: any, payload: any) {
-        commit('selectedInvestmentStrategyMutator', payload.investmentStrategyId);
+    selectInvestmentLibrary({commit}: any, payload: any) {
+        commit('selectedInvestmentLibraryMutator', payload.investmentLibraryId);
     },
-
-    selectInvestmentForScenario({ commit }: any, payload: any) {
-        commit('selectedInvestmentForScenarioMutator', payload.investmentStrategyId);
+    updateSelectedInvestmentLibrary({commit}: any, payload: any) {
+        commit('updatedSelectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
     },
-
-    updateSelectedInvestmentStrategy({commit}: any, payload: any) {
-        commit('updateSelectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy);
-    },
-    async createInvestmentStrategy({ commit }: any, payload: any) {
-        await db.ref('investmentLibraries').child('Investment_' + payload.createdInvestmentStrategy.id).set(payload.createdInvestmentStrategy)
+    async createInvestmentLibrary({ commit }: any, payload: any) {
+        await db.ref('investmentLibraries').child('Investment_' + payload.createdInvestmentLibrary.id).set(payload.createdInvestmentLibrary)
             .then(() => {
-                commit('createdInvestmentStrategyMutator', payload.createdInvestmentStrategy);
-                commit('selectedInvestmentStrategyMutator', payload.createdInvestmentStrategy.id);
+                commit('createdInvestmentLibraryMutator', payload.createdInvestmentLibrary);
+                commit('selectedInvestmentLibraryMutator', payload.createdInvestmentLibrary.id);
             })
             .catch((error: any) => console.log(error));
     },
-    async updateInvestmentStrategy({ commit }: any, payload: any) {
-        await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentStrategy.id).update(payload.updatedInvestmentStrategy)
+    async updateInvestmentLibrary({ commit }: any, payload: any) {
+        await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentLibrary.id).update(payload.updatedInvestmentLibrary)
             .then(() => {
-                commit('updatedInvestmentStrategyMutator', payload.updatedInvestmentStrategy);
-                commit('selectedInvestmentStrategyMutator', payload.updatedInvestmentStrategy.id);
+                commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
+                commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
             })
             .catch((error: any) => console.log(error));
     },
-    async updateInvestmentScenario({ commit }: any, payload: any) {
-        return await new InvestmentEditorService().updateInvestmentScenario(payload.updatedInvestmentScenario)
+    async getScenarioInvestmentLibrary({ commit }: any, payload: any) {
+        await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenario)
+            .then((investmentLibrary: any) => {
+                const scenarioInvestmentLibrary: InvestmentLibrary = {
+                    id: investmentLibrary[0].simulationId,
+                    name: investmentLibrary[0].name,
+                    inflationRate: investmentLibrary[0].inflationRate,
+                    discountRate: investmentLibrary[0].discountRate,
+                    description: investmentLibrary[0].description,
+                    budgetOrder: investmentLibrary[0].budgetNamesByOrder,
+                    budgetYears: investmentLibrary[0].yearlyBudgets
+                };
+                commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
+            })
+            .catch((error: any) => console.log(error));
+    },
+    async upsertScenarioInvestmentLibrary({ commit }: any, payload: any) {
+        return await new InvestmentEditorService().updateScenarioInvestmentLibrary(payload.updatedInvestmentScenario)
             .then((results: any) => {
                 return results.status;
             })
             .catch((error: any) => { return error.response.status; });
-    },
-
-    async getInvestmentForScenario({ commit }: any, payload: any) {
-        await new InvestmentEditorService().getInvestmentForScenario(payload.selectedScenario)
-            .then((investmentForScenario: any) => {
-                let scenario: InvestmentStrategy[] = [];
-                scenario.push({
-                    id: investmentForScenario[0].simulationId,
-                    name: investmentForScenario[0].name,
-                    inflationRate: investmentForScenario[0].inflationRate,
-                    discountRate: investmentForScenario[0].discountRate,
-                    description: investmentForScenario[0].description,
-                    budgetOrder: investmentForScenario[0].budgetNamesByOrder,
-                    budgetYears: investmentForScenario[0].yearlyBudgets,
-                    deletedBudgetYearIds: []
-                });
-                commit('investmentForScenarioMutator', scenario);
-            })
-            .catch((error: any) => console.log(error));
     }
 };
 

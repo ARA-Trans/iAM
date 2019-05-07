@@ -282,10 +282,10 @@
             const allConsequences: Consequence [] = [];
             this.allTreatments.forEach((treatment: Treatment) => {
                 if (hasValue(treatment.feasibility)) {
-                    allFeasibilities.push(clone(treatment.feasibility) as Feasibility);
+                    allFeasibilities.push(treatment.feasibility as Feasibility);
                 }
-                allCosts.push(...clone(treatment.costs));
-                allConsequences.push(...clone(treatment.consequences));
+                allCosts.push(...treatment.costs);
+                allConsequences.push(...treatment.consequences);
             });
             // set the 'latest' id for each: feasibilities, costs, and consequences
             this.latestFeasibilityId = getLatestPropertyValue('id', allFeasibilities);
@@ -301,19 +301,18 @@
             const treatments: Treatment[] = [];
             // add the treatments from the scenario treatment library (if present)
             if (this.scenarioTreatmentLibrary.id > 0) {
-                treatments.push(...clone(this.scenarioTreatmentLibrary.treatments));
+                treatments.push(...this.scenarioTreatmentLibrary.treatments);
             }
             // add the treatments from the selected treatment library (if present)
             if (this.selectedTreatmentLibrary.id > 0) {
-                treatments.push(...clone(this.selectedTreatmentLibrary.treatments));
+                treatments.push(...this.selectedTreatmentLibrary.treatments);
             }
             // add the treatments from each treatment library in the list of treatment libraries
             this.treatmentLibraries.forEach((treatmentLibrary: TreatmentLibrary) =>
-                treatments.push(...clone(treatmentLibrary.treatments))
+                treatments.push(...treatmentLibrary.treatments)
             );
             // remove duplicates and set allTreatments
             this.allTreatments = uniq(treatments);
-            // get the latest ids for each: treatments, feasibilities, costs, and consequences
         }
 
         /**
@@ -384,7 +383,7 @@
                                 vm.setIsBusyAction({isBusy: false});
                             }
                         });
-                }, 0);
+                });
             });
         }
 
@@ -445,7 +444,7 @@
             }).then(() => {
                 setTimeout(() => {
                     this.setSelectedTreatment(this.selectedTreatment.id);
-                }, 0);
+                });
             });
         }
 
@@ -466,7 +465,7 @@
                     this.setIsBusyAction({isBusy: true});
                     this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
                         .then(() => this.setIsBusyAction({isBusy: false}));
-                }, 0);
+                });
             }
         }
 
@@ -528,7 +527,7 @@
                         this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
                             this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
-                        }, 0);
+                        });
                     });
             }
         }
@@ -593,7 +592,7 @@
                 // dispatch action to update selectedTreatmentLibrary with the created treatment
                 this.updateSelectedTreatmentLibraryAction({
                     updatedSelectedTreatmentLibrary: {
-                        ...clone(this.selectedTreatmentLibrary),
+                        ...this.selectedTreatmentLibrary,
                         treatments: append(createdTreatment, this.selectedTreatmentLibrary.treatments)
                     }
                 }).then(() => this.treatmentSelectItemValue = createdTreatment.id.toString());

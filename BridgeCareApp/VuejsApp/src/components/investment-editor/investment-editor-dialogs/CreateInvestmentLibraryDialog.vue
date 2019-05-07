@@ -44,14 +44,14 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {hasValue} from '@/shared/utils/has-value';
-    import {CreateInvestmentStrategyDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-strategy-dialog-data';
-    import {emptyInvestmentStrategy, InvestmentStrategy} from '@/shared/models/iAM/investment';
+    import {CreateInvestmentLibraryDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-library-dialog-data';
+    import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 
     @Component
     export default class CreateInvestmentStrategyDialog extends Vue {
-        @Prop() dialogData: CreateInvestmentStrategyDialogData;
+        @Prop() dialogData: CreateInvestmentLibraryDialogData;
 
-        createdInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
+        createdInvestmentStrategy: InvestmentLibrary = {...emptyInvestmentLibrary};
 
         /**
          * Watcher: dialogData
@@ -76,7 +76,7 @@
          */
         onSubmit() {
             this.$emit('submit', this.createdInvestmentStrategy);
-            this.createdInvestmentStrategy = {...emptyInvestmentStrategy};
+            this.createdInvestmentStrategy = {...emptyInvestmentLibrary};
         }
 
         /**
@@ -84,7 +84,7 @@
          */
         onCancel() {
             this.$emit('submit', null);
-            this.createdInvestmentStrategy = {...emptyInvestmentStrategy};
+            this.createdInvestmentStrategy = {...emptyInvestmentLibrary};
         }
     }
 </script>

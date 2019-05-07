@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {mockScenarioTreatmentLibrary, mockTreatmentLibraries} from '@/shared/utils/mock-data';
-import {clone} from 'ramda';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -10,7 +9,7 @@ export default class TreatmentEditorService {
      * Gets all treatment libraries a user can read/edit
      */
     getTreatmentLibraries(): Promise<TreatmentLibrary[]> {
-        return Promise.resolve<TreatmentLibrary[]>(clone(mockTreatmentLibraries));
+        return Promise.resolve<TreatmentLibrary[]>(mockTreatmentLibraries);
         // TODO: add axios web service call for treatment libraries
     }
 
@@ -37,7 +36,7 @@ export default class TreatmentEditorService {
      * @param scenarioId The id of the scenario to use to get the scenario treatment library
      */
     getScenarioTreatmentLibrary(scenarioId: number): Promise<TreatmentLibrary> {
-        return Promise.resolve<TreatmentLibrary>(clone(mockScenarioTreatmentLibrary));
+        return Promise.resolve<TreatmentLibrary>(mockScenarioTreatmentLibrary);
         // TODO: add axios web service call for scenario treatment library
     }
 
