@@ -1,33 +1,52 @@
 import axios from 'axios';
-import {PerformanceStrategy} from '@/shared/models/iAM/performance';
-import {mockPerformanceStrategies} from '@/shared/utils/mock-data';
+import {PerformanceLibrary} from '@/shared/models/iAM/performance';
+import {mockPerformanceLibraries, mockScenarioPerformanceLibrary} from '@/shared/utils/mock-data';
+import {clone} from 'ramda';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class PerformanceEditorService {
     /**
-     * Gets all performance strategies a user can read/edit
+     * Gets all performance Libraries a user can read/edit
      */
-    getPerformanceStrategies(): Promise<PerformanceStrategy[]> {
-        return Promise.resolve<PerformanceStrategy[]>(mockPerformanceStrategies);
-        // TODO: add axios web service call for performance strategies
+    getPerformanceLibraries(): Promise<PerformanceLibrary[]> {
+        return Promise.resolve<PerformanceLibrary[]>(mockPerformanceLibraries);
+        // TODO: add axios web service call for performance Libraries
     }
 
     /**
-     * Creates a performance strategy
-     * @param createdPerformanceStrategy The performance strategy create data
+     * Creates a performance library
+     * @param createdPerformanceLibrary The performance library create data
      */
-    createPerformanceStrategy(createdPerformanceStrategy: PerformanceStrategy): Promise<PerformanceStrategy> {
-        return Promise.resolve<PerformanceStrategy>(createdPerformanceStrategy);
-        // TODO: add axios web service call for creating performance strategy
+    createPerformanceLibrary(createdPerformanceLibrary: PerformanceLibrary): Promise<any> {
+        return Promise.resolve<any>({} as any);
+        // TODO: add axios web service call for creating performance library
     }
 
     /**
-     * Updates a performance strategy
-     * @param updatePerformanceStrategy The performance strategy update data
+     * Updates a performance library
+     * @param updatePerformanceLibrary The performance library update data
      */
-    updatePerformanceStrategy(updatedPerformanceStrategy: PerformanceStrategy): Promise<PerformanceStrategy> {
-        return Promise.resolve<PerformanceStrategy>(updatedPerformanceStrategy);
-        // TODO: add axios web service call for updating performance strategy
+    updatePerformanceLibrary(updatedPerformanceLibrary: PerformanceLibrary): Promise<any> {
+        return Promise.resolve<any>({} as any);
+        // TODO: add axios web service call for updating performance library
+    }
+
+    /**
+     * Gets a scenario's performance library
+     * @param scenarioId The id of the scenario to use to get the scenario performance library
+     */
+    getScenarioPerformanceLibrary(scenarioId: number): Promise<PerformanceLibrary> {
+        return Promise.resolve<PerformanceLibrary>(clone(mockScenarioPerformanceLibrary));
+        // TODO: add axios web service call for scenario treatment library
+    }
+
+    /**
+     * Upserts a scenario performance library
+     * @param upsertedScenarioPerformanceLibrary The scenario performance library upsert data
+     */
+    upsertScenarioPerformanceLibrary(upsertedScenarioPerformanceLibrary: PerformanceLibrary): Promise<any> {
+        return Promise.resolve<any>({} as any);
+        // TODO: add axios web service call for upserting scenario performance library
     }
 }

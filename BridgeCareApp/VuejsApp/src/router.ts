@@ -61,6 +61,7 @@ const router = new VueRouter({
             path: '/PerformanceEditor/',
             name: 'PerformanceEditor',
             component: PerformanceEditor,
+            props: true,
             alias: '/PerformanceEditor/Library/'
         },
         {
@@ -79,6 +80,7 @@ const router = new VueRouter({
         {
             path: '/PerformanceEditor/',
             component: PerformanceEditor,
+            props: true,
             alias: '/PerformanceEditor/FromScenario/'
         },
         {
