@@ -19,10 +19,8 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -336,6 +334,7 @@
     <Content Include="Dependencies\OpenGISExtension.dll" />
     <Content Include="Dependencies\OpenGISExtension.pdb" />
     <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
+    <Content Include="Dependencies\RoadCareSecurityOperations.dll" />
     <Content Include="Dependencies\RollupSegmentation.dll" />
     <Content Include="Dependencies\RollupSegmentation.pdb" />
     <Content Include="Dependencies\SharpMap.dll" />
@@ -371,6 +370,7 @@
     </Content>
     <Content Include="Dependencies\RollupSegmentation.dll.config" />
     <Content Include="Dependencies\IntegrationOMS.dll.config" />
+    <Content Include="Dependencies\Simulation.dll.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

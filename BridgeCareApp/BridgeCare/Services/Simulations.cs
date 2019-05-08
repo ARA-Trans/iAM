@@ -30,7 +30,8 @@ namespace BridgeCare.Services
                                       SimulationName = contextTable.SIMULATION1,
                                       NetworkId = contextTable.NETWORKID.Value,
                                       Created = contextTable.DATE_CREATED,
-                                      LastRun = contextTable.DATE_LAST_RUN
+                                      LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
+                                      NetworkName = contextTable.NETWORK.NETWORK_NAME
                                   };
             return filteredColumns;
         }
@@ -95,7 +96,8 @@ namespace BridgeCare.Services
                     BUDGET_CONSTRAINT = "As Budget Permits",
                     WEIGHTING = "none",
                     COMMITTED_START = DateTime.Now.Year,
-                    COMMITTED_PERIOD = 5
+                    COMMITTED_PERIOD = 5,
+                    DATE_LAST_RUN = DateTime.Now
                 };
                 errorString = "Add to simulation table";
                 db.SIMULATIONS.Add(sim);

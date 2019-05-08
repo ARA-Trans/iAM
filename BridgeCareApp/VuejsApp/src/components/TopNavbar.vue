@@ -113,7 +113,7 @@
                 }
                 else {
                     this.$forceUpdate();
-                    this.setIsBusyAction({ isBusy: true })
+                    this.setIsBusyAction({ isBusy: true });
                     this.getNetworksAction().then(() =>
                         this.setIsBusyAction({ isBusy: false })
                     ).catch((error: any) => {

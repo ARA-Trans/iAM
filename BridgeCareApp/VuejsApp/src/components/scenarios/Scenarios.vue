@@ -120,7 +120,7 @@
     import ReportsDownload from '@/shared/dialogs/ReportsDownload.vue';
     import { ShowAvailableReports } from '@/shared/models/dialogs/download-reports-dialog';
     import { CreateScenarioDialogData } from '@/shared/models/dialogs/create-scenario-dialog/scenario-creation-data';
-    import ScenarioCreationDialog from '@/components/scenarios/create-scenario-dialog/ScenarioCreationDialog.vue'
+    import ScenarioCreationDialog from '@/components/scenarios/create-scenario-dialog/ScenarioCreationDialog.vue';
     import { Network } from '@/shared/models/iAM/network';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
@@ -138,6 +138,7 @@
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getUserScenarios') getUserScenariosAction: any;
+        @Action('getScenarios') getScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('createNewScenario') createNewScenarioAction: any;
@@ -208,7 +209,14 @@
                     this.setIsBusyAction({isBusy: false});
                     console.log(error);
                 });
-
+            
+            // Intentionally left this code commented, It fetches the scenarios/simulation from the Legacy db
+            //this.getScenariosAction()
+            //    .then(() => this.setIsBusyAction({isBusy: false}))
+            //    .catch((error: any) => {
+            //        this.setIsBusyAction({isBusy: false});
+            //        console.log(error);
+            //    });
         }
 
         //TODO: need to replace this with something that will actually get the status of scenario from server
@@ -296,7 +304,8 @@
             this.createNewScenarioAction({
                 networkId: this.networks[0].networkId,
                 networkName: this.networks[0].networkName,
-                scenarioName: value.name
+                scenarioName: value.name,
+                userId: this.userId
             })
                 .then(() => this.createScenarioData.showDialog = false);
         }

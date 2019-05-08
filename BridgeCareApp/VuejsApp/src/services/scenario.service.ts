@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
+import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -11,6 +11,13 @@ export default class ScenarioService {
     applyAnalysisDataToScenario(analysis: Analysis): Promise<boolean> {
         return Promise.resolve<boolean>(true);
         // TODO: add axios web service call to upsert analysis data for a scenario
+    }
+
+    getScenarios(): Promise<Scenario[]> {
+        return axios.get('/api/Simulations')
+            .then((response: any) => {
+                return response.data as Promise<Scenario[]>;
+            });
     }
 
     createNewScenario(networkId: number, simulationName: string): Promise<any> {
