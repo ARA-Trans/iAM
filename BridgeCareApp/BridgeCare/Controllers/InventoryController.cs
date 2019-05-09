@@ -1,6 +1,7 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Filters;
 
@@ -45,6 +46,17 @@ namespace BridgeCare.Controllers
             var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
             inventoryItemDetailModel.BRKey = brKey;
             return inventoryItemDetailModel;
+        }
+
+        /// <summary>
+        /// Get: api/InventorySelectionModels
+        /// </summary>
+        [Route("api/InventorySelectionModels")]       
+        [HttpGet]
+        public List<InventorySelectionModel> Get()
+        {
+            var inventorySelectionModels = inventory.GetInventorySelectionModels(db);
+            return inventorySelectionModels;
         }
     }
 }
