@@ -11,8 +11,8 @@
                     <v-text-field v-model="range" label="Edit" single-line :mask="'####'"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn v-on:click="onCancel">Cancel</v-btn>
                     <v-btn color="info" v-on:click="onSubmit" :disabled="range === ''">Submit</v-btn>
+                    <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

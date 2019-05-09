@@ -22,9 +22,9 @@ const mutations = {
                 .find((investmentLibrary: InvestmentLibrary) =>
                     investmentLibrary.id === investmentLibraryId
                 ) as InvestmentLibrary);
-        } else if (investmentLibraryId === null) {
+        } else {
             // update state.selectedInvestmentLibrary with a new empty investment library object
-            state.selectedInvestmentLibrary = {...emptyInvestmentLibrary};
+            state.selectedInvestmentLibrary = clone(emptyInvestmentLibrary);
         }
     },
     updatedSelectedInvestmentLibraryMutator(state: any, updatedSelectedInvestmentLibrary: InvestmentLibrary) {
@@ -56,78 +56,44 @@ const mutations = {
 
 const actions = {
     async getInvestmentLibraries({ commit }: any) {
-        await db.ref('investmentLibraries').on('value', (snapshot: any) => {
-            const results = snapshot.val();
-            let investmentLibraries: InvestmentLibrary[] = [];
-            for (let key in results) {
-                if (isNil(results[key].budgetOrder)) {
-                    results[key].budgetOrder = [];
-                }
-                if (isNil(results[key].budgetYears)) {
-                    results[key].budgetYears = [];
-                }
-                if (isNil(results[key].deletedBudgetYearIds)) {
-                    results[key].deletedBudgetYearIds = [];
-                }
-                investmentLibraries.push({
-                    id: results[key].id,
-                    name: results[key].name,
-                    inflationRate: results[key].inflationRate,
-                    discountRate: results[key].discountRate,
-                    description: results[key].description,
-                    budgetOrder: results[key].budgetOrder,
-                    budgetYears: results[key].budgetYears
-                });
-            }
-            commit('investmentLibrariesMutator', investmentLibraries);
-        }, (error: any) => {
-            console.log('error in fetching investment libraries', error);
-        });
+        await new InvestmentEditorService().getInvestmentLibraries()
+            .then((investmentLibraries: InvestmentLibrary[]) =>
+                commit('investmentLibrariesMutator', investmentLibraries)
+            );
     },
     selectInvestmentLibrary({commit}: any, payload: any) {
         commit('selectedInvestmentLibraryMutator', payload.investmentLibraryId);
     },
     updateSelectedInvestmentLibrary({commit}: any, payload: any) {
-        commit('updatedSelectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
+        commit('updatedSelectedInvestmentLibraryMutator', payload.updatedSelectedInvestmentLibrary);
     },
     async createInvestmentLibrary({ commit }: any, payload: any) {
-        await db.ref('investmentLibraries').child('Investment_' + payload.createdInvestmentLibrary.id).set(payload.createdInvestmentLibrary)
+        await new InvestmentEditorService().createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then(() => {
                 commit('createdInvestmentLibraryMutator', payload.createdInvestmentLibrary);
                 commit('selectedInvestmentLibraryMutator', payload.createdInvestmentLibrary.id);
-            })
-            .catch((error: any) => console.log(error));
+            });
     },
     async updateInvestmentLibrary({ commit }: any, payload: any) {
-        await db.ref('investmentLibraries').child('Investment_' + payload.updatedInvestmentLibrary.id).update(payload.updatedInvestmentLibrary)
+        await new InvestmentEditorService().updateInvestmentLibrary(payload.updatedInvestmentLibrary)
             .then(() => {
                 commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
                 commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
-            })
-            .catch((error: any) => console.log(error));
+            });
     },
     async getScenarioInvestmentLibrary({ commit }: any, payload: any) {
-        await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenario)
-            .then((investmentLibrary: any) => {
-                const scenarioInvestmentLibrary: InvestmentLibrary = {
-                    id: investmentLibrary[0].simulationId,
-                    name: investmentLibrary[0].name,
-                    inflationRate: investmentLibrary[0].inflationRate,
-                    discountRate: investmentLibrary[0].discountRate,
-                    description: investmentLibrary[0].description,
-                    budgetOrder: investmentLibrary[0].budgetNamesByOrder,
-                    budgetYears: investmentLibrary[0].yearlyBudgets
-                };
+        await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenarioId)
+            .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
                 commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
-            })
-            .catch((error: any) => console.log(error));
+                commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
+            });
     },
     async upsertScenarioInvestmentLibrary({ commit }: any, payload: any) {
-        return await new InvestmentEditorService().updateScenarioInvestmentLibrary(payload.updatedInvestmentScenario)
-            .then((results: any) => {
-                return results.status;
-            })
-            .catch((error: any) => { return error.response.status; });
+        return await new InvestmentEditorService().upsertScenarioInvestmentLibrary(payload.updatedInvestmentScenario)
+            .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
+                commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
+                commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
+            });
     }
 };
 

@@ -82,7 +82,7 @@
                 <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea no-resize outline full-width
+                            <v-textarea rows="4" no-resize outline full-width
                                         :label="selectedTreatmentLibrary.description === '' ? 'Description' : ''"
                                         v-model="selectedTreatmentLibrary.description">
                             </v-textarea>
@@ -188,6 +188,60 @@
         latestFeasibilityId: number = 0;
         latestCostId: number = 0;
         latestConsequenceId: number = 0;
+
+        /**
+         * Sets component ui properties that triggers cascading ui updates
+         */
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                if (to.path === '/TreatmentEditor/FromScenario/') {
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                    if (vm.selectedScenarioId === 0) {
+                        // set 'no selected scenario' error message, then redirect user to Scenarios UI
+                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                        vm.$router.push('/Scenarios/');
+                    }
+                    vm.setNavigationAction([
+                        {
+                            text: 'Scenario Dashboard',
+                            to: {path: '/Scenarios/', query: {}}
+                        },
+                        {
+                            text: 'Scenario Editor',
+                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
+                        },
+                        {
+                            text: 'Treatment Editor',
+                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
+                        }
+                    ]);
+                }
+                vm.onClearSelectedTreatmentLibrary();
+                setTimeout(() => {
+                    vm.setIsBusyAction({isBusy: true});
+                    vm.getTreatmentLibrariesAction()
+                        .then(() => {
+                            if (vm.selectedScenarioId > 0) {
+                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                    .then(() => vm.setIsBusyAction({isBusy: false}));
+                            } else {
+                                vm.setIsBusyAction({isBusy: false});
+                            }
+                        });
+                });
+            });
+        }
+
+        /**
+         * Resets component ui properties that triggers cascading ui updates
+         */
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            if (to.path === '/TreatmentEditor/Library/') {
+                this.selectedScenarioId = 0;
+                this.onClearSelectedTreatmentLibrary();
+                next();
+            }
+        }
 
         /**
          * Sets the treatmentLibrariesSelectListItems using the treatmentLibraries from state
@@ -345,61 +399,7 @@
         }
 
         /**
-         * Sets component ui properties that triggers cascading ui updates
-         */
-        beforeRouteEnter(to: any, from: any, next: any) {
-            next((vm: any) => {
-                if (to.path === '/TreatmentEditor/FromScenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
-                    if (vm.selectedScenarioId === 0) {
-                        // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                        vm.$router.push('/Scenarios/');
-                    }
-                    vm.setNavigationAction([
-                        {
-                            text: 'Scenario Dashboard',
-                            to: {path: '/Scenarios/', query: {}}
-                        },
-                        {
-                            text: 'Scenario Editor',
-                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
-                        },
-                        {
-                            text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
-                        }
-                    ]);
-                }
-                vm.onClearSelectedTreatmentLibrary();
-                setTimeout(() => {
-                    vm.setIsBusyAction({isBusy: true});
-                    vm.getTreatmentLibrariesAction()
-                        .then(() => {
-                            if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                    .then(() => vm.setIsBusyAction({isBusy: false}));
-                            } else {
-                                vm.setIsBusyAction({isBusy: false});
-                            }
-                        });
-                });
-            });
-        }
-
-        /**
-         * Resets component ui properties that triggers cascading ui updates
-         */
-        beforeRouteUpdate(to: any, from: any, next: any) {
-            if (to.path === '/TreatmentEditor/Library/') {
-                this.selectedScenarioId = 0;
-                this.onClearSelectedTreatmentLibrary();
-                next();
-            }
-        }
-
-        /**
-         * Clears the selected treatment library by setting treatmentLibrarySelectItemValue to an empty value
+         * Clears the selected treatment library by setting treatmentLibrarySelectItemValue to an empty value or 0
          */
         onClearSelectedTreatmentLibrary() {
             this.treatmentLibrarySelectItemValue = hasValue(this.treatmentLibrarySelectItemValue) ? '' : '0';

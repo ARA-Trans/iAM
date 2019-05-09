@@ -28,11 +28,11 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
                         <v-btn color="info" v-on:click="onSubmit"
                                :disabled="createdInvestmentStrategy.name === ''">
                             Submit
                         </v-btn>
+                        <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>

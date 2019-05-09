@@ -49,8 +49,10 @@
                     </v-data-table>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn v-on:click="onCancel">Cancel</v-btn>
-                    <v-btn v-on:click="onSubmit" color="info">Submit</v-btn>
+                    <v-layout justify-space-between fill-height>
+                        <v-btn color="info" v-on:click="onSubmit">Submit</v-btn>
+                        <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
+                    </v-layout>
                 </v-card-actions>
             </v-card>
         </v-dialog>
