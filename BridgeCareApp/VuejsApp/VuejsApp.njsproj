@@ -77,6 +77,7 @@
     </Content>
     <Content Include="src\components\scenarios\EditAnalysis.vue" />
     <Content Include="src\components\scenarios\EditScenario.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\CommittedProjectsFileUploaderDialog.vue" />
     <Content Include="src\components\scenarios\Scenarios.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentStrategyDialog.vue" />
@@ -122,6 +123,7 @@
     <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
     <Folder Include="src\components\scenarios\" />
     <Folder Include="src\components\scenarios\create-scenario-dialog\" />
+    <Folder Include="src\components\scenarios\scenarios-dialogs\" />
     <Folder Include="src\components\treatment-editor\" />
     <Folder Include="src\components\treatment-editor\treatment-editor-dialogs\" />
     <Folder Include="src\components\treatment-editor\treatment-editor-tabs\" />

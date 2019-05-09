@@ -219,7 +219,6 @@
             //    });
         }
 
-        //TODO: need to replace this with something that will actually get the status of scenario from server
         getStatus(isCompleted: boolean) {
             return isCompleted ? 'Completed' : 'Running';
         }

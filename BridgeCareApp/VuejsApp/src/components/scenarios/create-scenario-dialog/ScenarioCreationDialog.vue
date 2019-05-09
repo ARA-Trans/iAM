@@ -43,9 +43,6 @@
          */
         @Watch('scenarioDialog')
         onScenarioDialogChanged() {
-            /*if a user has selected an investment strategy to create a new library from, then set the new investment
-            strategy's inflation/discount rates, description, budget order, and budget years with the selected investment
-            strategy's*/
             this.createdScenario = {
                 ...this.createdScenario,
                 description: hasValue(this.scenarioDialog.description) ? this.scenarioDialog.description : ''
