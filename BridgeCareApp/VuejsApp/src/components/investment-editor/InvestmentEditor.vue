@@ -290,7 +290,10 @@
                     // parse selectItemValue as an integer
                     const id: number = parseInt(this.selectItemValue);
                     // dispatch selectInvestmentStrategyAction with id
-                    this.selectInvestmentStrategyAction({ investmentStrategyId: id });
+                    this.selectInvestmentStrategyAction({ investmentStrategyId: id })
+                        .then(() => {
+                            this.selectedInvestmentStrategy.id = this.investmentForScenario[0].id;
+                        });
                 }
             }
             else {

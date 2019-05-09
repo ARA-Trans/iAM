@@ -45,6 +45,9 @@
                             Your search for "{{searchMine}}" found no results.
                         </v-alert>
                     </v-data-table>
+                    <v-card-actions>
+                        <v-btn color="info lighten-1" v-on:click="onCreateScenario">Create new</v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-flex>
         </v-layout>
@@ -97,6 +100,9 @@
         <v-flex xs12>
             <ReportsDownload :dialogData="reportData" />
         </v-flex>
+        <v-flex xs12>
+            <ScenarioCreationDialog :scenarioDialog="createScenarioData" @submit="onSubmitNewScenario" />
+        </v-flex>
     </v-container>
 </template>
 
@@ -113,11 +119,14 @@
     import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
     import ReportsDownload from '@/shared/dialogs/ReportsDownload.vue';
     import { ShowAvailableReports } from '@/shared/models/dialogs/download-reports-dialog';
+    import { CreateScenarioDialogData } from '@/shared/models/dialogs/create-scenario-dialog/scenario-creation-data';
+    import ScenarioCreationDialog from '@/components/scenarios/create-scenario-dialog/ScenarioCreationDialog.vue';
+    import { Network } from '@/shared/models/iAM/network';
 
     axios.defaults.baseURL = process.env.VUE_APP_URL;
 
     @Component({
-        components: { AppModalPopup, ReportsDownload }
+        components: { AppModalPopup, ReportsDownload, ScenarioCreationDialog }
     })
     export default class Scenarios extends Vue {
         @State(state => state.busy.isBusy) isBusy: boolean;
@@ -125,11 +134,14 @@
         @State(state => state.security.userId) userId: string;
         @State(state => state.reports.names) reportNames: string[];
         @State(state => state.breadcrumb.navigation) navigation: any[];
+        @State(state => state.network.networks) networks: Network[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getUserScenarios') getUserScenariosAction: any;
+        @Action('getScenarios') getScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('createNewScenario') createNewScenarioAction: any;
 
         @Prop({
             default: function () {
@@ -144,6 +156,14 @@
             }
         })
         reportData: ShowAvailableReports;
+
+        @Prop({
+            default: function () {
+                return { showDialog: false };
+            }
+        })
+        createScenarioData: CreateScenarioDialogData;
+
 
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
@@ -189,10 +209,16 @@
                     this.setIsBusyAction({isBusy: false});
                     console.log(error);
                 });
-
+            
+            // Intentionally left this code commented, It fetches the scenarios/simulation from the Legacy db
+            //this.getScenariosAction()
+            //    .then(() => this.setIsBusyAction({isBusy: false}))
+            //    .catch((error: any) => {
+            //        this.setIsBusyAction({isBusy: false});
+            //        console.log(error);
+            //    });
         }
 
-        //TODO: need to replace this with something that will actually get the status of scenario from server
         getStatus(isCompleted: boolean) {
             return isCompleted ? 'Completed' : 'Running';
         }
@@ -263,6 +289,24 @@
             this.reportData.networkName = item.networkName;
             this.reportData.simulationId = item.simulationId;
             this.reportData.simulationName = item.simulationName;
+        }
+
+        onCreateScenario() {
+            this.createScenarioData.showDialog = true;
+        }
+
+        onSubmitNewScenario(value: any) {
+            if (!hasValue(value)) {
+                this.createScenarioData.showDialog = false;
+                return;
+            }
+            this.createNewScenarioAction({
+                networkId: this.networks[0].networkId,
+                networkName: this.networks[0].networkName,
+                scenarioName: value.name,
+                userId: this.userId
+            })
+                .then(() => this.createScenarioData.showDialog = false);
         }
     }
 </script>
