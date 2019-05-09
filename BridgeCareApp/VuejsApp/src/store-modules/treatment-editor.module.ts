@@ -1,83 +1,97 @@
-import {emptyTreatmentStrategy, TreatmentStrategy} from '@/shared/models/iAM/treatment';
-import {any, propEq, findIndex} from 'ramda';
+import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {any, propEq, findIndex, clone, append} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
-import {hasValue} from '@/shared/utils/has-value';
 
 const state = {
-    treatmentStrategies: [] as TreatmentStrategy[],
-    selectedTreatmentStrategy: {...emptyTreatmentStrategy} as TreatmentStrategy
+    treatmentLibraries: [] as TreatmentLibrary[],
+    scenarioTreatmentLibrary: clone(emptyTreatmentLibrary) as TreatmentLibrary,
+    selectedTreatmentLibrary: clone(emptyTreatmentLibrary) as TreatmentLibrary
 };
 
 const mutations = {
-    treatmentStrategiesMutator(state: any, treatmentStrategies: TreatmentStrategy[]) {
-        state.treatmentStrategies = [...treatmentStrategies];
+    treatmentLibrariesMutator(state: any, treatmentLibraries: TreatmentLibrary[]) {
+        state.treatmentLibraries = clone(treatmentLibraries);
     },
-    selectedTreatmentStrategyMutator(state: any, treatmentStrategyId: number) {
-        if (any(propEq('id', treatmentStrategyId), state.treatmentStrategies)) {
-            // find the existing treatment strategy in state.treatmentStrategies where the id matches treatmentStrategyId,
-            // copy it, then update state.selectedTreatmentStrategy with the copy
-            state.selectedTreatmentStrategy = {...state.treatmentStrategies
-                .find((treatmentStrategy: TreatmentStrategy) =>
-                    treatmentStrategy.id === treatmentStrategyId
-                ) as TreatmentStrategy};
-        } else if (treatmentStrategyId === null) {
-            // update state.selectedTreatmentStrategy with an empty treatment strategy object
-            state.selectedTreatmentStrategy = {...emptyTreatmentStrategy};
+    selectedTreatmentLibraryMutator(state: any, treatmentLibraryId: number) {
+        if (any(propEq('id', treatmentLibraryId), state.treatmentLibraries)) {
+            // find the existing treatment library in state.treatmentLibraries where the id matches treatmentLibraryId,
+            // copy it, then update state.selectedTreatmentLibrary with the copy
+            state.selectedTreatmentLibrary = clone(state.treatmentLibraries
+                .find((treatmentLibrary: TreatmentLibrary) =>
+                    treatmentLibrary.id === treatmentLibraryId
+                ) as TreatmentLibrary);
+        } else {
+            // update state.selectedTreatmentLibrary with an empty treatment library object
+            state.selectedTreatmentLibrary = clone(emptyTreatmentLibrary);
         }
     },
-    updatedSelectedTreatmentStrategyMutator(state: any, updatedSelectedTreatmentStrategy: TreatmentStrategy) {
-        // update state.selectedTreatmentStrategy with the updated selected treatment strategy
-        state.selectedTreatmentStrategy = {...updatedSelectedTreatmentStrategy};
+    updatedSelectedTreatmentLibraryMutator(state: any, updatedSelectedTreatmentLibrary: TreatmentLibrary) {
+        // update state.selectedTreatmentLibrary with the updated selected treatment library
+        state.selectedTreatmentLibrary = clone(updatedSelectedTreatmentLibrary);
     },
-    createdTreatmentStrategyMutator(state: any, createdTreatmentStrategy: TreatmentStrategy) {
-        // append the created treatment strategy to a copy of state.treatmentStrategies, then update state.treatmentStrategies
+    createdTreatmentLibraryMutator(state: any, createdTreatmentLibrary: TreatmentLibrary) {
+        // append the created treatment library to a copy of state.treatmentLibraries, then update state.treatmentLibraries
         // with the copy
-        state.treatmentStrategies = [...state.treatmentStrategies, createdTreatmentStrategy];
+        state.treatmentLibraries = append(createdTreatmentLibrary, state.treatmentLibraries);
     },
-    updatedTreatmentStrategyMutator(state: any, updatedTreatmentStrategy: TreatmentStrategy) {
-        if (any(propEq('id', updatedTreatmentStrategy.id), state.treatmentStrategies)) {
-            // make a copy of state.treatmentStrategies
-            const treatmentStrategies: TreatmentStrategy[] = [...state.treatmentStrategies];
-            // find the index of the existing treatment strategy in the copy that has a matching id with the updated
-            // treatment strategy
-            const index: number = findIndex(propEq('id', updatedTreatmentStrategy.id), treatmentStrategies);
-            // update the copy at the specified index with the updated treatment strategy
-            treatmentStrategies[index] = updatedTreatmentStrategy;
-            // update state.treatmentStrategies with the copy
-            state.treatmentStrategies = treatmentStrategies;
+    updatedTreatmentLibraryMutator(state: any, updatedTreatmentLibrary: TreatmentLibrary) {
+        if (any(propEq('id', updatedTreatmentLibrary.id), state.treatmentLibraries)) {
+            // make a copy of state.treatmentLibraries
+            const treatmentLibraries: TreatmentLibrary[] = clone(state.treatmentLibraries);
+            // find the index of the existing treatment library in the copy that has a matching id with the updated
+            // treatment library
+            const index: number = findIndex(propEq('id', updatedTreatmentLibrary.id), treatmentLibraries);
+            // update the copy at the specified index with the updated treatment library
+            treatmentLibraries[index] = clone(updatedTreatmentLibrary);
+            // update state.treatmentLibraries with the copy
+            state.treatmentLibraries = treatmentLibraries;
         }
+    },
+    scenarioTreatmentLibraryMutator(state: any, scenarioTreatmentLibrary: TreatmentLibrary) {
+        state.scenarioTreatmentLibrary = clone(scenarioTreatmentLibrary);
     }
 };
 
 const actions = {
-    async getTreatmentStrategies({commit}: any) {
-        await new TreatmentEditorService().getTreatmentStrategies()
-            .then((treatmentStrategies: TreatmentStrategy[]) =>
-                commit('treatmentStrategiesMutator', treatmentStrategies)
-            )
-            .catch((error: any) => console.log(error));
+    async getTreatmentLibraries({commit}: any) {
+        await new TreatmentEditorService().getTreatmentLibraries()
+            .then((treatmentLibraries: TreatmentLibrary[]) =>
+                commit('treatmentLibrariesMutator', treatmentLibraries)
+            );
     },
-    selectTreatmentStrategy({commit}: any, payload: any) {
-        commit('selectedTreatmentStrategyMutator', payload.treatmentStrategyId);
+    selectTreatmentLibrary({commit}: any, payload: any) {
+        commit('selectedTreatmentLibraryMutator', payload.treatmentLibraryId);
     },
-    updateSelectedTreatmentStrategy({commit}: any, payload: any) {
-        commit('updatedSelectedTreatmentStrategyMutator', payload.updatedSelectedTreatmentStrategy);
+    updateSelectedTreatmentLibrary({commit}: any, payload: any) {
+        commit('updatedSelectedTreatmentLibraryMutator', payload.updatedSelectedTreatmentLibrary);
     },
-    async createTreatmentStrategy({commit}: any, payload: any) {
-        await new TreatmentEditorService().createTreatmentStrategy(payload.createdTreatmentStrategy)
-            .then((createdTreatmentStrategy: TreatmentStrategy) => {
-                commit('createdTreatmentStrategyMutator', createdTreatmentStrategy);
-                commit('selectedTreatmentStrategyMutator', createdTreatmentStrategy.id);
-            })
-            .catch((error: any) => console.log(error));
+    async createTreatmentLibrary({commit}: any, payload: any) {
+        await new TreatmentEditorService().createTreatmentLibrary(payload.createdTreatmentLibrary)
+            .then(() => {
+                commit('createdTreatmentLibraryMutator', payload.createdTreatmentLibrary);
+                commit('selectedTreatmentLibraryMutator', payload.createdTreatmentLibrary.id);
+            });
     },
-    async updateTreatmentStrategy({commit}: any, payload: any) {
-        await new TreatmentEditorService().updateTreatmentStrategy(payload.updatedTreatmentStrategy)
-            .then((updatedTreatmentStrategy: TreatmentStrategy) => {
-                commit('updatedTreatmentStrategyMutator', updatedTreatmentStrategy);
-                commit('selectedTreatmentStrategyMutator', updatedTreatmentStrategy.id);
-            })
-            .catch((error: any) => console.log(error));
+    async updateTreatmentLibrary({commit}: any, payload: any) {
+        await new TreatmentEditorService().updateTreatmentLibrary(payload.updatedTreatmentLibrary)
+            .then(() => {
+                commit('updatedTreatmentLibraryMutator', payload.updatedTreatmentLibrary);
+                commit('selectedTreatmentLibraryMutator', payload.updatedTreatmentLibrary.id);
+            });
+    },
+    async getScenarioTreatmentLibrary({commit}: any, payload: any) {
+        await new TreatmentEditorService().getScenarioTreatmentLibrary(payload.selectedScenarioId)
+            .then((scenarioTreatmentLibrary: TreatmentLibrary) => {
+                commit('scenarioTreatmentLibraryMutator', scenarioTreatmentLibrary);
+                commit('updatedSelectedTreatmentLibraryMutator', scenarioTreatmentLibrary);
+            });
+    },
+    async upsertScenarioTreatmentLibrary({commit}: any, payload: any) {
+        await new TreatmentEditorService().upsertScenarioTreatmentLibrary(payload.upsertedScenarioTreatmentLibrary)
+            .then(() => {
+                commit('scenarioTreatmentLibraryMutator', payload.upsertedScenarioTreatmentLibrary);
+                commit('updatedSelectedTreatmentLibraryMutator', payload.upsertedScenarioTreatmentLibrary);
+            });
     }
 };
 

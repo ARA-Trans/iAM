@@ -173,7 +173,7 @@
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeNamesController.cs" />
-    <Compile Include="Controllers\InventoryControler.cs" />
+    <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
     <Compile Include="Controllers\TreatmentsController.cs" />
     <Compile Include="Controllers\PerformanceController.cs" />
@@ -231,6 +231,7 @@
     <Compile Include="Interfaces\IBudgetReport.cs" />
     <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentStrategies.cs" />
+    <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
     <Compile Include="Interfaces\ITreatment.cs" />
     <Compile Include="Interfaces\IPerformance.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeWorkSummaryData.cs" />
@@ -254,11 +255,17 @@
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
-    <Compile Include="Models\InventoryItemModel.cs" />
-    <Compile Include="Models\InventoryModel.cs" />
+    <Compile Include="Models\Inventory\ConditionDuration.cs" />
+    <Compile Include="Models\Inventory\InventoryItemDetailModel.cs" />
+    <Compile Include="Models\Inventory\InventoryItemModel.cs" />
+    <Compile Include="Models\Inventory\InventoryModel.cs" />
+    <Compile Include="Models\Inventory\OperatingRatingInventoryRatingGrouping.cs" />
+    <Compile Include="Models\Inventory\OperatingRatingInventoryRatingRow.cs" />
+    <Compile Include="Models\Inventory\RiskScores.cs" />
     <Compile Include="Models\InvestmentStrategyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyYearlyBudgetModel.cs" />
     <Compile Include="Models\InvestmentStrategyModel.cs" />
+    <Compile Include="Models\Inventory\LabelValue.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
@@ -299,6 +306,7 @@
     <Compile Include="Services\DetailedReport\FillDetailedSheet.cs" />
     <Compile Include="Services\DetailedReport\ReportCreator.cs" />
     <Compile Include="Services\DetailedReport\Target.cs" />
+    <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
     <Compile Include="Services\Network.cs" />
     <Compile Include="Services\Simulations.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />

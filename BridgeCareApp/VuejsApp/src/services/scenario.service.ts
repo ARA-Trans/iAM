@@ -8,6 +8,7 @@ export default class ScenarioService {
         return Promise.resolve<Analysis>({...emptyAnalysis});
         // TODO: add axios web service call to get a scenario's analysis data
     }
+
     applyAnalysisDataToScenario(analysis: Analysis): Promise<boolean> {
         return Promise.resolve<boolean>(true);
         // TODO: add axios web service call to upsert analysis data for a scenario
@@ -28,5 +29,10 @@ export default class ScenarioService {
         }).then((response: any) => {
             return response;
         });
+    }
+
+    uploadCommittedProjectsFiles(files: File[]): Promise<any> {
+        return Promise.resolve<any>({} as any);
+        // TODO: add axios web service call to upload excel file
     }
 }

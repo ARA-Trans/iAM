@@ -1,5 +1,5 @@
-export interface PerformanceStrategyEquation {
-    performanceStrategyId: number;
+export interface PerformanceLibraryEquation {
+    performanceLibraryId: number;
     id: number;
     attribute: string;
     equationName: string;
@@ -10,16 +10,15 @@ export interface PerformanceStrategyEquation {
     isFunction: boolean;
 }
 
-export interface PerformanceStrategy {
+export interface PerformanceLibrary {
     id: number;
     name: string;
     description: string;
-    equations: PerformanceStrategyEquation[];
-    deletedEquationIds: number[];
+    equations: PerformanceLibraryEquation[];
 }
 
-export const emptyEquation: PerformanceStrategyEquation = {
-    performanceStrategyId: 0,
+export const emptyEquation: PerformanceLibraryEquation = {
+    performanceLibraryId: 0,
     id: 0,
     attribute: '',
     equationName: '',
@@ -30,10 +29,9 @@ export const emptyEquation: PerformanceStrategyEquation = {
     isFunction: false,
 };
 
-export const emptyPerformanceStrategy: PerformanceStrategy = {
+export const emptyPerformanceLibrary: PerformanceLibrary = {
     id: 0,
     name: '',
     description: '',
-    equations: [],
-    deletedEquationIds: []
+    equations: []
 };

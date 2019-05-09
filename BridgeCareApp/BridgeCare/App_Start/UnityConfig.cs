@@ -78,6 +78,8 @@ namespace BridgeCare
             container.RegisterType<SummaryReportBridgeData>();
             container.RegisterType<ICommonSummaryReportData, CommonSummaryReportData>();
             container.RegisterType<IBridgeWorkSummaryData, BridgeWorkSummaryData>();
+
+            container.RegisterType<IInventoryItemDetailModelGenerator, InventoryItemDetailModelGenerator>();
         }
     }
 }

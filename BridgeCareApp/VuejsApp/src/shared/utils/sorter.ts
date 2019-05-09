@@ -31,6 +31,6 @@ export const sorter = (items: any[]) => {
 };
 
 export const sortByProperty = (property: string, items: any[]): any[] => {
-    const sorter = sortBy(prop(property));
-    return sorter(items);
+    const propSorter = sortBy(prop(property));
+    return propSorter(items);
 };

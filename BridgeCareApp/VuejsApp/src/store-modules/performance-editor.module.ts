@@ -1,82 +1,99 @@
-import {emptyPerformanceStrategy, PerformanceStrategy} from '@/shared/models/iAM/performance';
+import {emptyPerformanceLibrary, PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {clone, append, any, propEq, findIndex} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
+import {sortByProperty} from '@/shared/utils/sorter';
 
 const state = {
-    performanceStrategies: [] as PerformanceStrategy[],
-    selectedPerformanceStrategy: {...emptyPerformanceStrategy} as PerformanceStrategy
+    performanceLibraries: [] as PerformanceLibrary[],
+    scenarioPerformanceLibrary: clone(emptyPerformanceLibrary) as PerformanceLibrary,
+    selectedPerformanceLibrary: clone(emptyPerformanceLibrary) as PerformanceLibrary
 };
 
 const mutations = {
-    performanceStrategiesMutator(state: any, performanceStrategies: PerformanceStrategy[]) {
-        // update state.performanceStrategies with a clone of the incoming list of performance strategies
-        state.performanceStrategies = clone(performanceStrategies);
+    performanceLibrariesMutator(state: any, performanceLibraries: PerformanceLibrary[]) {
+        // update state.performanceLibraries with a clone of the incoming list of performance libraries
+        state.performanceLibraries = clone(performanceLibraries);
     },
-    selectedPerformanceStrategyMutator(state: any, performanceStrategyId: number) {
-        if (any(propEq('id', performanceStrategyId), state.performanceStrategies)) {
-            // find the existing performance strategy in state.performanceStrategies where the id matches performanceStrategyId,
-            // clone it, then update state.selectedPerformanceStrategy with the cloned, existing performance strategy
-            state.selectedPerformanceStrategy = clone(state.performanceStrategies
-                .find((performanceStrategy: PerformanceStrategy) =>
-                    performanceStrategy.id === performanceStrategyId
-                ) as PerformanceStrategy);
+    selectedPerformanceLibraryMutator(state: any, performanceLibraryId: number) {
+        if (any(propEq('id', performanceLibraryId), state.performanceLibraries)) {
+            // find the existing performance library in state.performanceLibraries where the id matches performanceLibraryId,
+            // clone it, then update state.selectedPerformanceLibrary with the cloned, existing performance library
+            state.selectedPerformanceLibrary = clone(state.performanceLibraries
+                .find((performanceLibrary: PerformanceLibrary) =>
+                    performanceLibrary.id === performanceLibraryId
+                ) as PerformanceLibrary);
         } else {
-            // reset state.selectedPerformanceStrategy as an empty performance strategy
-            state.selectedPerformanceStrategy = {...emptyPerformanceStrategy};
+            // reset state.selectedPerformanceLibrary as an empty performance library
+            state.selectedPerformanceLibrary = clone(emptyPerformanceLibrary);
         }
     },
-    updateSelectedPerformanceStrategyMutator(state: any, updatedSelectedPerformanceStrategy: PerformanceStrategy) {
-        // update the state.selectedPerformanceStrategy with the updated selected performance strategy
-        state.selectedPerformanceStrategy = updatedSelectedPerformanceStrategy;
+    updatedSelectedPerformanceLibraryMutator(state: any, updatedSelectedPerformanceLibrary: PerformanceLibrary) {
+        // update the state.selectedPerformanceLibrary with the updated selected performance library
+        state.selectedPerformanceLibrary = clone(updatedSelectedPerformanceLibrary);
     },
-    createdPerformanceStrategyMutator(state: any, createdPerformanceStrategy: PerformanceStrategy) {
-        // append the created performance strategy to a cloned list of state.performanceStrategies, then update
-        // state.performanceStrategies with the cloned list
-        state.performanceStrategies = append(createdPerformanceStrategy, state.performanceStrategies);
+    createdPerformanceLibraryMutator(state: any, createdPerformanceLibrary: PerformanceLibrary) {
+        // append the created performance library to a cloned list of state.performanceLibraries, then update
+        // state.performanceLibraries with the cloned list
+        state.performanceLibraries = append(createdPerformanceLibrary, state.performanceLibraries);
     },
-    updatedPerformanceStrategyMutator(state: any, updatedPerformanceStrategy: PerformanceStrategy) {
-        if (any(propEq('id', updatedPerformanceStrategy.id), state.performanceStrategies)) {
-            // clone the list of performance strategies in state
-            const performanceStrategies: PerformanceStrategy[] = clone(state.performanceStrategies);
-            // find the index of the existing performance strategy in the cloned list of performance strategies that has
-            // a matching id with the updated performance strategy
-            const index: number = findIndex(propEq('id', updatedPerformanceStrategy.id), performanceStrategies);
-            // set the updated performance strategy at the specified index
-            performanceStrategies[index] = updatedPerformanceStrategy;
-            // update state.performanceStrategies with the cloned list of performance strategies
-            state.performanceStrategies = performanceStrategies;
+    updatedPerformanceLibraryMutator(state: any, updatedPerformanceLibrary: PerformanceLibrary) {
+        if (any(propEq('id', updatedPerformanceLibrary.id), state.performanceLibraries)) {
+            // clone the list of performance libraries in state
+            const performanceLibraries: PerformanceLibrary[] = clone(state.performanceLibraries);
+            // find the index of the existing performance library in the cloned list of performance libraries that has
+            // a matching id with the updated performance library
+            const index: number = findIndex(propEq('id', updatedPerformanceLibrary.id), performanceLibraries);
+            // set the updated performance library at the specified index
+            performanceLibraries[index] = clone(updatedPerformanceLibrary);
+            // update state.performanceLibraries with the cloned list of performance libraries
+            state.performanceLibraries = performanceLibraries;
         }
+    },
+    scenarioPerformanceLibraryMutator(state: any, scenarioPerformanceLibrary: PerformanceLibrary) {
+        state.scenarioPerformanceLibrary = clone(scenarioPerformanceLibrary);
     }
 };
 
 const actions = {
-    async getPerformanceStrategies({commit}: any) {
-        await new PerformanceEditorService().getPerformanceStrategies()
-            .then((performanceStrategies: PerformanceStrategy[]) =>
-                commit('performanceStrategiesMutator', performanceStrategies)
-            )
-            .catch((error: any) => console.log(error));
+    async getPerformanceLibraries({commit}: any) {
+        await new PerformanceEditorService().getPerformanceLibraries()
+            .then((performanceLibraries: PerformanceLibrary[]) =>
+                commit('performanceLibrariesMutator', performanceLibraries)
+            );
     },
-    selectPerformanceStrategy({commit}: any, payload: any) {
-        commit('selectedPerformanceStrategyMutator', payload.performanceStrategyId);
+    selectPerformanceLibrary({commit}: any, payload: any) {
+        commit('selectedPerformanceLibraryMutator', payload.performanceLibraryId);
     },
-    updateSelectedPerformanceStrategy({commit}: any, payload: any) {
-        commit('updateSelectedPerformanceStrategyMutator', payload.updatedSelectedPerformanceStrategy);
+    updateSelectedPerformanceLibrary({commit}: any, payload: any) {
+        commit('updatedSelectedPerformanceLibraryMutator', payload.updatedSelectedPerformanceLibrary);
     },
-    async createPerformanceStrategy({commit}: any, payload: any) {
-        await new PerformanceEditorService().createPerformanceStrategy(payload.createdPerformanceStrategy)
-            .then((createdPerformanceStrategy: PerformanceStrategy) => {
-                commit('createdPerformanceStrategyMutator', createdPerformanceStrategy);
-                commit('selectedPerformanceStrategyMutator', createdPerformanceStrategy.id);
-            })
-            .catch((error: any) => console.log(error));
+    async createPerformanceLibrary({commit}: any, payload: any) {
+        await new PerformanceEditorService().createPerformanceLibrary(payload.createdPerformanceLibrary)
+            .then(() => {
+                commit('createdPerformanceLibraryMutator', payload.createdPerformanceLibrary);
+                commit('selectedPerformanceLibraryMutator', payload.createdPerformanceLibrary.id);
+            });
     },
-    async updatePerformanceStrategy({commit}: any, payload: any) {
-        await new PerformanceEditorService().updatePerformanceStrategy(payload.updatedPerformanceStrategy)
-            .then((updatedPerformanceStrategy: PerformanceStrategy) => {
-                commit('updatedPerformanceStrategyMutator', updatedPerformanceStrategy);
-            })
-            .catch((error: any) => console.log(error));
+    async updatePerformanceLibrary({commit}: any, payload: any) {
+        await new PerformanceEditorService().updatePerformanceLibrary(payload.updatedPerformanceLibrary)
+            .then(() => {
+                commit('updatedPerformanceLibraryMutator', payload.updatedPerformanceLibrary);
+                commit('selectedPerformanceLibraryMutator', payload.updatedPerformanceLibrary.id);
+            });
+    },
+    async getScenarioPerformanceLibrary({commit}: any, payload: any) {
+        await new PerformanceEditorService().getScenarioPerformanceLibrary(payload.selectedScenarioId)
+            .then((scenarioPerformanceLibrary: PerformanceLibrary) => {
+                commit('scenarioPerformanceLibraryMutator', scenarioPerformanceLibrary);
+                commit('updatedSelectedPerformanceLibraryMutator', scenarioPerformanceLibrary);
+            });
+    },
+    async upsertScenarioPerformanceLibrary({commit}: any, payload: any) {
+        await new PerformanceEditorService().upsertScenarioPerformanceLibrary(payload.upsertedScenarioPerformanceLibrary)
+            .then(() => {
+                commit('scenarioPerformanceLibraryMutator', payload.upsertedScenarioPerformanceLibrary);
+                commit('updatedSelectedPerformanceLibraryMutator', payload.upsertedScenarioPerformanceLibrary);
+            });
     }
 };
 
