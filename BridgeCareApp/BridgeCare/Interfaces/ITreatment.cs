@@ -5,13 +5,11 @@ namespace BridgeCare.Interfaces
 {
     public interface ITreatments
     {
-        IQueryable<TreatmentScenarioModel> GetTreatment(SimulationModel data, BridgeCareContext db);
+        TreatmentScenarioModel GetTreatment(int treatmentID, BridgeCareContext db);
+        IQueryable<TreatmentScenarioModel> GetTreatments(int simulationID, BridgeCareContext db);
+        TreatmentScenarioModel CreateTreatment(TreatmentScenarioModel data, BridgeCareContext db);
 
-        int CreateTreatment(TreatmentScenarioModel data, BridgeCareContext db);
-
-        int UpdateTreatment(TreatmentScenarioModel data, BridgeCareContext db);
-
-        int UpsertTreatment(TreatmentScenarioModel data, BridgeCareContext db);
+        TreatmentScenarioModel UpsertTreatment(TreatmentScenarioModel data, BridgeCareContext db);
 
     }
 }

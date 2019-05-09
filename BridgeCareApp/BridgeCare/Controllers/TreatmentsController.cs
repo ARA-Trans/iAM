@@ -18,35 +18,23 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        /// <summary>
-        /// Get: api/treatments
-        /// </summary>
-        [ModelValidation("Given simulation data is not valid")]
+        [Route("api/GetScenarioTreatmentLibrary/{treatmentId}")]
+        [ModelValidation("Given call is not valid")]
         [HttpGet]
-        public IQueryable<TreatmentScenarioModel> Get(SimulationModel data) => treatment.GetTreatment(data, db);
+        public TreatmentScenarioModel GetTreatment(int treatmentId) => treatment.GetTreatment(treatmentId, db);
 
-        [Route("api/CreateTreatment/{networkID}")]
-        [HttpPost]
-        public IHttpActionResult CreateTreatment([FromBody]TreatmentScenarioModel data)
-        {
-            int treatmentId = treatment.CreateTreatment(data, db);
-            return Ok(treatmentId);
-        }
+        [Route("api/GetScenarioTreatmentLibraries/{simulationId}")]
+        [ModelValidation("Given call is not valid")]
+        [HttpGet]
+        public IQueryable<TreatmentScenarioModel> GetTreatments(int simulationId) => treatment.GetTreatments(simulationId, db);
 
-        [Route("api/UpdateTreatment/{networkID}")]
+        [Route("api/CreateScenarioTreatmentLibrary")]
         [HttpPost]
-        public IHttpActionResult UpdateTreatment([FromBody]TreatmentScenarioModel data)
-        {
-            int treatmentId = treatment.UpdateTreatment(data, db);
-            return Ok(treatmentId);
-        }
+        public TreatmentScenarioModel CreateTreatment([FromBody]TreatmentScenarioModel data) => treatment.CreateTreatment(data, db);
 
-        [Route("api/UpsertTreatment/{networkID}")]
+        [Route("api/UpsertScenarioTreatmentLibrary")]
         [HttpPost]
-        public IHttpActionResult UpsertTreatment([FromBody]TreatmentScenarioModel data)
-        {
-            int treatmentId = treatment.UpsertTreatment(data, db);
-            return Ok(treatmentId);
-        }
+        public TreatmentScenarioModel UpsertTreatment([FromBody]TreatmentScenarioModel data) => treatment.UpsertTreatment(data, db);
+
     }
 }

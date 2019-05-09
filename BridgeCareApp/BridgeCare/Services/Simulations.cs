@@ -83,9 +83,7 @@ namespace BridgeCare.Services
 
         public int CreateNewSimulation(int networkId, string simulationName, BridgeCareContext db)
         {
-            string errorString = "Unknown Error";
-            try
-            {
+            try { 
                 var sim = new SIMULATION()
                 {
                     NETWORKID = networkId,
@@ -95,14 +93,37 @@ namespace BridgeCare.Services
                     BUDGET_CONSTRAINT = "As Budget Permits",
                     WEIGHTING = "none",
                     COMMITTED_START = DateTime.Now.Year,
-                    COMMITTED_PERIOD = 5
-                };
-                errorString = "Add to simulation table";
-                db.SIMULATIONS.Add(sim);
+                    COMMITTED_PERIOD = 5,
+                    TREATMENTS = new List<TREATMENT>
+                    {
+                        new TREATMENT()
+                        {
+                            TREATMENT1 = "No Treatment",
+                            BEFOREANY = 1,
+                            BEFORESAME = 1,
+                            BUDGET = null,
+                            DESCRIPTION = "Default Treatment",
+                            OMS_IS_EXCLUSIVE = null,
+                            OMS_IS_REPEAT = null,
+                            OMS_REPEAT_START = null,
+                            OMS_REPEAT_INTERVAL = null,
+                            CONSEQUENCES = new List<CONSEQUENCE>
+                            {
+                                new CONSEQUENCE
+                                    {
+                                    ATTRIBUTE_ = "AGE",
+                                    CHANGE_ = "+1"
+                                }
+                            }
+                        }
 
+                    }
+                };
+
+                db.SIMULATIONS.Add(sim);
                 db.SaveChanges();
 
-                var investment = new INVESTMENTS()
+                sim.INVESTMENTS = new INVESTMENTS()
                 {
                     SIMULATIONID = sim.SIMULATIONID,
                     FIRSTYEAR = DateTime.Now.Year,
@@ -112,48 +133,14 @@ namespace BridgeCare.Services
                     BUDGETORDER = "Rehabilitation,Maintenance,Construction",
                     DESCRIPTION = "new simulation"
                 };
-                errorString = "Add to investments table";
-                db.INVESTMENTs.Add(investment);
-                db.SaveChanges();
 
-                var treatments = new TREATMENT()
-                {
-                    TREATMENTID = 0,
-                    SIMULATIONID = sim.SIMULATIONID,
-                    TREATMENT1 = "No Treatment",
-                    BEFOREANY = 1,
-                    BEFORESAME = 1,
-                    BUDGET = null,
-                    DESCRIPTION = "Default Treatment",
-                    OMS_IS_EXCLUSIVE = null,
-                    OMS_IS_REPEAT = null,
-                    OMS_REPEAT_START = null,
-                    OMS_REPEAT_INTERVAL = null
-                };
-
-                errorString = "Add to treatments table"; ;
-                db.Treatments.Add(treatments);
-
-                db.SaveChanges();
-
-                String strQuery = errorString = "SELECT ATTRIBUTE_ FROM ATTRIBUTES_ WHERE lower(ATTRIBUTE_) = 'age'";
-                String strAge = db.Database.SqlQuery<string>(strQuery).SingleOrDefault();
-
-                var consequence = new CONSEQUENCE()
-                {
-                    TREATMENTID = treatments.TREATMENTID,
-                    ATTRIBUTE_ = strAge,
-                    CHANGE_ = "+1"
-                };
-                errorString = "Add to consequences table";
-                db.Consequences.Add(consequence);
                 db.SaveChanges();
 
                 return sim.SIMULATIONID;
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "SQL error:" + errorString);
+                HandleException.SqlError(ex, "SQL error: New Simulation");
             }
             return -1;
         }
