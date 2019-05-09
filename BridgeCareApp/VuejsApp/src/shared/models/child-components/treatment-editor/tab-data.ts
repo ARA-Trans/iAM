@@ -1,13 +1,19 @@
-import {emptyTreatment, emptyTreatmentStrategy, Treatment, TreatmentStrategy} from '@/shared/models/iAM/treatment';
+import {emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 
 export interface TabData {
-    tabTreatmentStrategies: TreatmentStrategy[];
-    tabSelectedTreatmentStrategy: TreatmentStrategy;
+    tabTreatmentLibraries: TreatmentLibrary[];
+    tabSelectedTreatmentLibrary: TreatmentLibrary;
     tabSelectedTreatment: Treatment;
+    latestFeasibilityId: number;
+    latestCostId: number;
+    latestConsequenceId: number;
 }
 
 export const emptyTabData: TabData = {
-    tabTreatmentStrategies: [],
-    tabSelectedTreatmentStrategy: {...emptyTreatmentStrategy},
-    tabSelectedTreatment: {...emptyTreatment}
+    tabTreatmentLibraries: [],
+    tabSelectedTreatmentLibrary: {...emptyTreatmentLibrary},
+    tabSelectedTreatment: {...emptyTreatment},
+    latestFeasibilityId: 0,
+    latestCostId: 0,
+    latestConsequenceId: 0
 };

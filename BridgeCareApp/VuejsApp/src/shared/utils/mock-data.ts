@@ -2,8 +2,8 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
-import {PerformanceStrategy} from '@/shared/models/iAM/performance';
-import {Consequence, Cost, Feasibility, Treatment, TreatmentStrategy} from '@/shared/models/iAM/treatment';
+import {PerformanceLibrary} from '@/shared/models/iAM/performance';
+import {Consequence, Cost, Feasibility, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 
 /*******************************************MOCK ATTRIBUTES DATA*******************************************************/
 export const mockAttributes: string[] = [
@@ -75,14 +75,17 @@ export const mockAttributes: string[] = [
 /*******************************************INVENTORY MOCK DATA********************************************************/
 
 export const mockInventory: InventoryItem[] = [{
-    networkId: 1111,
-    simulationId: 2222,
-    referenceId: 1234567890,
-    referenceKey: 19876,
+    bmsId: '01202000100000', //1234567890
+    brKey: 10 //19876
+},
+{
+    bmsId: '01003002100000',
+    brKey: 43
 }];
 
 export const mockInventoryItemDetail: InventoryItemDetail = {
-    simulationId: 2222,
+    bmsId: 1234567890,
+    brKey: 10,
     label: '5A02',
     name: 'Ben Franklin Bridge',
     location: [
@@ -268,14 +271,14 @@ export const mockInvestmentStrategies: InvestmentStrategy[] = [
     }
 ];
 /*******************************************PERFORMANCE EDITOR MOCK DATA***********************************************/
-export const mockPerformanceStrategies: PerformanceStrategy[] = [
+export const mockPerformanceLibraries: PerformanceLibrary[] = [
     {
         id: 1,
         name: 'Performance Strategy 1',
         description: 'This is a mock performance strategy',
         equations: [
             {
-                performanceStrategyId: 1,
+                performanceLibraryId: 1,
                 id: 1,
                 attribute: 'PCI',
                 equationName: 'PCI Deduct Curve',
@@ -286,10 +289,29 @@ export const mockPerformanceStrategies: PerformanceStrategy[] = [
                 isFunction: false
 
             }
-        ],
-        deletedEquationIds: []
+        ]
     }
 ];
+
+export const mockScenarioPerformanceLibrary: PerformanceLibrary = {
+    id: 2,
+    name: 'Performance Strategy 2',
+    description: 'This is another mock performance strategy',
+    equations: [
+        {
+            performanceLibraryId: 2,
+            id: 2,
+            attribute: 'ADTTOTAL',
+            equationName: 'ADT TOTAL',
+            equation: '(0,9)(1,8.68)(2,8.36)(3,8.04)(4,7.72)(5,7.58)(6,7.44)(7,7.3)(8,7.16)(9,7.02)',
+            criteria: '[ADTTOTAL]=\'50\'',
+            shift: false,
+            piecewise: false,
+            isFunction: false
+
+        }
+    ]
+};
 /*******************************************TREATMENT EDITOR MOCK DATA*************************************************/
 export const mockFeasibility: Feasibility = {
     treatmentId: 1,
@@ -315,7 +337,7 @@ export const mockConsequences: Consequence[] = [
         change: '+15%',
         equation: '',
         isFunction: false,
-        criteria: '[DISTRICT]=1'
+        criteria: '[DISTRICT]=\'1\''
     },
     {
         treatmentId: 1,
@@ -330,7 +352,7 @@ export const mockConsequences: Consequence[] = [
 
 export const mockTreatments: Treatment[] = [
     {
-        treatmentStrategyId: 1,
+        treatmentLibraryId: 1,
         id: 1,
         name: 'Chip Seal',
         feasibility: mockFeasibility,
@@ -339,7 +361,7 @@ export const mockTreatments: Treatment[] = [
         budgets: []
     },
     {
-        treatmentStrategyId: 1,
+        treatmentLibraryId: 1,
         id: 2,
         name: '2\'\' Mill 2\'\' Fill',
         feasibility: null,
@@ -349,7 +371,7 @@ export const mockTreatments: Treatment[] = [
     }
 ];
 
-export const mockTreatmentStrategies: TreatmentStrategy[] = [
+export const mockTreatmentLibraries: TreatmentLibrary[] = [
     {
         id: 1,
         name: 'Treatment Strategy 1',
@@ -357,3 +379,46 @@ export const mockTreatmentStrategies: TreatmentStrategy[] = [
         treatments: mockTreatments
     }
 ];
+
+export const mockScenarioFeasibility: Feasibility = {
+    treatmentId: 3,
+    id: 2,
+    criteria: '[ROADWIDTH]>=\'50\' AND [ROADWIDTH]<\'70\' AND [TRUCKPCT]=\'High\' AND [UNDERCLR]<\'80\' AND [SUFF_RATE]<\'5\'',
+    yearsBeforeAny: 8,
+    yearsBeforeSame: 10
+};
+
+export const mockScenarioCost: Cost = {
+    treatmentId: 3,
+    id: 2,
+    equation: '[DECK_AREA]*2.45',
+    isFunction: false,
+    criteria: '[DISTRICT]=\'2\''
+};
+
+export const mockScenarioConsequence: Consequence = {
+    treatmentId: 3,
+    id: 3,
+    attribute: 'BRIDGE_TYPE',
+    change: '+10%',
+    equation: '',
+    isFunction: false,
+    criteria: '[BRIDGE_TYPE]=\'2\''
+};
+
+export const mockScenarioTreatment: Treatment = {
+    treatmentLibraryId: 2,
+    id: 3,
+    name: 'Pothole Fill-in',
+    feasibility: mockScenarioFeasibility,
+    costs: [mockScenarioCost],
+    consequences: [mockScenarioConsequence],
+    budgets: []
+};
+
+export const mockScenarioTreatmentLibrary: TreatmentLibrary = {
+    id: 2,
+    name: 'Treatment Strategy 2',
+    description: 'This is another mock treatment strategy',
+    treatments: [mockScenarioTreatment]
+};

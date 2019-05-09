@@ -1,6 +1,6 @@
 <template>
     <v-container fluid grid-list-xl>
-        <v-layout fill-height>
+        <v-layout class="consequences-tab-content" fill-height>
             <v-flex xs12>
                 <v-btn color="info" v-on:click="onAddConsequence">Add Consequence</v-btn>
                 <div class="consequences-data-table">
@@ -62,7 +62,7 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {isNil, findIndex, uniq} from 'ramda';
+    import {isNil, findIndex, uniq, clone, append} from 'ramda';
     import EquationEditor from '../../../shared/dialogs/EquationEditor.vue';
     import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
     import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
@@ -70,9 +70,9 @@
         Consequence,
         emptyConsequence,
         emptyTreatment,
-        emptyTreatmentStrategy,
+        emptyTreatmentLibrary,
         Treatment,
-        TreatmentStrategy
+        TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {
@@ -98,9 +98,10 @@
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
-        consequencesTabTreatmentStrategies: TreatmentStrategy[] = [];
-        consequencesTabSelectedTreatmentStrategy: TreatmentStrategy = {...emptyTreatmentStrategy};
-        consequencesTabSelectedTreatment: Treatment = {...emptyTreatment};
+        consequencesTabTreatmentLibraries: TreatmentLibrary[] = [];
+        consequencesTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
+        consequencesTabSelectedTreatment: Treatment = clone(emptyTreatment);
+        consequencesTabLatestConsequenceId: number = 0;
 
         consequencesGridHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: '200px'},
@@ -110,20 +111,19 @@
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '100px'}
         ];
         consequencesGridData: Consequence[] = [];
-        equationEditorDialogData: EquationEditorDialogData = {...emptyEquationEditorDialogData};
-        criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
-        selectedConsequence: Consequence = {...emptyConsequence};
-        allConsequences: Consequence[] = [];
+        equationEditorDialogData: EquationEditorDialogData = clone(emptyEquationEditorDialogData);
+        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        selectedConsequence: Consequence = clone(emptyConsequence);
 
         /**
          * Sets the ConsequencesTab's required UI functionality properties
          */
         @Watch('consequencesTabData')
         onConsequencesTabDataChanged() {
-            this.consequencesTabTreatmentStrategies = this.consequencesTabData.tabTreatmentStrategies;
-            this.consequencesTabSelectedTreatmentStrategy = this.consequencesTabData.tabSelectedTreatmentStrategy;
+            this.consequencesTabTreatmentLibraries = this.consequencesTabData.tabTreatmentLibraries;
+            this.consequencesTabSelectedTreatmentLibrary = this.consequencesTabData.tabSelectedTreatmentLibrary;
             this.consequencesTabSelectedTreatment = this.consequencesTabData.tabSelectedTreatment;
-            this.setAllConsequences();
+            this.consequencesTabLatestConsequenceId = this.consequencesTabData.latestConsequenceId;
             this.setConsequencesGridData();
         }
 
@@ -142,33 +142,11 @@
         }
 
         /**
-         * Sets allConsequences property based on costsTabTreatmentStrategies data
-         */
-        setAllConsequences() {
-            this.consequencesTabTreatmentStrategies.forEach((treatmentStrategy: TreatmentStrategy) => {
-                if (treatmentStrategy.id === this.consequencesTabSelectedTreatmentStrategy.id) {
-                    this.consequencesTabSelectedTreatmentStrategy.treatments.forEach((treatment: Treatment) => {
-                        if (hasValue(treatment.consequences)) {
-                            this.allConsequences.push(...treatment.consequences);
-                        }
-                    });
-                } else {
-                    treatmentStrategy.treatments.forEach((treatment: Treatment) => {
-                        if (hasValue(treatment.consequences)) {
-                            this.allConsequences.push(...treatment.consequences);
-                        }
-                    });
-                }
-            });
-            this.allConsequences = uniq(this.allConsequences);
-        }
-
-        /**
          * Sets consequencesGridData property based on costsTabSelectedTreatment data
          */
         setConsequencesGridData() {
             if (this.consequencesTabSelectedTreatment.id !== 0 && this.consequencesTabSelectedTreatment.consequences.length > 0) {
-                this.consequencesGridData = [...this.consequencesTabSelectedTreatment.consequences];
+                this.consequencesGridData = clone(this.consequencesTabSelectedTreatment.consequences);
             } else {
                 this.consequencesGridData = [];
             }
@@ -178,11 +156,10 @@
          * Creates a new Consequence object to add to the selected treatment
          */
         onAddConsequence() {
-            const latestId: number = getLatestPropertyValue('id', this.allConsequences);
             const newConsequence: Consequence = {
-                ...emptyConsequence,
+                ...clone(emptyConsequence),
                 treatmentId: this.consequencesTabSelectedTreatment.id,
-                id: hasValue(latestId) ? latestId + 1 : 1
+                id: hasValue(this.consequencesTabLatestConsequenceId) ? this.consequencesTabLatestConsequenceId + 1 : 1
             };
             this.submitChanges(newConsequence, false);
         }
@@ -191,7 +168,7 @@
          * Edits the given consequence's specified property with the specified value
          */
         onEditConsequenceProperty(consequence: Consequence, property: string, value: any) {
-                const updatedConsequence: Consequence = {...consequence};
+                const updatedConsequence: Consequence = clone(consequence);
                 // @ts-ignore
                 updatedConsequence[property] = value;
                 this.submitChanges(updatedConsequence, false);
@@ -203,9 +180,9 @@
          * @param consequence The consequence to set as selectedConsequence
          */
         onEditConsequenceEquation(consequence: Consequence) {
-            this.selectedConsequence = {...consequence};
+            this.selectedConsequence = clone(consequence);
             this.equationEditorDialogData = {
-                ...emptyEquationEditorDialogData,
+                ...clone(emptyEquationEditorDialogData),
                 showDialog: true,
                 equation: this.selectedConsequence.equation,
                 isFunction: this.selectedConsequence.isFunction
@@ -218,10 +195,10 @@
          * @param result User's submitted EquationEditor result
          */
         onSubmitEditedConsequenceEquation(result: EquationEditorDialogResult) {
-            this.equationEditorDialogData = {...emptyEquationEditorDialogData};
+            this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
             if (!isNil(result)) {
-                const updatedConsequence: Consequence = {...this.selectedConsequence};
-                this.selectedConsequence = {...emptyConsequence};
+                const updatedConsequence: Consequence = clone(this.selectedConsequence);
+                this.selectedConsequence = clone(emptyConsequence);
                 updatedConsequence.equation = result.equation;
                 updatedConsequence.isFunction = result.isFunction;
                 this.submitChanges(updatedConsequence, false);
@@ -234,7 +211,7 @@
          * @param consequence The consequence to set as selectedConsequence
          */
         onEditConsequenceCriteria(consequence: Consequence) {
-            this.selectedConsequence = {...consequence};
+            this.selectedConsequence = clone(consequence);
             this.criteriaEditorDialogData = {
                 showDialog: true,
                 criteria: this.selectedConsequence.criteria
@@ -246,10 +223,10 @@
          * @param criteria User's submitted CriteriaEditor result
          */
         onSubmitEditedConsequenceCriteria(criteria: string) {
-            this.criteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
+            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
             if (!isNil(criteria)) {
-                const updatedConsequence: Consequence = {...this.selectedConsequence};
-                this.selectedConsequence = {...emptyConsequence};
+                const updatedConsequence: Consequence = clone(this.selectedConsequence);
+                this.selectedConsequence = clone(emptyConsequence);
                 updatedConsequence.criteria = criteria;
                 this.submitChanges(updatedConsequence, false);
             }
@@ -259,7 +236,7 @@
          * A Consequence 'Delete' button has been clicked
          */
         onDeleteConsequence(consequence: Consequence) {
-            this.submitChanges(consequence, true);
+            this.submitChanges(clone(consequence), true);
         }
 
         /**
@@ -269,7 +246,7 @@
          */
         submitChanges(consequenceData: Consequence, forDelete: boolean) {
             // update selected treatment data
-            const updatedTreatment: Treatment = {...this.consequencesTabSelectedTreatment};
+            const updatedTreatment: Treatment = clone(this.consequencesTabSelectedTreatment);
             if (forDelete) {
                 updatedTreatment.consequences = updatedTreatment.consequences
                     .filter((consequence: Consequence) => consequence.id !== consequenceData.id);
@@ -278,25 +255,29 @@
                     consequence.id === consequenceData.id, updatedTreatment.consequences
                 );
                 if (updatedConsequenceIndex === -1) {
-                    updatedTreatment.consequences = [...updatedTreatment.consequences, consequenceData];
+                    updatedTreatment.consequences = append(consequenceData, updatedTreatment.consequences);
                 } else {
                     updatedTreatment.consequences[updatedConsequenceIndex] = consequenceData;
                 }
             }
-            // update selected treatment strategy data
-            const updatedTreatmentStrategy: TreatmentStrategy = {...this.consequencesTabSelectedTreatmentStrategy};
+            // update selected treatment library data
+            const updatedTreatmentLibrary: TreatmentLibrary = clone(this.consequencesTabSelectedTreatmentLibrary);
             const updatedTreatmentIndex: number = findIndex(
-                (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentStrategy.treatments
+                (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentLibrary.treatments
             );
-            updatedTreatmentStrategy.treatments[updatedTreatmentIndex] = updatedTreatment;
-            this.$emit('submit', updatedTreatmentStrategy);
+            updatedTreatmentLibrary.treatments[updatedTreatmentIndex] = updatedTreatment;
+            this.$emit('submit', updatedTreatmentLibrary);
         }
     }
 </script>
 
 <style>
+    .consequences-tab-content {
+        height: 185px;
+    }
+
     .consequences-data-table {
-        height: 245px;
+        height: 215px;
         overflow-y: auto;
     }
 </style>

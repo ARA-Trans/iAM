@@ -4,6 +4,8 @@ namespace BridgeCare.Interfaces
 {
     public interface IInventory
     {
-        InventoryModel GetInventory(SectionModel data, BridgeCareContext db);
+        InventoryModel GetInventoryByBMSId(string bmsId, BridgeCareContext db);
+
+        InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db);
     }
 }

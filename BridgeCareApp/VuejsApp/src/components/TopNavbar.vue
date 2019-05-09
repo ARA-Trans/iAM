@@ -33,10 +33,10 @@
                     <v-list-tile @click="routing('/InvestmentEditor/Library/')">
                         <v-list-tile-title>Investment Editor</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="routing('/PerformanceEditor/')">
+                    <v-list-tile @click="routing('/PerformanceEditor/Library/')">
                         <v-list-tile-title>Performance Editor</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="routing('/TreatmentEditor/')">
+                    <v-list-tile @click="routing('/TreatmentEditor/Library/')">
                         <v-list-tile-title>Treatment Editor</v-list-tile-title>
                     </v-list-tile>
                 </v-list-group>
