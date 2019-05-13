@@ -3,27 +3,67 @@ using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Utility;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class Inventory : IInventory
     {   
+        /// <summary>
+        /// Get Inventory details based on bmsId
+        /// </summary>
+        /// <param name="bmsId"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public InventoryModel GetInventoryByBMSId(string bmsId, BridgeCareContext db)
         {
             var query = GetSelectColumnsForPennDotCrosswalk();
             query += " FROM PennDot_Report_A WHERE BRIDGE_ID = '" + bmsId + "'";
             var BridgeData = GetInventoryModelData(db, query);
             return BridgeData;
-        }       
+        }
 
+        /// <summary>
+        /// /// Get Inventory details based on brKey
+        /// </summary>
+        /// <param name="brKey"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db)
         {
             var query = GetSelectColumnsForPennDotCrosswalk();
             query += " FROM PennDot_Report_A WHERE BRKEY = " + brKey;
             var BridgeData = GetInventoryModelData(db, query);
             return BridgeData;
+        }
+
+        /// <summary>
+        /// Get BRKey and BMSId pairs in form of InventorySelectionModels
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public List<InventorySelectionModel> GetInventorySelectionModels(BridgeCareContext db)
+        {
+            IQueryable<InventorySelectionModel> rawQueryForData = null;
+
+            var select = string.Format("SELECT BRKEY as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A");
+
+            try
+            {
+                rawQueryForData = db.Database.SqlQuery<InventorySelectionModel>(select).AsQueryable();
+            }
+            catch (SqlException ex)
+            {
+                HandleException.SqlError(ex, "PennDot_Report_A");
+            }
+            catch (OutOfMemoryException ex)
+            {
+                HandleException.OutOfMemoryError(ex);
+            }
+            return rawQueryForData.ToList();          
         }
 
         private static string GetSelectColumnsForPennDotCrosswalk()

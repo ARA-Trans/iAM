@@ -6,9 +6,10 @@ import {mockInventory, mockInventoryItemDetail} from '@/shared/utils/mock-data';
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InventoryService {
-    getInventory(): Promise<InventoryItem[]> {
-        return Promise.resolve<InventoryItem[]>(mockInventory);
-        // TODO: integrate axios web service call for inventory
+    getInventory(): Promise<InventoryItem[]> {       
+        return axios.get('/api/InventorySelectionModels').then((response: any) => {
+            return response.data as Promise<InventoryItem[]>;
+        });
     }   
 
     getInventoryItemDetailByBMSId(bmsId: number): Promise<InventoryItemDetail> {
