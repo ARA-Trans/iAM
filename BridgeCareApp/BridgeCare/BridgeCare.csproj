@@ -255,6 +255,7 @@
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
+    <Compile Include="Models\Inventory\InventorySelectionModel.cs" />
     <Compile Include="Models\Inventory\ConditionDuration.cs" />
     <Compile Include="Models\Inventory\InventoryItemDetailModel.cs" />
     <Compile Include="Models\Inventory\InventoryItemModel.cs" />
