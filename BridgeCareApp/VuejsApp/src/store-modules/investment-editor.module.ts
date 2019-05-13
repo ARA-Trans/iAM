@@ -1,7 +1,6 @@
 import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex, isNil} from 'ramda';
-import {db} from '@/firebase';
+import {clone, any, propEq, append, findIndex} from 'ramda';
 
 const state = {
     investmentLibraries: [] as InvestmentLibrary[],
@@ -28,7 +27,7 @@ const mutations = {
         }
     },
     updatedSelectedInvestmentLibraryMutator(state: any, updatedSelectedInvestmentLibrary: InvestmentLibrary) {
-        state.selectedInvestmentLibrary = updatedSelectedInvestmentLibrary;
+        state.selectedInvestmentLibrary = clone(updatedSelectedInvestmentLibrary);
     },
     createdInvestmentLibraryMutator(state: any, createdInvestmentLibrary: InvestmentLibrary) {
         // append the created investment library to a cloned list of state.investmentLibraries, then update
@@ -50,16 +49,17 @@ const mutations = {
     },
     scenarioInvestmentLibraryMutator(state: any, investmentForScenario: InvestmentLibrary[]) {
         // update state.investmentLibraries with a clone of the incoming list of investment libraries
-        state.investmentForScenario = clone(investmentForScenario);
+        state.scenarioInvestmentLibrary = clone(investmentForScenario);
     }
 };
 
 const actions = {
-    async getInvestmentLibraries({ commit }: any) {
+    async getInvestmentLibraries({dispatch, commit}: any) {
         await new InvestmentEditorService().getInvestmentLibraries()
             .then((investmentLibraries: InvestmentLibrary[]) =>
                 commit('investmentLibrariesMutator', investmentLibraries)
-            );
+            )
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
     selectInvestmentLibrary({commit}: any, payload: any) {
         commit('selectedInvestmentLibraryMutator', payload.investmentLibraryId);
@@ -67,33 +67,51 @@ const actions = {
     updateSelectedInvestmentLibrary({commit}: any, payload: any) {
         commit('updatedSelectedInvestmentLibraryMutator', payload.updatedSelectedInvestmentLibrary);
     },
-    async createInvestmentLibrary({ commit }: any, payload: any) {
+    async createInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await new InvestmentEditorService().createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then(() => {
                 commit('createdInvestmentLibraryMutator', payload.createdInvestmentLibrary);
                 commit('selectedInvestmentLibraryMutator', payload.createdInvestmentLibrary.id);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async updateInvestmentLibrary({ commit }: any, payload: any) {
+    async updateInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await new InvestmentEditorService().updateInvestmentLibrary(payload.updatedInvestmentLibrary)
             .then(() => {
                 commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
                 commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async getScenarioInvestmentLibrary({ commit }: any, payload: any) {
+    async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenarioId)
-            .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
+            .then((data: any) => {
+                const scenarioInvestmentLibrary: InvestmentLibrary = {
+                    id: data.simulationId,
+                    name: data.name,
+                    inflationRate: data.inflationRate,
+                    discountRate: data.discountRate,
+                    description: data.description,
+                    budgetOrder: data.budgetNamesByOrder,
+                    budgetYears: data.yearlyBudgets,
+                };
                 commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
                 commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
-            });
+            })
+            // TODO: uncomment when service has been updated to return an InvestmentLibrary
+            /*.then((scenarioInvestmentLibrary: InvestmentLibrary) => {
+                commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
+                commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
+            });*/
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async upsertScenarioInvestmentLibrary({ commit }: any, payload: any) {
+    async upsertScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         return await new InvestmentEditorService().upsertScenarioInvestmentLibrary(payload.updatedInvestmentScenario)
             .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
                 commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
                 commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     }
 };
 

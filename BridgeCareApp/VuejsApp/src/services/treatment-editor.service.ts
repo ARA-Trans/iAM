@@ -6,7 +6,7 @@ axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class TreatmentEditorService {
     /**
-     * Gets all treatment libraries a user can read/edit
+     * Gets all treatment libraries
      */
     getTreatmentLibraries(): Promise<TreatmentLibrary[]> {
         return Promise.resolve<TreatmentLibrary[]>(mockTreatmentLibraries);
@@ -17,8 +17,8 @@ export default class TreatmentEditorService {
      * Creates a treatment library
      * @param createdTreatmentLibrary The treatment library create data
      */
-    createTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary): Promise<any> {
-        return Promise.resolve<any>({} as any);
+    createTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
+        return Promise.resolve<any>(createdTreatmentLibrary);
         // TODO: add axios web service call for creating treatment library
     }
 
@@ -26,14 +26,14 @@ export default class TreatmentEditorService {
      * Updates a treatment library
      * @param updatedTreatmentLibrary The treatment library update data
      */
-    updateTreatmentLibrary(updatedTreatmentLibrary: TreatmentLibrary): Promise<any> {
-        return Promise.resolve<any>({} as any);
+    updateTreatmentLibrary(updatedTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
+        return Promise.resolve<any>(updatedTreatmentLibrary);
         // TODO: add axios web service call for updating treatment library
     }
 
     /**
-     * Gets a scenario's treatment library
-     * @param scenarioId The id of the scenario to use to get the scenario treatment library
+     * Gets a scenario's treatment library data
+     * @param scenarioId Scenario id to use in finding a scenario's treatment library data
      */
     getScenarioTreatmentLibrary(scenarioId: number): Promise<TreatmentLibrary> {
         return Promise.resolve<TreatmentLibrary>(mockScenarioTreatmentLibrary);
@@ -41,11 +41,11 @@ export default class TreatmentEditorService {
     }
 
     /**
-     * Upserts a scenario treatment library
+     * Upserts a scenario's treatment library data
      * @param upsertedScenarioTreatmentLibrary The scenario treatment library upsert data
      */
-    upsertScenarioTreatmentLibrary(upsertedScenarioTreatmentLibrary: TreatmentLibrary): Promise<any> {
-        return Promise.resolve<any>({} as any);
+    upsertScenarioTreatmentLibrary(upsertedScenarioTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
+        return Promise.resolve<any>(upsertedScenarioTreatmentLibrary);
         // TODO: add axios web service call for upserting scenario treatment library
     }
 }

@@ -14,8 +14,8 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit" :disabled="createdTreatment.name === ''">Submit</v-btn>
+                        <v-btn color="info" v-on:click="onSubmit(true)" :disabled="createdTreatment.name === ''">Submit</v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -27,31 +27,26 @@
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
     import {emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
+    import {clone} from 'ramda';
 
     @Component
     export default class CreateTreatmentDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        createdTreatment: Treatment = {...emptyTreatment};
+        createdTreatment: Treatment = clone(emptyTreatment);
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the createdTreatment object or a null value to the parent component and resets the createdTreatment object
+         * @param Whether or not to emit the createdTreatment object
          */
-        onSubmit() {
-            // submit created treatment result
-            this.$emit('submit', this.createdTreatment);
-            // reset createdTreatment property
-            this.createdTreatment = {...emptyTreatment};
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.createdTreatment);
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * 'Cancel' button has been clicked
-         */
-        onCancel() {
-            // submit null result
-            this.$emit('submit', null);
-            // reset createdTreatment property
-            this.createdTreatment = {...emptyTreatment};
+            this.createdTreatment = clone(emptyTreatment);
         }
     }
 </script>

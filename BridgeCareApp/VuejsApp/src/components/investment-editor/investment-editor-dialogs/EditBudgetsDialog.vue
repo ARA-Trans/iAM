@@ -50,8 +50,8 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between fill-height>
-                        <v-btn color="info" v-on:click="onSubmit">Submit</v-btn>
-                        <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
+                        <v-btn color="info" v-on:click="onSubmit(true)">Submit</v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -72,7 +72,6 @@
     export default class EditBudgetsDialog extends Vue {
         @Prop() dialogData: EditBudgetsDialogData;
 
-
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
             {text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: ''}
         ];
@@ -80,7 +79,7 @@
         selectedGridRows: EditBudgetsDialogGridData[] = [];
 
         /**
-         * Watcher: dialogData
+         * Sets the editBudgetsDialogGridData array using the dialogData object's budgets data property
          */
         @Watch('dialogData')
         onDialogDataChanged() {
@@ -93,7 +92,8 @@
         }
 
         /**
-         * Whether or not the 'Move Up' button should be disabled
+         * Disables the 'Move Up' button if there are no selected grid rows, there is more than 1 selected grid row, or
+         * if the selected grid row is the first grid row in the grid data list
          */
         disableMoveUpButton() {
             return !hasValue(this.selectedGridRows) ||
@@ -102,33 +102,37 @@
         }
 
         /**
-         * 'Move Up' button has been clicked
+         * Moves a selected budget to the previous index in the grid data list
          */
         onMoveBudgetUp() {
-            // create a copy of the budgets grid data
-            const budgets: EditBudgetsDialogGridData[] = [...this.editBudgetsDialogGridData];
-            // get the current budget index
+            const gridData: EditBudgetsDialogGridData[] = [...clone(this.editBudgetsDialogGridData)];
+
             const currentBudgetIndex = this.selectedGridRows[0].index;
-            // set the previous budget index
+
             const previousBudgetIndex = currentBudgetIndex - 1;
-            // get the current budget
-            const currentBudget: EditBudgetsDialogGridData = budgets[currentBudgetIndex];
-            // get the previous budget
-            const previousBudget: EditBudgetsDialogGridData = budgets[previousBudgetIndex];
-            // update selected budget index as previous index
-            currentBudget.index = previousBudgetIndex;
-            // update previous budget index as current index
-            previousBudget.index = currentBudgetIndex;
-            // move selected budget to previous index in budgets list
-            budgets[previousBudgetIndex] = currentBudget;
-            // moved previous budget to current index in budgets list
-            budgets[currentBudgetIndex] = previousBudget;
-            // update editBudgetsDialogGridData with copy
-            this.editBudgetsDialogGridData = budgets;
+
+            const currentBudget: EditBudgetsDialogGridData = {
+                ...gridData[currentBudgetIndex],
+                index: previousBudgetIndex
+            };
+
+            const nextBudget: EditBudgetsDialogGridData = {
+                ...gridData[previousBudgetIndex],
+                index: currentBudgetIndex
+            };
+
+            gridData[previousBudgetIndex] = currentBudget;
+
+            gridData[currentBudgetIndex] = nextBudget;
+
+            this.editBudgetsDialogGridData = gridData;
+
+            this.selectedGridRows = [this.editBudgetsDialogGridData[previousBudgetIndex]];
         }
 
         /**
-         * Whether or not the 'Move Down' button should be disabled
+         * Disables the 'Move Down' button if there are no selected grid rows, there is more than 1 selected grid row,
+         * or the selected grid row is the last row in the grid data list
          */
         disableMoveDownButton() {
             return !hasValue(this.selectedGridRows) ||
@@ -137,39 +141,45 @@
         }
 
         /**
-         * 'Move Down' button has been clicked
+         * Moves a selected budget to the next index in the grid data list
          */
         onMoveBudgetDown() {
-            // create a copy of the budgets grid data
-            const budgets: EditBudgetsDialogGridData[] = [...this.editBudgetsDialogGridData];
-            // get the current budget index
+            const gridData: EditBudgetsDialogGridData[] = [...clone(this.editBudgetsDialogGridData)];
+
             const currentBudgetIndex = this.selectedGridRows[0].index;
-            // set the next budget index
+
             const nextBudgetIndex = currentBudgetIndex + 1;
-            // get the current budget
-            const currentBudget: EditBudgetsDialogGridData = budgets[currentBudgetIndex];
-            // get the next budget
-            const nextBudget: EditBudgetsDialogGridData = budgets[nextBudgetIndex];
-            // update selected budget index as previous index
-            currentBudget.index = nextBudgetIndex;
-            // update next budget index as current index
-            nextBudget.index = currentBudgetIndex;
-            // move selected budget to next index in budgets list
-            budgets[nextBudgetIndex] = currentBudget;
-            // move next budget to current index in budgets list
-            budgets[currentBudgetIndex] = nextBudget;
-            // update editBudgetsDialogGridData with copy
-            this.editBudgetsDialogGridData = budgets;
+
+            const currentBudget: EditBudgetsDialogGridData = {
+                ...gridData[currentBudgetIndex],
+                index: nextBudgetIndex
+            };
+
+            const nextBudget: EditBudgetsDialogGridData = {
+                ...gridData[nextBudgetIndex],
+                index: currentBudgetIndex
+            };
+
+            gridData[nextBudgetIndex] = currentBudget;
+
+            gridData[currentBudgetIndex] = nextBudget;
+
+            this.editBudgetsDialogGridData = gridData;
+
+            this.selectedGridRows = [this.editBudgetsDialogGridData[nextBudgetIndex]];
         }
 
         /**
-         * 'Add' button has been clicked
+         * Adds a new budget to the grid data list
          */
         onAddBudget() {
             let newBudget = 'Unnamed Budget';
+
             const unnamedBudgets = this.editBudgetsDialogGridData
                 .filter((budget: EditBudgetsDialogGridData) => budget.name.match(/Unnamed Budget/));
+
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
+
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
                 index: this.editBudgetsDialogGridData.length,
@@ -178,30 +188,27 @@
             });
         }
 
+        /**
+         * Modifies the budget name at the specified index in the grid data list
+         */
         onEditBudgetName(newName: string, index: number) {
-            // create a copy of the grid data
-            const budgets = [...this.editBudgetsDialogGridData];
-            // updated the name of the budget in the copy at the specified index
-            budgets[index] = {
+            this.editBudgetsDialogGridData[index] = {
                 ...this.editBudgetsDialogGridData[index],
                 name: newName
             };
-            // update the grid data with its copy
-            this.editBudgetsDialogGridData = budgets;
         }
 
         /**
-         * Whether or not the 'Delete' button should be disabled
+         * Disables the 'Delete' button if there are no selected grid rows
          */
         disableDeleteButton() {
             return !hasValue(this.selectedGridRows);
         }
 
         /**
-         * 'Delete' button has been clicked
+         * Removes budgets that have been marked for deletion from the grid data list and resets the selected grid rows
          */
         onDeleteBudget() {
-            // filter selected budget from budgets list
             this.editBudgetsDialogGridData = this.editBudgetsDialogGridData
                 .filter((budget: EditBudgetsDialogGridData) =>
                     !any(propEq('name', budget.name), this.selectedGridRows)
@@ -212,39 +219,33 @@
                     previousName: budget.previousName,
                     isNew: budget.isNew
                 }));
-            // reset selectedGridRows
+
             this.selectedGridRows = [];
         }
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the modified budgets data or a null value to the parent component then resets the component's data table
+         * UI properties
          */
-        onSubmit() {
-            // create a list of EditedBudget objects using editBudgetsDialogGridData
-            const editedBudgets: EditedBudget[] = this.editBudgetsDialogGridData
-                .map((budget: EditBudgetsDialogGridData) => ({
-                    name: budget.name,
-                    previousName: budget.previousName,
-                    isNew: budget.isNew
-                }));
-            // submit editedBudgets result
-            this.$emit('submit', editedBudgets);
-            // reset the data table properties
+        onSubmit(submit: boolean) {
+            if (submit) {
+                const editedBudgets: EditedBudget[] = this.editBudgetsDialogGridData
+                    .map((budget: EditBudgetsDialogGridData) => ({
+                        name: budget.name,
+                        previousName: budget.previousName,
+                        isNew: budget.isNew
+                    }));
+
+                this.$emit('submit', editedBudgets);
+            } else {
+                this.$emit('submit', null);
+            }
+
             this.resetDialogDataTableProperties();
         }
 
         /**
-         * 'Cancel' button has been clicked
-         */
-        onCancel() {
-            // submit null result
-            this.$emit('submit', null);
-            // reset the data table properties
-            this.resetDialogDataTableProperties();
-        }
-
-        /**
-         * Resets the data table properties of this component
+         * Resets the component's data table UI properties
          */
         resetDialogDataTableProperties() {
             this.editBudgetsDialogGridData = [];

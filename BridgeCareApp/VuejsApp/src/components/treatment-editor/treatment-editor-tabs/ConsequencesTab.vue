@@ -62,7 +62,7 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {isNil, findIndex, uniq, clone, append} from 'ramda';
+    import {isNil, findIndex, clone, append} from 'ramda';
     import EquationEditor from '../../../shared/dialogs/EquationEditor.vue';
     import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
     import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
@@ -84,7 +84,6 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
     import {hasValue} from '@/shared/utils/has-value';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
 
     @Component({
@@ -116,7 +115,7 @@
         selectedConsequence: Consequence = clone(emptyConsequence);
 
         /**
-         * Sets the ConsequencesTab's required UI functionality properties
+         * Sets the component's data properties
          */
         @Watch('consequencesTabData')
         onConsequencesTabDataChanged() {
@@ -124,29 +123,25 @@
             this.consequencesTabSelectedTreatmentLibrary = this.consequencesTabData.tabSelectedTreatmentLibrary;
             this.consequencesTabSelectedTreatment = this.consequencesTabData.tabSelectedTreatment;
             this.consequencesTabLatestConsequenceId = this.consequencesTabData.latestConsequenceId;
+
             this.setConsequencesGridData();
         }
 
         /**
-         * Component has been mounted
+         * Dispatches an action to get all attributes after being mounted
          */
         mounted() {
-            // set isBusy to true, then dispatch action to get all attributes
             this.setIsBusyAction({isBusy: true});
             this.getAttributesAction()
-                .then(() => this.setIsBusyAction({isBusy: false}))
-                .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
-                    console.log(error);
-                });
+                .then(() => this.setIsBusyAction({isBusy: false}));
         }
 
         /**
-         * Sets consequencesGridData property based on costsTabSelectedTreatment data
+         * Sets the component's grid data
          */
         setConsequencesGridData() {
             if (this.consequencesTabSelectedTreatment.id !== 0 && this.consequencesTabSelectedTreatment.consequences.length > 0) {
-                this.consequencesGridData = clone(this.consequencesTabSelectedTreatment.consequences);
+                this.consequencesGridData = this.consequencesTabSelectedTreatment.consequences;
             } else {
                 this.consequencesGridData = [];
             }
@@ -165,7 +160,10 @@
         }
 
         /**
-         * Edits the given consequence's specified property with the specified value
+         * Modifies a consequence's property with a value
+         * @param consequence The consequence to modify
+         * @param property The property to modify
+         * @param value The value to modify with
          */
         onEditConsequenceProperty(consequence: Consequence, property: string, value: any) {
                 const updatedConsequence: Consequence = clone(consequence);
@@ -175,12 +173,13 @@
         }
 
         /**
-         * Sets selectedConsequence with the given consequence, then sets equationEditorDialogData with
-         * selectedConsequence data
-         * @param consequence The consequence to set as selectedConsequence
+         * Sets the selectedConsequence and shows the EquationEditor passing in the selectedConsequence's equation &
+         * isFunction data
+         * @param consequence The consequence to set as the selectedConsequence
          */
         onEditConsequenceEquation(consequence: Consequence) {
             this.selectedConsequence = clone(consequence);
+
             this.equationEditorDialogData = {
                 ...clone(emptyEquationEditorDialogData),
                 showDialog: true,
@@ -190,28 +189,30 @@
         }
 
         /**
-         * Updates the selectedConsequence.equation & selectedConsequence.isFunction based on the user submitted result
-         * from the EquationEditor
-         * @param result User's submitted EquationEditor result
+         * Modifies the selectedConsequence's equation & isFunction data using the EquationEditor result
+         * @param result EquationEditor result
          */
         onSubmitEditedConsequenceEquation(result: EquationEditorDialogResult) {
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
+
             if (!isNil(result)) {
                 const updatedConsequence: Consequence = clone(this.selectedConsequence);
                 this.selectedConsequence = clone(emptyConsequence);
+
                 updatedConsequence.equation = result.equation;
                 updatedConsequence.isFunction = result.isFunction;
+
                 this.submitChanges(updatedConsequence, false);
             }
         }
 
         /**
-         * Sets selectedConsequence with the given consequence, then sets criteriaEditorDialogData with
-         * selectedConsequence data
-         * @param consequence The consequence to set as selectedConsequence
+         * Sets the selectedConsequence and shows the CriteriaEditor passing in the selectedConsequence's criteria data
+         * @param consequence The consequence to set as the selectedConsequence
          */
         onEditConsequenceCriteria(consequence: Consequence) {
             this.selectedConsequence = clone(consequence);
+
             this.criteriaEditorDialogData = {
                 showDialog: true,
                 criteria: this.selectedConsequence.criteria
@@ -219,54 +220,60 @@
         }
 
         /**
-         * Updates the selectedConsequence.criteria based on the user submitted result from the CriteriaEditor
-         * @param criteria User's submitted CriteriaEditor result
+         * Modifies the selectedConsequence's criteria data using the CriteriaEditor result
+         * @param criteria CriteriaEditor result
          */
         onSubmitEditedConsequenceCriteria(criteria: string) {
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
             if (!isNil(criteria)) {
                 const updatedConsequence: Consequence = clone(this.selectedConsequence);
                 this.selectedConsequence = clone(emptyConsequence);
+
                 updatedConsequence.criteria = criteria;
+
                 this.submitChanges(updatedConsequence, false);
             }
         }
 
         /**
-         * A Consequence 'Delete' button has been clicked
+         * Sends a Consequence object that has been marked for deletion to the submitChanges function
          */
         onDeleteConsequence(consequence: Consequence) {
-            this.submitChanges(clone(consequence), true);
+            this.submitChanges(consequence, true);
         }
 
         /**
-         * Submits consequence data changes
-         * @param consequenceData The consequence data to submit changes on
-         * @param forDelete Whether or not the consequence data is to be used for deleting a consequence
+         * Modifies the selected treatment & selected treatment library with a Consequence object's data changes and
+         * emits the modified objects to the parent component
+         * @param consequenceData The Consequence object's data to modify the selected treatment library with
+         * @param forDelete Whether or not the Consequence object's data is marked for deletion
          */
         submitChanges(consequenceData: Consequence, forDelete: boolean) {
-            // update selected treatment data
-            const updatedTreatment: Treatment = clone(this.consequencesTabSelectedTreatment);
             if (forDelete) {
-                updatedTreatment.consequences = updatedTreatment.consequences
+                this.consequencesTabSelectedTreatment.consequences = this.consequencesTabSelectedTreatment.consequences
                     .filter((consequence: Consequence) => consequence.id !== consequenceData.id);
             } else {
                 const updatedConsequenceIndex: number = findIndex((consequence: Consequence) =>
-                    consequence.id === consequenceData.id, updatedTreatment.consequences
+                    consequence.id === consequenceData.id, this.consequencesTabSelectedTreatment.consequences
                 );
                 if (updatedConsequenceIndex === -1) {
-                    updatedTreatment.consequences = append(consequenceData, updatedTreatment.consequences);
+                    this.consequencesTabSelectedTreatment.consequences = append(
+                        consequenceData, this.consequencesTabSelectedTreatment.consequences
+                    );
                 } else {
-                    updatedTreatment.consequences[updatedConsequenceIndex] = consequenceData;
+                    this.consequencesTabSelectedTreatment.consequences[updatedConsequenceIndex] = consequenceData;
                 }
             }
-            // update selected treatment library data
-            const updatedTreatmentLibrary: TreatmentLibrary = clone(this.consequencesTabSelectedTreatmentLibrary);
-            const updatedTreatmentIndex: number = findIndex(
-                (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentLibrary.treatments
+
+            const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
+                treatment.id === this.consequencesTabSelectedTreatment.id,
+                this.consequencesTabSelectedTreatmentLibrary.treatments
             );
-            updatedTreatmentLibrary.treatments[updatedTreatmentIndex] = updatedTreatment;
-            this.$emit('submit', updatedTreatmentLibrary);
+            this.consequencesTabSelectedTreatmentLibrary
+                .treatments[updatedTreatmentIndex] = this.consequencesTabSelectedTreatment;
+
+            this.$emit('submit', this.consequencesTabSelectedTreatmentLibrary);
         }
     }
 </script>

@@ -102,15 +102,18 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-flex xs6>
-                            <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        </v-flex>
-                        <v-flex xs4>
+                        <v-spacer></v-spacer>
+                        <v-flex xs2>
                             <v-layout justify-end row fill-height>
                                 <v-btn color="info lighten-1" v-on:click="onCheckEquation">Check</v-btn>
                                 <v-btn color="info" v-on:click="onSubmit" :disabled="cannotSubmit">Submit</v-btn>
                             </v-layout>
                         </v-flex>
+                        <v-spacer></v-spacer>
+                        <v-flex xs1>
+                            <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
+                        </v-flex>
+                        <v-spacer></v-spacer>
                     </v-layout>
                 </v-card-actions>
             </v-card>
