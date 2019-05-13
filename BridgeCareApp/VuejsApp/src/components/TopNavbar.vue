@@ -90,6 +90,8 @@
         @Action('setUsername') setUsernameAction: any;
         @Action('getAuthentication') getAuthenticationAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('getNetworks') getNetworksAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         warning: Alert = { showModal: false, heading: '', message: '', choice: false };
 
@@ -111,10 +113,17 @@
                 }
                 else {
                     this.$forceUpdate();
+                    this.setIsBusyAction({ isBusy: true });
+                    this.getNetworksAction().then(() =>
+                        this.setIsBusyAction({ isBusy: false })
+                    ).catch((error: any) => {
+                        this.setIsBusyAction({ isBusy: false });
+                        this.setErrorMessageAction({ message: 'Failed to fetch a network' });
+                    });
                 }
             }).catch((error: any) => {
                 this.setIsBusyAction({ isBusy: false });
-                console.log(error);
+                this.setErrorMessageAction({ message: 'Failed to authenticate the user' });
             });
         }
 

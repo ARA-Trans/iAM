@@ -30,7 +30,8 @@ namespace BridgeCare.Services
                                       SimulationName = contextTable.SIMULATION1,
                                       NetworkId = contextTable.NETWORKID.Value,
                                       Created = contextTable.DATE_CREATED,
-                                      LastRun = contextTable.DATE_LAST_RUN
+                                      LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
+                                      NetworkName = contextTable.NETWORK.NETWORK_NAME
                                   };
             return filteredColumns;
         }
@@ -116,8 +117,7 @@ namespace BridgeCare.Services
                                 }
                             }
                         }
-
-                    }
+                    }                 
                 };
 
                 db.SIMULATIONS.Add(sim);

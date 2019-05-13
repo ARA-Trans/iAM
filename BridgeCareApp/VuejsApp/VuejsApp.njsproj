@@ -72,15 +72,13 @@
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyDialog.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyEquationDialog.vue" />
     <Content Include="src\components\performance-editor\PerformanceEditor.vue" />
+    <Content Include="src\components\scenarios\create-scenario-dialog\ScenarioCreationDialog.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\scenarios\EditAnalysis.vue" />
     <Content Include="src\components\scenarios\EditScenario.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\CommittedProjectsFileUploaderDialog.vue" />
     <Content Include="src\components\scenarios\Scenarios.vue" />
-    <Content Include="src\components\scenario\EditAnalysis.vue">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="src\components\scenario\EditScenario.vue">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentStrategyDialog.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-tabs\BudgetsTab.vue" />
@@ -97,7 +95,6 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="src\shared\CriteriaEditor.vue" />
     <Content Include="src\shared\dialogs\AppModalPopup.vue" />
     <Content Include="src\shared\dialogs\AppSpinner.vue" />
     <Content Include="src\shared\dialogs\CriteriaEditor.vue" />
@@ -125,7 +122,8 @@
     <Folder Include="src\components\performance-editor\" />
     <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
     <Folder Include="src\components\scenarios\" />
-    <Folder Include="src\components\scenario\" />
+    <Folder Include="src\components\scenarios\create-scenario-dialog\" />
+    <Folder Include="src\components\scenarios\scenarios-dialogs\" />
     <Folder Include="src\components\treatment-editor\" />
     <Folder Include="src\components\treatment-editor\treatment-editor-dialogs\" />
     <Folder Include="src\components\treatment-editor\treatment-editor-tabs\" />
@@ -140,6 +138,7 @@
     <Folder Include="src\shared\models\dialogs\criteria-editor-dialog\" />
     <Folder Include="src\shared\models\dialogs\equation-editor-dialog\" />
     <Folder Include="src\shared\models\dialogs\investment-editor-dialogs\" />
+    <Folder Include="src\shared\models\dialogs\create-scenario-dialog\" />
     <Folder Include="src\shared\models\dialogs\performance-editor-dialogs\" />
     <Folder Include="src\shared\models\dialogs\treatment-editor-dialogs\" />
     <Folder Include="src\shared\models\iAM\" />
@@ -178,12 +177,13 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
     <TypeScriptCompile Include="src\shared\models\child-components\treatment-editor\tab-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\create-investment-strategy-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\dialogs\create-scenario-dialog\scenario-creation-data.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\shared\models\dialogs\criteria-editor-dialog\criteria-editor-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\download-reports-dialog.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\shared\models\dialogs\edit-budgets-dialog-result.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-result.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\investment-editor-dialogs\create-investment-strategy-dialog-data.ts" />
