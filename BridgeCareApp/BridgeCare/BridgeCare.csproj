@@ -215,6 +215,7 @@
     <Compile Include="EntityClasses\FEASIBILITY.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
+    <Compile Include="EntityClasses\PendingCrudSupport.cs" />
     <Compile Include="EntityClasses\PERFORMANCE.cs" />
     <Compile Include="EntityClasses\SCHEDULED.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="Models\CellAddress.cs" />
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
+    <Compile Include="Models\CrudModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
     <Compile Include="Models\Inventory\ConditionDuration.cs" />
     <Compile Include="Models\Inventory\InventoryItemDetailModel.cs" />

@@ -6,35 +6,53 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
-    public class TreatmentScenarioModel
+    [DataContract]
+    public class TreatmentScenarioModel : CrudModel
     {
-        public int TreatementId { get; set; }
+        [DataMember(Name = "id")]
+        public int TreatmentId { get; set; }
+
+        [DataMember(Name = "treatmentLibraryId")]
         public int SimulationId { get; set; }
 
-        public string Treatment { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "feasibility")]
+        public FeasibilityModel Feasilbility { get; set; }
+
+        [DataMember(Name = "costs")]
+        public List<CostModel> Cost { get; set; }
+
+        [DataMember(Name = "consequences")]
+        public List<ConsequenceModel> Consequences { get; set; }
+
+        [DataMember(Name = "budgets")]
+        public List<string> Budgets { get; set; }
+
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+
+
+
         [IgnoreDataMember]
         public int BeforeAny { get; set; }
         [IgnoreDataMember]
         public int BeforeSame { get; set; }
         [IgnoreDataMember]
         public string Budget { get; set; }
- 
-        public string Description { get; set; }
-
-        public List<string> Budgets { get; set; }
-
-        public string OMS_IS_EXCLUSIVE { get; set; }
-        public string OMS_IS_REPEAT { get; set; }
-        public string OMS_REPEAT_START { get; set; }
-        public string OMS_REPEAT_INTERVAL { get; set; }
-
-        public List<CostModel> Cost { get; set; }
-        public FeasibilityModel Feasilbility { get; set; }
 
         [IgnoreDataMember]
-        public List<FeasibilityModel> Feasibilities { get; set; }
+        public string OMS_IS_EXCLUSIVE { get; set; }
+        [IgnoreDataMember]
+        public string OMS_IS_REPEAT { get; set; }
+        [IgnoreDataMember]
+        public string OMS_REPEAT_START { get; set; }
+        [IgnoreDataMember]
+        public string OMS_REPEAT_INTERVAL { get; set; }
 
-        public List<ConsequenceModel> Consequences { get; set; }
+        [IgnoreDataMember]
+        public List<FeasibilityModel> Feasibilities { get; set; }    
 
         /// <summary>
         /// The conversion from DB comma delimited format to json array format
@@ -51,5 +69,6 @@ namespace BridgeCare.Models
         {
             return string.Join(",", Budgets);
         }
+
     }
 }
