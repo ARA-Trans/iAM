@@ -1,68 +1,42 @@
 ﻿<template>
-    <v-form>
-        <v-container>
-            <v-layout row wrap>
+    <v-container fluid grid-list-xl>
+        <v-layout>
+            <v-flex xs12>
+                <v-layout justify-center fill-height>
+                    <v-flex xs6>
+                        <v-layout column fill-height>
+                            <div class="scenario-edit-text-field-div" v-on:click="editAnalysis">
+                                <v-text-field :append-icon="'fas fa-chart-bar'" box readonly label="Analysis">
+                                </v-text-field>
+                            </div>
+                            <div class="scenario-edit-text-field-div" v-on:click="editInvestment">
+                                <v-text-field :append-icon="'fas fa-dollar-sign'" box readonly label="Investment">
+                                </v-text-field>
+                            </div>
+                            <div class="scenario-edit-text-field-div" v-on:click="editPerformance">
+                                <v-text-field :append-icon="'fas fa-chart-line'" box readonly label="Performance">
+                                </v-text-field>
+                            </div>
+                            <div class="scenario-edit-text-field-div" v-on:click="onShowCommittedProjectsFileUploader">
+                                <v-text-field :append-icon="'fas fa-tasks'" box readonly label="Commited">
+                                </v-text-field>
+                            </div>
+                            <div class="scenario-edit-text-field-div" v-on:click="editTreatment">
+                                <v-text-field :append-icon="'fas fa-heartbeat'" box readonly label="Treatments">
+                                </v-text-field>
+                            </div>
+                            <div class="scenario-edit-text-field-div" v-on:click="">
+                                <v-text-field :append-icon="'fas fa-copy'" box readonly label="Prioritization">
+                                </v-text-field>
+                            </div>
+                        </v-layout>
+                    </v-flex>
+                </v-layout>
+            </v-flex>
+        </v-layout>
 
-                <v-flex xs12>
-                    <v-text-field v-model="message"
-                                  :append-icon="'fas fa-edit'"
-                                  box
-                                  readonly
-                                  label="Analysis"
-                                  type="text"
-                                  @click:append="editAnalysis"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
-                                  :append-icon="'fas fa-dollar-sign'"
-                                  box
-                                  readonly
-                                  label="Investment"
-                                  type="text"
-                                  @click:append="editInvestment"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
-                                  :append-icon="'fas fa-chart-line'"
-                                  box
-                                  readonly
-                                  label="Performance"
-                                  type="text"
-                                  @click:append="editPerformance"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
-                                  :append-icon="marker ? 'info' : 'home'"
-                                  box
-                                  readonly
-                                  label="Commited"
-                                  type="text"
-                                  @click:append="onShowCommittedProjectsFileUploader"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
-                                  :append-icon="marker ? 'info' : 'home'"
-                                  box
-                                  readonly
-                                  label="Treatments"
-                                  type="text"
-                                  @click:append="editTreatment"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field v-model="message"
-                                  :append-icon="marker ? 'info' : 'home'"
-                                  box
-                                  readonly
-                                  label="Prioritization"
-                                  type="text"
-                                  @click:append="toggleMarker"></v-text-field>
-                </v-flex>
-
-            </v-layout>
-
-            <CommittedProjectsFileUploaderDialog :showDialog="showFileUploader" @submit="onUploadCommitedProjectFiles" />
-        </v-container>
-    </v-form>
+        <CommittedProjectsFileUploaderDialog :showDialog="showFileUploader" @submit="onUploadCommitedProjectFiles" />
+    </v-container>
 </template>
 
 <script lang="ts">
@@ -78,10 +52,6 @@
         components: {CommittedProjectsFileUploaderDialog}
     })
     export default class EditScenario extends Vue {
-        selectedScenarioId: number = 0;
-        marker: boolean = true;
-        message: string = '';
-
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
 
@@ -90,6 +60,7 @@
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
 
+        selectedScenarioId: number = 0;
         showFileUploader: boolean = false;
 
         beforeRouteEnter(to: any, from: any, next: any) {
@@ -116,14 +87,6 @@
                     vm.$router.push('/Scenarios/');
                 }
             });
-        }
-
-        created() {
-            this.marker = true;
-        }
-
-        toggleMarker() {
-            this.marker = !this.marker;
         }
 
         /**
@@ -173,7 +136,7 @@
 
         /**
          * Uploads the files submitted via the CommittedProjectsFileUploaderDialog (if present)
-         * @param files List of files to upload
+         * @param files File array
          */
         onUploadCommitedProjectFiles(files: File[]) {
             this.showFileUploader = false;
@@ -190,5 +153,8 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .scenario-edit-text-field-div * {
+        cursor: pointer;
+    }
 </style>
