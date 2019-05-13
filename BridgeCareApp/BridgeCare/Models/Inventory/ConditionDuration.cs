@@ -6,6 +6,6 @@
 
         public string Condition { get; set; }
 
-        public int Duration { get; set; }
+        public string Duration { get; set; }
     }
 }
