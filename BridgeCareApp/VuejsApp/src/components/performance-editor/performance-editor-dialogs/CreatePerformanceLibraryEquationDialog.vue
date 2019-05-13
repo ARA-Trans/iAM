@@ -9,10 +9,10 @@
                 </v-card-title>
                 <v-card-text>
                     <v-layout column fill-height>
-                        <v-text-field label="Name" v-model="createdPerformanceStrategyEquation.equationName" outline>
+                        <v-text-field label="Name" v-model="createdPerformanceLibraryEquation.equationName" outline>
                         </v-text-field>
                         <v-select label="Select Attribute" :items="attributesSelectListItems"
-                                  v-model="createdPerformanceStrategyEquation.attribute" outline>
+                                  v-model="createdPerformanceLibraryEquation.attribute" outline>
                         </v-select>
                     </v-layout>
                 </v-card-text>
@@ -20,8 +20,8 @@
                     <v-layout justify-space-between row fill-height>
                         <v-btn v-on:click="onCancel">Cancel</v-btn>
                         <v-btn color="info" v-on:click="onSubmit"
-                               :disabled="createdPerformanceStrategyEquation.equationName === '' ||
-                                          createdPerformanceStrategyEquation.attribute === ''">
+                               :disabled="createdPerformanceLibraryEquation.equationName === '' ||
+                                          createdPerformanceLibraryEquation.attribute === ''">
                             Submit
                         </v-btn>
                     </v-layout>
@@ -35,12 +35,12 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {emptyEquation, PerformanceStrategyEquation} from '@/shared/models/iAM/performance';
+    import {emptyEquation, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
     import {isEmpty} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
 
     @Component
-    export default class CreatePerformanceStrategyDialog extends Vue {
+    export default class CreatePerformanceLibraryDialog extends Vue {
         @Prop() showDialog: boolean;
 
         @State(state => state.attribute.attributes) attributes: string[];
@@ -49,7 +49,7 @@
         @Action('getAttributes') getAttributesAction: any;
 
         attributesSelectListItems: SelectItem[] = [];
-        createdPerformanceStrategyEquation: PerformanceStrategyEquation = {...emptyEquation};
+        createdPerformanceLibraryEquation: PerformanceLibraryEquation = {...emptyEquation};
 
         /**
          * Watcher: showDialog
@@ -86,8 +86,8 @@
          * 'Submit' button has been clicked
          */
         onSubmit() {
-            this.$emit('submit', this.createdPerformanceStrategyEquation);
-            this.createdPerformanceStrategyEquation = {...emptyEquation};
+            this.$emit('submit', this.createdPerformanceLibraryEquation);
+            this.createdPerformanceLibraryEquation = {...emptyEquation};
         }
 
         /**
@@ -95,7 +95,7 @@
          */
         onCancel() {
             this.$emit('submit', null);
-            this.createdPerformanceStrategyEquation = {...emptyEquation};
+            this.createdPerformanceLibraryEquation = {...emptyEquation};
         }
     }
 </script>

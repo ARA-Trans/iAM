@@ -5,30 +5,31 @@
                 <v-flex xs12>
                     <v-layout justify-center fill-height>
                         <v-flex xs3>
-                            <v-btn color="info" v-on:click="onNewLibrary">
+                            <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onNewLibrary">
                                 New Library
                             </v-btn>
-                            <v-select v-if="!hasSelectedPerformanceStrategy"
-                                      :items="performanceStrategiesSelectListItems"
-                                      label="Select a Performance Strategy" outline
+                            <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
+                                <v-icon left v-model="scenarioName">label</v-icon>Scenario name: {{scenarioName}}
+                            </v-chip>
+                            <v-select v-if="!hasSelectedPerformanceLibrary || selectedScenarioId > 0"
+                                      :items="performanceLibrariesSelectListItems"
+                                      label="Select a Performance Library" outline
                                       v-model="selectItemValue">
                             </v-select>
-                            <v-text-field v-if="hasSelectedPerformanceStrategy" label="Strategy Name" append-icon="clear"
-                                          v-model="selectedPerformanceStrategy.name"
-                                          @click:append="onClearPerformanceStrategySelection">
+                            <v-text-field v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0"
+                                          label="Library Name" append-icon="clear" v-model="selectedPerformanceLibrary.name"
+                                          @click:append="onClearSelectedPerformanceLibrary">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                <v-divider v-if="hasSelectedPerformanceStrategy"></v-divider>
-                <v-flex xs12 v-if="hasSelectedPerformanceStrategy">
+                <v-divider v-if="hasSelectedPerformanceLibrary"></v-divider>
+                <v-flex xs12 v-if="hasSelectedPerformanceLibrary">
                     <v-layout justify-center fill-height>
-                        <v-flex xs3>
-                            <v-layout justify-space-between fill-height>
-                                <v-btn color="info" v-on:click="onAddEquation">
-                                    Add
-                                </v-btn>
-                            </v-layout>
+                        <v-flex xs8>
+                            <v-btn color="info" v-on:click="onAddEquation">
+                                Add
+                            </v-btn>
                         </v-flex>
                     </v-layout>
                     <v-layout justify-center fill-height>
@@ -37,7 +38,7 @@
                                 <div class="data-table">
                                     <v-data-table :headers="equationsGridHeaders"
                                                   :items="equationsGridData"
-                                                  item-key="performanceStrategyEquationId"
+                                                  item-key="performanceLibraryEquationId"
                                                   class="elevation-1 fixed-header v-table__overflow" hide-actions>
                                         <template slot="items" slot-scope="props">
                                             <td class="text-xs-center">
@@ -116,13 +117,13 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                <v-divider v-if="hasSelectedPerformanceStrategy"></v-divider>
-                <v-flex xs12 v-if="hasSelectedPerformanceStrategy">
+                <v-divider v-if="hasSelectedPerformanceLibrary"></v-divider>
+                <v-flex xs12 v-if="hasSelectedPerformanceLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea no-resize outline full-width
-                                        :label="selectedPerformanceStrategy.description === '' ? 'Description' : ''"
-                                        v-model="selectedPerformanceStrategy.description">
+                            <v-textarea rows="4" no-resize outline full-width
+                                        :label="selectedPerformanceLibrary.description === '' ? 'Description' : ''"
+                                        v-model="selectedPerformanceLibrary.description">
                             </v-textarea>
                         </v-flex>
                     </v-layout>
@@ -132,28 +133,29 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
-                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedPerformanceStrategy">
+                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
+                       :disabled="!hasSelectedPerformanceLibrary">
+                    Discard Changes
+                </v-btn>
+                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedPerformanceLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn color="info lighten-1" v-on:click="onUpdateLibrary" :disabled="!hasSelectedPerformanceStrategy">
+                <v-btn v-show="selectedScenarioId === 0" color="info lighten-1" v-on:click="onUpdateLibrary"
+                       :disabled="!hasSelectedPerformanceLibrary">
                     Update Library
                 </v-btn>
-                <v-tooltip top>
-                    <template slot="activator">
-                        <v-btn color="info" v-on:click="onApplyToScenario" :disabled="true">
-                            Apply
-                        </v-btn>
-                    </template>
-                    <span>Feature not ready</span>
-                </v-tooltip>
+                <v-btn v-show="selectedScenarioId > 0" color="info" v-on:click="onApplyToScenario"
+                       :disabled="!hasSelectedPerformanceLibrary">
+                    Apply
+                </v-btn>
             </v-layout>
         </v-footer>
 
-        <CreatePerformanceStrategyDialog :dialogData="createPerformanceStrategyDialogData"
-                                         @submit="onCreatePerformanceStrategy" />
+        <CreatePerformanceLibraryDialog :dialogData="createPerformanceLibraryDialogData"
+                                         @submit="onCreatePerformanceLibrary" />
 
-        <CreatePerformanceStrategyEquationDialog :showDialog="showCreatePerformanceStrategyEquationDialog"
-                                                 @submit="onCreatePerformanceStrategyEquation" />
+        <CreatePerformanceLibraryEquationDialog :showDialog="showCreatePerformanceLibraryEquationDialog"
+                                                 @submit="onCreatePerformanceLibraryEquation" />
 
         <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult" />
 
@@ -166,22 +168,19 @@
     import { Watch } from 'vue-property-decorator';
     import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
-    import CreatePerformanceStrategyDialog from './performance-editor-dialogs/CreatePerformanceStrategyDialog.vue';
-    import CreatePerformanceStrategyEquationDialog from './performance-editor-dialogs/CreatePerformanceStrategyEquationDialog.vue';
+    import CreatePerformanceLibraryDialog from './performance-editor-dialogs/CreatePerformanceLibraryDialog.vue';
+    import CreatePerformanceLibraryEquationDialog from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
     import EquationEditor from '../../shared/dialogs/EquationEditor.vue';
     import CriteriaEditor from '../../shared/dialogs/CriteriaEditor.vue';
-    import {
-        PerformanceStrategyEquation,
-        PerformanceStrategy, emptyEquation
-    } from '@/shared/models/iAM/performance';
+    import {PerformanceLibraryEquation, PerformanceLibrary, emptyEquation} from '@/shared/models/iAM/performance';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {any, propEq, clone, isNil, findIndex, append, contains, isEmpty} from 'ramda';
+    import {any, propEq, clone, isNil, findIndex, append, isEmpty, uniq} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value';
     import {
-        CreatePerformanceStrategyDialogData,
-        emptyCreatePerformanceStrategyDialogData
-    } from '@/shared/models/dialogs/performance-editor-dialogs/create-performance-strategy-dialog-data';
+        CreatePerformanceLibraryDialogData,
+        emptyCreatePerformanceLibraryDialogData
+    } from '@/shared/models/dialogs/performance-editor-dialogs/create-performance-library-dialog-data';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -192,28 +191,35 @@
     } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
+    import {sortByProperty} from '@/shared/utils/sorter';
 
     @Component({
-        components: {CreatePerformanceStrategyDialog, CreatePerformanceStrategyEquationDialog, EquationEditor, CriteriaEditor}
+        components: {CreatePerformanceLibraryDialog: CreatePerformanceLibraryDialog, CreatePerformanceLibraryEquationDialog, EquationEditor, CriteriaEditor}
     })
     export default class PerformanceEditor extends Vue {
-        @State(state => state.performanceEditor.performanceStrategies) performanceStrategies: PerformanceStrategy[];
-        @State(state => state.performanceEditor.selectedPerformanceStrategy) selectedPerformanceStrategy: PerformanceStrategy;
+        @State(state => state.performanceEditor.performanceLibraries) performanceLibraries: PerformanceLibrary[];
+        @State(state => state.performanceEditor.selectedPerformanceLibrary) selectedPerformanceLibrary: PerformanceLibrary;
+        @State(state => state.performanceEditor.scenarioPerformanceLibrary) scenarioPerformanceLibrary: PerformanceLibrary;
         @State(state => state.attribute.attributes) attributes: string[];
         @State(state => state.breadcrumb.navigation) navigation: any[];
 
         @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getPerformanceStrategies') getPerformanceStrategiesAction: any;
-        @Action('selectPerformanceStrategy') selectPerformanceStrategyAction: any;
-        @Action('createPerformanceStrategy') createPerformanceStrategyAction: any;
-        @Action('updatePerformanceStrategy') updatePerformanceStrategyAction: any;
-        @Action('updateSelectedPerformanceStrategy') updateSelectedPerformanceStrategyAction: any;
+        @Action('getPerformanceLibraries') getPerformanceLibrariesAction: any;
+        @Action('selectPerformanceLibrary') selectPerformanceLibraryAction: any;
+        @Action('createPerformanceLibrary') createPerformanceLibraryAction: any;
+        @Action('updatePerformanceLibrary') updatePerformanceLibraryAction: any;
+        @Action('updateSelectedPerformanceLibrary') updateSelectedPerformanceLibraryAction: any;
+        @Action('getScenarioPerformanceLibrary') getScenarioPerformanceLibraryAction: any;
+        @Action('upsertScenarioPerformanceLibrary') upsertScenarioPerformanceLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
 
-        performanceStrategiesSelectListItems: SelectItem[] = [];
+        selectedScenarioId: number = 0;
+        scenarioName: string = '';
+        hasSelectedPerformanceLibrary: boolean = false;
+        performanceLibrariesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
-        hasSelectedPerformanceStrategy: boolean = false;
         equationsGridHeaders: DataTableHeader[] = [
             {text: 'Name', value: 'equationName', align: 'center', sortable: true, class: '', width: ''},
             {text: 'Attribute', value: 'attribute', align: 'center', sortable: true, class: '', width: ''},
@@ -221,127 +227,136 @@
             {text: 'Criteria', value: 'criteria', align: 'center', sortable: false, class: '', width: ''},
             {text: '', value: '', align: 'center', sortable: false, class: '', width: ''}
         ];
-        equationsGridData: PerformanceStrategyEquation[] = [];
+        equationsGridData: PerformanceLibraryEquation[] = [];
         attributesSelectListItems: SelectItem[] = [];
-        selectedEquation: PerformanceStrategyEquation = {...emptyEquation};
-        createPerformanceStrategyDialogData: CreatePerformanceStrategyDialogData = {
-            ...emptyCreatePerformanceStrategyDialogData
+        selectedEquation: PerformanceLibraryEquation = clone(emptyEquation);
+        createPerformanceLibraryDialogData: CreatePerformanceLibraryDialogData = {
+            ...emptyCreatePerformanceLibraryDialogData
         };
-        equationEditorDialogData: EquationEditorDialogData = {...emptyEquationEditorDialogData};
-        criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
-        showCreatePerformanceStrategyEquationDialog = false;
+        equationEditorDialogData: EquationEditorDialogData = clone(emptyEquationEditorDialogData);
+        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        showCreatePerformanceLibraryEquationDialog = false;
+        allPerformanceLibraries: PerformanceLibrary[] = [];
+        latestLibraryId: number = 0;
+        latestEquationId: number = 0;
 
         beforeRouteEnter(to: any, from: any, next: any) {
-            if (to.path === '/PerformanceEditor/FromScenario/') {
-                next((vm: any) => {
+            next((vm: any) => {
+                if (to.path === '/PerformanceEditor/FromScenario/') {
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                    if (vm.selectedScenarioId === 0) {
+                        // set 'no selected scenario' error message, then redirect user to Scenario UI
+                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                        vm.$router.push('/Scenarios/');
+                    }
                     vm.setNavigationAction([
                         {
                             text: 'Scenario dashboard',
-                            to: '/Scenarios/'
+                            to: {path: '/Scenarios/', query: {}}
                         },
                         {
                             text: 'Scenario editor',
-                            to: {
-                                path: '/EditScenario/', query: {
-                                    simulationId: to.query.simulationId
-                                }
-                            }
+                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
                         },
                         {
                             text: 'Performance editor',
-                            to: {
-                                path: '/PerformanceEditor/FromScenario/', query: {
-                                    simulationId: to.query.simulationId
-                                }
-                            }
+                            to: {path: '/PerformanceEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
                         }
                     ]);
-                });
-            }
-            else {
-                next((vm: any) => {
-                    vm.setNavigationAction([]);
-                });
-            }
+                } else {
+                    next((vm: any) => {
+                        vm.setNavigationAction([]);
+                    });
+                }
+                vm.onClearSelectedPerformanceLibrary();
+                setTimeout(() => {
+                    vm.setIsBusyAction({isBusy: true});
+                    vm.getPerformanceLibrariesAction()
+                        .then(() => {
+                            if (vm.selectedScenarioId > 0) {
+                                vm.getScenarioPerformanceLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                    .then(() => vm.setIsBusyAction({isBusy: false}));
+                            } else {
+                                vm.setIsBusyAction({isBusy: false});
+                            }
+                        });
+                }, 0);
+            });
         }
 
         beforeRouteUpdate(to: any, from: any, next: any) {
-            console.log('Router rerendered');
-            next();
-            // called when the route that renders this component has changed,
-            // but this component is reused in the new route.
-            // For example, for a route with dynamic params `/foo/:id`, when we
-            // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
-            // will be reused, and this hook will be called when that happens.
-            // has access to `this` component instance.
+            if (to.path === '/PerformanceEditor/Library/') {
+                this.selectedScenarioId = 0;
+                this.onClearSelectedPerformanceLibrary();
+                next();
+            }
         }
 
         /**
-         * Watcher: performanceStrategies
+         * Sets the performanceLibrariesSelectListItems using the performanceLibraries from state
          */
-        @Watch('performanceStrategies')
-        onPerformanceStrategiesChanged(performanceStrategies: PerformanceStrategy[]) {
-            // set the performanceStrategiesSelectListItems list using performanceStrategies list
-            this.performanceStrategiesSelectListItems = performanceStrategies
-                .map((performanceStrategy: PerformanceStrategy) => ({
-                    text: performanceStrategy.name,
-                    value: performanceStrategy.id.toString()
+        @Watch('performanceLibraries')
+        onPerformanceLibrariesChanged(performanceLibraries: PerformanceLibrary[]) {
+            this.performanceLibrariesSelectListItems = performanceLibraries
+                .map((performanceLibrary: PerformanceLibrary) => ({
+                    text: performanceLibrary.name,
+                    value: performanceLibrary.id.toString()
                 }));
+            // set allPerformanceLibraries
+            this.setAllPerformanceLibraries();
         }
 
         /**
-         * Watcher: performanceStrategiesSelectItem
+         * Sets scenarioName using the scenarioPerformanceLibrary from state
+         */
+        @Watch('scenarioPerformanceLibrary')
+        onScenarioPerformanceLibraryChanged() {
+            this.scenarioName = this.scenarioPerformanceLibrary.name;
+            // set allPerformanceLibraries
+            this.setAllPerformanceLibraries();
+        }
+
+        /**
+         * Sets the selected performance library based on selectItemValue
          */
         @Watch('selectItemValue')
-        onPerformanceStrategiesSelectItemChanged() {
-            if (hasValue(this.selectItemValue) && this.selectedPerformanceStrategy.id === 0) {
-                // parse selectItemValue as an integer
-                const id: number = parseInt(this.selectItemValue);
-                // dispatch selectPerformanceStrategyAction with id
-                this.selectPerformanceStrategyAction({performanceStrategyId: id});
-            } else if (!hasValue(this.selectItemValue) && this.selectedPerformanceStrategy.id !== 0) {
-                // dispatch selectPerformanceStrategyAction with null
-                this.selectPerformanceStrategyAction({performanceStrategyId: null});
+        onPerformanceLibrariesSelectItemChanged() {
+            const id: number = hasValue(this.selectItemValue) ? parseInt(this.selectItemValue) : 0;
+            if (id !== this.selectedPerformanceLibrary.id) {
+                this.selectPerformanceLibraryAction({performanceLibraryId: id});
             }
         }
 
         /**
-         * Watcher: selectedPerformanceStrategy
+         * Sets/resets the UI component properties when a performance library has been selected/unselected
          */
-        @Watch('selectedPerformanceStrategy')
-        onSelectedPerformanceStrategyChanged() {
-            if (this.selectedPerformanceStrategy.id !== 0) {
-                // set ui specific properties
-                if (!hasValue(this.selectItemValue)) {
-                    this.selectItemValue = this.selectedPerformanceStrategy.id.toString();
-                }
-                this.hasSelectedPerformanceStrategy = true;
-                this.equationsGridData = clone(this.selectedPerformanceStrategy.equations);
+        @Watch('selectedPerformanceLibrary')
+        onSelectedPerformanceLibraryChanged() {
+            if (this.selectedPerformanceLibrary.id !== 0) {
+                // set
+                this.hasSelectedPerformanceLibrary = true;
+                this.equationsGridData = this.selectedPerformanceLibrary.equations;
                 if (isEmpty(this.attributes)) {
-                    // set isBusy to true, then dispatch action to get attributes
+                    // dispatch an action to get all attributes
                     this.setIsBusyAction({isBusy: true});
                     this.getAttributesAction()
-                        .then(() => this.setIsBusyAction({isBusy: false}))
-                        .catch((error: any) => {
-                            this.setIsBusyAction({isBusy: false});
-                            console.log(error);
-                        });
+                        .then(() => this.setIsBusyAction({isBusy: false}));
                 }
             } else {
-                // reset ui specific properties
-                this.selectItemValue = '';
-                this.hasSelectedPerformanceStrategy = false;
+                // reset
+                this.hasSelectedPerformanceLibrary = false;
                 this.equationsGridData = [];
             }
+            // set allPerformanceLibraries
+            this.setAllPerformanceLibraries();
         }
 
         /**
-         * Watcher: attributes
+         * Sets the attributesSelectListItems using the attributes from state
          */
         @Watch('attributes')
         onAttributesChanged() {
             if (!isEmpty(this.attributes)) {
-                // set the attributesSelectListItems property using the list of attributes
                 this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
                     text: attribute,
                     value: attribute
@@ -349,36 +364,50 @@
             }
         }
 
-        /**
-         * Component has been mounted
-         */
-        mounted() {
-            // set isBusy to true, then dispatch action to get all performance strategies
-            this.setIsBusyAction({isBusy: true});
-            this.getPerformanceStrategiesAction()
-                .then(() => this.setIsBusyAction({isBusy: false}))
-                .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
-                    console.log(error);
-                });
-
+        @Watch('allPerformanceLibraries')
+        onAllPerformanceLibrariesChanged() {
+            // set latestLibraryId
+            this.latestLibraryId = getLatestPropertyValue('id', this.allPerformanceLibraries);
+            // set latestEquationId
+            const equations: PerformanceLibraryEquation[] = [];
+            this.allPerformanceLibraries.forEach((performanceLibrary) => {
+                equations.push(...performanceLibrary.equations);
+            });
+            this.latestEquationId = getLatestPropertyValue('id', equations);
         }
 
         /**
-         * Component is about to be destroyed
+         * Sets the latestLibraryId & latestEquationId properties
          */
-        beforeDestroy() {
-            // clear the selected performance strategy
-            this.onClearPerformanceStrategySelection();
+        setAllPerformanceLibraries() {
+            // add all performance libraries from state
+            const libraries: PerformanceLibrary[] = [...this.performanceLibraries];
+            // add scenario performance library from state if present
+            if (this.scenarioPerformanceLibrary.id > 0) {
+                libraries.push(this.scenarioPerformanceLibrary);
+            }
+            // add selected performance library from state if present
+            if (this.selectedPerformanceLibrary.id > 0) {
+                libraries.push(this.selectedPerformanceLibrary);
+            }
+            // remove duplicates and set allPerformanceLibraries
+            this.allPerformanceLibraries = uniq(libraries);
+        }
+
+        /**
+         * Clears the selected performance library by setting selectItemValue to an empty string or 0
+         */
+        onClearSelectedPerformanceLibrary() {
+            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
         }
 
         /**
          * 'New Library' button has been clicked
          */
         onNewLibrary() {
-            // create new CreatePerformanceStrategyDialogData object
-            this.createPerformanceStrategyDialogData = {
-                ...emptyCreatePerformanceStrategyDialogData,
+            // create new CreatePerformanceLibraryDialogData object
+            this.createPerformanceLibraryDialogData = {
+                ...emptyCreatePerformanceLibraryDialogData,
                 showDialog: true
             };
         }
@@ -387,29 +416,51 @@
          * 'Add Equation' button has been clicked
          */
         onAddEquation() {
-            // set showCreatePerformanceStrategyEquationDialog to true to show CreatePerformanceStrategyEquationDialog
-            this.showCreatePerformanceStrategyEquationDialog = true;
+            // set showCreatePerformanceLibraryEquationDialog to true to show CreatePerformanceLibraryEquationDialog
+            this.showCreatePerformanceLibraryEquationDialog = true;
         }
 
         /**
          * User has submitted a createdEquation dialog result
          */
-        onCreatePerformanceStrategyEquation(createdEquation: PerformanceStrategyEquation) {
-            // set showCreatePerformanceStrategyEquationDialog to false to hide CreatePerformanceStrategyEquationDialog
-            this.showCreatePerformanceStrategyEquationDialog = false;
-            // if there is a createdPerformanceStrategyEquation
+        onCreatePerformanceLibraryEquation(createdEquation: PerformanceLibraryEquation) {
+            // set showCreatePerformanceLibraryEquationDialog to false to hide CreatePerformanceLibraryEquationDialog
+            this.showCreatePerformanceLibraryEquationDialog = false;
+            // if there is a createdPerformanceLibraryEquation
             if (!isNil(createdEquation)) {
-                // get the latest id from the list of selected performance strategy equations
-                const latestId: number = getLatestPropertyValue('id', this.selectedPerformanceStrategy.equations);
-                // set the created equation's id by adding 1 to latestId (if present), otherwise use 1
-                createdEquation.id = hasValue(latestId) ? latestId + 1 : 1;
-                // set the performanceStrategyId on the created equation with the selected performance strategy's id
-                createdEquation.performanceStrategyId = this.selectedPerformanceStrategy.id;
-                // update the selected performance strategy's equations with the new equation
-                this.updateSelectedPerformanceStrategyAction({
-                    updatedSelectedPerformanceStrategy: {
-                        ...this.selectedPerformanceStrategy,
-                        equations: append(createdEquation, this.selectedPerformanceStrategy.equations)
+                // set the equation id & performanceLibraryId
+                createdEquation.id = hasValue(this.latestEquationId) ? this.latestEquationId + 1 : 1;
+                createdEquation.performanceLibraryId = this.selectedPerformanceLibrary.id;
+                // update the selected performance library's equations with the new equation
+                this.updateSelectedPerformanceLibraryAction({
+                    updatedSelectedPerformanceLibrary: {
+                        ...this.selectedPerformanceLibrary,
+                        equations: append(createdEquation, this.selectedPerformanceLibrary.equations)
+                    }
+                });
+            }
+        }
+
+        /**
+         * A performance library equation's name/attribute property has been edited
+         * @param id: Performance library equation id
+         * @param property Performance library equation property
+         * @param value Value to set on the performance library equation property
+         */
+        onEditEquationProperty(id: number, property: string, value: any) {
+            if (any(propEq('id', id), this.selectedPerformanceLibrary.equations)) {
+                // get the selected performance library's list of equations
+                const updatedEquations: PerformanceLibraryEquation[] = this.selectedPerformanceLibrary.equations;
+                // find the index of the updated equation in the list of equations
+                const index = findIndex(propEq('id', id), updatedEquations);
+                // update the specified property of the equation at the specified index with the given value
+                // @ts-ignore
+                updatedEquations[index][property] = value;
+                // dispatch action to update the selected performance library's equations
+                this.updateSelectedPerformanceLibraryAction({
+                    updatedSelectedPerformanceLibrary: {
+                        ...this.selectedPerformanceLibrary,
+                        equations: updatedEquations
                     }
                 });
             }
@@ -420,9 +471,9 @@
          * @param id The id of the selected equation for edit
          */
         onShowEquationEditorDialog(id: number) {
-            // get the selected equation from the selected performance strategy's equations list using the specified id
-            this.selectedEquation = this.selectedPerformanceStrategy.equations
-                .find((equation: PerformanceStrategyEquation) => equation.id === id) as PerformanceStrategyEquation;
+            // get the selected equation from the selected performance library's equations list using the specified id
+            this.selectedEquation = this.selectedPerformanceLibrary.equations
+                .find((equation: PerformanceLibraryEquation) => equation.id === id) as PerformanceLibraryEquation;
             if (!isNil(this.selectedEquation)) {
                 // create a new equationEditorDialogData object using selectedEquation data
                 this.equationEditorDialogData = {
@@ -441,11 +492,11 @@
          */
         onSubmitEquationEditorDialogResult(result: EquationEditorDialogResult) {
             // reset equationEditorDialogData
-            this.equationEditorDialogData = {...emptyEquationEditorDialogData};
+            this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
             // check that a result was submitted
             if (!isNil(result)) {
-                // get the selected performance strategy's equations
-                const updatedEquations: PerformanceStrategyEquation[] = this.selectedPerformanceStrategy.equations;
+                // get the selected performance library's equations
+                const updatedEquations: PerformanceLibraryEquation[] = this.selectedPerformanceLibrary.equations;
                 // find the index of the submitted equation in the list of equations
                 const index = findIndex(propEq('id', this.selectedEquation.id), updatedEquations);
                 // update the updatedEquation at the index
@@ -456,11 +507,11 @@
                     isFunction: result.isFunction
                 };
                 // reset the selectedEquation property
-                this.selectedEquation = {...emptyEquation};
-                // dispatch an action to update the selected performance strategy's equations
-                this.updateSelectedPerformanceStrategyAction({
-                    updatedSelectedPerformanceStrategy: {
-                        ...this.selectedPerformanceStrategy,
+                this.selectedEquation = clone(emptyEquation);
+                // dispatch an action to update the selected performance library's equations
+                this.updateSelectedPerformanceLibraryAction({
+                    updatedSelectedPerformanceLibrary: {
+                        ...this.selectedPerformanceLibrary,
                         equations: updatedEquations
                     }
                 });
@@ -472,10 +523,10 @@
          * @param id The id of the selected equation for edit
          */
         onShowCriteriaEditorDialog(id: number) {
-            // set selectedEquation using the found equation in the selected performance strategy's list of equations
+            // set selectedEquation using the found equation in the selected performance library's list of equations
             // using the specified id
-            this.selectedEquation = this.selectedPerformanceStrategy.equations
-                .find((equation: PerformanceStrategyEquation) => equation.id === id) as PerformanceStrategyEquation;
+            this.selectedEquation = this.selectedPerformanceLibrary.equations
+                .find((equation: PerformanceLibraryEquation) => equation.id === id) as PerformanceLibraryEquation;
             if (!isNil(this.selectedEquation)) {
                 // create a new criteriaEditorDialogData object and set the criteria using selectedEquation
                 this.criteriaEditorDialogData = {
@@ -491,11 +542,11 @@
          */
         onSubmitCriteriaEditorDialogResult(criteria: string) {
             // reset criteriaEditorDialogData
-            this.criteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
+            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
             // check that a result submitted
             if (!isNil(criteria)) {
-                // get the selected performance strategy's equations
-                const updatedEquations: PerformanceStrategyEquation[] = this.selectedPerformanceStrategy.equations;
+                // get the selected performance library's equations
+                const updatedEquations: PerformanceLibraryEquation[] = this.selectedPerformanceLibrary.equations;
                 // find the index of the submitted equation in the list of equations
                 const index = findIndex(propEq('id', this.selectedEquation.id), updatedEquations);
                 // update the updatedEquation at the index
@@ -504,37 +555,11 @@
                     criteria: criteria
                 };
                 // reset the selectedEquation property
-                this.selectedEquation = {...emptyEquation};
-                // dispatch an action to update the selected performance strategy's equations
-                this.updateSelectedPerformanceStrategyAction({
-                    updatedSelectedPerformanceStrategy: {
-                        ...this.selectedPerformanceStrategy,
-                        equations: updatedEquations
-                    }
-                });
-            }
-        }
-
-
-        /**
-         * A performance strategy equation's name/attribute property has been edited
-         * @param id: Performance strategy equation id
-         * @param property Performance strategy equation property
-         * @param value Value to set on the performance strategy equation property
-         */
-        onEditEquationProperty(id: number, property: string, value: any) {
-            if (any(propEq('id', id), this.selectedPerformanceStrategy.equations)) {
-                // get the selected performance strategy's list of equations
-                const updatedEquations: PerformanceStrategyEquation[] = this.selectedPerformanceStrategy.equations;
-                // find the index of the updated equation in the list of equations
-                const index = findIndex(propEq('id', id), updatedEquations);
-                // update the specified property of the equation at the specified index with the given value
-                // @ts-ignore
-                updatedEquations[index][property] = value;
-                // dispatch action to update the selected performance strategy's equations
-                this.updateSelectedPerformanceStrategyAction({
-                    updatedSelectedPerformanceStrategy: {
-                        ...this.selectedPerformanceStrategy,
+                this.selectedEquation = clone(emptyEquation);
+                // dispatch an action to update the selected performance library's equations
+                this.updateSelectedPerformanceLibraryAction({
+                    updatedSelectedPerformanceLibrary: {
+                        ...this.selectedPerformanceLibrary,
                         equations: updatedEquations
                     }
                 });
@@ -542,98 +567,125 @@
         }
 
         /**
-         * 'Delete' button was clicked
+         * Filters out an equation that has a matching id with the specified id
          */
         onDeleteEquation(id: number) {
-            // combine the selected equations' ids in a list with the selected performance strategy's list of deleted
-            // equation ids
-            const editedDeletedEquationIds: number[] = [
-                ...this.selectedPerformanceStrategy.deletedEquationIds,
-                id
-            ];
-            // filter the list of equations by removing all equations that don't have an id in the deleted equation ids list
-            const editedEquations = this.selectedPerformanceStrategy.equations
-                .filter((equation: PerformanceStrategyEquation) => !contains(equation.id, editedDeletedEquationIds));
-            // dispatch action to update the selected performance strategy's deleted equation ids
-            this.updateSelectedPerformanceStrategyAction({
-                updatedSelectedPerformanceStrategy: {
-                    ...this.selectedPerformanceStrategy,
-                    equations: editedEquations,
-                    deletedEquationIds: editedDeletedEquationIds
+            this.updateSelectedPerformanceLibraryAction({
+                updatedSelectedPerformanceLibrary: {
+                    ...this.selectedPerformanceLibrary,
+                    equations: this.selectedPerformanceLibrary.equations
+                        .filter((equation: PerformanceLibraryEquation) => equation.id !== id)
                 }
             });
+        }
+
+        /**
+         * Resets the component UI by discarding the user's changes and resetting the selected performance library with
+         * the current scenario's performance library data
+         */
+        onDiscardChanges() {
+            this.onClearSelectedPerformanceLibrary();
+            if (this.scenarioPerformanceLibrary.id > 0) {
+                setTimeout(() => {
+                    this.updateSelectedPerformanceLibraryAction({
+                        updatedSelectedPerformanceLibrary: this.scenarioPerformanceLibrary
+                    });
+                });
+            } else {
+                setTimeout(() => {
+                    this.setIsBusyAction({isBusy: true});
+                    this.getScenarioPerformanceLibraryAction({selectedScenarioId: this.selectedScenarioId})
+                        .then(() => this.setIsBusyAction({isBusy: false}));
+                });
+            }
         }
 
         /**
          * 'Create as New Library' button has been clicked
          */
         onCreateAsNewLibrary() {
-            // create a new CreatePerformanceStrategyDialogData object, setting the description and equations list
-            // with data from the selected performance strategy
-            this.createPerformanceStrategyDialogData = {
+            // create a new CreatePerformanceLibraryDialogData object, setting the description and equations list
+            // with data from the selected performance library
+            this.createPerformanceLibraryDialogData = {
                 showDialog: true,
-                selectedPerformanceStrategyDescription: this.selectedPerformanceStrategy.description,
-                selectedPerformanceStrategyEquations: this.selectedPerformanceStrategy.equations
+                selectedPerformanceLibraryDescription: this.selectedPerformanceLibrary.description,
+                selectedPerformanceLibraryEquations: this.selectedPerformanceLibrary.equations
             };
         }
 
         /**
-         * User has submitted a createdPerformanceStrategy dialog result
-         * @param createdPerformanceStrategy The created performance strategy to save
+         * User has submitted a createdPerformanceLibrary dialog result
+         * @param createdPerformanceLibrary The created performance library to save
          */
-        onCreatePerformanceStrategy(createdPerformanceStrategy: PerformanceStrategy) {
-            // create a new CreatePerformanceStrategyDialogData object
-            this.createPerformanceStrategyDialogData = {...emptyCreatePerformanceStrategyDialogData};
-            // if there is a createdPerformanceStrategy...
-            if (!isNil(createdPerformanceStrategy)) {
-                 // get the latest id from the list of performance strategies
-                const latestId: number = getLatestPropertyValue('id', this.performanceStrategies);
-                // set the created performance strategy's id by adding 1 to latestId (if present), otherwise use 1
-                createdPerformanceStrategy.id = hasValue(latestId) ? latestId + 1 : 1;
-                // set isBusy to true, then dispatch action to create performance strategy
+        onCreatePerformanceLibrary(createdPerformanceLibrary: PerformanceLibrary) {
+            // create a new CreatePerformanceLibraryDialogData object
+            this.createPerformanceLibraryDialogData = clone(emptyCreatePerformanceLibraryDialogData);
+            // if there is a createdPerformanceLibrary...
+            if (!isNil(createdPerformanceLibrary)) {
+                // set the performance library using latestLibraryId + 1 (if present), otherwise set as 1
+                createdPerformanceLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
+                createdPerformanceLibrary = this.setIdsForNewPerformanceLibraryRelatedData(createdPerformanceLibrary);
+                // set isBusy to true, then dispatch action to create performance library
                 this.setIsBusyAction({isBusy: true});
-                this.createPerformanceStrategyAction({createdPerformanceStrategy: createdPerformanceStrategy})
-                    .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => {
-                        this.setIsBusyAction({isBusy: false});
-                        console.log(error);
+                this.createPerformanceLibraryAction({createdPerformanceLibrary: createdPerformanceLibrary})
+                    .then(() => this.setIsBusyAction({isBusy: false}));
+            }
+        }
+
+        /**
+         * Sets the ids for the created performance library's equations
+         */
+        setIdsForNewPerformanceLibraryRelatedData(createdPerformanceLibrary: PerformanceLibrary) {
+            if (hasValue(createdPerformanceLibrary.equations)) {
+                let nextEquationId: number = hasValue(this.latestEquationId) ? this.latestEquationId + 1 : 1;
+                createdPerformanceLibrary.equations = sortByProperty('id', createdPerformanceLibrary.equations)
+                    .map((equation: PerformanceLibraryEquation) => {
+                        equation.performanceLibraryId = createdPerformanceLibrary.id;
+                        equation.id = nextEquationId;
+                        nextEquationId++;
+                        return equation;
                     });
             }
+            return createdPerformanceLibrary;
         }
 
         /**
          * 'Update Library' button has been clicked
          */
         onUpdateLibrary() {
-            // dispatch the updatePerformanceStrategy action to update the selected performance strategy
-            this.updatePerformanceStrategyAction({updatedPerformanceStrategy: this.selectedPerformanceStrategy});
+            // dispatch the updatePerformanceLibrary action to update the selected performance library
+            this.setIsBusyAction({isBusy: true});
+            this.updatePerformanceLibraryAction({updatedPerformanceLibrary: this.selectedPerformanceLibrary})
+                .then(() => {
+                    this.setIsBusyAction({isBusy: false});
+                    this.setSuccessMessageAction({message: 'Performance library updated successfully'});
+                });
         }
 
         /**
-         * 'Apply' button has been clicked
+         * Applies the current library data to the selected scenario for edit
          */
         onApplyToScenario() {
-            // TODO: add library application to scenario functionality
-        }
-
-        /**
-         * 'Clear' button has been clicked
-         */
-        onClearPerformanceStrategySelection() {
-            this.selectPerformanceStrategyAction({performanceStrategyId: null});
+            this.setIsBusyAction({isBusy: true});
+            this.upsertScenarioPerformanceLibraryAction({
+                upsertedScenarioPerformanceLibrary: this.selectedPerformanceLibrary
+            }).then(() => {
+                this.setIsBusyAction({isBusy: false});
+                this.setSuccessMessageAction({message: 'Scenario performance library updated successfully'});
+            });
         }
     }
 </script>
 
 <style>
     .performance-editor-container {
-        height: 785px;
+        height: 730px;
         overflow-x: hidden;
         overflow-y: auto;
     }
 
     .data-table {
-        height: 370px;
+        height: 310px;
         overflow-y: auto;
     }
 

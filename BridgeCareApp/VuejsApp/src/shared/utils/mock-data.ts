@@ -2,7 +2,7 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
-import {PerformanceStrategy} from '@/shared/models/iAM/performance';
+import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {Consequence, Cost, Feasibility, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 
 /*******************************************MOCK ATTRIBUTES DATA*******************************************************/
@@ -270,14 +270,14 @@ export const mockInvestmentLibraries: InvestmentLibrary[] = [
     }
 ];
 /*******************************************PERFORMANCE EDITOR MOCK DATA***********************************************/
-export const mockPerformanceStrategies: PerformanceStrategy[] = [
+export const mockPerformanceLibraries: PerformanceLibrary[] = [
     {
         id: 1,
         name: 'Performance Strategy 1',
         description: 'This is a mock performance strategy',
         equations: [
             {
-                performanceStrategyId: 1,
+                performanceLibraryId: 1,
                 id: 1,
                 attribute: 'PCI',
                 equationName: 'PCI Deduct Curve',
@@ -288,10 +288,29 @@ export const mockPerformanceStrategies: PerformanceStrategy[] = [
                 isFunction: false
 
             }
-        ],
-        deletedEquationIds: []
+        ]
     }
 ];
+
+export const mockScenarioPerformanceLibrary: PerformanceLibrary = {
+    id: 2,
+    name: 'Performance Strategy 2',
+    description: 'This is another mock performance strategy',
+    equations: [
+        {
+            performanceLibraryId: 2,
+            id: 2,
+            attribute: 'ADTTOTAL',
+            equationName: 'ADT TOTAL',
+            equation: '(0,9)(1,8.68)(2,8.36)(3,8.04)(4,7.72)(5,7.58)(6,7.44)(7,7.3)(8,7.16)(9,7.02)',
+            criteria: '[ADTTOTAL]=\'50\'',
+            shift: false,
+            piecewise: false,
+            isFunction: false
+
+        }
+    ]
+};
 /*******************************************TREATMENT EDITOR MOCK DATA*************************************************/
 export const mockFeasibility: Feasibility = {
     treatmentId: 1,

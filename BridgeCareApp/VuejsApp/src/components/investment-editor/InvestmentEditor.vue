@@ -9,7 +9,7 @@
                                 New Library
                             </v-btn>
                             <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
-                                <v-icon left v-model="scenarioName">label</v-icon>Scenario name: {{scenarioName}}
+                                <v-icon left>label</v-icon>Scenario name: {{scenarioInvestmentLibrary.name}}
                             </v-chip>
                             <v-select v-if="!hasSelectedInvestmentLibrary || selectedScenarioId > 0"
                                       :items="investmentLibrariesSelectListItems"
@@ -41,10 +41,10 @@
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
                             <v-layout justify-space-between fill-height>
-                                <v-btn color="info lighten-2" v-on:click="onEditBudgets">
+                                <v-btn color="info" v-on:click="onEditBudgets">
                                     Edit Budgets
                                 </v-btn>
-                                <v-btn color="info" v-on:click="onAddBudgetYear"
+                                <v-btn color="info lighten-1" v-on:click="onAddBudgetYear"
                                        :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
                                     Add Year
                                 </v-btn>
@@ -52,7 +52,7 @@
                                        :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
                                     Add Years by Range
                                 </v-btn>
-                                <v-btn color="error" v-on:click="onDeleteBudgetYears"
+                                <v-btn color="error lighten-1" v-on:click="onDeleteBudgetYears"
                                        :disabled="selectedGridRows.length === 0">
                                     Delete Budget Year(s)
                                 </v-btn>
@@ -110,20 +110,20 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
-                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
-                       :disabled="!hasSelectedInvestmentLibrary">
-                    Discard changes
-                </v-btn>
-                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
-                    Create as New Library
-                </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" color="info lighten-1" v-on:click="onUpdateLibrary"
-                       :disabled="!hasSelectedInvestmentLibrary">
-                    Update Library
-                </v-btn>
                 <v-btn v-show="selectedScenarioId > 0" color="info" v-on:click="onApplyToScenario"
                        :disabled="!hasSelectedInvestmentLibrary">
                     Apply
+                </v-btn>
+                <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onUpdateLibrary"
+                       :disabled="!hasSelectedInvestmentLibrary">
+                    Update Library
+                </v-btn>
+                <v-btn color="info lighten-1" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
+                    Create as New Library
+                </v-btn>
+                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
+                       :disabled="!hasSelectedInvestmentLibrary">
+                    Discard changes
                 </v-btn>
             </v-layout>
         </v-footer>
@@ -167,7 +167,7 @@
         emptyEditBudgetsDialogData
     } from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
-    import {sorter} from '@/shared/utils/sorter';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter';
 
     @Component({
         components: {CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog}
@@ -194,7 +194,6 @@
         scenarioInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
 
         selectedScenarioId: number =  0;
-        scenarioName: string = '';
         hasSelectedInvestmentLibrary: boolean = false;
         investmentLibrariesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -271,19 +270,28 @@
             }
         }
 
+        /**
+         * Sets investmentLibraries object = copy of stateInvestmentLibraries array
+         */
         @Watch('stateInvestmentLibraries')
         onStateInvestmentLibrariesChanged() {
             this.investmentLibraries = [...clone(this.stateInvestmentLibraries)];
         }
 
+        /**
+         * Sets selectedInvestmentLibrary object = copy of stateSelectedInvestmentLibrary object
+         */
         @Watch('stateSelectedInvestmentLibrary')
         onStateSelectedInvestmentLibraryChanged() {
-            this.selectedInvestmentLibrary = {...clone(this.stateSelectedInvestmentLibrary)};
+            this.selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
         }
 
+        /**
+         * Sets scenarioInvestmentLibrary object = stateScenarioInvestmentLibrary object
+         */
         @Watch('stateScenarioInvestmentLibrary')
         onStateScenarioInvestmentLibraryChanged() {
-            this.scenarioInvestmentLibrary = {...clone(this.stateScenarioInvestmentLibrary)};
+            this.scenarioInvestmentLibrary = clone(this.stateScenarioInvestmentLibrary);
         }
 
         /**
@@ -652,12 +660,14 @@
         /**
          * Dispatches an action with a user's submitted CreateInvestmentLibraryDialog result in order to create a new
          * investment library on the server
+         * @param createdInvestmentLibrary InvestmentLibrary object data
          */
         onCreateInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary) {
             this.createInvestmentLibraryDialogData = clone(emptyCreateInvestmentLibraryDialogData);
 
             if (!isNil(createdInvestmentLibrary)) {
                 createdInvestmentLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
+                createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
                 this.setIsBusyAction({isBusy: true});
                 this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary})
@@ -666,6 +676,25 @@
                         this.setSuccessMessageAction({ message: 'New library created successfully' });
                     });
             }
+        }
+
+        /**
+         * Sets the ids for the createdInvestmentLibrary object's budgetYears
+         */
+        setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary: InvestmentLibrary) {
+            if (hasValue(createdInvestmentLibrary.budgetYears)) {
+                let nextBudgetYearId: number = hasValue(this.latestBudgetYearId) ? this.latestBudgetYearId + 1 : 1;
+
+                createdInvestmentLibrary.budgetYears = sortByProperty('id', createdInvestmentLibrary.budgetYears)
+                    .map((budgetYear: InvestmentLibraryBudgetYear) => {
+                        budgetYear.investmentLibraryId = createdInvestmentLibrary.id;
+                        budgetYear.id = nextBudgetYearId;
+                        nextBudgetYearId++;
+                        return budgetYear;
+                    });
+            }
+
+            return createdInvestmentLibrary;
         }
 
         /**
@@ -683,7 +712,7 @@
 
         /**
          * Dispatches an action with the selected investment library data in order to update the selected scenario's
-         * library data on the server
+         * investment library data on the server
          */
         onApplyToScenario() {
             this.setIsBusyAction({ isBusy: true });
@@ -701,6 +730,7 @@
          */
         onDiscardChanges() {
             this.onClearSelectedInvestmentLibrary();
+
             if (this.scenarioInvestmentLibrary.id > 0) {
                 setTimeout(() => {
                     this.updateSelectedInvestmentLibraryAction({
@@ -726,7 +756,7 @@
     }
 
     .investment-editor-data-table {
-        height: 240px;
+        height: 230px;
         overflow-y: auto;
     }
 </style>

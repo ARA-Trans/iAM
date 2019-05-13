@@ -1,4 +1,4 @@
-import {PerformanceStrategyEquation} from '@/shared/models/iAM/performance';
+import {PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
 
 export interface EquationEditorDialogData {
     showDialog: boolean;
