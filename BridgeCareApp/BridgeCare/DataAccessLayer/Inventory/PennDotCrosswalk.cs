@@ -116,8 +116,23 @@ namespace BridgeCare.DataAccessLayer
             Add("OVER_STREET_CLEARANCE", "4A15", "Over Street Clearance"); // double
             Add("UNDER_CLEARANCE", "4A17", "Under Clearance"); // double
 
+            Add("DECK", "CURRENT", "DECK");
+            Add("DECK_D", "CURRENT", "DECK");
+            Add("SUP", "CURRENT", "SUP");
+            Add("SUP_D", "CURRENT", "SUP");
+            Add("SUB", "CURRENT", "SUB");
+            Add("SUB_D", "CURRENT", "SUB");
+            Add("SUB", "CURRENT", "CULV");
+            Add("SUB_D", "CURRENT", "CULV");
 
-
+            Add("PRIOR_DECK_C", "PRIOR", "DECK");
+            Add("PRIOR_DECK_D", "PRIOR", "DECK");
+            Add("PRIOR_SUP_C", "PRIOR", "SUP");
+            Add("PRIOR_SUP_D", "PRIOR", "SUP");
+            Add("PRIOR_SUB_C", "PRIOR", "SUB");
+            Add("PRIOR_SUB_D", "PRIOR", "SUB");
+            Add("PRIOR_CULV_C", "PRIOR", "CULV");
+            Add("PRIOR_CULV_D", "PRIOR", "CULV");
         }
 
         private static void Add(string columnNameKey, string id, string description)
