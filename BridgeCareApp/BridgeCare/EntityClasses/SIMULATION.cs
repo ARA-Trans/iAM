@@ -39,6 +39,8 @@ namespace BridgeCare.EntityClasses
 
         public string JURISDICTION { get; set; }
 
+        public string BENEFIT_VARIABLE { get; set; }
+
         [Column("COMMENTS")]
         [StringLength(8000)]
         public string COMMENTS { get; set; }

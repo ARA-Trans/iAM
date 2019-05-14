@@ -28,7 +28,8 @@ namespace BridgeCare.DataAccessLayer
                         budget_constraint = b.BUDGET_CONSTRAINT,
                         benefit_limit = b.BENEFIT_LIMIT,
                         comments = b.COMMENTS,
-                        jurisdiction = b.JURISDICTION
+                        jurisdiction = b.JURISDICTION,
+                        benefit_variable = b.BENEFIT_VARIABLE
                     }).SingleOrDefault();
 
                 return simulations;
@@ -54,6 +55,7 @@ namespace BridgeCare.DataAccessLayer
                 simulation.COMMENTS = model.comments;
                 simulation.COMMITTED_PERIOD = model.committed_period;
                 simulation.COMMITTED_START = model.committed_start;
+                simulation.BENEFIT_VARIABLE = model.benefit_variable;
 
                 db.SaveChanges();
             }

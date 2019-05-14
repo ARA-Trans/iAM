@@ -27,5 +27,8 @@ namespace BridgeCare.Models
 
         [DataMember(Name = "criteria")]
         public string jurisdiction { get; set; }
+
+        [DataMember(Name = "benefitAttribute")]
+        public string benefit_variable { get; set; }
     }
 }
