@@ -67,7 +67,7 @@
                                             <v-tab-item>
                                                 <v-card>
                                                     <v-card-text class="card-tab-content">
-                                                        <UnderConstruction />
+                                                        <BudgetsTab :budgetsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
                                                     </v-card-text>
                                                 </v-card>
                                             </v-tab-item>
@@ -140,24 +140,26 @@
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
-    import {isNil, append, any, propEq, clone, uniq} from 'ramda';
+    import {isNil, append, any, propEq, clone, uniq, isEmpty} from 'ramda';
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
     import {TabData, emptyTabData} from '@/shared/models/child-components/treatment-editor/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
-    import UnderConstruction from '@/components/UnderConstruction.vue';
     import {sortByProperty} from '@/shared/utils/sorter';
+    import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
+    import {InvestmentStrategy} from '@/shared/models/iAM/investment';
 
     @Component({
         components: {
-            UnderConstruction,
+            BudgetsTab,
             ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentLibraryDialog}
     })
     export default class TreatmentEditor extends Vue {
         @State(state => state.treatmentEditor.treatmentLibraries) treatmentLibraries: TreatmentLibrary[];
         @State(state => state.treatmentEditor.selectedTreatmentLibrary) selectedTreatmentLibrary: TreatmentLibrary;
         @State(state => state.treatmentEditor.scenarioTreatmentLibrary) scenarioTreatmentLibrary: TreatmentLibrary;
+        @State(state => state.investmentEditor.investmentForScenario) scenarioInvestmentLibrary: InvestmentStrategy[];
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
@@ -169,6 +171,7 @@
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
         @Action('upsertScenarioTreatmentLibrary') upsertScenarioTreatmentLibraryAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('getInvestmentForScenario') getScenarioInvestmentLibraryAction: any;
 
         selectedScenarioId: number = 0;
         scenarioName: string = '';
@@ -179,7 +182,7 @@
         treatmentSelectItemValue: string = '';
         selectedTreatment: Treatment = clone(emptyTreatment);
         activeTab: number = 0;
-        treatmentTabs: string[] = ['feasibility', 'costs', 'consequences', 'budgets'];
+        treatmentTabs: string[] = ['feasibility', 'costs', 'consequences'];
         createTreatmentLibraryDialogData: CreateTreatmentLibraryDialogData = clone(emptyCreateTreatmentLibraryDialogData);
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = clone(emptyTabData);
@@ -352,11 +355,13 @@
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/FromScenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
+
                     vm.setNavigationAction([
                         {
                             text: 'Scenario Dashboard',
@@ -371,15 +376,29 @@
                             to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
                         }
                     ]);
+
+                    vm.treatmentTabs = [...vm.treatmentTabs, 'budgets'];
                 }
                 vm.onClearSelectedTreatmentLibrary();
+
                 setTimeout(() => {
                     vm.setIsBusyAction({isBusy: true});
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                    .then(() => vm.setIsBusyAction({isBusy: false}));
+                                setTimeout(() => {
+                                    vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                        .then(() => {
+                                            if (!isEmpty(vm.scenarioInvestmentLibrary) &&
+                                                vm.scenarioInvestmentLibrary[0].id !== vm.selectedScenarioId) {
+                                                vm.getScenarioInvestmentLibraryAction({
+                                                    selectedScenario: vm.selectedScenarioId
+                                                }).then(() => this.setIsBusyAction({isBusy: false}));
+                                            } else {
+                                                vm.setIsBusyAction({isBusy: false})
+                                            }
+                                        });
+                                });
                             } else {
                                 vm.setIsBusyAction({isBusy: false});
                             }

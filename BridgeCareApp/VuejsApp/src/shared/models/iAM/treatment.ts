@@ -41,6 +41,10 @@ export interface TreatmentLibrary {
     treatments: Treatment[];
 }
 
+export interface BudgetGridRow {
+    budget: string;
+}
+
 export const emptyTreatmentLibrary: TreatmentLibrary = {
     id: 0,
     name: '',

@@ -1,3 +1,4 @@
+import {clone} from 'ramda';
 import {emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 
 export interface TabData {
@@ -11,8 +12,8 @@ export interface TabData {
 
 export const emptyTabData: TabData = {
     tabTreatmentLibraries: [],
-    tabSelectedTreatmentLibrary: {...emptyTreatmentLibrary},
-    tabSelectedTreatment: {...emptyTreatment},
+    tabSelectedTreatmentLibrary: clone(emptyTreatmentLibrary),
+    tabSelectedTreatment: clone(emptyTreatment),
     latestFeasibilityId: 0,
     latestCostId: 0,
     latestConsequenceId: 0
