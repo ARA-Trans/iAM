@@ -279,25 +279,25 @@ namespace BridgeCare.DataAccessLayer
                 // shift up and occupy the lower Id's
                 foreach (TREATMENT existingTreatment in existingTreatments.ToList())
                 {
-                    TreatmentScenarioModel treatment = requestedModel.Treatments.SingleOrDefault(t => t.TreatmentId == existingTreatment.TREATMENTID);
+                    TreatmentScenarioModel treatmentModel = requestedModel.Treatments.SingleOrDefault(t => t.TreatmentId == existingTreatment.TREATMENTID);
 
-                    if (treatment == null)
+                    if (treatmentModel == null)
                     {
                         TREATMENT.delete(existingTreatment, db);
                         continue;
                     }
-                    treatment.matched = true;
+                    treatmentModel.matched = true;
 
-                    existingTreatment.SIMULATIONID = treatment.SimulationId;
-                    existingTreatment.TREATMENTID = treatment.TreatmentId;
-                    existingTreatment.TREATMENT1 = treatment.Name;
-                    existingTreatment.DESCRIPTION = treatment.Description;
+                    existingTreatment.SIMULATIONID = treatmentModel.SimulationId;
+                    existingTreatment.TREATMENTID = treatmentModel.TreatmentId;
+                    existingTreatment.TREATMENT1 = treatmentModel.Name;
+                    existingTreatment.DESCRIPTION = treatmentModel.Description;
 
                     // on the database side feasibilties is an array, on the UI side it can be and is
                     // treated as a single record consiting of a criteria. So the DB -> UI sie gets
                     // the array and concatenates it. the UI insert or update wipes out all but one
                     // element of the array
-                    if (treatment.Feasilbility != null)
+                    if (treatmentModel.Feasilbility != null)
                     {
                         if (existingTreatment.FEASIBILITY == null)
                         {
@@ -306,31 +306,31 @@ namespace BridgeCare.DataAccessLayer
 
                             FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
 
-                            feasibility.TREATMENTID = treatment.TreatmentId;
+                            feasibility.TREATMENTID = treatmentModel.TreatmentId;
                             feasibility.FEASIBILITYID = 0;
-                            feasibility.CRITERIA = treatment.Feasilbility.Criteria;
+                            feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
 
-                            existingTreatment.BEFOREANY = treatment.Feasilbility.BeforeAny;
-                            existingTreatment.BEFORESAME = treatment.Feasilbility.BeforeSame;
+                            existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
+                            existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
                         }
                         else
                         {
                             FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
 
-                            feasibility.TREATMENTID = treatment.TreatmentId;
-                            feasibility.CRITERIA = treatment.Feasilbility.Criteria;
-                            existingTreatment.BEFOREANY = treatment.Feasilbility.BeforeAny;
-                            existingTreatment.BEFORESAME = treatment.Feasilbility.BeforeSame;
+                            feasibility.TREATMENTID = treatmentModel.TreatmentId;
+                            feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
+                            existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
+                            existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
                         }
                     }
 
-                    UpsertConsequences(treatment, existingTreatment, db);
+                    UpsertConsequences(treatmentModel, existingTreatment, db);
 
-                    UpsertCost(treatment, existingTreatment, db);
+                    UpsertCost(treatmentModel, existingTreatment, db);
 
-                    if (treatment.Budgets.Count() > 0)
+                    if (treatmentModel.Budgets.Count() > 0)
                     {
-                        existingTreatment.BUDGET = treatment.GetBudgets();
+                        existingTreatment.BUDGET = treatmentModel.GetBudgets();
                     }
                     else
                     {
@@ -355,19 +355,19 @@ namespace BridgeCare.DataAccessLayer
             return GetTreatments(requestedModel.SimulationId, db);
         }
 
-        public void UpsertCost(TreatmentScenarioModel treatment,
+        public void UpsertCost(TreatmentScenarioModel treatmentScenarioModel,
             TREATMENT existingTreatment, BridgeCareContext db)
         {
             int dataIndex = 0;
 
             foreach (COST cost in existingTreatment.COST.ToList())
             {
-                if (treatment.Cost.Count() > dataIndex)
+                if (treatmentScenarioModel.Cost.Count() > dataIndex)
                 {
-                    cost.COST_ = treatment.Cost[dataIndex].Cost;
-                    cost.CRITERIA = treatment.Cost[dataIndex].Criteria;
-                    cost.ISFUNCTION = treatment.Cost[dataIndex].IsFunction;
-                    cost.UNIT = treatment.Cost[dataIndex].Unit;
+                    cost.COST_ = treatmentScenarioModel.Cost[dataIndex].Cost;
+                    cost.CRITERIA = treatmentScenarioModel.Cost[dataIndex].Criteria;
+                    cost.ISFUNCTION = treatmentScenarioModel.Cost[dataIndex].IsFunction;
+                    cost.UNIT = treatmentScenarioModel.Cost[dataIndex].Unit;
                 }
                 else
                 {
@@ -376,36 +376,36 @@ namespace BridgeCare.DataAccessLayer
                 dataIndex++;
             }
             //these must be inserts as the number of updated records exceeds the number of existing records
-            while (treatment.Cost.Count() > dataIndex)
+            while (treatmentScenarioModel.Cost.Count() > dataIndex)
             {
                 var costEntity = new COST()
                 {
                     COSTID = 0,
-                    COST_ = treatment.Cost[dataIndex].Cost,
-                    CRITERIA = treatment.Cost[dataIndex].Criteria,
-                    ISFUNCTION = treatment.Cost[dataIndex].IsFunction,
-                    UNIT = treatment.Cost[dataIndex].Unit,
-                    TREATMENTID = treatment.TreatmentId
+                    COST_ = treatmentScenarioModel.Cost[dataIndex].Cost,
+                    CRITERIA = treatmentScenarioModel.Cost[dataIndex].Criteria,
+                    ISFUNCTION = treatmentScenarioModel.Cost[dataIndex].IsFunction,
+                    UNIT = treatmentScenarioModel.Cost[dataIndex].Unit,
+                    TREATMENTID = treatmentScenarioModel.TreatmentId
                 };
                 existingTreatment.COST.Add(costEntity);
                 dataIndex++;
             }
         }
 
-        public void UpsertConsequences(TreatmentScenarioModel treatment,
+        public void UpsertConsequences(TreatmentScenarioModel treatmentScenarioModel,
             TREATMENT existingTreatment, BridgeCareContext db)
         {
             int dataIndex = 0;
 
             foreach (CONSEQUENCE consequence in existingTreatment.CONSEQUENCES.ToList())
             {
-                if (treatment.Consequences.Count() > dataIndex)
+                if (treatmentScenarioModel.Consequences.Count() > dataIndex)
                 {
-                    consequence.EQUATION = treatment.Consequences[dataIndex].Equation;
-                    consequence.CRITERIA = treatment.Consequences[dataIndex].Criteria;
-                    consequence.ATTRIBUTE_ = treatment.Consequences[dataIndex].Attribute_;
-                    consequence.CHANGE_ = treatment.Consequences[dataIndex].Change;
-                    consequence.ISFUNCTION = treatment.Consequences[dataIndex].IsFunction;
+                    consequence.EQUATION = treatmentScenarioModel.Consequences[dataIndex].Equation;
+                    consequence.CRITERIA = treatmentScenarioModel.Consequences[dataIndex].Criteria;
+                    consequence.ATTRIBUTE_ = treatmentScenarioModel.Consequences[dataIndex].Attribute_;
+                    consequence.CHANGE_ = treatmentScenarioModel.Consequences[dataIndex].Change;
+                    consequence.ISFUNCTION = treatmentScenarioModel.Consequences[dataIndex].IsFunction;
                 }
                 else
                 {
@@ -414,16 +414,16 @@ namespace BridgeCare.DataAccessLayer
                 dataIndex++;
             }
             //these must be inserts as the updated records exceed existing records
-            while (treatment.Consequences.Count() > dataIndex)
+            while (treatmentScenarioModel.Consequences.Count() > dataIndex)
             {
                 var consequenceEntity = new CONSEQUENCE()
                 {
-                    TREATMENTID = treatment.TreatmentId,
-                    EQUATION = treatment.Consequences[dataIndex].Equation,
-                    CRITERIA = treatment.Consequences[dataIndex].Criteria,
-                    ATTRIBUTE_ = treatment.Consequences[dataIndex].Attribute_,
-                    CHANGE_ = treatment.Consequences[dataIndex].Change,
-                    ISFUNCTION = treatment.Consequences[dataIndex].IsFunction,
+                    TREATMENTID = treatmentScenarioModel.TreatmentId,
+                    EQUATION = treatmentScenarioModel.Consequences[dataIndex].Equation,
+                    CRITERIA = treatmentScenarioModel.Consequences[dataIndex].Criteria,
+                    ATTRIBUTE_ = treatmentScenarioModel.Consequences[dataIndex].Attribute_,
+                    CHANGE_ = treatmentScenarioModel.Consequences[dataIndex].Change,
+                    ISFUNCTION = treatmentScenarioModel.Consequences[dataIndex].IsFunction,
                     CONSEQUENCEID = 0
                 };
                 existingTreatment.CONSEQUENCES.Add(consequenceEntity);
