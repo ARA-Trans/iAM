@@ -35,6 +35,10 @@ namespace BridgeCare.EntityClasses
 
         public int COMMITTED_PERIOD { get; set; }
 
+        public double BENEFIT_LIMIT{ get; set; }
+
+        public string JURISDICTION { get; set; }
+
         [Column("COMMENTS")]
         [StringLength(8000)]
         public string COMMENTS { get; set; }
