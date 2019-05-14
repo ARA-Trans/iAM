@@ -83,7 +83,12 @@ namespace BridgeCare.DataAccessLayer
             Add("PROPWORK", "3B01 ", "PROPWORK");
             Add("IRLOAD", "4B07", "IRLOAD");
 
-            // New columns -- string except if mentioned
+            Add("DECK", "", "DECK");            
+            Add("SUP", "", "SUP");            
+            Add("SUB", "", "SUB");            
+            Add("CULV", "", "CULV");
+            
+            // New columns
             Add("TYPE_OF_SERVICE_ON", "5A17", "Type of Service On"); 
             Add("TYPE_OF_SERVICE_UNDER", "5A18", "Type of Service Under");
 
@@ -94,36 +99,32 @@ namespace BridgeCare.DataAccessLayer
             Add("DECK_SURFACE_TYPE", "5B02", "Deck Surface Type");
             Add("DECK_MEMBRANE_TYPE", "5B03", "Deck Membrane Type");
             Add("DECK_PROTECTION", "5B04", "Deck Protection");
-            Add("SKEW", "5B09", "Skew"); // int
+            Add("SKEW", "5B09", "Skew"); 
 
             Add("MAIN_SPAN_MATERIAL", "5B12", "Main Span Material");
             Add("MAIN_SPAN_DESIGN", "5B13", "Main Span Design");
             Add("APPROACH_SPAN_MATERIAL", "5B15", "Approach Span Material");
             Add("APPROACH_SPAN_DESIGN", "5B16", "Approach Span Design");
-            Add("MAXIMUM_SPAN_LENGTH", "5B17", "Maximum Span Length"); // double
-            Add("TOTAL_LENGTH", "5B20", "Total Length"); // double
+            Add("MAXIMUM_SPAN_LENGTH", "5B17", "Maximum Span Length"); 
+            Add("TOTAL_LENGTH", "5B20", "Total Length"); 
             Add("FC_GROUP_NUMBER_MAIN", "6A44", "FC Group Number (Main)");
             Add("FC_GROUP_NUMBER_APPROACH", "6A44", "FC Group Number (Approach)");
 
-            Add("LOAD_TYPE", "IR04", "Load Type"); // int
-            Add("NBI", "IR05", "NBI"); // int
-            Add("INV_RATING_TON", "IR010", "Inv Rating Ton"); // double
-            Add("OPR_RATING_TON", "IR11", "Opr Rating Ton"); // double
-            Add("SLC_RATING_FACTOR", "IR11a", "SLC Rating Factor"); // double
-            Add("IR_RATING_FACTOR", "IR20", "IR Rating Factor"); // double
-            Add("OR_RATING_FACTOR", "IR21", "OR Rating Factor"); // double
+            Add("LOAD_TYPE", "IR04", "Load Type"); 
+            Add("NBI", "IR05", "NBI"); 
+            Add("INV_RATING_TON", "IR010", "Inv Rating Ton");
+            Add("OPR_RATING_TON", "IR11", "Opr Rating Ton"); 
+            Add("SLC_RATING_FACTOR", "IR11a", "SLC Rating Factor"); 
+            Add("IR_RATING_FACTOR", "IR20", "IR Rating Factor"); 
+            Add("OR_RATING_FACTOR", "IR21", "OR Rating Factor"); 
             Add("RATING_DATASET", "IR17", "Rating Dataset");
 
-            Add("OVER_STREET_CLEARANCE", "4A15", "Over Street Clearance"); // double
-            Add("UNDER_CLEARANCE", "4A17", "Under Clearance"); // double
-
-            Add("DECK", "", "DECK");
-            Add("DECK_D", "", "DECK");
-            Add("SUP", "", "SUP");
+            Add("OVER_STREET_CLEARANCE", "4A15", "Over Street Clearance"); 
+            Add("UNDER_CLEARANCE", "4A17", "Under Clearance"); 
+                        
+            Add("DECK_D", "", "DECK");            
             Add("SUP_D", "", "SUP");
-            Add("SUB", "", "SUB");
             Add("SUB_D", "", "SUB");
-            Add("CULV", "", "CULV");
             Add("CULV_D", "", "CULV");
 
             Add("PRIOR_DECK_C", "", "DECK");
