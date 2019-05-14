@@ -28,11 +28,11 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit"
+                        <v-btn color="info" v-on:click="onSubmit(true)"
                                :disabled="createdInvestmentStrategy.name === ''">
                             Submit
                         </v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -44,23 +44,22 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {hasValue} from '@/shared/utils/has-value';
-    import {CreateInvestmentStrategyDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-strategy-dialog-data';
-    import {emptyInvestmentStrategy, InvestmentStrategy} from '@/shared/models/iAM/investment';
+    import {CreateInvestmentLibraryDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-library-dialog-data';
+    import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
+    import {clone} from 'ramda';
 
     @Component
     export default class CreateInvestmentStrategyDialog extends Vue {
-        @Prop() dialogData: CreateInvestmentStrategyDialogData;
+        @Prop() dialogData: CreateInvestmentLibraryDialogData;
 
-        createdInvestmentStrategy: InvestmentStrategy = {...emptyInvestmentStrategy};
+        createdInvestmentStrategy: InvestmentLibrary = clone(emptyInvestmentLibrary);
 
         /**
-         * Watcher: dialogData
+         * Sets the createdInvestmentStrategy object's data properties using the dialogData object's data properties
+         * if they have value
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            /*if a user has selected an investment strategy to create a new library from, then set the new investment
-            strategy's inflation/discount rates, description, budget order, and budget years with the selected investment
-            strategy's*/
             this.createdInvestmentStrategy = {
                 ...this.createdInvestmentStrategy,
                 inflationRate: hasValue(this.dialogData.inflationRate) ? this.dialogData.inflationRate : 0,
@@ -72,19 +71,17 @@
         }
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the createdInvestmentStrategy object or a null value to the parent component and resets the
+         * createdInvestmentStrategy object
          */
-        onSubmit() {
-            this.$emit('submit', this.createdInvestmentStrategy);
-            this.createdInvestmentStrategy = {...emptyInvestmentStrategy};
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.createdInvestmentStrategy);
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * 'Cancel' button has been clicked
-         */
-        onCancel() {
-            this.$emit('submit', null);
-            this.createdInvestmentStrategy = {...emptyInvestmentStrategy};
+            this.createdInvestmentStrategy = {...emptyInvestmentLibrary};
         }
     }
 </script>

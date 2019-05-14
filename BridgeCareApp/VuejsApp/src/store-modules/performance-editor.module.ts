@@ -55,11 +55,12 @@ const mutations = {
 };
 
 const actions = {
-    async getPerformanceLibraries({commit}: any) {
+    async getPerformanceLibraries({dispatch, commit}: any) {
         await new PerformanceEditorService().getPerformanceLibraries()
             .then((performanceLibraries: PerformanceLibrary[]) =>
                 commit('performanceLibrariesMutator', performanceLibraries)
-            );
+            )
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
     selectPerformanceLibrary({commit}: any, payload: any) {
         commit('selectedPerformanceLibraryMutator', payload.performanceLibraryId);
@@ -67,33 +68,37 @@ const actions = {
     updateSelectedPerformanceLibrary({commit}: any, payload: any) {
         commit('updatedSelectedPerformanceLibraryMutator', payload.updatedSelectedPerformanceLibrary);
     },
-    async createPerformanceLibrary({commit}: any, payload: any) {
+    async createPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await new PerformanceEditorService().createPerformanceLibrary(payload.createdPerformanceLibrary)
-            .then(() => {
-                commit('createdPerformanceLibraryMutator', payload.createdPerformanceLibrary);
-                commit('selectedPerformanceLibraryMutator', payload.createdPerformanceLibrary.id);
-            });
+            .then((createdPerformanceLibrary: PerformanceLibrary) => {
+                commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
+                commit('selectedPerformanceLibraryMutator', createdPerformanceLibrary.id);
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async updatePerformanceLibrary({commit}: any, payload: any) {
+    async updatePerformanceLibrary({dispatch, commit}: any, payload: any) {
         await new PerformanceEditorService().updatePerformanceLibrary(payload.updatedPerformanceLibrary)
-            .then(() => {
-                commit('updatedPerformanceLibraryMutator', payload.updatedPerformanceLibrary);
-                commit('selectedPerformanceLibraryMutator', payload.updatedPerformanceLibrary.id);
-            });
+            .then((updatedPerformanceLibrary: PerformanceLibrary) => {
+                commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
+                commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async getScenarioPerformanceLibrary({commit}: any, payload: any) {
+    async getScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await new PerformanceEditorService().getScenarioPerformanceLibrary(payload.selectedScenarioId)
             .then((scenarioPerformanceLibrary: PerformanceLibrary) => {
                 commit('scenarioPerformanceLibraryMutator', scenarioPerformanceLibrary);
                 commit('updatedSelectedPerformanceLibraryMutator', scenarioPerformanceLibrary);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async upsertScenarioPerformanceLibrary({commit}: any, payload: any) {
+    async upsertScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await new PerformanceEditorService().upsertScenarioPerformanceLibrary(payload.upsertedScenarioPerformanceLibrary)
-            .then(() => {
-                commit('scenarioPerformanceLibraryMutator', payload.upsertedScenarioPerformanceLibrary);
-                commit('updatedSelectedPerformanceLibraryMutator', payload.upsertedScenarioPerformanceLibrary);
-            });
+            .then((upsertedScenarioPerformanceLibrary: PerformanceLibrary) => {
+                commit('scenarioPerformanceLibraryMutator', upsertedScenarioPerformanceLibrary);
+                commit('updatedSelectedPerformanceLibraryMutator', upsertedScenarioPerformanceLibrary);
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     }
 };
 

@@ -1,20 +1,19 @@
-export interface InvestmentStrategyBudgetYear {
-    investmentStrategyId: number;
+export interface InvestmentLibraryBudgetYear {
+    investmentLibraryId: number;
     id: number;
     year: number;
     budgetName: string;
     budgetAmount: number;
 }
 
-export interface InvestmentStrategy {
+export interface InvestmentLibrary {
     id: number;
     name: string;
     inflationRate: number;
     discountRate: number;
     description: string;
     budgetOrder: string[];
-    budgetYears: InvestmentStrategyBudgetYear[];
-    deletedBudgetYearIds: number[];
+    budgetYears: InvestmentLibraryBudgetYear[];
 }
 
 export interface BudgetYearsGridData {
@@ -35,13 +34,12 @@ export interface EditedBudget {
     isNew: boolean;
 }
 
-export const emptyInvestmentStrategy: InvestmentStrategy = {
+export const emptyInvestmentLibrary: InvestmentLibrary = {
     id: 0,
     name: '',
     inflationRate: 0,
     discountRate: 0,
     description: '',
     budgetOrder: [],
-    budgetYears: [],
-    deletedBudgetYearIds: []
+    budgetYears: []
 };

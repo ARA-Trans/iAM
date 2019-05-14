@@ -1,6 +1,6 @@
 import {Scenario} from '@/shared/models/iAM/scenario';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
-import {InvestmentStrategy, InvestmentStrategyBudgetYear} from '@/shared/models/iAM/investment';
+import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {Consequence, Cost, Feasibility, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
@@ -217,7 +217,7 @@ export const mockBudgetOrder: string[] = [
 ];
 
 function createBudgetYearMockData() {
-    const budgetYears: InvestmentStrategyBudgetYear[] = [];
+    const budgetYears: InvestmentLibraryBudgetYear[] = [];
     let budgetAAmount = 100000000;
     let budgetBAmount = 200000000;
     let budgetCAmount = 300000000;
@@ -240,7 +240,7 @@ function createBudgetYearMockData() {
                     break;
             }
             budgetYears.push({
-                investmentStrategyId: 1234567890,
+                investmentLibraryId: 1234567890,
                 id: nextId,
                 year: nextYear,
                 budgetName: mockBudgetName,
@@ -255,19 +255,18 @@ function createBudgetYearMockData() {
     return budgetYears;
 }
 
-export const mockInvestmentBudgetYears: InvestmentStrategyBudgetYear[] = createBudgetYearMockData();
+export const mockInvestmentBudgetYears: InvestmentLibraryBudgetYear[] = createBudgetYearMockData();
 
 
-export const mockInvestmentStrategies: InvestmentStrategy[] = [
+export const mockInvestmentLibraries: InvestmentLibrary[] = [
     {
         id: 1234567890,
-        name: 'Investment Strategy 1',
+        name: 'Investment Library 1',
         inflationRate: 3,
         discountRate: 2,
         budgetYears: mockInvestmentBudgetYears,
         budgetOrder: mockBudgetOrder,
-        description: '',
-        deletedBudgetYearIds: []
+        description: ''
     }
 ];
 /*******************************************PERFORMANCE EDITOR MOCK DATA***********************************************/
@@ -374,8 +373,8 @@ export const mockTreatments: Treatment[] = [
 export const mockTreatmentLibraries: TreatmentLibrary[] = [
     {
         id: 1,
-        name: 'Treatment Strategy 1',
-        description: 'This is a mock treatment strategy',
+        name: 'Treatment Library 1',
+        description: 'This is a mock treatment library',
         treatments: mockTreatments
     }
 ];
@@ -418,7 +417,7 @@ export const mockScenarioTreatment: Treatment = {
 
 export const mockScenarioTreatmentLibrary: TreatmentLibrary = {
     id: 2,
-    name: 'Treatment Strategy 2',
-    description: 'This is another mock treatment strategy',
+    name: 'Treatment Library 2',
+    description: 'This is another mock treatment library',
     treatments: [mockScenarioTreatment]
 };

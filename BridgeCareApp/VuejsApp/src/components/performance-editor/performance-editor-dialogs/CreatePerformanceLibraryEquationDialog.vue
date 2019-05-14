@@ -18,12 +18,12 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit"
+                        <v-btn color="info" v-on:click="onSubmit(true)"
                                :disabled="createdPerformanceLibraryEquation.equationName === '' ||
                                           createdPerformanceLibraryEquation.attribute === ''">
                             Submit
                         </v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -36,7 +36,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {emptyEquation, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
-    import {isEmpty} from 'ramda';
+    import {isEmpty, clone} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
 
     @Component
@@ -49,32 +49,26 @@
         @Action('getAttributes') getAttributesAction: any;
 
         attributesSelectListItems: SelectItem[] = [];
-        createdPerformanceLibraryEquation: PerformanceLibraryEquation = {...emptyEquation};
+        createdPerformanceLibraryEquation: PerformanceLibraryEquation = clone(emptyEquation);
 
         /**
-         * Watcher: showDialog
+         * Dispatches an action to get the attributes data from the server if the attributes array is empty
          */
         @Watch('showDialog')
         onShowDialogChanged() {
             if (this.showDialog && isEmpty(this.attributes)) {
-                // set isBusy to true, then dispatch action to get attributes
                 this.setIsBusyAction({isBusy: true});
                 this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => {
-                        this.setIsBusyAction({isBusy: false});
-                        console.log(error);
-                    });
+                    .then(() => this.setIsBusyAction({isBusy: false}));
             }
         }
 
         /**
-         * Watcher: attributes
+         * Sets the attributesSelectListItems object using the attributes object
          */
         @Watch('attributes')
         onAttributesChanged() {
             if (!isEmpty(this.attributes)) {
-                // set the attributesSelectListItems property using the list of attributes
                 this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
                     text: attribute,
                     value: attribute
@@ -83,18 +77,17 @@
         }
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the createdPerformanceLibraryEquation object or a null value to the parent component and resets the
+         * createdPerformanceLibraryEquation object
+         * @param submit Whether or not to emit the createdPerformanceLibraryEquation object
          */
-        onSubmit() {
-            this.$emit('submit', this.createdPerformanceLibraryEquation);
-            this.createdPerformanceLibraryEquation = {...emptyEquation};
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.createdPerformanceLibraryEquation);
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * One of the 'Cancel' buttons has been clicked
-         */
-        onCancel() {
-            this.$emit('submit', null);
             this.createdPerformanceLibraryEquation = {...emptyEquation};
         }
     }

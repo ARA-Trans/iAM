@@ -9,7 +9,7 @@
                                 New Library
                             </v-btn>
                             <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
-                                <v-icon left v-model="scenarioName">label</v-icon>Scenario name: {{scenarioName}}
+                                <v-icon left>label</v-icon>Scenario name: {{scenarioTreatmentLibrary.name}}
                             </v-chip>
                             <v-select v-if="!hasSelectedTreatmentLibrary || selectedScenarioId > 0"
                                       :items="treatmentLibrariesSelectListItems" label="Select a Treatment Library"
@@ -82,7 +82,7 @@
                 <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea no-resize outline full-width
+                            <v-textarea rows="4" no-resize outline full-width
                                         :label="selectedTreatmentLibrary.description === '' ? 'Description' : ''"
                                         v-model="selectedTreatmentLibrary.description">
                             </v-textarea>
@@ -94,20 +94,20 @@
 
         <v-footer>
             <v-layout justify-end row fill-height>
-                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
-                       :disabled="!hasSelectedTreatmentLibrary">
-                    Discard Changes
-                </v-btn>
-                <v-btn color="info lighten-2" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
-                    Create as New Library
-                </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" color="info lighten-1" v-on:click="onUpdateLibrary"
-                       :disabled="!hasSelectedTreatmentLibrary">
-                    Update Library
-                </v-btn>
                 <v-btn v-show="selectedScenarioId > 0" color="info" v-on:click="onApplyToScenario"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Apply
+                </v-btn>
+                <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onUpdateLibrary"
+                       :disabled="!hasSelectedTreatmentLibrary">
+                    Update Library
+                </v-btn>
+                <v-btn color="info lighten-1" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
+                    Create as New Library
+                </v-btn>
+                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
+                       :disabled="!hasSelectedTreatmentLibrary">
+                    Discard Changes
                 </v-btn>
             </v-layout>
         </v-footer>
@@ -133,7 +133,7 @@
     import {
         Consequence,
         Cost,
-        emptyTreatment,
+        emptyTreatment, emptyTreatmentLibrary,
         Feasibility,
         Treatment,
         TreatmentLibrary
@@ -155,9 +155,9 @@
             ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentLibraryDialog}
     })
     export default class TreatmentEditor extends Vue {
-        @State(state => state.treatmentEditor.treatmentLibraries) treatmentLibraries: TreatmentLibrary[];
-        @State(state => state.treatmentEditor.selectedTreatmentLibrary) selectedTreatmentLibrary: TreatmentLibrary;
-        @State(state => state.treatmentEditor.scenarioTreatmentLibrary) scenarioTreatmentLibrary: TreatmentLibrary;
+        @State(state => state.treatmentEditor.treatmentLibraries) stateTreatmentLibraries: TreatmentLibrary[];
+        @State(state => state.treatmentEditor.selectedTreatmentLibrary) stateSelectedTreatmentLibrary: TreatmentLibrary;
+        @State(state => state.treatmentEditor.scenarioTreatmentLibrary) stateScenarioTreatmentLibrary: TreatmentLibrary;
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
@@ -170,8 +170,11 @@
         @Action('upsertScenarioTreatmentLibrary') upsertScenarioTreatmentLibraryAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
 
+        treatmentLibraries: TreatmentLibrary[] = [];
+        selectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
+        scenarioTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
+
         selectedScenarioId: number = 0;
-        scenarioName: string = '';
         hasSelectedTreatmentLibrary: boolean = false;
         treatmentLibrariesSelectListItems: SelectItem[] = [];
         treatmentLibrarySelectItemValue: string = '';
@@ -183,170 +186,15 @@
         createTreatmentLibraryDialogData: CreateTreatmentLibraryDialogData = clone(emptyCreateTreatmentLibraryDialogData);
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = clone(emptyTabData);
-        allTreatments: Treatment[] = [];
+        allTreatmentLibraries: TreatmentLibrary[] = [];
+        latestTreatmentLibraryId: number = 0;
         latestTreatmentId: number = 0;
         latestFeasibilityId: number = 0;
         latestCostId: number = 0;
         latestConsequenceId: number = 0;
 
         /**
-         * Sets the treatmentLibrariesSelectListItems using the treatmentLibraries from state
-         */
-        @Watch('treatmentLibraries')
-        onTreatmentLibrariesChanged() {
-            // set treatmentLibrariesSelectListItems' list of SelectItems using treatmentLibraries
-            this.treatmentLibrariesSelectListItems = this.treatmentLibraries
-                .map((treatmentLibrary: TreatmentLibrary) => ({
-                    text: treatmentLibrary.name,
-                    value: treatmentLibrary.id.toString()
-                }));
-            // set allTreatments with all the treatments from all treatment libraries
-            this.setAllTreatments();
-        }
-
-        /**
-         * Sets the scenarioName when a scenarioTreatmentLibrary has been set
-         */
-        @Watch('scenarioTreatmentLibrary')
-        onScenarioTreatmentLibraryChanged() {
-            if (this.scenarioTreatmentLibrary.id > 0) {
-                this.scenarioName = this.scenarioTreatmentLibrary.name;
-                // set all treatments, making sure to add all of the scenario treatment library's treatments
-                this.setAllTreatments();
-            }
-        }
-
-        /**
-         * Sets the selected treatment library based on treatmentLibrarySelectItemValue
-         */
-        @Watch('treatmentLibrarySelectItemValue')
-        onTreatmentLibrarySelectItemValueChanged() {
-            const id: number = hasValue(this.treatmentLibrarySelectItemValue)
-                ? parseInt(this.treatmentLibrarySelectItemValue)
-                : 0;
-            if (id !== this.selectedTreatmentLibrary.id) {
-                this.selectTreatmentLibraryAction({treatmentLibraryId: id});
-            }
-        }
-
-        /**
-         * Sets/resets component properties that rely on the state of whether or not a treatment library has been selected
-         */
-        @Watch('selectedTreatmentLibrary')
-        onSelectedTreatmentLibraryChanged() {
-            if (this.selectedTreatmentLibrary.id !== 0) {
-                // set linked component properties
-                this.hasSelectedTreatmentLibrary = true;
-                if (this.selectedTreatment.treatmentLibraryId !== this.selectedTreatmentLibrary.id) {
-                    this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
-                }
-                this.treatmentsSelectListItems = this.selectedTreatmentLibrary.treatments
-                    .map((treatment: Treatment) => ({
-                        text: treatment.name,
-                        value: treatment.id.toString()
-                    }));
-            } else {
-                // reset linked component properties
-                this.hasSelectedTreatmentLibrary = false;
-                this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
-                this.treatmentsSelectListItems = [];
-            }
-            // set allTreatments with all the treatments from all treatment libraries
-            this.setAllTreatments();
-        }
-
-        /**
-         * Parses treatmentSelectItemValue as an int (if present), then calls the
-         * setSelectedTreatment function while passing in the appropriate id parameter
-         */
-        @Watch('treatmentSelectItemValue')
-        onTreatmentSelectItemValueChanged() {
-            const id: number = hasValue(this.treatmentSelectItemValue)
-                ? parseInt(this.treatmentSelectItemValue)
-                : 0;
-            if (id !== this.selectedTreatment.id) {
-                this.setSelectedTreatment(id);
-            }
-        }
-
-        /**
-         * Sets each list of allFeasibilityIds, allCostsIds, and allConsequencesIds using allTreatmentsIds
-         */
-        @Watch('allTreatments')
-        onAllTreatmentsChanged() {
-            // set latestTreatmentId
-            this.latestTreatmentId = getLatestPropertyValue('id', this.allTreatments);
-            // get all of each: feasibilities, costs, and consequences
-            const allFeasibilities: Feasibility[] = [];
-            const allCosts: Cost[] = [];
-            const allConsequences: Consequence [] = [];
-            this.allTreatments.forEach((treatment: Treatment) => {
-                if (hasValue(treatment.feasibility)) {
-                    allFeasibilities.push(clone(treatment.feasibility) as Feasibility);
-                }
-                allCosts.push(...clone(treatment.costs));
-                allConsequences.push(...clone(treatment.consequences));
-            });
-            // set the 'latest' id for each: feasibilities, costs, and consequences
-            this.latestFeasibilityId = getLatestPropertyValue('id', allFeasibilities);
-            this.latestCostId = getLatestPropertyValue('id', allCosts);
-            this.latestConsequenceId = getLatestPropertyValue('id', allConsequences);
-        }
-
-        /**
-         * Sets allTreatments with treatments from the scenario treatment library (if present) and the list of
-         * treatment libraries
-         */
-        setAllTreatments() {
-            const treatments: Treatment[] = [];
-            // add the treatments from the scenario treatment library (if present)
-            if (this.scenarioTreatmentLibrary.id > 0) {
-                treatments.push(...clone(this.scenarioTreatmentLibrary.treatments));
-            }
-            // add the treatments from the selected treatment library (if present)
-            if (this.selectedTreatmentLibrary.id > 0) {
-                treatments.push(...clone(this.selectedTreatmentLibrary.treatments));
-            }
-            // add the treatments from each treatment library in the list of treatment libraries
-            this.treatmentLibraries.forEach((treatmentLibrary: TreatmentLibrary) =>
-                treatments.push(...clone(treatmentLibrary.treatments))
-            );
-            // remove duplicates and set allTreatments
-            this.allTreatments = uniq(treatments);
-            // get the latest ids for each: treatments, feasibilities, costs, and consequences
-        }
-
-        /**
-         * Sets selectedTreatment property based on the value of the id parameter
-         * @param id The id of the selected treatment
-         */
-        setSelectedTreatment(id: number) {
-            if (any(propEq('id', id), this.selectedTreatmentLibrary.treatments as Treatment[])) {
-                this.selectedTreatment = clone(
-                    this.selectedTreatmentLibrary.treatments.find((t: Treatment) => t.id === id) as Treatment
-                );
-            } else {
-                this.selectedTreatment = clone(emptyTreatment);
-            }
-            this.setTabData();
-        }
-
-        /**
-         * Sets data for each of the child component tabs
-         */
-        setTabData() {
-            this.tabData = {
-                tabTreatmentLibraries: hasValue(this.treatmentLibraries) ? clone(this.treatmentLibraries) : [],
-                tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
-                tabSelectedTreatment: clone(this.selectedTreatment),
-                latestFeasibilityId: clone(this.latestFeasibilityId),
-                latestCostId: clone(this.latestCostId),
-                latestConsequenceId: clone(this.latestConsequenceId)
-            };
-        }
-
-        /**
-         * Sets component ui properties that triggers cascading ui updates
+         * Sets component UI properties that triggers cascading UI updates
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -384,12 +232,12 @@
                                 vm.setIsBusyAction({isBusy: false});
                             }
                         });
-                }, 0);
+                });
             });
         }
 
         /**
-         * Resets component ui properties that triggers cascading ui updates
+         * Resets component UI properties that triggers cascading UI updates
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/TreatmentEditor/Library/') {
@@ -400,19 +248,195 @@
         }
 
         /**
-         * Clears the selected treatment library by setting treatmentLibrarySelectItemValue to an empty value
+         * Sets treatmentLibraries with the treatmentLibraries state data
+         */
+        @Watch('stateTreatmentLibraries')
+        onStateTreatmentLibrariesChanged() {
+            this.treatmentLibraries = [...clone(this.stateTreatmentLibraries)];
+        }
+
+        /**
+         * Sets selectedTreatmentLibrary with selectedTreatmentLibrary state data
+         */
+        @Watch('stateSelectedTreatmentLibrary')
+        onStateSelectedTreatmentLibraryChanged() {
+            this.selectedTreatmentLibrary = clone(this.stateSelectedTreatmentLibrary);
+        }
+
+        /**
+         * Sets scenarioTreatmentLibrary with scenarioTreatmentLibrary state data
+         */
+        @Watch('stateScenarioTreatmentLibrary')
+        onStateScenarioTreatmentLibraryChanged() {
+            this.scenarioTreatmentLibrary = clone(this.stateScenarioTreatmentLibrary);
+        }
+
+        /**
+         * Sets the treatmentLibrariesSelectListItems using treatmentLibraries, then calls setAllTreatments to push
+         * all treatment libraries into one list
+         */
+        @Watch('treatmentLibraries')
+        onTreatmentLibrariesChanged() {
+            this.treatmentLibrariesSelectListItems = this.treatmentLibraries
+                .map((treatmentLibrary: TreatmentLibrary) => ({
+                    text: treatmentLibrary.name,
+                    value: treatmentLibrary.id.toString()
+                }));
+
+            this.setAllTreatmentLibraries();
+        }
+
+        /**
+         * Calls setAllTreatments to push all treatment libraries into one list
+         */
+        @Watch('scenarioTreatmentLibrary')
+        onScenarioTreatmentLibraryChanged() {
+            this.setAllTreatmentLibraries();
+        }
+
+        /**
+         * Sets the selected treatment library based on treatmentLibrarySelectItemValue
+         */
+        @Watch('treatmentLibrarySelectItemValue')
+        onTreatmentLibrarySelectItemValueChanged() {
+            const id: number = hasValue(this.treatmentLibrarySelectItemValue)
+                ? parseInt(this.treatmentLibrarySelectItemValue)
+                : 0;
+            if (id !== this.selectedTreatmentLibrary.id) {
+                this.selectTreatmentLibraryAction({treatmentLibraryId: id});
+            }
+        }
+
+        /**
+         * Sets/resets the component UI properties reliant on a selected treatment library
+         */
+        @Watch('selectedTreatmentLibrary')
+        onSelectedTreatmentLibraryChanged() {
+            if (this.selectedTreatmentLibrary.id !== 0) {
+                this.hasSelectedTreatmentLibrary = true;
+
+                if (this.selectedTreatment.treatmentLibraryId !== this.selectedTreatmentLibrary.id) {
+                    this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
+                }
+
+                this.treatmentsSelectListItems = this.selectedTreatmentLibrary.treatments
+                    .map((treatment: Treatment) => ({
+                        text: treatment.name,
+                        value: treatment.id.toString()
+                    }));
+            } else {
+                this.hasSelectedTreatmentLibrary = false;
+                this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
+                this.treatmentsSelectListItems = [];
+            }
+
+            this.setAllTreatmentLibraries();
+        }
+
+        /**
+         * Sets the selected treatment
+         */
+        @Watch('treatmentSelectItemValue')
+        onTreatmentSelectItemValueChanged() {
+            const id: number = hasValue(this.treatmentSelectItemValue)
+                ? parseInt(this.treatmentSelectItemValue)
+                : 0;
+            if (id !== this.selectedTreatment.id) {
+                this.setSelectedTreatment(id);
+            }
+        }
+
+        /**
+         * Uses the allTreatments list to set the latestTreatmentId, latestFeasibilityId, latestCostId, & latestConsequenceId
+         */
+        @Watch('allTreatmentLibraries')
+        onAllTreatmentLibrariesChanged() {
+            this.latestTreatmentLibraryId = getLatestPropertyValue('id', this.allTreatmentLibraries);
+
+            const allTreatments: Treatment[] = [];
+            this.allTreatmentLibraries.forEach((treatmentLibrary: TreatmentLibrary) => {
+                allTreatments.push(...treatmentLibrary.treatments);
+            });
+
+            this.latestTreatmentId = getLatestPropertyValue('id', allTreatments);
+
+            const allFeasibilities: Feasibility[] = [];
+            const allCosts: Cost[] = [];
+            const allConsequences: Consequence [] = [];
+            allTreatments.forEach((treatment: Treatment) => {
+                if (hasValue(treatment.feasibility)) {
+                    allFeasibilities.push(treatment.feasibility as Feasibility);
+                }
+                allCosts.push(...treatment.costs);
+                allConsequences.push(...treatment.consequences);
+            });
+
+            this.latestFeasibilityId = getLatestPropertyValue('id', allFeasibilities);
+            this.latestCostId = getLatestPropertyValue('id', allCosts);
+            this.latestConsequenceId = getLatestPropertyValue('id', allConsequences);
+        }
+
+        /**
+         * Pushes all treatments to a list from treatmentLibraries, selectedTreatmentLibrary, & scenarioTreatmentLibrary
+         */
+        setAllTreatmentLibraries() {
+            const treatmentLibraries: TreatmentLibrary[] = [];
+
+            treatmentLibraries.push(...clone(this.treatmentLibraries));
+
+            if (this.scenarioTreatmentLibrary.id > 0) {
+                treatmentLibraries.push(clone(this.scenarioTreatmentLibrary));
+            }
+
+            if (this.selectedTreatmentLibrary.id > 0) {
+                treatmentLibraries.push(clone(this.selectedTreatmentLibrary));
+            }
+
+            this.allTreatmentLibraries = uniq(treatmentLibraries);
+        }
+
+        /**
+         * Sets selectedTreatment
+         * @param id Treatment id to use in setting the selected treatment
+         */
+        setSelectedTreatment(id: number) {
+            if (any(propEq('id', id), this.selectedTreatmentLibrary.treatments as Treatment[])) {
+                this.selectedTreatment = clone(
+                    this.selectedTreatmentLibrary.treatments.find((t: Treatment) => t.id === id) as Treatment
+                );
+            } else {
+                this.selectedTreatment = clone(emptyTreatment);
+            }
+
+            this.setTabData();
+        }
+
+        /**
+         * Sets data for each of the child component tabs
+         */
+        setTabData() {
+            this.tabData = {
+                tabTreatmentLibraries: hasValue(this.treatmentLibraries) ? clone(this.treatmentLibraries) : [],
+                tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
+                tabSelectedTreatment: clone(this.selectedTreatment),
+                latestFeasibilityId: this.latestFeasibilityId,
+                latestCostId: this.latestCostId,
+                latestConsequenceId: this.latestConsequenceId
+            };
+        }
+
+        /**
+         * Clears the selected treatment library and resets the active tab to first tab
          */
         onClearSelectedTreatmentLibrary() {
             this.treatmentLibrarySelectItemValue = hasValue(this.treatmentLibrarySelectItemValue) ? '' : '0';
-            // reset activeTab to first tab
             this.activeTab = 0;
         }
 
         /**
-         * 'New Library' button has been clicked
+         * Shows the CreateTreatmentLibraryDialog to allow a user to create a new treatment library
          */
         onNewLibrary() {
-            // show the CreateTreatmentLibraryDialog component
             this.createTreatmentLibraryDialogData = {
                 ...clone(emptyCreateTreatmentLibraryDialogData),
                 showDialog: true
@@ -420,24 +444,22 @@
         }
 
         /**
-         * 'Add Treatment' button has been clicked
+         * Shows the CreateTreatmentDialog to allow a user to create a new treatment
          */
         onAddTreatment() {
-            // show the CreateTreatmentDialog component
             this.showCreateTreatmentDialog = true;
         }
 
         /**
-         * A treatment tab has been clicked
+         * Sets the active tab
          */
         setAsActiveTab(treatmentTab: number) {
             this.activeTab = treatmentTab;
         }
 
         /**
-         * Updates a selected treatment library by dispatching the updateSelectedTreatmentLibraryAction with the given
-         * treatment library parameter
-         * @param updatedSelectedTreatmentLibrary The selected treatment data to use for updating
+         * Dispatches an action to update the selected treatment library in state, then resets the selected treatment
+         * @param updatedSelectedTreatmentLibrary The selected treatment library data to use for updating
          */
         updateSelectedTreatmentLibrary(updatedSelectedTreatmentLibrary: TreatmentLibrary) {
             this.updateSelectedTreatmentLibraryAction({
@@ -445,37 +467,14 @@
             }).then(() => {
                 setTimeout(() => {
                     this.setSelectedTreatment(this.selectedTreatment.id);
-                }, 0);
+                });
             });
         }
 
         /**
-         * Resets the component ui by discarding the user's changes and resetting the selected treatment library with
-         * the current scenario's treatment library data
-         */
-        onDiscardChanges() {
-            this.onClearSelectedTreatmentLibrary();
-            if (this.scenarioTreatmentLibrary.id > 0) {
-                setTimeout(() => {
-                    this.updateSelectedTreatmentLibraryAction({
-                        updatedSelectedTreatmentLibrary: clone(this.scenarioTreatmentLibrary)
-                    });
-                });
-            } else {
-                setTimeout(() => {
-                    this.setIsBusyAction({isBusy: true});
-                    this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
-                        .then(() => this.setIsBusyAction({isBusy: false}));
-                }, 0);
-            }
-        }
-
-        /**
-         * 'Create as New Library' button has been clicked
+         * Shows the CreateTreatmentLibraryDialog passing in the selected treatment library's description & treatments data
          */
         onCreateAsNewLibrary() {
-            // show the CreateTreatmentLibraryDialog component and include selectedTreatmentLibrary.description &
-            // selectedTreatmentLibrary.treatments
             this.createTreatmentLibraryDialogData = {
                 showDialog: true,
                 selectedTreatmentLibraryDescription: this.selectedTreatmentLibrary.description,
@@ -484,10 +483,96 @@
         }
 
         /**
-         * 'Update Library' button has been clicked
+         * Dispatches an action to create a new treatment library on the server
+         */
+        onCreateTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary) {
+            this.createTreatmentLibraryDialogData =  clone(emptyCreateTreatmentLibraryDialogData);
+
+            if (!isNil(createdTreatmentLibrary)) {
+                createdTreatmentLibrary.id = hasValue(this.latestTreatmentLibraryId) ? this.latestTreatmentLibraryId + 1 : 1;
+                createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
+
+                this.setIsBusyAction({isBusy: true});
+                this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
+                    .then(() => {
+                        this.setIsBusyAction({isBusy: false});
+                        this.setSuccessMessageAction({message: 'Treatment library created successfully'});
+                        this.onClearSelectedTreatmentLibrary();
+                        setTimeout(() => {
+                            this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
+                        });
+                    });
+            }
+        }
+
+        /**
+         * Sets the ids for new treatments and each new treatments' feasibility, costs, and consequences
+         */
+        setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary: TreatmentLibrary) {
+            if (hasValue(createdTreatmentLibrary.treatments)) {
+                let nextTreatmentId = hasValue(this.latestTreatmentId) ? this.latestTreatmentId + 1 : 1;
+                let nextFeasibilityId: number = hasValue(this.latestFeasibilityId) ? this.latestFeasibilityId + 1 : 1;
+                let nextCostId: number = hasValue(this.latestCostId) ? this.latestCostId + 1 : 1;
+                let nextConsequenceId: number = hasValue(this.latestConsequenceId) ? this.latestConsequenceId + 1 : 1;
+
+                createdTreatmentLibrary.treatments = sortByProperty('id', createdTreatmentLibrary.treatments)
+                    .map((treatment: Treatment) => {
+                        treatment.treatmentLibraryId = createdTreatmentLibrary.id;
+                        treatment.id = nextTreatmentId;
+                        nextTreatmentId++;
+
+                        if (hasValue(treatment.feasibility)) {
+                            // @ts-ignore
+                            treatment.feasibility.id = nextFeasibilityId;
+                            nextFeasibilityId++;
+                        }
+
+                        if (hasValue(treatment.costs)) {
+                            treatment.costs = sortByProperty('id', treatment.costs).map((cost: Cost) => {
+                                cost.id = nextCostId;
+                                nextCostId++;
+                                return cost;
+                            });
+                        }
+
+                        if (hasValue(treatment.consequences)) {
+                            treatment.consequences = sortByProperty('id', treatment.consequences).map((consequence: Consequence) => {
+                                consequence.id = nextConsequenceId;
+                                nextConsequenceId++;
+                                return consequence;
+                            });
+                        }
+
+                        return treatment;
+                    });
+            }
+
+            return createdTreatmentLibrary;
+        }
+
+        /**
+         * Dispatches an action to add a created treatment to the selected treatment library's treatments list in state
+         */
+        onCreateTreatment(createdTreatment: Treatment) {
+            this.showCreateTreatmentDialog = false;
+
+            if (!isNil(createdTreatment)) {
+                createdTreatment.treatmentLibraryId = this.selectedTreatmentLibrary.id;
+                createdTreatment.id = hasValue(this.latestTreatmentId) ? this.latestTreatmentId + 1 : 1;
+
+                this.selectedTreatmentLibrary.treatments = append(createdTreatment, this.selectedTreatmentLibrary.treatments);
+
+                this.updateSelectedTreatmentLibraryAction({
+                    updatedSelectedTreatmentLibrary: this.selectedTreatmentLibrary
+                })
+                .then(() => this.treatmentSelectItemValue = createdTreatment.id.toString());
+            }
+        }
+
+        /**
+         * Dispatches an action to update the selected treatment library on the server
          */
         onUpdateLibrary() {
-            // set isBusy to true, then dispatch action to update selected treatment library on the server
             this.setIsBusyAction({isBusy: true});
             this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary})
                 .then(() => {
@@ -497,106 +582,39 @@
         }
 
         /**
-         * 'Apply' button has been clicked
+         * Dispatches an action to update the scenario's treatment library data with the currently selected treatment library
          */
         onApplyToScenario() {
             this.setIsBusyAction({isBusy: true});
             this.upsertScenarioTreatmentLibraryAction({
                 upsertedScenarioTreatmentLibrary: clone(this.selectedTreatmentLibrary)
             })
-            .then(() => {
-                this.setIsBusyAction({isBusy: false});
-                this.setSuccessMessageAction({message: 'Scenario treatment library updated successfully'});
-            });
-        }
-
-        onCreateTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary) {
-            // hide the CreateTreatmentLibraryDialog component
-            this.createTreatmentLibraryDialogData =  clone(emptyCreateTreatmentLibraryDialogData);
-            if (!isNil(createdTreatmentLibrary)) {
-                // get the latest id of the treatment libraries
-                const latestId: number = getLatestPropertyValue('id', this.treatmentLibraries);
-                // set the createdTreatmentLibrary.id = latestId + 1 (if present), otherwise set as 1
-                createdTreatmentLibrary.id = hasValue(latestId) ? latestId + 1 : 1;
-                createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
-                // set isBusy to true, then dispatch action to create the new treatment library
-                this.setIsBusyAction({isBusy: true});
-                this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
-                    .then(() => {
-                        this.setIsBusyAction({isBusy: false});
-                        this.setSuccessMessageAction({message: 'Treatment library created successfully'});
-                        this.onClearSelectedTreatmentLibrary();
-                        setTimeout(() => {
-                            this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
-                        }, 0);
-                    });
-            }
+                .then(() => {
+                    this.setIsBusyAction({isBusy: false});
+                    this.setSuccessMessageAction({message: 'Scenario treatment library updated successfully'});
+                });
         }
 
         /**
-         * Sets the ids for treatments and each treatment's feasibility, costs, and consequences
+         * Clears the selected treatment library and dispatches an action to update the selected treatment library in
+         * state with the scenario treatment library (if present), otherwise an action is dispatched to get the scenario
+         * treatment library from the server to update the selected treatment library in state
          */
-        setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary: TreatmentLibrary) {
-            if (hasValue(createdTreatmentLibrary.treatments)) {
-                // get next treatment id
-                let nextTreatmentId = hasValue(this.latestTreatmentId) ? this.latestTreatmentId + 1 : 1;
-                // get next feasibility id
-                let nextFeasibilityId: number = hasValue(this.latestFeasibilityId) ? this.latestFeasibilityId + 1 : 1;
-                // get next cost id
-                let nextCostId: number = hasValue(this.latestCostId) ? this.latestCostId + 1 : 1;
-                // get next consequence id
-                let nextConsequenceId: number = hasValue(this.latestConsequenceId) ? this.latestConsequenceId + 1 : 1;
-                // for each created treatment library's treatments, set the new treatment's treatmentLibraryId & id,
-                // then set a new id for each of the treatment's feasibilities, costs, and consequences
-                createdTreatmentLibrary.treatments = sortByProperty('id', createdTreatmentLibrary.treatments)
-                    .map((treatment: Treatment) => {
-                        treatment.treatmentLibraryId = createdTreatmentLibrary.id;
-                        treatment.id = nextTreatmentId;
-                        nextTreatmentId++;
-                        if (hasValue(treatment.feasibility)) {
-                            // @ts-ignore
-                            treatment.feasibility.id = nextFeasibilityId;
-                            nextFeasibilityId++;
-                        }
-                        if (hasValue(treatment.costs)) {
-                            treatment.costs = sortByProperty('id', treatment.costs).map((cost: Cost) => {
-                                cost.id = nextCostId;
-                                nextCostId++;
-                                return cost;
-                            });
-                        }
-                        if (hasValue(treatment.consequences)) {
-                            treatment.consequences = sortByProperty('id', treatment.consequences).map((consequence: Consequence) => {
-                                consequence.id = nextConsequenceId;
-                                nextConsequenceId++;
-                                return consequence;
-                            });
-                        }
-                        return treatment;
-                    });
-            }
-            return createdTreatmentLibrary;
-        }
+        onDiscardChanges() {
+            this.onClearSelectedTreatmentLibrary();
 
-        /**
-         * User has submitted CreateTreatmentDialog result
-         * @param createdTreatment The created treatment data that was submitted
-         */
-        onCreateTreatment(createdTreatment: Treatment) {
-            // hide the CreateTreatmentDialog component
-            this.showCreateTreatmentDialog = false;
-            if (!isNil(createdTreatment)) {
-                // set createdTreatment.treatmentLibraryId = selectedTreatmentLibrary.id
-                createdTreatment.treatmentLibraryId = this.selectedTreatmentLibrary.id;
-                // set the createdTreatment.id = this.latestTreatmentId + 1 (if present), otherwise set as 1
-                createdTreatment.id = hasValue(this.latestTreatmentId) ? this.latestTreatmentId + 1 : 1;
-                // dispatch action to update selectedTreatmentLibrary with the created treatment
-                this.updateSelectedTreatmentLibraryAction({
-                    updatedSelectedTreatmentLibrary: {
-                        ...clone(this.selectedTreatmentLibrary),
-                        treatments: append(createdTreatment, this.selectedTreatmentLibrary.treatments)
-                    }
-                }).then(() => this.treatmentSelectItemValue = createdTreatment.id.toString());
+            if (this.scenarioTreatmentLibrary.id > 0) {
+                setTimeout(() => {
+                    this.updateSelectedTreatmentLibraryAction({
+                        updatedSelectedTreatmentLibrary: this.scenarioTreatmentLibrary
+                    });
+                });
+            } else {
+                setTimeout(() => {
+                    this.setIsBusyAction({isBusy: true});
+                    this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
+                        .then(() => this.setIsBusyAction({isBusy: false}));
+                });
             }
         }
     }

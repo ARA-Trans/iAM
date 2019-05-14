@@ -11,8 +11,8 @@
                     <v-text-field v-model="range" label="Edit" single-line :mask="'####'"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn v-on:click="onCancel">Cancel</v-btn>
-                    <v-btn color="info" v-on:click="onSubmit" :disabled="range === ''">Submit</v-btn>
+                    <v-btn color="info" v-on:click="onSubmit(true)" :disabled="range === ''">Submit</v-btn>
+                    <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -30,22 +30,15 @@
         range: number = 0;
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the range value or a null value to the parent component then resets the range value to 0
          */
-        onSubmit() {
-            // submit range result
-            this.$emit('submit', this.range);
-            // reset range
-            this.range = 0;
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.range);
+            } else {
+                this.$emit('submit', 0);
+            }
 
-        /**
-         * 'Cancel' button has been clicked
-         */
-        onCancel() {
-            // submit range result
-            this.$emit('submit', 0);
-            // reset range
             this.range = 0;
         }
     }
