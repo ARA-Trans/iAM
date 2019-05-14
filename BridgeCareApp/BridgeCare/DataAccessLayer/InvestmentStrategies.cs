@@ -87,15 +87,7 @@ namespace BridgeCare.DataAccessLayer
                 simulation.INVESTMENTS.DISCOUNTRATE = data.DiscountRate;
                 simulation.INVESTMENTS.BUDGETORDER = budgetOrder;
 
-                db.YEARLYINVESTMENTs.RemoveRange(simulation.YEARLYINVESTMENTs);
-
-                List<YEARLYINVESTMENT> investments = new List<YEARLYINVESTMENT>();
-
-                foreach (InvestmentStrategyYearlyBudgetModel year in data.YearlyBudgets)
-                {
-                    investments.Add(new YEARLYINVESTMENT(data.SimulationId, year.Year, year.BudgetName, year.BudgetAmount));
-                }
-                db.YEARLYINVESTMENTs.AddRange(investments);
+                UpsertYearlyData(data, simulation, db);
 
                 db.SaveChanges();
                 return;
@@ -105,6 +97,37 @@ namespace BridgeCare.DataAccessLayer
                 HandleException.SqlError(ex, "Investment Strategies");
             }
             return;
+        }
+        public void UpsertYearlyData(InvestmentStrategyModel investment,
+           SIMULATION simulation, BridgeCareContext db)
+        {
+            int dataIndex = 0;
+
+            foreach (YEARLYINVESTMENT yearly in simulation.YEARLYINVESTMENTs.ToList())
+            {
+                if (investment.YearlyBudgets.Count() > dataIndex)
+                {
+                    yearly.YEAR_ = investment.YearlyBudgets[dataIndex].Year;
+                    yearly.BUDGETNAME= investment.YearlyBudgets[dataIndex].BudgetName;
+                    yearly.AMOUNT = investment.YearlyBudgets[dataIndex].BudgetAmount;
+                }
+                else
+                {
+                    db.Entry(yearly).State = EntityState.Deleted;
+                }
+                dataIndex++;
+            }
+            //these must be inserts as the updated records exceed existing records
+            while (investment.YearlyBudgets.Count() > dataIndex)
+            {
+                var yearly = new YEARLYINVESTMENT(investment.SimulationId,
+                    investment.YearlyBudgets[dataIndex].Year,
+                    investment.YearlyBudgets[dataIndex].BudgetName,
+                    investment.YearlyBudgets[dataIndex].BudgetAmount);
+
+                simulation.YEARLYINVESTMENTs.Add(yearly);
+                dataIndex++;
+            }
         }
     }
 }
