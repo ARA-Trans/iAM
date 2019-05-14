@@ -103,17 +103,17 @@ namespace BridgeCare.DataAccessLayer
         {
             int dataIndex = 0;
 
-            foreach (YEARLYINVESTMENT yearly in simulation.YEARLYINVESTMENTs.ToList())
+            foreach (YEARLYINVESTMENT yearlyInvestment in simulation.YEARLYINVESTMENTs.ToList())
             {
                 if (investment.YearlyBudgets.Count() > dataIndex)
                 {
-                    yearly.YEAR_ = investment.YearlyBudgets[dataIndex].Year;
-                    yearly.BUDGETNAME= investment.YearlyBudgets[dataIndex].BudgetName;
-                    yearly.AMOUNT = investment.YearlyBudgets[dataIndex].BudgetAmount;
+                    yearlyInvestment.YEAR_ = investment.YearlyBudgets[dataIndex].Year;
+                    yearlyInvestment.BUDGETNAME= investment.YearlyBudgets[dataIndex].BudgetName;
+                    yearlyInvestment.AMOUNT = investment.YearlyBudgets[dataIndex].BudgetAmount;
                 }
                 else
                 {
-                    db.Entry(yearly).State = EntityState.Deleted;
+                    db.Entry(yearlyInvestment).State = EntityState.Deleted;
                 }
                 dataIndex++;
             }

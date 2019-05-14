@@ -17,7 +17,7 @@ namespace BridgeCare.DataAccessLayer
         {
             try
             {
-                var simulations = db.SIMULATIONS
+                var simulationAnalysisModel = db.SIMULATIONS
                     .Where(b => b.SIMULATIONID == simulationId)
                     .Select(b => new SimulationAnalysisModel()
                     {
@@ -32,7 +32,7 @@ namespace BridgeCare.DataAccessLayer
                         benefit_variable = b.BENEFIT_VARIABLE
                     }).SingleOrDefault();
 
-                return simulations;
+                return simulationAnalysisModel;
             }
             catch (SqlException ex)
             {
@@ -63,7 +63,6 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.SqlError(ex, "Simulation anlalysis");
             }
-            return;
         }
     }
 }

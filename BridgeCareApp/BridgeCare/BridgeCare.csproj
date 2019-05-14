@@ -217,7 +217,6 @@
     <Compile Include="EntityClasses\FEASIBILITY.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
-    <Compile Include="EntityClasses\PendingCrudSupport.cs" />
     <Compile Include="EntityClasses\PERFORMANCE.cs" />
     <Compile Include="EntityClasses\SCHEDULED.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
