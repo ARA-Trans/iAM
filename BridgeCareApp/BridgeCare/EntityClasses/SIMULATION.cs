@@ -35,7 +35,7 @@ namespace BridgeCare.EntityClasses
 
         public int COMMITTED_PERIOD { get; set; }
 
-        public double BENEFIT_LIMIT{ get; set; }
+        public double BENEFIT_LIMIT { get; set; }
 
         public string JURISDICTION { get; set; }
 

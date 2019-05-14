@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Runtime.Serialization;
 
 namespace BridgeCare.Models
 {
