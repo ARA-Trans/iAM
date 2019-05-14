@@ -20,9 +20,9 @@ namespace BridgeCare.Controllers
         [HttpGet]
         public SimulationAnalysisModel GetSimulationAnalysis(int SimulationId) => analysis.GetSimulationAnalyis(SimulationId, db);
 
-        [Route("api/UpdateAnalysisScenario/{simulationId}")]
+        [Route("api/UpdateAnalysisScenario")]
         [HttpPost]
-        public IHttpActionResult UpdateSimulationAnalysis(SimulationAnalysisModel model)
+        public IHttpActionResult UpdateSimulationAnalysis([FromBody]SimulationAnalysisModel model)
         {
             analysis.UpdateSimulationAnalyis(model, db);
             return Ok();
