@@ -182,7 +182,7 @@ namespace BridgeCare.DataAccessLayer
 
         public int CreateTreatment(TreatmentScenarioModel data, BridgeCareContext db)
         {
-            var treatment = new TREATMENT()
+            var newTreatmentModel = new TREATMENT()
             {
                 SIMULATIONID = data.SimulationId,
                 TREATMENTID = 0,
@@ -199,7 +199,7 @@ namespace BridgeCare.DataAccessLayer
                 SCHEDULED = null
             };
 
-            treatment.FEASIBILITY = new List<FEASIBILITY>()
+            newTreatmentModel.FEASIBILITY = new List<FEASIBILITY>()
             {
                 new FEASIBILITY()
                 {
@@ -211,7 +211,7 @@ namespace BridgeCare.DataAccessLayer
 
             if (data.Cost.Count() > 0)
             {
-                treatment.COST = new List<COST>();
+                newTreatmentModel.COST = new List<COST>();
 
                 foreach (CostModel cost in data.Cost)
                 {
@@ -224,13 +224,13 @@ namespace BridgeCare.DataAccessLayer
                         ISFUNCTION = cost.IsFunction,
                         UNIT = cost.Unit
                     };
-                    treatment.COST.Add(costEntity);
+                    newTreatmentModel.COST.Add(costEntity);
                 }
             }
 
             if (data.Consequences.Count() > 0)
             {
-                treatment.CONSEQUENCES = new List<CONSEQUENCE>();
+                newTreatmentModel.CONSEQUENCES = new List<CONSEQUENCE>();
                 foreach (ConsequenceModel consequence in data.Consequences)
                 {
                     var consequenceEntity = new CONSEQUENCE()
@@ -243,19 +243,19 @@ namespace BridgeCare.DataAccessLayer
                         CHANGE_ = consequence.Change,
                         ISFUNCTION = consequence.IsFunction
                     };
-                    treatment.CONSEQUENCES.Add(consequenceEntity);
+                    newTreatmentModel.CONSEQUENCES.Add(consequenceEntity);
                 }
             }
             if (data.Budgets.Count() > 0)
             {
-                treatment.BUDGET = data.GetBudgets();
+                newTreatmentModel.BUDGET = data.GetBudgets();
             }
 
-            db.Treatments.Add(treatment);
+            db.Treatments.Add(newTreatmentModel);
 
             db.SaveChanges();
 
-            return treatment.TREATMENTID;
+            return newTreatmentModel.TREATMENTID;
         }
 
         public TreatmentsModel UpsertTreatment(TreatmentsModel requestedModel, BridgeCareContext db)
