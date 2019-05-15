@@ -5,7 +5,7 @@ namespace BridgeCare.Interfaces
 {
     public interface IPerformance
     {
-        IQueryable<PerformanceScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db);
+        IQueryable<PerformanceScenarioModel> GetPerformance(int simulationId, BridgeCareContext db);
 
         void UpdatePerformanceScenario(PerformanceScenarioModel data, BridgeCareContext db);
     }

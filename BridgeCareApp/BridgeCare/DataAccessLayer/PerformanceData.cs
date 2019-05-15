@@ -12,12 +12,12 @@ namespace BridgeCare.DataAccessLayer
         {
         }
 
-        public IQueryable<PerformanceScenarioModel> GetPerformance(SimulationModel data, BridgeCareContext db)
+        public IQueryable<PerformanceScenarioModel> GetPerformance(int simulationId, BridgeCareContext db)
         {
             try
             {
                 return (db.PERFORMANCE
-                    .Where(d => d.SIMULATIONID == data.SimulationId)
+                    .Where(d => d.SIMULATIONID == simulationId)
                     .Select(p => new PerformanceScenarioModel()
                     {
                         PerformanceId = p.PERFORMANCEID,
