@@ -19,7 +19,7 @@
                                           class="elevation-1 fixed-header v-table__overflow budgets-data-table">
                                 <template slot="items" slot-scope="props">
                                     <td>
-                                        <v-checkbox v-model="props.selected" primary hide-details v-on:change="submitChanges">
+                                        <v-checkbox v-model="props.selected" primary hide-details>
                                         </v-checkbox>
                                     </td>
                                     <td>
@@ -38,8 +38,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
-    import {clone, isEmpty, findIndex} from 'ramda';
+    import {clone, isEmpty, findIndex, equals} from 'ramda';
     import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
     import {
         BudgetGridRow,
@@ -47,23 +46,19 @@
         emptyTreatmentLibrary,
         Treatment,
         TreatmentLibrary
-    } from "@/shared/models/iAM/treatment";
-    import {InvestmentStrategy} from '@/shared/models/iAM/investment';
-    import {sorter} from '@/shared/utils/sorter';
+    } from '@/shared/models/iAM/treatment';
+    import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import {DataTableHeader} from "@/shared/models/vue/data-table-header";
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
 
     @Component
     export default class BudgetsTab extends Vue {
         @Prop() budgetsTabData: TabData;
 
-        @State(state => state.investmentEditor.investmentForScenario) scenarioInvestmentLibrary: InvestmentStrategy[];
-
-        @Action('setIsBusy') setIsBusyAction: any;
-        @Action('getInvestmentForScenario') getScenarioInvestmentLibraryAction: any;
-
         budgetsTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         budgetsTabSelectedTreatment: Treatment = clone(emptyTreatment);
+        budgetsTabScenarioInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
         budgetHeaders: DataTableHeader[] = [
             {text: 'Budget', value: 'budget', align: 'left', sortable: true, class: '', width: '300px'}
         ];
@@ -75,18 +70,30 @@
             this.budgetsTabSelectedTreatmentLibrary = this.budgetsTabData.tabSelectedTreatmentLibrary;
             this.budgetsTabSelectedTreatment = this.budgetsTabData.tabSelectedTreatment;
             this.selectedBudgets = this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}));
+            this.budgetsTabScenarioInvestmentLibrary = this.budgetsTabData.tabScenarioInvestmentLibrary;
         }
 
-        @Watch('scenarioInvestmentLibrary')
+        @Watch('budgetsTabScenarioInvestmentLibrary')
         onScenarioInvestmentLibraryChanged() {
-            if (!isEmpty(this.scenarioInvestmentLibrary[0].budgetOrder)) {
-                this.budgets = this.scenarioInvestmentLibrary[0].budgetOrder.map((name: string) => ({budget: name}));
-            } else if (!isEmpty(this.scenarioInvestmentLibrary[0].budgetYears)) {
+            if (!isEmpty(this.budgetsTabScenarioInvestmentLibrary.budgetOrder)) {
+                this.budgets = this.budgetsTabScenarioInvestmentLibrary.budgetOrder.map((name: string) => ({budget: name}));
+            } else if (!isEmpty(this.budgetsTabScenarioInvestmentLibrary.budgetYears)) {
                 this.budgets = (sorter(
-                    getPropertyValues('budgetName', this.scenarioInvestmentLibrary[0].budgetYears)
+                    getPropertyValues('budgetName', this.budgetsTabScenarioInvestmentLibrary.budgetYears)
                 ) as string[]).map((name: string) => ({budget: name}));
             } else {
                 this.budgets = [];
+            }
+        }
+
+        @Watch('selectedBudgets')
+        onSelectedBudgetsChanged() {
+            const sortedTreatmentBudgets: BudgetGridRow[] = sortByProperty(
+                'budget', this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}))
+            );
+            const sortedSelectedBudgets: BudgetGridRow[] = sortByProperty('budget', this.selectedBudgets);
+            if (!equals(sortedSelectedBudgets, sortedTreatmentBudgets)) {
+                this.submitChanges();
             }
         }
 

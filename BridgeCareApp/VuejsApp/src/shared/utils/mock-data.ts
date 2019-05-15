@@ -138,16 +138,16 @@ export const mockInventoryItemDetail: InventoryItemDetail = {
 
     ],
     currentConditionDuration: [
-        {name: 'DECK', condition: '', duration: "0"},
-        {name: 'SUPER', condition: '', duration: "0"},
-        {name: 'SUB', condition: '', duration: "0"},
-        {name: 'CULV', condition: '', duration: "0"}
+        {name: 'DECK', condition: '', duration: '0'},
+        {name: 'SUPER', condition: '', duration: '0'},
+        {name: 'SUB', condition: '', duration: '0'},
+        {name: 'CULV', condition: '', duration: '0'}
     ],
     previousConditionDuration: [
-        {name: 'DECK', condition: '', duration: "0"},
-        {name: 'SUPER', condition: '', duration: "0"},
-        {name: 'SUB', condition: '', duration: "0"},
-        {name: 'CULV', condition: '', duration: "0"}
+        {name: 'DECK', condition: '', duration: '0'},
+        {name: 'SUPER', condition: '', duration: '0'},
+        {name: 'SUB', condition: '', duration: '0'},
+        {name: 'CULV', condition: '', duration: '0'}
     ],
     riskScores: {
         new: 0,

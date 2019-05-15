@@ -140,7 +140,7 @@
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
-    import {isNil, append, any, propEq, clone, uniq, isEmpty} from 'ramda';
+    import {isNil, append, any, propEq, clone, uniq} from 'ramda';
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
@@ -148,7 +148,7 @@
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
     import {sortByProperty} from '@/shared/utils/sorter';
     import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
-    import {InvestmentStrategy} from '@/shared/models/iAM/investment';
+    import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 
     @Component({
         components: {
@@ -159,7 +159,7 @@
         @State(state => state.treatmentEditor.treatmentLibraries) stateTreatmentLibraries: TreatmentLibrary[];
         @State(state => state.treatmentEditor.selectedTreatmentLibrary) stateSelectedTreatmentLibrary: TreatmentLibrary;
         @State(state => state.treatmentEditor.scenarioTreatmentLibrary) stateScenarioTreatmentLibrary: TreatmentLibrary;
-        @State(state => state.investmentEditor.investmentForScenario) scenarioInvestmentLibrary: InvestmentStrategy[];
+        @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary;
 
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
@@ -171,7 +171,7 @@
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
         @Action('upsertScenarioTreatmentLibrary') upsertScenarioTreatmentLibraryAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
-        @Action('getInvestmentForScenario') getScenarioInvestmentLibraryAction: any;
+        @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
         treatmentLibraries: TreatmentLibrary[] = [];
         selectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
@@ -197,17 +197,19 @@
         latestConsequenceId: number = 0;
 
         /**
-         * Sets component UI properties that triggers cascading UI updates
+         * Sets component ui properties that triggers cascading ui updates
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/FromScenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
+
                     vm.setNavigationAction([
                         {
                             text: 'Scenario Dashboard',
@@ -222,30 +224,48 @@
                             to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
                         }
                     ]);
+
+                    vm.treatmentTabs = [...vm.treatmentTabs, 'budgets'];
                 }
                 vm.onClearSelectedTreatmentLibrary();
+
                 setTimeout(() => {
                     vm.setIsBusyAction({isBusy: true});
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                    .then(() => vm.setIsBusyAction({isBusy: false}));
+                                setTimeout(() => {
+                                    vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                        .then(() => {
+                                            if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
+                                                vm.getScenarioInvestmentLibraryAction({
+                                                    selectedScenarioId: vm.selectedScenarioId
+                                                }).then(() => vm.setIsBusyAction({isBusy: false}));
+                                            } else {
+                                                vm.setIsBusyAction({isBusy: false});
+                                            }
+                                        });
+                                });
                             } else {
                                 vm.setIsBusyAction({isBusy: false});
+                                vm.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
                             }
                         });
-                });
+                }, 0);
             });
         }
 
         /**
-         * Resets component UI properties that triggers cascading UI updates
+         * Resets component ui properties that triggers cascading ui updates
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/TreatmentEditor/Library/') {
                 this.selectedScenarioId = 0;
                 this.onClearSelectedTreatmentLibrary();
+                this.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
+                if (this.treatmentTabs.length === 4) {
+                    this.treatmentTabs.splice(3, 1);
+                }
                 next();
             }
         }
@@ -422,80 +442,11 @@
                 tabTreatmentLibraries: hasValue(this.treatmentLibraries) ? clone(this.treatmentLibraries) : [],
                 tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
                 tabSelectedTreatment: clone(this.selectedTreatment),
+                tabScenarioInvestmentLibrary: clone(this.scenarioInvestmentLibrary),
                 latestFeasibilityId: this.latestFeasibilityId,
                 latestCostId: this.latestCostId,
                 latestConsequenceId: this.latestConsequenceId
             };
-        }
-
-        /**
-         * Sets component ui properties that triggers cascading ui updates
-         */
-        beforeRouteEnter(to: any, from: any, next: any) {
-            next((vm: any) => {
-                if (to.path === '/TreatmentEditor/FromScenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
-
-                    if (vm.selectedScenarioId === 0) {
-                        // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                        vm.$router.push('/Scenarios/');
-                    }
-
-                    vm.setNavigationAction([
-                        {
-                            text: 'Scenario Dashboard',
-                            to: {path: '/Scenarios/', query: {}}
-                        },
-                        {
-                            text: 'Scenario Editor',
-                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
-                        },
-                        {
-                            text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
-                        }
-                    ]);
-
-                    vm.treatmentTabs = [...vm.treatmentTabs, 'budgets'];
-                }
-                vm.onClearSelectedTreatmentLibrary();
-
-                setTimeout(() => {
-                    vm.setIsBusyAction({isBusy: true});
-                    vm.getTreatmentLibrariesAction()
-                        .then(() => {
-                            if (vm.selectedScenarioId > 0) {
-                                setTimeout(() => {
-                                    vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                        .then(() => {
-                                            if (!isEmpty(vm.scenarioInvestmentLibrary) &&
-                                                vm.scenarioInvestmentLibrary[0].id !== vm.selectedScenarioId) {
-                                                vm.getScenarioInvestmentLibraryAction({
-                                                    selectedScenario: vm.selectedScenarioId
-                                                }).then(() => this.setIsBusyAction({isBusy: false}));
-                                            } else {
-                                                vm.setIsBusyAction({isBusy: false})
-                                            }
-                                        });
-                                });
-                            } else {
-                                vm.setIsBusyAction({isBusy: false});
-                            }
-                        });
-                }, 0);
-            });
-        }
-
-        /**
-         * Resets component ui properties that triggers cascading ui updates
-         */
-        beforeRouteUpdate(to: any, from: any, next: any) {
-            if (to.path === '/TreatmentEditor/Library/') {
-                this.selectedScenarioId = 0;
-                this.onClearSelectedTreatmentLibrary();
-                next();
-            }
         }
 
         /**
