@@ -7,14 +7,21 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
+    [DataContract]
     public class CostModel
     {
+        [DataMember(Name = "Id")]
         public int CostId { get; set; }
-        [IgnoreDataMember]
+        [DataMember(Name = "treatmentId")]
         public int TreatmentId { get; set; }
-        public string Cost { get; set; }
-        public string Unit { get; set; }
+        [DataMember(Name = "criteria")]
         public string Criteria { get; set; }
+        [DataMember(Name = "isFunction")]
         public Nullable<bool> IsFunction { get; set; }
+        [DataMember(Name = "equation")]
+        public string Cost { get; set; }
+        [IgnoreDataMember]
+        public string Unit { get; set; }
+
     }
 }

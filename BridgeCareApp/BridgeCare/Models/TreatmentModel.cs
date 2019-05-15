@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
-    public class TreatmentModel
+    // Top level model not as interface to db but for producing json
+    [DataContract]
+    public class TreatmentsModel
     {
-        public string Treatment { get; set; }
-        public int BeforeAny { get; set; }
-        public int BeforeSame { get; set; }
-        public string Budget { get; set; }
+        //simulationID or libraryID
+        [DataMember(Name = "id")]
+        public int SimulationId { get; set; }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "description")]
         public string Description { get; set; }
-        public string OMS_IS_EXCLUSIVE { get; set; }
-        public string OMS_IS_REPEAT { get; set; }
-        public string OMS_REPEAT_START { get; set; }
-        public string OMS_REPEAT_INTERVAL { get; set; }
+
+        [DataMember(Name = "treatement")]
+        public List<TreatmentScenarioModel> Treatments { get; set; }
     }
 }
