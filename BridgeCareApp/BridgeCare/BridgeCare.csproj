@@ -19,8 +19,10 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -175,6 +177,7 @@
     <Compile Include="Controllers\AttributeNamesController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentStrategiesController.cs" />
+    <Compile Include="Controllers\SimulationAnalysisController.cs" />
     <Compile Include="Controllers\TreatmentsController.cs" />
     <Compile Include="Controllers\PerformanceController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
@@ -192,6 +195,7 @@
     <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentStrategies.cs" />
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
+    <Compile Include="DataAccessLayer\SimulationAnalysis.cs" />
     <Compile Include="DataAccessLayer\TreatmentData.cs" />
     <Compile Include="DataAccessLayer\PerformanceData.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
@@ -233,6 +237,7 @@
     <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentStrategies.cs" />
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
+    <Compile Include="Interfaces\ISimulationAnalysis.cs" />
     <Compile Include="Interfaces\ITreatment.cs" />
     <Compile Include="Interfaces\IPerformance.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeWorkSummaryData.cs" />
@@ -270,6 +275,7 @@
     <Compile Include="Models\InvestmentStrategyModel.cs" />
     <Compile Include="Models\Inventory\LabelValue.cs" />
     <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\SimulationAnalysisModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
     <Compile Include="Models\TreatmentScenarioModel.cs" />
