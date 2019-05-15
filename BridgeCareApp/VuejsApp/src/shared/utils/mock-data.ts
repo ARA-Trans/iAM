@@ -72,6 +72,13 @@ export const mockAttributes: string[] = [
     'YEAR_BUILT',
     'YEAR_RECON'
 ];
+/***********************************************MOCK BENEFITS DATA*****************************************************/
+export const mockBenefitAttributes: string[] = [
+    'COST SAVINGS',
+    'INCREASED LIFETIME',
+    'BETTER TRAFFIC MGMT'
+];
+
 /*******************************************INVENTORY MOCK DATA********************************************************/
 
 export const mockInventory: InventoryItem[] = [{
@@ -138,16 +145,16 @@ export const mockInventoryItemDetail: InventoryItemDetail = {
 
     ],
     currentConditionDuration: [
-        {name: 'DECK', condition: '', duration: "0"},
-        {name: 'SUPER', condition: '', duration: "0"},
-        {name: 'SUB', condition: '', duration: "0"},
-        {name: 'CULV', condition: '', duration: "0"}
+        {name: 'DECK', condition: '', duration: '0'},
+        {name: 'SUPER', condition: '', duration: '0'},
+        {name: 'SUB', condition: '', duration: '0'},
+        {name: 'CULV', condition: '', duration: '0'}
     ],
     previousConditionDuration: [
-        {name: 'DECK', condition: '', duration: "0"},
-        {name: 'SUPER', condition: '', duration: "0"},
-        {name: 'SUB', condition: '', duration: "0"},
-        {name: 'CULV', condition: '', duration: "0"}
+        {name: 'DECK', condition: '', duration: '0'},
+        {name: 'SUPER', condition: '', duration: '0'},
+        {name: 'SUB', condition: '', duration: '0'},
+        {name: 'CULV', condition: '', duration: '0'}
     ],
     riskScores: {
         new: 0,

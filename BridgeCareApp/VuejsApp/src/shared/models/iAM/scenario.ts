@@ -1,5 +1,5 @@
 export interface Analysis {
-    scenarioId: number;
+    id: number;
     startYear: number;
     analysisPeriod: number;
     optimizationType: string;
@@ -7,17 +7,19 @@ export interface Analysis {
     benefitLimit: number;
     description: string;
     criteria: string;
+    benefitAttribute: string;
 }
 
 export const emptyAnalysis: Analysis = {
-    scenarioId: 0,
+    id: 0,
     startYear: 0,
     analysisPeriod: 0,
     optimizationType: '',
     budgetType: '',
     benefitLimit: 0,
     description: '',
-    criteria: ''
+    criteria: '',
+    benefitAttribute: ''
 };
 
 export interface Scenario {

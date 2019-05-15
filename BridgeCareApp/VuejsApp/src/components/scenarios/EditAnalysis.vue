@@ -43,10 +43,14 @@
                         <v-layout justify-center fill-height>
                             <v-spacer></v-spacer>
                             <v-flex xs3>
+                                <v-select v-model="analysis.benefitAttribute" :items="benefitAttributes" label="Benefit"
+                                          outline>
+                                </v-select>
+                            </v-flex>
+                            <v-flex xs3>
                                 <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
                                 </v-text-field>
                             </v-flex>
-                            <v-flex xs3></v-flex>
                             <v-spacer></v-spacer>
                         </v-layout>
                         <v-layout justify-center fill-height>
@@ -74,7 +78,7 @@
         <v-footer>
             <v-layout justify-end row fill-height>
                 <v-btn depressed color="primary" @click="onApplyAnalysisToScenario">Apply</v-btn>
-                <v-btn depressed color="grey" @click="onCancelAnalysisEdit">Cancel</v-btn>
+                <v-btn depressed color="error" @click="onCancelAnalysisEdit">Cancel</v-btn>
             </v-layout>
         </v-footer>
 
@@ -86,7 +90,7 @@
     import Vue from 'vue';
     import {Watch} from 'vue-property-decorator';
     import Component from 'vue-class-component';
-    import {Action} from 'vuex-class';
+    import {State, Action} from 'vuex-class';
 
     import moment from 'moment';
     import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
@@ -102,10 +106,13 @@
         components: {CriteriaEditor}
     })
     export default class EditAnalysis extends Vue {
+        @State(state => state.scenario.benefitAttributes) benefitAttributes: string[];
+
         @Action('setNavigation') setNavigationAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('getBenefitAttributes') getBenefitAttributesAction: any;
 
         selectedScenarioId: number = 0;
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
@@ -115,11 +122,18 @@
         budgetType: string[] =  ['As budget permits', 'Another one', 'The better one'];
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
+        /**
+         * Sets component UI properties
+         */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                // set selectedScenarioId
                 vm.selectedScenarioId = isNaN(to.query.simulationId) ? 0 : parseInt(to.query.simulationId);
-                // set the breadcrumbs
+                if (vm.selectedScenarioId === 0) {
+                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
+                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                    vm.$router.push('/Scenarios/');
+                }
+
                 vm.setNavigationAction([
                     {
                         text: 'Scenario dashboard',
@@ -138,24 +152,16 @@
                         }
                     }
                 ]);
-                // check that selectedScenarioId is set
-                if (vm.selectedScenarioId > 0) {
-                    // set isBusy to true
-                    vm.setIsBusyAction({isBusy: true});
-                    // get the selected scenario's analysis data
-                    new ScenarioService().getScenarioAnalysisData(vm.selectedScenarioId)
-                        .then((analysis: Analysis) => {
-                            vm.setIsBusyAction({isBusy: false});
-                            vm.analysis = {
-                                ...analysis,
-                                startYear: analysis.startYear > 0 ? analysis.startYear : moment().year()
-                            };
-                        });
-                } else {
-                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                    vm.$router.push('/Scenarios/');
-                }
+
+                vm.setIsBusyAction({isBusy: true});
+                new ScenarioService().getScenarioAnalysisData(vm.selectedScenarioId)
+                    .then((analysis: Analysis) => {
+                        vm.analysis = {
+                            ...analysis,
+                            startYear: analysis.startYear > 0 ? analysis.startYear : moment().year()
+                        };
+                        vm.getBenefitAttributesAction().then(() => vm.setIsBusyAction({isBusy: false}));
+                    });
             });
         }
 
@@ -209,7 +215,9 @@
                     if (dataUpserted) {
                         // set 'analysis applied' success message, then redirect user to EditScenario UI
                         this.setSuccessMessageAction({message: 'Analysis was applied to selected scenario'});
-                        this.$router.push('/EditScenario/');
+                        this.$router.push({
+                            path: '/EditScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+                        });
                     } else {
                         this.setErrorMessageAction({message: 'Failed to apply analysis data to scenario'});
                     }

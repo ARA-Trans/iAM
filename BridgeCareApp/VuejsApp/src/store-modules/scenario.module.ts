@@ -2,14 +2,19 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import {statusReference} from '@/firebase';
 import ScenarioService from '@/services/scenario.service';
 import moment from 'moment';
+import {clone} from 'ramda';
 
 const state = {
     scenarios: [] as Scenario[],
+    benefitAttributes: [] as string[]
 };
 
 const mutations = {
     scenariosMutator(state: any, scenarios: Scenario[]) {
-        state.scenarios = [...scenarios];
+        state.scenarios = clone(scenarios);
+    },
+    benefitAttributesMutator(state: any, benefitAttributes: string[]) {
+        state.benefitAttributes = clone(benefitAttributes);
     }
 };
 
@@ -83,6 +88,11 @@ const actions = {
                 return results.status;
             })
             .catch((error: any) => { return error.response.status; });
+    },
+    async getBenefitAttributes({dispatch, commit}: any) {
+        await new ScenarioService().getBenefitAttributes()
+            .then((benefitAttributes: string[]) => commit('benefitAttributesMutator', benefitAttributes))
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     }
 };
 
