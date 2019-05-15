@@ -1,4 +1,4 @@
-import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {any, propEq, findIndex, clone, append} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 
@@ -53,11 +53,12 @@ const mutations = {
 };
 
 const actions = {
-    async getTreatmentLibraries({commit}: any) {
+    async getTreatmentLibraries({dispatch, commit}: any) {
         await new TreatmentEditorService().getTreatmentLibraries()
             .then((treatmentLibraries: TreatmentLibrary[]) =>
                 commit('treatmentLibrariesMutator', treatmentLibraries)
-            );
+            )
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
     selectTreatmentLibrary({commit}: any, payload: any) {
         commit('selectedTreatmentLibraryMutator', payload.treatmentLibraryId);
@@ -65,33 +66,37 @@ const actions = {
     updateSelectedTreatmentLibrary({commit}: any, payload: any) {
         commit('updatedSelectedTreatmentLibraryMutator', payload.updatedSelectedTreatmentLibrary);
     },
-    async createTreatmentLibrary({commit}: any, payload: any) {
+    async createTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await new TreatmentEditorService().createTreatmentLibrary(payload.createdTreatmentLibrary)
             .then(() => {
                 commit('createdTreatmentLibraryMutator', payload.createdTreatmentLibrary);
                 commit('selectedTreatmentLibraryMutator', payload.createdTreatmentLibrary.id);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async updateTreatmentLibrary({commit}: any, payload: any) {
+    async updateTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await new TreatmentEditorService().updateTreatmentLibrary(payload.updatedTreatmentLibrary)
             .then(() => {
                 commit('updatedTreatmentLibraryMutator', payload.updatedTreatmentLibrary);
                 commit('selectedTreatmentLibraryMutator', payload.updatedTreatmentLibrary.id);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async getScenarioTreatmentLibrary({commit}: any, payload: any) {
+    async getScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await new TreatmentEditorService().getScenarioTreatmentLibrary(payload.selectedScenarioId)
             .then((scenarioTreatmentLibrary: TreatmentLibrary) => {
                 commit('scenarioTreatmentLibraryMutator', scenarioTreatmentLibrary);
                 commit('updatedSelectedTreatmentLibraryMutator', scenarioTreatmentLibrary);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async upsertScenarioTreatmentLibrary({commit}: any, payload: any) {
+    async upsertScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await new TreatmentEditorService().upsertScenarioTreatmentLibrary(payload.upsertedScenarioTreatmentLibrary)
             .then(() => {
                 commit('scenarioTreatmentLibraryMutator', payload.upsertedScenarioTreatmentLibrary);
                 commit('updatedSelectedTreatmentLibraryMutator', payload.upsertedScenarioTreatmentLibrary);
-            });
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     }
 };
 

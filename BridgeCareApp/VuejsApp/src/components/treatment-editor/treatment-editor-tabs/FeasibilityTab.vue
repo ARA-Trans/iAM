@@ -69,7 +69,7 @@
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
         /**
-         * Sets the FeasibilityTab required UI functionality properties
+         * Sets the component's data properties
          */
         @Watch('feasibilityTabData')
         onFeasibilityTabDataChanged() {
@@ -77,17 +77,18 @@
             this.feasibilityTabSelectedTreatmentLibrary = this.feasibilityTabData.tabSelectedTreatmentLibrary;
             this.feasibilityTabSelectedTreatment = this.feasibilityTabData.tabSelectedTreatment;
             this.feasibilityTabLatestFeasibilityId = this.feasibilityTabData.latestFeasibilityId;
+
             this.setFeasibility();
         }
 
         /**
-         * Sets the feasibility property based on feasibilitySelectedTreatment
+         * Sets the component's grid data
          */
         setFeasibility() {
             if (this.feasibilityTabSelectedTreatment.id !== 0 &&
                 !isNil(this.feasibilityTabSelectedTreatment.feasibility) &&
                 this.feasibilityTabSelectedTreatment.feasibility.id !== 0) {
-                    this.feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility);
+                    this.feasibility = this.feasibilityTabSelectedTreatment.feasibility;
             } else {
                 this.feasibility = clone(emptyFeasibility);
             }
@@ -102,14 +103,14 @@
                 treatmentId: this.feasibilityTabSelectedTreatment.id,
                 id: hasValue(this.feasibilityTabLatestFeasibilityId) ? this.feasibilityTabLatestFeasibilityId + 1 : 1
             };
+
             this.submitChanges(newFeasibility);
         }
 
         /**
-         * 'Edit Criteria' button has been clicked
+         * Shows the CriteriaEditor passing in the Feasibility object's criteria data
          */
         onEditFeasibilityCriteria() {
-            // show the CriteriaEditor, passing in the feasibility's criteria
             this.criteriaEditorDialogData = {
                 showDialog: true,
                 criteria: this.feasibility.criteria
@@ -121,39 +122,45 @@
          * @param criteria The criteria submitted by the user
          */
         onSubmitFeasibilityCriteria(criteria: string) {
-            // hide the CriteriaEditor
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
             if (!isNil(criteria)) {
-                this.submitChanges({...clone(this.feasibility), criteria: criteria});
+                this.feasibility.criteria = criteria;
+
+                this.submitChanges(this.feasibility);
             }
         }
 
         /**
-         * User has changed one of 'Years Before Any' or 'Years Before Same' inputs
+         * Sends the Feasibility object to the submitChanges function when a user modifies it's yearsBeforeAny or
+         * yearsBeforeSame data
          */
         onChangeYears() {
-            this.submitChanges(clone(this.feasibility));
+            this.submitChanges(this.feasibility);
         }
 
         /**
-         * 'Delete' button has been clicked
+         * Calls the submitChanges function with a null value parameter
          */
         onDeleteFeasibility() {
             this.submitChanges(null);
         }
 
         /**
-         * Submits feasibility data changes
+         * Modifies the selected treatment & selected treatment library with the Feasibility object's data changes
          * @param feasibilityData The feasibility data to submit changes on
          */
         submitChanges(feasibilityData: Feasibility | null) {
-            const updatedTreatmentLibrary = clone(this.feasibilityTabSelectedTreatmentLibrary);
-            const updatedTreatment: Treatment = {...clone(this.feasibilityTabSelectedTreatment), feasibility: clone(feasibilityData)};
+            this.feasibilityTabSelectedTreatment.feasibility = feasibilityData;
+
             const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
-                treatment.id === updatedTreatment.id, updatedTreatmentLibrary.treatments
+                treatment.id === this.feasibilityTabSelectedTreatment.id,
+                this.feasibilityTabSelectedTreatmentLibrary.treatments
             );
-            updatedTreatmentLibrary.treatments[updatedTreatmentIndex] = updatedTreatment;
-            this.$emit('submit', updatedTreatmentLibrary);
+            this.feasibilityTabSelectedTreatmentLibrary
+                .treatments[updatedTreatmentIndex] = this.feasibilityTabSelectedTreatment;
+
+            this.$emit('submit', this.feasibilityTabSelectedTreatmentLibrary);
         }
     }
 </script>

@@ -61,7 +61,7 @@
     import {
         EquationEditorDialogResult
     } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
-    import {isNil, findIndex, uniq, clone, append} from 'ramda';
+    import {isNil, findIndex, clone, append} from 'ramda';
     import EquationEditor from '../../../shared/dialogs/EquationEditor.vue';
     import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
     import {hasValue} from '@/shared/utils/has-value';
@@ -89,7 +89,7 @@
         selectedCost: Cost = clone(emptyCost);
 
         /**
-         * Sets the CostsTab's required UI functionality properties
+         * Sets the component's data properties
          */
         @Watch('costsTabData')
         onCostsTabDataChanged() {
@@ -97,15 +97,16 @@
             this.costsTabSelectedTreatmentLibrary = this.costsTabData.tabSelectedTreatmentLibrary;
             this.costsTabSelectedTreatment = this.costsTabData.tabSelectedTreatment;
             this.costsTabLatestCostId = this.costsTabData.latestCostId;
+
             this.setCostsGridData();
         }
 
         /**
-         * Sets costsGridData property based on costsTabSelectedTreatment data
+         * Sets the component's grid data
          */
         setCostsGridData() {
             if (this.costsTabSelectedTreatment.id !== 0 && this.costsTabSelectedTreatment.costs.length > 0) {
-                    this.costsGridData = clone(this.costsTabSelectedTreatment.costs);
+                    this.costsGridData = this.costsTabSelectedTreatment.costs;
             } else {
                 this.costsGridData = [];
             }
@@ -120,16 +121,17 @@
                 treatmentId: this.costsTabSelectedTreatment.id,
                 id: hasValue(this.costsTabLatestCostId) ? this.costsTabLatestCostId + 1 : 1
             };
+
             this.submitChanges(newCost, false);
         }
 
         /**
-         * Sets selectedCost with the given cost parameter, then sets equationEditorDialogData with selectedCost
-         * data
-         * @param cost The cost to set as selectedCost
+         * Sets the selectedCost and shows the EquationEditor passing in the selectedCost's equation & isFunction data
+         * @param cost The cost to set as the selectedCost
          */
         onEditCostEquation(cost: Cost) {
             this.selectedCost = clone(cost);
+
             this.equationEditorDialogData = {
                 ...clone(emptyEquationEditorDialogData),
                 showDialog: true,
@@ -139,23 +141,25 @@
         }
 
         /**
-         * Updates the selectedCost.equation & selectedCost.isFunction based on the user submitted result from the
-         * EquationEditor
-         * @param result User's submitted EquationEditor result
+         * Modifies the selectedCost's equation & isFunction data using the EquationEditor result
+         * @param result EquationEditor result
          */
         onSubmitEditedCostEquation(result: EquationEditorDialogResult) {
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
+
             if (!isNil(result)) {
                 const updatedCost: Cost = clone(this.selectedCost);
                 this.selectedCost = clone(emptyCost);
+
                 updatedCost.equation = result.equation;
                 updatedCost.isFunction = result.isFunction;
+
                 this.submitChanges(updatedCost, false);
             }
         }
 
         /**
-         * Sets selectedCost with the given cost parameter, then sets criteriaEditorDialogData with selectedCost
+         * Sets the selectedCost and shows the CriteriaEditor passing in the selectedCost's criteria data
          * data
          * @param cost The cost to set as selectedCost
          */
@@ -168,51 +172,57 @@
         }
 
         /**
-         * Updates the selectedCost.criteria based on the user submitted result from the CriteriaEditor
-         * @param criteria User's submitted CriteriaEditor result
+         * Modifies the selectedCost's criteria data using the CriteriaEditor result
+         * @param criteria CriteriaEditor result
          */
         onSubmitEditedCostCriteria(criteria: string) {
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
             if (!isNil(criteria)) {
                 const updatedCost: Cost = clone(this.selectedCost);
                 this.selectedCost = clone(emptyCost);
+
                 updatedCost.criteria = criteria;
+
                 this.submitChanges(updatedCost, false);
             }
         }
 
         /**
-         * A Cost 'Delete' button has been clicked
+         * Sends a Cost object that has been marked for deletion to the submitChanges function
          */
         onDeleteCost(cost: Cost) {
-            this.submitChanges(clone(cost), true);
+            this.submitChanges(cost, true);
         }
 
         /**
-         * Submits cost data changes
-         * @param costData The cost data to submit changes on
-         * @param forDelete Whether or not the cost data is to be used for deleting a cost
+         * Modifies the selected treatment & selected treatment library with a Cost object's data changes and emits the
+         * modified objects to the parent component
+         * @param costData Cost object data
+         * @param forDelete Whether or not the Cost object's data is marked for deletion
          */
         submitChanges(costData: Cost, forDelete: boolean) {
-            // update selected treatment data
-            const updatedTreatment: Treatment = clone(this.costsTabSelectedTreatment);
             if (forDelete) {
-                updatedTreatment.costs = updatedTreatment.costs.filter((cost: Cost) => cost.id !== costData.id);
+                this.costsTabSelectedTreatment.costs = this.costsTabSelectedTreatment.costs
+                    .filter((cost: Cost) => cost.id !== costData.id);
             } else {
-                const updatedCostIndex: number = findIndex((cost: Cost) => cost.id === costData.id, updatedTreatment.costs);
+                const updatedCostIndex: number = findIndex((cost: Cost) =>
+                    cost.id === costData.id, this.costsTabSelectedTreatment.costs
+                );
                 if (updatedCostIndex === -1) {
-                    updatedTreatment.costs = append(costData, updatedTreatment.costs);
+                    this.costsTabSelectedTreatment.costs = append(costData, this.costsTabSelectedTreatment.costs);
                 } else {
-                    updatedTreatment.costs[updatedCostIndex] = costData;
+                    this.costsTabSelectedTreatment.costs[updatedCostIndex] = costData;
                 }
             }
-            // update selected treatment library data
-            const updatedTreatmentLibrary: TreatmentLibrary = clone(this.costsTabSelectedTreatmentLibrary);
-            const updatedTreatmentIndex: number = findIndex(
-                (treatment: Treatment) => treatment.id === updatedTreatment.id, updatedTreatmentLibrary.treatments
+
+            const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
+                treatment.id === this.costsTabSelectedTreatment.id,
+                this.costsTabSelectedTreatmentLibrary.treatments
             );
-            updatedTreatmentLibrary.treatments[updatedTreatmentIndex] = updatedTreatment;
-            this.$emit('submit', updatedTreatmentLibrary);
+            this.costsTabSelectedTreatmentLibrary.treatments[updatedTreatmentIndex] = this.costsTabSelectedTreatment;
+
+            this.$emit('submit', this.costsTabSelectedTreatmentLibrary);
         }
     }
 </script>

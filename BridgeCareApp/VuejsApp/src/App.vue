@@ -61,7 +61,10 @@
                 function (error) {
                     setIsBusyAction({ isBusy: false });
                     if (error.response) {
-                        setErrorMessageAction({message: error.response.data.message});                    }
+                        setErrorMessageAction({message: error.response.data.message});
+                    } else {
+                        setErrorMessageAction({message: error.message});
+                    }
                 }
             );
         }

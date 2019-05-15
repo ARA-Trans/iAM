@@ -11,7 +11,7 @@ export interface LabelValue {
 export interface ConditionDuration {
     name: string;
     condition: string;
-    duration: number;
+    duration: string;
 }
 
 export interface RiskScores {

@@ -18,12 +18,12 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit"
+                        <v-btn color="info" v-on:click="onSubmit(true)"
                                :disabled="createdTreatmentLibrary.name === '' ||
                                           createdTreatmentLibrary.description === ''">
                             Submit
                         </v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -39,46 +39,41 @@
     } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-library-dialog-data';
     import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value';
+    import {clone} from 'ramda';
 
     @Component
     export default class CreateTreatmentLibraryDialog extends Vue {
         @Prop() dialogData: CreateTreatmentLibraryDialogData;
 
-        createdTreatmentLibrary: TreatmentLibrary = {...emptyTreatmentLibrary};
+        createdTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
 
         /**
-         * Watcher: dialogData
+         * Sets the createdTreatmentLibrary's description & treatments data properties if present in the dialogData object
          */
         @Watch('dialogData')
         onDialogDataChanged() {
             if (hasValue(this.dialogData.selectedTreatmentLibraryDescription)) {
-                // set createdTreatmentLibrary.description property with description data from dialogData
                 this.createdTreatmentLibrary.description = this.dialogData.selectedTreatmentLibraryDescription;
             }
+
             if (hasValue(this.dialogData.selectedTreatmentLibraryTreatments)) {
-                // set createdTreatmentLibrary.description property with treatments data from dialogData
                 this.createdTreatmentLibrary.treatments = this.dialogData.selectedTreatmentLibraryTreatments;
             }
         }
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the createdTreatmentLibrary object or a null value to the parent component and resets the
+         * createdTreatmentLibrary object
+         * @param submit Whether or not to emit the createdTreatmentLibrary object
          */
-        onSubmit() {
-            // submit created treatment library result
-            this.$emit('submit', this.createdTreatmentLibrary);
-            // reset createdTreatmentLibrary property
-            this.createdTreatmentLibrary = {...emptyTreatmentLibrary};
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.createdTreatmentLibrary);
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * 'Cancel' button has been clicked
-         */
-        onCancel() {
-            // submit null result
-            this.$emit('submit', null);
-            // reset createdTreatmentLibrary property
-            this.createdTreatmentLibrary = {...emptyTreatmentLibrary};
+            this.createdTreatmentLibrary = clone(emptyTreatmentLibrary);
         }
     }
 </script>

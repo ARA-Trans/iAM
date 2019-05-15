@@ -28,10 +28,10 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit">
+                        <v-btn color="info" v-on:click="onSubmit(true)">
                             Apply
                         </v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -77,24 +77,26 @@
         };
         currentCriteriaOutput = '';
 
+        /**
+         * Sets the criteria object with the dialogData object's parsed criteria string, then dispatches an action to
+         * get the attributes from the server if the attributes array is empty
+         */
         @Watch('dialogData')
         onDialogDataChanged() {
-            // set the criteria string
             this.criteria = parseCriteriaString(this.dialogData.criteria);
+            if (isEmpty(this.criteria.logicalOperator)) {
+                this.criteria.logicalOperator = 'AND';
+            }
+
             if (this.dialogData.showDialog && isEmpty(this.attributes)) {
-                // set isBusy to true, then dispatch action to get attributes
                 this.setIsBusyAction({isBusy: true});
                 this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => {
-                        this.setIsBusyAction({isBusy: false});
-                        console.log(error);
-                    });
+                    .then(() => this.setIsBusyAction({isBusy: false}));
             }
         }
 
         /**
-         * Watcher: attributes
+         * Sets the editorRules array using the attributes array data
          */
         @Watch('attributes')
         onAttributesChanged() {
@@ -110,7 +112,7 @@
         }
 
         /**
-         * Criteria in dialog has changed
+         * Calls the setCurrentCriteriaOutput function when the criteria object has been modified
          */
         @Watch('criteria')
         onCriteriaChanged() {
@@ -118,7 +120,7 @@
         }
 
         /**
-         * Sets the currentCriteriaOutput based on if the current criteria is valid or not
+         * Sets the currentCriteriaOutput string based on if the current criteria is valid or not
          */
         setCurrentCriteriaOutput() {
             if (this.isNotValidCriteria()) {
@@ -129,26 +131,23 @@
         }
 
         /**
-         * Whether or not the current criteria is valid
+         * Determines if the current criteria data is valid or not
          */
         isNotValidCriteria() {
             return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
         }
 
         /**
-         * 'Apply' button was clicked
+         * Emits the parsed criteria object's data to the calling parent component, or null if the user clicked the
+         * 'Cancel' button
          */
-        onSubmit() {
-            // emit dialog result
-            this.$emit('submit', parseQueryBuilderJson(this.criteria).join(''));
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', parseQueryBuilderJson(this.criteria).join(''));
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * 'Cancel' button was clicked
-         */
-        onCancel() {
-            // emit null result
-            this.$emit('submit', null);
         }
     }
 </script>

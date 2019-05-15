@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {mockPerformanceLibraries, mockScenarioPerformanceLibrary} from '@/shared/utils/mock-data';
-import {clone} from 'ramda';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -18,8 +17,8 @@ export default class PerformanceEditorService {
      * Creates a performance library
      * @param createdPerformanceLibrary The performance library create data
      */
-    createPerformanceLibrary(createdPerformanceLibrary: PerformanceLibrary): Promise<any> {
-        return Promise.resolve<any>({} as any);
+    createPerformanceLibrary(createdPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
+        return Promise.resolve<any>(createdPerformanceLibrary);
         // TODO: add axios web service call for creating performance library
     }
 
@@ -27,8 +26,8 @@ export default class PerformanceEditorService {
      * Updates a performance library
      * @param updatePerformanceLibrary The performance library update data
      */
-    updatePerformanceLibrary(updatedPerformanceLibrary: PerformanceLibrary): Promise<any> {
-        return Promise.resolve<any>({} as any);
+    updatePerformanceLibrary(updatedPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
+        return Promise.resolve<any>(updatedPerformanceLibrary);
         // TODO: add axios web service call for updating performance library
     }
 
@@ -37,7 +36,7 @@ export default class PerformanceEditorService {
      * @param scenarioId The id of the scenario to use to get the scenario performance library
      */
     getScenarioPerformanceLibrary(scenarioId: number): Promise<PerformanceLibrary> {
-        return Promise.resolve<PerformanceLibrary>(clone(mockScenarioPerformanceLibrary));
+        return Promise.resolve<PerformanceLibrary>(mockScenarioPerformanceLibrary);
         // TODO: add axios web service call for scenario treatment library
     }
 
@@ -45,8 +44,8 @@ export default class PerformanceEditorService {
      * Upserts a scenario performance library
      * @param upsertedScenarioPerformanceLibrary The scenario performance library upsert data
      */
-    upsertScenarioPerformanceLibrary(upsertedScenarioPerformanceLibrary: PerformanceLibrary): Promise<any> {
-        return Promise.resolve<any>({} as any);
+    upsertScenarioPerformanceLibrary(upsertedScenarioPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
+        return Promise.resolve<any>(upsertedScenarioPerformanceLibrary);
         // TODO: add axios web service call for upserting scenario performance library
     }
 }

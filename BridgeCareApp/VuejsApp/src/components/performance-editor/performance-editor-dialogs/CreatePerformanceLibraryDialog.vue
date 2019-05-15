@@ -18,11 +18,11 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit"
+                        <v-btn color="info" v-on:click="onSubmit(true)"
                                :disabled="createdPerformanceLibrary.name === ''">
                             Submit
                         </v-btn>
+                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -38,43 +38,40 @@
     import {
         CreatePerformanceLibraryDialogData
     } from '@/shared/models/dialogs/performance-editor-dialogs/create-performance-library-dialog-data';
+    import {clone} from 'ramda';
 
     @Component
     export default class CreatePerformanceLibraryDialog extends Vue {
         @Prop() dialogData: CreatePerformanceLibraryDialogData;
 
-        createdPerformanceLibrary: PerformanceLibrary = {...emptyPerformanceLibrary};
+        createdPerformanceLibrary: PerformanceLibrary = clone(emptyPerformanceLibrary);
 
         /**
-         * Watcher: CreatePerformanceLibraryDialogData
+         * Sets the createdPerformanceLibrary's description & equation data properties if present in the dialogData object
          */
         @Watch('dialogData')
         onSelectedPerformanceLibraryChanged() {
-            // if dialog data has a selectedPerformanceLibraryDescription for created performance library...
             if (hasValue(this.dialogData.selectedPerformanceLibraryDescription)) {
-                // set the created performance library with dialog data's selectedPerformanceLibraryDescription
                 this.createdPerformanceLibrary.description = this.dialogData.selectedPerformanceLibraryDescription;
             }
-            // if dialog data has selectedPerformanceLibraryEquations for created performance library...
+
             if (hasValue(this.dialogData.selectedPerformanceLibraryEquations)) {
-                // set the created performance library with dialog data's selectedPerformanceLibraryEquations
                 this.createdPerformanceLibrary.equations = this.dialogData.selectedPerformanceLibraryEquations;
             }
         }
 
         /**
-         * 'Submit' button has been clicked
+         * Emits the createdPerformanceLibrary object or a null value to the parent component and resets the
+         * createdPerformanceLibrary object
+         * @param submit Whether or not to emit the createdPerformanceLibrary object
          */
-        onSubmit() {
-            this.$emit('submit', this.createdPerformanceLibrary);
-            this.createdPerformanceLibrary = {...emptyPerformanceLibrary};
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.createdPerformanceLibrary);
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * One of the 'Cancel' buttons has been clicked
-         */
-        onCancel() {
-            this.$emit('submit', null);
             this.createdPerformanceLibrary = {...emptyPerformanceLibrary};
         }
     }
