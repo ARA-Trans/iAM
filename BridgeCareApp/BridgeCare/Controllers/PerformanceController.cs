@@ -22,8 +22,9 @@ namespace BridgeCare.Controllers
         /// Get: api/performance
         /// </summary>
         [ModelValidation("Given simulation data is not valid")]
+        [Route("api/GetPerformance/{simulationId}")]
         [HttpGet]
-        public IQueryable<PerformanceScenarioModel> Get(SimulationModel data) => performance.GetPerformance(data, db);
+        public IQueryable<PerformanceScenarioModel> Get(int simulationId) => performance.GetPerformance(simulationId, db);
 
         [ModelValidation("Given performance scenario data is not valid")]
         [Route("api/UpdatePerformance")]
