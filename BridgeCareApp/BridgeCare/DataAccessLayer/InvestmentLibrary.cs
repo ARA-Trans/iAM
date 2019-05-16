@@ -3,24 +3,22 @@ using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web.Http;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class InvestmentStrategies : IInvestmentStrategies
+    public class InvestmentLibrary : IInvestmentLibrary
     {
         private readonly BridgeCareContext db;
 
-        public InvestmentStrategies(BridgeCareContext context)
+        public InvestmentLibrary(BridgeCareContext context)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IQueryable<InvestmentStrategyModel> GetInvestmentStrategies(int simulationId, BridgeCareContext db)
+        public IQueryable<InvestmentLibraryModel> GetInvestmentLibrary(int simulationId, BridgeCareContext db)
         {
             try
             {
@@ -28,7 +26,7 @@ namespace BridgeCare.DataAccessLayer
                     .Include(d => d.INVESTMENTS)
                     .Include(d => d.YEARLYINVESTMENTs)
                     .Where(d => d.SIMULATIONID == simulationId )
-                    .Select(p => new InvestmentStrategyModel()
+                    .Select(p => new InvestmentLibraryModel()
                     {
                         Name = p.SIMULATION1,
                         Description = p.COMMENTS,
@@ -39,7 +37,7 @@ namespace BridgeCare.DataAccessLayer
                         InflationRate = p.INVESTMENTS.INFLATIONRATE ?? 0,
                         DiscountRate = p.INVESTMENTS.DISCOUNTRATE ?? 0,
                         BudgetOrder = p.INVESTMENTS.BUDGETORDER,
-                        YearlyBudgets = p.YEARLYINVESTMENTs.Select(m => new InvestmentStrategyYearlyBudgetModel
+                        YearlyBudgets = p.YEARLYINVESTMENTs.Select(m => new InvestmentLibraryYearlyBudgetModel
                         {
                             Id = m.YEARID,
                             Year = m.YEAR_,
@@ -48,7 +46,7 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).ToList();
 
-                foreach (InvestmentStrategyModel model in simulation)
+                foreach (InvestmentLibraryModel model in simulation)
                 {
                     model.SetBudgets();
                 }
@@ -59,10 +57,10 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.SqlError(ex, "Investment Strategies");
             }
-            return Enumerable.Empty<InvestmentStrategyModel>().AsQueryable();
+            return Enumerable.Empty<InvestmentLibraryModel>().AsQueryable();
         }
 
-        public void SetInvestmentStrategies(InvestmentStrategyModel data, BridgeCareContext db)
+        public void SetInvestmentStrategies(InvestmentLibraryModel data, BridgeCareContext db)
         {
             // Ensures budget order is transferred from array storage as it comes in from json to the
             // databse format, comma delimited
@@ -98,7 +96,7 @@ namespace BridgeCare.DataAccessLayer
             }
             return;
         }
-        public void UpsertYearlyData(InvestmentStrategyModel investment,
+        public void UpsertYearlyData(InvestmentLibraryModel investment,
            SIMULATION simulation, BridgeCareContext db)
         {
             int dataIndex = 0;

@@ -11,25 +11,25 @@ namespace BridgeCare.Controllers
     /// Http interface to get a list of investment strategies which are text descriptions and a
     /// corresponding index for each one
     /// </summary>
-    public class InvestmentStrategiesController : ApiController
+    public class InvestmentLibraryController : ApiController
     {
         private readonly BridgeCareContext db;
-        private readonly IInvestmentStrategies investmentStrategies;
+        private readonly IInvestmentLibrary investmentLibrary;
 
-        public InvestmentStrategiesController(IInvestmentStrategies investmetStrategiesRepository, BridgeCareContext context)
+        public InvestmentLibraryController(IInvestmentLibrary investmentLibraryRepository, BridgeCareContext context)
         {
-            investmentStrategies = investmetStrategiesRepository ?? throw new ArgumentNullException(nameof(investmetStrategiesRepository));
+            investmentLibrary = investmentLibraryRepository ?? throw new ArgumentNullException(nameof(investmentLibraryRepository));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        ///<summary> Get: api/GetInvestmentStrategies
+        ///<summary> Get: api/GetScenarioInvestmentLibrary
         ///argument: NetworkModel
         ///</summary>
         [ModelValidation("Given simulation ID is not valid")]
-        [Route("api/GetInvestmentStrategies/{simulationId}")]
+        [Route("api/GetScenarioInvestmentLibrary/{simulationId}")]
         [HttpGet]
-        public IQueryable<InvestmentStrategyModel> Get(int simulationId)
-             => investmentStrategies.GetInvestmentStrategies(simulationId, db);
+        public IQueryable<InvestmentLibraryModel> Get(int simulationId)
+             => investmentLibrary.GetInvestmentLibrary(simulationId, db);
 
         ///<summary> Post: api/SaveInvestmentStrategy
         ///argument: InvestmentStrategyModel
@@ -40,9 +40,9 @@ namespace BridgeCare.Controllers
         [ModelValidation("Given investment strategy data is not valid")]
         [Route("api/SaveInvestmentStrategy")]
         [HttpPost]
-        public IHttpActionResult Post([FromBody]InvestmentStrategyModel data)
+        public IHttpActionResult Post([FromBody]InvestmentLibraryModel data)
         {
-            investmentStrategies.SetInvestmentStrategies(data, db);
+            investmentLibrary.SetInvestmentStrategies(data, db);
             return Ok();
         }
     }

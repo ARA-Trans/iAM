@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
-    public class InvestmentStrategyModel
+    public class InvestmentLibraryModel
     {
-        public InvestmentStrategyModel()
+        public InvestmentLibraryModel()
         {
-            YearlyBudgets = new List<InvestmentStrategyYearlyBudgetModel>();
+            YearlyBudgets = new List<InvestmentLibraryYearlyBudgetModel>();
         }
 
         [Required]
@@ -43,10 +43,10 @@ namespace BridgeCare.Models
         [IgnoreDataMember]
         public List<string> DeletedBudgetNames { get; set; }
 
-        public List<InvestmentStrategyYearlyBudgetModel> YearlyBudgets { get; set; }
+        public List<InvestmentLibraryYearlyBudgetModel> YearlyBudgets { get; set; }
 
         [IgnoreDataMember]
-        public List<InvestmentStrategyYearlyBudgetModel> DeletedYearlyBudgets { get; set; }
+        public List<InvestmentLibraryYearlyBudgetModel> DeletedYearlyBudgets { get; set; }
 
         /// <summary>
         /// The one and only means to convert from BudgetOrder to BudgetNamesByOrder

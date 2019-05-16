@@ -2,17 +2,17 @@
 
 namespace BridgeCare.Models
 {
-    public class InvestmentStrategyYearlyBudgetModel
+    public class InvestmentLibraryYearlyBudgetModel
     {
-        public InvestmentStrategyYearlyBudgetModel()
+        public InvestmentLibraryYearlyBudgetModel()
         {
-            Budget = new List<InvestmentStrategyBudgetModel>();
+            Budget = new List<InvestmentLibraryBudgetModel>();
         }
 
         public int Id { get; set; }
         public int Year { get; set; }
         public double? BudgetAmount { get; set; }
         public string BudgetName { get; set; }
-        public List<InvestmentStrategyBudgetModel> Budget { get; set; }
+        public List<InvestmentLibraryBudgetModel> Budget { get; set; }
     }
 }

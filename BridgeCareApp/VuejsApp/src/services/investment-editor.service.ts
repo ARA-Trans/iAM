@@ -71,7 +71,7 @@ export default class InvestmentEditorService extends Vue {
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
     getScenarioInvestmentLibrary(selectedScenarioId: number): Promise<InvestmentLibrary> {
-        return axios.get<InvestmentLibrary>(`/api/GetInvestmentStrategies/${selectedScenarioId}`)
+        return axios.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`)
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
                     return response.data[0];
