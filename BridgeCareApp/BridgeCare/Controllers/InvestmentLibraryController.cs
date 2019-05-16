@@ -28,7 +28,7 @@ namespace BridgeCare.Controllers
         [ModelValidation("Given simulation ID is not valid")]
         [Route("api/GetScenarioInvestmentLibrary/{simulationId}")]
         [HttpGet]
-        public IQueryable<InvestmentLibraryModel> Get(int simulationId)
+        public InvestmentLibraryModel Get(int simulationId)
              => investmentLibrary.GetInvestmentLibrary(simulationId, db);
 
         ///<summary> Post: api/SaveInvestmentStrategy

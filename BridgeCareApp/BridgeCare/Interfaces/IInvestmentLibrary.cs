@@ -6,7 +6,7 @@ namespace BridgeCare.Interfaces
 {
     public interface IInvestmentLibrary
     {
-        IQueryable<InvestmentLibraryModel> GetInvestmentLibrary(int simulationId, BridgeCareContext db);
+        InvestmentLibraryModel GetInvestmentLibrary(int simulationId, BridgeCareContext db);
 
         void SetInvestmentStrategies(InvestmentLibraryModel data, BridgeCareContext db);
     }

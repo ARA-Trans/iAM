@@ -18,14 +18,14 @@ namespace BridgeCare.DataAccessLayer
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IQueryable<InvestmentLibraryModel> GetInvestmentLibrary(int simulationId, BridgeCareContext db)
+        public InvestmentLibraryModel GetInvestmentLibrary(int simulationId, BridgeCareContext db)
         {
             try
             {
-                var simulation = db.SIMULATIONS
+                var investmentLibraryModel = db.SIMULATIONS
                     .Include(d => d.INVESTMENTS)
                     .Include(d => d.YEARLYINVESTMENTs)
-                    .Where(d => d.SIMULATIONID == simulationId )
+                    .Where(d => d.SIMULATIONID == simulationId)
                     .Select(p => new InvestmentLibraryModel()
                     {
                         Name = p.SIMULATION1,
@@ -44,20 +44,16 @@ namespace BridgeCare.DataAccessLayer
                             BudgetAmount = m.AMOUNT,
                             BudgetName = m.BUDGETNAME
                         }).ToList()
-                    }).ToList();
+                    }).FirstOrDefault();
 
-                foreach (InvestmentLibraryModel model in simulation)
-                {
-                    model.SetBudgets();
-                }
-
-                return simulation.AsQueryable();
+                investmentLibraryModel.SetBudgets();
+                return investmentLibraryModel;
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "Investment Strategies");
             }
-            return Enumerable.Empty<InvestmentLibraryModel>().AsQueryable();
+            return new InvestmentLibraryModel();
         }
 
         public void SetInvestmentStrategies(InvestmentLibraryModel data, BridgeCareContext db)

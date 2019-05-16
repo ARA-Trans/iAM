@@ -74,9 +74,7 @@ export default class InvestmentEditorService extends Vue {
         return axios.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`)
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
-                    return response.data[0];
-                    // TODO: uncomment when service has been updated to return an InvestmentLibrary
-                    // return response.data;
+                    return response.data;
                 }
                 return Promise.reject('Failed to get scenario investment library');
             });
