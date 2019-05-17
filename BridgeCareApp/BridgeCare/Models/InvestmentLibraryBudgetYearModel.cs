@@ -2,9 +2,9 @@
 
 namespace BridgeCare.Models
 {
-    public class InvestmentLibraryYearlyBudgetModel
+    public class InvestmentLibraryBudgetYearModel
     {
-        public InvestmentLibraryYearlyBudgetModel()
+        public InvestmentLibraryBudgetYearModel()
         {
             Budget = new List<InvestmentLibraryBudgetModel>();
         }

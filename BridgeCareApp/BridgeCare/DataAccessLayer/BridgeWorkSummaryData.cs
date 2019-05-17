@@ -13,10 +13,10 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="simulationId"></param>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public List<InvestmentLibraryYearlyBudgetModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext)
+        public List<InvestmentLibraryBudgetYearModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext)
         {
             var yearlyInvestments = dbContext.YEARLYINVESTMENTs.Where(y => y.SIMULATIONID == simulationId);
-            var yearlyBudgetModels = yearlyInvestments.Select(m => new InvestmentLibraryYearlyBudgetModel
+            var yearlyBudgetModels = yearlyInvestments.Select(m => new InvestmentLibraryBudgetYearModel
             {
                 Year = m.YEAR_,
                 Budget = yearlyInvestments

@@ -270,7 +270,7 @@
     <Compile Include="Models\Inventory\OperatingRatingInventoryRatingRow.cs" />
     <Compile Include="Models\Inventory\RiskScores.cs" />
     <Compile Include="Models\InvestmentLibraryBudgetModel.cs" />
-    <Compile Include="Models\InvestmentLibraryYearlyBudgetModel.cs" />
+    <Compile Include="Models\InvestmentLibraryBudgetYearModel.cs" />
     <Compile Include="Models\InvestmentLibraryModel.cs" />
     <Compile Include="Models\Inventory\LabelValue.cs" />
     <Compile Include="Models\PerformanceModel.cs" />

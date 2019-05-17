@@ -5,6 +5,6 @@ namespace BridgeCare.Interfaces
 {
     public interface IBridgeWorkSummaryData
     {
-        List<InvestmentLibraryYearlyBudgetModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext);
+        List<InvestmentLibraryBudgetYearModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext);
     }
 }
