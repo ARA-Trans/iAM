@@ -18,7 +18,7 @@ namespace BridgeCare.DataAccessLayer
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public InvestmentLibraryModel GetInvestmentLibrary(int simulationId, BridgeCareContext db)
+        public InvestmentLibraryModel GetScenarioInvestmentLibrary(int simulationId, BridgeCareContext db)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Investment Strategies");
+                HandleException.SqlError(ex, "Investment Library");
             }
             return new InvestmentLibraryModel();
         }

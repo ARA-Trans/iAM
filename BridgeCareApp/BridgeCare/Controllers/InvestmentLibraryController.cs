@@ -29,7 +29,7 @@ namespace BridgeCare.Controllers
         [Route("api/GetScenarioInvestmentLibrary/{simulationId}")]
         [HttpGet]
         public InvestmentLibraryModel Get(int simulationId)
-             => investmentLibrary.GetInvestmentLibrary(simulationId, db);
+             => investmentLibrary.GetScenarioInvestmentLibrary(simulationId, db);
 
         ///<summary> Post: api/SaveInvestmentStrategy
         ///argument: InvestmentStrategyModel
