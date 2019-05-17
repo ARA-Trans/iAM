@@ -31,19 +31,19 @@ namespace BridgeCare.Controllers
         public InvestmentLibraryModel Get(int simulationId)
              => investmentLibrary.GetScenarioInvestmentLibrary(simulationId, db);
 
-        ///<summary> Post: api/SaveInvestmentStrategy
+        ///<summary> Post: api/SaveScenarioInvestmentLibrary
         ///argument: InvestmentStrategyModel
-        ///return : 200 sucess
+        ///return : 200 sucess with updated model output
         ///         400 for bad input argument
         ///         500 internal server error (uncaught exception)
         ///</summary>
         [ModelValidation("Given investment strategy data is not valid")]
-        [Route("api/SaveInvestmentStrategy")]
+        [Route("api/SaveScenarioInvestmentLibrary")]
         [HttpPost]
         public IHttpActionResult Post([FromBody]InvestmentLibraryModel data)
         {
-            investmentLibrary.SetInvestmentStrategies(data, db);
-            return Ok();
+            var investmentLibraryModel = investmentLibrary.SaveScenarioInvestmentLibrary(data, db);
+            return Ok(investmentLibraryModel);
         }
     }
 }

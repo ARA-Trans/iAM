@@ -8,6 +8,6 @@ namespace BridgeCare.Interfaces
     {
         InvestmentLibraryModel GetScenarioInvestmentLibrary(int simulationId, BridgeCareContext db);
 
-        void SetInvestmentStrategies(InvestmentLibraryModel data, BridgeCareContext db);
+        InvestmentLibraryModel SaveScenarioInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db);
     }
 }

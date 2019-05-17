@@ -85,16 +85,12 @@ export default class InvestmentEditorService extends Vue {
      * @param upsertedScenarioInvestmentLibrary The scenario investment library upsert data
      */
     upsertScenarioInvestmentLibrary(upsertedScenarioInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return axios.post<InvestmentLibrary>('/api/SaveInvestmentStrategy', upsertedScenarioInvestmentLibrary)
+        return axios.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', upsertedScenarioInvestmentLibrary)
             .then((response: AxiosResponse) => {
-                return Promise.resolve(upsertedScenarioInvestmentLibrary);
-            });
-            // TODO: uncomment when service has been updated to return an InvestmentLibrary
-            /*.then((response: AxiosResponse) => {
                 if (!isNil(response)) {
                     return response.data;
                 }
                 return Promise.reject('Failed to apply investment library');
-            });*/
+            });
     }
 }

@@ -51,12 +51,12 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Investment Library");
+                HandleException.SqlError(ex, "Scenario Investment Library");
             }
             return new InvestmentLibraryModel();
         }
 
-        public void SetInvestmentStrategies(InvestmentLibraryModel data, BridgeCareContext db)
+        public InvestmentLibraryModel SaveScenarioInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db)
         {
             // Ensures budget order is transferred from array storage as it comes in from json to the
             // databse format, comma delimited
@@ -84,13 +84,14 @@ namespace BridgeCare.DataAccessLayer
                 UpsertYearlyData(data, simulation, db);
 
                 db.SaveChanges();
-                return;
+                return data;
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Investment Strategies");
+                HandleException.SqlError(ex, "Scenario Investment Library");
             }
-            return;
+            // Returning empty model in case of any exception.
+            return new InvestmentLibraryModel();
         }
         public void UpsertYearlyData(InvestmentLibraryModel investment,
            SIMULATION simulation, BridgeCareContext db)
