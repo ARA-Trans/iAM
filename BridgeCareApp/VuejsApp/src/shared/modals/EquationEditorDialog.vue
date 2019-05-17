@@ -125,14 +125,14 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {EquationEditorDialogData} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
-    import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
+    import {EquationEditorDialogData} from '@/shared/models/modals/equation-editor-dialog-data';
+    import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
     import {formulas} from '@/shared/utils/formulas';
     import {isEmpty} from 'ramda';
 
     @Component
-    export default class EquationEditor extends Vue {
+    export default class EquationEditorDialog extends Vue {
         @Prop() dialogData: EquationEditorDialogData;
 
         @State(state => state.attribute.attributes) attributes: string[];

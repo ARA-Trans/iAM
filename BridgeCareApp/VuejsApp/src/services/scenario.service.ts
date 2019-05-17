@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class ScenarioService {
     getScenarioAnalysisData(scenarioId: number): Promise<Analysis> {
-        return Promise.resolve<Analysis>({...emptyAnalysis});
+        return Promise.resolve<Analysis>(emptyAnalysis);
         // TODO: add axios web service call to get a scenario's analysis data
     }
 
@@ -15,20 +15,13 @@ export default class ScenarioService {
     }
 
     getScenarios(): Promise<Scenario[]> {
-        return axios.get('/api/Simulations')
-            .then((response: any) => {
-                return response.data as Promise<Scenario[]>;
-            });
+        return axios.get<Scenario[]>('/api/Simulations')
+            .then((response: AxiosResponse) => response.data);
     }
 
     createNewScenario(networkId: number, simulationName: string): Promise<any> {
-        return axios({
-            method: 'post',
-            url: `/api/CreateNewSimulation/${networkId}/${simulationName}`,
-            data: {}
-        }).then((response: any) => {
-            return response;
-        });
+        return axios.post<any>(`/api/CreateNewSimulation/${networkId}/${simulationName}`)
+            .then((response: AxiosResponse) => response.data);
     }
 
     uploadCommittedProjectsFiles(files: File[]): Promise<any> {

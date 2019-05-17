@@ -1,7 +1,7 @@
 import {emptyPerformanceLibrary, PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {clone, append, any, propEq, findIndex} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
-import {sortByProperty} from '@/shared/utils/sorter';
+import {sortByProperty} from '@/shared/utils/sorter-utils';
 
 const state = {
     performanceLibraries: [] as PerformanceLibrary[],

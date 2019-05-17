@@ -53,13 +53,13 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { State, Action } from 'vuex-class';
-    import { hasValue } from '@/shared/utils/has-value';
-    import { ShowAvailableReports } from '@/shared/models/dialogs/download-reports-dialog';
+    import { hasValue } from '@/shared/utils/has-value-util';
+    import { ReportsDownloaderDialogData } from '@/shared/models/modals/reports-downloader-dialog-data';
 
     @Component({
     })
-    export default class ReportsDownload extends Vue {
-        @Prop() dialogData: ShowAvailableReports;
+    export default class ReportsDownloaderDialog extends Vue {
+        @Prop() dialogData: ReportsDownloaderDialogData;
 
         @State(state => state.reports.reportsBlob) reportsBlob: Blob;
         @State(state => state.reports.currentReportName) currentReportName: string;

@@ -33,8 +33,7 @@ const actions = {
                     .then((reportsBlob: Blob) => {
                         commit('reportsBlobMutator', reportsBlob);
                         commit('currentReportNameMutator', 'Summary report.xlsx');
-                        })
-                    .catch((error: any) => console.log(error));
+                    });
                 break;
             }
         }

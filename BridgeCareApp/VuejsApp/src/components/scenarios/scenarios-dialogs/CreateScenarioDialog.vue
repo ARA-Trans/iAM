@@ -1,6 +1,6 @@
 ﻿<template>
     <v-layout>
-        <v-dialog v-model="scenarioDialog.showDialog" persistent max-width="450px">
+        <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center fill-height>
@@ -14,11 +14,10 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn v-on:click="onCancel">Cancel</v-btn>
-                        <v-btn color="info" v-on:click="onSubmit"
-                               :disabled="createdScenario.name === ''">
+                        <v-btn color="info" v-on:click="onSubmit(true)" :disabled="createdScenario.name === ''">
                             Submit
                         </v-btn>
+                        <v-btn v-on:click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -29,40 +28,37 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {hasValue} from '@/shared/utils/has-value';
-    import { CreateScenario, emptyScenario, CreateScenarioDialogData } from '@/shared/models/dialogs/create-scenario-dialog/scenario-creation-data';
+    import {CreateScenario, emptyScenario, CreateScenarioDialogData} from '@/shared/models/modals/scenario-creation-data';
+    import {clone} from 'ramda';
 
     @Component
-    export default class ScenarioCreationDialog extends Vue {
-        @Prop() scenarioDialog: CreateScenarioDialogData;
+    export default class CreateScenarioDialog extends Vue {
+        @Prop() dialogData: CreateScenarioDialogData;
 
-        createdScenario: CreateScenario = { ...emptyScenario };
+        createdScenario: CreateScenario = clone(emptyScenario);
 
         /**
          * Watcher: dialogData
          */
-        @Watch('scenarioDialog')
-        onScenarioDialogChanged() {
+        @Watch('dialogData')
+        onDialogDataChanged() {
             this.createdScenario = {
                 ...this.createdScenario,
-                description: hasValue(this.scenarioDialog.description) ? this.scenarioDialog.description : ''
+                description: this.dialogData.description
             };
         }
 
         /**
          * 'Submit' button has been clicked
          */
-        onSubmit() {
-            this.$emit('submit', this.createdScenario);
-            this.createdScenario = { ...emptyScenario};
-        }
+        onSubmit(submit: boolean) {
+            if (submit) {
+                this.$emit('submit', this.createdScenario);
+            } else {
+                this.$emit('submit', null);
+            }
 
-        /**
-         * 'Cancel' button has been clicked
-         */
-        onCancel() {
-            this.$emit('submit', null);
-            this.createdScenario = { ...emptyScenario};
+            this.createdScenario = clone(emptyScenario);
         }
     }
 </script>

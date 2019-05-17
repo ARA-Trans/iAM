@@ -33,7 +33,7 @@
             </v-flex>
         </v-layout>
 
-        <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitFeasibilityCriteria" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitFeasibilityCriteria" />
     </v-container>
 </template>
 
@@ -46,17 +46,17 @@
         Treatment,
         TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
-    import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
+    import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
-    } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
-    import {hasValue} from '@/shared/utils/has-value';
-    import {findIndex, isNil, uniq, clone} from 'ramda';
-    import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {findIndex, isNil, clone} from 'ramda';
+    import {TabData} from '@/shared/models/child-components/tab-data';
 
     @Component({
-        components: {CriteriaEditor}
+        components: {CriteriaEditorDialog}
     })
     export default class FeasibilityTab extends Vue {
         @Prop() feasibilityTabData: TabData;
@@ -108,7 +108,7 @@
         }
 
         /**
-         * Shows the CriteriaEditor passing in the Feasibility object's criteria data
+         * Shows the CriteriaEditorDialog passing in the Feasibility object's criteria data
          */
         onEditFeasibilityCriteria() {
             this.criteriaEditorDialogData = {
@@ -118,7 +118,7 @@
         }
 
         /**
-         * User has submitted a CriteriaEditor result
+         * User has submitted a CriteriaEditorDialog result
          * @param criteria The criteria submitted by the user
          */
         onSubmitFeasibilityCriteria(criteria: string) {

@@ -31,3 +31,15 @@ export interface Scenario {
     status: string;
     shared: boolean;
 }
+
+export const emptyScenario: Scenario = {
+    networkId: 0,
+    simulationId: 0,
+    networkName: '',
+    simulationName: '',
+    name: '',
+    createdDate: new Date(),
+    lastModifiedDate: new Date(),
+    status: '',
+    shared: false
+};

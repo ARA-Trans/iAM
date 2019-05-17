@@ -1,19 +1,14 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class DetailedReportService {
     getDetailedReport(networkId: number, simulationId: number): Promise<Blob> {
-        return axios({
-            method: 'post',
-            url: '/api/DetailedReport',
-            responseType: 'blob',
-            data: {
+        return axios.post<Blob>('/api/DetailedReport',
+            {
                 NetworkId: networkId,
                 SimulationId: simulationId
             }
-        }).then(response => {
-            return new Blob([response.data]);
-        });
+        ).then((response: AxiosResponse) => new Blob([response.data]));
     }
 }

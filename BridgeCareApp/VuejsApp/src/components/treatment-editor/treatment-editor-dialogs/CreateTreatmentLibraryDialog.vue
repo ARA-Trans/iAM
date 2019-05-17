@@ -36,9 +36,9 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {
         CreateTreatmentLibraryDialogData
-    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-library-dialog-data';
+    } from '@/shared/models/modals/create-treatment-library-dialog-data';
     import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import {clone} from 'ramda';
 
     @Component

@@ -78,7 +78,7 @@
             </v-layout>
         </v-footer>
 
-        <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitScopeCriteria" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitScopeCriteria" />
     </v-container>
 </template>
 
@@ -90,20 +90,19 @@
 
     import moment from 'moment';
     import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
-    import CriteriaEditor from '@/shared/dialogs/CriteriaEditor.vue';
+    import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
-    } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {isNil} from 'ramda';
     import ScenarioService from '@/services/scenario.service';
 
     @Component({
-        components: {CriteriaEditor}
+        components: {CriteriaEditorDialog}
     })
     export default class EditAnalysis extends Vue {
         @Action('setNavigation') setNavigationAction: any;
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
@@ -180,7 +179,7 @@
         }
 
         /**
-         * Opens the CriteriaEditor passing in the analysis criteria
+         * Opens the CriteriaEditorDialog passing in the analysis criteria
          */
         onEditScopeCriteria() {
             this.criteriaEditorDialogData = {
@@ -207,7 +206,7 @@
             new ScenarioService().applyAnalysisDataToScenario(this.analysis)
                 .then((dataUpserted: boolean) => {
                     if (dataUpserted) {
-                        // set 'analysis applied' success message, then redirect user to EditScenario UI
+                        // set 'analysis applied' success message, then navigate user to EditScenario page
                         this.setSuccessMessageAction({message: 'Analysis was applied to selected scenario'});
                         this.$router.push('/EditScenario/');
                     } else {
@@ -217,7 +216,7 @@
         }
 
         /**
-         * Returns user to EditScenario UI
+         * Navigates user to the EditScenario page passing in the selected scenario's id
          */
         onCancelAnalysisEdit() {
             this.$router.push({

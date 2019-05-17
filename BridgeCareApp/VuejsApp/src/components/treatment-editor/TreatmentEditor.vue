@@ -129,7 +129,7 @@
     import {
         CreateTreatmentLibraryDialogData,
         emptyCreateTreatmentLibraryDialogData
-    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-library-dialog-data';
+    } from '@/shared/models/modals/create-treatment-library-dialog-data';
     import {
         Consequence,
         Cost,
@@ -138,16 +138,16 @@
         Treatment,
         TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
     import {isNil, append, any, propEq, clone, uniq} from 'ramda';
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
-    import {TabData, emptyTabData} from '@/shared/models/child-components/treatment-editor/tab-data';
+    import {TabData, emptyTabData} from '@/shared/models/child-components/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
     import UnderConstruction from '@/components/UnderConstruction.vue';
-    import {sortByProperty} from '@/shared/utils/sorter';
+    import {sortByProperty} from '@/shared/utils/sorter-utils';
 
     @Component({
         components: {
@@ -159,7 +159,6 @@
         @State(state => state.treatmentEditor.selectedTreatmentLibrary) stateSelectedTreatmentLibrary: TreatmentLibrary;
         @State(state => state.treatmentEditor.scenarioTreatmentLibrary) stateScenarioTreatmentLibrary: TreatmentLibrary;
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('getTreatmentLibraries') getTreatmentLibrariesAction: any;
         @Action('getScenarioTreatmentLibrary') getScenarioTreatmentLibraryAction: any;
@@ -173,7 +172,6 @@
         treatmentLibraries: TreatmentLibrary[] = [];
         selectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         scenarioTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
-
         selectedScenarioId: number = 0;
         hasSelectedTreatmentLibrary: boolean = false;
         treatmentLibrariesSelectListItems: SelectItem[] = [];
@@ -492,10 +490,8 @@
                 createdTreatmentLibrary.id = hasValue(this.latestTreatmentLibraryId) ? this.latestTreatmentLibraryId + 1 : 1;
                 createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
 
-                this.setIsBusyAction({isBusy: true});
                 this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
                     .then(() => {
-                        this.setIsBusyAction({isBusy: false});
                         this.setSuccessMessageAction({message: 'Treatment library created successfully'});
                         this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
@@ -573,10 +569,8 @@
          * Dispatches an action to update the selected treatment library on the server
          */
         onUpdateLibrary() {
-            this.setIsBusyAction({isBusy: true});
             this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary})
                 .then(() => {
-                    this.setIsBusyAction({isBusy: false});
                     this.setSuccessMessageAction({message: 'Treatment library updated successfully'});
                 });
         }
@@ -585,14 +579,12 @@
          * Dispatches an action to update the scenario's treatment library data with the currently selected treatment library
          */
         onApplyToScenario() {
-            this.setIsBusyAction({isBusy: true});
             this.upsertScenarioTreatmentLibraryAction({
                 upsertedScenarioTreatmentLibrary: clone(this.selectedTreatmentLibrary)
             })
-                .then(() => {
-                    this.setIsBusyAction({isBusy: false});
-                    this.setSuccessMessageAction({message: 'Scenario treatment library updated successfully'});
-                });
+            .then(() => {
+                this.setSuccessMessageAction({message: 'Scenario treatment library updated successfully'});
+            });
         }
 
         /**
@@ -611,9 +603,7 @@
                 });
             } else {
                 setTimeout(() => {
-                    this.setIsBusyAction({isBusy: true});
-                    this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
-                        .then(() => this.setIsBusyAction({isBusy: false}));
+                    this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId});
                 });
             }
         }

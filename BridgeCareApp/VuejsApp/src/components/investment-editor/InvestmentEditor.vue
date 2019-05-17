@@ -156,18 +156,18 @@
     import {any, clone, groupBy, isEmpty, isNil, keys, propEq, uniq, contains} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
     import {
         CreateInvestmentLibraryDialogData,
         emptyCreateInvestmentLibraryDialogData
-    } from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-library-dialog-data';
+    } from '@/shared/models/modals/create-investment-library-dialog-data';
     import {
         EditBudgetsDialogData,
         emptyEditBudgetsDialogData
-    } from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
+    } from '@/shared/models/modals/edit-budgets-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
-    import {sortByProperty, sorter} from '@/shared/utils/sorter';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
 
     @Component({
         components: {CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog}
@@ -177,7 +177,6 @@
         @State(state => state.investmentEditor.selectedInvestmentLibrary) stateSelectedInvestmentLibrary: InvestmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('getInvestmentLibraries') getInvestmentLibrariesAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
@@ -245,14 +244,10 @@
                     }
                     vm.onClearSelectedInvestmentLibrary();
                     setTimeout(() => {
-                        vm.setIsBusyAction({isBusy: true});
                         vm.getInvestmentLibrariesAction()
                             .then(() => {
                                 if (vm.selectedScenarioId > 0) {
-                                    vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                        .then(() => vm.setIsBusyAction({isBusy: false}));
-                                } else {
-                                    vm.setIsBusyAction({isBusy: false});
+                                    vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId});
                                 }
                             });
                     });
@@ -669,10 +664,8 @@
                 createdInvestmentLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
                 createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
-                this.setIsBusyAction({isBusy: true});
                 this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary})
                     .then(() => {
-                        this.setIsBusyAction({ isBusy: false });
                         this.setSuccessMessageAction({ message: 'New library created successfully' });
                     });
             }
@@ -702,10 +695,8 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.setIsBusyAction({ isBusy: true });
             this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary})
                 .then(() => {
-                    this.setIsBusyAction({ isBusy: false });
                     this.setSuccessMessageAction({ message: 'Library updated successfully' });
                 });
         }
@@ -715,10 +706,8 @@
          * investment library data on the server
          */
         onApplyToScenario() {
-            this.setIsBusyAction({ isBusy: true });
             this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: this.selectedInvestmentLibrary})
                 .then(() => {
-                    this.setIsBusyAction({ isBusy: false });
                     this.setSuccessMessageAction({ message: 'Library applied to scenario successfully' });
                 });
         }
@@ -739,9 +728,7 @@
                 });
             } else {
                 setTimeout(() => {
-                    this.setIsBusyAction({isBusy: true});
-                    this.getScenarioInvestmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
-                        .then(() => this.setIsBusyAction({isBusy: false}));
+                    this.getScenarioInvestmentLibraryAction({selectedScenarioId: this.selectedScenarioId});
                 });
             }
         }

@@ -1,15 +1,12 @@
-﻿import axios from 'axios';
+﻿import axios, {AxiosResponse} from 'axios';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class AuthenticationService {
-    getAuthentication(): Promise<any> {
-        return axios.get('/auth/getuser', { withCredentials: true })
-            .then(response => {
+    authenticateUser(): Promise<any> {
+        return axios.get('/auth/getuser', {withCredentials: true})
+            .then((response: AxiosResponse) => {
                 return response;
-            })
-            .catch(error => {
-                return error.response;
             });
     }
 }

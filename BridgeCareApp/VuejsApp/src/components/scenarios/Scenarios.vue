@@ -19,17 +19,17 @@
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
-                                        <v-btn flat icon color="blue" v-on:click="onRunSimulation(props.item)">
+                                        <v-btn flat icon color="blue" v-on:click="onShowRunSimulationAlert(props.item)">
                                             <v-icon>fas fa-play</v-icon>
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="info" v-on:click="openReportDialog(props.item)">
+                                        <v-btn flat icon color="info" v-on:click="onShowReportsDownloaderDialog(props.item)">
                                             <v-icon>fas fa-chart-line</v-icon>
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="editScenario(props.item.simulationId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.simulationId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -70,17 +70,17 @@
                             <td>
                                 <v-layout row wrap>
                                     <v-flex>
-                                        <v-btn flat icon color="blue" v-on:click="onRunSimulation(props.item)">
+                                        <v-btn flat icon color="blue" v-on:click="onShowRunSimulationAlert(props.item)">
                                             <v-icon>fas fa-play</v-icon>
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="openReportDialog(props.item)">
+                                        <v-btn flat icon color="green" v-on:click="onShowReportsDownloaderDialog(props.item)">
                                             <v-icon>fas fa-chart-line</v-icon>
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="editSharedScenario(props.item.simulationId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditSharedScenario(props.item.simulationId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -95,76 +95,58 @@
             </v-flex>
         </v-layout>
         <v-flex xs12>
-            <AppModalPopup :modalData="warning" @decision="onWarningModalDecision" />
+            <Alert :dialogData="alertData" @submit="onSubmitAlertResult" />
         </v-flex>
         <v-flex xs12>
-            <ReportsDownload :dialogData="reportData" />
+            <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
         </v-flex>
         <v-flex xs12>
-            <ScenarioCreationDialog :scenarioDialog="createScenarioData" @submit="onSubmitNewScenario" />
+            <CreateScenarioDialog :dialogData="createScenarioDialogData" @submit="onSubmitNewScenario" />
         </v-flex>
     </v-container>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component, Watch, Prop } from 'vue-property-decorator';
+    import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import axios from 'axios';
-
-    import * as moment from 'moment';
-    import {Scenario} from '../../shared/models/iAM/scenario';
-    import { hasValue } from '../../shared/utils/has-value';
-    import { Alert } from '@/shared/models/iAM/alert';
-    import AppModalPopup from '@/shared/dialogs/AppModalPopup.vue';
-    import ReportsDownload from '@/shared/dialogs/ReportsDownload.vue';
-    import { ShowAvailableReports } from '@/shared/models/dialogs/download-reports-dialog';
-    import { CreateScenarioDialogData } from '@/shared/models/dialogs/create-scenario-dialog/scenario-creation-data';
-    import ScenarioCreationDialog from '@/components/scenarios/create-scenario-dialog/ScenarioCreationDialog.vue';
-    import { Network } from '@/shared/models/iAM/network';
-
-    axios.defaults.baseURL = process.env.VUE_APP_URL;
+    import moment from 'moment';
+    import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
+    import ReportsDownloaderDialog from '@/components/scenarios/scenarios-dialogs/ReportsDownloaderDialog.vue';
+    import {
+        emptyReportsDownloadDialogData,
+        ReportsDownloaderDialogData
+    } from '@/shared/models/modals/reports-downloader-dialog-data';
+    import {
+        CreateScenarioDialogData,
+        emptyCreateScenarioDialogData
+    } from '@/shared/models/modals/scenario-creation-data';
+    import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
+    import {Network} from '@/shared/models/iAM/network';
+    import {clone} from 'ramda';
 
     @Component({
-        components: { AppModalPopup, ReportsDownload, ScenarioCreationDialog }
+        components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog}
     })
     export default class Scenarios extends Vue {
-        @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
         @State(state => state.security.userId) userId: string;
         @State(state => state.reports.names) reportNames: string[];
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
-
-        @Action('setIsBusy') setIsBusyAction: any;
+        
         @Action('getUserScenarios') getUserScenariosAction: any;
         @Action('getScenarios') getScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('createNewScenario') createNewScenarioAction: any;
 
-        @Prop({
-            default: function () {
-                return { showModal: false };
-            }
-        })
-        warning: Alert;
-
-        @Prop({
-            default: function () {
-                return { showModal: false };
-            }
-        })
-        reportData: ShowAvailableReports;
-
-        @Prop({
-            default: function () {
-                return { showDialog: false };
-            }
-        })
-        createScenarioData: CreateScenarioDialogData;
-
-
+        alertData: AlertData = clone(emptyAlertData);
+        reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
+        createScenarioDialogData: CreateScenarioDialogData = clone(emptyCreateScenarioDialogData);
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
@@ -176,20 +158,19 @@
         sharedScenarios: Scenario[] = [];
         searchMine = '';
         searchShared = '';
-
         networkId: number = 0;
         networkName: string = '';
         simulationId: number = 0;
         simulationName: string = '';
-        currentItem: Scenario;
+        currentScenario: Scenario = clone(emptyScenario);
 
         @Watch('scenarios')
-        onScenariosChanged(val: Scenario[]) {
-            if (hasValue(val)) {
+        onScenariosChanged() {
+            if (hasValue(this.scenarios)) {
                 // filter scenarios that are the user's
-                this.userScenarios = val.filter((s: Scenario) => s.shared === false);
+                this.userScenarios = this.scenarios.filter((simulation: Scenario) => !simulation.shared);
                 // filter scenarios that are shared with the user
-                this.sharedScenarios = val.filter((s: Scenario) => s.shared === true);
+                this.sharedScenarios = this.scenarios.filter((simulation: Scenario) => simulation.shared);
             }
 
         }
@@ -202,21 +183,7 @@
          * Component has been mounted
          */
         mounted() {
-            this.setIsBusyAction({isBusy: true});
-            this.getUserScenariosAction({ userId: this.userId })
-                .then(() => this.setIsBusyAction({isBusy: false}))
-                .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
-                    console.log(error);
-                });
-            
-            // Intentionally left this code commented, It fetches the scenarios/simulation from the Legacy db
-            //this.getScenariosAction()
-            //    .then(() => this.setIsBusyAction({isBusy: false}))
-            //    .catch((error: any) => {
-            //        this.setIsBusyAction({isBusy: false});
-            //        console.log(error);
-            //    });
+            this.getUserScenariosAction({ userId: this.userId });
         }
 
         getStatus(isCompleted: boolean) {
@@ -228,85 +195,101 @@
          * @param unformattedDate Unformatted date
          */
         formatDate(unformattedDate: Date) {
-            //@ts-ignore
             return moment(unformattedDate).format('M/D/YYYY');
         }
 
-        editScenario(id: number) {
+        /**
+         * Navigates user to EditScenario page passing in the simulation id of their scenario
+         * @param id Scenario simulation id
+         */
+        onEditScenario(id: number) {
             this.$router.push({
                 path: '/EditScenario/', query: {simulationId: id.toString()}
             });
         }
-        editSharedScenario(id: number) {
+        
+        /**
+         * Navigates user to EditScenario page passing in the simulation id of a shared scenario
+         * @param id Scenario simulation id
+         */
+        onEditSharedScenario(id: number) {
             this.$router.push({
                 path: '/EditScenario/', query: { simulationId: id.toString() }
             });
         }
 
         /**
-         * 'Run Simulation' button has been clicked
+         * Shows the Alert
          */
-        onRunSimulation(item: any) {
-            this.warning.showModal = true;
-            this.warning.heading = 'Warning';
-            this.warning.choice = true;
-            this.warning.message = 'The simulation can take around five minutes to finish. ' +
-                'Are you sure that you want to continue?';
-            this.currentItem = item;
+        onShowRunSimulationAlert(scenario: Scenario) {
+            this.currentScenario = scenario;
+            
+            this.alertData = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'The simulation can take around five minutes to finish. ' +
+                    'Are you sure that you want to continue?'
+            };
         }
 
         /**
-         * A 'warning' modal decision has been made by the user
-         * @param value The user decision
+         * Takes in a boolean parameter from the AppPopupModal to determine if a scenario's simulation should be executed
+         * @param runSimulation Alert result
          */
-        onWarningModalDecision(value: boolean) {
-            this.warning.showModal = false;
-            if (value == true) {
+        onSubmitAlertResult(runSimulation: boolean) {
+            this.alertData = clone(emptyAlertData);
+            
+            if (runSimulation) {
                 this.runSimulation();
             }
         }
 
         /**
-         * User has chosen to run a simulation
+         * Dispatches an action with the currentScenario object's data in order to run a simulation on the server
          */
         runSimulation() {
-            // dispatch action to run simulation
             this.runSimulationAction({
-                networkId: this.currentItem.networkId,
-                simulationId: this.currentItem.simulationId,
-                networkName: this.currentItem.networkName,
-                simulationName: this.currentItem.simulationName,
+                networkId: this.currentScenario.networkId,
+                simulationId: this.currentScenario.simulationId,
+                networkName: this.currentScenario.networkName,
+                simulationName: this.currentScenario.simulationName,
                 userId: this.userId
-            }).catch((error: any) => {
-                console.log(error);
             });
         }
 
-        openReportDialog(item: any) {
-            this.reportData.showModal = true;
-            this.reportData.names = this.reportNames;
-            this.reportData.networkId = item.networkId;
-            this.reportData.networkName = item.networkName;
-            this.reportData.simulationId = item.simulationId;
-            this.reportData.simulationName = item.simulationName;
+        /**
+         * Shows the ReportsDownloaderDialog passing in the specified scenario's data
+         * @param scenario Scenario object to use for setting the ReportsDownloaderDialogData object
+         */
+        onShowReportsDownloaderDialog(scenario: Scenario) {
+            this.reportsDownloaderDialogData = {
+                showModal: true,
+                names: this.reportNames,
+                networkId: scenario.networkId,
+                networkName: scenario.networkName,
+                simulationId: scenario.simulationId,
+                simulationName: scenario.simulationName,
+            };
         }
 
         onCreateScenario() {
-            this.createScenarioData.showDialog = true;
+            this.createScenarioDialogData.showDialog = true;
         }
 
         onSubmitNewScenario(value: any) {
             if (!hasValue(value)) {
-                this.createScenarioData.showDialog = false;
+                this.createScenarioDialogData.showDialog = false;
                 return;
             }
+
             this.createNewScenarioAction({
                 networkId: this.networks[0].networkId,
                 networkName: this.networks[0].networkName,
                 scenarioName: value.name,
                 userId: this.userId
             })
-                .then(() => this.createScenarioData.showDialog = false);
+            .then(() => this.createScenarioDialogData.showDialog = false);
         }
     }
 </script>

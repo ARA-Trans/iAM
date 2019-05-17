@@ -12,3 +12,8 @@ export interface CreateScenarioDialogData {
     showDialog: boolean;
     description: string;
 }
+
+export const emptyCreateScenarioDialogData: CreateScenarioDialogData = {
+    showDialog: false,
+    description: ''
+};

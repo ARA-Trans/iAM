@@ -46,14 +46,14 @@
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
     import {Criteria, emptyCriteria} from '../models/iAM/criteria';
     import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
-    import {hasValue} from '../utils/has-value';
-    import {CriteriaEditorDialogData} from '../models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
+    import {hasValue} from '../utils/has-value-util';
+    import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
     import {isEmpty} from 'ramda';
 
     @Component({
         components: {VueQueryBuilder}
     })
-    export default class CriteriaEditor extends Vue {
+    export default class CriteriaEditorDialog extends Vue {
         @Prop() dialogData: CriteriaEditorDialogData;
 
         @State(state => state.attribute.attributes) attributes: string[];

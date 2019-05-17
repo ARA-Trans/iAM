@@ -1,5 +1,6 @@
 import AuthenticationService from '../services/authentication.service';
-import { db } from '@/firebase';
+import {AxiosResponse} from 'axios';
+import {db} from '@/firebase';
 
 const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
 
@@ -17,30 +18,24 @@ const mutations = {
     userNameMutator(state: any, userName: string) {
         state.userName = userName;
     },
+    userIdMutator(state: any, userId: string) {
+        state.userId = userId;
+    },
     userRoleMutator(state: any, role: string) {
         if (!state.userRoles.includes(role)) {
             state.userRoles.push(role);
         }
-    },
-    userIdMutator(state: any, userId: string) {
-        state.userId = userId;
-    },
+    }
 };
 
 const actions = {
-    setLoginStatus({commit}: any, payload: any) {
-        commit('loginMutator', payload.status);
-    },
-    setUsername({commit}: any, payload: any) {
-        commit('userNameMutator', payload.userName);
-    },
-    async getAuthentication({ commit }: any) {
-        return await new AuthenticationService().getAuthentication()
-            .then((results: any) => {
-                if (results.status == '200') {
-                    commit('userNameMutator', results.data[0]);
-                    commit('userIdMutator', results.data[1]);
+    async authenticateUser({ commit }: any) {
+        return await new AuthenticationService().authenticateUser()
+            .then((response: AxiosResponse) => {
+                if (response.status == 200) {
                     commit('loginMutator', false);
+                    commit('userNameMutator', response.data[0]);
+                    commit('userIdMutator', response.data[1]);
 
                     db.ref('roles').once('value', (snapshot: any) => {
                         let data = snapshot.val();
@@ -50,13 +45,8 @@ const actions = {
                             }
                         }
                     });
-                    return results;
                 }
-                else {
-                    return results;
-                }
-            })
-            .catch((error: any) => { return error.response; });
+            });
     }
 };
 

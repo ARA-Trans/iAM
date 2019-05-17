@@ -7,10 +7,11 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import axios from 'axios';
+    import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import TopNavbar from './components/TopNavbar.vue';
     import {isEmpty} from 'ramda';
     import iziToast from 'izitoast';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component({
         components: {TopNavbar}
@@ -52,20 +53,33 @@
         }
 
         mounted() {
-            const setErrorMessageAction = this.setErrorMessageAction;
-            const setIsBusyAction = this.setIsBusyAction;
-            axios.interceptors.response.use(
-                function(response) {
-                    return response;
-                },
-                function (error) {
-                    setIsBusyAction({ isBusy: false });
-                    if (error.response) {
-                        setErrorMessageAction({message: error.response.data.message});
-                    } else {
-                        setErrorMessageAction({message: error.message});
-                    }
+            // create a request handler
+            const requestHandler = (request: AxiosRequestConfig) => {
+                this.setIsBusyAction({isBusy: true});
+                return request;
+            };
+            // set axios request interceptor to use request handler
+            axios.interceptors.request.use(
+                request => requestHandler(request)
+            );
+            // create a success & error handler
+            const successHandler = (response: AxiosResponse) => {
+                this.setIsBusyAction({isBusy: false});
+                return response;
+            };
+            const errorHandler = (error: AxiosError) => {
+                this.setIsBusyAction({isBusy: false});
+                if (error.response) {
+                    this.setErrorMessageAction({message: error.response.data.message});
+                } else {
+                    this.setErrorMessageAction({message: error.message});
                 }
+
+            };
+            // set axios response handler to use success & error Handler
+            axios.interceptors.response.use(
+                response => successHandler(response),
+                error => errorHandler(error)
             );
         }
     }
