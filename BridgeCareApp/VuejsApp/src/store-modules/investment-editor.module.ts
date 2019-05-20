@@ -88,13 +88,13 @@ const actions = {
             await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenarioId)
                 .then((data: any) => {
                     const scenarioInvestmentLibrary: InvestmentLibrary = {
-                        id: data.simulationId,
+                        id: data.id,
                         name: data.name,
                         inflationRate: data.inflationRate,
                         discountRate: data.discountRate,
                         description: data.description,
-                        budgetOrder: data.budgetNamesByOrder,
-                        budgetYears: data.yearlyBudgets,
+                        budgetOrder: data.budgetOrder,
+                        budgetYears: data.budgetYears,
                     };
                     commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
                     commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
