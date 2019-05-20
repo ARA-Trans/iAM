@@ -18,14 +18,14 @@ namespace BridgeCare.DataAccessLayer
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public InvestmentLibraryModel GetScenarioInvestmentLibrary(int simulationId, BridgeCareContext db)
+        public InvestmentLibraryModel GetScenarioInvestmentLibrary(int selectedScenarioId, BridgeCareContext db)
         {
             try
             {
                 var investmentLibraryModel = db.SIMULATIONS
                     .Include(d => d.INVESTMENTS)
                     .Include(d => d.YEARLYINVESTMENTs)
-                    .Where(d => d.SIMULATIONID == simulationId)
+                    .Where(d => d.SIMULATIONID == selectedScenarioId)
                     .Select(p => new InvestmentLibraryModel()
                     {
                         Name = p.SIMULATION1,

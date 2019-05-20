@@ -25,11 +25,11 @@ namespace BridgeCare.Controllers
         ///<summary> Get: api/GetScenarioInvestmentLibrary
         ///argument: NetworkModel
         ///</summary>
-        [ModelValidation("Given simulation ID is not valid")]
-        [Route("api/GetScenarioInvestmentLibrary/{simulationId}")]
+        [ModelValidation("Given selected scenario Id is not valid")]
+        [Route("api/GetScenarioInvestmentLibrary/{selectedScenarioId}")]
         [HttpGet]
-        public InvestmentLibraryModel Get(int simulationId)
-             => investmentLibrary.GetScenarioInvestmentLibrary(simulationId, db);
+        public InvestmentLibraryModel Get(int selectedScenarioId)
+             => investmentLibrary.GetScenarioInvestmentLibrary(selectedScenarioId, db);
 
         ///<summary> Post: api/SaveScenarioInvestmentLibrary
         ///argument: InvestmentStrategyModel
