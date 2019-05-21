@@ -115,6 +115,8 @@ const actions = {
             .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
                 commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
                 commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
+                dispatch('setIsBusy', {isBusy: false});
+                dispatch('setSuccessMessage', {message: 'Applied investment library changes successfully'});
             })
             .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     }

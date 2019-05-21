@@ -715,12 +715,14 @@
          * investment library data on the server
          */
         onApplyToScenario() {
+            const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
+            appliedInvestmentLibrary.id = this.selectedScenarioId;
+            appliedInvestmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => ({
+                ...budgetYear,
+                investmentLibraryId: this.selectedScenarioId
+            }));
             this.setIsBusyAction({ isBusy: true });
-            this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: this.selectedInvestmentLibrary})
-                .then(() => {
-                    this.setIsBusyAction({ isBusy: false });
-                    this.setSuccessMessageAction({ message: 'Library applied to scenario successfully' });
-                });
+            this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
         }
 
         /**
