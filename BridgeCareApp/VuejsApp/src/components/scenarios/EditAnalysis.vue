@@ -133,7 +133,7 @@
                     {
                         text: 'Analysis editor',
                         to: {
-                            path: '/EditAnalysis/', query: {simulationId: to.query.simulationId}
+                            path: '/EditAnalysis/', query: {simulationId: to.query.scenarioId}
                         }
                     }
                 ]);
@@ -142,7 +142,7 @@
                     // set isBusy to true
                     vm.setIsBusyAction({isBusy: true});
                     // get the selected scenario's analysis data
-                    new ScenarioService().getScenarioAnalysisData(vm.selectedScenarioId)
+                    ScenarioService.getScenarioAnalysisData(vm.selectedScenarioId)
                         .then((analysis: Analysis) => {
                             vm.setIsBusyAction({isBusy: false});
                             vm.analysis = {
@@ -203,7 +203,7 @@
          * selected scenario (will redirect user to EditScenario on a success)
          */
         onApplyAnalysisToScenario() {
-            new ScenarioService().applyAnalysisDataToScenario(this.analysis)
+            ScenarioService.applyAnalysisDataToScenario(this.analysis)
                 .then((dataUpserted: boolean) => {
                     if (dataUpserted) {
                         // set 'analysis applied' success message, then navigate user to EditScenario page

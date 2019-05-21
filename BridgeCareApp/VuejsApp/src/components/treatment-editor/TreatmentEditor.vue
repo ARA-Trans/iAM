@@ -146,7 +146,7 @@
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
     import {TabData, emptyTabData} from '@/shared/models/child-components/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
-    import {sortByProperty} from '@/shared/utils/sorter';
+    import {sortByProperty} from '@/shared/utils/sorter-utils';
     import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 
@@ -219,7 +219,7 @@
                         },
                         {
                             text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
+                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.scenarioId}}
                         }
                     ]);
 

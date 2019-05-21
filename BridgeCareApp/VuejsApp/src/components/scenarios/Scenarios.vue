@@ -29,7 +29,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.simulationId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.scenarioId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -80,7 +80,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditSharedScenario(props.item.simulationId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditSharedScenario(props.item.scenarioId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -251,7 +251,7 @@
         runSimulation() {
             this.runSimulationAction({
                 networkId: this.currentScenario.networkId,
-                simulationId: this.currentScenario.simulationId,
+                simulationId: this.currentScenario.scenarioId,
                 networkName: this.currentScenario.networkName,
                 simulationName: this.currentScenario.simulationName,
                 userId: this.userId
@@ -268,7 +268,7 @@
                 names: this.reportNames,
                 networkId: scenario.networkId,
                 networkName: scenario.networkName,
-                simulationId: scenario.simulationId,
+                simulationId: scenario.scenarioId,
                 simulationName: scenario.simulationName,
             };
         }

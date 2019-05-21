@@ -88,7 +88,7 @@ const actions = {
             await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenarioId)
                 .then((data: any) => {
                     const scenarioInvestmentLibrary: InvestmentLibrary = {
-                        id: data.simulationId,
+                        id: data.scenarioId,
                         name: data.name,
                         inflationRate: data.inflationRate,
                         discountRate: data.discountRate,

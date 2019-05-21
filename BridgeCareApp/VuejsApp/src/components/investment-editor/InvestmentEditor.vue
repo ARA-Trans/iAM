@@ -237,7 +237,7 @@
                             {
                                 text: 'Investment editor',
                                 to: {
-                                    path: '/InvestmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}
+                                    path: '/InvestmentEditor/FromScenario/', query: {simulationId: to.query.scenarioId}
                                 }
                             }
                         ]);

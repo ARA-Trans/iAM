@@ -22,7 +22,7 @@ export const emptyAnalysis: Analysis = {
 
 export interface Scenario {
     networkId: number;
-    simulationId: number;
+    scenarioId: number;
     networkName: string;
     simulationName: string;
     name: string;
@@ -34,7 +34,7 @@ export interface Scenario {
 
 export const emptyScenario: Scenario = {
     networkId: 0,
-    simulationId: 0,
+    scenarioId: 0,
     networkName: '',
     simulationName: '',
     name: '',

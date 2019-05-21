@@ -11,7 +11,7 @@
     import TopNavbar from './components/TopNavbar.vue';
     import {isEmpty} from 'ramda';
     import iziToast from 'izitoast';
-    import {hasValue} from '@/shared/utils/has-value-util';
+
 
     @Component({
         components: {TopNavbar}

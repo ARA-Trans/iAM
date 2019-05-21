@@ -76,7 +76,7 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                            path: '/EditScenario/', query: {simulationId: to.query.scenarioId}
                         }
                     }
                 ]);
@@ -141,7 +141,7 @@
         onUploadCommitedProjectFiles(files: File[]) {
             this.showFileUploader = false;
             if (!isNil(files)) {
-                new ScenarioService().uploadCommittedProjectsFiles(files)
+                ScenarioService.uploadCommittedProjectsFiles(files)
                     .then(() => {
                         this.setSuccessMessageAction({message: 'Files uploaded successfully'});
                     });

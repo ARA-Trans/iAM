@@ -1,8 +1,6 @@
-﻿import DetailedReportService from '@/services/detailed-report.service';
-import SummaryReportService from '@/services/summary-report.service';
-import {AxiosResponse} from 'axios';
-import {http200Response} from '@/shared/utils/http-codes-regex-utils';
-import {hasValue} from '@/shared/utils/has-value-util';
+﻿import {AxiosResponse} from 'axios';
+import {http200Response, setStatusMessage} from '@/shared/utils/http-utils';
+import ReportsService from '@/services/reports.service';
 
 const state = {
     names: ['Detailed report', 'Summary report'],
@@ -23,32 +21,26 @@ const actions = {
     async getReports({dispatch, commit}: any, payload: any) {
         switch (payload.reportName) {
             case 'Detailed report': {
-                 await new DetailedReportService().getDetailedReport(payload.networkId, payload.simulationId)
+                 await new ReportsService().getDetailedReport(payload.networkId, payload.simulationId)
                      .then((response: AxiosResponse<Blob>) => {
                          if (http200Response.test(response.status.toString())) {
                              commit('reportsBlobMutator', new Blob([response.data]));
                              commit('currentReportNameMutator', 'Detailed report.xlsx');
                          } else {
-                             const statusText: string = hasValue(response.statusText)
-                                 ? `: HTTP Code ${response.status} => ${response.statusText}`
-                                 : `: HTTP Code ${response.status}`;
-                             dispatch('setErrorMessage', {message: `Detailed Report Download Failed${statusText}`});
+                             dispatch('setErrorMessage', {message: `Detailed Report Download Failed${setStatusMessage(response)}`});
                          }
                     });
                 break;
             }
             case 'Summary report': {
-                await new SummaryReportService()
+                await new ReportsService()
                     .getSummaryReport(payload.networkId, payload.simulationId, payload.networkName, payload.simulationName)
                     .then((response: AxiosResponse<Blob>) => {
                         if (http200Response.test(response.status.toString())) {
                             commit('reportsBlobMutator', new Blob([response.data]));
                             commit('currentReportNameMutator', 'Summary report.xlsx');
                         } else {
-                            const statusText: string = hasValue(response.statusText)
-                                ? `: HTTP Code ${response.status} => ${response.statusText}`
-                                : `: HTTP Code ${response.status}`;
-                            dispatch('setErrorMessage', {message: `Summary Report Download Failed${statusText}`});
+                            dispatch('setErrorMessage', {message: `Summary Report Download Failed${setStatusMessage(response)}`});
                         }
                     });
                 break;

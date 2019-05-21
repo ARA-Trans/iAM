@@ -267,7 +267,7 @@
                         },
                         {
                             text: 'Performance editor',
-                            to: {path: '/PerformanceEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
+                            to: {path: '/PerformanceEditor/FromScenario/', query: {simulationId: to.query.scenarioId}}
                         }
                     ]);
                 } else {

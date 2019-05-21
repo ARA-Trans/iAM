@@ -1,7 +1,5 @@
 import axios from 'axios';
-import {Network} from '@/shared/models/iAM/network';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
-import {mockInventory, mockInventoryItemDetail} from '@/shared/utils/mock-data';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 

@@ -2,6 +2,8 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import {statusReference} from '@/firebase';
 import ScenarioService from '@/services/scenario.service';
 import moment from 'moment';
+import {AxiosResponse} from 'axios';
+import {http200Response, setStatusMessage} from '@/shared/utils/http-utils';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -14,14 +16,14 @@ const mutations = {
 };
 
 const actions = {
-    getUserScenarios({ commit }: any, payload: any) {
+    getUserScenarios({dispatch, commit}: any, payload: any) {
         statusReference.on('value', (snapshot: any) => {
             const results = snapshot.val();
             let scenarios: Scenario[] = [];
             for (let key in results) {
                 scenarios.push({
                     networkId: results[key].networkId,
-                    simulationId: results[key].simulationId,
+                    scenarioId: results[key].simulationId,
                     networkName: results[key].networkName,
                     simulationName: results[key].simulationName,
                     name: key,
@@ -33,56 +35,101 @@ const actions = {
             }
             commit('scenariosMutator', scenarios);
         }, (error: any) => {
-            console.log('error in fetching scenarios', error);
+            dispatch('setErrorMessage', {message: `Failed to get scenarios: ${error}`});
         });
     },
-
-    // Gets the scenarios/simulation from the SQL database
-    async getScenarios({ commit }: any) {
-        return await new ScenarioService().getScenarios()
-            .then((results: any) => {
-                let scenarios: Scenario[] = [];
-                for (let key in results) {
-                    scenarios.push({
-                        networkId: results[key].networkId,
-                        simulationId: results[key].simulationId,
-                        networkName: results[key].networkName,
-                        simulationName: results[key].simulationName,
-                        name: results[key].simulationName,
-                        createdDate: results[key].created,
-                        lastModifiedDate: results[key].lastRun,
-                        status: 'success',
-                        shared: false
-                    });
-                }
+    async getScenarios({dispatch, commit}: any) {
+        return await ScenarioService.getScenarios().then((response: AxiosResponse<any>) => {
+            if (http200Response.test(response.status.toString())) {
+                const data: any[] = response.data as any[];
+                const scenarios: Scenario[] = data.map((scenarioData: any) => ({
+                    networkId: scenarioData.networkId,
+                    scenarioId: scenarioData.simulationId,
+                    networkName: scenarioData.networkName,
+                    simulationName: scenarioData.simulationName,
+                    name: scenarioData.simulationName,
+                    createdDate: scenarioData.created,
+                    lastModifiedDate: scenarioData.lastRun,
+                    status: 'success',
+                    shared: false
+                }));
                 commit('scenariosMutator', scenarios);
-            });
+            } else {
+                dispatch('setErrorMessage', {message: `Detailed Report Download Failed${setStatusMessage(response)}`});
+            }
+        });
     },
-
     async createNewScenario({ commit }: any, payload: any) {
-        return await new ScenarioService().createNewScenario(payload.networkId, payload.scenarioName)
-            .then((results: any) => {
+        return await ScenarioService.createNewScenario(payload.networkId, payload.scenarioName)
+            .then((response: AxiosResponse<any>) => {
 
                 const scenarioData = {
                     status: 'New scenario',
                     owner: payload.userId,
                     sharedWith: [],
                     networkId: payload.networkId,
-                    simulationId: results.data,
+                    simulationId: response.data,
                     networkName: payload.networkName,
                     simulationName: payload.scenarioName,
                     created: moment().toISOString(),
                     lastModified: moment().toISOString()
                 };
-                statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + results.data.toString()).set(scenarioData)
+                statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + response.data.toString()).set(scenarioData)
                     .then(() => {
                     })
                     .catch((error) => {
                         console.log(error);
                     });
-                return results.status;
+                return response.status;
             })
             .catch((error: any) => { return error.response.status; });
+    },
+    runSimulation({ commit }: any, payload: any) {
+        statusReference.once('value', (snapshot) => {
+            if (snapshot.hasChild('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString())) {
+                const simulationData = {
+                    status: 'Started',
+                    networkId: payload.networkId,
+                    simulationId: payload.simulationId,
+                    networkName: payload.networkName,
+                    simulationName: payload.simulationName,
+                    lastModified: moment().toISOString(),
+                    //[Note]: this will be removed
+                    owner: payload.userId
+                };
+                statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString()).update(simulationData)
+                    .then(() => {
+                        new ScenarioService().runSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
+                            .then((simulation: any) => console.log(simulation))
+                            .catch((error: any) => console.log(error));
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+            else {
+                const simulationData = {
+                    status: 'Started',
+                    owner: payload.userId,
+                    sharedWith: [],
+                    networkId: payload.networkId,
+                    simulationId: payload.simulationId,
+                    networkName: payload.networkName,
+                    simulationName: payload.simulationName,
+                    created: moment().toISOString(),
+                    lastModified: moment().toISOString()
+                };
+                statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString()).set(simulationData)
+                    .then(() => {
+                        new SimulationService().runSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
+                            .then((simulation: any) => console.log(simulation))
+                            .catch((error: any) => console.log(error));
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        });
     }
 };
 
