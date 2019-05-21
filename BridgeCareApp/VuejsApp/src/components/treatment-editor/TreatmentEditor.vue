@@ -67,7 +67,7 @@
                                             <v-tab-item>
                                                 <v-card>
                                                     <v-card-text class="card-tab-content">
-                                                        <UnderConstruction />
+                                                        <BudgetsTab :budgetsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
                                                     </v-card-text>
                                                 </v-card>
                                             </v-tab-item>
@@ -146,18 +146,20 @@
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
     import {TabData, emptyTabData} from '@/shared/models/child-components/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
-    import UnderConstruction from '@/components/UnderConstruction.vue';
-    import {sortByProperty} from '@/shared/utils/sorter-utils';
+    import {sortByProperty} from '@/shared/utils/sorter';
+    import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
+    import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 
     @Component({
         components: {
-            UnderConstruction,
+            BudgetsTab,
             ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentLibraryDialog}
     })
     export default class TreatmentEditor extends Vue {
         @State(state => state.treatmentEditor.treatmentLibraries) stateTreatmentLibraries: TreatmentLibrary[];
         @State(state => state.treatmentEditor.selectedTreatmentLibrary) stateSelectedTreatmentLibrary: TreatmentLibrary;
         @State(state => state.treatmentEditor.scenarioTreatmentLibrary) stateScenarioTreatmentLibrary: TreatmentLibrary;
+        @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary;
 
         @Action('setNavigation') setNavigationAction: any;
         @Action('getTreatmentLibraries') getTreatmentLibrariesAction: any;
@@ -168,6 +170,7 @@
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
         @Action('upsertScenarioTreatmentLibrary') upsertScenarioTreatmentLibraryAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
         treatmentLibraries: TreatmentLibrary[] = [];
         selectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
@@ -180,7 +183,7 @@
         treatmentSelectItemValue: string = '';
         selectedTreatment: Treatment = clone(emptyTreatment);
         activeTab: number = 0;
-        treatmentTabs: string[] = ['feasibility', 'costs', 'consequences', 'budgets'];
+        treatmentTabs: string[] = ['feasibility', 'costs', 'consequences'];
         createTreatmentLibraryDialogData: CreateTreatmentLibraryDialogData = clone(emptyCreateTreatmentLibraryDialogData);
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = clone(emptyTabData);
@@ -192,17 +195,19 @@
         latestConsequenceId: number = 0;
 
         /**
-         * Sets component UI properties that triggers cascading UI updates
+         * Sets component ui properties that triggers cascading ui updates
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/FromScenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
+
                     vm.setNavigationAction([
                         {
                             text: 'Scenario Dashboard',
@@ -217,30 +222,48 @@
                             to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
                         }
                     ]);
+
+                    vm.treatmentTabs = [...vm.treatmentTabs, 'budgets'];
                 }
                 vm.onClearSelectedTreatmentLibrary();
+
                 setTimeout(() => {
                     vm.setIsBusyAction({isBusy: true});
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                    .then(() => vm.setIsBusyAction({isBusy: false}));
+                                setTimeout(() => {
+                                    vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                        .then(() => {
+                                            if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
+                                                vm.getScenarioInvestmentLibraryAction({
+                                                    selectedScenarioId: vm.selectedScenarioId
+                                                }).then(() => vm.setIsBusyAction({isBusy: false}));
+                                            } else {
+                                                vm.setIsBusyAction({isBusy: false});
+                                            }
+                                        });
+                                });
                             } else {
                                 vm.setIsBusyAction({isBusy: false});
+                                vm.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
                             }
                         });
-                });
+                }, 0);
             });
         }
 
         /**
-         * Resets component UI properties that triggers cascading UI updates
+         * Resets component ui properties that triggers cascading ui updates
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/TreatmentEditor/Library/') {
                 this.selectedScenarioId = 0;
                 this.onClearSelectedTreatmentLibrary();
+                this.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
+                if (this.treatmentTabs.length === 4) {
+                    this.treatmentTabs.splice(3, 1);
+                }
                 next();
             }
         }
@@ -417,6 +440,7 @@
                 tabTreatmentLibraries: hasValue(this.treatmentLibraries) ? clone(this.treatmentLibraries) : [],
                 tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
                 tabSelectedTreatment: clone(this.selectedTreatment),
+                tabScenarioInvestmentLibrary: clone(this.scenarioInvestmentLibrary),
                 latestFeasibilityId: this.latestFeasibilityId,
                 latestCostId: this.latestCostId,
                 latestConsequenceId: this.latestConsequenceId
