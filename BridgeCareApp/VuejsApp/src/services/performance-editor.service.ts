@@ -37,7 +37,7 @@ export default class PerformanceEditorService {
      */
     getScenarioPerformanceLibrary(scenarioId: number): Promise<PerformanceLibrary> {
         return Promise.resolve<PerformanceLibrary>(mockScenarioPerformanceLibrary);
-        // TODO: add axios web service call for scenario treatment library
+        // TODO: add axios web service call for scenario performance library
     }
 
     /**

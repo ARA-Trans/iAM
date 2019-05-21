@@ -52,7 +52,7 @@ namespace BridgeCare
             container.RegisterType<IDetailedReport, DetailedReport>();
             container.RegisterType<IAttributeNames, AttributeNames>();
             container.RegisterType<IAttributesByYear, AttributesByYear>();
-            container.RegisterType<IPerformance, PerformanceData>();
+            container.RegisterType<IPerformanceLibrary, PerformanceLibrary>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
             container.RegisterType<IInventory, Inventory>();

@@ -179,7 +179,7 @@
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
     <Compile Include="Controllers\SimulationAnalysisController.cs" />
     <Compile Include="Controllers\TreatmentsController.cs" />
-    <Compile Include="Controllers\PerformanceController.cs" />
+    <Compile Include="Controllers\PerformanceLibraryController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
     <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
@@ -197,7 +197,7 @@
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
     <Compile Include="DataAccessLayer\SimulationAnalysis.cs" />
     <Compile Include="DataAccessLayer\TreatmentData.cs" />
-    <Compile Include="DataAccessLayer\PerformanceData.cs" />
+    <Compile Include="DataAccessLayer\PerformanceLibrary.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
     <Compile Include="DataAccessLayer\DeficientReport.cs" />
@@ -238,7 +238,7 @@
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
     <Compile Include="Interfaces\ISimulationAnalysis.cs" />
     <Compile Include="Interfaces\ITreatment.cs" />
-    <Compile Include="Interfaces\IPerformance.cs" />
+    <Compile Include="Interfaces\IPerformanceLibrary.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeWorkSummaryData.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />

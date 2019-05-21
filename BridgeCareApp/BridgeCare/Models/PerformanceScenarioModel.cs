@@ -1,14 +1,16 @@
-﻿namespace BridgeCare.Models
-{
-    public class PerformanceScenarioModel
-    {
-        public PerformanceScenarioModel()
-        {
-            Performance = new PerformanceModel();
-        }
+﻿using System.Collections.Generic;
 
-        public int PerformanceId { get; set; }
-        public int SimulationId { get; set; }
-        public PerformanceModel Performance { get; set; }
+namespace BridgeCare.Models
+{
+    public class PerformanceLibraryModel
+    {
+        public PerformanceLibraryModel()
+        {
+            Equations = new List<PerformanceLibraryEquation>();
+        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public List<PerformanceLibraryEquation> Equations { get; set; }
     }
 }
