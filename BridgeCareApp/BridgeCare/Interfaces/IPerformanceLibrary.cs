@@ -1,5 +1,4 @@
 ﻿using BridgeCare.Models;
-using System.Linq;
 
 namespace BridgeCare.Interfaces
 {
@@ -7,6 +6,6 @@ namespace BridgeCare.Interfaces
     {
         PerformanceLibraryModel GetScenarioPerformanceLibrary(int selectedScenarioId, BridgeCareContext db);
 
-        void SaveScenarioPerformanceLibrary(PerformanceLibraryModel data, BridgeCareContext db);
+        PerformanceLibraryModel SaveScenarioPerformanceLibrary(PerformanceLibraryModel data, BridgeCareContext db);
     }
 }

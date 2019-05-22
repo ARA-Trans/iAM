@@ -6,11 +6,11 @@ namespace BridgeCare.Models
     {
         public PerformanceLibraryModel()
         {
-            Equations = new List<PerformanceLibraryEquation>();
+            Equations = new List<PerformanceLibraryEquationModel>();
         }
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<PerformanceLibraryEquation> Equations { get; set; }
+        public List<PerformanceLibraryEquationModel> Equations { get; set; }
     }
 }

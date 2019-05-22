@@ -31,8 +31,8 @@ namespace BridgeCare.Controllers
         [HttpPost]
         public IHttpActionResult Post([FromBody]PerformanceLibraryModel data)
         {
-            performanceLibrary.SaveScenarioPerformanceLibrary(data, db);
-            return Ok();
+            var performanceLibraryModel = performanceLibrary.SaveScenarioPerformanceLibrary(data, db);
+            return Ok(performanceLibraryModel);
         }
     }
 }

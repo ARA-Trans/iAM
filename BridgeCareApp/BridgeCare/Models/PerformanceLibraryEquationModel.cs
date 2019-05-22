@@ -2,9 +2,11 @@
 
 namespace BridgeCare.Models
 {
-    public class PerformanceLibraryEquation
+    public class PerformanceLibraryEquationModel
     {
-        public int PerformanceId { get; set; }
+        public int Id { get; set; }
+        // This is SimulationId for Performance
+        public int PerformanceLibraryId { get; set; }
         public string Attribute { get; set; }
         public string EquationName { get; set; }
         public string Criteria { get; set; }

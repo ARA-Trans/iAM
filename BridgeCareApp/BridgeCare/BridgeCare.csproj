@@ -273,12 +273,12 @@
     <Compile Include="Models\InvestmentLibraryBudgetYearModel.cs" />
     <Compile Include="Models\InvestmentLibraryModel.cs" />
     <Compile Include="Models\Inventory\LabelValue.cs" />
-    <Compile Include="Models\PerformanceModel.cs" />
+    <Compile Include="Models\PerformanceLibraryEquationModel.cs" />
     <Compile Include="Models\SimulationAnalysisModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
     <Compile Include="Models\TreatmentScenarioModel.cs" />
-    <Compile Include="Models\PerformanceScenarioModel.cs" />
+    <Compile Include="Models\PerformanceLibraryModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
     <Compile Include="Models\SimulatedSegmentIdsModel.cs" />
     <Compile Include="Models\CostDetails.cs" />
