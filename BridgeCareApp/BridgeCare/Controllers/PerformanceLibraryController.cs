@@ -19,13 +19,20 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
-        /// Get: api/performance
+        /// Get: api/GetScenarioPerformanceLibrary
         /// </summary>
+        /// <param name="selectedScenarioId"></param>
+        /// <returns>PerformanceLibraryModel</returns>
         [ModelValidation("Given simulation data is not valid")]
         [Route("api/GetScenarioPerformanceLibrary/{selectedScenarioId}")]
         [HttpGet]
         public PerformanceLibraryModel Get(int selectedScenarioId) => performanceLibrary.GetScenarioPerformanceLibrary(selectedScenarioId, db);
 
+        /// <summary>
+        /// Post: api/SaveScenarioPerformanceLibrary
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns>Updated data model</returns>
         [ModelValidation("Given performance scenario data is not valid")]
         [Route("api/SaveScenarioPerformanceLibrary")]
         [HttpPost]
