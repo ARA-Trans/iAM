@@ -1,4 +1,6 @@
-import axios from 'axios';
+import Vue from 'vue';
+import axios, { AxiosResponse } from 'axios';
+import { isNil } from 'ramda';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {mockPerformanceLibraries, mockScenarioPerformanceLibrary} from '@/shared/utils/mock-data';
 
@@ -33,11 +35,16 @@ export default class PerformanceEditorService {
 
     /**
      * Gets a scenario's performance library
-     * @param scenarioId The id of the scenario to use to get the scenario performance library
+     * @param selectedScenarioId The id of the scenario to use to get the scenario performance library
      */
-    getScenarioPerformanceLibrary(scenarioId: number): Promise<PerformanceLibrary> {
-        return Promise.resolve<PerformanceLibrary>(mockScenarioPerformanceLibrary);
-        // TODO: add axios web service call for scenario performance library
+    getScenarioPerformanceLibrary(selectedScenarioId: number): Promise<PerformanceLibrary> {
+        return axios.get<PerformanceLibrary>(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
+                    return response.data;
+                }
+                return Promise.reject('Failed to get scenario performance library');
+            });
     }
 
     /**
@@ -45,7 +52,12 @@ export default class PerformanceEditorService {
      * @param upsertedScenarioPerformanceLibrary The scenario performance library upsert data
      */
     upsertScenarioPerformanceLibrary(upsertedScenarioPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
-        return Promise.resolve<any>(upsertedScenarioPerformanceLibrary);
-        // TODO: add axios web service call for upserting scenario performance library
+        return axios.post<PerformanceLibrary>('/api/SaveScenarioPerformanceLibrary', upsertedScenarioPerformanceLibrary)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
+                    return response.data;
+                }
+                return Promise.reject('Failed to apply performance library');
+            });       
     }
 }
