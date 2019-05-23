@@ -58,7 +58,6 @@
 
         @State(state => state.attribute.attributes) attributes: string[];
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
         criteria: Criteria = {...emptyCriteria};
@@ -89,9 +88,7 @@
             }
 
             if (this.dialogData.showDialog && isEmpty(this.attributes)) {
-                this.setIsBusyAction({isBusy: true});
-                this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}));
+                this.getAttributesAction();
             }
         }
 

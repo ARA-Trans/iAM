@@ -133,7 +133,7 @@
     })
     export default class Scenarios extends Vue {
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
-        @State(state => state.security.userId) userId: string;
+        @State(state => state.authentication.userId) userId: string;
         @State(state => state.reports.names) reportNames: string[];
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
@@ -142,7 +142,7 @@
         @Action('getScenarios') getScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('createNewScenario') createNewScenarioAction: any;
+        @Action('createScenario') createNewScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
@@ -204,7 +204,7 @@
          */
         onEditScenario(id: number) {
             this.$router.push({
-                path: '/EditScenario/', query: {simulationId: id.toString()}
+                path: '/EditScenario/', query: {selectedScenarioId: id.toString()}
             });
         }
         
@@ -214,7 +214,7 @@
          */
         onEditSharedScenario(id: number) {
             this.$router.push({
-                path: '/EditScenario/', query: { simulationId: id.toString() }
+                path: '/EditScenario/', query: {selectedScenarioId: id.toString()}
             });
         }
 
@@ -237,18 +237,18 @@
          * Takes in a boolean parameter from the AppPopupModal to determine if a scenario's simulation should be executed
          * @param runSimulation Alert result
          */
-        onSubmitAlertResult(runSimulation: boolean) {
+        onSubmitAlertResult(runScenarioSimulation: boolean) {
             this.alertData = clone(emptyAlertData);
             
-            if (runSimulation) {
-                this.runSimulation();
+            if (runScenarioSimulation) {
+                this.runScenarioSimulation();
             }
         }
 
         /**
          * Dispatches an action with the currentScenario object's data in order to run a simulation on the server
          */
-        runSimulation() {
+        runScenarioSimulation() {
             this.runSimulationAction({
                 networkId: this.currentScenario.networkId,
                 simulationId: this.currentScenario.scenarioId,

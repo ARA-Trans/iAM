@@ -1,6 +1,8 @@
 import {emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {any, propEq, findIndex, clone, append} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
+import {AxiosResponse} from 'axios';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 
 const state = {
     treatmentLibraries: [] as TreatmentLibrary[],
@@ -53,50 +55,68 @@ const mutations = {
 };
 
 const actions = {
-    async getTreatmentLibraries({dispatch, commit}: any) {
-        await new TreatmentEditorService().getTreatmentLibraries()
-            .then((treatmentLibraries: TreatmentLibrary[]) =>
-                commit('treatmentLibrariesMutator', treatmentLibraries)
-            )
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
-    },
     selectTreatmentLibrary({commit}: any, payload: any) {
         commit('selectedTreatmentLibraryMutator', payload.treatmentLibraryId);
     },
     updateSelectedTreatmentLibrary({commit}: any, payload: any) {
         commit('updatedSelectedTreatmentLibraryMutator', payload.updatedSelectedTreatmentLibrary);
     },
+    async getTreatmentLibraries({dispatch, commit}: any) {
+        await TreatmentEditorService.getTreatmentLibraries()
+            .then((response: AxiosResponse<TreatmentLibrary[]>) => {
+                if (http2XX.test(response.status.toString())) {
+                    commit('treatmentLibrariesMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to get treatment libraries${setStatusMessage(response)}`});
+                }
+            });
+    },
     async createTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await new TreatmentEditorService().createTreatmentLibrary(payload.createdTreatmentLibrary)
-            .then(() => {
-                commit('createdTreatmentLibraryMutator', payload.createdTreatmentLibrary);
-                commit('selectedTreatmentLibraryMutator', payload.createdTreatmentLibrary.id);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+        await TreatmentEditorService.createTreatmentLibrary(payload.createdTreatmentLibrary)
+            .then((response: AxiosResponse<TreatmentLibrary>) => {
+                if (http2XX.test(response.status.toString())) {
+                    commit('createdTreatmentLibraryMutator', response.data);
+                    commit('selectedTreatmentLibraryMutator', response.data.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully created treatment library'});
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to create treatment library${setStatusMessage(response)}`});
+                }
+            });
     },
     async updateTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await new TreatmentEditorService().updateTreatmentLibrary(payload.updatedTreatmentLibrary)
-            .then(() => {
-                commit('updatedTreatmentLibraryMutator', payload.updatedTreatmentLibrary);
-                commit('selectedTreatmentLibraryMutator', payload.updatedTreatmentLibrary.id);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+        await TreatmentEditorService.updateTreatmentLibrary(payload.updatedTreatmentLibrary)
+            .then((response: AxiosResponse<TreatmentLibrary>) => {
+                if (http2XX.test(response.status.toString())) {
+                    commit('updatedTreatmentLibraryMutator', response.data);
+                    commit('selectedTreatmentLibraryMutator', response.data.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully updated treatment library'});
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to update treatment library${setStatusMessage(response)}`});
+                }
+            });
     },
     async getScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await new TreatmentEditorService().getScenarioTreatmentLibrary(payload.selectedScenarioId)
-            .then((scenarioTreatmentLibrary: TreatmentLibrary) => {
-                commit('scenarioTreatmentLibraryMutator', scenarioTreatmentLibrary);
-                commit('updatedSelectedTreatmentLibraryMutator', scenarioTreatmentLibrary);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+        await TreatmentEditorService.getScenarioTreatmentLibrary(payload.selectedScenarioId)
+            .then((response: AxiosResponse<TreatmentLibrary>) => {
+                if (http2XX.test(response.status.toString())) {
+                    commit('scenarioTreatmentLibraryMutator', response.data);
+                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to get scenario treatment library${setStatusMessage(response)}`});
+                }
+            });
     },
-    async upsertScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await new TreatmentEditorService().upsertScenarioTreatmentLibrary(payload.upsertedScenarioTreatmentLibrary)
-            .then(() => {
-                commit('scenarioTreatmentLibraryMutator', payload.upsertedScenarioTreatmentLibrary);
-                commit('updatedSelectedTreatmentLibraryMutator', payload.upsertedScenarioTreatmentLibrary);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+    async saveScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
+        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.upsertedScenarioTreatmentLibrary)
+            .then((response: AxiosResponse<TreatmentLibrary>) => {
+                if (http2XX.test(response.status.toString())) {
+                    commit('scenarioTreatmentLibraryMutator', response.data);
+                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to update scenario treatment library${setStatusMessage(response)}`});
+                }
+            });
     }
 };
 

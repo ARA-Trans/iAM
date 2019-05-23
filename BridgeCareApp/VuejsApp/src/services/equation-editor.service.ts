@@ -1,14 +1,16 @@
-import axios from 'axios';
-
-axios.defaults.baseURL = process.env.VUE_APP_URL;
+import {AxiosPromise} from 'axios';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+// TODO: remove mockAdapter code when api is implemented
+import {mockAdapterInstance} from '@/shared/utils/mock-adapter-instance';
 
 export default class EquationEditorService {
     /**
      * Checks an equation's validity
      * @param equation The equation to check
      */
-    checkEquationValidity(equation: string): Promise<boolean> {
-        return Promise.resolve<boolean>(true);
-        // TODO: add axios web service call to perform actual validation check on equation
+    static checkEquationValidity(equation: string): AxiosPromise<boolean> {
+        mockAdapterInstance.onPost(`${axiosInstance.defaults.baseURL}/api/ValidateEquation`)
+            .reply(200, true);
+        return axiosInstance.post<boolean>('/api/ValidateEquation', equation);
     }
 }

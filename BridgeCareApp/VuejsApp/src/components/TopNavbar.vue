@@ -73,8 +73,8 @@
         components: {Spinner}
     })
     export default class TopNavbar extends Vue {
-        @State(state => state.security.loginFailed) loginFailed: boolean;
-        @State(state => state.security.userName) userName: string;
+        @State(state => state.authentication.loginFailed) loginFailed: boolean;
+        @State(state => state.authentication.userName) userName: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         
         @Action('authenticateUser') authenticateUserAction: any;

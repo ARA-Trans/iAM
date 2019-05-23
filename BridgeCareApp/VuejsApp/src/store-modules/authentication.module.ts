@@ -1,6 +1,8 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {db} from '@/firebase';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {UserInformation} from '@/shared/models/iAM/user-information';
 
 const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
 
@@ -29,13 +31,13 @@ const mutations = {
 };
 
 const actions = {
-    async authenticateUser({ commit }: any) {
-        return await new AuthenticationService().authenticateUser()
-            .then((response: AxiosResponse) => {
-                if (response.status == 200) {
+    async authenticateUser({dispatch, commit }: any) {
+        return await AuthenticationService.authenticateUser()
+            .then((response: AxiosResponse<UserInformation>) => {
+                if (http2XX.test(response.status.toString())) {
                     commit('loginMutator', false);
-                    commit('userNameMutator', response.data[0]);
-                    commit('userIdMutator', response.data[1]);
+                    commit('userNameMutator', response.data.name);
+                    commit('userIdMutator', response.data.id);
 
                     db.ref('roles').once('value', (snapshot: any) => {
                         let data = snapshot.val();
@@ -45,6 +47,8 @@ const actions = {
                             }
                         }
                     });
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to authenticate user${setStatusMessage(response)}`});
                 }
             });
     }

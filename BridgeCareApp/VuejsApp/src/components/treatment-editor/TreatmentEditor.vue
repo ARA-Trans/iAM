@@ -168,7 +168,7 @@
         @Action('updateSelectedTreatmentLibrary') updateSelectedTreatmentLibraryAction: any;
         @Action('createTreatmentLibrary') createTreatmentLibraryAction: any;
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
-        @Action('upsertScenarioTreatmentLibrary') upsertScenarioTreatmentLibraryAction: any;
+        @Action('saveScenarioTreatmentLibrary') saveScenarioTreatmentLibraryAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
@@ -200,7 +200,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/FromScenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
 
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
@@ -215,11 +215,11 @@
                         },
                         {
                             text: 'Scenario Editor',
-                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
+                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
                         },
                         {
                             text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.scenarioId}}
+                            to: {path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
                         }
                     ]);
 
@@ -228,7 +228,6 @@
                 vm.onClearSelectedTreatmentLibrary();
 
                 setTimeout(() => {
-                    vm.setIsBusyAction({isBusy: true});
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
@@ -238,14 +237,11 @@
                                             if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
                                                 vm.getScenarioInvestmentLibraryAction({
                                                     selectedScenarioId: vm.selectedScenarioId
-                                                }).then(() => vm.setIsBusyAction({isBusy: false}));
-                                            } else {
-                                                vm.setIsBusyAction({isBusy: false});
+                                                });
                                             }
                                         });
                                 });
                             } else {
-                                vm.setIsBusyAction({isBusy: false});
                                 vm.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
                             }
                         });
@@ -603,7 +599,7 @@
          * Dispatches an action to update the scenario's treatment library data with the currently selected treatment library
          */
         onApplyToScenario() {
-            this.upsertScenarioTreatmentLibraryAction({
+            this.saveScenarioTreatmentLibraryAction({
                 upsertedScenarioTreatmentLibrary: clone(this.selectedTreatmentLibrary)
             })
             .then(() => {

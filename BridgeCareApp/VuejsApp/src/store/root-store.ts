@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import busy from '@/store-modules/busy.module';
-import security from '@/store-modules/security.module';
+import authentication from '@/store-modules/authentication.module';
 import network from '../store-modules/network.module';
 import scenario from '../store-modules/scenario.module';
 import inventory from '@/store-modules/inventory.module';
@@ -19,7 +19,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     modules: {
         busy,
-        security,
+        authentication,
         network,
         reports,
         scenario,

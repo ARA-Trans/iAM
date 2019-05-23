@@ -184,7 +184,7 @@
         @Action('updateSelectedInvestmentLibrary') updateSelectedInvestmentLibraryAction: any;
         @Action('createInvestmentLibrary') createInvestmentLibraryAction: any;
         @Action('updateInvestmentLibrary') updateInvestmentLibraryAction: any;
-        @Action('upsertScenarioInvestmentLibrary') upsertScenarioInvestmentLibraryAction: any;
+        @Action('saveScenarioInvestmentLibrary') upsertScenarioInvestmentLibraryAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
@@ -215,7 +215,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
                 next((vm: any) => {
                     if (to.path === '/InvestmentEditor/FromScenario/') {
-                        vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                        vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                         if (vm.selectedScenarioId === 0) {
                             // set 'no selected scenario' error message, then redirect user to Scenarios UI
                             vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -231,13 +231,13 @@
                             {
                                 text: 'Scenario editor',
                                 to: {
-                                    path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                                    path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                                 }
                             },
                             {
                                 text: 'Investment editor',
                                 to: {
-                                    path: '/InvestmentEditor/FromScenario/', query: {simulationId: to.query.scenarioId}
+                                    path: '/InvestmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                                 }
                             }
                         ]);

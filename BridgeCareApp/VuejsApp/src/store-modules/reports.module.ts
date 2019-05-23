@@ -1,5 +1,5 @@
 ﻿import {AxiosResponse} from 'axios';
-import {http200Response, setStatusMessage} from '@/shared/utils/http-utils';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 import ReportsService from '@/services/reports.service';
 
 const state = {
@@ -23,7 +23,7 @@ const actions = {
             case 'Detailed report': {
                  await new ReportsService().getDetailedReport(payload.networkId, payload.simulationId)
                      .then((response: AxiosResponse<Blob>) => {
-                         if (http200Response.test(response.status.toString())) {
+                         if (http2XX.test(response.status.toString())) {
                              commit('reportsBlobMutator', new Blob([response.data]));
                              commit('currentReportNameMutator', 'Detailed report.xlsx');
                          } else {
@@ -36,7 +36,7 @@ const actions = {
                 await new ReportsService()
                     .getSummaryReport(payload.networkId, payload.simulationId, payload.networkName, payload.simulationName)
                     .then((response: AxiosResponse<Blob>) => {
-                        if (http200Response.test(response.status.toString())) {
+                        if (http2XX.test(response.status.toString())) {
                             commit('reportsBlobMutator', new Blob([response.data]));
                             commit('currentReportNameMutator', 'Summary report.xlsx');
                         } else {

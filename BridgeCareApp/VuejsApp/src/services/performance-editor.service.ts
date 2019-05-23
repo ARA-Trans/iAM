@@ -1,51 +1,62 @@
-import axios from 'axios';
+import {AxiosPromise} from 'axios';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+// TODO: remove mockAdapter code when api is implemented
+import {mockAdapterInstance} from '@/shared/utils/mock-adapter-instance';
 import {mockPerformanceLibraries, mockScenarioPerformanceLibrary} from '@/shared/utils/mock-data';
-
-axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class PerformanceEditorService {
     /**
      * Gets all performance Libraries a user can read/edit
      */
-    getPerformanceLibraries(): Promise<PerformanceLibrary[]> {
-        return Promise.resolve<PerformanceLibrary[]>(mockPerformanceLibraries);
-        // TODO: add axios web service call for performance Libraries
+    static getPerformanceLibraries(): AxiosPromise<PerformanceLibrary[]> {
+        // TODO: remove mockAdapter code when api is implemented
+        mockAdapterInstance.onGet(`${axiosInstance.defaults.baseURL}/api/GetPerformanceLibraries`)
+            .reply(200, mockPerformanceLibraries);
+        return axiosInstance.get<PerformanceLibrary[]>('/api/GetPerformanceLibraries');
     }
 
     /**
      * Creates a performance library
-     * @param createdPerformanceLibrary The performance library create data
+     * @param createPerformanceLibraryData The performance library create data
      */
-    createPerformanceLibrary(createdPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
-        return Promise.resolve<any>(createdPerformanceLibrary);
-        // TODO: add axios web service call for creating performance library
+    static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
+        // TODO: remove mockAdapter code when api is implemented
+        mockAdapterInstance.onPost(`${axiosInstance.defaults.baseURL}/api/CreatePerformanceLibrary`)
+            .reply(200, createPerformanceLibraryData);
+        return axiosInstance.post<PerformanceLibrary>('/api/CreatePerformanceLibrary', createPerformanceLibraryData);
     }
 
     /**
      * Updates a performance library
-     * @param updatePerformanceLibrary The performance library update data
+     * @param updatePerformanceLibraryData The performance library update data
      */
-    updatePerformanceLibrary(updatedPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
-        return Promise.resolve<any>(updatedPerformanceLibrary);
-        // TODO: add axios web service call for updating performance library
+    static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
+        // TODO: remove mockAdapter code when api is implemented
+        mockAdapterInstance.onPost(`${axiosInstance.defaults.baseURL}/api/UpdatePerformanceLibrary`)
+            .reply(200, updatePerformanceLibraryData);
+        return axiosInstance.post<PerformanceLibrary>('/api/UpdatePerformanceLibrary', updatePerformanceLibraryData);
     }
 
     /**
      * Gets a scenario's performance library
-     * @param scenarioId The id of the scenario to use to get the scenario performance library
+     * @param selectedScenarioId Scenario object id
      */
-    getScenarioPerformanceLibrary(scenarioId: number): Promise<PerformanceLibrary> {
-        return Promise.resolve<PerformanceLibrary>(mockScenarioPerformanceLibrary);
-        // TODO: add axios web service call for scenario treatment library
+    static getScenarioPerformanceLibrary(selectedScenarioId: number): AxiosPromise<PerformanceLibrary> {
+        // TODO: remove mockAdapter code when api is implemented
+        mockAdapterInstance.onGet(`${axiosInstance.defaults.baseURL}/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`)
+            .reply(200, mockScenarioPerformanceLibrary);
+        return axiosInstance.get<PerformanceLibrary>(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`);
     }
 
     /**
      * Upserts a scenario performance library
-     * @param upsertedScenarioPerformanceLibrary The scenario performance library upsert data
+     * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
-    upsertScenarioPerformanceLibrary(upsertedScenarioPerformanceLibrary: PerformanceLibrary): Promise<PerformanceLibrary> {
-        return Promise.resolve<any>(upsertedScenarioPerformanceLibrary);
-        // TODO: add axios web service call for upserting scenario performance library
+    static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
+        // TODO: remove mockAdapter code when api is implemented
+        mockAdapterInstance.onPost(`${axiosInstance.defaults.baseURL}/api/SaveScenarioPerformanceLibrary`)
+            .reply(200, saveScenarioPerformanceLibraryData);
+        return axiosInstance.post<PerformanceLibrary>('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData);
     }
 }

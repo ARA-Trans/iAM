@@ -12,7 +12,6 @@
     import {isEmpty} from 'ramda';
     import iziToast from 'izitoast';
 
-
     @Component({
         components: {TopNavbar}
     })
@@ -69,7 +68,7 @@
             };
             const errorHandler = (error: AxiosError) => {
                 this.setIsBusyAction({isBusy: false});
-                if (error.response) {
+                if (error.response && error.response.data) {
                     this.setErrorMessageAction({message: error.response.data.message});
                 } else {
                     this.setErrorMessageAction({message: error.message});

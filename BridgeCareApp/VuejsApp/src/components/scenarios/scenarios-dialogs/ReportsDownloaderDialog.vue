@@ -74,11 +74,11 @@
 
         @Watch('dialogData.showModal')
         onshowModalChanged(showModal: boolean) {
-            if (showModal === false) {
+            if (showModal) {
                 this.errorMessage = '';
                 this.showError = false;
             }
-            if (this.isReportDownloading === false) {
+            if (!this.isReportDownloading) {
                 this.selectedReports = [];
             }
 

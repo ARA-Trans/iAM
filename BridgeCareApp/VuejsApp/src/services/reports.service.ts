@@ -1,6 +1,5 @@
-import axios, {AxiosPromise} from 'axios';
-
-axios.defaults.baseURL = process.env.VUE_APP_URL;
+import {AxiosPromise} from 'axios';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
 export default class ReportsService {
     /**
@@ -9,7 +8,7 @@ export default class ReportsService {
      * @param simulationId
      */
     getDetailedReport(networkId: number, simulationId: number): AxiosPromise<Blob> {
-        return axios.post<Blob>('/api/DetailedReport', {NetworkId: networkId, SimulationId: simulationId});
+        return axiosInstance.post<Blob>('/api/DetailedReport', {NetworkId: networkId, SimulationId: simulationId});
     }
 
     /**
@@ -20,7 +19,7 @@ export default class ReportsService {
      * @param simulationName
      */
     getSummaryReport(networkId: number, simulationId: number, networkName: string, simulationName: string): AxiosPromise<Blob> {
-        return axios.post<Blob>(
+        return axiosInstance.post<Blob>(
             '/api/SummaryReport',
             {
                 NetworkId: networkId,

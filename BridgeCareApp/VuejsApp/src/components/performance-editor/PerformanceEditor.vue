@@ -213,7 +213,7 @@
         @Action('updatePerformanceLibrary') updatePerformanceLibraryAction: any;
         @Action('updateSelectedPerformanceLibrary') updateSelectedPerformanceLibraryAction: any;
         @Action('getScenarioPerformanceLibrary') getScenarioPerformanceLibraryAction: any;
-        @Action('upsertScenarioPerformanceLibrary') upsertScenarioPerformanceLibraryAction: any;
+        @Action('saveScenarioPerformanceLibrary') upsertScenarioPerformanceLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
@@ -250,7 +250,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/PerformanceEditor/FromScenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenario UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -263,11 +263,11 @@
                         },
                         {
                             text: 'Scenario editor',
-                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
+                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
                         },
                         {
                             text: 'Performance editor',
-                            to: {path: '/PerformanceEditor/FromScenario/', query: {simulationId: to.query.scenarioId}}
+                            to: {path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
                         }
                     ]);
                 } else {

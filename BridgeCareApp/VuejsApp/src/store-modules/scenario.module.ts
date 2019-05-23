@@ -3,7 +3,7 @@ import {statusReference} from '@/firebase';
 import ScenarioService from '@/services/scenario.service';
 import moment from 'moment';
 import {AxiosResponse} from 'axios';
-import {http200Response, setStatusMessage} from '@/shared/utils/http-utils';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -40,7 +40,7 @@ const actions = {
     },
     async getScenarios({dispatch, commit}: any) {
         return await ScenarioService.getScenarios().then((response: AxiosResponse<any>) => {
-            if (http200Response.test(response.status.toString())) {
+            if (http2XX.test(response.status.toString())) {
                 const data: any[] = response.data as any[];
                 const scenarios: Scenario[] = data.map((scenarioData: any) => ({
                     networkId: scenarioData.networkId,
@@ -60,11 +60,11 @@ const actions = {
         });
     },
     async createNewScenario({ commit }: any, payload: any) {
-        return await ScenarioService.createNewScenario(payload.networkId, payload.scenarioName)
+        return await ScenarioService.createScenario(payload.networkId, payload.scenarioName)
             .then((response: AxiosResponse<any>) => {
 
                 const scenarioData = {
-                    status: 'New scenario',
+                    status: 'new',
                     owner: payload.userId,
                     sharedWith: [],
                     networkId: payload.networkId,
@@ -99,7 +99,7 @@ const actions = {
                 };
                 statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString()).update(simulationData)
                     .then(() => {
-                        new ScenarioService().runSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
+                        ScenarioService.runScenarioSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
                             .then((simulation: any) => console.log(simulation))
                             .catch((error: any) => console.log(error));
                     })
@@ -121,7 +121,7 @@ const actions = {
                 };
                 statusReference.child('Scenario' + '_' + payload.networkId.toString() + '_' + payload.simulationId.toString()).set(simulationData)
                     .then(() => {
-                        new SimulationService().runSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
+                        ScenarioService.runScenarioSimulation(payload.networkId, payload.networkName, payload.simulationId, payload.simulationName)
                             .then((simulation: any) => console.log(simulation))
                             .catch((error: any) => console.log(error));
                     })

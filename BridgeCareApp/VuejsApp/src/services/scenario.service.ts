@@ -1,30 +1,21 @@
-import axios, {AxiosPromise, AxiosResponse} from 'axios';
-import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
-
-axios.defaults.baseURL = process.env.VUE_APP_URL;
+import {AxiosPromise} from 'axios';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
 export default class ScenarioService {
-    static getScenarioAnalysisData(scenarioId: number): Promise<Analysis> {
-        return Promise.resolve<Analysis>(emptyAnalysis);
-        // TODO: add axios web service call to get a scenario's analysis data
-    }
-
-    static applyAnalysisDataToScenario(analysis: Analysis): Promise<boolean> {
-        return Promise.resolve<boolean>(true);
-        // TODO: add axios web service call to upsert analysis data for a scenario
-    }
-
+    /**
+     * Gets all scenarios
+     */
     static getScenarios(): AxiosPromise<any[]> {
-        return axios.get<any[]>('/api/Simulations');
+        return axiosInstance.get<any[]>('/api/Simulations');
     }
 
-    static createNewScenario(networkId: number, simulationName: string): AxiosPromise<any> {
-        return axios.post<any>(`/api/CreateNewSimulation/${networkId}/${simulationName}`);
-    }
-
-    static uploadCommittedProjectsFiles(files: File[]): Promise<any> {
-        return Promise.resolve<any>({} as any);
-        // TODO: add axios web service call to upload excel file
+    /**
+     * Creates a new scenario
+     * @param networkId
+     * @param simulationName
+     */
+    static createScenario(networkId: number, simulationName: string): AxiosPromise<any> {
+        return axiosInstance.post<any>(`/api/CreateNewSimulation/${networkId}/${simulationName}`);
     }
 
     /**
@@ -34,8 +25,8 @@ export default class ScenarioService {
      * @param simulationId
      * @param simulationName
      */
-    static runSimulation(networkId: number, networkName: string, simulationId: number, simulationName: string): AxiosPromise<any> {
-        return axios.post<any>('/api/RunSimulation',
+    static runScenarioSimulation(networkId: number, networkName: string, simulationId: number, simulationName: string): AxiosPromise<any> {
+        return axiosInstance.post<any>('/api/RunSimulation',
             {
                 NetworkId: networkId,
                 SimulationId: simulationId,

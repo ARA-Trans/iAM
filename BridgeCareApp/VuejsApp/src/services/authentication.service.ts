@@ -1,12 +1,20 @@
-﻿import axios, {AxiosResponse} from 'axios';
+﻿import {AxiosPromise} from 'axios';
+import {UserInformation} from '@/shared/models/iAM/user-information';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+// TODO: remove mockAdapter code when api is implemented
+import {mockAdapterInstance} from '@/shared/utils/mock-adapter-instance';
+import {reject} from 'q';
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class AuthenticationService {
-    authenticateUser(): Promise<any> {
-        return axios.get('/auth/getuser', {withCredentials: true})
-            .then((response: AxiosResponse) => {
-                return response;
-            });
+    /**
+     * Authenticates a user
+     */
+    static authenticateUser(): AxiosPromise<UserInformation> {
+        // TODO: remove mockAdapter code when api is implemented
+        mockAdapterInstance.onGet(`${axiosInstance.defaults.baseURL}/auth/AuthenticateUser`)
+            .reply(200, {name: 'John Smith', id: '0'} as UserInformation);
+        return axiosInstance.get<UserInformation>('/auth/AuthenticateUser', {withCredentials: true})
+            .catch((error: any) => reject(error));
     }
 }

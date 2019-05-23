@@ -45,9 +45,10 @@
     import {State, Action} from 'vuex-class';
     import {Scenario} from '@/shared/models/iAM/scenario';
     import CommittedProjectsFileUploaderDialog from '@/components/scenarios/scenarios-dialogs/CommittedProjectsFileUploaderDialog.vue';
-    import ScenarioService from '@/services/scenario.service';
     import {isNil} from 'ramda';
     import {AxiosResponse} from 'axios';
+    import CommittedProjectsService from '@/services/committed-projects.service';
+    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 
     @Component({
         components: {CommittedProjectsFileUploaderDialog}
@@ -66,7 +67,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 // set selectedScenarioId
-                vm.selectedScenarioId = isNaN(to.query.simulationId) ? 0 : parseInt(to.query.simulationId);
+                vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
                 // set breadcrumbs
                 vm.setNavigationAction([
                     {
@@ -76,7 +77,7 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {simulationId: to.query.scenarioId}
+                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                         }
                     }
                 ]);
@@ -94,7 +95,7 @@
          */
         onEditAnalysis() {
             this.$router.push({
-                path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/EditAnalysis/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
@@ -104,7 +105,7 @@
         onEditInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
-                    simulationId: this.selectedScenarioId.toString()
+                    selectedScenarioId: this.selectedScenarioId.toString()
                 }
             });
         }
@@ -114,7 +115,7 @@
          */
         onEditPerformance() {
             this.$router.push({
-                path: '/PerformanceEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
@@ -123,7 +124,7 @@
          */
         onEditTreatment() {
             this.$router.push({
-                path: '/TreatmentEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
@@ -141,14 +142,14 @@
         onUploadCommitedProjectFiles(files: File[]) {
             this.showFileUploader = false;
             if (!isNil(files)) {
-                ScenarioService.uploadCommittedProjectsFiles(files)
-                    .then(() => {
-                        this.setSuccessMessageAction({message: 'Files uploaded successfully'});
+                CommittedProjectsService.saveCommittedProjectsFiles(files)
+                    .then((response: AxiosResponse<any>) => {
+                        if (http2XX.test(response.status.toString())) {
+                            this.setSuccessMessageAction({message: 'Successfully saved files'});
+                        } else {
+                            this.setErrorMessageAction({message: `Failed to save files${setStatusMessage(response)}`});
+                        }
                     });
-                    // TODO: handle server response properly
-                    /*.then((response: AxiosResponse) => {
-
-                    });*/
             }
         }
     }

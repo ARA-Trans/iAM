@@ -96,7 +96,9 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {isNil} from 'ramda';
-    import ScenarioService from '@/services/scenario.service';
+    import AnalysisEditorService from '@/services/analysis-editor.service';
+    import {AxiosResponse} from 'axios';
+    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 
     @Component({
         components: {CriteriaEditorDialog}
@@ -117,7 +119,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 // set selectedScenarioId
-                vm.selectedScenarioId = isNaN(to.query.simulationId) ? 0 : parseInt(to.query.simulationId);
+                vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
                 // set the breadcrumbs
                 vm.setNavigationAction([
                     {
@@ -127,28 +129,32 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                         }
                     },
                     {
                         text: 'Analysis editor',
                         to: {
-                            path: '/EditAnalysis/', query: {simulationId: to.query.scenarioId}
+                            path: '/EditAnalysis/', query: {selectedScenarioId: to.query.selectedScenarioId}
                         }
                     }
                 ]);
                 // check that selectedScenarioId is set
                 if (vm.selectedScenarioId > 0) {
-                    // set isBusy to true
-                    vm.setIsBusyAction({isBusy: true});
                     // get the selected scenario's analysis data
-                    ScenarioService.getScenarioAnalysisData(vm.selectedScenarioId)
-                        .then((analysis: Analysis) => {
-                            vm.setIsBusyAction({isBusy: false});
-                            vm.analysis = {
-                                ...analysis,
-                                startYear: analysis.startYear > 0 ? analysis.startYear : moment().year()
-                            };
+                    AnalysisEditorService.getScenarioAnalysisData(vm.selectedScenarioId)
+                        .then((response: AxiosResponse<Analysis>) => {
+                            if (http2XX.test(response.status.toString())) {
+                                vm.analysis = {
+                                    ...response.data,
+                                    startYear: response.data.startYear > 0 ? response.data.startYear : moment().year()
+                                };
+                            } else {
+                                vm.setErrorMessageAction({
+                                    message: `Failed to retrieve scenario analysis data${setStatusMessage((response))}`
+                                });
+                            }
+
                         });
                 } else {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
@@ -203,14 +209,16 @@
          * selected scenario (will redirect user to EditScenario on a success)
          */
         onApplyAnalysisToScenario() {
-            ScenarioService.applyAnalysisDataToScenario(this.analysis)
-                .then((dataUpserted: boolean) => {
-                    if (dataUpserted) {
+            AnalysisEditorService.saveScenarioAnalysisData(this.analysis)
+                .then((response: AxiosResponse<any>) => {
+                    if (http2XX.test(response.status.toString())) {
                         // set 'analysis applied' success message, then navigate user to EditScenario page
-                        this.setSuccessMessageAction({message: 'Analysis was applied to selected scenario'});
-                        this.$router.push('/EditScenario/');
+                        this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
+                        this.$router.push({
+                            path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                        });
                     } else {
-                        this.setErrorMessageAction({message: 'Failed to apply analysis data to scenario'});
+                        this.setErrorMessageAction({message: 'Failed to save scenario analysis data'});
                     }
                 });
         }
@@ -220,7 +228,7 @@
          */
         onCancelAnalysisEdit() {
             this.$router.push({
-                path: '/EditScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
     }
