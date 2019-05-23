@@ -1,6 +1,6 @@
 ﻿namespace BridgeCare.Models
 {
-    public class InvestmentStrategyBudgetModel
+    public class InvestmentLibraryBudgetModel
     {
         public string budgetName { get; set; }
         public double? budgetAmount { get; set; }

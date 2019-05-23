@@ -706,10 +706,13 @@
          * investment library data on the server
          */
         onApplyToScenario() {
-            this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: this.selectedInvestmentLibrary})
-                .then(() => {
-                    this.setSuccessMessageAction({ message: 'Library applied to scenario successfully' });
-                });
+            const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
+            appliedInvestmentLibrary.id = this.selectedScenarioId;
+            appliedInvestmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => ({
+                ...budgetYear,
+                investmentLibraryId: this.selectedScenarioId
+            }));
+            this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
         }
 
         /**

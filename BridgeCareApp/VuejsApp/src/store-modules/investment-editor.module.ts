@@ -95,13 +95,13 @@ const actions = {
                 .then((response: AxiosResponse<any>) => {
                     if (http2XX.test(response.status.toString())) {
                         const scenarioInvestmentLibrary: InvestmentLibrary = {
-                            id: response.data.scenarioId,
+                            id: response.data.id,
                             name: response.data.name,
                             inflationRate: response.data.inflationRate,
                             discountRate: response.data.discountRate,
                             description: response.data.description,
-                            budgetOrder: response.data.budgetNamesByOrder,
-                            budgetYears: response.data.yearlyBudgets,
+                            budgetOrder: response.data.budgetOrder,
+                            budgetYears: response.data.budgetYears,
                         };
                         commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
                         commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
@@ -121,7 +121,8 @@ const actions = {
                     commit('scenarioInvestmentLibraryMutator', response.data);
                     commit('updatedSelectedInvestmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
-                } else {
+                dispatch('setIsBusy', {isBusy: false});
+                dispatch('setSuccessMessage', {message: 'Applied investment library changes successfully'});} else {
                     dispatch('setErrorMessage', {message: `Failed to save scenario investment library${setStatusMessage(response)}`});
                 }
             });

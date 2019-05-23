@@ -5,15 +5,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BridgeCare.Models
 {
-    public class InvestmentStrategyModel
+    public class InvestmentLibraryModel
     {
-        public InvestmentStrategyModel()
+        public InvestmentLibraryModel()
         {
-            YearlyBudgets = new List<InvestmentStrategyYearlyBudgetModel>();
+            BudgetYears = new List<InvestmentLibraryBudgetYearModel>();
         }
 
         [Required]
-        public int SimulationId { get; set; }
+        public int Id { get; set; }
         public int NetworkId { get; set; }
         [Required]
         public string Name { get; set; }
@@ -32,28 +32,28 @@ namespace BridgeCare.Models
         [Required]
         public double? DiscountRate { get; set; }
         public string Description { get; set; }
-        public List<string> BudgetNamesByOrder { get; set; }
+        public List<string> BudgetOrder { get; set; }
 
         ///<remarks>this is a variable which is uses to receive the
         ///comma delimited list of budget types, it is ignored so to
         ///not be transmitted on the web side as part of the API.</remarks>
         [IgnoreDataMember]
-        public string BudgetOrder;
+        public string BudgetNamesByOrder;
 
         [IgnoreDataMember]
         public List<string> DeletedBudgetNames { get; set; }
 
-        public List<InvestmentStrategyYearlyBudgetModel> YearlyBudgets { get; set; }
+        public List<InvestmentLibraryBudgetYearModel> BudgetYears { get; set; }
 
         [IgnoreDataMember]
-        public List<InvestmentStrategyYearlyBudgetModel> DeletedYearlyBudgets { get; set; }
+        public List<InvestmentLibraryBudgetYearModel> DeletedYearlyBudgets { get; set; }
 
         /// <summary>
         /// The one and only means to convert from BudgetOrder to BudgetNamesByOrder
         /// </summary>
         public void SetBudgets()
         {
-            BudgetNamesByOrder = BudgetOrder.Split(',').ToList<string>();
+            BudgetOrder = BudgetNamesByOrder.Split(',').ToList();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace BridgeCare.Models
         /// </summary>
         public string GetBudgetOrder()
         {
-            return string.Join(",", BudgetNamesByOrder);
+            return string.Join(",", BudgetOrder);
         }
     }
 }

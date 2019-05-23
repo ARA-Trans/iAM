@@ -96,7 +96,7 @@ export default class InvestmentEditorService extends Vue {
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
     static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise<InvestmentLibrary> {
-        return axios.get<InvestmentLibrary>(`/api/GetInvestmentStrategies/${selectedScenarioId}`);
+        return axios.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -104,6 +104,6 @@ export default class InvestmentEditorService extends Vue {
      * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
     static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-        return axios.post<InvestmentLibrary>('/api/SaveInvestmentStrategy', saveScenarioInvestmentLibraryData);
+        return axios.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
     }
 }
