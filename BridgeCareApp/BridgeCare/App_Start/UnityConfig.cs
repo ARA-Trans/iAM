@@ -59,7 +59,7 @@ namespace BridgeCare
             container.RegisterType<ISimulationAnalysis, SimulationAnalysis>();
             container.RegisterType<IDeficientReport, DeficientReport>();
             container.RegisterType<IInvestmentLibrary, InvestmentLibrary>();
-            container.RegisterType<ITreatments, TreatmentData>();
+            container.RegisterType<ITreatmentLibrary, TreatmentLibrary>();
             container.RegisterType<CostDetails>();
             container.RegisterType<ITarget, Targets>();
             container.RegisterType<IReportCreator, ReportCreator>();
