@@ -83,28 +83,14 @@ const actions = {
             })
             .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
+    async getScenarioInvestmentLibrary({ dispatch, commit }: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await new InvestmentEditorService().getScenarioInvestmentLibrary(payload.selectedScenarioId)
-                .then((data: any) => {
-                    const scenarioInvestmentLibrary: InvestmentLibrary = {
-                        id: data.id,
-                        name: data.name,
-                        inflationRate: data.inflationRate,
-                        discountRate: data.discountRate,
-                        description: data.description,
-                        budgetOrder: data.budgetOrder,
-                        budgetYears: data.budgetYears,
-                    };
+                .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
                     commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
                     commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
                 })
-                // TODO: uncomment when service has been updated to return an InvestmentLibrary
-                /*.then((scenarioInvestmentLibrary: InvestmentLibrary) => {
-                    commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
-                    commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
-                });*/
-                .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+                .catch((error: string) => dispatch('setErrorMessage', { message: error }));
         } else {
             commit('scenarioInvestmentLibraryMutator', emptyInvestmentLibrary);
             commit('updatedSelectedInvestmentLibraryMutator', emptyInvestmentLibrary);
