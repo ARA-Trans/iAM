@@ -3,6 +3,7 @@ import {clone, append, any, propEq, findIndex} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     performanceLibraries: [] as PerformanceLibrary[],
@@ -65,7 +66,7 @@ const actions = {
     async getPerformanceLibraries({dispatch, commit}: any) {
         await PerformanceEditorService.getPerformanceLibraries()
             .then((response: AxiosResponse<PerformanceLibrary[]>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('performanceLibrariesMutator', response.data);
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to get performance libraries${setStatusMessage(response)}`});
@@ -75,7 +76,7 @@ const actions = {
     async createPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.createPerformanceLibrary(payload.createdPerformanceLibrary)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('createdPerformanceLibraryMutator', response.data);
                     commit('selectedPerformanceLibraryMutator', response.data.id);
                     dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
@@ -87,7 +88,7 @@ const actions = {
     async updatePerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.updatePerformanceLibrary(payload.updatedPerformanceLibrary)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('updatedPerformanceLibraryMutator', response.data);
                     commit('selectedPerformanceLibraryMutator', response.data.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
@@ -99,7 +100,7 @@ const actions = {
     async getScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.getScenarioPerformanceLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioPerformanceLibraryMutator', response.data);
                     commit('updatedSelectedPerformanceLibraryMutator', response.data);
                 } else {
@@ -110,7 +111,7 @@ const actions = {
     async saveScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.saveScenarioPerformanceLibrary(payload.saveScenarioPerformanceLibraryData)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioPerformanceLibraryMutator', response.data);
                     commit('updatedSelectedPerformanceLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario performance library'});

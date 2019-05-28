@@ -12,6 +12,6 @@ namespace BridgeCare.Interfaces
 
         void UpdateName(SimulationModel model);
 
-        int CreateNewSimulation(int networkId, string simulationName, BridgeCareContext db);
+        SimulationModel CreateNewSimulation(CreateSimulationData createSimulationData, BridgeCareContext db);
     }
 }

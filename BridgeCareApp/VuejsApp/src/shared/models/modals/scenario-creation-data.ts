@@ -1,19 +1,9 @@
-﻿export interface CreateScenario {
+﻿export interface CreateScenarioData {
+    networkId: number;
     name: string;
-    description: string;
 }
 
-export const emptyScenario: CreateScenario = {
-    name: '',
-    description: '',
-};
-
-export interface CreateScenarioDialogData {
-    showDialog: boolean;
-    description: string;
-}
-
-export const emptyCreateScenarioDialogData: CreateScenarioDialogData = {
-    showDialog: false,
-    description: ''
+export const emptyCreateScenarioData: CreateScenarioData = {
+    networkId: 0,
+    name: ''
 };

@@ -1,18 +1,17 @@
 import Vue from 'vue';
-import axios, {AxiosPromise, AxiosResponse} from 'axios';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+import {AxiosPromise, AxiosResponse} from 'axios';
 import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 import {db} from '@/firebase';
 import {isNil} from 'ramda';
 import DataSnapshot = firebase.database.DataSnapshot;
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
-
 export default class InvestmentEditorService extends Vue {
     /**
      * Gets all investment libraries
      */
-    async getInvestmentLibraries(): Promise<InvestmentLibrary[]> {
-        return new Promise<InvestmentLibrary[]>((resolve, reject) => {
+    static getInvestmentLibraries(): AxiosPromise<InvestmentLibrary[]> {
+        return new Promise<AxiosResponse<InvestmentLibrary[]>>((resolve) => {
             db.ref('investmentLibraries').once('value')
                 .then((snapshot: DataSnapshot) => {
                     const investmentLibraries: InvestmentLibrary[] = [];
@@ -28,10 +27,28 @@ export default class InvestmentEditorService extends Vue {
                             budgetYears: isNil(results[key].budgetYears) ? [] : results[key].budgetYears
                         });
                     }
-                    return resolve(investmentLibraries);
+                    const response: AxiosResponse<InvestmentLibrary[]> = {
+                        data: investmentLibraries,
+                        status: 200,
+                        statusText: 'Success',
+                        headers: {},
+                        config: {}
+                    };
+                    return resolve(response);
                 })
-                .catch((error: any) => reject(`Failed to get investment libraries: ${error.toString()}`));
+                .catch((error: any) => {
+                    const response: AxiosResponse<InvestmentLibrary[]> = {
+                        data: [] as InvestmentLibrary[],
+                        status: 500,
+                        statusText: error.toString(),
+                        headers: {},
+                        config: {}
+                    };
+                    resolve(response);
+                });
         });
+        // TODO: replace the above code with the following when mongo db implemented
+        // return axiosInstance.get<InvestmentLibrary[]>('/api/GetInvestmentLibraries');
     }
 
     /**
@@ -39,15 +56,6 @@ export default class InvestmentEditorService extends Vue {
      * @param createInvestmentLibraryData The investment library create data
      */
     static createInvestmentLibrary(createInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-        /*return new Promise<InvestmentLibrary>((resolve, reject) => {
-            db.ref('investmentLibraries')
-                .child('Investment_' + createInvestmentLibraryData.id)
-                .set(createInvestmentLibraryData)
-                .then(() => {
-                    return resolve(createInvestmentLibraryData);
-                })
-                .catch((error: any) => reject(`Failed to create investment library: ${error.toString()}`));
-        });*/
         return new Promise<AxiosResponse<InvestmentLibrary>>((resolve) => {
             db.ref('investmentLibraries')
                 .child('Investment_' + createInvestmentLibraryData.id)
@@ -72,23 +80,43 @@ export default class InvestmentEditorService extends Vue {
                     };
                     resolve(response);
                 });
-        }) as AxiosPromise<InvestmentLibrary>;
+        });
+        // TODO: replace the above code with the following when mongo db implemented
+        // return axiosInstance.post<InvestmentLibrary>('/api/CreateInvestmentLibrary', createInvestmentLibraryData);
     }
 
     /**
      * Updates an investment library
-     * @param updatedInvestmentLibrary The investment library updated data
+     * @param updateInvestmentLibraryData The investment library updated data
      */
-    updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return new Promise<InvestmentLibrary>((resolve, reject) => {
+    updateInvestmentLibrary(updateInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
+        return new Promise<AxiosResponse<InvestmentLibrary>>((resolve) => {
             db.ref('investmentLibraries')
-                .child('Investment_' + updatedInvestmentLibrary.id)
-                .update(updatedInvestmentLibrary)
+                .child('Investment_' + updateInvestmentLibraryData.id)
+                .update(updateInvestmentLibraryData)
                 .then(() => {
-                    return resolve(updatedInvestmentLibrary);
+                    const response: AxiosResponse<InvestmentLibrary> = {
+                        data: updateInvestmentLibraryData,
+                        status: 200,
+                        statusText: 'Success',
+                        headers: {},
+                        config: {}
+                    };
+                    return resolve(response);
                 })
-                .catch((error: any) => reject(`Failed to update investment library: ${error.toString()}`));
+                .catch((error: any) => {
+                    const response: AxiosResponse<InvestmentLibrary> = {
+                        data: {} as InvestmentLibrary,
+                        status: 500,
+                        statusText: error.toString(),
+                        headers: {},
+                        config: {}
+                    };
+                    resolve(response);
+                });
         });
+        // TODO: replace the above with the following when mongo db implemented
+        // return axiosInstance.post<InvestmentLibrary>('/api/UpdateInvestmentLibrary', updateInvestmentLibraryData);
     }
 
     /**
@@ -96,7 +124,7 @@ export default class InvestmentEditorService extends Vue {
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
     static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise<InvestmentLibrary> {
-        return axios.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
+        return axiosInstance.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -104,6 +132,6 @@ export default class InvestmentEditorService extends Vue {
      * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
     static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-        return axios.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
+        return axiosInstance.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
     }
 }

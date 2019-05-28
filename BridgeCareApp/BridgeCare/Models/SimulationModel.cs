@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
@@ -15,5 +16,13 @@ namespace BridgeCare.Models
         public DateTime? Created { get; set; }
 
         public DateTime? LastRun { get; set; }
+    }
+
+    public class CreateSimulationData
+    {
+      [Required]
+      public int NetworkId { get; set; }
+      [Required]
+      public string Name { get; set; }
     }
 }

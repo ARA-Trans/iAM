@@ -169,7 +169,6 @@
         @Action('createTreatmentLibrary') createTreatmentLibraryAction: any;
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
         @Action('saveScenarioTreatmentLibrary') saveScenarioTreatmentLibraryAction: any;
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
         treatmentLibraries: TreatmentLibrary[] = [];
@@ -512,7 +511,6 @@
 
                 this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
                     .then(() => {
-                        this.setSuccessMessageAction({message: 'Treatment library created successfully'});
                         this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
                             this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
@@ -589,10 +587,7 @@
          * Dispatches an action to update the selected treatment library on the server
          */
         onUpdateLibrary() {
-            this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary})
-                .then(() => {
-                    this.setSuccessMessageAction({message: 'Treatment library updated successfully'});
-                });
+            this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary});
         }
 
         /**
@@ -601,9 +596,6 @@
         onApplyToScenario() {
             this.saveScenarioTreatmentLibraryAction({
                 upsertedScenarioTreatmentLibrary: clone(this.selectedTreatmentLibrary)
-            })
-            .then(() => {
-                this.setSuccessMessageAction({message: 'Scenario treatment library updated successfully'});
             });
         }
 

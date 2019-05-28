@@ -2,6 +2,8 @@ import {AxiosPromise} from 'axios';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 
+axiosInstance.defaults.baseURL = process.env.VUE_APP_URL;
+
 export default class InventoryService {
     /**
      * Gets a list of inventory items
@@ -15,7 +17,8 @@ export default class InventoryService {
      * @param bmsId number
      */
     static getInventoryItemDetailByBMSId(bmsId: number): AxiosPromise<InventoryItemDetail> {
-        return axiosInstance.get<InventoryItemDetail>('/api/InventoryItemDetailByBMSId', {params: {'bmsId': bmsId}});
+        return axiosInstance
+            .get<InventoryItemDetail>('/api/InventoryItemDetailByBMSId', {params: {'bmsId': bmsId}});
     }
 
     /**
@@ -23,6 +26,7 @@ export default class InventoryService {
      * @param brKey number
      */
     static getInventoryItemDetailByBRKey(brKey: number): AxiosPromise<InventoryItemDetail> {
-        return axiosInstance.get<InventoryItemDetail>('/api/InventoryItemDetailByBRKey', {params: {'brKey': brKey}});
+        return axiosInstance
+            .get<InventoryItemDetail>('/api/InventoryItemDetailByBRKey', {params: {'brKey': brKey}});
     }
 }

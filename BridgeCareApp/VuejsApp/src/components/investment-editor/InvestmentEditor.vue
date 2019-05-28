@@ -184,8 +184,7 @@
         @Action('updateSelectedInvestmentLibrary') updateSelectedInvestmentLibraryAction: any;
         @Action('createInvestmentLibrary') createInvestmentLibraryAction: any;
         @Action('updateInvestmentLibrary') updateInvestmentLibraryAction: any;
-        @Action('saveScenarioInvestmentLibrary') upsertScenarioInvestmentLibraryAction: any;
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
         investmentLibraries: InvestmentLibrary[] = [];
@@ -664,10 +663,7 @@
                 createdInvestmentLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
                 createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
-                this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary})
-                    .then(() => {
-                        this.setSuccessMessageAction({ message: 'New library created successfully' });
-                    });
+                this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary});
             }
         }
 
@@ -695,10 +691,7 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary})
-                .then(() => {
-                    this.setSuccessMessageAction({ message: 'Library updated successfully' });
-                });
+            this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary});
         }
 
         /**
@@ -712,7 +705,7 @@
                 ...budgetYear,
                 investmentLibraryId: this.selectedScenarioId
             }));
-            this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
+            this.saveScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
         }
 
         /**

@@ -29,7 +29,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.scenarioId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.simulationId)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -63,7 +63,7 @@
                     </v-card-title>
                     <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                         <template slot="items" slot-scope="props">
-                            <td>{{props.item.name}}</td>
+                            <td>{{props.item.simulationName}}</td>
                             <td>{{formatDate(props.item.createdDate)}}</td>
                             <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                             <td>{{getStatus(props.item.status)}}</td>
@@ -101,7 +101,7 @@
             <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
         </v-flex>
         <v-flex xs12>
-            <CreateScenarioDialog :dialogData="createScenarioDialogData" @submit="onSubmitNewScenario" />
+            <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario" />
         </v-flex>
     </v-container>
 </template>
@@ -120,10 +120,7 @@
         emptyReportsDownloadDialogData,
         ReportsDownloaderDialogData
     } from '@/shared/models/modals/reports-downloader-dialog-data';
-    import {
-        CreateScenarioDialogData,
-        emptyCreateScenarioDialogData
-    } from '@/shared/models/modals/scenario-creation-data';
+    import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
     import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
     import {clone} from 'ramda';
@@ -139,16 +136,15 @@
         @State(state => state.network.networks) networks: Network[];
         
         @Action('getUserScenarios') getUserScenariosAction: any;
-        @Action('getScenarios') getScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('createScenario') createNewScenarioAction: any;
+        @Action('createScenario') createScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
-        createScenarioDialogData: CreateScenarioDialogData = clone(emptyCreateScenarioDialogData);
+        showCreateScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
-            {text: 'Scenario Name', align: 'left', sortable: false, value: 'name'},
+            {text: 'Scenario Name', align: 'left', sortable: false, value: 'simulationName'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
             {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
             {text: 'Status', sortable: false, value: 'status' },
@@ -235,7 +231,7 @@
 
         /**
          * Takes in a boolean parameter from the AppPopupModal to determine if a scenario's simulation should be executed
-         * @param runSimulation Alert result
+         * @param runScenarioSimulation Alert result
          */
         onSubmitAlertResult(runScenarioSimulation: boolean) {
             this.alertData = clone(emptyAlertData);
@@ -250,10 +246,7 @@
          */
         runScenarioSimulation() {
             this.runSimulationAction({
-                networkId: this.currentScenario.networkId,
-                simulationId: this.currentScenario.scenarioId,
-                networkName: this.currentScenario.networkName,
-                simulationName: this.currentScenario.simulationName,
+                selectedScenario: this.currentScenario,
                 userId: this.userId
             });
         }
@@ -266,30 +259,24 @@
             this.reportsDownloaderDialogData = {
                 showModal: true,
                 names: this.reportNames,
-                networkId: scenario.networkId,
-                networkName: scenario.networkName,
-                simulationId: scenario.scenarioId,
-                simulationName: scenario.simulationName,
+                scenario: scenario
             };
         }
 
         onCreateScenario() {
-            this.createScenarioDialogData.showDialog = true;
+            this.showCreateScenarioDialog = true;
         }
 
-        onSubmitNewScenario(value: any) {
-            if (!hasValue(value)) {
-                this.createScenarioDialogData.showDialog = false;
-                return;
+        onSubmitNewScenario(createScenarioData: CreateScenarioData) {
+            this.showCreateScenarioDialog = false;
+
+            if (hasValue(createScenarioData)) {
+                this.createScenarioAction({
+                    createScenarioData: {...createScenarioData, networkId: this.networks[0].networkId},
+                    userId: this.userId
+                });
             }
 
-            this.createNewScenarioAction({
-                networkId: this.networks[0].networkId,
-                networkName: this.networks[0].networkName,
-                scenarioName: value.name,
-                userId: this.userId
-            })
-            .then(() => this.createScenarioDialogData.showDialog = false);
         }
     }
 </script>

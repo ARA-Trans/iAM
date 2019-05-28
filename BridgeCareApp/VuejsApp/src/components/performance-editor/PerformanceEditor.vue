@@ -213,10 +213,9 @@
         @Action('updatePerformanceLibrary') updatePerformanceLibraryAction: any;
         @Action('updateSelectedPerformanceLibrary') updateSelectedPerformanceLibraryAction: any;
         @Action('getScenarioPerformanceLibrary') getScenarioPerformanceLibraryAction: any;
-        @Action('saveScenarioPerformanceLibrary') upsertScenarioPerformanceLibraryAction: any;
+        @Action('saveScenarioPerformanceLibrary') saveScenarioPerformanceLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
         @Action('setNavigation') setNavigationAction: any;
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
 
         performanceLibraries: PerformanceLibrary[] = [];
         selectedPerformanceLibrary: PerformanceLibrary = clone(emptyPerformanceLibrary);
@@ -642,10 +641,7 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.updatePerformanceLibraryAction({updatedPerformanceLibrary: this.selectedPerformanceLibrary})
-                .then(() => {
-                    this.setSuccessMessageAction({message: 'Performance library updated successfully'});
-                });
+            this.updatePerformanceLibraryAction({updatedPerformanceLibrary: this.selectedPerformanceLibrary});
         }
 
         /**
@@ -653,10 +649,7 @@
          * performance library data on the server
          */
         onApplyToScenario() {
-            this.upsertScenarioPerformanceLibraryAction({upsertedScenarioPerformanceLibrary: this.selectedPerformanceLibrary})
-                .then(() => {
-                    this.setSuccessMessageAction({message: 'Scenario performance library updated successfully'});
-                });
+            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: this.selectedPerformanceLibrary});
         }
 
         /**

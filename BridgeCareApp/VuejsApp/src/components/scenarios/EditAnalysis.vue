@@ -99,6 +99,7 @@
     import AnalysisEditorService from '@/services/analysis-editor.service';
     import {AxiosResponse} from 'axios';
     import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component({
         components: {CriteriaEditorDialog}
@@ -144,7 +145,7 @@
                     // get the selected scenario's analysis data
                     AnalysisEditorService.getScenarioAnalysisData(vm.selectedScenarioId)
                         .then((response: AxiosResponse<Analysis>) => {
-                            if (http2XX.test(response.status.toString())) {
+                            if (hasValue(response) && http2XX.test(response.status.toString())) {
                                 vm.analysis = {
                                     ...response.data,
                                     startYear: response.data.startYear > 0 ? response.data.startYear : moment().year()
@@ -211,14 +212,14 @@
         onApplyAnalysisToScenario() {
             AnalysisEditorService.saveScenarioAnalysisData(this.analysis)
                 .then((response: AxiosResponse<any>) => {
-                    if (http2XX.test(response.status.toString())) {
+                    if (hasValue(response) && http2XX.test(response.status.toString())) {
                         // set 'analysis applied' success message, then navigate user to EditScenario page
                         this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
                         this.$router.push({
                             path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
                         });
                     } else {
-                        this.setErrorMessageAction({message: 'Failed to save scenario analysis data'});
+                        this.setErrorMessageAction({message: `Failed to save scenario analysis data${setStatusMessage(response)}`});
                     }
                 });
         }

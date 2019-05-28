@@ -36,11 +36,11 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn color="error lighten-1" :disabled="isReportDownloading" v-on:click="onCancel">
-                            Cancel
-                        </v-btn>
-                        <v-btn color="info lighten-1" :disabled="isReportDownloading" v-on:click="onSubmit">
+                        <v-btn color="info lighten-1" :disabled="isReportDownloading" v-on:click="onDownload(true)">
                             Download
+                        </v-btn>
+                        <v-btn color="error lighten-1" :disabled="isReportDownloading" v-on:click="onDownload(false)">
+                            Cancel
                         </v-btn>
                     </v-layout>
                 </v-card-actions>
@@ -103,32 +103,29 @@
             }
         }
 
-        async onSubmit() {
-            if (this.selectedReports.length === 0) {
-                this.errorMessage = 'Please select at least one report to download';
-                this.showError = true;
-                return;
+        async onDownload(download: boolean) {
+            if (download) {
+                if (this.selectedReports.length === 0) {
+                    this.errorMessage = 'Please select at least one report to download';
+                    this.showError = true;
+                    return;
+                }
+                for (let report in this.selectedReports) {
+                    // dispatch action to get report data
+                    this.isReportDownloading = true;
+                    await this.getReportsAction({
+                        reportName: this.selectedReports[report],
+                        networkId: this.dialogData.scenario.networkId,
+                        simulationId: this.dialogData.scenario.simulationId
+                    }).then(() => {
+                        this.isReportDownloading = false;
+                    }).catch((error: any) => {
+                        this.isReportDownloading = false;
+                    });
+                }
+            } else {
+                this.dialogData.showModal = false;
             }
-            for (let report in this.selectedReports) {
-                // dispatch action to get report data
-                this.isReportDownloading = true;
-                await this.getReportsAction({
-                    reportName: this.selectedReports[report],
-                    networkId: this.dialogData.networkId,
-                    simulationId: this.dialogData.simulationId,
-                    networkName: this.dialogData.networkName,
-                    simulationName: this.dialogData.simulationName
-                }).then(() => {
-                    this.isReportDownloading = false;
-                }).catch((error: any) => {
-                    this.isReportDownloading = false;
-                    console.log(error);
-                });
-            }
-        }
-
-        onCancel() {
-            this.dialogData.showModal = false;
         }
     }
 </script>

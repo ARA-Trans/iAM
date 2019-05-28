@@ -1,32 +1,33 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
+import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
 
 export default class ReportsService {
     /**
-     * Gets a simulation's detailed report
-     * @param networkId
-     * @param simulationId
+     * Gets a scenario's detailed report
+     * @param networkId Scenario's network id
+     * @param simulationId Scenario's simulation id
      */
-    getDetailedReport(networkId: number, simulationId: number): AxiosPromise<Blob> {
-        return axiosInstance.post<Blob>('/api/DetailedReport', {NetworkId: networkId, SimulationId: simulationId});
+    static getDetailedReport(networkId: number, simulationId: number): AxiosPromise<Blob> {
+        const scenario: Scenario = {
+            ...emptyScenario,
+            networkId: networkId,
+            simulationId: simulationId
+        };
+        return axiosInstance.post<Blob>('/api/DetailedReport', scenario);
     }
 
     /**
-     * Gets a simulation's summary report
-     * @param networkId
-     * @param simulationId
-     * @param networkName
-     * @param simulationName
+     * Gets a scenario's summary report
+     * @param networkId Scenario's network id
+     * @param simulationId Scenario's simulation id
      */
-    getSummaryReport(networkId: number, simulationId: number, networkName: string, simulationName: string): AxiosPromise<Blob> {
-        return axiosInstance.post<Blob>(
-            '/api/SummaryReport',
-            {
-                NetworkId: networkId,
-                SimulationId: simulationId,
-                NetworkName: networkName,
-                SimulationName: simulationName
-            }
-        );
+    static getSummaryReport(networkId: number, simulationId: number): AxiosPromise<Blob> {
+        const scenario: Scenario = {
+            ...emptyScenario,
+            networkId: networkId,
+            simulationId: simulationId
+        };
+        return axiosInstance.post<Blob>('/api/SummaryReport', scenario);
     }
 }

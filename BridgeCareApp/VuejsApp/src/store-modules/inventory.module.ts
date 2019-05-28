@@ -3,6 +3,7 @@ import InventoryService from '@/services/inventory.service';
 import {clone} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     inventoryItems: [] as InventoryItem[],
@@ -22,7 +23,7 @@ const actions = {
     async getInventory({dispatch, commit}: any) {
         await InventoryService.getInventory()
             .then((response: AxiosResponse<InventoryItem[]>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('inventoryItemsMutator', response.data);
                 } else {
                     dispatch('setErrorMessage', `Failed to get inventory items${setStatusMessage(response)}`);
@@ -32,7 +33,7 @@ const actions = {
     async getInventoryItemDetailByBMSId({dispatch, commit}: any, payload: any) {
         await InventoryService.getInventoryItemDetailByBMSId(payload.bmsId)
             .then((response: AxiosResponse<InventoryItemDetail>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('inventoryItemDetailMutator', response.data);
                 } else {
                     dispatch('setErrorMessage', `Failed to get inventory item detail${setStatusMessage(response)}`);
@@ -42,7 +43,7 @@ const actions = {
     async getInventoryItemDetailByBRKey({dispatch, commit}: any, payload: any) {
         await InventoryService.getInventoryItemDetailByBRKey(payload.brKey)
             .then((response: AxiosResponse<InventoryItemDetail>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('inventoryItemDetailMutator', response.data);
                 } else {
                     dispatch('setErrorMessage', `Failed to get inventory item detail${setStatusMessage(response)}`);

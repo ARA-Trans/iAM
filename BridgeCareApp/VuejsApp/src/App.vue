@@ -7,10 +7,11 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
+    import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import TopNavbar from './components/TopNavbar.vue';
     import {isEmpty} from 'ramda';
     import iziToast from 'izitoast';
+    import {axiosInstance} from "@/shared/utils/axios-instance";
 
     @Component({
         components: {TopNavbar}
@@ -58,7 +59,7 @@
                 return request;
             };
             // set axios request interceptor to use request handler
-            axios.interceptors.request.use(
+            axiosInstance.interceptors.request.use(
                 request => requestHandler(request)
             );
             // create a success & error handler
@@ -69,14 +70,20 @@
             const errorHandler = (error: AxiosError) => {
                 this.setIsBusyAction({isBusy: false});
                 if (error.response && error.response.data) {
-                    this.setErrorMessageAction({message: error.response.data.message});
+                    if (error.response.data.exceptionMessage) {
+                        this.setErrorMessageAction({
+                            message: `${error.response.data.message} ${error.response.data.exceptionMessage}`
+                        });
+                    } else {
+                        this.setErrorMessageAction({message: error.response.data.message});
+                    }
                 } else {
                     this.setErrorMessageAction({message: error.message});
                 }
 
             };
             // set axios response handler to use success & error Handler
-            axios.interceptors.response.use(
+            axiosInstance.interceptors.response.use(
                 response => successHandler(response),
                 error => errorHandler(error)
             );

@@ -3,6 +3,7 @@ import {AxiosResponse} from 'axios';
 import {db} from '@/firebase';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 import {UserInformation} from '@/shared/models/iAM/user-information';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
 
@@ -34,7 +35,7 @@ const actions = {
     async authenticateUser({dispatch, commit }: any) {
         return await AuthenticationService.authenticateUser()
             .then((response: AxiosResponse<UserInformation>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('loginMutator', false);
                     commit('userNameMutator', response.data.name);
                     commit('userIdMutator', response.data.id);

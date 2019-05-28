@@ -3,6 +3,7 @@ import {any, propEq, findIndex, clone, append} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     treatmentLibraries: [] as TreatmentLibrary[],
@@ -64,7 +65,7 @@ const actions = {
     async getTreatmentLibraries({dispatch, commit}: any) {
         await TreatmentEditorService.getTreatmentLibraries()
             .then((response: AxiosResponse<TreatmentLibrary[]>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('treatmentLibrariesMutator', response.data);
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to get treatment libraries${setStatusMessage(response)}`});
@@ -74,7 +75,7 @@ const actions = {
     async createTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.createTreatmentLibrary(payload.createdTreatmentLibrary)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('createdTreatmentLibraryMutator', response.data);
                     commit('selectedTreatmentLibraryMutator', response.data.id);
                     dispatch('setSuccessMessage', {message: 'Successfully created treatment library'});
@@ -86,7 +87,7 @@ const actions = {
     async updateTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.updateTreatmentLibrary(payload.updatedTreatmentLibrary)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('updatedTreatmentLibraryMutator', response.data);
                     commit('selectedTreatmentLibraryMutator', response.data.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated treatment library'});
@@ -98,7 +99,7 @@ const actions = {
     async getScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.getScenarioTreatmentLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioTreatmentLibraryMutator', response.data);
                     commit('updatedSelectedTreatmentLibraryMutator', response.data);
                 } else {
@@ -109,7 +110,7 @@ const actions = {
     async saveScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.upsertedScenarioTreatmentLibrary)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioTreatmentLibraryMutator', response.data);
                     commit('updatedSelectedTreatmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});

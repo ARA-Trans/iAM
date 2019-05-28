@@ -3,6 +3,7 @@ import NetworkService from '../services/network.service';
 import {clone} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     networks: [] as Network[]
@@ -18,7 +19,7 @@ const actions = {
     async getNetworks({dispatch, commit}: any) {
         await NetworkService.getNetworks()
             .then((response: AxiosResponse<Network[]>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('networksMutator', response.data);
                 } else {
                     dispatch('setErrorMessage', `Failed to get networks${setStatusMessage(response)}`);

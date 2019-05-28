@@ -1,17 +1,13 @@
-﻿export interface ReportsDownloaderDialogData {
+﻿import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
+
+export interface ReportsDownloaderDialogData {
     showModal: boolean;
     names: string[];
-    networkId: number;
-    networkName: string;
-    simulationId: number;
-    simulationName: string;
+    scenario: Scenario;
 }
 
 export const emptyReportsDownloadDialogData: ReportsDownloaderDialogData = {
     showModal: false,
     names: [],
-    networkId: 0,
-    networkName: '',
-    simulationId: 0,
-    simulationName: ''
+    scenario: emptyScenario
 };
