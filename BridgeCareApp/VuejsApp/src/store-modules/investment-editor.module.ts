@@ -96,7 +96,7 @@ const actions = {
                 }
             });
     },
-    async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
+    async getScenarioInvestmentLibrary({ dispatch, commit }: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await InvestmentEditorService.getScenarioInvestmentLibrary(payload.selectedScenarioId)
                 .then((response: AxiosResponse<InvestmentLibrary>) => {
