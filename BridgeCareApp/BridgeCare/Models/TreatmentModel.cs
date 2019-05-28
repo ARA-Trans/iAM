@@ -59,7 +59,7 @@ namespace BridgeCare.Models
         /// </summary>
         public void SetBudgets()
         {
-            Budgets = Budget.Split(',').ToList<string>();
+            Budgets = Budget != null ? Budget.Split(',').ToList<string>() : new List<string>();
         }
 
         /// <summary>

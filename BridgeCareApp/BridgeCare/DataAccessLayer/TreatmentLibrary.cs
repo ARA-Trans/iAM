@@ -300,8 +300,7 @@ namespace BridgeCare.DataAccessLayer
                     if (treatmentModel.Feasilbility != null)
                     {
                         if (existingTreatment.FEASIBILITY == null)
-                        {
-                            existingTreatment.FEASIBILITY = new List<FEASIBILITY>();
+                        {                            
                             existingTreatment.FEASIBILITY.Add(new FEASIBILITY());
 
                             FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
@@ -334,7 +333,7 @@ namespace BridgeCare.DataAccessLayer
                     }
                     else
                     {
-                        db.Entry(existingTreatment.BUDGET).State = EntityState.Deleted;
+                        existingTreatment.BUDGET = null;
                     }
                 }
                 foreach (TreatmentModel treatment in requestedModel.Treatments)
@@ -345,7 +344,7 @@ namespace BridgeCare.DataAccessLayer
                     }
                 }
 
-                db.SaveChanges();
+             db.SaveChanges();
             }
             catch (SqlException ex)
             {

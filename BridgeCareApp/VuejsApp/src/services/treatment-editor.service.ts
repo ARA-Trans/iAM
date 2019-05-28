@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { isNil } from 'ramda';
 import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {mockScenarioTreatmentLibrary, mockTreatmentLibraries} from '@/shared/utils/mock-data';
 
@@ -33,11 +34,16 @@ export default class TreatmentEditorService {
 
     /**
      * Gets a scenario's treatment library data
-     * @param scenarioId Scenario id to use in finding a scenario's treatment library data
+     * @param selectedScenarioId to use in finding a scenario's treatment library data
      */
-    getScenarioTreatmentLibrary(scenarioId: number): Promise<TreatmentLibrary> {
-        return Promise.resolve<TreatmentLibrary>(mockScenarioTreatmentLibrary);
-        // TODO: add axios web service call for scenario treatment library
+    getScenarioTreatmentLibrary(selectedScenarioId: number): Promise<TreatmentLibrary> {        
+        return axios.get<TreatmentLibrary>(`/api/GetScenarioTreatmentLibrary/${selectedScenarioId}`)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
+                    return response.data;
+                }
+                return Promise.reject('Failed to get scenario treatment library');
+            });
     }
 
     /**
@@ -45,7 +51,12 @@ export default class TreatmentEditorService {
      * @param upsertedScenarioTreatmentLibrary The scenario treatment library upsert data
      */
     upsertScenarioTreatmentLibrary(upsertedScenarioTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
-        return Promise.resolve<any>(upsertedScenarioTreatmentLibrary);
-        // TODO: add axios web service call for upserting scenario treatment library
+        return axios.post<TreatmentLibrary>('/api/SaveScenarioTreatmentLibrary', upsertedScenarioTreatmentLibrary)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
+                    return response.data;
+                }
+                return Promise.reject('Failed to apply treatment library');
+            });
     }
 }
