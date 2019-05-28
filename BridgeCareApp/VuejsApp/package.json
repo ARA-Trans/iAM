@@ -42,6 +42,7 @@
     "@vue/cli-plugin-typescript": "3.0.4",
     "@vue/cli-service": "^3.6.0",
     "axios-mock-adapter": "1.16.0",
+    "core-js": "2.6.5",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
     "stylus": "^0.54.5",
