@@ -66,7 +66,7 @@ export default class PerformanceEditorService {
     }
 
     /**
-     * Upserts a scenario performance library
+     * Saves a scenario performance library
      * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
     static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
