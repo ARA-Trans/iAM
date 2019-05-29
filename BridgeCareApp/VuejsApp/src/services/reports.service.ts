@@ -5,29 +5,17 @@ import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
 export default class ReportsService {
     /**
      * Gets a scenario's detailed report
-     * @param networkId Scenario's network id
-     * @param simulationId Scenario's simulation id
+     * @param selectedScenarioData Scenario data to use in generating the report
      */
-    static getDetailedReport(networkId: number, simulationId: number): AxiosPromise<Blob> {
-        const scenario: Scenario = {
-            ...emptyScenario,
-            networkId: networkId,
-            simulationId: simulationId
-        };
-        return axiosInstance.post<Blob>('/api/DetailedReport', scenario);
+    static getDetailedReport(selectedScenarioData: Scenario): AxiosPromise<any> {
+        return axiosInstance.post<any>('/api/DetailedReport', selectedScenarioData, {responseType: 'blob'});
     }
 
     /**
      * Gets a scenario's summary report
-     * @param networkId Scenario's network id
-     * @param simulationId Scenario's simulation id
+     * @param selectedScenarioData Scenario data to use in generating the report
      */
-    static getSummaryReport(networkId: number, simulationId: number): AxiosPromise<Blob> {
-        const scenario: Scenario = {
-            ...emptyScenario,
-            networkId: networkId,
-            simulationId: simulationId
-        };
-        return axiosInstance.post<Blob>('/api/SummaryReport', scenario);
+    static getSummaryReport(selectedScenarioData: Scenario): AxiosPromise<any> {
+        return axiosInstance.post<any>('/api/SummaryReport', selectedScenarioData, {responseType: 'blob'});
     }
 }

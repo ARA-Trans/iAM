@@ -2,12 +2,10 @@
 
 export interface ReportsDownloaderDialogData {
     showModal: boolean;
-    names: string[];
     scenario: Scenario;
 }
 
 export const emptyReportsDownloadDialogData: ReportsDownloaderDialogData = {
     showModal: false,
-    names: [],
     scenario: emptyScenario
 };

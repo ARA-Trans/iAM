@@ -131,7 +131,6 @@
     export default class Scenarios extends Vue {
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
         @State(state => state.authentication.userId) userId: string;
-        @State(state => state.reports.names) reportNames: string[];
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
         
@@ -258,7 +257,6 @@
         onShowReportsDownloaderDialog(scenario: Scenario) {
             this.reportsDownloaderDialogData = {
                 showModal: true,
-                names: this.reportNames,
                 scenario: scenario
             };
         }
