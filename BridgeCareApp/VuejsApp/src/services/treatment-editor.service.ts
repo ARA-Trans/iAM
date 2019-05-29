@@ -1,62 +1,69 @@
-import axios, { AxiosResponse } from 'axios';
-import { isNil } from 'ramda';
+import {AxiosPromise} from 'axios';
 import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+// TODO: remove MockAdapter code when api is implemented
+import MockAdapter from 'axios-mock-adapter';
 import {mockScenarioTreatmentLibrary, mockTreatmentLibraries} from '@/shared/utils/mock-data';
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
-
 export default class TreatmentEditorService {
+
     /**
      * Gets all treatment libraries
      */
-    getTreatmentLibraries(): Promise<TreatmentLibrary[]> {
-        return Promise.resolve<TreatmentLibrary[]>(mockTreatmentLibraries);
-        // TODO: add axios web service call for treatment libraries
+    static getTreatmentLibraries(): AxiosPromise<TreatmentLibrary[]> {
+        // TODO: remove MockAdapter code when api is implemented
+        const mockAdapterInstance = new MockAdapter(axiosInstance)
+            .onGet(`${axiosInstance.defaults.baseURL}/api/GetTreatmentLibraries`)
+            .reply((config: any) => {
+                mockAdapterInstance.restore();
+                return [200, mockTreatmentLibraries];
+            });
+        return axiosInstance.get<TreatmentLibrary[]>('/api/GetTreatmentLibraries');
     }
 
     /**
      * Creates a treatment library
-     * @param createdTreatmentLibrary The treatment library create data
+     * @param createTreatmentLibraryData The treatment library create data
      */
-    createTreatmentLibrary(createdTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
-        return Promise.resolve<any>(createdTreatmentLibrary);
-        // TODO: add axios web service call for creating treatment library
+    static createTreatmentLibrary(createTreatmentLibraryData: TreatmentLibrary): AxiosPromise<TreatmentLibrary> {
+        // TODO: remove MockAdapter code when api is implemented
+        const mockAdapterInstance = new MockAdapter(axiosInstance)
+            .onPost(`${axiosInstance.defaults.baseURL}/api/CreateTreatmentLibrary`)
+            .reply((config: any) => {
+                mockAdapterInstance.restore();
+                return [200, createTreatmentLibraryData];
+            });
+        return axiosInstance.post<TreatmentLibrary>('/api/CreateTreatmentLibrary', createTreatmentLibraryData);
     }
 
     /**
      * Updates a treatment library
-     * @param updatedTreatmentLibrary The treatment library update data
+     * @param updateTreatmentLibraryData The treatment library update data
      */
-    updateTreatmentLibrary(updatedTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
-        return Promise.resolve<any>(updatedTreatmentLibrary);
-        // TODO: add axios web service call for updating treatment library
+    static updateTreatmentLibrary(updateTreatmentLibraryData: TreatmentLibrary): AxiosPromise<TreatmentLibrary> {
+        // TODO: remove MockAdapter code when api is implemented
+        const mockAdapterInstance = new MockAdapter(axiosInstance)
+            .onPost(`${axiosInstance.defaults.baseURL}/api/UpdateTreatmentLibrary`)
+            .reply((config: any) => {
+                mockAdapterInstance.restore();
+                return [200, updateTreatmentLibraryData];
+            });
+        return axiosInstance.post<TreatmentLibrary>('/api/UpdateTreatmentLibrary', updateTreatmentLibraryData);
     }
 
     /**
      * Gets a scenario's treatment library data
-     * @param selectedScenarioId to use in finding a scenario's treatment library data
+     * @param selectedScenarioId Scenario object id
      */
-    getScenarioTreatmentLibrary(selectedScenarioId: number): Promise<TreatmentLibrary> {        
-        return axios.get<TreatmentLibrary>(`/api/GetScenarioTreatmentLibrary/${selectedScenarioId}`)
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to get scenario treatment library');
-            });
+    static getScenarioTreatmentLibrary(selectedScenarioId: number): AxiosPromise<TreatmentLibrary> {
+        return axiosInstance.get<TreatmentLibrary>(`/api/GetScenarioTreatmentLibrary/${selectedScenarioId}`);
     }
 
     /**
-     * Upserts a scenario's treatment library data
-     * @param upsertedScenarioTreatmentLibrary The scenario treatment library upsert data
+     * Saves a scenario's treatment library data
+     * @param saveScenarioTreatmentLibraryData The scenario treatment library save data
      */
-    upsertScenarioTreatmentLibrary(upsertedScenarioTreatmentLibrary: TreatmentLibrary): Promise<TreatmentLibrary> {
-        return axios.post<TreatmentLibrary>('/api/SaveScenarioTreatmentLibrary', upsertedScenarioTreatmentLibrary)
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to apply treatment library');
-            });
+    static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary): AxiosPromise<TreatmentLibrary> {
+        return axiosInstance.post<TreatmentLibrary>('/api/SaveScenarioTreatmentLibrary', saveScenarioTreatmentLibraryData);
     }
 }

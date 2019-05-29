@@ -43,8 +43,8 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {hasValue} from '@/shared/utils/has-value';
-    import {CreateInvestmentLibraryDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-library-dialog-data';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {CreateInvestmentLibraryDialogData} from '@/shared/models/modals/create-investment-library-dialog-data';
     import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
     import {clone} from 'ramda';
 
@@ -81,7 +81,7 @@
                 this.$emit('submit', null);
             }
 
-            this.createdInvestmentStrategy = {...emptyInvestmentLibrary};
+            this.createdInvestmentStrategy = clone(emptyInvestmentLibrary);
         }
     }
 </script>

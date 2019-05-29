@@ -271,28 +271,17 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import axios from 'axios';
-
-    import {
-        InventoryItem,
-        InventoryItemDetail,
-        LabelValue
-    } from '@/shared/models/iAM/inventory';
+    import {InventoryItem, InventoryItemDetail, LabelValue} from '@/shared/models/iAM/inventory';
     import {uniq, groupBy} from 'ramda';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import { DataTableRow } from '@/shared/models/vue/data-table-row';
-
-    axios.defaults.baseURL = process.env.VUE_APP_URL;
+    import {DataTableRow} from '@/shared/models/vue/data-table-row';
 
     @Component
     export default class Inventory extends Vue {
-        @State(state => state.busy.isBusy) isBusy: boolean;
         @State(state => state.inventory.inventoryItems) inventoryItems: InventoryItem[];
         @State(state => state.inventory.inventoryItemDetail) inventoryItemDetail: InventoryItemDetail;
-        
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('getInventory') getInventoryAction: any;
         @Action('getInventoryItemDetailByBMSId') getInventoryItemDetailByBMSIdAction: any;
         @Action('getInventoryItemDetailByBRKey') getInventoryItemDetailByBRKeyAction: any;
@@ -312,7 +301,7 @@
         postingTableRows: DataTableRow[] = [];
 
         /**
-         * inventoryItems state has changed
+         * Sets the bmsIds & brKeys arrays using the inventoryItems array
          */
         @Watch('inventoryItems')
         onInventoryItemsChanged(inventoryItems: InventoryItem[]) {
@@ -371,15 +360,7 @@
          * Vue component has been mounted
          */
         mounted() {
-            this.setIsBusyAction({isBusy: true});
-            this.getInventoryAction({
-                network: {}
-            }).then(() =>
-                this.setIsBusyAction({isBusy: false})
-            ).catch((error: any) => {
-                this.setIsBusyAction({isBusy: false});
-                console.log(error);
-            });
+            this.getInventoryAction({network: {}});
         }
 
         /**
@@ -392,21 +373,15 @@
         /**
          * BMS id has been selected
          */
-        onSelectInventoryItemByBMSId(bmsId: number) {            
-            // dispatch action to get inventory item detail
-            this.setIsBusyAction({ isBusy: true });
-            this.getInventoryItemDetailByBMSIdAction({ bmsId: bmsId })
-                .then(() => this.setIsBusyAction({ isBusy: false }));               
+        onSelectInventoryItemByBMSId(bmsId: number) {
+            this.getInventoryItemDetailByBMSIdAction({bmsId: bmsId});
         }
 
         /**
          * BR key has been selected
          */
-        onSelectInventoryItemsByBRKey(brKey: number) {          
-            // dispatch action to get inventory item detail
-            this.setIsBusyAction({isBusy: true});
-            this.getInventoryItemDetailByBRKeyAction({ brKey: brKey })
-                .then(() => this.setIsBusyAction({ isBusy: false }));
+        onSelectInventoryItemsByBRKey(brKey: number) {
+            this.getInventoryItemDetailByBRKeyAction({ brKey: brKey });
         }
                 
         getGMapsUrl() {

@@ -39,7 +39,7 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {clone, isEmpty, findIndex, equals} from 'ramda';
-    import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
+    import {TabData} from '@/shared/models/child-components/tab-data';
     import {
         BudgetGridRow,
         emptyTreatment,
@@ -48,7 +48,7 @@
         TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
-    import {sortByProperty, sorter} from '@/shared/utils/sorter';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
 

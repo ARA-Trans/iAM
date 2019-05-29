@@ -129,7 +129,7 @@
     import {
         CreateTreatmentLibraryDialogData,
         emptyCreateTreatmentLibraryDialogData
-    } from '@/shared/models/dialogs/treatment-editor-dialogs/create-treatment-library-dialog-data';
+    } from '@/shared/models/modals/create-treatment-library-dialog-data';
     import {
         Consequence,
         Cost,
@@ -138,15 +138,15 @@
         Treatment,
         TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
     import {isNil, append, any, propEq, clone, uniq} from 'ramda';
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
-    import {TabData, emptyTabData} from '@/shared/models/child-components/treatment-editor/tab-data';
+    import {TabData, emptyTabData} from '@/shared/models/child-components/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
-    import {sortByProperty} from '@/shared/utils/sorter';
+    import {sortByProperty} from '@/shared/utils/sorter-utils';
     import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 
@@ -161,7 +161,6 @@
         @State(state => state.treatmentEditor.scenarioTreatmentLibrary) stateScenarioTreatmentLibrary: TreatmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary;
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('getTreatmentLibraries') getTreatmentLibrariesAction: any;
         @Action('getScenarioTreatmentLibrary') getScenarioTreatmentLibraryAction: any;
@@ -169,14 +168,12 @@
         @Action('updateSelectedTreatmentLibrary') updateSelectedTreatmentLibraryAction: any;
         @Action('createTreatmentLibrary') createTreatmentLibraryAction: any;
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
-        @Action('upsertScenarioTreatmentLibrary') upsertScenarioTreatmentLibraryAction: any;
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('saveScenarioTreatmentLibrary') saveScenarioTreatmentLibraryAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
         treatmentLibraries: TreatmentLibrary[] = [];
         selectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         scenarioTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
-
         selectedScenarioId: number = 0;
         hasSelectedTreatmentLibrary: boolean = false;
         treatmentLibrariesSelectListItems: SelectItem[] = [];
@@ -202,7 +199,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/FromScenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
 
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
@@ -217,11 +214,11 @@
                         },
                         {
                             text: 'Scenario Editor',
-                            to: {path: '/EditScenario/', query: {simulationId: to.query.simulationId}}
+                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
                         },
                         {
                             text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}}
+                            to: {path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
                         }
                     ]);
 
@@ -230,7 +227,6 @@
                 vm.onClearSelectedTreatmentLibrary();
 
                 setTimeout(() => {
-                    vm.setIsBusyAction({isBusy: true});
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
@@ -240,14 +236,11 @@
                                             if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
                                                 vm.getScenarioInvestmentLibraryAction({
                                                     selectedScenarioId: vm.selectedScenarioId
-                                                }).then(() => vm.setIsBusyAction({isBusy: false}));
-                                            } else {
-                                                vm.setIsBusyAction({isBusy: false});
+                                                });
                                             }
                                         });
                                 });
                             } else {
-                                vm.setIsBusyAction({isBusy: false});
                                 vm.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
                             }
                         });
@@ -516,11 +509,8 @@
                 createdTreatmentLibrary.id = hasValue(this.latestTreatmentLibraryId) ? this.latestTreatmentLibraryId + 1 : 1;
                 createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
 
-                this.setIsBusyAction({isBusy: true});
                 this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
                     .then(() => {
-                        this.setIsBusyAction({isBusy: false});
-                        this.setSuccessMessageAction({message: 'Treatment library created successfully'});
                         this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
                             this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
@@ -597,26 +587,16 @@
          * Dispatches an action to update the selected treatment library on the server
          */
         onUpdateLibrary() {
-            this.setIsBusyAction({isBusy: true});
-            this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary})
-                .then(() => {
-                    this.setIsBusyAction({isBusy: false});
-                    this.setSuccessMessageAction({message: 'Treatment library updated successfully'});
-                });
+            this.updateTreatmentLibraryAction({updatedTreatmentLibrary: this.selectedTreatmentLibrary});
         }
 
         /**
          * Dispatches an action to update the scenario's treatment library data with the currently selected treatment library
          */
         onApplyToScenario() {
-            this.setIsBusyAction({isBusy: true});
-            this.upsertScenarioTreatmentLibraryAction({
+            this.saveScenarioTreatmentLibraryAction({
                 upsertedScenarioTreatmentLibrary: clone(this.selectedTreatmentLibrary)
-            })
-                .then(() => {
-                    this.setIsBusyAction({isBusy: false});
-                    this.setSuccessMessageAction({message: 'Scenario treatment library updated successfully'});
-                });
+            });
         }
 
         /**
@@ -635,9 +615,7 @@
                 });
             } else {
                 setTimeout(() => {
-                    this.setIsBusyAction({isBusy: true});
-                    this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
-                        .then(() => this.setIsBusyAction({isBusy: false}));
+                    this.getScenarioTreatmentLibraryAction({selectedScenarioId: this.selectedScenarioId});
                 });
             }
         }

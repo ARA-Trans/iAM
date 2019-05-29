@@ -3,19 +3,19 @@ import {axiosInstance} from '@/shared/utils/axios-instance';
 // TODO: remove MockAdapter code when api is implemented
 import MockAdapter from 'axios-mock-adapter';
 
-export default class EquationEditorService {
+export default class CommittedProjectsService {
     /**
-     * Checks an equation's validity
-     * @param equation The equation to check
+     * Saves committed projects files
+     * @param files List of files to save
      */
-    static checkEquationValidity(equation: string): AxiosPromise<boolean> {
+    static saveCommittedProjectsFiles(files: File[]): AxiosPromise<any> {
         // TODO: remove MockAdapter code when api is implemented
         const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/ValidateEquation`)
+            .onPost(`${axiosInstance.defaults.baseURL}/api/SaveCommittedProjectsFiles`)
             .reply((config: any) => {
                 mockAdapterInstance.restore();
-                return [200, true];
+                return [201];
             });
-        return axiosInstance.post<boolean>('/api/ValidateEquation', equation);
+        return axiosInstance.post<any>('/api/SaveCommittedProjectsFiles', files);
     }
 }

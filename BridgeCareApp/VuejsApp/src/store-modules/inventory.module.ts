@@ -1,6 +1,9 @@
 import {emptyInventoryItemDetail, InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import InventoryService from '@/services/inventory.service';
-import * as R from 'ramda';
+import {clone} from 'ramda';
+import {AxiosResponse} from 'axios';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     inventoryItems: [] as InventoryItem[],
@@ -9,31 +12,43 @@ const state = {
 
 const mutations = {
     inventoryItemsMutator(state: any, inventoryItems: InventoryItem[]) {
-        state.inventoryItems = R.clone(inventoryItems);
+        state.inventoryItems = clone(inventoryItems);
     },
     inventoryItemDetailMutator(state: any, inventoryItemDetail: InventoryItemDetail) {
-        state.inventoryItemDetail = R.merge(state.inventoryItemDetail, inventoryItemDetail);
+        state.inventoryItemDetail = clone(inventoryItemDetail);
     }
 };
 
 const actions = {
-    async getInventory({ commit }: any) {
-        await new InventoryService().getInventory()
-            .then((inventoryItems: InventoryItem[]) =>
-                commit('inventoryItemsMutator', inventoryItems)
-            );
+    async getInventory({dispatch, commit}: any) {
+        await InventoryService.getInventory()
+            .then((response: AxiosResponse<InventoryItem[]>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('inventoryItemsMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', `Failed to get inventory items${setStatusMessage(response)}`);
+                }
+            });
     },
-    async getInventoryItemDetailByBMSId({ commit }: any, payload: any) {
-        await new InventoryService().getInventoryItemDetailByBMSId(payload.bmsId)
-            .then((inventoryItemDetail: InventoryItemDetail) =>
-                commit('inventoryItemDetailMutator', inventoryItemDetail)
-            );
+    async getInventoryItemDetailByBMSId({dispatch, commit}: any, payload: any) {
+        await InventoryService.getInventoryItemDetailByBMSId(payload.bmsId)
+            .then((response: AxiosResponse<InventoryItemDetail>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('inventoryItemDetailMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', `Failed to get inventory item detail${setStatusMessage(response)}`);
+                }
+            });
     },
-    async getInventoryItemDetailByBRKey({ commit }: any, payload: any) {
-        await new InventoryService().getInventoryItemDetailByBRKey(payload.brKey)
-            .then((inventoryItemDetail: InventoryItemDetail) =>
-                commit('inventoryItemDetailMutator', inventoryItemDetail)
-            );
+    async getInventoryItemDetailByBRKey({dispatch, commit}: any, payload: any) {
+        await InventoryService.getInventoryItemDetailByBRKey(payload.brKey)
+            .then((response: AxiosResponse<InventoryItemDetail>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('inventoryItemDetailMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', `Failed to get inventory item detail${setStatusMessage(response)}`);
+                }
+            });
     }
 };
 
