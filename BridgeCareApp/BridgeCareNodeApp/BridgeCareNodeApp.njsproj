@@ -37,9 +37,14 @@
     <Content Include="models\investmentLibraryModel.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="routes\investmentLibraryRouters.js" />
+    <Content Include="tests\libraryControllerTests.js" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="controllers\" />
     <Folder Include="models\" />
+    <Folder Include="routes\" />
+    <Folder Include="tests\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

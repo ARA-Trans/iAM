@@ -7,31 +7,47 @@ import DataSnapshot = firebase.database.DataSnapshot;
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
+const nodeAPIInstance = axios.create({
+    baseURL: process.env.VUE_APP_NODE_URL
+});
+
+Vue.prototype.$nodeApi = nodeAPIInstance;
+
 export default class InvestmentEditorService extends Vue {
     /**
      * Gets all investment libraries
      */
     async getInvestmentLibraries(): Promise<InvestmentLibrary[]> {
-        return new Promise<InvestmentLibrary[]>((resolve, reject) => {
-            db.ref('investmentLibraries').once('value')
-                .then((snapshot: DataSnapshot) => {
+
+        return axios.get<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
                     const investmentLibraries: InvestmentLibrary[] = [];
-                    const results = snapshot.val();
-                    for (let key in results) {
-                        investmentLibraries.push({
-                            id: results[key].id,
-                            name: results[key].name,
-                            inflationRate: results[key].inflationRate,
-                            discountRate: results[key].discountRate,
-                            description: results[key].description,
-                            budgetOrder: isNil(results[key].budgetOrder) ? [] : results[key].budgetOrder,
-                            budgetYears: isNil(results[key].budgetYears) ? [] : results[key].budgetYears
-                        });
-                    }
-                    return resolve(investmentLibraries);
-                })
-                .catch((error: any) => reject(`Failed to get investment libraries: ${error.toString()}`));
-        });
+                    return response.data;
+                }
+                return Promise.reject('Failed to get investment library');
+            });
+
+        //return new Promise<InvestmentLibrary[]>((resolve, reject) => {
+        //    db.ref('investmentLibraries').once('value')
+        //        .then((snapshot: DataSnapshot) => {
+        //            const investmentLibraries: InvestmentLibrary[] = [];
+        //            const results = snapshot.val();
+        //            for (let key in results) {
+        //                investmentLibraries.push({
+        //                    id: results[key].id,
+        //                    name: results[key].name,
+        //                    inflationRate: results[key].inflationRate,
+        //                    discountRate: results[key].discountRate,
+        //                    description: results[key].description,
+        //                    budgetOrder: isNil(results[key].budgetOrder) ? [] : results[key].budgetOrder,
+        //                    budgetYears: isNil(results[key].budgetYears) ? [] : results[key].budgetYears
+        //                });
+        //            }
+        //            return resolve(investmentLibraries);
+        //        })
+        //        .catch((error: any) => reject(`Failed to get investment libraries: ${error.toString()}`));
+        //});
     }
 
     /**
