@@ -93,6 +93,10 @@ namespace BridgeCare.DataAccessLayer
             Add("TYPE_OF_SERVICE_UNDER", "5A18", "Type of Service Under");
 
             Add("MAINT_RESP", "5A20", "Maint Resp");
+            // Add below 3 to db
+            Add("REPORT_GROUP", "5A24", "Reporting Group");
+            Add("HISTSIGN", "5E04", "Hist Significance");
+            Add("SHP_KEY_NUMBER", "5E05", "SHP Key Number");
 
             Add("DECK_STRUCTURE_TYPE", "5B01", "Deck Structure Type");
             Add("DECK_SHEET_TYPE_PENNDOT", "6A38", "Deck Sheet Type (PennDOT)");

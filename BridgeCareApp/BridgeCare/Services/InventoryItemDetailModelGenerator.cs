@@ -110,7 +110,7 @@ namespace BridgeCare.Services
 
         private void AddManagement(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var managementColumns = new List<string> { "MAINT_RESP", "OWNER_CODE", "MPO", "SUBM_AGENCY", "NBISLEN", "BUS_PLAN_NETWORK" };
+            var managementColumns = new List<string> { "MAINT_RESP", "OWNER_CODE", "MPO", "REPORT_GROUP", "SUBM_AGENCY", "NBISLEN", "HISTSIGN", "SHP_KEY_NUMBER", "BUS_PLAN_NETWORK" };
             inventoryItemDetailModel.Management = CreateLabelValues(inventoryItems, managementColumns);
         }
 
