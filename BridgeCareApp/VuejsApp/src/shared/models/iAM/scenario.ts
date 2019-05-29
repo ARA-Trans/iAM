@@ -22,12 +22,22 @@ export const emptyAnalysis: Analysis = {
 
 export interface Scenario {
     networkId: number;
-    simulationId: number;
     networkName: string;
+    simulationId: number;
     simulationName: string;
-    name: string;
-    createdDate: Date;
-    lastModifiedDate: Date;
-    status: string;
-    shared: boolean;
+    createdDate?: Date;
+    lastModifiedDate?: Date;
+    status?: string;
+    shared?: boolean;
 }
+
+export const emptyScenario: Scenario = {
+    networkId: 0,
+    networkName: '',
+    simulationId: 0,
+    simulationName: '',
+    createdDate: new Date(),
+    lastModifiedDate: new Date(),
+    status: '',
+    shared: false,
+};

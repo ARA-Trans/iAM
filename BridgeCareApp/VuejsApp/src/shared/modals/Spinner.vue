@@ -1,8 +1,8 @@
 ﻿<template>
-    <v-layout row justify-center>
+    <v-layout>
         <v-dialog v-model="loading" persistent content content-class="centered-dialog">
             <v-container fill-height>
-                <v-layout column justify-center align-center>
+                <v-layout align-center justify-center column>
                     <v-progress-circular indeterminate :size="70" :width="7" color="purple"></v-progress-circular>
                     <h1>Please wait</h1>
                 </v-layout>
@@ -17,15 +17,13 @@
     import {State} from 'vuex-class';
 
     @Component
-    export default class AppSpinner extends Vue {
+    export default class Spinner extends Vue {
         @State(store => store.busy.isBusy) loading: boolean;
-
     }
 </script>
 
 <style>
-    .dialog.centered-dialog,
-    .v-dialog.centered-dialog {
+    .dialog.centered-dialog, .v-dialog.centered-dialog {
         background: grey;
         box-shadow: none;
         border-radius: 6px;

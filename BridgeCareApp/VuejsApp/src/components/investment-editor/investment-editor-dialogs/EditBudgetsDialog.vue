@@ -62,11 +62,11 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import {any, propEq, clone} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {EditBudgetsDialogGridData, EditedBudget} from '@/shared/models/iAM/investment';
-    import {EditBudgetsDialogData} from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
+    import {EditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog-data';
 
     @Component
     export default class EditBudgetsDialog extends Vue {

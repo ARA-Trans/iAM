@@ -125,20 +125,22 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {EquationEditorDialogData} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
-    import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
+    import {EquationEditorDialogData} from '@/shared/models/modals/equation-editor-dialog-data';
+    import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
     import {formulas} from '@/shared/utils/formulas';
     import {isEmpty} from 'ramda';
+    import {AxiosResponse} from 'axios';
+    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 
     @Component
-    export default class EquationEditor extends Vue {
+    export default class EquationEditorDialog extends Vue {
         @Prop() dialogData: EquationEditorDialogData;
 
         @State(state => state.attribute.attributes) attributes: string[];
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         attributesList: string[] = [];
         formulasList: string[] = formulas;
@@ -161,14 +163,7 @@
             this.isPiecewise = this.dialogData.isPiecewise;
             this.isFunction = this.dialogData.isFunction;
             if (this.dialogData.showDialog && isEmpty(this.attributes)) {
-                // set isBusy to true, then dispatch action to get attributes
-                this.setIsBusyAction({isBusy: true});
-                this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}))
-                    .catch((error: any) => {
-                        this.setIsBusyAction({isBusy: false});
-                        console.log(error);
-                    });
+                this.getAttributesAction();
             }
         }
 
@@ -284,26 +279,23 @@
          * 'Check' button has been clicked
          */
         onCheckEquation() {
-            // set isBusy to true, then dispatch request to check equation validity
-            this.setIsBusyAction({isBusy: true});
-            new EquationEditorService().checkEquationValidity(this.equation)
-                .then((valid: boolean) => {
-                    this.setIsBusyAction({isBusy: false});
-                    // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
-                    if (valid) {
-                        this.showValidMessage = true;
-                        this.cannotSubmit = false;
-                        this.showInvalidMessage = false;
+            EquationEditorService.checkEquationValidity(this.equation)
+                .then((response: AxiosResponse<boolean>) => {
+                    if (http2XX.test(response.status.toString())) {
+                        // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
+                        if (response.data) {
+                            this.showValidMessage = true;
+                            this.cannotSubmit = false;
+                            this.showInvalidMessage = false;
+                        } else {
+                            // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
+                            this.showInvalidMessage = true;
+                            this.cannotSubmit = true;
+                            this.showValidMessage = false;
+                        }
                     } else {
-                    // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
-                        this.showInvalidMessage = true;
-                        this.cannotSubmit = true;
-                        this.showValidMessage = false;
+                        this.setErrorMessageAction({message: `Failed to validate equation${setStatusMessage(response)}`});
                     }
-                })
-                .catch((error: any) => {
-                    this.setIsBusyAction({isBusy: false});
-                    console.log(error);
                 });
         }
 

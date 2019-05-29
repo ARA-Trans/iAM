@@ -19,10 +19,8 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -259,6 +257,7 @@
     <Compile Include="Models\CellAddress.cs" />
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
+    <Compile Include="Models\CreateSimulationDataModel.cs" />
     <Compile Include="Models\CrudModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
     <Compile Include="Models\Inventory\InventorySelectionModel.cs" />

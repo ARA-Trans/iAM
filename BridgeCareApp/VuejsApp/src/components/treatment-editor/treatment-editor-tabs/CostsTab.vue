@@ -32,9 +32,9 @@
             </v-flex>
         </v-layout>
 
-        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEditedCostEquation" />
+        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedCostEquation" />
 
-        <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedCostCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedCostCriteria"/>
     </v-container>
 </template>
 
@@ -52,23 +52,23 @@
     import {
         emptyEquationEditorDialogData,
         EquationEditorDialogData
-    } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
+    } from '@/shared/models/modals/equation-editor-dialog-data';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
-    } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {
         EquationEditorDialogResult
-    } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
+    } from '@/shared/models/modals/equation-editor-dialog-result';
     import {isNil, findIndex, clone, append} from 'ramda';
-    import EquationEditor from '../../../shared/dialogs/EquationEditor.vue';
-    import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
-    import {hasValue} from '@/shared/utils/has-value';
-    import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
+    import EquationEditorDialog from '../../../shared/modals/EquationEditorDialog.vue';
+    import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {TabData} from '@/shared/models/child-components/tab-data';
 
     @Component({
-        components: {CriteriaEditor, EquationEditor}
+        components: {CriteriaEditorDialog, EquationEditorDialog}
     })
     export default class CostsTab extends Vue {
         @Prop() costsTabData: TabData;
@@ -77,7 +77,6 @@
         costsTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         costsTabSelectedTreatment: Treatment = clone(emptyTreatment);
         costsTabLatestCostId: number = 0;
-
         costsGridHeaders: DataTableHeader[] = [
             {text: 'Equation', value: 'equation', align: 'left', sortable: false, class: '', width: ''},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''},
@@ -126,7 +125,7 @@
         }
 
         /**
-         * Sets the selectedCost and shows the EquationEditor passing in the selectedCost's equation & isFunction data
+         * Sets the selectedCost and shows the EquationEditorDialog passing in the selectedCost's equation & isFunction data
          * @param cost The cost to set as the selectedCost
          */
         onEditCostEquation(cost: Cost) {
@@ -141,8 +140,8 @@
         }
 
         /**
-         * Modifies the selectedCost's equation & isFunction data using the EquationEditor result
-         * @param result EquationEditor result
+         * Modifies the selectedCost's equation & isFunction data using the EquationEditorDialog result
+         * @param result EquationEditorDialog result
          */
         onSubmitEditedCostEquation(result: EquationEditorDialogResult) {
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
@@ -159,7 +158,7 @@
         }
 
         /**
-         * Sets the selectedCost and shows the CriteriaEditor passing in the selectedCost's criteria data
+         * Sets the selectedCost and shows the CriteriaEditorDialog passing in the selectedCost's criteria data
          * data
          * @param cost The cost to set as selectedCost
          */
@@ -172,8 +171,8 @@
         }
 
         /**
-         * Modifies the selectedCost's criteria data using the CriteriaEditor result
-         * @param criteria CriteriaEditor result
+         * Modifies the selectedCost's criteria data using the CriteriaEditorDialog result
+         * @param criteria CriteriaEditorDialog result
          */
         onSubmitEditedCostCriteria(criteria: string) {
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);

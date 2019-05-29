@@ -52,9 +52,9 @@
             </v-flex>
         </v-layout>
 
-        <EquationEditor :dialogData="equationEditorDialogData" @submit="onSubmitEditedConsequenceEquation" />
+        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedConsequenceEquation" />
 
-        <CriteriaEditor :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedConsequenceCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedConsequenceCriteria"/>
     </v-container>
 </template>
 
@@ -63,9 +63,9 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {isNil, findIndex, clone, append} from 'ramda';
-    import EquationEditor from '../../../shared/dialogs/EquationEditor.vue';
-    import CriteriaEditor from '../../../shared/dialogs/CriteriaEditor.vue';
-    import {TabData} from '@/shared/models/child-components/treatment-editor/tab-data';
+    import EquationEditorDialog from '../../../shared/modals/EquationEditorDialog.vue';
+    import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
+    import {TabData} from '@/shared/models/child-components/tab-data';
     import {
         Consequence,
         emptyConsequence,
@@ -78,30 +78,28 @@
     import {
         emptyEquationEditorDialogData,
         EquationEditorDialogData
-    } from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-data';
+    } from '@/shared/models/modals/equation-editor-dialog-data';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
-    } from '@/shared/models/dialogs/criteria-editor-dialog/criteria-editor-dialog-data';
-    import {hasValue} from '@/shared/utils/has-value';
-    import {EquationEditorDialogResult} from '@/shared/models/dialogs/equation-editor-dialog/equation-editor-dialog-result';
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
 
     @Component({
-        components: {CriteriaEditor, EquationEditor}
+        components: {CriteriaEditorDialog, EquationEditorDialog}
     })
     export default class ConsequencesTab extends Vue {
         @Prop() consequencesTabData: TabData;
 
         @State(state => state.attribute.attributes) attributes: string[];
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
         consequencesTabTreatmentLibraries: TreatmentLibrary[] = [];
         consequencesTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         consequencesTabSelectedTreatment: Treatment = clone(emptyTreatment);
         consequencesTabLatestConsequenceId: number = 0;
-
         consequencesGridHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: '200px'},
             {text: 'Change', value: 'change', align: 'left', sortable: false, class: '', width: '125px'},
@@ -131,9 +129,7 @@
          * Dispatches an action to get all attributes after being mounted
          */
         mounted() {
-            this.setIsBusyAction({isBusy: true});
-            this.getAttributesAction()
-                .then(() => this.setIsBusyAction({isBusy: false}));
+            this.getAttributesAction();
         }
 
         /**
@@ -173,7 +169,7 @@
         }
 
         /**
-         * Sets the selectedConsequence and shows the EquationEditor passing in the selectedConsequence's equation &
+         * Sets the selectedConsequence and shows the EquationEditorDialog passing in the selectedConsequence's equation &
          * isFunction data
          * @param consequence The consequence to set as the selectedConsequence
          */
@@ -189,8 +185,8 @@
         }
 
         /**
-         * Modifies the selectedConsequence's equation & isFunction data using the EquationEditor result
-         * @param result EquationEditor result
+         * Modifies the selectedConsequence's equation & isFunction data using the EquationEditorDialog result
+         * @param result EquationEditorDialog result
          */
         onSubmitEditedConsequenceEquation(result: EquationEditorDialogResult) {
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
@@ -207,7 +203,7 @@
         }
 
         /**
-         * Sets the selectedConsequence and shows the CriteriaEditor passing in the selectedConsequence's criteria data
+         * Sets the selectedConsequence and shows the CriteriaEditorDialog passing in the selectedConsequence's criteria data
          * @param consequence The consequence to set as the selectedConsequence
          */
         onEditConsequenceCriteria(consequence: Consequence) {
@@ -220,8 +216,8 @@
         }
 
         /**
-         * Modifies the selectedConsequence's criteria data using the CriteriaEditor result
-         * @param criteria CriteriaEditor result
+         * Modifies the selectedConsequence's criteria data using the CriteriaEditorDialog result
+         * @param criteria CriteriaEditorDialog result
          */
         onSubmitEditedConsequenceCriteria(criteria: string) {
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);

@@ -156,18 +156,18 @@
     import {any, clone, groupBy, isEmpty, isNil, keys, propEq, uniq, contains} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
     import {
         CreateInvestmentLibraryDialogData,
         emptyCreateInvestmentLibraryDialogData
-    } from '@/shared/models/dialogs/investment-editor-dialogs/create-investment-library-dialog-data';
+    } from '@/shared/models/modals/create-investment-library-dialog-data';
     import {
         EditBudgetsDialogData,
         emptyEditBudgetsDialogData
-    } from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
+    } from '@/shared/models/modals/edit-budgets-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
-    import {sortByProperty, sorter} from '@/shared/utils/sorter';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
 
     @Component({
         components: {CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog}
@@ -177,7 +177,6 @@
         @State(state => state.investmentEditor.selectedInvestmentLibrary) stateSelectedInvestmentLibrary: InvestmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('getInvestmentLibraries') getInvestmentLibrariesAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
@@ -185,8 +184,7 @@
         @Action('updateSelectedInvestmentLibrary') updateSelectedInvestmentLibraryAction: any;
         @Action('createInvestmentLibrary') createInvestmentLibraryAction: any;
         @Action('updateInvestmentLibrary') updateInvestmentLibraryAction: any;
-        @Action('upsertScenarioInvestmentLibrary') upsertScenarioInvestmentLibraryAction: any;
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
         investmentLibraries: InvestmentLibrary[] = [];
@@ -216,7 +214,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
                 next((vm: any) => {
                     if (to.path === '/InvestmentEditor/FromScenario/') {
-                        vm.selectedScenarioId = isNaN(parseInt(to.query.simulationId)) ? 0 : parseInt(to.query.simulationId);
+                        vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                         if (vm.selectedScenarioId === 0) {
                             // set 'no selected scenario' error message, then redirect user to Scenarios UI
                             vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -232,27 +230,23 @@
                             {
                                 text: 'Scenario editor',
                                 to: {
-                                    path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                                    path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                                 }
                             },
                             {
                                 text: 'Investment editor',
                                 to: {
-                                    path: '/InvestmentEditor/FromScenario/', query: {simulationId: to.query.simulationId}
+                                    path: '/InvestmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                                 }
                             }
                         ]);
                     }
                     vm.onClearSelectedInvestmentLibrary();
                     setTimeout(() => {
-                        vm.setIsBusyAction({isBusy: true});
                         vm.getInvestmentLibrariesAction()
                             .then(() => {
                                 if (vm.selectedScenarioId > 0) {
-                                    vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                        .then(() => vm.setIsBusyAction({isBusy: false}));
-                                } else {
-                                    vm.setIsBusyAction({isBusy: false});
+                                    vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId});
                                 }
                             });
                     });
@@ -669,12 +663,7 @@
                 createdInvestmentLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
                 createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
-                this.setIsBusyAction({isBusy: true});
-                this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary})
-                    .then(() => {
-                        this.setIsBusyAction({ isBusy: false });
-                        this.setSuccessMessageAction({ message: 'New library created successfully' });
-                    });
+                this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary});
             }
         }
 
@@ -702,12 +691,7 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.setIsBusyAction({ isBusy: true });
-            this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary})
-                .then(() => {
-                    this.setIsBusyAction({ isBusy: false });
-                    this.setSuccessMessageAction({ message: 'Library updated successfully' });
-                });
+            this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary});
         }
 
         /**
@@ -721,8 +705,7 @@
                 ...budgetYear,
                 investmentLibraryId: this.selectedScenarioId
             }));
-            this.setIsBusyAction({ isBusy: true });
-            this.upsertScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
+            this.saveScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
         }
 
         /**
@@ -741,9 +724,7 @@
                 });
             } else {
                 setTimeout(() => {
-                    this.setIsBusyAction({isBusy: true});
-                    this.getScenarioInvestmentLibraryAction({selectedScenarioId: this.selectedScenarioId})
-                        .then(() => this.setIsBusyAction({isBusy: false}));
+                    this.getScenarioInvestmentLibraryAction({selectedScenarioId: this.selectedScenarioId});
                 });
             }
         }

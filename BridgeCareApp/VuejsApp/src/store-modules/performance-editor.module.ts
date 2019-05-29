@@ -1,7 +1,9 @@
 import {emptyPerformanceLibrary, PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {clone, append, any, propEq, findIndex} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
-import {sortByProperty} from '@/shared/utils/sorter';
+import {AxiosResponse} from 'axios';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     performanceLibraries: [] as PerformanceLibrary[],
@@ -55,50 +57,68 @@ const mutations = {
 };
 
 const actions = {
-    async getPerformanceLibraries({dispatch, commit}: any) {
-        await new PerformanceEditorService().getPerformanceLibraries()
-            .then((performanceLibraries: PerformanceLibrary[]) =>
-                commit('performanceLibrariesMutator', performanceLibraries)
-            )
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
-    },
     selectPerformanceLibrary({commit}: any, payload: any) {
         commit('selectedPerformanceLibraryMutator', payload.performanceLibraryId);
     },
     updateSelectedPerformanceLibrary({commit}: any, payload: any) {
         commit('updatedSelectedPerformanceLibraryMutator', payload.updatedSelectedPerformanceLibrary);
     },
+    async getPerformanceLibraries({dispatch, commit}: any) {
+        await PerformanceEditorService.getPerformanceLibraries()
+            .then((response: AxiosResponse<PerformanceLibrary[]>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('performanceLibrariesMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to get performance libraries${setStatusMessage(response)}`});
+                }
+            });
+    },
     async createPerformanceLibrary({dispatch, commit}: any, payload: any) {
-        await new PerformanceEditorService().createPerformanceLibrary(payload.createdPerformanceLibrary)
-            .then((createdPerformanceLibrary: PerformanceLibrary) => {
-                commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
-                commit('selectedPerformanceLibraryMutator', createdPerformanceLibrary.id);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+        await PerformanceEditorService.createPerformanceLibrary(payload.createdPerformanceLibrary)
+            .then((response: AxiosResponse<PerformanceLibrary>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('createdPerformanceLibraryMutator', response.data);
+                    commit('selectedPerformanceLibraryMutator', response.data.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to create performance library${setStatusMessage(response)}`});
+                }
+            });
     },
     async updatePerformanceLibrary({dispatch, commit}: any, payload: any) {
-        await new PerformanceEditorService().updatePerformanceLibrary(payload.updatedPerformanceLibrary)
-            .then((updatedPerformanceLibrary: PerformanceLibrary) => {
-                commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
-                commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+        await PerformanceEditorService.updatePerformanceLibrary(payload.updatedPerformanceLibrary)
+            .then((response: AxiosResponse<PerformanceLibrary>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('updatedPerformanceLibraryMutator', response.data);
+                    commit('selectedPerformanceLibraryMutator', response.data.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to update performance library${setStatusMessage(response)}`});
+                }
+            });
     },
     async getScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
-        await new PerformanceEditorService().getScenarioPerformanceLibrary(payload.selectedScenarioId)
-            .then((scenarioPerformanceLibrary: PerformanceLibrary) => {
-                commit('scenarioPerformanceLibraryMutator', scenarioPerformanceLibrary);
-                commit('updatedSelectedPerformanceLibraryMutator', scenarioPerformanceLibrary);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+        await PerformanceEditorService.getScenarioPerformanceLibrary(payload.selectedScenarioId)
+            .then((response: AxiosResponse<PerformanceLibrary>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('scenarioPerformanceLibraryMutator', response.data);
+                    commit('updatedSelectedPerformanceLibraryMutator', response.data);
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to get scenario performance library${setStatusMessage(response)}`});
+                }
+            });
     },
-    async upsertScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
-        await new PerformanceEditorService().upsertScenarioPerformanceLibrary(payload.upsertedScenarioPerformanceLibrary)
-            .then((upsertedScenarioPerformanceLibrary: PerformanceLibrary) => {
-                commit('scenarioPerformanceLibraryMutator', upsertedScenarioPerformanceLibrary);
-                commit('updatedSelectedPerformanceLibraryMutator', upsertedScenarioPerformanceLibrary);
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+    async saveScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
+        await PerformanceEditorService.saveScenarioPerformanceLibrary(payload.saveScenarioPerformanceLibraryData)
+            .then((response: AxiosResponse<PerformanceLibrary>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('scenarioPerformanceLibraryMutator', response.data);
+                    commit('updatedSelectedPerformanceLibraryMutator', response.data);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario performance library'});
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to save scenario performance library${setStatusMessage(response)}`});
+                }
+            });
     }
 };
 

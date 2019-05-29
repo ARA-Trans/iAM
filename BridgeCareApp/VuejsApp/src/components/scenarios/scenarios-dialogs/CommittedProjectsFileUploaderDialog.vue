@@ -52,7 +52,7 @@
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
     import {Action} from 'vuex-class';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {last, any, propEq, clone} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';

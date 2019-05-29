@@ -1,36 +1,32 @@
-import axios from 'axios';
-import {Network} from '@/shared/models/iAM/network';
+import {AxiosPromise} from 'axios';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
-import {mockInventory, mockInventoryItemDetail} from '@/shared/utils/mock-data';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
+axiosInstance.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class InventoryService {
-    getInventory(): Promise<InventoryItem[]> {       
-        return axios.get('/api/InventorySelectionModels').then((response: any) => {
-            return response.data as Promise<InventoryItem[]>;
-        });
-    }   
-
-    getInventoryItemDetailByBMSId(bmsId: number): Promise<InventoryItemDetail> {
-        return axios.get('/api/InventoryItemDetailByBMSId', {
-            headers: { 'Content-Type': 'application/json' },
-            params: {
-                'bmsId': bmsId
-            }
-        }).then((response: any) => {
-            return response.data as Promise<InventoryItemDetail>;
-        });
+    /**
+     * Gets a list of inventory items
+     */
+    static getInventory(): AxiosPromise<InventoryItem[]> {
+        return axiosInstance.get<InventoryItem[]>('/api/InventorySelectionModels');
     }
 
-    getInventoryItemDetailByBRKey(brKey: number): Promise<InventoryItemDetail> {
-        return axios.get('/api/InventoryItemDetailByBRKey', {
-            headers: { 'Content-Type': 'application/json' },
-            params: {
-                'brKey': brKey
-            }
-        }).then((response: any) => {
-            return response.data as Promise<InventoryItemDetail>;
-        });
+    /**
+     * Gets an inventory item's detail by bms id
+     * @param bmsId number
+     */
+    static getInventoryItemDetailByBMSId(bmsId: number): AxiosPromise<InventoryItemDetail> {
+        return axiosInstance
+            .get<InventoryItemDetail>('/api/InventoryItemDetailByBMSId', {params: {'bmsId': bmsId}});
+    }
+
+    /**
+     * Gets an inventory item's detail by br key
+     * @param brKey number
+     */
+    static getInventoryItemDetailByBRKey(brKey: number): AxiosPromise<InventoryItemDetail> {
+        return axiosInstance
+            .get<InventoryItemDetail>('/api/InventoryItemDetailByBRKey', {params: {'brKey': brKey}});
     }
 }

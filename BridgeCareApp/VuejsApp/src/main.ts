@@ -6,7 +6,6 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Vuetify from 'vuetify';
 import VueFire from 'vuefire';
-
 import App from './App.vue';
 import router from './router';
 import store from './store/root-store';
