@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using BridgeCare.Models;
 
 namespace BridgeCare.Controllers
 {
@@ -15,17 +16,17 @@ namespace BridgeCare.Controllers
     public class WindowsAuthorizationController : ApiController
     {
         [HttpGet]
-        [Route("getuser")]
+        [Route("AuthenticateUser")]
         [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
         public IHttpActionResult GetUser()
         {
             if (User.Identity.IsAuthenticated)
             {
                 WindowsIdentity identity = HttpContext.Current.Request.LogonUserIdentity;
-                List<string> userInformation = new List<string>
+                UserInformationModel userInformation = new UserInformationModel
                 {
-                    $"{identity.Name}",
-                    $"{identity.User}"
+                  Name = identity.Name,
+                  Id = identity.User.ToString()
                 };
                 return Ok(userInformation);
             }
