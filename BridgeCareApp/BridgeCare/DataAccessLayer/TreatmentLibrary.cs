@@ -10,30 +10,30 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class TreatmentData : ITreatments
+    public class TreatmentLibrary : ITreatmentLibrary
     {
-        public TreatmentData()
+        public TreatmentLibrary()
         {
         }
 
-        public TreatmentsModel GetTreatments(int simulationID, BridgeCareContext db)
+        public TreatmentLibraryModel GetScenarioTreatmentLibrary(int selectedScenarioId, BridgeCareContext db)
         {
             /// Query will fetch all data with data.Simulationid and fill each TreatmentScenarioModel
             /// object from four tables based on a common TreatmentId
             try
             {
-                var treatment = db.SIMULATIONS
+                var treatmentLibraryModel = db.SIMULATIONS
                     .Include("TREATMENTS")
                     .Include("CONSEQUENCES")
                     .Include("FEASIBILITY")
                     .Include("COST")
-                    .Where(b => b.SIMULATIONID == simulationID)
-                    .Select(b => new TreatmentsModel()
+                    .Where(b => b.SIMULATIONID == selectedScenarioId)
+                    .Select(b => new TreatmentLibraryModel()
                     {
                         SimulationId = b.SIMULATIONID,
                         Description = b.COMMENTS,
                         Name = b.SIMULATION1,
-                        Treatments = b.TREATMENTS.Select(p => new TreatmentScenarioModel
+                        Treatments = b.TREATMENTS.Select(p => new TreatmentModel
                         {
                             SimulationId = b.SIMULATIONID,
                             TreatmentId = p.TREATMENTID,
@@ -44,7 +44,7 @@ namespace BridgeCare.DataAccessLayer
                             OMS_IS_REPEAT = p.OMS_IS_REPEAT,
                             OMS_REPEAT_START = p.OMS_REPEAT_START,
                             OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
-                            Cost = p.COST.Select(q => new CostModel
+                            Costs = p.COST.Select(q => new CostModel
                             {
                                 TreatmentId = p.TREATMENTID,
                                 Cost = q.COST_,
@@ -74,35 +74,35 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).SingleOrDefault();
 
-                foreach (TreatmentScenarioModel treatmentScenario in treatment.Treatments)
+                foreach (var treatment in treatmentLibraryModel.Treatments)
                 {
-                    treatmentScenario.SetBudgets();
-                    if (treatmentScenario.Feasibilities.Count() == 0)
+                    treatment.SetBudgets();
+                    if (treatment.Feasibilities.Count() == 0)
                     {
-                        treatmentScenario.Feasilbility = null;
+                        treatment.Feasilbility = null;
                         continue;
                     }
 
-                    treatmentScenario.Feasilbility = new FeasibilityModel();
+                    treatment.Feasilbility = new FeasibilityModel();
 
-                    foreach (FeasibilityModel feasibility in treatmentScenario.Feasibilities)
+                    foreach (var feasibility in treatment.Feasibilities)
                     {
-                        treatmentScenario.Feasilbility.Agregate(feasibility);
-                        treatmentScenario.Feasilbility.BeforeAny = treatmentScenario.BeforeAny;
-                        treatmentScenario.Feasilbility.BeforeSame = treatmentScenario.BeforeSame;
-                        treatmentScenario.Feasilbility.TreatmentId = treatmentScenario.TreatmentId;
+                        treatment.Feasilbility.Agregate(feasibility);
+                        treatment.Feasilbility.BeforeAny = treatment.BeforeAny;
+                        treatment.Feasilbility.BeforeSame = treatment.BeforeSame;
+                        treatment.Feasilbility.TreatmentId = treatment.TreatmentId;
                     }
                 }
-                return treatment;
+                return treatmentLibraryModel;
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Get Treatments Failed");
+                HandleException.SqlError(ex, "Get Treatment Library Failed");
             }
-            return new TreatmentsModel();
+            return new TreatmentLibraryModel();
         }
 
-        public TreatmentScenarioModel GetTreatment(int treatmentID, BridgeCareContext db)
+        public TreatmentModel GetTreatment(int treatmentID, BridgeCareContext db)
         {
             /// Query will fetch all data with a treatmentId and fill the TreatmentScenarioModel
             /// object from four tables
@@ -113,7 +113,7 @@ namespace BridgeCare.DataAccessLayer
                     .Include("FEASIBILITY")
                     .Include("COST")
                     .Where(p => p.TREATMENTID == treatmentID)
-                    .Select(p => new TreatmentScenarioModel()
+                    .Select(p => new TreatmentModel()
                     {
                         SimulationId = p.SIMULATIONID,
                         TreatmentId = p.TREATMENTID,
@@ -124,7 +124,7 @@ namespace BridgeCare.DataAccessLayer
                         OMS_IS_REPEAT = p.OMS_IS_REPEAT,
                         OMS_REPEAT_START = p.OMS_REPEAT_START,
                         OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
-                        Cost = p.COST.Select(q => new CostModel
+                        Costs = p.COST.Select(q => new CostModel
                         {
                             TreatmentId = p.TREATMENTID,
                             Cost = q.COST_,
@@ -177,10 +177,10 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.SqlError(ex, "Get Treatment Failed");
             }
-            return new TreatmentScenarioModel();
+            return new TreatmentModel();
         }
 
-        public int CreateTreatment(TreatmentScenarioModel data, BridgeCareContext db)
+        public int CreateTreatment(TreatmentModel data, BridgeCareContext db)
         {
             var newTreatmentModel = new TREATMENT()
             {
@@ -209,11 +209,11 @@ namespace BridgeCare.DataAccessLayer
                 }
             };
 
-            if (data.Cost.Count() > 0)
+            if (data.Costs.Count() > 0)
             {
                 newTreatmentModel.COST = new List<COST>();
 
-                foreach (CostModel cost in data.Cost)
+                foreach (CostModel cost in data.Costs)
                 {
                     var costEntity = new COST()
                     {
@@ -258,7 +258,7 @@ namespace BridgeCare.DataAccessLayer
             return newTreatmentModel.TREATMENTID;
         }
 
-        public TreatmentsModel UpsertTreatment(TreatmentsModel requestedModel, BridgeCareContext db)
+        public TreatmentLibraryModel SaveScenarioTreatmentLibrary(TreatmentLibraryModel requestedModel, BridgeCareContext db)
         {
             try
             {
@@ -277,9 +277,9 @@ namespace BridgeCare.DataAccessLayer
                 // sub tables also get deleted, the records in the sub tables are tied to one treatment.
                 // if a cost or consequence record is deleted all the records for the particular treatment 
                 // shift up and occupy the lower Id's
-                foreach (TREATMENT existingTreatment in existingTreatments.ToList())
+                foreach (var existingTreatment in existingTreatments.ToList())
                 {
-                    TreatmentScenarioModel treatmentModel = requestedModel.Treatments.SingleOrDefault(t => t.TreatmentId == existingTreatment.TREATMENTID);
+                    var treatmentModel = requestedModel.Treatments.SingleOrDefault(t => t.TreatmentId == existingTreatment.TREATMENTID);
 
                     if (treatmentModel == null)
                     {
@@ -300,8 +300,7 @@ namespace BridgeCare.DataAccessLayer
                     if (treatmentModel.Feasilbility != null)
                     {
                         if (existingTreatment.FEASIBILITY == null)
-                        {
-                            existingTreatment.FEASIBILITY = new List<FEASIBILITY>();
+                        {                            
                             existingTreatment.FEASIBILITY.Add(new FEASIBILITY());
 
                             FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
@@ -334,10 +333,10 @@ namespace BridgeCare.DataAccessLayer
                     }
                     else
                     {
-                        db.Entry(existingTreatment.BUDGET).State = EntityState.Deleted;
+                        existingTreatment.BUDGET = null;
                     }
                 }
-                foreach (TreatmentScenarioModel treatment in requestedModel.Treatments)
+                foreach (TreatmentModel treatment in requestedModel.Treatments)
                 {
                     if (!treatment.matched)
                     {
@@ -345,29 +344,29 @@ namespace BridgeCare.DataAccessLayer
                     }
                 }
 
-                db.SaveChanges();
+             db.SaveChanges();
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Update/Insert Treatment Failed");
+                HandleException.SqlError(ex, "Update/Insert Treatment Library Failed");
             }
 
-            return GetTreatments(requestedModel.SimulationId, db);
+            return GetScenarioTreatmentLibrary(requestedModel.SimulationId, db);
         }
 
-        public void UpsertCost(TreatmentScenarioModel treatmentScenarioModel,
+        public void UpsertCost(TreatmentModel treatmentScenarioModel,
             TREATMENT existingTreatment, BridgeCareContext db)
         {
             int dataIndex = 0;
 
             foreach (COST cost in existingTreatment.COST.ToList())
             {
-                if (treatmentScenarioModel.Cost.Count() > dataIndex)
+                if (treatmentScenarioModel.Costs.Count() > dataIndex)
                 {
-                    cost.COST_ = treatmentScenarioModel.Cost[dataIndex].Cost;
-                    cost.CRITERIA = treatmentScenarioModel.Cost[dataIndex].Criteria;
-                    cost.ISFUNCTION = treatmentScenarioModel.Cost[dataIndex].IsFunction;
-                    cost.UNIT = treatmentScenarioModel.Cost[dataIndex].Unit;
+                    cost.COST_ = treatmentScenarioModel.Costs[dataIndex].Cost;
+                    cost.CRITERIA = treatmentScenarioModel.Costs[dataIndex].Criteria;
+                    cost.ISFUNCTION = treatmentScenarioModel.Costs[dataIndex].IsFunction;
+                    cost.UNIT = treatmentScenarioModel.Costs[dataIndex].Unit;
                 }
                 else
                 {
@@ -376,15 +375,15 @@ namespace BridgeCare.DataAccessLayer
                 dataIndex++;
             }
             //these must be inserts as the number of updated records exceeds the number of existing records
-            while (treatmentScenarioModel.Cost.Count() > dataIndex)
+            while (treatmentScenarioModel.Costs.Count() > dataIndex)
             {
                 var costEntity = new COST()
                 {
                     COSTID = 0,
-                    COST_ = treatmentScenarioModel.Cost[dataIndex].Cost,
-                    CRITERIA = treatmentScenarioModel.Cost[dataIndex].Criteria,
-                    ISFUNCTION = treatmentScenarioModel.Cost[dataIndex].IsFunction,
-                    UNIT = treatmentScenarioModel.Cost[dataIndex].Unit,
+                    COST_ = treatmentScenarioModel.Costs[dataIndex].Cost,
+                    CRITERIA = treatmentScenarioModel.Costs[dataIndex].Criteria,
+                    ISFUNCTION = treatmentScenarioModel.Costs[dataIndex].IsFunction,
+                    UNIT = treatmentScenarioModel.Costs[dataIndex].Unit,
                     TREATMENTID = treatmentScenarioModel.TreatmentId
                 };
                 existingTreatment.COST.Add(costEntity);
@@ -392,7 +391,7 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        public void UpsertConsequences(TreatmentScenarioModel treatmentScenarioModel,
+        public void UpsertConsequences(TreatmentModel treatmentScenarioModel,
             TREATMENT existingTreatment, BridgeCareContext db)
         {
             int dataIndex = 0;

@@ -20,6 +20,7 @@ namespace BridgeCare.Models
         public Nullable<bool> IsFunction { get; set; }
         [DataMember(Name = "equation")]
         public string Cost { get; set; }
+
         [IgnoreDataMember]
         public string Unit { get; set; }
 
