@@ -178,7 +178,7 @@
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
     <Compile Include="Controllers\SimulationAnalysisController.cs" />
-    <Compile Include="Controllers\TreatmentsController.cs" />
+    <Compile Include="Controllers\TreatmentLibraryController.cs" />
     <Compile Include="Controllers\PerformanceLibraryController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
     <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
@@ -196,7 +196,7 @@
     <Compile Include="DataAccessLayer\InvestmentLibrary.cs" />
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
     <Compile Include="DataAccessLayer\SimulationAnalysis.cs" />
-    <Compile Include="DataAccessLayer\TreatmentData.cs" />
+    <Compile Include="DataAccessLayer\TreatmentLibrary.cs" />
     <Compile Include="DataAccessLayer\PerformanceLibrary.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeData.cs" />
     <Compile Include="DataAccessLayer\BudgetReport.cs" />
@@ -237,7 +237,7 @@
     <Compile Include="Interfaces\IInvestmentLibrary.cs" />
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
     <Compile Include="Interfaces\ISimulationAnalysis.cs" />
-    <Compile Include="Interfaces\ITreatment.cs" />
+    <Compile Include="Interfaces\ITreatmentLibrary.cs" />
     <Compile Include="Interfaces\IPerformanceLibrary.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeWorkSummaryData.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
@@ -276,8 +276,8 @@
     <Compile Include="Models\PerformanceLibraryEquationModel.cs" />
     <Compile Include="Models\SimulationAnalysisModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
+    <Compile Include="Models\TreatmentLibraryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />
-    <Compile Include="Models\TreatmentScenarioModel.cs" />
     <Compile Include="Models\PerformanceLibraryModel.cs" />
     <Compile Include="Models\SectionLocationModel.cs" />
     <Compile Include="Models\SimulatedSegmentIdsModel.cs" />

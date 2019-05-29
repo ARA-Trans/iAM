@@ -56,16 +56,7 @@ export default class TreatmentEditorService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioTreatmentLibrary(selectedScenarioId: number): AxiosPromise<TreatmentLibrary> {
-        // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onGet(`${axiosInstance.defaults.baseURL}/api/GetScenarioTreatmentLibrary`)
-            .reply((config: any) => {
-                mockAdapterInstance.restore();
-                return [200, mockScenarioTreatmentLibrary];
-            });
-        return axiosInstance.get<TreatmentLibrary>('/api/GetScenarioTreatmentLibrary', {
-            params: {'selectedScenarioId': selectedScenarioId}
-        });
+        return axiosInstance.get<TreatmentLibrary>(`/api/GetScenarioTreatmentLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -73,13 +64,6 @@ export default class TreatmentEditorService {
      * @param saveScenarioTreatmentLibraryData The scenario treatment library save data
      */
     static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary): AxiosPromise<TreatmentLibrary> {
-        // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/SaveScenarioTreatmentLibrary`)
-            .reply((config: any) => {
-                mockAdapterInstance.restore();
-                return [200, saveScenarioTreatmentLibraryData];
-            });
         return axiosInstance.post<TreatmentLibrary>('/api/SaveScenarioTreatmentLibrary', saveScenarioTreatmentLibraryData);
     }
 }
