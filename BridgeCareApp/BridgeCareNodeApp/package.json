@@ -1,0 +1,41 @@
+{
+  "name": "bridge-care-node-app",
+  "version": "0.0.0",
+  "description": "BridgeCareNodeApp",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "start": "nodemon app.js",
+    "test": "mocha tests/**/*Tests.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.0",
+    "install": "^0.12.2",
+    "mongodb": "3.2.6",
+    "mongoose": "^5.5.11",
+    "nodemon": "^1.19.0",
+    "npm": "^6.9.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "mocha": "^6.1.4",
+    "should": "^13.2.3",
+    "sinon": "^7.3.2"
+  },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      "node_modules/**/node_modules"
+    ],
+    "delay": "2500",
+    "env": {
+      "NODE_ENV": "development",
+      "PORT": 4000
+    }
+  }
+}
