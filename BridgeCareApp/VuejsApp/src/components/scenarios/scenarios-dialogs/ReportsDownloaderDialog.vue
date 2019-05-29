@@ -58,8 +58,8 @@
     import FileDownload from 'js-file-download';
     import ReportsService from '@/services/reports.service';
     import {AxiosResponse} from 'axios';
-    import {http2XX, setStatusMessage} from "@/shared/utils/http-utils";
-    import {emptyScenario, Scenario} from "@/shared/models/iAM/scenario";
+    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+    import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
     import {clone} from 'ramda';
 
     @Component({

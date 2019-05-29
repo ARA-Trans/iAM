@@ -83,7 +83,7 @@ namespace BridgeCare.Services
             return;
         }
 
-        public SimulationModel CreateNewSimulation(CreateSimulationData createSimulationData, BridgeCareContext db)
+        public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
         {
             try { 
                 var sim = new SIMULATION()

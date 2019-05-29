@@ -17,12 +17,4 @@ namespace BridgeCare.Models
 
         public DateTime? LastRun { get; set; }
     }
-
-    public class CreateSimulationData
-    {
-      [Required]
-      public int NetworkId { get; set; }
-      [Required]
-      public string Name { get; set; }
-    }
 }

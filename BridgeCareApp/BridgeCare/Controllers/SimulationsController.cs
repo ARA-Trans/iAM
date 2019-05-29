@@ -64,7 +64,7 @@ namespace BridgeCare.Controllers
 
         [Route("api/CreateNewSimulation")]
         [HttpPost]
-        public IHttpActionResult CreateNewSimulation([FromBody]CreateSimulationData createSimulationData)
+        public IHttpActionResult CreateNewSimulation([FromBody]CreateSimulationDataModel createSimulationData)
         {
             SimulationModel simulationData = simulations.CreateNewSimulation(createSimulationData, db);
             if (simulationData != null && simulationData.SimulationId > 0)
