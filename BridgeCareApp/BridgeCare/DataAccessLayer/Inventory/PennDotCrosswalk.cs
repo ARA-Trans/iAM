@@ -92,8 +92,7 @@ namespace BridgeCare.DataAccessLayer
             Add("TYPE_OF_SERVICE_ON", "5A17", "Type of Service On"); 
             Add("TYPE_OF_SERVICE_UNDER", "5A18", "Type of Service Under");
 
-            Add("MAINT_RESP", "5A20", "Maint Resp");
-            // Add below 3 to db
+            Add("MAINT_RESP", "5A20", "Maint Resp");            
             Add("REPORT_GROUP", "5A24", "Reporting Group");
             Add("HISTSIGN", "5E04", "Hist Significance");
             Add("SHP_KEY_NUMBER", "5E05", "SHP Key Number");
@@ -139,6 +138,20 @@ namespace BridgeCare.DataAccessLayer
             Add("PRIOR_SUB_D", "", "SUB");
             Add("PRIOR_CULV_C", "", "CULV");
             Add("PRIOR_CULV_D", "", "CULV");
+            
+            Add("HS20_OR", "4B05", "HS20 (OR)");
+            Add("HS20_IR", "4B07", "HS20 (IR)");
+            Add("HS20_RATIO", "", "Ratio OR / Max Legal Load");
+            Add("H20_OR", "4B09", "H20 (OR)");
+            Add("H20_IR", "4B11", "H20 (IR)");
+            Add("H20_RATIO", "", "Ratio OR / Max Legal Load");
+            Add("ML80_OR", "4B12", "ML80 (OR)");
+            Add("ML80_IR", "4B12", "ML80 (IR)");
+            Add("ML80_RATIO", "", "Ratio OR / Max Legal Load");
+            Add("TK527_OR", "4B13", "TK527 (OR)");
+            Add("TK527_IR", "4B13", "TK527 (IR)");
+            Add("TK527_RATIO", "", "Ratio OR / Max Legal Load");
+            Add("MIN_RATIO", "", "Min Ratio OR / Max Legal Load");
         }
 
         private static void Add(string columnNameKey, string id, string description)
