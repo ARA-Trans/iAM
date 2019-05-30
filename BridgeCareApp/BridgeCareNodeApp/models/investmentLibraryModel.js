@@ -9,7 +9,7 @@ const budgetYearSchema = new Schema({
     budgetName: { type: String },
     year: { type: Number },
     investmentLibraryId: { type: Number }
-});
+}, {_id: false});
 
 const investmentLibraryModel = new Schema({
     description: { type: String },

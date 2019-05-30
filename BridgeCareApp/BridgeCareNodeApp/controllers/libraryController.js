@@ -36,18 +36,11 @@ function libraryController(InvestmentLibrary) {
     }
 
     function put(req, res) {
-        InvestmentLibrary.findById(req.params.libraryId, (err, library) => {
+        InvestmentLibrary.findOneAndUpdate({id: req.params.libraryId}, req.body, {new: true},(err, doc)=> {
             if (err) {
-                return res.send(err);
+                return res.status(400).json(err);
             }
-            library.Investment = req.body.Investment;
-            library.save(function (err, library) {
-                if (err) {
-                    return res.status(400).json(err);
-                }
-                return res.status(200).json(library);
-
-            });
+            return res.status(200).json(doc);
         });
     }
 

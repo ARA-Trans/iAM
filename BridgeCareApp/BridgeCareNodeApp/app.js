@@ -27,10 +27,6 @@ async function run() {
     console.log(data);
   });
 
-  app.get("/", (req, res) => {
-    res.send("Welcome to the API!");
-  });
-
   app.listen(port, () => {
     console.log(`Running on port ${port}`);
   });

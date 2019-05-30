@@ -24,19 +24,7 @@ export default class InvestmentEditorService extends Vue {
             //@ts-ignore
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
-                    let investmentLibraries: InvestmentLibrary[] = [];
-                    for (let key in response.data) {
-                        investmentLibraries.push({
-                            id: response.data[key].mongoId,
-                            name: response.data[key].name,
-                            description: response.data[key].description,
-                            discountRate: response.data[key].discountRate,
-                            inflationRate: response.data[key].inflationRate,
-                            budgetOrder: response.data[key].budgetOrder,
-                            budgetYears: response.data[key].budgetYears
-                        })
-                    }
-                    return investmentLibraries;
+                    return response.data;
                 }
                 return Promise.reject('Failed to get investment library');
             });
@@ -68,15 +56,23 @@ export default class InvestmentEditorService extends Vue {
      * @param createdInvestmentLibrary The investment library create data
      */
     createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return new Promise<InvestmentLibrary>((resolve, reject) => {
-            db.ref('investmentLibraries')
-                .child('Investment_' + createdInvestmentLibrary.id)
-                .set(createdInvestmentLibrary)
-                .then(() => {
-                    return resolve(createdInvestmentLibrary);
-                })
-                .catch((error: any) => reject(`Failed to create investment library: ${error.toString()}`));
-        });
+
+        return axios.post<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`, createdInvestmentLibrary)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
+                    return response.data;
+                }
+                return Promise.reject('Failed to get investment library');
+            });
+        //return new Promise<InvestmentLibrary>((resolve, reject) => {
+        //    db.ref('investmentLibraries')
+        //        .child('Investment_' + createdInvestmentLibrary.id)
+        //        .set(createdInvestmentLibrary)
+        //        .then(() => {
+        //            return resolve(createdInvestmentLibrary);
+        //        })
+        //        .catch((error: any) => reject(`Failed to create investment library: ${error.toString()}`));
+        //});
     }
 
     /**
@@ -84,15 +80,22 @@ export default class InvestmentEditorService extends Vue {
      * @param updatedInvestmentLibrary The investment library updated data
      */
     updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return new Promise<InvestmentLibrary>((resolve, reject) => {
-            db.ref('investmentLibraries')
-                .child('Investment_' + updatedInvestmentLibrary.id)
-                .update(updatedInvestmentLibrary)
-                .then(() => {
-                    return resolve(updatedInvestmentLibrary);
-                })
-                .catch((error: any) => reject(`Failed to update investment library: ${error.toString()}`));
-        });
+        return axios.put<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
+            .then((response: AxiosResponse) => {
+                if (!isNil(response)) {
+                    return response.data;
+                }
+                return Promise.reject('Failed to get investment library');
+            });
+        //return new Promise<InvestmentLibrary>((resolve, reject) => {
+        //    db.ref('investmentLibraries')
+        //        .child('Investment_' + updatedInvestmentLibrary.id)
+        //        .update(updatedInvestmentLibrary)
+        //        .then(() => {
+        //            return resolve(updatedInvestmentLibrary);
+        //        })
+        //        .catch((error: any) => reject(`Failed to update investment library: ${error.toString()}`));
+        //});
     }
 
     /**
