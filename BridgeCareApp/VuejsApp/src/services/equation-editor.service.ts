@@ -11,7 +11,7 @@ export default class EquationEditorService {
     static checkEquationValidity(equation: string): AxiosPromise<boolean> {
         // TODO: remove MockAdapter code when api is implemented
         mockAdapter
-            .onGet('/api/ValidateEquation')
+            .onPost('/api/ValidateEquation')
             .reply((config: any) => {
                 return [200, true];
             });

@@ -27,7 +27,7 @@ export default class PerformanceEditorService {
     static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
         // TODO: remove MockAdapter code when api is implemented
         mockAdapter
-            .onGet('/api/CreatePerformanceLibrary')
+            .onPost('/api/CreatePerformanceLibrary')
             .reply((config: any) => {
                 return [200, createPerformanceLibraryData];
             });
@@ -42,7 +42,7 @@ export default class PerformanceEditorService {
     static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
         // TODO: remove MockAdapter code when api is implemented
         mockAdapter
-            .onGet('/api/UpdatePerformanceLibrary')
+            .onPost('/api/UpdatePerformanceLibrary')
             .reply((config: any) => {
                 return [200, updatePerformanceLibraryData];
             });

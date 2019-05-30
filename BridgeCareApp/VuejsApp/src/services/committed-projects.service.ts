@@ -11,7 +11,7 @@ export default class CommittedProjectsService {
     static saveCommittedProjectsFiles(files: File[]): AxiosPromise<any> {
         // TODO: remove MockAdapter code when api is implemented
         mockAdapter
-            .onGet('/api/SaveCommittedProjectsFiles')
+            .onPost('/api/SaveCommittedProjectsFiles')
             .reply((config: any) => {
                 return [201];
             });

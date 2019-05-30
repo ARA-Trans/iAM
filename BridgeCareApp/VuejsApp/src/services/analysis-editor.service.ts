@@ -12,14 +12,12 @@ export default class AnalysisEditorService {
     static getScenarioAnalysisData(selectedScenarioId: number): AxiosPromise<Analysis> {
         // TODO: remove MockAdapter code when api is implemented
         mockAdapter
-            .onGet('/api/GetScenarioAnalysisData')
+            .onGet(`/api/GetScenarioAnalysisData?selectedScenarioId=${selectedScenarioId}`)
             .reply((config: any) => {
                 return [200, emptyAnalysis];
             });
         // TODO: replace mockAxiosInstance with axiosInstance
-        return mockAxiosInstance.get<Analysis>('/api/GetScenarioAnalysisData', {
-            params: {'selectedScenarioId': selectedScenarioId}
-        });
+        return mockAxiosInstance.get<Analysis>(`/api/GetScenarioAnalysisData?selectedScenarioId=${selectedScenarioId}`);
     }
 
     /**
@@ -29,7 +27,7 @@ export default class AnalysisEditorService {
     static saveScenarioAnalysisData(scenarioAnalysisData: Analysis): AxiosPromise<any> {
         // TODO: remove MockAdapter code when api is implemented
         mockAdapter
-            .onGet('/api/SaveScenarioAnalysisData')
+            .onPost('/api/SaveScenarioAnalysisData')
             .reply((config: any) => {
                 return [201];
             });
