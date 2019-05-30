@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const should = require('should');
 const sinon = require('sinon');
 const libraryController = require('../controllers/libraryController');

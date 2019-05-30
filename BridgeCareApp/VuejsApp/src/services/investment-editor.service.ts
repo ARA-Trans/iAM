@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import axios, {AxiosResponse} from 'axios';
-import {InvestmentLibrary} from '@/shared/models/iAM/investment';
+import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import {db} from '@/firebase';
 import {isNil} from 'ramda';
 import DataSnapshot = firebase.database.DataSnapshot;
+import forEach from 'ramda/es/forEach';
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 
@@ -20,10 +21,22 @@ export default class InvestmentEditorService extends Vue {
     async getInvestmentLibraries(): Promise<InvestmentLibrary[]> {
 
         return axios.get<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`)
+            //@ts-ignore
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
-                    const investmentLibraries: InvestmentLibrary[] = [];
-                    return response.data;
+                    let investmentLibraries: InvestmentLibrary[] = [];
+                    for (let key in response.data) {
+                        investmentLibraries.push({
+                            id: response.data[key].mongoId,
+                            name: response.data[key].name,
+                            description: response.data[key].description,
+                            discountRate: response.data[key].discountRate,
+                            inflationRate: response.data[key].inflationRate,
+                            budgetOrder: response.data[key].budgetOrder,
+                            budgetYears: response.data[key].budgetYears
+                        })
+                    }
+                    return investmentLibraries;
                 }
                 return Promise.reject('Failed to get investment library');
             });
