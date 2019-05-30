@@ -2,8 +2,8 @@ import {AxiosPromise} from 'axios';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 // TODO: remove MockAdapter code when api is implemented
-import MockAdapter from 'axios-mock-adapter';
-import {mockPerformanceLibraries, mockScenarioPerformanceLibrary} from '@/shared/utils/mock-data';
+import {mockPerformanceLibraries} from '@/shared/utils/mock-data';
+import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 
 export default class PerformanceEditorService {
     /**
@@ -11,13 +11,13 @@ export default class PerformanceEditorService {
      */
     static getPerformanceLibraries(): AxiosPromise<PerformanceLibrary[]> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onGet(`${axiosInstance.defaults.baseURL}/api/GetPerformanceLibraries`)
+        mockAdapter
+            .onGet('/api/GetPerformanceLibraries')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, mockPerformanceLibraries];
             });
-        return axiosInstance.get<PerformanceLibrary[]>('/api/GetPerformanceLibraries');
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.get<PerformanceLibrary[]>('/api/GetPerformanceLibraries');
     }
 
     /**
@@ -26,13 +26,13 @@ export default class PerformanceEditorService {
      */
     static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/CreatePerformanceLibrary`)
+        mockAdapter
+            .onGet('/api/CreatePerformanceLibrary')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, createPerformanceLibraryData];
             });
-        return axiosInstance.post<PerformanceLibrary>('/api/CreatePerformanceLibrary', createPerformanceLibraryData);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<PerformanceLibrary>('/api/CreatePerformanceLibrary', createPerformanceLibraryData);
     }
 
     /**
@@ -41,13 +41,13 @@ export default class PerformanceEditorService {
      */
     static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/UpdatePerformanceLibrary`)
+        mockAdapter
+            .onGet('/api/UpdatePerformanceLibrary')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, updatePerformanceLibraryData];
             });
-        return axiosInstance.post<PerformanceLibrary>('/api/UpdatePerformanceLibrary', updatePerformanceLibraryData);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<PerformanceLibrary>('/api/UpdatePerformanceLibrary', updatePerformanceLibraryData);
     }
 
     /**
@@ -55,13 +55,6 @@ export default class PerformanceEditorService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioPerformanceLibrary(selectedScenarioId: number): AxiosPromise<PerformanceLibrary> {
-        // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onGet(`${axiosInstance.defaults.baseURL}/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`)
-            .reply((config: any) => {
-                mockAdapterInstance.restore();
-                return [200, mockScenarioPerformanceLibrary];
-            });
         return axiosInstance.get<PerformanceLibrary>(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`);
     }
 
@@ -70,13 +63,6 @@ export default class PerformanceEditorService {
      * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
     static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise<PerformanceLibrary> {
-        // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/SaveScenarioPerformanceLibrary`)
-            .reply((config: any) => {
-                mockAdapterInstance.restore();
-                return [200, saveScenarioPerformanceLibraryData];
-            });
         return axiosInstance.post<PerformanceLibrary>('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData);
     }
 }

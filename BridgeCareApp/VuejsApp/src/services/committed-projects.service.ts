@@ -1,7 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 // TODO: remove MockAdapter code when api is implemented
-import MockAdapter from 'axios-mock-adapter';
+import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 
 export default class CommittedProjectsService {
     /**
@@ -10,12 +10,12 @@ export default class CommittedProjectsService {
      */
     static saveCommittedProjectsFiles(files: File[]): AxiosPromise<any> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/SaveCommittedProjectsFiles`)
+        mockAdapter
+            .onGet('/api/SaveCommittedProjectsFiles')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [201];
             });
-        return axiosInstance.post<any>('/api/SaveCommittedProjectsFiles', files);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<any>('/api/SaveCommittedProjectsFiles', files);
     }
 }

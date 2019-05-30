@@ -2,7 +2,7 @@ import {AxiosPromise} from 'axios';
 import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 // TODO: remove MockAdapter code when api is implemented
-import MockAdapter from 'axios-mock-adapter';
+import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 
 export default class AnalysisEditorService {
     /**
@@ -11,13 +11,13 @@ export default class AnalysisEditorService {
      */
     static getScenarioAnalysisData(selectedScenarioId: number): AxiosPromise<Analysis> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onGet(`${axiosInstance.defaults.baseURL}/api/GetScenarioAnalysisData`)
+        mockAdapter
+            .onGet('/api/GetScenarioAnalysisData')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, emptyAnalysis];
             });
-        return axiosInstance.get<Analysis>('/api/GetScenarioAnalysisData', {
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.get<Analysis>('/api/GetScenarioAnalysisData', {
             params: {'selectedScenarioId': selectedScenarioId}
         });
     }
@@ -28,12 +28,12 @@ export default class AnalysisEditorService {
      */
     static saveScenarioAnalysisData(scenarioAnalysisData: Analysis): AxiosPromise<any> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/SaveScenarioAnalysisData`)
+        mockAdapter
+            .onGet('/api/SaveScenarioAnalysisData')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [201];
             });
-        return axiosInstance.post<any>('/api/SaveScenarioAnalysisData', scenarioAnalysisData);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<any>('/api/SaveScenarioAnalysisData', scenarioAnalysisData);
     }
 }
