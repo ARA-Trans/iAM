@@ -2,8 +2,8 @@ import {AxiosPromise} from 'axios';
 import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 // TODO: remove MockAdapter code when api is implemented
-import MockAdapter from 'axios-mock-adapter';
-import {mockScenarioTreatmentLibrary, mockTreatmentLibraries} from '@/shared/utils/mock-data';
+import {mockTreatmentLibraries} from '@/shared/utils/mock-data';
+import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 
 export default class TreatmentEditorService {
 
@@ -12,13 +12,13 @@ export default class TreatmentEditorService {
      */
     static getTreatmentLibraries(): AxiosPromise<TreatmentLibrary[]> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onGet(`${axiosInstance.defaults.baseURL}/api/GetTreatmentLibraries`)
+        mockAdapter
+            .onGet('/api/GetTreatmentLibraries')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, mockTreatmentLibraries];
             });
-        return axiosInstance.get<TreatmentLibrary[]>('/api/GetTreatmentLibraries');
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.get<TreatmentLibrary[]>('/api/GetTreatmentLibraries');
     }
 
     /**
@@ -27,13 +27,13 @@ export default class TreatmentEditorService {
      */
     static createTreatmentLibrary(createTreatmentLibraryData: TreatmentLibrary): AxiosPromise<TreatmentLibrary> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/CreateTreatmentLibrary`)
+        mockAdapter
+            .onPost('/api/CreateTreatmentLibrary')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, createTreatmentLibraryData];
             });
-        return axiosInstance.post<TreatmentLibrary>('/api/CreateTreatmentLibrary', createTreatmentLibraryData);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<TreatmentLibrary>('/api/CreateTreatmentLibrary', createTreatmentLibraryData);
     }
 
     /**
@@ -42,13 +42,13 @@ export default class TreatmentEditorService {
      */
     static updateTreatmentLibrary(updateTreatmentLibraryData: TreatmentLibrary): AxiosPromise<TreatmentLibrary> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/UpdateTreatmentLibrary`)
+        mockAdapter
+            .onPost('/api/UpdateTreatmentLibrary')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, updateTreatmentLibraryData];
             });
-        return axiosInstance.post<TreatmentLibrary>('/api/UpdateTreatmentLibrary', updateTreatmentLibraryData);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<TreatmentLibrary>('/api/UpdateTreatmentLibrary', updateTreatmentLibraryData);
     }
 
     /**
