@@ -298,6 +298,7 @@
     <Compile Include="Models\SummaryReport\YearsData.cs" />
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
+    <Compile Include="Models\UserInformationModel.cs" />
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
     <Compile Include="Models\YearlyDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
