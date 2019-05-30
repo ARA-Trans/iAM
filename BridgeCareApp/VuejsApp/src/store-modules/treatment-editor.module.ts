@@ -108,7 +108,7 @@ const actions = {
             });
     },
     async saveScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.upsertedScenarioTreatmentLibrary)
+        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.saveScenarioTreatmentLibraryData)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioTreatmentLibraryMutator', response.data);

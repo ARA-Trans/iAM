@@ -268,7 +268,7 @@
          */
         @Watch('stateTreatmentLibraries')
         onStateTreatmentLibrariesChanged() {
-            this.treatmentLibraries = [...clone(this.stateTreatmentLibraries)];
+            this.treatmentLibraries = clone(this.stateTreatmentLibraries);
         }
 
         /**
@@ -335,11 +335,12 @@
                     this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
                 }
 
-                this.treatmentsSelectListItems = this.selectedTreatmentLibrary.treatments
-                    .map((treatment: Treatment) => ({
-                        text: treatment.name,
-                        value: treatment.id.toString()
-                    }));
+                this.treatmentsSelectListItems = hasValue(this.selectedTreatmentLibrary.treatments)
+                    ? this.selectedTreatmentLibrary.treatments.map((treatment: Treatment) => ({
+                            text: treatment.name,
+                            value: treatment.id.toString()
+                        }))
+                    : [];
             } else {
                 this.hasSelectedTreatmentLibrary = false;
                 this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
@@ -371,7 +372,9 @@
 
             const allTreatments: Treatment[] = [];
             this.allTreatmentLibraries.forEach((treatmentLibrary: TreatmentLibrary) => {
-                allTreatments.push(...treatmentLibrary.treatments);
+                if (hasValue(treatmentLibrary.treatments)) {
+                    allTreatments.push(...treatmentLibrary.treatments);
+                }
             });
 
             this.latestTreatmentId = getLatestPropertyValue('id', allTreatments);
@@ -383,8 +386,12 @@
                 if (hasValue(treatment.feasibility)) {
                     allFeasibilities.push(treatment.feasibility as Feasibility);
                 }
-                allCosts.push(...treatment.costs);
-                allConsequences.push(...treatment.consequences);
+                if (hasValue(treatment.costs)) {
+                    allCosts.push(...treatment.costs);
+                }
+                if (hasValue(treatment.consequences)) {
+                    allConsequences.push(...treatment.consequences);
+                }
             });
 
             this.latestFeasibilityId = getLatestPropertyValue('id', allFeasibilities);
@@ -396,16 +403,14 @@
          * Pushes all treatments to a list from treatmentLibraries, selectedTreatmentLibrary, & scenarioTreatmentLibrary
          */
         setAllTreatmentLibraries() {
-            const treatmentLibraries: TreatmentLibrary[] = [];
-
-            treatmentLibraries.push(...clone(this.treatmentLibraries));
+            const treatmentLibraries: TreatmentLibrary[] = clone(this.treatmentLibraries);
 
             if (this.scenarioTreatmentLibrary.id > 0) {
-                treatmentLibraries.push(clone(this.scenarioTreatmentLibrary));
+                treatmentLibraries.push(this.scenarioTreatmentLibrary);
             }
 
             if (this.selectedTreatmentLibrary.id > 0) {
-                treatmentLibraries.push(clone(this.selectedTreatmentLibrary));
+                treatmentLibraries.push(this.selectedTreatmentLibrary);
             }
 
             this.allTreatmentLibraries = uniq(treatmentLibraries);
@@ -594,9 +599,15 @@
          * Dispatches an action to update the scenario's treatment library data with the currently selected treatment library
          */
         onApplyToScenario() {
-            this.saveScenarioTreatmentLibraryAction({
-                upsertedScenarioTreatmentLibrary: clone(this.selectedTreatmentLibrary)
-            });
+            const appliedTreatmentLibrary: TreatmentLibrary = clone(this.selectedTreatmentLibrary);
+            appliedTreatmentLibrary.id = this.selectedScenarioId;
+            if (hasValue(appliedTreatmentLibrary.treatments)) {
+                appliedTreatmentLibrary.treatments.map((treatment: Treatment) => ({
+                    ...treatment,
+                    treatmentLibraryId: this.selectedScenarioId
+                }));
+            }
+            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary});
         }
 
         /**

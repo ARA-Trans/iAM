@@ -39,7 +39,6 @@ namespace BridgeCare.DataAccessLayer
                             TreatmentId = p.TREATMENTID,
                             Name = p.TREATMENT1,
                             Budget = p.BUDGET,
-                            Description = p.DESCRIPTION,
                             OMS_IS_EXCLUSIVE = p.OMS_IS_EXCLUSIVE,
                             OMS_IS_REPEAT = p.OMS_IS_REPEAT,
                             OMS_REPEAT_START = p.OMS_REPEAT_START,
@@ -119,7 +118,6 @@ namespace BridgeCare.DataAccessLayer
                         TreatmentId = p.TREATMENTID,
                         Name = p.TREATMENT1,
                         Budget = p.BUDGET,
-                        Description = p.DESCRIPTION,
                         OMS_IS_EXCLUSIVE = p.OMS_IS_EXCLUSIVE,
                         OMS_IS_REPEAT = p.OMS_IS_REPEAT,
                         OMS_REPEAT_START = p.OMS_REPEAT_START,
@@ -189,7 +187,7 @@ namespace BridgeCare.DataAccessLayer
                 TREATMENT1 = data.Name,
                 BEFOREANY = data.Feasilbility.BeforeAny,
                 BEFORESAME = data.Feasilbility.BeforeSame,
-                DESCRIPTION = data.Description,
+                DESCRIPTION = data.Name,
                 OMS_IS_EXCLUSIVE = data.OMS_IS_EXCLUSIVE,
                 OMS_IS_REPEAT = data.OMS_IS_REPEAT,
                 OMS_REPEAT_START = data.OMS_REPEAT_INTERVAL,
@@ -291,7 +289,7 @@ namespace BridgeCare.DataAccessLayer
                     existingTreatment.SIMULATIONID = treatmentModel.SimulationId;
                     existingTreatment.TREATMENTID = treatmentModel.TreatmentId;
                     existingTreatment.TREATMENT1 = treatmentModel.Name;
-                    existingTreatment.DESCRIPTION = treatmentModel.Description;
+                    existingTreatment.DESCRIPTION = treatmentModel.Name;
 
                     // on the database side feasibilties is an array, on the UI side it can be and is
                     // treated as a single record consiting of a criteria. So the DB -> UI sie gets
