@@ -31,7 +31,7 @@ namespace BridgeCare.Services
                 AddRoadwayInfo(inventoryItemDetailModel, inventoryItems);
                 AddCurrentConditionDuration(inventoryItemDetailModel, inventoryItems);
                 AddRiskScores(inventoryItemDetailModel);
-                AddOperatingInventoryRating(inventoryItemDetailModel);                  
+                AddOperatingInventoryRating(inventoryItemDetailModel, inventoryItems);                  
             }
             catch (Exception ex)
             {
@@ -41,10 +41,39 @@ namespace BridgeCare.Services
             return inventoryItemDetailModel;
         }
 
-        private void AddOperatingInventoryRating(InventoryItemDetailModel inventoryItemDetailModel)
+        private void AddOperatingInventoryRating(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            // TODO Operating Rating (OR) vs Inventory Rating (IR)
-            inventoryItemDetailModel.OperatingRatingInventoryRatingGrouping = new OperatingRatingInventoryRatingGrouping { RatingRows = new List<OperatingRatingInventoryRatingRow>() { }, MinRatioLegalLoad = new LabelValue(string.Empty, string.Empty) };
+            var operatingRatingInventoryRatingGrouping = new OperatingRatingInventoryRatingGrouping();
+            AddRatingRows(operatingRatingInventoryRatingGrouping, inventoryItems);
+            AddMinRatioLegalLoad(operatingRatingInventoryRatingGrouping, inventoryItems);         
+            inventoryItemDetailModel.OperatingRatingInventoryRatingGrouping = operatingRatingInventoryRatingGrouping;
+        }
+
+        private void AddMinRatioLegalLoad(OperatingRatingInventoryRatingGrouping operatingRatingInventoryRatingGrouping, List<InventoryItemModel> inventoryItems)
+        {
+            var minRatioColumns = new List<string> { "MIN_RATIO" };
+            operatingRatingInventoryRatingGrouping.MinRatioLegalLoad = CreateLabelValues(inventoryItems, minRatioColumns).FirstOrDefault();
+        }
+
+        private void AddRatingRows(OperatingRatingInventoryRatingGrouping operatingRatingInventoryRatingGrouping, List<InventoryItemModel> inventoryItems)
+        {
+            var hs20Columns = new List<string> { "HS20_OR", "HS20_IR", "HS20_RATIO" };
+            var h20Columns = new List<string> { "H20_OR", "H20_IR", "H20_RATIO" };
+            var ml80Columns = new List<string> { "ML80_OR", "ML80_IR", "ML80_RATIO" };
+            var tk527Columns = new List<string> { "TK527_OR", "TK527_IR", "TK527_RATIO" };
+
+            var ratingRows = new List<OperatingRatingInventoryRatingRow>();
+            AddRatingRow(hs20Columns, ratingRows, inventoryItems);
+            AddRatingRow(h20Columns, ratingRows, inventoryItems);
+            AddRatingRow(ml80Columns, ratingRows, inventoryItems);
+            AddRatingRow(tk527Columns, ratingRows, inventoryItems);
+            operatingRatingInventoryRatingGrouping.RatingRows = ratingRows;
+        }
+
+        private void AddRatingRow(List<string> hs20Columns, List<OperatingRatingInventoryRatingRow> ratingRows, List<InventoryItemModel> inventoryItems)
+        {
+            var labelValues = CreateLabelValues(inventoryItems, hs20Columns);
+            ratingRows.Add(new OperatingRatingInventoryRatingRow { OperatingRating = labelValues[0], InventoryRating = labelValues[1], RatioLegalLoad = labelValues[2] });
         }
 
         private void AddRiskScores(InventoryItemDetailModel inventoryItemDetailModel)
@@ -110,7 +139,7 @@ namespace BridgeCare.Services
 
         private void AddManagement(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var managementColumns = new List<string> { "MAINT_RESP", "OWNER_CODE", "MPO", "SUBM_AGENCY", "NBISLEN", "BUS_PLAN_NETWORK" };
+            var managementColumns = new List<string> { "MAINT_RESP", "OWNER_CODE", "MPO", "REPORT_GROUP", "SUBM_AGENCY", "NBISLEN", "HISTSIGN", "SHP_KEY_NUMBER", "BUS_PLAN_NETWORK" };
             inventoryItemDetailModel.Management = CreateLabelValues(inventoryItems, managementColumns);
         }
 

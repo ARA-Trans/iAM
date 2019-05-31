@@ -1,7 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 // TODO: remove MockAdapter code when api is implemented
-import MockAdapter from 'axios-mock-adapter';
+import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 
 export default class EquationEditorService {
     /**
@@ -10,12 +10,12 @@ export default class EquationEditorService {
      */
     static checkEquationValidity(equation: string): AxiosPromise<boolean> {
         // TODO: remove MockAdapter code when api is implemented
-        const mockAdapterInstance = new MockAdapter(axiosInstance)
-            .onPost(`${axiosInstance.defaults.baseURL}/api/ValidateEquation`)
+        mockAdapter
+            .onPost('/api/ValidateEquation')
             .reply((config: any) => {
-                mockAdapterInstance.restore();
                 return [200, true];
             });
-        return axiosInstance.post<boolean>('/api/ValidateEquation', equation);
+        // TODO: replace mockAxiosInstance with axiosInstance
+        return mockAxiosInstance.post<boolean>('/api/ValidateEquation', equation);
     }
 }
