@@ -180,35 +180,37 @@ namespace BridgeCare.DataAccessLayer
 
     public TREATMENT CreateTreatment(TreatmentModel data)
     {
-      var newTreatmentModel = new TREATMENT
+      var feasibility = data.Feasilbility;
+      var newTreatment = new TREATMENT
       {
         SIMULATIONID = data.SimulationId,
         TREATMENTID = 0,
         TREATMENT1 = data.Name,
-        BEFOREANY = data.Feasilbility.BeforeAny,
-        BEFORESAME = data.Feasilbility.BeforeSame,
+        BEFOREANY = feasibility != null ? feasibility.BeforeAny : 0,
+        BEFORESAME = feasibility != null ? feasibility.BeforeSame : 0,
         DESCRIPTION = data.Name,
         OMS_IS_EXCLUSIVE = data.OMS_IS_EXCLUSIVE,
         OMS_IS_REPEAT = data.OMS_IS_REPEAT,
         OMS_REPEAT_START = data.OMS_REPEAT_INTERVAL,
         OMS_REPEAT_INTERVAL = data.OMS_REPEAT_START,
-        CONSEQUENCES = null,
-        COST = null,
+        CONSEQUENCES = new List<CONSEQUENCE>(),
+        COST = new List<COST>(),
         SCHEDULED = null,
         FEASIBILITY = new List<FEASIBILITY>()
-        {
-          new FEASIBILITY() {TREATMENTID = 0, FEASIBILITYID = 0, CRITERIA = data.Feasilbility.Criteria}
+        { new FEASIBILITY()
+          {
+            FEASIBILITYID = 0,
+            TREATMENTID = 0,
+            CRITERIA = feasibility != null ? feasibility.Criteria : string.Empty
+          }
         }
       };
 
-
       if (data.Costs.Any())
       {
-        newTreatmentModel.COST = new List<COST>();
-
         foreach (var cost in data.Costs)
         {
-          var costEntity = new COST()
+          newTreatment.COST.Add(new COST()
           {
             COSTID = 0,
             TREATMENTID = 0,
@@ -216,17 +218,15 @@ namespace BridgeCare.DataAccessLayer
             CRITERIA = cost.Criteria,
             ISFUNCTION = cost.IsFunction,
             UNIT = cost.Unit
-          };
-          newTreatmentModel.COST.Add(costEntity);
+          });
         }
       }
 
       if (data.Consequences.Any())
       {
-        newTreatmentModel.CONSEQUENCES = new List<CONSEQUENCE>();
         foreach (var consequence in data.Consequences)
         {
-          var consequenceEntity = new CONSEQUENCE()
+          newTreatment.CONSEQUENCES.Add(new CONSEQUENCE()
           {
             TREATMENTID = 0,
             CONSEQUENCEID = 0,
@@ -235,16 +235,16 @@ namespace BridgeCare.DataAccessLayer
             ATTRIBUTE_ = consequence.Attribute_,
             CHANGE_ = consequence.Change,
             ISFUNCTION = consequence.IsFunction
-          };
-          newTreatmentModel.CONSEQUENCES.Add(consequenceEntity);
+          });
         }
       }
+
       if (data.Budgets.Any())
       {
-        newTreatmentModel.BUDGET = data.GetBudgets();
+        newTreatment.BUDGET = data.GetBudgets();
       }
 
-      return newTreatmentModel;
+      return newTreatment;
     }
 
     public TreatmentLibraryModel SaveScenarioTreatmentLibrary(TreatmentLibraryModel requestedModel, BridgeCareContext db)
@@ -272,47 +272,50 @@ namespace BridgeCare.DataAccessLayer
           {
             var treatmentModel =
               requestedModel.Treatments.SingleOrDefault(t => t.TreatmentId == existingTreatment.TREATMENTID);
-            treatmentModel.matched = true;
-            existingTreatment.SIMULATIONID = treatmentModel.SimulationId;
-            existingTreatment.TREATMENTID = treatmentModel.TreatmentId;
-            existingTreatment.TREATMENT1 = treatmentModel.Name;
-            existingTreatment.DESCRIPTION = treatmentModel.Name;
-
-            // on the database side feasibilties is an array, on the UI side it can be and is
-            // treated as a single record consisting of a criteria. So the DB -> UI side gets
-            // the array and concatenates it. the UI insert or update wipes out all but one
-            // element of the array
-            if (treatmentModel.Feasilbility != null)
+            if (treatmentModel != null)
             {
-              if (existingTreatment.FEASIBILITY == null)
+              treatmentModel.matched = true;
+              existingTreatment.SIMULATIONID = treatmentModel.SimulationId;
+              existingTreatment.TREATMENTID = treatmentModel.TreatmentId;
+              existingTreatment.TREATMENT1 = treatmentModel.Name;
+              existingTreatment.DESCRIPTION = treatmentModel.Name;
+
+              // on the database side feasibilties is an array, on the UI side it can be and is
+              // treated as a single record consisting of a criteria. So the DB -> UI side gets
+              // the array and concatenates it. the UI insert or update wipes out all but one
+              // element of the array
+              if (treatmentModel.Feasilbility != null)
               {
-                existingTreatment.FEASIBILITY.Add(new FEASIBILITY());
+                if (existingTreatment.FEASIBILITY == null)
+                {
+                  existingTreatment.FEASIBILITY.Add(new FEASIBILITY());
 
-                FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
+                  FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
 
-                feasibility.TREATMENTID = treatmentModel.TreatmentId;
-                feasibility.FEASIBILITYID = 0;
-                feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
+                  feasibility.TREATMENTID = treatmentModel.TreatmentId;
+                  feasibility.FEASIBILITYID = 0;
+                  feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
 
-                existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
-                existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
+                  existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
+                  existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
+                }
+                else
+                {
+                  FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
+
+                  feasibility.TREATMENTID = treatmentModel.TreatmentId;
+                  feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
+                  existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
+                  existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
+                }
               }
-              else
-              {
-                FEASIBILITY feasibility = existingTreatment.FEASIBILITY.FirstOrDefault();
 
-                feasibility.TREATMENTID = treatmentModel.TreatmentId;
-                feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
-                existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
-                existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
-              }
+              UpsertConsequences(treatmentModel, existingTreatment, db);
+
+              UpsertCost(treatmentModel, existingTreatment, db);
+
+              existingTreatment.BUDGET = treatmentModel.Budgets.Any() ? treatmentModel.GetBudgets() : null;
             }
-
-            UpsertConsequences(treatmentModel, existingTreatment, db);
-
-            UpsertCost(treatmentModel, existingTreatment, db);
-
-            existingTreatment.BUDGET = treatmentModel.Budgets.Any() ? treatmentModel.GetBudgets() : null;
           }
           else
           {
@@ -326,7 +329,7 @@ namespace BridgeCare.DataAccessLayer
         if (requestedModel.Treatments.Any(t => !t.matched))
         {
           var newTreatmentsData = requestedModel.Treatments.Where(t => !t.matched).ToList();
-          foreach (TreatmentModel treatment in newTreatmentsData)
+          foreach (var treatment in newTreatmentsData)
           {
             db.Treatments.Add(CreateTreatment(treatment));
           }
