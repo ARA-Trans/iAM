@@ -167,10 +167,11 @@
         emptyEditBudgetsDialogData
     } from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
-    import {sortByProperty, sorter} from '@/shared/utils/sorter';
+    import { sortByProperty, sorter } from '@/shared/utils/sorter';
+import { functions } from 'firebase';
 
     @Component({
-        components: {CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog}
+        components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog }
     })
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentLibraries) stateInvestmentLibraries: InvestmentLibrary[];
@@ -256,9 +257,10 @@
                                 }
                             });
                     });
-                });
-        }
+            });
 
+            
+        }
         /**
          * Resets component UI properties that triggers cascading UI updates
          */
@@ -707,7 +709,9 @@
                 .then(() => {
                     this.setIsBusyAction({ isBusy: false });
                     this.setSuccessMessageAction({ message: 'Library updated successfully' });
-                });
+                }).catch(() => {
+                    this.setIsBusyAction({ isBusy: false });
+            });
         }
 
         /**

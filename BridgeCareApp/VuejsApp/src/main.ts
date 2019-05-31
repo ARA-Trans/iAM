@@ -6,6 +6,9 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Vuetify from 'vuetify';
 import VueFire from 'vuefire';
+import io from 'socket.io-client';
+//@ts-ignore
+import VueSocketIO from 'vue-socket.io';
 
 import App from './App.vue';
 import router from './router';
@@ -18,7 +21,19 @@ Vue.use(Vuetify, {
     iconfont: 'fa'
 }, VueFire);
 
+Vue.use(new VueSocketIO({
+    debug: true,
+    connection: 'http://localhost:4000',
+    vuex: {
+        store,
+        actionPrefix: 'SOCKET_',
+        mutationPrefix: 'SOCKET_'
+    }
+}));
+
 Vue.config.productionTip = false;
+
+//Vue.prototype.$socketIO = io('http://localhost:4000');
 
 new Vue({
     store,

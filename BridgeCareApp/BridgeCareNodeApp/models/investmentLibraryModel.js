@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const autoIncrement = require('mongoose-sequence')(mongoose);
+mongoose.set('useFindAndModify', false)
 
 const { Schema } = mongoose;
 

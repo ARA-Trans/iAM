@@ -78,8 +78,8 @@ const actions = {
     async updateInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await new InvestmentEditorService().updateInvestmentLibrary(payload.updatedInvestmentLibrary)
             .then(() => {
-                commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
-                commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
+                //commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
+                //commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
             })
             .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
@@ -119,6 +119,15 @@ const actions = {
                 dispatch('setSuccessMessage', {message: 'Applied investment library changes successfully'});
             })
             .catch((error: string) => dispatch('setErrorMessage', {message: error}));
+    },
+    async SOCKET_investmentLibrary({ commit }: any, library: any) {
+        if (library.operationType == 'update' || library.operationType == 'replace') {
+            commit('updatedInvestmentLibraryMutator', library.fullDocument);
+            commit('selectedInvestmentLibraryMutator', library.fullDocument.id);
+        }
+        if (library.operationType == 'insert') {
+            commit('createdInvestmentLibraryMutator', library.fullDocument);
+        }
     }
 };
 
