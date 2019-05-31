@@ -180,13 +180,14 @@ namespace BridgeCare.DataAccessLayer
 
     public TREATMENT CreateTreatment(TreatmentModel data)
     {
+      var feasibility = data.Feasilbility;
       var newTreatment = new TREATMENT
       {
         SIMULATIONID = data.SimulationId,
         TREATMENTID = 0,
         TREATMENT1 = data.Name,
-        BEFOREANY = data.Feasilbility.BeforeAny,
-        BEFORESAME = data.Feasilbility.BeforeSame,
+        BEFOREANY = feasibility != null ? feasibility.BeforeAny : 0,
+        BEFORESAME = feasibility != null ? feasibility.BeforeSame : 0,
         DESCRIPTION = data.Name,
         OMS_IS_EXCLUSIVE = data.OMS_IS_EXCLUSIVE,
         OMS_IS_REPEAT = data.OMS_IS_REPEAT,
@@ -200,7 +201,7 @@ namespace BridgeCare.DataAccessLayer
           {
             FEASIBILITYID = 0,
             TREATMENTID = 0,
-            CRITERIA = data.Feasilbility.Criteria
+            CRITERIA = feasibility != null ? feasibility.Criteria : string.Empty
           }
         }
       };
