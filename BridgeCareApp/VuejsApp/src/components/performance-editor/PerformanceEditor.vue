@@ -331,8 +331,8 @@
          * setAllPerformanceLibraries function
          */
         @Watch('performanceLibraries')
-        onPerformanceLibrariesChanged(performanceLibraries: PerformanceLibrary[]) {
-            this.performanceLibrariesSelectListItems = performanceLibraries
+        onPerformanceLibrariesChanged() {
+            this.performanceLibrariesSelectListItems = this.performanceLibraries
                 .map((performanceLibrary: PerformanceLibrary) => ({
                     text: performanceLibrary.name,
                     value: performanceLibrary.id.toString()
@@ -371,7 +371,9 @@
             if (this.selectedPerformanceLibrary.id !== 0) {
                 this.hasSelectedPerformanceLibrary = true;
 
-                this.equationsGridData = this.selectedPerformanceLibrary.equations;
+                this.equationsGridData = hasValue(this.selectedPerformanceLibrary.equations)
+                    ? this.selectedPerformanceLibrary.equations
+                    : [];
 
                 if (isEmpty(this.attributes)) {
                     this.getAttributesAction();
@@ -406,7 +408,9 @@
 
             const equations: PerformanceLibraryEquation[] = [];
             this.allPerformanceLibraries.forEach((performanceLibrary) => {
-                equations.push(...performanceLibrary.equations);
+                if (hasValue(performanceLibrary.equations)) {
+                    equations.push(...performanceLibrary.equations);
+                }
             });
 
             this.latestEquationId = getLatestPropertyValue('id', equations);
@@ -416,7 +420,7 @@
          * Pushes all PerformanceLibrary objects to the allPerformanceLibraries array
          */
         setAllPerformanceLibraries() {
-            const libraries: PerformanceLibrary[] = [...this.performanceLibraries];
+            const libraries: PerformanceLibrary[] = clone(this.performanceLibraries);
 
             if (this.scenarioPerformanceLibrary.id > 0) {
                 libraries.push(this.scenarioPerformanceLibrary);
@@ -649,6 +653,14 @@
          * performance library data on the server
          */
         onApplyToScenario() {
+            const appliedPerformanceLibrary: PerformanceLibrary = clone(this.selectedPerformanceLibrary);
+            appliedPerformanceLibrary.id = this.selectedScenarioId;
+            if (hasValue(appliedPerformanceLibrary.equations)) {
+                appliedPerformanceLibrary.equations.map((equation: PerformanceLibraryEquation) => ({
+                    ...equation,
+                    performanceLibraryId: this.selectedScenarioId
+                }));
+            }
             this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: this.selectedPerformanceLibrary});
         }
 

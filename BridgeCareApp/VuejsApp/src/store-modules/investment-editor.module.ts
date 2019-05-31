@@ -113,7 +113,7 @@ const actions = {
         }
     },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        return await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.updatedInvestmentScenario)
+        return await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
             .then((response: AxiosResponse<InvestmentLibrary>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioInvestmentLibraryMutator', response.data);

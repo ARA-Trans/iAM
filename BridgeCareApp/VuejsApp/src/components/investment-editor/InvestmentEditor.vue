@@ -269,7 +269,7 @@
          */
         @Watch('stateInvestmentLibraries')
         onStateInvestmentLibrariesChanged() {
-            this.investmentLibraries = [...clone(this.stateInvestmentLibraries)];
+            this.investmentLibraries = clone(this.stateInvestmentLibraries);
         }
 
         /**
@@ -292,8 +292,8 @@
          * Sets the investmentLibrariesSelectListItems using the investmentLibraries from state
          */
         @Watch('investmentLibraries')
-        onInvestmentLibrariesChanged(investmentLibraries: InvestmentLibrary[]) {
-            this.investmentLibrariesSelectListItems = investmentLibraries
+        onInvestmentLibrariesChanged() {
+            this.investmentLibrariesSelectListItems = this.investmentLibraries
                 .map((investmentLibrary: InvestmentLibrary) => ({
                     text: investmentLibrary.name,
                     value: investmentLibrary.id.toString()
@@ -323,7 +323,8 @@
             if (this.selectedInvestmentLibrary.id !== 0) {
                 this.hasSelectedInvestmentLibrary = true;
 
-                if (!hasValue(this.selectedInvestmentLibrary.budgetOrder) && hasValue(this.selectedInvestmentLibrary.budgetYears)) {
+                if (!hasValue(this.selectedInvestmentLibrary.budgetOrder) &&
+                     hasValue(this.selectedInvestmentLibrary.budgetYears)) {
                     this.setSelectedInvestmentLibraryBudgetOrder();
                 } else {
                     this.setGridHeaders();
@@ -351,9 +352,11 @@
             this.latestLibraryId = getLatestPropertyValue('id', this.allInvestmentLibraries);
 
             const budgetYears: InvestmentLibraryBudgetYear[] = [];
-            this.allInvestmentLibraries.forEach((library: InvestmentLibrary) =>
-                budgetYears.push(...library.budgetYears)
-            );
+            this.allInvestmentLibraries.forEach((library: InvestmentLibrary) => {
+                if (hasValue(library.budgetYears)) {
+                    budgetYears.push(...library.budgetYears);
+                }
+            });
 
             this.latestBudgetYearId = getLatestPropertyValue('id', budgetYears);
         }
@@ -363,7 +366,7 @@
          * investment libraries
          */
         setAllInvestmentLibraries() {
-            const libraries: InvestmentLibrary[] = [...this.investmentLibraries];
+            const libraries: InvestmentLibrary[] = clone(this.investmentLibraries);
 
             if (this.scenarioInvestmentLibrary.id > 0) {
                 libraries.push(this.scenarioInvestmentLibrary);
@@ -701,11 +704,13 @@
         onApplyToScenario() {
             const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
             appliedInvestmentLibrary.id = this.selectedScenarioId;
-            appliedInvestmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => ({
-                ...budgetYear,
-                investmentLibraryId: this.selectedScenarioId
-            }));
-            this.saveScenarioInvestmentLibraryAction({updatedInvestmentScenario: appliedInvestmentLibrary});
+            if (hasValue(appliedInvestmentLibrary.budgetYears)) {
+                appliedInvestmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => ({
+                    ...budgetYear,
+                    investmentLibraryId: this.selectedScenarioId
+                }));
+            }
+            this.saveScenarioInvestmentLibraryAction({saveScenarioInvestmentLibraryData: appliedInvestmentLibrary});
         }
 
         /**

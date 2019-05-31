@@ -17,7 +17,7 @@ namespace BridgeCare.Models
         [DataMember(Name = "description")]
         public string Description { get; set; }
 
-        [DataMember(Name = "treatements")]
+        [DataMember(Name = "treatments")]
         public List<TreatmentModel> Treatments { get; set; }
     }
 }
