@@ -143,14 +143,14 @@
          * Calls the submitChanges function with a null value parameter
          */
         onDeleteFeasibility() {
-            this.submitChanges(null);
+            this.submitChanges(emptyFeasibility);
         }
 
         /**
          * Modifies the selected treatment & selected treatment library with the Feasibility object's data changes
          * @param feasibilityData The feasibility data to submit changes on
          */
-        submitChanges(feasibilityData: Feasibility | null) {
+        submitChanges(feasibilityData: Feasibility) {
             this.feasibilityTabSelectedTreatment.feasibility = feasibilityData;
 
             const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
