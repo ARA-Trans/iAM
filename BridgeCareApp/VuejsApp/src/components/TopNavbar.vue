@@ -1,8 +1,7 @@
 ﻿<template>
     <nav>
         <v-toolbar flat app>
-            <v-toolbar-side-icon @click="drawer = !drawer" class="grey--text"
-                                 v-if="!loginFailed"></v-toolbar-side-icon>
+            <v-toolbar-side-icon @click="drawer = !drawer" class="grey--text" v-if="!loginFailed"></v-toolbar-side-icon>
             <v-toolbar-title class="grey--text">
                 <span class="font-weight-light">iAM</span>
                 <span>BridgeCare</span>
@@ -16,11 +15,11 @@
 
         <v-navigation-drawer app class="grey lighten-3" v-if="!loginFailed" v-model="drawer">
             <v-list dense class="pt-0">
-                <v-list-tile @click="routing('/Inventory/')">
+                <v-list-tile @click="onNavigate('/Inventory/')">
                     <v-list-tile-action><v-icon>home</v-icon></v-list-tile-action>
                     <v-list-tile-title>Inventory</v-list-tile-title>
                 </v-list-tile>
-                <v-list-tile @click="routing('/Scenarios/')">
+                <v-list-tile @click="onNavigate('/Scenarios/')">
                     <v-list-tile-action><v-icon>list</v-icon></v-list-tile-action>
                     <v-list-tile-title>Scenarios</v-list-tile-title>
                 </v-list-tile>
@@ -30,110 +29,78 @@
                             <v-list-tile-title>Libraries</v-list-tile-title>
                         </v-list-tile>
                     </template>
-                    <v-list-tile @click="routing('/InvestmentEditor/Library/')">
+                    <v-list-tile @click="onNavigate('/InvestmentEditor/Library/')">
                         <v-list-tile-title>Investment Editor</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="routing('/PerformanceEditor/Library/')">
+                    <v-list-tile @click="onNavigate('/PerformanceEditor/Library/')">
                         <v-list-tile-title>Performance Editor</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile @click="routing('/TreatmentEditor/Library/')">
+                    <v-list-tile @click="onNavigate('/TreatmentEditor/Library/')">
                         <v-list-tile-title>Treatment Editor</v-list-tile-title>
                     </v-list-tile>
                 </v-list-group>
-                <v-list-tile @click="routing('/UnderConstruction/')">
+                <v-list-tile @click="onNavigate('/UnderConstruction/')">
                     <v-list-tile-action><v-icon>lock</v-icon></v-list-tile-action>
                     <v-list-tile-title>Security</v-list-tile-title>
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
+
         <v-content v-if="!loginFailed">
             <v-flex xs12>
                 <v-breadcrumbs :items="navigation" divider=">">
-                    <v-breadcrumbs-item slot="item"
-                                        slot-scope="{ item }"
-                                        exact
-                                        :to="item.to">
-                        {{ item.text }}
+                    <v-breadcrumbs-item slot="item" slot-scope="{item}" exact :to="item.to">
+                        {{item.text}}
                     </v-breadcrumbs-item>
                 </v-breadcrumbs>
             </v-flex>
             <router-view></router-view>
         </v-content>
+
         <v-flex xs12>
-            <AppSpinner />
-            <AppModalPopup :modalData="warning" @decision="onWarningModalDecision" />
+            <Spinner />
         </v-flex>
     </nav>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Component } from 'vue-property-decorator';
-    import { Action, State } from 'vuex-class';
-
-    import { Alert } from '@/shared/models/iAM/alert';
-    import AppSpinner from '../shared/dialogs/AppSpinner.vue';
-    import AppModalPopup from '../shared/dialogs/AppModalPopup.vue';
+    import {Component} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
+    import Spinner from '../shared/modals/Spinner.vue';
 
     @Component({
-        components: { AppSpinner, AppModalPopup }
+        components: {Spinner}
     })
     export default class TopNavbar extends Vue {
-        @State(state => state.security.loginFailed) loginFailed: boolean;
-        @State(state => state.security.userName) userName: string;
-        @State(state => state.busy.isBusy) isBusy: boolean;
-        @State(state => state.security.userRoles) userRoles: Array<string>;
+        @State(state => state.authentication.loginFailed) loginFailed: boolean;
+        @State(state => state.authentication.userName) userName: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
-
-        @Action('setIsBusy') setIsBusyAction: any;
-        @Action('setLoginStatus') setLoginStatusAction: any;
-        @Action('setUsername') setUsernameAction: any;
-        @Action('getAuthentication') getAuthenticationAction: any;
-        @Action('setNavigation') setNavigationAction: any;
+        
+        @Action('authenticateUser') authenticateUserAction: any;
         @Action('getNetworks') getNetworksAction: any;
-        @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('setNavigation') setNavigationAction: any;
 
-        warning: Alert = { showModal: false, heading: '', message: '', choice: false };
+        drawer: boolean = false;
 
-        data() {
-            return {
-                drawer: true
-            };
-        }
-
+        /**
+         * Component has been mounted: Dispatches an action to authenticate the current user, then if user is authenticated
+         * another another action is dispatched to get the networks
+         */
         mounted() {
-            this.setIsBusyAction({ isBusy: true });
-            this.getAuthenticationAction().then((result: any) => {
-                this.setIsBusyAction({ isBusy: false });
-                if (result.status == '401') {
-                    this.warning.showModal = true;
-                    this.warning.heading = 'Error';
-                    this.warning.choice = false;
-                    this.warning.message = result.data.message;
-                }
-                else {
-                    this.$forceUpdate();
-                    this.setIsBusyAction({ isBusy: true });
-                    this.getNetworksAction().then(() =>
-                        this.setIsBusyAction({ isBusy: false })
-                    ).catch((error: any) => {
-                        this.setIsBusyAction({ isBusy: false });
-                        this.setErrorMessageAction({ message: 'Failed to fetch a network' });
-                    });
-                }
-            }).catch((error: any) => {
-                this.setIsBusyAction({ isBusy: false });
-                this.setErrorMessageAction({ message: 'Failed to authenticate the user' });
+            this.authenticateUserAction().then(() => {
+                this.$forceUpdate();
+                this.getNetworksAction();
             });
         }
 
-        routing(routeName: string) {
+        /**
+         * Navigates a user to a page using the specified routeName
+         * @param routeName The route name to use when navigating a user
+         */
+        onNavigate(routeName: string) {
             this.setNavigationAction([]);
             this.$router.push(routeName);
-        }
-
-        onWarningModalDecision(value: boolean) {
-            this.warning.showModal = false;
         }
     }
 </script>

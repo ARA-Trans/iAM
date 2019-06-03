@@ -1,18 +1,17 @@
 import Vue from 'vue';
-import axios, {AxiosResponse} from 'axios';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+import {AxiosPromise, AxiosResponse} from 'axios';
 import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 import {db} from '@/firebase';
 import {isNil} from 'ramda';
 import DataSnapshot = firebase.database.DataSnapshot;
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
-
 export default class InvestmentEditorService extends Vue {
     /**
      * Gets all investment libraries
      */
-    async getInvestmentLibraries(): Promise<InvestmentLibrary[]> {
-        return new Promise<InvestmentLibrary[]>((resolve, reject) => {
+    static getInvestmentLibraries(): AxiosPromise<InvestmentLibrary[]> {
+        return new Promise<AxiosResponse<InvestmentLibrary[]>>((resolve) => {
             db.ref('investmentLibraries').once('value')
                 .then((snapshot: DataSnapshot) => {
                     const investmentLibraries: InvestmentLibrary[] = [];
@@ -28,75 +27,111 @@ export default class InvestmentEditorService extends Vue {
                             budgetYears: isNil(results[key].budgetYears) ? [] : results[key].budgetYears
                         });
                     }
-                    return resolve(investmentLibraries);
+                    const response: AxiosResponse<InvestmentLibrary[]> = {
+                        data: investmentLibraries,
+                        status: 200,
+                        statusText: 'Success',
+                        headers: {},
+                        config: {}
+                    };
+                    return resolve(response);
                 })
-                .catch((error: any) => reject(`Failed to get investment libraries: ${error.toString()}`));
+                .catch((error: any) => {
+                    const response: AxiosResponse<InvestmentLibrary[]> = {
+                        data: [] as InvestmentLibrary[],
+                        status: 500,
+                        statusText: error.toString(),
+                        headers: {},
+                        config: {}
+                    };
+                    resolve(response);
+                });
         });
+        // TODO: replace the above code with the following when mongo db implemented
+        // return axiosInstance.get<InvestmentLibrary[]>('/api/GetInvestmentLibraries');
     }
 
     /**
      * Creates an investment library
-     * @param createdInvestmentLibrary The investment library create data
+     * @param createInvestmentLibraryData The investment library create data
      */
-    createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return new Promise<InvestmentLibrary>((resolve, reject) => {
+    static createInvestmentLibrary(createInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
+        return new Promise<AxiosResponse<InvestmentLibrary>>((resolve) => {
             db.ref('investmentLibraries')
-                .child('Investment_' + createdInvestmentLibrary.id)
-                .set(createdInvestmentLibrary)
+                .child('Investment_' + createInvestmentLibraryData.id)
+                .set(createInvestmentLibraryData)
                 .then(() => {
-                    return resolve(createdInvestmentLibrary);
+                    const response: AxiosResponse<InvestmentLibrary> = {
+                        data: createInvestmentLibraryData,
+                        status: 200,
+                        statusText: 'Success',
+                        headers: {},
+                        config: {}
+                    };
+                    return resolve(response);
                 })
-                .catch((error: any) => reject(`Failed to create investment library: ${error.toString()}`));
+                .catch((error: any) => {
+                    const response: AxiosResponse<InvestmentLibrary> = {
+                        data: {} as InvestmentLibrary,
+                        status: 500,
+                        statusText: error.toString(),
+                        headers: {},
+                        config: {}
+                    };
+                    resolve(response);
+                });
         });
+        // TODO: replace the above code with the following when mongo db implemented
+        // return axiosInstance.post<InvestmentLibrary>('/api/CreateInvestmentLibrary', createInvestmentLibraryData);
     }
 
     /**
      * Updates an investment library
-     * @param updatedInvestmentLibrary The investment library updated data
+     * @param updateInvestmentLibraryData The investment library updated data
      */
-    updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return new Promise<InvestmentLibrary>((resolve, reject) => {
+    updateInvestmentLibrary(updateInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
+        return new Promise<AxiosResponse<InvestmentLibrary>>((resolve) => {
             db.ref('investmentLibraries')
-                .child('Investment_' + updatedInvestmentLibrary.id)
-                .update(updatedInvestmentLibrary)
+                .child('Investment_' + updateInvestmentLibraryData.id)
+                .update(updateInvestmentLibraryData)
                 .then(() => {
-                    return resolve(updatedInvestmentLibrary);
+                    const response: AxiosResponse<InvestmentLibrary> = {
+                        data: updateInvestmentLibraryData,
+                        status: 200,
+                        statusText: 'Success',
+                        headers: {},
+                        config: {}
+                    };
+                    return resolve(response);
                 })
-                .catch((error: any) => reject(`Failed to update investment library: ${error.toString()}`));
+                .catch((error: any) => {
+                    const response: AxiosResponse<InvestmentLibrary> = {
+                        data: {} as InvestmentLibrary,
+                        status: 500,
+                        statusText: error.toString(),
+                        headers: {},
+                        config: {}
+                    };
+                    resolve(response);
+                });
         });
+        // TODO: replace the above with the following when mongo db implemented
+        // return axiosInstance.post<InvestmentLibrary>('/api/UpdateInvestmentLibrary', updateInvestmentLibraryData);
     }
 
     /**
      * Gets a scenario's investment library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
-    getScenarioInvestmentLibrary(selectedScenarioId: number): Promise<InvestmentLibrary> {
-        return axios.get<InvestmentLibrary>(`/api/GetInvestmentStrategies/${selectedScenarioId}`)
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data[0];
-                    // TODO: uncomment when service has been updated to return an InvestmentLibrary
-                    // return response.data;
-                }
-                return Promise.reject('Failed to get scenario investment library');
-            });
+    static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise<InvestmentLibrary> {
+        return axiosInstance.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
     }
 
     /**
      * Upserts a scenario's investment library data
-     * @param upsertedScenarioInvestmentLibrary The scenario investment library upsert data
+     * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
-    upsertScenarioInvestmentLibrary(upsertedScenarioInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return axios.post<InvestmentLibrary>('/api/SaveInvestmentStrategy', upsertedScenarioInvestmentLibrary)
-            .then((response: AxiosResponse) => {
-                return Promise.resolve(upsertedScenarioInvestmentLibrary);
-            });
-            // TODO: uncomment when service has been updated to return an InvestmentLibrary
-            /*.then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to apply investment library');
-            });*/
+    static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
+        return axiosInstance.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
     }
 }

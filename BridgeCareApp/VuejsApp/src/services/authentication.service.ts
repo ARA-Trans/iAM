@@ -1,15 +1,13 @@
-﻿import axios from 'axios';
+﻿import {AxiosPromise} from 'axios';
+import {UserInformation} from '@/shared/models/iAM/user-information';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
 
 export default class AuthenticationService {
-    getAuthentication(): Promise<any> {
-        return axios.get('/auth/getuser', { withCredentials: true })
-            .then(response => {
-                return response;
-            })
-            .catch(error => {
-                return error.response;
-            });
+    /**
+     * Authenticates a user
+     */
+    static authenticateUser(): AxiosPromise<UserInformation> {
+        return axiosInstance.get<UserInformation>('/auth/AuthenticateUser', {withCredentials: true});
     }
 }

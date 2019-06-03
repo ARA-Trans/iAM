@@ -1,5 +1,5 @@
 import {last, pluck, uniq} from 'ramda';
-import {sorter} from '@/shared/utils/sorter';
+import {sorter} from '@/shared/utils/sorter-utils';
 
 export const getPropertyValues = (property: string, items: any[]): any[] => {
     const getter = pluck(property);

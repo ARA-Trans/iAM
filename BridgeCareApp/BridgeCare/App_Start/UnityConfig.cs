@@ -52,14 +52,14 @@ namespace BridgeCare
             container.RegisterType<IDetailedReport, DetailedReport>();
             container.RegisterType<IAttributeNames, AttributeNames>();
             container.RegisterType<IAttributesByYear, AttributesByYear>();
-            container.RegisterType<IPerformance, PerformanceData>();
+            container.RegisterType<IPerformanceLibrary, PerformanceLibrary>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReport>();
             container.RegisterType<IInventory, Inventory>();
             container.RegisterType<ISimulationAnalysis, SimulationAnalysis>();
             container.RegisterType<IDeficientReport, DeficientReport>();
-            container.RegisterType<IInvestmentStrategies, InvestmentStrategies>();
-            container.RegisterType<ITreatments, TreatmentData>();
+            container.RegisterType<IInvestmentLibrary, InvestmentLibrary>();
+            container.RegisterType<ITreatmentLibrary, TreatmentLibrary>();
             container.RegisterType<CostDetails>();
             container.RegisterType<ITarget, Targets>();
             container.RegisterType<IReportCreator, ReportCreator>();

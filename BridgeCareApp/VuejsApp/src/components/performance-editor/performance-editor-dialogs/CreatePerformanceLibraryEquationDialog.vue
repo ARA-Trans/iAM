@@ -45,7 +45,6 @@
 
         @State(state => state.attribute.attributes) attributes: string[];
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
         attributesSelectListItems: SelectItem[] = [];
@@ -57,9 +56,7 @@
         @Watch('showDialog')
         onShowDialogChanged() {
             if (this.showDialog && isEmpty(this.attributes)) {
-                this.setIsBusyAction({isBusy: true});
-                this.getAttributesAction()
-                    .then(() => this.setIsBusyAction({isBusy: false}));
+                this.getAttributesAction();
             }
         }
 

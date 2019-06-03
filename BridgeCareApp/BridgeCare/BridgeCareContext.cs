@@ -16,7 +16,7 @@ namespace BridgeCare
         public virtual DbSet<SIMULATION> SIMULATIONS { get; set; }
         public virtual DbSet<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
         public virtual DbSet<INVESTMENTS> INVESTMENTs { get; set; }
-        public virtual DbSet<PERFORMANCE> PERFORMANCE { get; set; }
+        public virtual DbSet<PERFORMANCE> PERFORMANCEs { get; set; }
         public virtual DbSet<Deficients> Deficient { get; set; }
         public virtual DbSet<Targets> Target { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
@@ -27,7 +27,7 @@ namespace BridgeCare
         public virtual DbSet<COST> Costs { get; set; }
         public virtual DbSet<FEASIBILITY> Feasibilities { get; set; }
         public virtual DbSet<CONSEQUENCE> Consequences { get; set; }
-
+        
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<NETWORK>()

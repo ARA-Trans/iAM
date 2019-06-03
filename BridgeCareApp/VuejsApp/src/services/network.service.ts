@@ -1,13 +1,9 @@
-import axios from 'axios';
+import {AxiosPromise} from 'axios';
 import {Network} from '@/shared/models/iAM/network';
-
-axios.defaults.baseURL = process.env.VUE_APP_URL;
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
 export default class NetworkService {
-    getNetworks(): Promise<Network[]> {
-        return axios.get('/api/Networks')
-            .then(response => {
-                return response.data as Promise<Network[]>;
-            });
+    static getNetworks(): AxiosPromise<Network[]> {
+        return axiosInstance.get<Network[]>('/api/Networks');
     }
 }

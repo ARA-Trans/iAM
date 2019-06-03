@@ -57,5 +57,7 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
 
         public virtual ICollection<TREATMENT> TREATMENTS { get; set; }
+
+        public virtual ICollection<PERFORMANCE> PERFORMANCES { get; set; }
     }
 }
