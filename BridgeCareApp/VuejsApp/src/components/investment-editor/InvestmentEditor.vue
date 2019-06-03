@@ -705,10 +705,9 @@
             const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
             appliedInvestmentLibrary.id = this.selectedScenarioId;
             if (hasValue(appliedInvestmentLibrary.budgetYears)) {
-                appliedInvestmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => ({
-                    ...budgetYear,
-                    investmentLibraryId: this.selectedScenarioId
-                }));
+                appliedInvestmentLibrary.budgetYears.forEach((budgetYear: InvestmentLibraryBudgetYear) => {
+                    budgetYear.investmentLibraryId = this.selectedScenarioId;
+                });
             }
             this.saveScenarioInvestmentLibraryAction({saveScenarioInvestmentLibraryData: appliedInvestmentLibrary});
         }

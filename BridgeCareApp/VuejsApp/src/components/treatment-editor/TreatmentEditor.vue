@@ -602,10 +602,9 @@
             const appliedTreatmentLibrary: TreatmentLibrary = clone(this.selectedTreatmentLibrary);
             appliedTreatmentLibrary.id = this.selectedScenarioId;
             if (hasValue(appliedTreatmentLibrary.treatments)) {
-                appliedTreatmentLibrary.treatments.map((treatment: Treatment) => ({
-                    ...treatment,
-                    treatmentLibraryId: this.selectedScenarioId
-                }));
+                appliedTreatmentLibrary.treatments.forEach((treatment: Treatment) => {
+                    treatment.treatmentLibraryId = this.selectedScenarioId;
+                });
             }
             this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary});
         }

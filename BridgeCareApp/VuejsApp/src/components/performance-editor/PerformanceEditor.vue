@@ -656,10 +656,9 @@
             const appliedPerformanceLibrary: PerformanceLibrary = clone(this.selectedPerformanceLibrary);
             appliedPerformanceLibrary.id = this.selectedScenarioId;
             if (hasValue(appliedPerformanceLibrary.equations)) {
-                appliedPerformanceLibrary.equations.map((equation: PerformanceLibraryEquation) => ({
-                    ...equation,
-                    performanceLibraryId: this.selectedScenarioId
-                }));
+                appliedPerformanceLibrary.equations.forEach((equation: PerformanceLibraryEquation) => {
+                    equation.performanceLibraryId = this.selectedScenarioId;
+                });
             }
             this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary});
         }
