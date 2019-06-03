@@ -5,6 +5,7 @@ using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -82,13 +83,13 @@ namespace BridgeCare.Services
             return;
         }
 
-        public int CreateNewSimulation(int networkId, string simulationName, BridgeCareContext db)
+        public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
         {
             try { 
                 var sim = new SIMULATION()
                 {
-                    NETWORKID = networkId,
-                    SIMULATION1 = simulationName,
+                    NETWORKID = createSimulationData.NetworkId,
+                    SIMULATION1 = createSimulationData.Name,
                     DATE_CREATED = DateTime.Now,
                     ANALYSIS = "Incremental Benefit/Cost",
                     BUDGET_CONSTRAINT = "As Budget Permits",
@@ -136,13 +137,23 @@ namespace BridgeCare.Services
 
                 db.SaveChanges();
 
-                return sim.SIMULATIONID;
+                var simulationModel = from contextTable in db.SIMULATIONS where contextTable.SIMULATIONID == sim.SIMULATIONID
+                                      select new SimulationModel
+                                      {
+                                        SimulationId = contextTable.SIMULATIONID,
+                                        SimulationName = contextTable.SIMULATION1,
+                                        NetworkId = contextTable.NETWORKID.Value,
+                                        Created = contextTable.DATE_CREATED,
+                                        LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
+                                        NetworkName = contextTable.NETWORK.NETWORK_NAME
+                                      };
+              return simulationModel.FirstOrDefault();
             }
             catch (SqlException ex)
             {
                 HandleException.SqlError(ex, "SQL error: New Simulation");
             }
-            return -1;
+            return null;
         }
     }
 }

@@ -34,10 +34,10 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {emptyPerformanceLibrary, PerformanceLibrary} from '@/shared/models/iAM/performance';
-    import {hasValue} from '@/shared/utils/has-value';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import {
         CreatePerformanceLibraryDialogData
-    } from '@/shared/models/dialogs/performance-editor-dialogs/create-performance-library-dialog-data';
+    } from '@/shared/models/modals/create-performance-library-dialog-data';
     import {clone} from 'ramda';
 
     @Component

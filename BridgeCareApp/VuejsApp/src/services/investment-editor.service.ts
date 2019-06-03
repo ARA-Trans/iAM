@@ -1,6 +1,7 @@
 import Vue from 'vue';
-import axios, {AxiosResponse} from 'axios';
-import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+import {AxiosPromise, AxiosResponse} from 'axios';
+import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 import {db} from '@/firebase';
 import {isNil} from 'ramda';
 import DataSnapshot = firebase.database.DataSnapshot;
@@ -32,7 +33,7 @@ export default class InvestmentEditorService extends Vue {
 
     /**
      * Creates an investment library
-     * @param createdInvestmentLibrary The investment library create data
+     * @param createInvestmentLibraryData The investment library create data
      */
     createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
 
@@ -47,7 +48,7 @@ export default class InvestmentEditorService extends Vue {
 
     /**
      * Updates an investment library
-     * @param updatedInvestmentLibrary The investment library updated data
+     * @param updateInvestmentLibraryData The investment library updated data
      */
     updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
         return axios.put<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
@@ -63,27 +64,15 @@ export default class InvestmentEditorService extends Vue {
      * Gets a scenario's investment library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
-    getScenarioInvestmentLibrary(selectedScenarioId: number): Promise<InvestmentLibrary> {
-        return axios.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`)
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to get scenario investment library');
-            });
+    static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise<InvestmentLibrary> {
+        return axiosInstance.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
     }
 
     /**
      * Upserts a scenario's investment library data
-     * @param upsertedScenarioInvestmentLibrary The scenario investment library upsert data
+     * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
-    upsertScenarioInvestmentLibrary(upsertedScenarioInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return axios.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', upsertedScenarioInvestmentLibrary)
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to apply investment library');
-            });
+    static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
+        return axiosInstance.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
     }
 }

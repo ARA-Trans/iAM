@@ -5,15 +5,15 @@
                 <v-layout justify-center fill-height>
                     <v-flex xs6>
                         <v-layout column fill-height>
-                            <div class="scenario-edit-text-field-div" v-on:click="editAnalysis">
+                            <div class="scenario-edit-text-field-div" v-on:click="onEditAnalysis">
                                 <v-text-field :append-icon="'fas fa-chart-bar'" box readonly label="Analysis">
                                 </v-text-field>
                             </div>
-                            <div class="scenario-edit-text-field-div" v-on:click="editInvestment">
+                            <div class="scenario-edit-text-field-div" v-on:click="onEditInvestment">
                                 <v-text-field :append-icon="'fas fa-dollar-sign'" box readonly label="Investment">
                                 </v-text-field>
                             </div>
-                            <div class="scenario-edit-text-field-div" v-on:click="editPerformance">
+                            <div class="scenario-edit-text-field-div" v-on:click="onEditPerformance">
                                 <v-text-field :append-icon="'fas fa-chart-line'" box readonly label="Performance">
                                 </v-text-field>
                             </div>
@@ -21,7 +21,7 @@
                                 <v-text-field :append-icon="'fas fa-tasks'" box readonly label="Commited">
                                 </v-text-field>
                             </div>
-                            <div class="scenario-edit-text-field-div" v-on:click="editTreatment">
+                            <div class="scenario-edit-text-field-div" v-on:click="onEditTreatment">
                                 <v-text-field :append-icon="'fas fa-heartbeat'" box readonly label="Treatments">
                                 </v-text-field>
                             </div>
@@ -45,8 +45,10 @@
     import {State, Action} from 'vuex-class';
     import {Scenario} from '@/shared/models/iAM/scenario';
     import CommittedProjectsFileUploaderDialog from '@/components/scenarios/scenarios-dialogs/CommittedProjectsFileUploaderDialog.vue';
-    import ScenarioService from '@/services/scenario.service';
     import {isNil} from 'ramda';
+    import {AxiosResponse} from 'axios';
+    import CommittedProjectsService from '@/services/committed-projects.service';
+    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 
     @Component({
         components: {CommittedProjectsFileUploaderDialog}
@@ -55,7 +57,6 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
 
-        @Action('setIsBusy') setIsBusyAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
@@ -66,7 +67,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 // set selectedScenarioId
-                vm.selectedScenarioId = isNaN(to.query.simulationId) ? 0 : parseInt(to.query.simulationId);
+                vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
                 // set breadcrumbs
                 vm.setNavigationAction([
                     {
@@ -76,7 +77,7 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {simulationId: to.query.simulationId}
+                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
                         }
                     }
                 ]);
@@ -90,40 +91,40 @@
         }
 
         /**
-         * Navigates to EditAnalysis UI, providing simulationId context
+         * Navigates user to the EditAnalysis page passing in the selected scenario's id
          */
-        editAnalysis() {
+        onEditAnalysis() {
             this.$router.push({
-                path: '/EditAnalysis/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/EditAnalysis/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
         /**
-         * Navigates to InvestmentEditor UI, providing simulationId context
+         * Navigates user to the InvestmentEditor page passing in the selected scenario's id
          */
-        editInvestment() {
+        onEditInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
-                    simulationId: this.selectedScenarioId.toString()
+                    selectedScenarioId: this.selectedScenarioId.toString()
                 }
             });
         }
 
         /**
-         * Navigates to PerformanceEditor UI, providing simulationId context
+         * Navigates user to the PerformanceEditor page passing in the selected scenario's id
          */
-        editPerformance() {
+        onEditPerformance() {
             this.$router.push({
-                path: '/PerformanceEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
         /**
-         * Navigates to TreatmentEditor UI, providing simulationId context
+         * Navigates user to the TreatmentEditor page passing in the selected scenario's id
          */
-        editTreatment() {
+        onEditTreatment() {
             this.$router.push({
-                path: '/TreatmentEditor/FromScenario/', query: {simulationId: this.selectedScenarioId.toString()}
+                path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
@@ -141,12 +142,13 @@
         onUploadCommitedProjectFiles(files: File[]) {
             this.showFileUploader = false;
             if (!isNil(files)) {
-                this.setIsBusyAction({isBusy: true});
-                new ScenarioService().uploadCommittedProjectsFiles(files)
-                    .then(() => {
-                        this.setIsBusyAction({isBusy: false});
-                        // TODO: handle server response properly
-                        this.setSuccessMessageAction({message: 'Files uploaded successfully'});
+                CommittedProjectsService.saveCommittedProjectsFiles(files)
+                    .then((response: AxiosResponse<any>) => {
+                        if (http2XX.test(response.status.toString())) {
+                            this.setSuccessMessageAction({message: 'Successfully saved files'});
+                        } else {
+                            this.setErrorMessageAction({message: `Failed to save files${setStatusMessage(response)}`});
+                        }
                     });
             }
         }

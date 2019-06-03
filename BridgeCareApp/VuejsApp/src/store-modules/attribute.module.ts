@@ -1,5 +1,10 @@
 import {clone} from 'ramda';
 import AttributeService from '@/services/attribute.service';
+import {AxiosResponse} from 'axios';
+import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+import {hasValue} from '@/shared/utils/has-value-util';
+import {AttributeName} from '@/shared/models/iAM/attribute-name';
+import {pluck} from 'ramda';
 
 const state = {
     attributes: [] as string[]
@@ -12,12 +17,15 @@ const mutations = {
 };
 
 const actions = {
-    async getAttributes({commit}: any) {
-        await new AttributeService().getAttributes()
-            .then((attributes: string[]) =>
-                commit('attributesMutator', attributes)
-            )
-            .catch((error: any) => console.log(error));
+    async getAttributes({dispatch, commit}: any) {
+        await AttributeService.getAttributes()
+            .then((response: AxiosResponse<AttributeName[]>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('attributesMutator', pluck('name', response.data));
+                } else {
+                    dispatch('setErrorMessage', {message: `Failed to get attributes${setStatusMessage(response)}`});
+                }
+            });
     }
 };
 

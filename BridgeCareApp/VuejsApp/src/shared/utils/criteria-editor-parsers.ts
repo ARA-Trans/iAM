@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/shared/models/iAM/criteria';
-import {hasValue} from '@/shared/utils/has-value';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 /**
  * Creates a clause string from a given criteria object

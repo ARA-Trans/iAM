@@ -3,7 +3,14 @@ import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory'
 import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
-import {Consequence, Cost, Feasibility, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {
+    Consequence,
+    Cost,
+    emptyFeasibility,
+    Feasibility,
+    Treatment,
+    TreatmentLibrary
+} from '@/shared/models/iAM/treatment';
 
 /*******************************************MOCK ATTRIBUTES DATA*******************************************************/
 export const mockAttributes: string[] = [
@@ -363,7 +370,7 @@ export const mockTreatments: Treatment[] = [
         treatmentLibraryId: 1,
         id: 2,
         name: '2\'\' Mill 2\'\' Fill',
-        feasibility: null,
+        feasibility: emptyFeasibility,
         costs: [],
         consequences: [],
         budgets: []
