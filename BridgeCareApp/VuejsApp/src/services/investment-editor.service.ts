@@ -28,27 +28,6 @@ export default class InvestmentEditorService extends Vue {
                 }
                 return Promise.reject('Failed to get investment library');
             });
-
-        //return new Promise<InvestmentLibrary[]>((resolve, reject) => {
-        //    db.ref('investmentLibraries').once('value')
-        //        .then((snapshot: DataSnapshot) => {
-        //            const investmentLibraries: InvestmentLibrary[] = [];
-        //            const results = snapshot.val();
-        //            for (let key in results) {
-        //                investmentLibraries.push({
-        //                    id: results[key].id,
-        //                    name: results[key].name,
-        //                    inflationRate: results[key].inflationRate,
-        //                    discountRate: results[key].discountRate,
-        //                    description: results[key].description,
-        //                    budgetOrder: isNil(results[key].budgetOrder) ? [] : results[key].budgetOrder,
-        //                    budgetYears: isNil(results[key].budgetYears) ? [] : results[key].budgetYears
-        //                });
-        //            }
-        //            return resolve(investmentLibraries);
-        //        })
-        //        .catch((error: any) => reject(`Failed to get investment libraries: ${error.toString()}`));
-        //});
     }
 
     /**
@@ -64,15 +43,6 @@ export default class InvestmentEditorService extends Vue {
                 }
                 return Promise.reject('Failed to get investment library');
             });
-        //return new Promise<InvestmentLibrary>((resolve, reject) => {
-        //    db.ref('investmentLibraries')
-        //        .child('Investment_' + createdInvestmentLibrary.id)
-        //        .set(createdInvestmentLibrary)
-        //        .then(() => {
-        //            return resolve(createdInvestmentLibrary);
-        //        })
-        //        .catch((error: any) => reject(`Failed to create investment library: ${error.toString()}`));
-        //});
     }
 
     /**
@@ -87,15 +57,6 @@ export default class InvestmentEditorService extends Vue {
                 }
                 return Promise.reject('Failed to get investment library');
             });
-        //return new Promise<InvestmentLibrary>((resolve, reject) => {
-        //    db.ref('investmentLibraries')
-        //        .child('Investment_' + updatedInvestmentLibrary.id)
-        //        .update(updatedInvestmentLibrary)
-        //        .then(() => {
-        //            return resolve(updatedInvestmentLibrary);
-        //        })
-        //        .catch((error: any) => reject(`Failed to update investment library: ${error.toString()}`));
-        //});
     }
 
     /**

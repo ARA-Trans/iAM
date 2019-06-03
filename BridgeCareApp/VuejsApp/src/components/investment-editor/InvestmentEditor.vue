@@ -168,7 +168,6 @@
     } from '@/shared/models/dialogs/investment-editor-dialogs/edit-budgets-dialog-data';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
     import { sortByProperty, sorter } from '@/shared/utils/sorter';
-import { functions } from 'firebase';
 
     @Component({
         components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog }

@@ -8,8 +8,9 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "start": "nodemon app.js",
-    "test": "mocha tests/**/*Tests.js"
+    "start": "nodemon --exec babel-node app.js",
+    "test": "mocha tests/**/*Tests.js",
+    "startprod": "NODE_ENV=production node add.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -25,6 +26,8 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
     "eslint": "^5.16.0",
     "mocha": "^6.1.4",
     "should": "^13.2.3",
