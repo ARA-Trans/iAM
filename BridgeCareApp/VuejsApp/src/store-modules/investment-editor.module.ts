@@ -119,8 +119,7 @@ const actions = {
                     commit('scenarioInvestmentLibraryMutator', response.data);
                     commit('updatedSelectedInvestmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
-                dispatch('setIsBusy', {isBusy: false});
-                dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});} else {
+                } else {
                     dispatch('setErrorMessage', {message: `Failed to save scenario investment library${setStatusMessage(response)}`});
                 }
             });
