@@ -661,7 +661,7 @@
                     performanceLibraryId: this.selectedScenarioId
                 }));
             }
-            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: this.selectedPerformanceLibrary});
+            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary});
         }
 
         /**
