@@ -120,7 +120,7 @@ const actions = {
             })
             .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
-    async SOCKET_investmentLibrary({ commit }: any, library: any) {
+    async socket_investmentLibrary({ commit }: any, library: any) {
         if (library.operationType == 'update' || library.operationType == 'replace') {
             commit('updatedInvestmentLibraryMutator', library.fullDocument);
             commit('selectedInvestmentLibraryMutator', library.fullDocument.id);

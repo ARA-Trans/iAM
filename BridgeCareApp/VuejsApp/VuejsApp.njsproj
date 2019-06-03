@@ -209,7 +209,6 @@
     <TypeScriptCompile Include="src\shared\utils\has-value.ts" />
     <TypeScriptCompile Include="src\shared\utils\mock-data.ts" />
     <TypeScriptCompile Include="src\shared\utils\sorter.ts" />
-    <TypeScriptCompile Include="src\shims-socket-io-aug.d.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
     <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts">
