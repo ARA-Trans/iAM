@@ -7,37 +7,22 @@ import {isNil} from 'ramda';
 import DataSnapshot = firebase.database.DataSnapshot;
 import forEach from 'ramda/es/forEach';
 
-axios.defaults.baseURL = process.env.VUE_APP_URL;
-
-const nodeAPIInstance = axios.create({
-    baseURL: process.env.VUE_APP_NODE_URL
-});
-
-Vue.prototype.$nodeApi = nodeAPIInstance;
-
 export default class InvestmentEditorService extends Vue {
     /**
      * Gets all investment libraries
      */
-    async getInvestmentLibraries(): Promise<InvestmentLibrary[]> {
+    getInvestmentLibraries(): AxiosPromise<InvestmentLibrary[]> {
 
-        return axios.get<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`)
-            //@ts-ignore
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to get investment library');
-            });
+        return axiosInstance.get<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`);
     }
 
     /**
      * Creates an investment library
      * @param createInvestmentLibraryData The investment library create data
      */
-    createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
+    createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
 
-        return axios.post<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`, createdInvestmentLibrary)
+        return axiosInstance.post<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`, createdInvestmentLibrary)
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
                     return response.data;
@@ -50,8 +35,8 @@ export default class InvestmentEditorService extends Vue {
      * Updates an investment library
      * @param updateInvestmentLibraryData The investment library updated data
      */
-    updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): Promise<InvestmentLibrary> {
-        return axios.put<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
+    updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
+        return axiosInstance.put<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
                     return response.data;

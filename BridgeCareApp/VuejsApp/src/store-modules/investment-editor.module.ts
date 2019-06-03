@@ -64,7 +64,7 @@ const actions = {
         commit('updatedSelectedInvestmentLibraryMutator', payload.updatedSelectedInvestmentLibrary);
     },
     async getInvestmentLibraries({dispatch, commit}: any) {
-        await InvestmentEditorService.getInvestmentLibraries()
+        await new InvestmentEditorService().getInvestmentLibraries()
             .then((response: AxiosResponse<InvestmentLibrary[]>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('investmentLibrariesMutator', response.data);
@@ -74,7 +74,7 @@ const actions = {
             });
     },
     async createInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        await InvestmentEditorService.createInvestmentLibrary(payload.createdInvestmentLibrary)
+        await new InvestmentEditorService().createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then((response: AxiosResponse<InvestmentLibrary>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('createdInvestmentLibraryMutator', response.data);
@@ -109,16 +109,6 @@ const actions = {
             commit('updatedSelectedInvestmentLibraryMutator', emptyInvestmentLibrary);
         }
     },
-    async upsertScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        return await new InvestmentEditorService().upsertScenarioInvestmentLibrary(payload.updatedInvestmentScenario)
-            .then((scenarioInvestmentLibrary: InvestmentLibrary) => {
-                commit('scenarioInvestmentLibraryMutator', scenarioInvestmentLibrary);
-                commit('updatedSelectedInvestmentLibraryMutator', scenarioInvestmentLibrary);
-                dispatch('setIsBusy', {isBusy: false});
-                dispatch('setSuccessMessage', {message: 'Applied investment library changes successfully'});
-            })
-            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
-    },
     async socket_investmentLibrary({ commit }: any, library: any) {
         if (library.operationType == 'update' || library.operationType == 'replace') {
             commit('updatedInvestmentLibraryMutator', library.fullDocument);
@@ -127,6 +117,7 @@ const actions = {
         if (library.operationType == 'insert') {
             commit('createdInvestmentLibraryMutator', library.fullDocument);
         }
+    },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         return await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
             .then((response: AxiosResponse<InvestmentLibrary>) => {

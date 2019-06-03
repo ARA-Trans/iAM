@@ -695,13 +695,10 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.setIsBusyAction({ isBusy: true });
             this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary})
                 .then(() => {
-                    this.setIsBusyAction({ isBusy: false });
                     this.setSuccessMessageAction({ message: 'Library updated successfully' });
                 }).catch(() => {
-                    this.setIsBusyAction({ isBusy: false });
             });
         }
 
