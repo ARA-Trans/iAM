@@ -132,12 +132,15 @@
     import {isEmpty} from 'ramda';
     import {AxiosResponse} from 'axios';
     import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import {Attribute} from '@/shared/models/iAM/attribute';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component
     export default class EquationEditorDialog extends Vue {
         @Prop() dialogData: EquationEditorDialogData;
 
-        @State(state => state.attribute.attributes) attributes: string[];
+        @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('getAttributes') getAttributesAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -154,7 +157,18 @@
         cannotSubmit: boolean = false;
 
         /**
-         * Watcher: dialogData
+         * Component mounted event handler
+         */
+        mounted() {
+            this.textareaInput = document.getElementById('equation_textarea') as HTMLTextAreaElement;
+            this.cursorPosition = this.textareaInput.selectionStart;
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesList();
+            }
+        }
+
+        /**
+         * Sets equation UI properties dialogData has changed
          */
         @Watch('dialogData')
         onDialogDataChanged() {
@@ -162,22 +176,21 @@
             this.equation = this.dialogData.equation;
             this.isPiecewise = this.dialogData.isPiecewise;
             this.isFunction = this.dialogData.isFunction;
-            if (this.dialogData.showDialog && isEmpty(this.attributes)) {
-                this.getAttributesAction();
+        }
+
+        /**
+         * Calls the setBenefitAndWeightingAttributes function if a change to stateNumericAttributes causes it to have a value
+         */
+        @Watch('stateNumericAttributes')
+        onStateNumericAttributesChanged() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesList();
             }
         }
 
         /**
-         * Watcher: attributes
-         */
-        @Watch('attributes')
-        onAttributesChanged() {
-            // set attributesList = attributes
-            this.attributesList = this.attributes;
-        }
-
-        /**
-         * Watcher: equation
+         * Sets boolean properties to show validated/invalidated equation messages and allow/prevent submitting equation
+         * data
          */
         @Watch('equation')
         onEquationChanged() {
@@ -189,11 +202,10 @@
         }
 
         /**
-         * Component has been mounted
+         * Sets attributesList with the numeric attributes from state
          */
-        mounted() {
-            this.textareaInput = document.getElementById('equation_textarea') as HTMLTextAreaElement;
-            this.cursorPosition = this.textareaInput.selectionStart;
+        setAttributesList() {
+            this.attributesList = getPropertyValues('name', this.stateNumericAttributes);
         }
 
         /**

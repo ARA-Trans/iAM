@@ -1,7 +1,5 @@
 import {Scenario} from '@/shared/models/iAM/scenario';
-import {statusReference} from '@/firebase';
 import ScenarioService from '@/services/scenario.service';
-import moment from 'moment';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 import {hasValue} from '@/shared/utils/has-value-util';

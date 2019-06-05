@@ -172,7 +172,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
-    <Compile Include="Controllers\AttributeNamesController.cs" />
+    <Compile Include="Controllers\AttributeController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
     <Compile Include="Controllers\SimulationAnalysisController.cs" />
@@ -187,7 +187,7 @@
     <Compile Include="Controllers\SimulationsController.cs" />
     <Compile Include="Controllers\WindowsAuthorizationController.cs" />
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
-    <Compile Include="DataAccessLayer\AttributeNames.cs" />
+    <Compile Include="DataAccessLayer\Attributes.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryData.cs" />
     <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
@@ -250,7 +250,7 @@
     <Compile Include="Interfaces\ITarget.cs" />
     <Compile Include="Interfaces\SummaryReport\ISummaryReportGenrator.cs" />
     <Compile Include="Models\AttributeByYearModel.cs" />
-    <Compile Include="Models\AttributeNameModel.cs" />
+    <Compile Include="Models\AttributeModel.cs" />
     <Compile Include="Models\AttributeYearlyValueModel.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
     <Compile Include="Models\BudgetModel.cs" />

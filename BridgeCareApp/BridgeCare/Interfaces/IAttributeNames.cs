@@ -5,6 +5,6 @@ namespace BridgeCare.Interfaces
 {
     public interface IAttributeNames
     {
-        IQueryable<AttributeNameModel> GetAttributeNames(BridgeCareContext db);
+        IQueryable<AttributeModel> GetAttributes(BridgeCareContext db);
     }
 }

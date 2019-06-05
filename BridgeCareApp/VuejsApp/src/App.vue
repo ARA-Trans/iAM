@@ -11,7 +11,7 @@
     import TopNavbar from './components/TopNavbar.vue';
     import iziToast from 'izitoast';
     import {axiosInstance} from '@/shared/utils/axios-instance';
-    import {hasValue} from "@/shared/utils/has-value-util";
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component({
         components: {TopNavbar}

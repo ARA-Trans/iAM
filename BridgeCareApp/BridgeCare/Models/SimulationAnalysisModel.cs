@@ -31,5 +31,8 @@ namespace BridgeCare.Models
 
     [DataMember(Name = "benefitAttribute")]
     public string benefit_variable { get; set; }
+
+    [DataMember(Name = "weightingAttribute")]
+    public string weighting { get; set; }
   }
 }

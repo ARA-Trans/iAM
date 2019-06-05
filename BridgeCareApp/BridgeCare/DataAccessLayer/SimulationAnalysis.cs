@@ -29,7 +29,8 @@ namespace BridgeCare.DataAccessLayer
               benefit_limit = b.BENEFIT_LIMIT,
               comments = b.COMMENTS,
               jurisdiction = b.JURISDICTION,
-              benefit_variable = b.BENEFIT_VARIABLE
+              benefit_variable = b.BENEFIT_VARIABLE,
+              weighting = b.WEIGHTING
             }).SingleOrDefault();
 
         return simulationAnalysisModel;
@@ -56,6 +57,7 @@ namespace BridgeCare.DataAccessLayer
         simulation.COMMITTED_PERIOD = model.committed_period;
         simulation.COMMITTED_START = model.committed_start;
         simulation.BENEFIT_VARIABLE = model.benefit_variable;
+        simulation.WEIGHTING = model.weighting;
 
         db.SaveChanges();
       }

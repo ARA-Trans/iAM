@@ -197,6 +197,7 @@
     import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
+    import {Attribute} from '@/shared/models/iAM/attribute';
 
     @Component({
         components: {CreatePerformanceLibraryDialog, CreatePerformanceLibraryEquationDialog, EquationEditorDialog, CriteriaEditorDialog}
@@ -205,7 +206,7 @@
         @State(state => state.performanceEditor.performanceLibraries) statePerformanceLibraries: PerformanceLibrary[];
         @State(state => state.performanceEditor.selectedPerformanceLibrary) stateSelectedPerformanceLibrary: PerformanceLibrary;
         @State(state => state.performanceEditor.scenarioPerformanceLibrary) stateScenarioPerformanceLibrary: PerformanceLibrary;
-        @State(state => state.attribute.attributes) stateAttributes: string[];
+        @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('getPerformanceLibraries') getPerformanceLibrariesAction: any;
         @Action('selectPerformanceLibrary') selectPerformanceLibraryAction: any;
@@ -214,13 +215,11 @@
         @Action('updateSelectedPerformanceLibrary') updateSelectedPerformanceLibraryAction: any;
         @Action('getScenarioPerformanceLibrary') getScenarioPerformanceLibraryAction: any;
         @Action('saveScenarioPerformanceLibrary') saveScenarioPerformanceLibraryAction: any;
-        @Action('getAttributes') getAttributesAction: any;
         @Action('setNavigation') setNavigationAction: any;
 
         performanceLibraries: PerformanceLibrary[] = [];
         selectedPerformanceLibrary: PerformanceLibrary = clone(emptyPerformanceLibrary);
         scenarioPerformanceLibrary: PerformanceLibrary = clone(emptyPerformanceLibrary);
-        attributes: string[] = [];
 
         selectedScenarioId: number = 0;
         hasSelectedPerformanceLibrary: boolean = false;
@@ -246,6 +245,9 @@
         latestLibraryId: number = 0;
         latestEquationId: number = 0;
 
+        /**
+         * beforeRouteEnter event handler
+         */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/PerformanceEditor/FromScenario/') {
@@ -286,11 +288,23 @@
             });
         }
 
+        /**
+         * beforeRouteUpdate event handler
+         */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/PerformanceEditor/Library/') {
                 this.selectedScenarioId = 0;
                 this.onClearSelectedPerformanceLibrary();
                 next();
+            }
+        }
+
+        /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
             }
         }
 
@@ -319,11 +333,13 @@
         }
 
         /**
-         * Sets attributes array = copy of stateAttributes array
+         * Calls the setAttributesSelectListItems function if a change to stateNumericAttributes causes it to have a value
          */
-        @Watch('stateAttributes')
-        onStateAttributesChanged() {
-            this.attributes = clone(this.stateAttributes);
+        @Watch('stateNumericAttributes')
+        onStateNumericAttributesChanged() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
+            }
         }
 
         /**
@@ -374,29 +390,12 @@
                 this.equationsGridData = hasValue(this.selectedPerformanceLibrary.equations)
                     ? this.selectedPerformanceLibrary.equations
                     : [];
-
-                if (isEmpty(this.attributes)) {
-                    this.getAttributesAction();
-                }
             } else {
                 this.hasSelectedPerformanceLibrary = false;
                 this.equationsGridData = [];
             }
 
             this.setAllPerformanceLibraries();
-        }
-
-        /**
-         * Sets the attributesSelectListItems array using the attributes array
-         */
-        @Watch('attributes')
-        onAttributesChanged() {
-            if (!isEmpty(this.attributes)) {
-                this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
-                    text: attribute,
-                    value: attribute
-                }));
-            }
         }
 
         /**
@@ -431,6 +430,16 @@
             }
 
             this.allPerformanceLibraries = uniq(libraries);
+        }
+
+        /**
+         * Sets the attributes select items using the numeric attributes from state
+         */
+        setAttributesSelectListItems() {
+            this.attributesSelectListItems = this.stateNumericAttributes.map((attribute: Attribute) => ({
+                text: attribute.name,
+                value: attribute.name
+            }));
         }
 
         /**

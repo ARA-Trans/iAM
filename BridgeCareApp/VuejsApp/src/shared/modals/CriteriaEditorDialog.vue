@@ -49,6 +49,7 @@
     import {hasValue} from '../utils/has-value-util';
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
     import {isEmpty} from 'ramda';
+    import {Attribute} from '@/shared/models/iAM/attribute';
 
     @Component({
         components: {VueQueryBuilder}
@@ -56,7 +57,7 @@
     export default class CriteriaEditorDialog extends Vue {
         @Prop() dialogData: CriteriaEditorDialogData;
 
-        @State(state => state.attribute.attributes) attributes: string[];
+        @State(state => state.attribute.attributes) stateAttributes: Attribute[];
 
         @Action('getAttributes') getAttributesAction: any;
 
@@ -77,6 +78,15 @@
         currentCriteriaOutput = '';
 
         /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateAttributes)) {
+                this.setEditorRules();
+            }
+        }
+
+        /**
          * Sets the criteria object with the dialogData object's parsed criteria string, then dispatches an action to
          * get the attributes from the server if the attributes array is empty
          */
@@ -86,26 +96,28 @@
             if (isEmpty(this.criteria.logicalOperator)) {
                 this.criteria.logicalOperator = 'AND';
             }
+        }
 
-            if (this.dialogData.showDialog && isEmpty(this.attributes)) {
-                this.getAttributesAction();
+        /**
+         * Calls the setEditorRules function if a change to stateAttributes causes it to have a value
+         */
+        @Watch('stateAttributes')
+        onStateAttributesChanged() {
+            if (hasValue(this.stateAttributes)) {
+                this.setEditorRules();
             }
         }
 
         /**
-         * Sets the editorRules array using the attributes array data
+         * Sets editorRules property using the attributes from state
          */
-        @Watch('attributes')
-        onAttributesChanged() {
-            if (!isEmpty(this.attributes)) {
-                // set the rules property using the list of attributes
-                this.editorRules = this.attributes.map((attribute: string) => ({
-                    type: 'text',
-                    label: attribute,
-                    id: attribute,
-                    operators: ['=', '<>', '<', '<=', '>', '>=']
-                }));
-            }
+        setEditorRules() {
+            this.editorRules = this.stateAttributes.map((attribute: Attribute) => ({
+                type: 'text',
+                label: attribute.name,
+                id: attribute.name,
+                operators: ['=', '<>', '<', '<=', '>', '>=']
+            }));
         }
 
         /**

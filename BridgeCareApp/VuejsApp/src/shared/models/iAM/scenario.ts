@@ -8,6 +8,7 @@ export interface Analysis {
     description: string;
     criteria: string;
     benefitAttribute: string;
+    weightingAttribute: string;
 }
 
 export const emptyAnalysis: Analysis = {
@@ -19,7 +20,8 @@ export const emptyAnalysis: Analysis = {
     benefitLimit: 0,
     description: '',
     criteria: '',
-    benefitAttribute: ''
+    benefitAttribute: '',
+    weightingAttribute: ''
 };
 
 export interface Scenario {

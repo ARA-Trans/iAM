@@ -30,12 +30,12 @@
                         <v-layout justify-center fill-height>
                             <v-spacer></v-spacer>
                             <v-flex xs3>
-                                <v-select v-model="analysis.optimizationType" :items="optimizationType"
+                                <v-select v-model="analysis.optimizationType" :items="optimizationTypes"
                                           label="Optimization type" outline>
                                 </v-select>
                             </v-flex>
                             <v-flex xs3>
-                                <v-select v-model="analysis.budgetType" :items="budgetType" label="Budget type" outline>
+                                <v-select v-model="analysis.budgetType" :items="budgetTypes" label="Budget type" outline>
                                 </v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
@@ -51,6 +51,16 @@
                                 <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
                                 </v-text-field>
                             </v-flex>
+                            <v-spacer></v-spacer>
+                        </v-layout>
+                        <v-layout justify-center fill-height>
+                            <v-spacer></v-spacer>
+                            <v-flex xs3>
+                                <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
+                                          outline>
+                                </v-select>
+                            </v-flex>
+                            <v-flex xs3></v-flex>
                             <v-spacer></v-spacer>
                         </v-layout>
                         <v-layout justify-center fill-height>
@@ -104,12 +114,14 @@
     import {AxiosResponse} from 'axios';
     import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {Attribute} from '@/shared/models/iAM/attribute';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
 
     @Component({
         components: {CriteriaEditorDialog}
     })
     export default class EditAnalysis extends Vue {
-        @State(state => state.scenario.benefitAttributes) benefitAttributes: string[];
+        @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setNavigation') setNavigationAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
@@ -120,12 +132,18 @@
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
-        optimizationType: string[] = ['Incremental benefit/cost', 'Another one', 'The better one'];
-        budgetType: string[] =  ['As budget permits', 'Another one', 'The better one'];
+        optimizationTypes: string[] = ['Incremental Benefit/Cost', 'Maximum Benefit', 'Remaining Life/Cost',
+            'Conditional RSL/Cost', 'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost',
+            'Multi-year Maximum Benefit', 'Multi-year Remaining Life/Cost', 'Multi-year Maximum Life'];
+        budgetTypes: string[] =  ['No Spending', 'As Budget Permits', 'Until Targets Met', 'Until Deficient Met',
+            'Targets/Deficient Met', 'Unlimited'];
+        benefitAttributes: string[] = [];
+        weightingAttributes: string[] = ['None'];
+
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
         /**
-         * Sets component UI properties
+         * beforeRouterEnter event handler
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -179,6 +197,25 @@
         }
 
         /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setBenefitAndWeightingAttributes();
+            }
+        }
+
+        /**
+         * Calls the setBenefitAndWeightingAttributes function if a change to stateNumericAttributes causes it to have a value
+         */
+        @Watch('stateNumericAttributes')
+        onStateNumericAttributesChanged() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setBenefitAndWeightingAttributes();
+            }
+        }
+
+        /**
          * Sets the activePicker to use 'YEAR' input if showDatePicker is true
          */
         @Watch('showDatePicker')
@@ -187,6 +224,15 @@
                 // @ts-ignore
                 this.$nextTick(() => this.$refs.picker.activePicker = 'YEAR');
             }
+        }
+
+        /**
+         * Sets the benefitAttributes & weightingAttributes lists using the numeric attributes from state
+         */
+        setBenefitAndWeightingAttributes() {
+            const numericAttributes: string[] = getPropertyValues('name', this.stateNumericAttributes);
+            this.benefitAttributes = numericAttributes;
+            this.weightingAttributes = [...this.weightingAttributes, ...numericAttributes];
         }
 
         /**
