@@ -1,5 +1,5 @@
-import {Scenario} from '@/shared/models/iAM/scenario';
-import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
+import { Scenario } from '@/shared/models/iAM/scenario';
+import { InventoryItem, InventoryItemDetail } from '@/shared/models/iAM/inventory';
 import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import moment from 'moment';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
@@ -185,16 +185,18 @@ export const mockInventoryItemDetail: InventoryItemDetail = {
         ],
         minRatioLegalLoad: {label: 'Min Ratio OR / Max Legal Load', value: ''}
     },
-    nbiLoadRating: [
-        {label: 'IR04 Load Type', value: ''},
-        {label: 'IR05 NBI', value: ''},
-        {label: 'IR010 Inv Rating Ton', value: ''},
-        {label: 'IR11 Opr Rating Ton', value: ''},
-        {label: 'IR11a SLC Rating Factor', value: ''},
-        {label: 'IR20 IR Rating Factor', value: ''},
-        {label: 'IR21 OR Rating Factor', value: ''},
-        {label: 'IR17 Rating Dataset', value: ''}
-    ],
+    nbiLoadRatings: [{
+        nbiLoadRatingRow: [
+            { label: 'IR04 Load Type', value: '' },
+            { label: 'IR05 NBI', value: '' },
+            { label: 'IR010 Inv Rating Ton', value: '' },
+            { label: 'IR11 Opr Rating Ton', value: '' },
+            { label: 'IR11a SLC Rating Factor', value: '' },
+            { label: 'IR20 IR Rating Factor', value: '' },
+            { label: 'IR21 OR Rating Factor', value: '' },
+            { label: 'IR17 Rating Dataset', value: '' }
+        ]
+    }],
     posting: [
         {label: 'VP01 Status Date', value: ''},
         {label: 'VP02 Posting Status', value: ''},

@@ -19,8 +19,10 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -260,11 +262,13 @@
     <Compile Include="Models\CreateSimulationDataModel.cs" />
     <Compile Include="Models\CrudModel.cs" />
     <Compile Include="Models\FeasibilityModel.cs" />
+    <Compile Include="Models\Inventory\InventoryNbiLoadRatingModel.cs" />
     <Compile Include="Models\Inventory\InventorySelectionModel.cs" />
     <Compile Include="Models\Inventory\ConditionDuration.cs" />
     <Compile Include="Models\Inventory\InventoryItemDetailModel.cs" />
     <Compile Include="Models\Inventory\InventoryItemModel.cs" />
     <Compile Include="Models\Inventory\InventoryModel.cs" />
+    <Compile Include="Models\Inventory\NbiLoadRating.cs" />
     <Compile Include="Models\Inventory\OperatingRatingInventoryRatingGrouping.cs" />
     <Compile Include="Models\Inventory\OperatingRatingInventoryRatingRow.cs" />
     <Compile Include="Models\Inventory\RiskScores.cs" />

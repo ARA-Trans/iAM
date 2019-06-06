@@ -20,8 +20,9 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         public InventoryModel GetInventoryByBMSId(string bmsId, BridgeCareContext db)
         {
-            var query = GetSelectColumnsForPennDotCrosswalk();
+            var query = GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalk.InventoryItems);
             query += " FROM PennDot_Report_A WHERE BRIDGE_ID = '" + bmsId + "'";
+            
             var BridgeData = GetInventoryModelData(db, query);
             return BridgeData;
         }
@@ -34,8 +35,9 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         public InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db)
         {
-            var query = GetSelectColumnsForPennDotCrosswalk();
+            var query = GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalk.InventoryItems);
             query += " FROM PennDot_Report_A WHERE BRKEY = " + brKey;
+           
             var BridgeData = GetInventoryModelData(db, query);
             return BridgeData;
         }
@@ -66,13 +68,13 @@ namespace BridgeCare.DataAccessLayer
             return rawQueryForData.ToList();          
         }
 
-        private static string GetSelectColumnsForPennDotCrosswalk()
+        private static string GetSelectColumnsForPennDotCrosswalk(List<InventoryItemModel> inventoryItems)
         {
             var query = "SELECT ";
             var separator = " ";
-            foreach (InventoryItemModel p in PennDotCrosswalk.InventoryItems)
+            foreach (var inventoryItem in inventoryItems)
             {
-                query += separator + p.ColumnName;
+                query += separator + inventoryItem.ColumnName;
                 separator = ",";
             }
 
@@ -84,11 +86,14 @@ namespace BridgeCare.DataAccessLayer
             InventoryModel BridgeData = new InventoryModel();
             try
             {
-                DataTable dt = UtilityFunctions.NonEntitySQLQuery(query, db);
-                foreach (InventoryItemModel p in PennDotCrosswalk.InventoryItems)
+                DataTable dataTable = UtilityFunctions.NonEntitySQLQuery(query, db);
+                foreach (InventoryItemModel inventoryItemModel in PennDotCrosswalk.InventoryItems)
                 {
-                    BridgeData.AddModel(p, dt.Rows[0][p.ColumnName].ToString());
+                    BridgeData.AddModel(inventoryItemModel, dataTable.Rows[0][inventoryItemModel.ColumnName].ToString());
                 }
+
+                var brKey = Convert.ToInt32(dataTable.Rows[0]["BRKEY"]);
+                AddNbiLoadRaingToModel(BridgeData, brKey, db);
             }
             catch (SqlException ex)
             {
@@ -99,6 +104,34 @@ namespace BridgeCare.DataAccessLayer
                 HandleException.OutOfMemoryError(ex);
             }
             return BridgeData;
+        }
+
+        private static void AddNbiLoadRaingToModel(InventoryModel BridgeData, int brKey, BridgeCareContext db)
+        {
+            var nbiLoadRatingQuery = GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalk.NbiLoadRatingInventoryItems);
+            nbiLoadRatingQuery += " FROM PENNDOT_NBI_LOAD_RATING WHERE BRKEY = " + brKey;
+            var dataTable = UtilityFunctions.NonEntitySQLQuery(nbiLoadRatingQuery, db);
+            var inventoryNbiLoadRatings = new List<InventoryNbiLoadRatingModel>();
+            var nbiLoadRatingInventoryItems = PennDotCrosswalk.NbiLoadRatingInventoryItems;
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var inventoryNbiLoadRatingModel = new InventoryNbiLoadRatingModel();
+                foreach (var nbiLoadRatingInventoryItem in nbiLoadRatingInventoryItems)
+                {
+                    var itemToAdd = new InventoryItemModel
+                    {
+                        ColumnName = nbiLoadRatingInventoryItem.ColumnName,
+                        DisplayValue = nbiLoadRatingInventoryItem.DisplayValue,
+                        Id = nbiLoadRatingInventoryItem.Id,
+                        ViewName = nbiLoadRatingInventoryItem.ViewName
+                    };
+                    itemToAdd.DisplayValue = row[nbiLoadRatingInventoryItem.ColumnName].ToString();
+                    inventoryNbiLoadRatingModel.NbiLoadRatingItems.Add(itemToAdd);
+                }
+                inventoryNbiLoadRatings.Add(inventoryNbiLoadRatingModel);
+            }
+            BridgeData.InventoryNbiLoadRatings = inventoryNbiLoadRatings;
         }
     }
 }
