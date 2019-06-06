@@ -7,19 +7,19 @@ using System.Web.Http;
 
 namespace BridgeCare.Controllers
 {
-    public class AttributeNamesController : ApiController
+    public class AttributeController : ApiController
     {
         private readonly BridgeCareContext db;
         private readonly IAttributeNames attributes;
 
-        public AttributeNamesController(IAttributeNames attributeNames, BridgeCareContext context)
+        public AttributeController(IAttributeNames attributeNames, BridgeCareContext context)
         {
             attributes = attributeNames ?? throw new ArgumentNullException(nameof(attributeNames));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // Get: api/attributeNames
+        [Route("api/GetAttributes")]
         [HttpGet]
-        public List<AttributeNameModel> Get() => attributes.GetAttributeNames(db).ToList();
+        public List<AttributeModel> GetAttributes() => attributes.GetAttributes(db).ToList();
     }
 }

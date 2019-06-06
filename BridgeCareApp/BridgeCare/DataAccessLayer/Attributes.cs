@@ -7,19 +7,19 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class AttributeNames : IAttributeNames
+    public class Attributes : IAttributeNames
     {
-        public AttributeNames()
+        public Attributes()
         {
         }
 
-        public IQueryable<AttributeNameModel> GetAttributeNames(BridgeCareContext db)
+        public IQueryable<AttributeModel> GetAttributes(BridgeCareContext db)
         {
-            var select = ("SELECT ATTRIBUTE_ as Name FROM Attributes_");
-            var rawQueryForData = Enumerable.Empty<AttributeNameModel>();
+            var select = ("SELECT ATTRIBUTE_ as Name, TYPE_ as Type FROM Attributes_");
+            var rawQueryForData = Enumerable.Empty<AttributeModel>();
             try
             {
-                rawQueryForData = db.Database.SqlQuery<AttributeNameModel>(select);
+                rawQueryForData = db.Database.SqlQuery<AttributeModel>(select);
             }
             catch (SqlException ex)
             {
