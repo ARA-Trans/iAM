@@ -2,8 +2,6 @@ import {AxiosPromise} from 'axios';
 import {InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 
-axiosInstance.defaults.baseURL = process.env.VUE_APP_URL;
-
 export default class InventoryService {
     /**
      * Gets a list of inventory items

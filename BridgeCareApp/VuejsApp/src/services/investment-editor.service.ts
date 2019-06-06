@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {axiosInstance} from '@/shared/utils/axios-instance';
+import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise, AxiosResponse} from 'axios';
 import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 import {db} from '@/firebase';
@@ -13,7 +13,7 @@ export default class InvestmentEditorService extends Vue {
      */
     getInvestmentLibraries(): AxiosPromise<InvestmentLibrary[]> {
 
-        return axiosInstance.get<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`);
+        return nodejsAxiosInstance.get<InvestmentLibrary[]>(`/api/investmentLibraries/`);
     }
 
     /**
@@ -22,7 +22,7 @@ export default class InvestmentEditorService extends Vue {
      */
     createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
 
-        return axiosInstance.post<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`, createdInvestmentLibrary)
+        return nodejsAxiosInstance.post<InvestmentLibrary[]>(`/api/investmentLibraries/`, createdInvestmentLibrary)
             .then((response: any) => {
                 if (!isNil(response)) {
                     return response;
@@ -36,7 +36,7 @@ export default class InvestmentEditorService extends Vue {
      * @param updateInvestmentLibraryData The investment library updated data
      */
     updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-        return axiosInstance.put<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
+        return nodejsAxiosInstance.put<InvestmentLibrary[]>(`/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
             .then((response: AxiosResponse) => {
                 if (!isNil(response)) {
                     return response.data;

@@ -61,9 +61,6 @@
     <Content Include="src\assets\images\inventory_mock_bridge_images\8.jpg" />
     <Content Include="src\assets\images\under-construction.png" />
     <Content Include="src\assets\logo.svg" />
-    <Content Include="src\components\DetailedReport.vue">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="src\components\Inventory.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentStrategyDialog.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\EditBudgetsDialog.vue" />
@@ -102,6 +99,10 @@
     <Content Include="src\shared\dialogs\ReportsDownload.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\shared\modals\Alert.vue" />
+    <Content Include="src\shared\modals\CriteriaEditorDialog.vue" />
+    <Content Include="src\shared\modals\EquationEditorDialog.vue" />
+    <Content Include="src\shared\modals\Spinner.vue" />
     <Content Include="tsconfig.json" />
     <Content Include="tslint.json" />
     <Content Include="Web.config" />
@@ -131,6 +132,7 @@
     <Folder Include="src\services\" />
     <Folder Include="src\shared\" />
     <Folder Include="src\shared\dialogs\" />
+    <Folder Include="src\shared\modals\" />
     <Folder Include="src\shared\models\" />
     <Folder Include="src\shared\models\child-components\" />
     <Folder Include="src\shared\models\child-components\treatment-editor\" />
@@ -160,21 +162,19 @@
     <TypeScriptCompile Include="src\router.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\analysis-editor.service.ts" />
     <TypeScriptCompile Include="src\services\attribute.service.ts" />
     <TypeScriptCompile Include="src\services\authentication.service.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\services\detailed-report.service.ts" />
+    <TypeScriptCompile Include="src\services\committed-projects.service.ts" />
     <TypeScriptCompile Include="src\services\equation-editor.service.ts" />
     <TypeScriptCompile Include="src\services\inventory.service.ts" />
     <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
     <TypeScriptCompile Include="src\services\network.service.ts" />
     <TypeScriptCompile Include="src\services\performance-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\reports.service.ts" />
     <TypeScriptCompile Include="src\services\scenario.service.ts" />
-    <TypeScriptCompile Include="src\services\simulation.service.ts" />
-    <TypeScriptCompile Include="src\services\summary-report.service.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
     <TypeScriptCompile Include="src\shared\models\child-components\treatment-editor\tab-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\create-scenario-dialog\scenario-creation-data.ts">
@@ -203,12 +203,16 @@
     <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-row.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\select-item.ts" />
+    <TypeScriptCompile Include="src\shared\utils\axios-instance.ts" />
+    <TypeScriptCompile Include="src\shared\utils\axios-mock-adapter-instance.ts" />
     <TypeScriptCompile Include="src\shared\utils\criteria-editor-parsers.ts" />
     <TypeScriptCompile Include="src\shared\utils\formulas.ts" />
     <TypeScriptCompile Include="src\shared\utils\getter-utils.ts" />
-    <TypeScriptCompile Include="src\shared\utils\has-value.ts" />
+    <TypeScriptCompile Include="src\shared\utils\has-value-util.ts" />
+    <TypeScriptCompile Include="src\shared\utils\http-utils.ts" />
+    <TypeScriptCompile Include="src\shared\utils\math-utils.ts" />
     <TypeScriptCompile Include="src\shared\utils\mock-data.ts" />
-    <TypeScriptCompile Include="src\shared\utils\sorter.ts" />
+    <TypeScriptCompile Include="src\shared\utils\sorter-utils.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
     <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts">
@@ -218,6 +222,7 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\attribute.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\authentication.module.ts" />
     <TypeScriptCompile Include="src\store-modules\breadcrumb.module.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -231,8 +236,6 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\security.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\simulation.module.ts" />
     <TypeScriptCompile Include="src\store-modules\toastr.module.ts" />
     <TypeScriptCompile Include="src\store-modules\treatment-editor.module.ts" />
     <TypeScriptCompile Include="src\store\root-store.ts" />
