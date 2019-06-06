@@ -80,6 +80,7 @@
         @Action('authenticateUser') authenticateUserAction: any;
         @Action('getNetworks') getNetworksAction: any;
         @Action('setNavigation') setNavigationAction: any;
+        @Action('getAttributes') getAttributesAction: any;
 
         drawer: boolean = false;
 
@@ -91,6 +92,7 @@
             this.authenticateUserAction().then(() => {
                 this.$forceUpdate();
                 this.getNetworksAction();
+                this.getAttributesAction();
             });
         }
 
