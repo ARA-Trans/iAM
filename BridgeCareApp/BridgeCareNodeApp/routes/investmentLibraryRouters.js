@@ -1,7 +1,7 @@
 const express = require('express');
 const libraryController = require('../controllers/libraryController');
 
-function routes(InvestmentLibrary){
+function routes(InvestmentLibrary, connectionTest){
     const investmentLibraryRouter = express.Router();
     const controller = libraryController(InvestmentLibrary);
       investmentLibraryRouter.route("/investmentLibraries")
@@ -12,6 +12,11 @@ function routes(InvestmentLibrary){
         .get(controller.getById)
         .put(controller.put)
         .delete(controller.deleteLibrary);
+
+        investmentLibraryRouter.route("/test")
+        .get((req,res) => {
+          return res.send(connectionTest);
+        });
         return investmentLibraryRouter;
 }
 

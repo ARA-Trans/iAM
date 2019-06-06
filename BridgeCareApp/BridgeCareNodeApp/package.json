@@ -10,10 +10,11 @@
     "lint": "eslint .",
     "start": "nodemon --exec babel-node app.js",
     "test": "mocha tests/**/*Tests.js",
-    "startprod": "NODE_ENV=production node add.js"
+    "prod": "set NODE_ENV=production&& nodemon app.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.0",
     "http": "0.0.0",
@@ -40,7 +41,7 @@
     ],
     "delay": "2500",
     "env": {
-      "NODE_ENV": "development",
+      "NODE_ENV": "development", 
       "PORT": 4000
     }
   }

@@ -23,9 +23,9 @@ export default class InvestmentEditorService extends Vue {
     createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
 
         return axiosInstance.post<InvestmentLibrary[]>(`http://localhost:4000/api/investmentLibraries/`, createdInvestmentLibrary)
-            .then((response: AxiosResponse) => {
+            .then((response: any) => {
                 if (!isNil(response)) {
-                    return response.data;
+                    return response;
                 }
                 return Promise.reject('Failed to get investment library');
             });
