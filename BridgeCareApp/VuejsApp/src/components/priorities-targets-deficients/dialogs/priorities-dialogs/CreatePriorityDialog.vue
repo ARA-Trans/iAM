@@ -4,13 +4,14 @@
             <v-card>
                 <v-card-title>
                     <v-layout justify-center fill-height>
-                        <h3>New Deficient</h3>
+                        <h3>New Priority</h3>
                     </v-layout>
                 </v-card-title>
                 <v-card-text>
                     <v-layout column fill-height>
-                        <v-text-field label="Name" v-model="newDeficient.name" outline></v-text-field>
-                        <v-select-list :items="numericAttributes" v-model="newDeficient.attribute"></v-select-list>
+                        <v-text-field label="Priority" v-model="newPriority.priorityLevel" outline></v-text-field>
+
+                        <v-text-field label="Year" v-model="newPriority.year" outline></v-text-field>
                     </v-layout>
                 </v-card-text>
             </v-card>
@@ -20,27 +21,24 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State} from 'vuex-class';
-    import {Deficient, emptyDeficient} from '@/shared/models/iAM/deficient';
+    import {Component, Prop} from 'vue-property-decorator';
+    import {emptyPriority, Priority} from "@/shared/models/iAM/priority";
     import {clone} from 'ramda';
 
     @Component
-    export default class CreateDeficientDialog extends Vue {
+    export default class CreatePriorityDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[]
-
-        newDeficient: Deficient = clone(emptyDeficient);
+        newPriority: Priority = clone(emptyPriority);
 
         onSubmit(submit: boolean) {
             if (submit) {
-                this.$emit('submit', this.newDeficient);
+                this.$emit('submit', this.newPriority);
             } else {
                 this.$emit('submit', null);
             }
 
-            this.newDeficient = clone(emptyDeficient);
+            this.newPriority = clone(emptyPriority);
         }
     }
 </script>
