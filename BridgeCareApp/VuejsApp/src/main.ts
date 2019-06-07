@@ -6,6 +6,9 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Vuetify from 'vuetify';
 import VueFire from 'vuefire';
+import VueSocketio from 'vue-socket.io-extended';
+import io from 'socket.io-client';
+
 import App from './App.vue';
 import router from './router';
 import store from './store/root-store';
@@ -16,6 +19,8 @@ import 'izitoast/dist/js/iziToast.min';
 Vue.use(Vuetify, {
     iconfont: 'fa'
 }, VueFire);
+
+Vue.use(VueSocketio, io(process.env.VUE_APP_NODE_URL), { store });
 
 Vue.config.productionTip = false;
 
