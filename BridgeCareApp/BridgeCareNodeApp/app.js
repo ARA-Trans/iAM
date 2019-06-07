@@ -52,12 +52,12 @@ async function run() {
   const InvestmentLibrary = require("./models/investmentLibraryModel");
   const investmentLibraryrouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary, connectionTest);
 
-  app.use("/api", investmentLibraryrouter);
-
   app.use(cors());
   io.origins('*:*');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+
+  app.use("/api", investmentLibraryrouter);
 
   const pipeline = [{ $match: { 'ns.db': 'BridgeCare', 'ns.coll': 'investmentLibraries' } }];
   const options = { fullDocument: 'updateLookup' };

@@ -20,7 +20,7 @@ Vue.use(Vuetify, {
     iconfont: 'fa'
 }, VueFire);
 
-Vue.use(VueSocketio, io('http://localhost:4000'), { store });
+Vue.use(VueSocketio, io(process.env.VUE_APP_NODE_URL), { store });
 
 Vue.config.productionTip = false;
 
