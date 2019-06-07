@@ -46,8 +46,8 @@ async function run() {
 
   }
 
-  io.on('connect', () => { console.log('a user is connected') });
-  io.on('disconnect', () => { console.log('a user is disconnected') });
+  io.on('connect', () => { debug('a user is connected') });
+  io.on('disconnect', () => { debug('a user is disconnected') });
 
   const InvestmentLibrary = require("./models/investmentLibraryModel");
   const investmentLibraryrouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary, connectionTest);
