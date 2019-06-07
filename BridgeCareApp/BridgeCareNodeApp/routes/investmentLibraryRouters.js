@@ -13,7 +13,7 @@ function routes(InvestmentLibrary, connectionTest){
         .put(controller.put)
         .delete(controller.deleteLibrary);
 
-        investmentLibraryRouter.route("/test")
+        investmentLibraryRouter.route("/")
         .get((req,res) => {
           return res.send(connectionTest);
         });
