@@ -16,15 +16,15 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        [Route("api/GetAnalysisScenario/{simulationId}")]
+        [Route("api/GetScenarioAnalysisData/{simulationId}")]
         [HttpGet]
-        public SimulationAnalysisModel GetSimulationAnalysis(int SimulationId) => analysis.GetSimulationAnalyis(SimulationId, db);
+        public SimulationAnalysisModel GetSimulationAnalysis(int SimulationId) => analysis.GetSimulationAnalysis(SimulationId, db);
 
-        [Route("api/UpdateAnalysisScenario")]
+        [Route("api/SaveScenarioAnalysisData")]
         [HttpPost]
         public IHttpActionResult UpdateSimulationAnalysis([FromBody]SimulationAnalysisModel model)
         {
-            analysis.UpdateSimulationAnalyis(model, db);
+            analysis.UpdateSimulationAnalysis(model, db);
             return Ok();
         }
     }

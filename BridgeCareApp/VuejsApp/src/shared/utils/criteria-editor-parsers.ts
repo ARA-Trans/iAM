@@ -2,6 +2,8 @@ import * as R from 'ramda';
 import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/shared/models/iAM/criteria';
 import {hasValue} from '@/shared/utils/has-value-util';
 
+const operators: string[] = ['<=', '>=', '<>', '=', '<', '>'];
+
 /**
  * Creates a clause string from a given criteria object
  * @param criteria The criteria object used to create the clause string
@@ -70,7 +72,7 @@ export const parseCriteriaString = (clause: string) => {
         // if no open parentheses are present, assume clause string was created in legacy app
         if ((clause.match(/\(/g) || []).length === 0) {
             // ensure there are no close parentheses in the string before parsing
-            clause = clause.split(')').join(' ');
+            clause = clause.replace(/\)/g, '');
             // parse the clause string and return
             return parseLegacyAppClause(clause, newCriteria);
         } else {
@@ -88,6 +90,9 @@ export const parseCriteriaString = (clause: string) => {
  */
 function parseLegacyAppClause(clause: string, criteria: Criteria) {
     const splitVals = clause.split(' ');
+    while (splitVals.indexOf('') !== -1) {
+        splitVals.splice(splitVals.indexOf(''), 1);
+    }
     let i = 0;
     while (i < splitVals.length) {
         const splitVal = splitVals[i];
@@ -140,6 +145,9 @@ function parseLegacyAppClause(clause: string, criteria: Criteria) {
  */
 function parseQueryBuilderClause(clause: string, criteria: Criteria) {
     const splitVals = clause.split(' ');
+    while (splitVals.indexOf('') !== -1) {
+        splitVals.splice(splitVals.indexOf(''), 1);
+    }
     let i = 0;
     while (i < splitVals.length) {
         const splitVal = splitVals[i];
@@ -217,26 +225,22 @@ function parseQueryBuilderClause(clause: string, criteria: Criteria) {
  * @param criteriaRuleString The clause substring to parse
  */
 function parseCriteriaRule(criteriaRuleString: string): CriteriaRule {
-    // get the operand value using [ & ] to find it in the rule string
-    const operandStart = criteriaRuleString.indexOf('[') + 1;
-    const operandEnd = criteriaRuleString.indexOf(']');
-    const operand = criteriaRuleString.slice(operandStart, operandEnd);
-    // create a string list for the operator
-    const operator: string[] = [];
-    // start checking the char after the ] in the rule string to get the operator strings, stop when you hit the start
-    // of the value
-    let charIndex = operandEnd + 1;
-    while (criteriaRuleString.charAt(charIndex) !== '\'') {
-        operator.push(criteriaRuleString.charAt(charIndex));
-        charIndex++;
+    criteriaRuleString = criteriaRuleString.replace(/\[/g, '').replace(/]/g, '');
+    let operator: string = '';
+    let operandAndValue: string[] = [];
+
+    for (let operatorIndex = 0; operatorIndex < operators.length; operatorIndex++) {
+        if (criteriaRuleString.indexOf(operators[operatorIndex]) !== -1) {
+            operator = operators[operatorIndex];
+            operandAndValue = criteriaRuleString.split(operator);
+            break;
+        }
     }
-    // get the value at the end of the rule string after the last index of the operator
-    const value = criteriaRuleString.slice(charIndex + 1, criteriaRuleString.length - 1);
-    // return object in shape of CriteriaRule
+
     return {
-        rule: operand,
-        selectedOperator: operator.join(''),
-        selectedOperand: operand,
-        value: value
+        rule: operandAndValue[0],
+        selectedOperator: operator,
+        selectedOperand: operandAndValue[0],
+        value: operandAndValue[1].replace(/'/g, '').replace(/\|/g, '')
     };
 }

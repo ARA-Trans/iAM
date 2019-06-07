@@ -9,9 +9,9 @@
     import {State, Action} from 'vuex-class';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import TopNavbar from './components/TopNavbar.vue';
-    import {isEmpty} from 'ramda';
     import iziToast from 'izitoast';
     import {axiosInstance} from '@/shared/utils/axios-instance';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component({
         components: {TopNavbar}
@@ -26,7 +26,7 @@
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
-            if (!isEmpty(this.successMessage)) {
+            if (hasValue(this.successMessage)) {
                 iziToast.success({
                     title: 'Success',
                     message: this.successMessage,
@@ -40,7 +40,7 @@
 
         @Watch('errorMessage')
         onErrorMessageChanged() {
-            if (!isEmpty(this.errorMessage)) {
+            if (hasValue(this.errorMessage)) {
                 iziToast.error({
                     title: 'Error',
                     message: this.errorMessage,

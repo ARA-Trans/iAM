@@ -1,8 +1,6 @@
 import {AxiosPromise} from 'axios';
-import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
+import {Analysis} from '@/shared/models/iAM/scenario';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-// TODO: remove MockAdapter code when api is implemented
-import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 
 export default class AnalysisEditorService {
     /**
@@ -10,14 +8,7 @@ export default class AnalysisEditorService {
      * @param selectedScenarioId A scenario's id
      */
     static getScenarioAnalysisData(selectedScenarioId: number): AxiosPromise<Analysis> {
-        // TODO: remove MockAdapter code when api is implemented
-        mockAdapter
-            .onGet(`/api/GetScenarioAnalysisData?selectedScenarioId=${selectedScenarioId}`)
-            .reply((config: any) => {
-                return [200, emptyAnalysis];
-            });
-        // TODO: replace mockAxiosInstance with axiosInstance
-        return mockAxiosInstance.get<Analysis>(`/api/GetScenarioAnalysisData?selectedScenarioId=${selectedScenarioId}`);
+        return axiosInstance.get<Analysis>(`/api/GetScenarioAnalysisData/${selectedScenarioId}`);
     }
 
     /**
@@ -25,13 +16,6 @@ export default class AnalysisEditorService {
      * @param scenarioAnalysisData A scenario's analysis data
      */
     static saveScenarioAnalysisData(scenarioAnalysisData: Analysis): AxiosPromise<any> {
-        // TODO: remove MockAdapter code when api is implemented
-        mockAdapter
-            .onPost('/api/SaveScenarioAnalysisData')
-            .reply((config: any) => {
-                return [201];
-            });
-        // TODO: replace mockAxiosInstance with axiosInstance
-        return mockAxiosInstance.post<any>('/api/SaveScenarioAnalysisData', scenarioAnalysisData);
+        return axiosInstance.post<any>('/api/SaveScenarioAnalysisData', scenarioAnalysisData);
     }
 }

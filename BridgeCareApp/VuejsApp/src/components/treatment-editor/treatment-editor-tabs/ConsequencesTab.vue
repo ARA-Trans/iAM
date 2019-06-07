@@ -12,7 +12,7 @@
                                                :return-value.sync="props.item.attribute" large lazy persistent>
                                     <v-text-field readonly :value="props.item.attribute"></v-text-field>
                                     <template slot="input">
-                                        <v-select :items="attributes" v-model="props.item.attribute"
+                                        <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
                                                   label="Edit">
                                         </v-select>
                                     </template>
@@ -85,6 +85,8 @@
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
+    import {SelectItem} from '@/shared/models/vue/select-item';
+    import {Attribute} from '@/shared/models/iAM/attribute';
 
     @Component({
         components: {CriteriaEditorDialog, EquationEditorDialog}
@@ -92,9 +94,7 @@
     export default class ConsequencesTab extends Vue {
         @Prop() consequencesTabData: TabData;
 
-        @State(state => state.attribute.attributes) attributes: string[];
-
-        @Action('getAttributes') getAttributesAction: any;
+        @State(state => state.attribute.attributes) stateAttributes: Attribute[];
 
         consequencesTabTreatmentLibraries: TreatmentLibrary[] = [];
         consequencesTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
@@ -111,6 +111,16 @@
         equationEditorDialogData: EquationEditorDialogData = clone(emptyEquationEditorDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         selectedConsequence: Consequence = clone(emptyConsequence);
+        attributesSelectListItems: SelectItem[] = [];
+
+        /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateAttributes)) {
+                this.setAttributeSelectListItems();
+            }
+        }
 
         /**
          * Sets the component's data properties
@@ -126,10 +136,13 @@
         }
 
         /**
-         * Dispatches an action to get all attributes after being mounted
+         * Calls the setAttributesSelectListItems function if a change to stateAttributes causes it to have a value
          */
-        mounted() {
-            this.getAttributesAction();
+        @Watch('stateAttributes')
+        onStateAttributesChanged() {
+            if (hasValue(this.stateAttributes)) {
+                this.setAttributeSelectListItems();
+            }
         }
 
         /**
@@ -141,6 +154,16 @@
             } else {
                 this.consequencesGridData = [];
             }
+        }
+
+        /**
+         * Sets the attribute select items using attributes from state
+         */
+        setAttributeSelectListItems() {
+            this.attributesSelectListItems = this.stateAttributes.map((attribute: Attribute) => ({
+                text: attribute.name,
+                value: attribute.name
+            }));
         }
 
         /**
