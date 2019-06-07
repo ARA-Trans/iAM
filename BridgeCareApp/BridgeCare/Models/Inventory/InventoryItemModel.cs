@@ -10,6 +10,11 @@
             DisplayValue = "-";
         }
 
+        // It is added to fix instantiation issue with same values.
+        public InventoryItemModel()
+        {
+        }
+
         public string ColumnName { get; set; }
         public string Id { get; set; }
         public string ViewName { get; set; }
