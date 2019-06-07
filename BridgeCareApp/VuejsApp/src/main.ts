@@ -8,8 +8,6 @@ import Vuetify from 'vuetify';
 import VueFire from 'vuefire';
 import VueSocketio from 'vue-socket.io-extended';
 import io from 'socket.io-client';
-//@ts-ignore
-//import VueSocketIO from 'vue-socket.io';
 
 import App from './App.vue';
 import router from './router';
@@ -23,19 +21,8 @@ Vue.use(Vuetify, {
 }, VueFire);
 
 Vue.use(VueSocketio, io('http://localhost:4000'), { store });
-//Vue.use(new VueSocketIO({
-//    debug: true,
-//    connection: 'http://localhost:4000',
-//    vuex: {
-//        store,
-//        actionPrefix: 'SOCKET_',
-//        mutationPrefix: 'SOCKET_'
-//    }
-//}));
 
 Vue.config.productionTip = false;
-
-//Vue.prototype.$socketIO = io('http://localhost:4000');
 
 new Vue({
     store,
