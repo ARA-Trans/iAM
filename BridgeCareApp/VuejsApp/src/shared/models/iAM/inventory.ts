@@ -1,3 +1,5 @@
+import concat from 'ramda/es/concat';
+
 export interface InventoryItem {        
     bmsId: string;
     brKey: number;
@@ -30,6 +32,10 @@ export interface OperatingRatingInventoryRatingGrouping {
     minRatioLegalLoad: LabelValue;
 }
 
+export interface NbiLoadRating {
+    nbiLoadRatingRow: LabelValue[];
+}
+
 export interface InventoryItemDetail {
     bmsId: number;
     brKey: number;
@@ -44,7 +50,7 @@ export interface InventoryItemDetail {
     previousConditionDuration: ConditionDuration[];
     riskScores: RiskScores;
     operatingRatingInventoryRatingGrouping: OperatingRatingInventoryRatingGrouping;
-    nbiLoadRating: LabelValue[];
+    nbiLoadRatings: NbiLoadRating[];
     posting: LabelValue[];
     roadwayInfo: LabelValue[];
 }
@@ -74,7 +80,7 @@ export const emptyInventoryItemDetail: InventoryItemDetail = {
             value: ''
         }
     },
-    nbiLoadRating: [],
+    nbiLoadRatings: [{ nbiLoadRatingRow: [] }],
     posting: [],
     roadwayInfo: []
 };

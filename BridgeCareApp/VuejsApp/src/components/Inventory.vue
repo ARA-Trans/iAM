@@ -271,7 +271,7 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import {InventoryItem, InventoryItemDetail, LabelValue} from '@/shared/models/iAM/inventory';
+    import {InventoryItem, InventoryItemDetail, LabelValue, NbiLoadRating} from '@/shared/models/iAM/inventory';
     import {uniq, groupBy} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
@@ -311,16 +311,22 @@
 
         @Watch('inventoryItemDetail')
         onInventoryItemDetailChanged(inventoryItemDetail: InventoryItemDetail) {
-            // get the nbiLoadRating column names using the inventoryItemDetail.nbiLoadRating LabelValue list
-            const nbiLoadRatingColumns: string[] = uniq(inventoryItemDetail.nbiLoadRating
-                .map((labelValue: LabelValue) => labelValue.label) as string[]
-            );
-            // set nbiLoadRatingTableHeaders using nbiLoadRatingColumns
-            this.nbiLoadRatingTableHeaders = nbiLoadRatingColumns.map((columnName: string) => ({
-                text: columnName, value: columnName, align: 'center', sortable: false, class: '', width: ''
-            }) as DataTableHeader);
-            // set the nbiLoadRatingTableRows using the inventoryItemDetail.nbiLoadRating LabelValue list
-            this.nbiLoadRatingTableRows = this.createDataTableRowFromGrouping(inventoryItemDetail.nbiLoadRating);
+            if (inventoryItemDetail.nbiLoadRatings.length > 0) {
+                // get the nbiLoadRating column names using the inventoryItemDetail.nbiLoadRatings 1st entry
+                const nbiLoadRatingColumns: string[] = uniq(inventoryItemDetail.nbiLoadRatings[0].nbiLoadRatingRow
+                    .map((labelValue: LabelValue) => labelValue.label) as string[]
+                );
+                // set nbiLoadRatingTableHeaders using nbiLoadRatingColumns
+                this.nbiLoadRatingTableHeaders = nbiLoadRatingColumns.map((columnName: string) => ({
+                    text: columnName, value: columnName, align: 'center', sortable: false, class: '', width: ''
+                }) as DataTableHeader);
+                // set the nbiLoadRatingTableRows
+                this.nbiLoadRatingTableRows = this.createDataTableRowFromNbiLoadRatingGrouping(inventoryItemDetail.nbiLoadRatings);
+            }
+            else {
+                this.nbiLoadRatingTableRows = [];
+            }
+
             // get the posting column names using the inventoryItemDetail.posting LabelValue list
             const postingColumns: string[] = uniq(inventoryItemDetail.posting
                 .map((labelValue: LabelValue) => labelValue.label) as string[]
@@ -356,10 +362,36 @@
             return dataTableRows;
         }
 
+        createDataTableRowFromNbiLoadRatingGrouping(nbiLoadRatingList: NbiLoadRating[]) {
+            // create a DataTableRow list
+            const dataTableRows: DataTableRow[] = [];
+            for (let index = 0; index < nbiLoadRatingList.length; index++) {
+                // group the LabelValue list by the label prop
+                const groups = groupBy((labelValue: LabelValue) => labelValue.label, nbiLoadRatingList[index].nbiLoadRatingRow);
+                // get the list of group keys
+                const keys = Object.keys(groups);
+                // get the length of the first LabelValue group using the first key in keys if keys has a value
+                const groupsLength = hasValue(keys) ? groups[keys[0]].length : 0;
+
+                // use a for loop to create a DataTableRow to add to dataTableRows
+                for (let i = 0; i < groupsLength; i++) {
+                    // create an empty DataTableRow object
+                    const dataTableRow: DataTableRow = {};
+                    // loop over each postingGroups key, adding the key as a property to postingTableRow
+                    // and then getting the value of the LabelValue object at the current iteration for the current group
+                    Object.keys(groups).forEach((key: string) => dataTableRow[key] = hasValue(groups[key][i]) ? groups[key][i].value : '');
+                    // push the created postingTableRow to postingTableRows
+                    dataTableRows.push(dataTableRow);
+                }
+            }
+            return dataTableRows;
+        }
+
         /**
          * Vue component has been mounted
          */
         mounted() {
+            //this.$forceUpdate();
             this.getInventoryAction({network: {}});
         }
 

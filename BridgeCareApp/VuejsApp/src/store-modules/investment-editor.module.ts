@@ -64,7 +64,7 @@ const actions = {
         commit('updatedSelectedInvestmentLibraryMutator', payload.updatedSelectedInvestmentLibrary);
     },
     async getInvestmentLibraries({dispatch, commit}: any) {
-        await InvestmentEditorService.getInvestmentLibraries()
+        await new InvestmentEditorService().getInvestmentLibraries()
             .then((response: AxiosResponse<InvestmentLibrary[]>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('investmentLibrariesMutator', response.data);
@@ -74,7 +74,7 @@ const actions = {
             });
     },
     async createInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        await InvestmentEditorService.createInvestmentLibrary(payload.createdInvestmentLibrary)
+        await new InvestmentEditorService().createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then((response: AxiosResponse<InvestmentLibrary>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('createdInvestmentLibraryMutator', response.data);
@@ -87,14 +87,11 @@ const actions = {
     },
     async updateInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await new InvestmentEditorService().updateInvestmentLibrary(payload.updatedInvestmentLibrary)
-            .then((response: AxiosResponse<InvestmentLibrary>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
-                    commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to update investment library${setStatusMessage(response)}`});
-                }
-            });
+            .then(() => {
+                commit('updatedInvestmentLibraryMutator', payload.updatedInvestmentLibrary);
+                commit('selectedInvestmentLibraryMutator', payload.updatedInvestmentLibrary.id);
+            })
+            .catch((error: string) => dispatch('setErrorMessage', {message: error}));
     },
     async getScenarioInvestmentLibrary({ dispatch, commit }: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
@@ -110,6 +107,17 @@ const actions = {
         } else {
             commit('scenarioInvestmentLibraryMutator', emptyInvestmentLibrary);
             commit('updatedSelectedInvestmentLibraryMutator', emptyInvestmentLibrary);
+        }
+    },
+    async socket_investmentLibrary({state, commit }: any, library: any) {
+        if (library.operationType == 'update' || library.operationType == 'replace') {
+            commit('updatedInvestmentLibraryMutator', library.fullDocument);
+            if (state.selectedInvestmentLibrary.id == library.fullDocument.id) {
+                commit('selectedInvestmentLibraryMutator', library.fullDocument.id);
+            }
+        }
+        if (library.operationType == 'insert') {
+            commit('createdInvestmentLibraryMutator', library.fullDocument);
         }
     },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {

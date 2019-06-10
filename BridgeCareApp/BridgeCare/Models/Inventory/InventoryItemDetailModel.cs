@@ -17,7 +17,7 @@ namespace BridgeCare.Models
         public List<LabelValue> Management { get; set; }
         public List<LabelValue> DeckInformation { get; set; }
         public List<LabelValue> SpanInformation { get; set; }
-        public List<LabelValue> NbiLoadRating { get; set; }
+        public List<NbiLoadRating> NbiLoadRatings { get; set; }
         public List<LabelValue> Posting { get; set; }
         public List<LabelValue> RoadwayInfo { get; set; }
 
