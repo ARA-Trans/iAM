@@ -20,11 +20,12 @@ const actions = {
                 commit('targetsMutator', response.data)
             );
     },
-    async saveTargets({commit}: any, payload: any) {
-        await TargetService.saveTargets(payload.targets)
-            .then((response: AxiosResponse<Target[]>) =>
-                commit('targetsMutator', response.data)
-            );
+    async saveTargets({dispatch, commit}: any, payload: any) {
+        await TargetService.saveTargets(payload.targetData)
+            .then((response: AxiosResponse<Target[]>) => {
+                commit('targetsMutator', response.data);
+                dispatch('setSuccessMessage', {message: 'Target data successfully saved'});
+            });
     }
 };
 

@@ -1,7 +1,7 @@
 <template>
     <v-container fluid grid-list-xl>
         <div class="priorities-targets-deficients-container">
-            <v-layout>
+            <v-layout class="priorities-targets-deficients-layout">
                 <v-tabs v-model="activeTab">
                     <v-tab v-for="(tab, index) in tabs" :key="index" ripple @click="setAsActiveTab(index)">
                         {{tab}}
@@ -9,21 +9,21 @@
                     <v-tabs-items v-model="activeTab">
                         <v-tab-item>
                             <v-card>
-                                <v-card-text>
+                                <v-card-text class="priorities-targets-deficients-card-text">
                                     <PrioritiesTab />
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card>
-                                <v-card-text>
+                                <v-card-text class="priorities-targets-deficients-card-text">
                                     <TargetsTab />
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card>
-                                <v-card-text>
+                                <v-card-text class="priorities-targets-deficients-card-text">
                                     <DeficientsTab />
                                 </v-card-text>
                             </v-card>
@@ -39,12 +39,9 @@
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import {Action} from 'vuex-class';
-    import PrioritiesTab
-        from '@/components/priorities-targets-deficients/priorities-targets-deficients-tabs/PrioritiesTab.vue';
-    import TargetsTab
-        from '@/components/priorities-targets-deficients/priorities-targets-deficients-tabs/TargetsTab.vue';
-    import DeficientsTab
-        from '@/components/priorities-targets-deficients/priorities-targets-deficients-tabs/DeficientsTab.vue';
+    import PrioritiesTab from '@/components/priorities-targets-deficients/priorities-targets-deficients-tabs/PrioritiesTab.vue';
+    import TargetsTab from '@/components/priorities-targets-deficients/priorities-targets-deficients-tabs/TargetsTab.vue';
+    import DeficientsTab from '@/components/priorities-targets-deficients/priorities-targets-deficients-tabs/DeficientsTab.vue';
 
     @Component({
         components: {DeficientsTab, TargetsTab, PrioritiesTab}
@@ -98,3 +95,28 @@
         }
     }
 </script>
+
+<style>
+    .priorities-targets-deficients-container {
+        height: 730px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .priorities-targets-deficients-layout {
+        padding: 15px;
+    }
+
+    .priorities-targets-deficients-card-text {
+        height: 660px;
+    }
+
+    .priorities-data-table, .targets-data-table, .deficients-data-table {
+        height: 490px;
+        overflow-y: auto;
+    }
+
+    .priorities-targets-deficients-buttons {
+        background: white;
+    }
+</style>

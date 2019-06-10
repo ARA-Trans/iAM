@@ -20,11 +20,12 @@ const actions = {
                 commit('prioritiesMutator', response.data)
             );
     },
-    async savePriorities({commit}: any, payload: any) {
-        await PriorityService.savePriorities(payload.priorities)
-            .then((response: AxiosResponse<Priority[]>) =>
-                commit('prioritiesMutator', response.data)
-            );
+    async savePriorities({dispatch, commit}: any, payload: any) {
+        await PriorityService.savePriorities(payload.priorityData)
+            .then((response: AxiosResponse<Priority[]>) => {
+                commit('prioritiesMutator', response.data);
+                dispatch('setSuccessMessage', {message: 'Priority data successfully saved'});
+            });
     }
 };
 

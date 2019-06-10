@@ -1,6 +1,11 @@
 <template>
     <v-container fluid grid-list-xl>
-        <div class="">
+        <div>
+            <v-layout>
+                <v-flex>
+                    <v-btn color="info" @click="onAddDeficient">Add</v-btn>
+                </v-flex>
+            </v-layout>
             <v-layout>
                 <v-flex>
                     <div class="deficients-data-table">
@@ -18,14 +23,9 @@
                                         </v-edit-dialog>
                                     </div>
                                     <div v-else>
-                                        <v-layout row>
-                                            <v-flex>
-                                                <v-text-field readonly :value="props.item[header.value]"></v-text-field>
-                                            </v-flex>
-                                            <v-btn flat icon @click="onEditCriteria(props.item)">
-                                                <v-icon></v-icon>
-                                            </v-btn>
-                                        </v-layout>
+                                        <v-text-field readonly :value="props.item.criteria" append-outer-icon="edit"
+                                                      @click:append-outer="onEditCriteria(props.item)">
+                                        </v-text-field>
                                     </div>
                                 </td>
                             </template>
@@ -35,10 +35,12 @@
             </v-layout>
         </div>
 
+        <CreateDeficientDialog :showDialog="showCreateDeficientDialog" @submit="onSubmitNewDeficient" />
+
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
 
         <v-footer>
-            <v-layout justify-end row fill-height>
+            <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
                 <v-btn color="info" @click="onSaveDeficients">Save</v-btn>
                 <v-btn color="error" @click="onCancelChangesToDeficients">Cancel</v-btn>
             </v-layout>
@@ -50,16 +52,19 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {Deficient, emptyDeficient} from "@/shared/models/iAM/deficient";
-    import {DataTableHeader} from "@/shared/models/vue/data-table-header";
-    import {clone, isNil} from 'ramda';
+    import {Deficient} from '@/shared/models/iAM/deficient';
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
+    import {clone, isNil, append} from 'ramda';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
-    } from "@/shared/models/modals/criteria-editor-dialog-data";
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
+    import CreateDeficientDialog from '@/components/priorities-targets-deficients/dialogs/deficients-dialogs/CreateDeficientDialog.vue';
+    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
+
     @Component({
-        components: {CriteriaEditorDialog}
+        components: {CreateDeficientDialog, CriteriaEditorDialog}
     })
     export default class DeficientsTab extends Vue {
         @State(state => state.deficient.deficients) stateDeficients: Deficient[];
@@ -68,18 +73,51 @@
 
         deficients: Deficient[] = [];
         deficientDataTableHeaders: DataTableHeader[] = [
-            {text: 'Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: ''},
-            {text: 'Name', value: 'name', align: 'left', sortable: true, class: '', width: ''},
-            {text: 'Deficient Level', value: 'deficient', align: 'left', sortable: true, class: '', width: ''},
-            {text: 'Allowed Deficient(%)', value: 'deficientPercent', align: 'left', sortable: true, class: '', width: ''},
-            {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''}
+            {text: 'Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: '14%'},
+            {text: 'Name', value: 'name', align: 'left', sortable: true, class: '', width: '14%'},
+            {text: 'Deficient Level', value: 'deficient', align: 'left', sortable: true, class: '', width: '10%'},
+            {text: 'Allowed Deficient(%)', value: 'percentDeficient', align: 'left', sortable: true, class: '', width: '11%'},
+            {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '50%'}
         ];
-        selectedDeficient: Deficient = clone(emptyDeficient);
+        selectedDeficientIndex: number = -1;
+        showCreateDeficientDialog: boolean = false;
+        latestDeficientId: number = 0;
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
+        /**
+         * Sets the deficients list property with a copy of the stateDeficients property when stateDeficients list
+         * changes are detected
+         */
         @Watch('stateDeficients')
         onStateDeficientsChanged() {
             this.deficients = clone(this.stateDeficients);
+        }
+
+        /**
+         * Sets the latestDeficientId property when deficients list changes are detected
+         */
+        @Watch('deficients')
+        onDeficientsChanged() {
+            this.latestDeficientId = getLatestPropertyValue('id', this.deficients);
+        }
+
+        /**
+         * Sets showCreateDeficientDialog property to true
+         */
+        onAddDeficient() {
+            this.showCreateDeficientDialog = true;
+        }
+
+        /**
+         * Receives a Deficient object result from the CreateDeficientDialog and adds it to the deficients list property
+         * @param newDeficient Deficient object
+         */
+        onSubmitNewDeficient(newDeficient: Deficient) {
+            this.showCreateDeficientDialog = false;
+
+            if (!isNil(newDeficient)) {
+                this.deficients = append(newDeficient, this.deficients);
+            }
         }
 
         /**
@@ -88,16 +126,16 @@
          * @param deficient Deficient object
          */
         onEditCriteria(deficient: Deficient) {
-            this.selectedDeficient = clone(deficient);
+            this.selectedDeficientIndex = this.deficients.findIndex((d: Deficient) => d.id === deficient.id);
 
             this.criteriaEditorDialogData = {
                 showDialog: true,
-                criteria: this.selectedDeficient.criteria
+                criteria: deficient.criteria
             };
         }
 
         /**
-         * Receives the criteria result from the CriteriaEditor and sets the selectedDeficient.criteria property
+         * Receives a criteria string result from the CriteriaEditor and sets the selectedDeficient.criteria property
          * with the criteria result (if present)
          * @param criteria CriteriaEditor criteria result
          */
@@ -105,13 +143,8 @@
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                this.selectedDeficient.criteria = criteria;
-
-                const index: number = this.deficients
-                    .findIndex((deficient: Deficient) => deficient.id === this.selectedDeficient.id);
-                this.deficients[index] = this.selectedDeficient;
-
-                this.selectedDeficient = clone(emptyDeficient);
+                this.deficients[this.selectedDeficientIndex].criteria = criteria;
+                this.selectedDeficientIndex = -1;
             }
         }
 
@@ -119,11 +152,11 @@
          * Sends deficient data changes to the server for upsert
          */
         onSaveDeficients() {
-            this.saveDeficientsAction({deficientsData: this.deficients});
+            this.saveDeficientsAction({deficientData: this.deficients});
         }
 
         /**
-         * Discards deficient data changes by resetting the deficients array with a copy of stateDeficients
+         * Discards deficient data changes by resetting the deficients list with a new copy of the stateDeficients list
          */
         onCancelChangesToDeficients() {
             this.deficients = clone(this.stateDeficients);

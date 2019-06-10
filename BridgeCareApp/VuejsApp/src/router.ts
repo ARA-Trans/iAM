@@ -9,6 +9,7 @@ import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vu
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import PerformanceEditor from '@/components/performance-editor/PerformanceEditor.vue';
 import TreatmentEditor from '@/components/treatment-editor/TreatmentEditor.vue';
+import PrioritiesTargetsDeficients from '@/components/priorities-targets-deficients/PrioritiesTargetsDeficients.vue';
 
 Vue.use(VueRouter);
 
@@ -73,6 +74,11 @@ const router = new VueRouter({
             component: TreatmentEditor,
             props: true,
             alias: '/TreatmentEditor/FromScenario/'
+        },
+        {
+            path: '/PrioritiesTargetsDeficients/',
+            component: PrioritiesTargetsDeficients,
+            props: true
         },
         {
             path: '/UnderConstruction/',

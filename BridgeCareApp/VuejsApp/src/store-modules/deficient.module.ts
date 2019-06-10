@@ -20,11 +20,12 @@ const actions = {
                 commit('deficientsMutator', response.data)
             );
     },
-    async saveDeficients({commit}: any, payload: any) {
-        await DeficientService.saveDeficients(payload.deficientsData)
-            .then((response: AxiosResponse<Deficient[]>) =>
-                commit('deficientsMutator', response.data)
-            );
+    async saveDeficients({dispatch, commit}: any, payload: any) {
+        await DeficientService.saveDeficients(payload.deficientData)
+            .then((response: AxiosResponse<Deficient[]>) => {
+                commit('deficientsMutator', response.data);
+                dispatch('setSuccessMessage', {message: 'Deficient data successfully saved'});
+            });
     }
 };
 
