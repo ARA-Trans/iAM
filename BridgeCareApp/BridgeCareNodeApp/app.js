@@ -49,8 +49,11 @@ async function run() {
   io.on('connect', (socket) => { debug('a user is connected'); });
   io.on('disconnect', () => { debug('a user is disconnected'); });
 
-  const InvestmentLibrary = require("./models/investmentLibraryModel");
+  const InvestmentLibrary = require('./models/investmentLibraryModel');
   const investmentLibraryrouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary, connectionTest);
+
+  const Scenario = require('./models/scenarioModel');
+  const scenarioRouter = require('./routes/scenarioRouters')(Scenario);
 
   app.use(cors());
   io.origins('*:*');
@@ -64,6 +67,7 @@ async function run() {
   });
 
   app.use("/api", investmentLibraryrouter);
+  app.use("/api", scenarioRouter);
 }
 
 

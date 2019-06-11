@@ -1,6 +1,6 @@
 import {AxiosPromise, AxiosResponse} from 'axios';
 import {Scenario} from '@/shared/models/iAM/scenario';
-import {axiosInstance} from '@/shared/utils/axios-instance';
+import { axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {db} from '@/firebase';
 import DataSnapshot = firebase.database.DataSnapshot;
 import moment from 'moment';
@@ -10,41 +10,52 @@ import {hasValue} from '@/shared/utils/has-value-util';
 export default class ScenarioService {
     static getUserScenarios(userId: string): AxiosPromise<Scenario[]> {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-            db.ref('scenarioStatus').once('value')
-                .then((snapshot: DataSnapshot) => {
-                    const scenarios: Scenario[] = [];
-                    const results = snapshot.val();
-                    for (let key in results) {
-                        scenarios.push({
-                            networkId: results[key].networkId,
-                            networkName: results[key].networkName,
-                            simulationId: results[key].simulationId,
-                            simulationName: results[key].simulationName,
-                            createdDate: results[key].created,
-                            lastModifiedDate: results[key].lastModified,
-                            status: results[key].status,
-                            shared: false
-                        });
+
+            nodejsAxiosInstance.get<Scenario[]>('api/scenarios')
+                .then((response: AxiosResponse<Scenario[]>) => {
+                    if (hasValue(response)) {
+                        return resolve(response);
                     }
-                    const response: AxiosResponse<Scenario[]> = {
-                        data: scenarios,
-                        status: 200,
-                        statusText: 'Success',
-                        headers: {},
-                        config: {}
-                    };
-                    return resolve(response);
                 })
                 .catch((error: any) => {
-                    const response: AxiosResponse<Scenario[]> = {
-                        data: [] as Scenario[],
-                        status: 500,
-                        statusText: error.toString(),
-                        headers: {},
-                        config: {}
-                    };
-                    return resolve(response);
+                    return resolve(error.response);
                 });
+
+            //db.ref('scenarioStatus').once('value')
+            //    .then((snapshot: DataSnapshot) => {
+            //        const scenarios: Scenario[] = [];
+            //        const results = snapshot.val();
+            //        for (let key in results) {
+            //            scenarios.push({
+            //                networkId: results[key].networkId,
+            //                networkName: results[key].networkName,
+            //                simulationId: results[key].simulationId,
+            //                simulationName: results[key].simulationName,
+            //                createdDate: results[key].created,
+            //                lastModifiedDate: results[key].lastModified,
+            //                status: results[key].status,
+            //                shared: false
+            //            });
+            //        }
+            //        const response: AxiosResponse<Scenario[]> = {
+            //            data: scenarios,
+            //            status: 200,
+            //            statusText: 'Success',
+            //            headers: {},
+            //            config: {}
+            //        };
+            //        return resolve(response);
+            //    })
+            //    .catch((error: any) => {
+            //        const response: AxiosResponse<Scenario[]> = {
+            //            data: [] as Scenario[],
+            //            status: 500,
+            //            statusText: error.toString(),
+            //            headers: {},
+            //            config: {}
+            //        };
+            //        return resolve(response);
+            //    });
         });
         // TODO: replace the above code with the following when mongo db implemented
         // return axiosInstance.get<Scenario[]>('/api/GetUserScenarios', {params: {'userId': userId}});
@@ -60,17 +71,22 @@ export default class ScenarioService {
             axiosInstance.post<Scenario>('/api/CreateNewSimulation', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
-                        const firebaseScenario: any = {
+                        //const firebaseScenario: any = {
+                        //    ...response.data,
+                        //    sharedWith: [],
+                        //    // [Note]: this will be removed
+                        //    owner: userId
+                        //};
+                        const scenarioToTrackStatus: Scenario = {
                             ...response.data,
-                            sharedWith: [],
-                            // [Note]: this will be removed
-                            owner: userId
+                            shared: false,
+                            status: 'New scenario'
                         };
-                        const newScenarioPath: string =
-                            `Scenario_${firebaseScenario.networkId.toString()}_${firebaseScenario.simulationId.toString()}`;
-                        db.ref('scenarioStatus').child(newScenarioPath).set(firebaseScenario)
-                            .then(() => {
-                                return resolve(response);
+                        nodejsAxiosInstance.post<Scenario>('api/scenarios', scenarioToTrackStatus)
+                            .then((res: AxiosResponse<Scenario>) => {
+                                if (hasValue(res)) {
+                                    return resolve(res);
+                                }
                             })
                             .catch((error: any) => {
                                 const axiosResponse: AxiosResponse<Scenario> = {
@@ -82,6 +98,22 @@ export default class ScenarioService {
                                 };
                                 return resolve(axiosResponse);
                             });
+                        //const newScenarioPath: string =
+                        //    `Scenario_${firebaseScenario.networkId.toString()}_${firebaseScenario.simulationId.toString()}`;
+                        //db.ref('scenarioStatus').child(newScenarioPath).set(firebaseScenario)
+                        //    .then(() => {
+                        //        return resolve(response);
+                        //    })
+                        //    .catch((error: any) => {
+                        //        const axiosResponse: AxiosResponse<Scenario> = {
+                        //            data: {} as Scenario,
+                        //            status: 500,
+                        //            statusText: error.toString(),
+                        //            headers: {},
+                        //            config: {}
+                        //        };
+                        //        return resolve(axiosResponse);
+                        //    });
                     }
                 });
         });
