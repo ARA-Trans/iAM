@@ -19,10 +19,8 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -177,6 +175,7 @@
     <Compile Include="Controllers\AttributeController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
+    <Compile Include="Controllers\PriorityController.cs" />
     <Compile Include="Controllers\SimulationAnalysisController.cs" />
     <Compile Include="Controllers\TreatmentLibraryController.cs" />
     <Compile Include="Controllers\PerformanceLibraryController.cs" />
@@ -195,6 +194,7 @@
     <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentLibrary.cs" />
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
+    <Compile Include="DataAccessLayer\Priority.cs" />
     <Compile Include="DataAccessLayer\SimulationAnalysis.cs" />
     <Compile Include="DataAccessLayer\TreatmentLibrary.cs" />
     <Compile Include="DataAccessLayer\PerformanceLibrary.cs" />
@@ -212,18 +212,20 @@
     <Compile Include="EntityClasses\Attributes.cs" />
     <Compile Include="EntityClasses\CONSEQUENCE.cs" />
     <Compile Include="EntityClasses\COST.cs" />
-    <Compile Include="EntityClasses\Deficients.cs" />
+    <Compile Include="EntityClasses\DEFICIENTS.cs" />
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\FEASIBILITY.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
     <Compile Include="EntityClasses\PERFORMANCE.cs" />
+    <Compile Include="EntityClasses\PRIORITY.cs" />
+    <Compile Include="EntityClasses\PRIORITYFUND.cs" />
     <Compile Include="EntityClasses\SCHEDULED.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
     <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
-    <Compile Include="EntityClasses\Targets.cs" />
+    <Compile Include="EntityClasses\TARGETS.cs" />
     <Compile Include="EntityClasses\TREATMENT.cs" />
     <Compile Include="EntityClasses\TREATMENT_CONSEQUENCES.cs" />
     <Compile Include="EntityClasses\YEARLYINVESTMENT.cs" />
@@ -236,6 +238,7 @@
     <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentLibrary.cs" />
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
+    <Compile Include="Interfaces\IPriority.cs" />
     <Compile Include="Interfaces\ISimulationAnalysis.cs" />
     <Compile Include="Interfaces\ITreatmentLibrary.cs" />
     <Compile Include="Interfaces\IPerformanceLibrary.cs" />
@@ -277,6 +280,8 @@
     <Compile Include="Models\InvestmentLibraryModel.cs" />
     <Compile Include="Models\Inventory\LabelValue.cs" />
     <Compile Include="Models\PerformanceLibraryEquationModel.cs" />
+    <Compile Include="Models\PriorityFundModel.cs" />
+    <Compile Include="Models\PriorityModel.cs" />
     <Compile Include="Models\SimulationAnalysisModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
     <Compile Include="Models\TreatmentLibraryModel.cs" />

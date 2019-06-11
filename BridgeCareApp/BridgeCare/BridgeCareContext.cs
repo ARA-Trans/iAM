@@ -17,8 +17,10 @@ namespace BridgeCare
         public virtual DbSet<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
         public virtual DbSet<INVESTMENTS> INVESTMENTs { get; set; }
         public virtual DbSet<PERFORMANCE> PERFORMANCEs { get; set; }
-        public virtual DbSet<Deficients> Deficient { get; set; }
-        public virtual DbSet<Targets> Target { get; set; }
+        public virtual DbSet<PRIORITY> Priorities { get; set; }
+        public virtual DbSet<PRIORITYFUND> PriorityFunds { get; set; }
+        public virtual DbSet<DEFICIENTS> Deficient { get; set; }
+        public virtual DbSet<TARGETS> Target { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
         public virtual DbSet<PennDotBridgeData> PennDotBridgeData { get; set; }
         public virtual DbSet<PennDotReportAData> PennDotReportAData { get; set; }
@@ -50,6 +52,9 @@ namespace BridgeCare
             modelBuilder.Entity<INVESTMENTS>()
                 .Property(e => e.BUDGETORDER)
                 .IsUnicode(false);
+
+            modelBuilder.Entity<PRIORITY>()
+              .HasMany(e => e.PRIORITYFUNDS);
         }
     }
 }

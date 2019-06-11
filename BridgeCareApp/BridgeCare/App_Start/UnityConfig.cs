@@ -72,6 +72,7 @@ namespace BridgeCare
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
             container.RegisterType<IRunSimulation, RunSimulation>();
+            container.RegisterType<IPriority, Priority>();
 
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();

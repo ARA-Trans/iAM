@@ -61,7 +61,7 @@ namespace BridgeCare.DataAccessLayer
 
         private DeficientResult GetDeficientInformation(SimulationModel data, Hashtable yearsIDValues, int[] totalYears)
         {
-            var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
+            var deficientTableData = db.Deficient.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId);
             var totalYearCount = totalYears.Count();
             DataTable DeficientTable = new DataTable();
             DeficientTable.Columns.Add("Attribute");
@@ -79,17 +79,17 @@ namespace BridgeCare.DataAccessLayer
             return forDeficient;
         }
 
-        private void FillData(IQueryable<Deficients> deficientTableData, Hashtable yearsIDValues, DataTable DeficientTable, int[] totalYears)
+        private void FillData(IQueryable<DEFICIENTS> deficientTableData, Hashtable yearsIDValues, DataTable DeficientTable, int[] totalYears)
         {
             var increment = 2;
             foreach (var item in deficientTableData)
             {
                 Hashtable yearValues = new Hashtable();
-                yearValues = (Hashtable)yearsIDValues[item.Id_];
+                yearValues = (Hashtable)yearsIDValues[item.ID_];
 
                 DataRow newDataRow = DeficientTable.NewRow();
-                newDataRow["Attribute"] = item.Attribute_;
-                newDataRow["Group"] = item.DeficientName;
+                newDataRow["Attribute"] = item.ATTRIBUTE_;
+                newDataRow["Group"] = item.DEFICIENTNAME;
 
                 if (yearValues.Count <= 0)
                 {
@@ -99,9 +99,9 @@ namespace BridgeCare.DataAccessLayer
                 {
                     int column = key - totalYears[0] + 2;
                     var value = (double)yearValues[key] * 100;
-                    newDataRow[column] = value + "%/" + item.PercentDeficient + "% (" + item.Deficient + ")";
+                    newDataRow[column] = value + "%/" + item.PERCENTDEFICIENT + "% (" + item.DEFICIENT + ")";
 
-                    if (value > item.PercentDeficient)
+                    if (value > item.PERCENTDEFICIENT)
                     {
                         address.Cells.Add((increment, column));
                     }

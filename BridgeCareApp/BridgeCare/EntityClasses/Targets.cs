@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
 
 namespace BridgeCare.EntityClasses
 {
-    [Table("TARGETS")]
-    public class Targets
-    {
-        [Key]
-        public int Id_ { get; set; }
-        public int SimulationID { get; set; }
+  [Table("TARGETS")]
+  public class TARGETS
+  {
+    [Key]
+    public int ID_ { get; set; }
+    [ForeignKey("SIMULATION")]
+    public int SIMULATIONID { get; set; }
+    [ForeignKey("ATTRIBUTES_")]
+    public string ATTRIBUTE_ { get; set; }
+    public int YEARS { get; set; }
+    public double TARGETMEAN { get; set; }
+    public string TARGETNAME { get; set; }
+    public string CRITERIA { get; set; }
+    public byte[] BINARY_CRITERIA { get; set; }
 
-        [Column(TypeName = "VARCHAR")]
-        [StringLength(50)]
-        public string Attribute_ { get; set; }
-
-        [Column(TypeName = "VARCHAR")]
-        [StringLength(4000)]
-        public string TargetName { get; set; }
-        public double TargetMean { get; set; }
-
-        [Column(TypeName = "VARCHAR")]
-        [StringLength(4000)]
-        public string Criteria { get; set; }
-    }
+    public virtual SIMULATION SIMULATION { get; set; }
+    public virtual Attributes ATTRIBUTES_ { get; set; }
+  }
 }

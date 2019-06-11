@@ -59,7 +59,7 @@ namespace BridgeCare.DataAccessLayer
 
         private TargetModel GetTargetInformation(SimulationModel data, Hashtable YearsIDValues, int[] totalYears)
         {
-            var targetData = db.Target.AsNoTracking().Where(_ => _.SimulationID == data.SimulationId);
+            var targetData = db.Target.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId);
 
             var listRows = new List<string>();
             var idTargets = new Hashtable();
@@ -68,11 +68,11 @@ namespace BridgeCare.DataAccessLayer
             {
                 var target = new TargetParameters
                 {
-                    Id = item.Id_,
-                    Attribute = item.Attribute_,
-                    TargetMean = item.TargetMean,
-                    Name = item.TargetName,
-                    Criteria = item.Criteria
+                    Id = item.ID_,
+                    Attribute = item.ATTRIBUTE_,
+                    TargetMean = item.TARGETMEAN,
+                    Name = item.TARGETNAME,
+                    Criteria = item.CRITERIA
                 };
                 var rowKey = target.Attribute + "|" + target.Name + "|" + target.Criteria;
 
