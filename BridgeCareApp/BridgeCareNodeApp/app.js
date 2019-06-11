@@ -46,14 +46,7 @@ async function run() {
 
   }
 
-  io.on('connect', (socket) => {
-    debug('a user is connected');
-    const pipeline = [{ $match: { 'ns.db': 'BridgeCare', 'ns.coll': 'investmentLibraries' } }];
-    const options = { fullDocument: 'updateLookup' };
-    InvestmentLibrary.watch(pipeline, options).on('change', data => {
-      socket.broadcast.emit('investmentLibrary', data);
-    });
-  });
+  io.on('connect', (socket) => { debug('a user is connected'); });
   io.on('disconnect', () => { debug('a user is disconnected'); });
 
   const InvestmentLibrary = require("./models/investmentLibraryModel");
@@ -63,6 +56,12 @@ async function run() {
   io.origins('*:*');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+
+  const pipeline = [{ $match: { 'ns.db': 'BridgeCare', 'ns.coll': 'investmentLibraries' } }];
+  const options = { fullDocument: 'updateLookup' };
+  InvestmentLibrary.watch(pipeline, options).on('change', data => {
+    io.emit('investmentLibrary', data);
+  });
 
   app.use("/api", investmentLibraryrouter);
 }
