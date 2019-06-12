@@ -2,6 +2,7 @@
 
 namespace BridgeCare.Models
 {
+    [DataContract]
     public class SimulationAnalysisModel
     {
         [DataMember(Name = "id")]

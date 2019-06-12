@@ -19,8 +19,10 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -185,6 +187,7 @@
     <Compile Include="Controllers\NetworksController.cs" />
     <Compile Include="Controllers\RunSimulationController.cs" />
     <Compile Include="Controllers\SimulationsController.cs" />
+    <Compile Include="Controllers\ValidationController.cs" />
     <Compile Include="Controllers\WindowsAuthorizationController.cs" />
     <Compile Include="DataAccessLayer\AttributesByYear.cs" />
     <Compile Include="DataAccessLayer\AttributeNames.cs" />
@@ -207,6 +210,8 @@
     <Compile Include="DataAccessLayer\TargetResults.cs" />
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
+    <Compile Include="DataAccessLayer\Validation\CalculateEvaluate.cs" />
+    <Compile Include="DataAccessLayer\Validation\Validation.cs" />
     <Compile Include="EntityClasses\Attributes.cs" />
     <Compile Include="EntityClasses\CONSEQUENCE.cs" />
     <Compile Include="EntityClasses\COST.cs" />
@@ -237,6 +242,7 @@
     <Compile Include="Interfaces\ISimulationAnalysis.cs" />
     <Compile Include="Interfaces\ITreatmentLibrary.cs" />
     <Compile Include="Interfaces\IPerformanceLibrary.cs" />
+    <Compile Include="Interfaces\IValidation.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeWorkSummaryData.cs" />
     <Compile Include="Interfaces\SummaryReport\ICommonSummaryReportData.cs" />
     <Compile Include="Interfaces\IDeficientReport.cs" />
@@ -299,6 +305,7 @@
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
     <Compile Include="Models\UserInformationModel.cs" />
+    <Compile Include="Models\ValidateModel.cs" />
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
     <Compile Include="Models\YearlyDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
