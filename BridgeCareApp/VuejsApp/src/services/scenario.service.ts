@@ -59,6 +59,28 @@ export default class ScenarioService {
         });
     }
 
+    static deleteScenario(scenarioId: number): AxiosPromise<number> {
+        return new Promise<AxiosResponse<number>>((resolve) => {
+            axiosInstance.delete(`/api/DeleteSimulation/${scenarioId}`)
+                .then((response: AxiosResponse<number>) => {
+                    if (hasValue(response)) {
+                        nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
+                            .then((res: AxiosResponse<number>) => {
+                                if (hasValue(res)) {
+                                    return resolve(res);
+                                }
+                            })
+                            .catch((error: any) => {
+                                return resolve(error.response);
+                            });
+                    }
+                })
+                .catch((error: any) => {
+                    return resolve(error.response);
+                });
+        });
+    }
+
     /**
      * Runs a simulation for a specific scenario
      * @param selectedScenario The scenario to run the simulation on

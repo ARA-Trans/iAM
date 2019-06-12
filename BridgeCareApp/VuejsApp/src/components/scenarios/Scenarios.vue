@@ -202,6 +202,10 @@
                 path: '/EditScenario/', query: {selectedScenarioId: id.toString()}
             });
         }
+
+        onDeleteScenario(id: number) {
+            
+        }
         
         /**
          * Navigates user to EditScenario page passing in the simulation id of a shared scenario

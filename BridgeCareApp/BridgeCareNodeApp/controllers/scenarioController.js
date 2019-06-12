@@ -1,5 +1,3 @@
-const debug = require('debug')('app:*');
-
 function scenarioController(Scenario) {
     function post(req, res) {
         const scenario = new Scenario(req.body);
