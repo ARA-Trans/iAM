@@ -27,7 +27,9 @@ namespace BridgeCare
         public virtual DbSet<COST> Costs { get; set; }
         public virtual DbSet<FEASIBILITY> Feasibilities { get; set; }
         public virtual DbSet<CONSEQUENCE> Consequences { get; set; }
-        
+        public virtual DbSet<COMMITTED_PROJECT> COMMITTEDPROJECTs { get; set; }
+        public virtual DbSet<COMMIT_CONSEQUENCES> COMMITCONSEQUENCEs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<NETWORK>()

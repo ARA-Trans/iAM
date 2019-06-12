@@ -81,6 +81,8 @@ namespace BridgeCare
             container.RegisterType<IBridgeWorkSummaryData, BridgeWorkSummaryData>();
 
             container.RegisterType<IInventoryItemDetailModelGenerator, InventoryItemDetailModelGenerator>();
+            container.RegisterType<ICommittedProjects, CommittedProjects>();
+            container.RegisterType<ICommitted, Committed>();
         }
     }
 }

@@ -173,6 +173,7 @@
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BridgeCareContext.cs" />
+    <Compile Include="Controllers\CommittedProjectsController.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="DataAccessLayer\Attributes.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryData.cs" />
+    <Compile Include="DataAccessLayer\Committed.cs" />
     <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentLibrary.cs" />
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
@@ -210,6 +212,8 @@
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
     <Compile Include="EntityClasses\Attributes.cs" />
+    <Compile Include="EntityClasses\COMMITTED_PROJECT.cs" />
+    <Compile Include="EntityClasses\COMMIT_CONSEQUENCES.cs" />
     <Compile Include="EntityClasses\CONSEQUENCE.cs" />
     <Compile Include="EntityClasses\COST.cs" />
     <Compile Include="EntityClasses\Deficients.cs" />
@@ -233,6 +237,8 @@
     <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\ICommitted.cs" />
+    <Compile Include="Interfaces\ICommittedProjects.cs" />
     <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentLibrary.cs" />
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
@@ -257,6 +263,8 @@
     <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\CellAddress.cs" />
+    <Compile Include="Models\CommitConsequenceModel.cs" />
+    <Compile Include="Models\CommittedProjectModel.cs" />
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\CreateSimulationDataModel.cs" />
@@ -312,6 +320,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\CheckEquations.cs" />
+    <Compile Include="Services\CommittedProjects.cs" />
     <Compile Include="Services\DetailedReport\Budget.cs" />
     <Compile Include="Services\DetailedReport\Deficient.cs" />
     <Compile Include="Services\DetailedReport\Detailed.cs" />
