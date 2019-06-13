@@ -5,7 +5,7 @@ using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -81,6 +81,19 @@ namespace BridgeCare.Services
                 HandleException.SqlError(ex, "Update Simulation Name");
             }
             return;
+        }
+
+        // Deletes simulation record and all records with FK simulationId = id in
+        // other tables.
+        // The traverse of the DB is setup using [Key] and [ForeignKey] attributes
+        // in entity classes
+        public void Delete(int id)
+        {
+            var sim = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == id);
+
+            db.Entry(sim).State = EntityState.Deleted;
+
+            db.SaveChanges();
         }
 
         public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
