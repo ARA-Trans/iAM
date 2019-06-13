@@ -38,39 +38,45 @@
     import {emptyEquation, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
     import {isEmpty, clone} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
+    import {Attribute} from '@/shared/models/iAM/attribute';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component
     export default class CreatePerformanceLibraryDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        @State(state => state.attribute.attributes) attributes: string[];
-
-        @Action('getAttributes') getAttributesAction: any;
+        @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         attributesSelectListItems: SelectItem[] = [];
         createdPerformanceLibraryEquation: PerformanceLibraryEquation = clone(emptyEquation);
 
         /**
-         * Dispatches an action to get the attributes data from the server if the attributes array is empty
+         * Component mounted event handler
          */
-        @Watch('showDialog')
-        onShowDialogChanged() {
-            if (this.showDialog && isEmpty(this.attributes)) {
-                this.getAttributesAction();
+        mounted() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
             }
         }
 
         /**
-         * Sets the attributesSelectListItems object using the attributes object
+         * Calls the setAttributesSelectListItems function if a change to stateNumericAttributes causes it to have a value
          */
-        @Watch('attributes')
-        onAttributesChanged() {
-            if (!isEmpty(this.attributes)) {
-                this.attributesSelectListItems = this.attributes.map((attribute: string) => ({
-                    text: attribute,
-                    value: attribute
-                }));
+        @Watch('stateNumericAttributes')
+        onStateNumericAttributesChanged() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
             }
+        }
+
+        /**
+         * Sets the attribute select items using numeric attributes from state
+         */
+        setAttributesSelectListItems() {
+            this.attributesSelectListItems = this.stateNumericAttributes.map((attribute: Attribute) => ({
+                text: attribute.name,
+                value: attribute.name
+            }));
         }
 
         /**

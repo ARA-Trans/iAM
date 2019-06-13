@@ -1,4 +1,5 @@
 ﻿using BridgeCare.Models;
+using System;
 using System.Collections.Generic;
 
 namespace BridgeCare.DataAccessLayer
@@ -7,9 +8,12 @@ namespace BridgeCare.DataAccessLayer
     {
         public static List<InventoryItemModel> InventoryItems { get; private set; }
 
+        public static List<InventoryItemModel> NbiLoadRatingInventoryItems { get; private set; }
+
         static PennDotCrosswalk()
         {
             InventoryItems = new List<InventoryItemModel>();
+            NbiLoadRatingInventoryItems = new List<InventoryItemModel>();
 
             Add("BRKEY", "5A03", "BRKEY");
             Add("DISTRICT", "5A04", "DISTRICT");
@@ -24,7 +28,7 @@ namespace BridgeCare.DataAccessLayer
             Add("NUMBER_SPANS", "5B11/5B14", "# Spans");
             Add("STRUCTURE_TYPE", "6A26-29", "StructureType");
             Add("YEAR_BUILT", "5A15", "YEARBUILT");
-            Add("POST_STATUS", "VP02", "POSTSTATUS");
+            Add("POST_STATUS", "VP02", "POST STATUS");
             Add("SINGLE", "VP04", "Single(Tons);");
             Add("COMB", "VP05", "Comb(Tons);");
             Add("OTHER", "VP03", "Other");
@@ -64,7 +68,7 @@ namespace BridgeCare.DataAccessLayer
             Add("POST_LIMIT_WEIGHT", "VP04", "POST_LIMIT_WEIGHT");
             Add("POST_LIMIT_COMB", "VP05", "POST_LIMIT_COMB");
             Add("POST_STATUS2", "VP02", "POST_STATUS");
-            Add("SPEC_RESTRICT_POST", "VP03", "SPEC_RESTRICT_POST");
+            Add("SPEC_RESTRICT_POST", "VP03", "SPEC RESTRICT POST");
             Add("WATERADEQ", "1A06", "WATERADEQ");
             Add("STRRATTING", "4A09", "STRRATING");//spelled wrong here 'STRRATTING' to align with DB
             Add("DECKGEEOM", "4A10", "DECKGEOM");//spelled wrong here 'DECKGEEOM' to align with DB
@@ -113,15 +117,6 @@ namespace BridgeCare.DataAccessLayer
             Add("FC_GROUP_NUMBER_MAIN", "6A44", "FC Group Number (Main)");
             Add("FC_GROUP_NUMBER_APPROACH", "6A44", "FC Group Number (Approach)");
 
-            Add("LOAD_TYPE", "IR04", "Load Type"); 
-            Add("NBI", "IR05", "NBI"); 
-            Add("INV_RATING_TON", "IR010", "Inv Rating Ton");
-            Add("OPR_RATING_TON", "IR11", "Opr Rating Ton"); 
-            Add("SLC_RATING_FACTOR", "IR11a", "SLC Rating Factor"); 
-            Add("IR_RATING_FACTOR", "IR20", "IR Rating Factor"); 
-            Add("OR_RATING_FACTOR", "IR21", "OR Rating Factor"); 
-            Add("RATING_DATASET", "IR17", "Rating Dataset");
-
             Add("OVER_STREET_CLEARANCE", "4A15", "Over Street Clearance"); 
             Add("UNDER_CLEARANCE", "4A17", "Under Clearance"); 
                         
@@ -152,6 +147,20 @@ namespace BridgeCare.DataAccessLayer
             Add("TK527_IR", "4B13", "TK527 (IR)");
             Add("TK527_RATIO", "", "Ratio OR / Max Legal Load");
             Add("MIN_RATIO", "", "Min Ratio OR / Max Legal Load");
+                        
+            AddNbiLoadRatingItem("LOAD_TYPE", "IR04", "Load Type");
+            AddNbiLoadRatingItem("NBI", "IR05", "NBI");
+            AddNbiLoadRatingItem("INV_RATING_TON", "IR010", "Inv Rating Ton");
+            AddNbiLoadRatingItem("OPR_RATING_TON", "IR11", "Opr Rating Ton");
+            AddNbiLoadRatingItem("SLC_RATING_FACTOR", "IR11a", "SLC Rating Factor");
+            AddNbiLoadRatingItem("IR_RATING_FACTOR", "IR20", "IR Rating Factor");
+            AddNbiLoadRatingItem("OR_RATING_FACTOR", "IR21", "OR Rating Factor");
+            AddNbiLoadRatingItem("RATING_DATASET", "IR17", "Rating Dataset");
+        }
+
+        private static void AddNbiLoadRatingItem(string column, string id, string description)
+        {
+            NbiLoadRatingInventoryItems.Add(new InventoryItemModel(column, id, description));
         }
 
         private static void Add(string columnNameKey, string id, string description)

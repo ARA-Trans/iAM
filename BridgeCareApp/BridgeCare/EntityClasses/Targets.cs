@@ -12,6 +12,7 @@ namespace BridgeCare.EntityClasses
     {
         [Key]
         public int Id_ { get; set; }
+        [ForeignKey("SIMULATION")]
         public int SimulationID { get; set; }
 
         [Column(TypeName = "VARCHAR")]
@@ -26,5 +27,8 @@ namespace BridgeCare.EntityClasses
         [Column(TypeName = "VARCHAR")]
         [StringLength(4000)]
         public string Criteria { get; set; }
+
+        public virtual Attributes ATTRIBUTES_ { get; set; }
+        public virtual SIMULATION SIMULATION { get; set; }
     }
 }

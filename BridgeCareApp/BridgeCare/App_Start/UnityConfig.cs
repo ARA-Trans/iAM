@@ -50,7 +50,7 @@ namespace BridgeCare
             container.RegisterType<ISections, Sections>();
             container.RegisterType<ISectionLocator, SectionLocator>();
             container.RegisterType<IDetailedReport, DetailedReport>();
-            container.RegisterType<IAttributeNames, AttributeNames>();
+            container.RegisterType<IAttributeNames, Attributes>();
             container.RegisterType<IAttributesByYear, AttributesByYear>();
             container.RegisterType<IPerformanceLibrary, PerformanceLibrary>();
             container.RegisterType<BridgeCareContext>();

@@ -17,6 +17,7 @@ namespace BridgeCare.Services
         public InventoryItemDetailModel MakeInventoryItemDetailModel(InventoryModel inventoryModel)
         {
             var inventoryItems = inventoryModel.InventoryItems;
+            var inventoryNbiLoadRatings = inventoryModel.InventoryNbiLoadRatings;
             var inventoryItemDetailModel = new InventoryItemDetailModel();
 
             try
@@ -26,7 +27,7 @@ namespace BridgeCare.Services
                 AddManagement(inventoryItemDetailModel, inventoryItems);
                 AddDeckInformation(inventoryItemDetailModel, inventoryItems);
                 AddSpanInformation(inventoryItemDetailModel, inventoryItems);
-                AddNbiLoadRating(inventoryItemDetailModel, inventoryItems);
+                AddNbiLoadRating(inventoryItemDetailModel, inventoryNbiLoadRatings);
                 AddPosting(inventoryItemDetailModel, inventoryItems);
                 AddRoadwayInfo(inventoryItemDetailModel, inventoryItems);
                 AddCurrentConditionDuration(inventoryItemDetailModel, inventoryItems);
@@ -119,10 +120,17 @@ namespace BridgeCare.Services
             inventoryItemDetailModel.Posting = CreateLabelValues(inventoryItems, postingColumns);
         }
 
-        private void AddNbiLoadRating(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
+        private void AddNbiLoadRating(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryNbiLoadRatingModel> inventoryNbiLoadRatings)
         {
+            var nbiLoadRatings = new List<NbiLoadRating>();
             var nbiLoadRatingColumns = new List<string> { "LOAD_TYPE", "NBI", "INV_RATING_TON", "OPR_RATING_TON", "SLC_RATING_FACTOR", "IR_RATING_FACTOR", "OR_RATING_FACTOR", "RATING_DATASET" };
-            inventoryItemDetailModel.NbiLoadRating = CreateLabelValues(inventoryItems, nbiLoadRatingColumns);
+            foreach (var inventoryNbiLoadRating in inventoryNbiLoadRatings)
+            {
+                var nbiLoadRating = new NbiLoadRating { NbiLoadRatingRow = CreateLabelValues(inventoryNbiLoadRating.NbiLoadRatingItems, nbiLoadRatingColumns) };
+
+                nbiLoadRatings.Add(nbiLoadRating);
+            }
+            inventoryItemDetailModel.NbiLoadRatings = nbiLoadRatings;
         }
 
         private void AddSpanInformation(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)

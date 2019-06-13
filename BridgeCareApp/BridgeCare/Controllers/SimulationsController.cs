@@ -62,6 +62,15 @@ namespace BridgeCare.Controllers
             return Ok();
         }
 
+        [ModelValidation("Given simulation is not valid")]
+        [Route("api/DeleteSimulation/{simulationId}")]
+        [HttpPost]
+        public IHttpActionResult DeleteSimulatione(int simulationId)
+        {
+            simulations.Delete(simulationId);
+            return Ok(simulationId);
+        }
+
         [Route("api/CreateNewSimulation")]
         [HttpPost]
         public IHttpActionResult CreateNewSimulation([FromBody]CreateSimulationDataModel createSimulationData)
