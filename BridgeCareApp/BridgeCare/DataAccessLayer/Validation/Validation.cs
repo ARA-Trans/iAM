@@ -35,6 +35,7 @@ namespace BridgeCare.DataAccessLayer
         }
         public bool ValidateCriteria(ValidateModel data, BridgeCareContext db)
         {
+            string criteria = data.equation.Replace("|", "'").ToUpper();
             return true;
         }
     }

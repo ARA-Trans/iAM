@@ -21,11 +21,16 @@ namespace BridgeCare.Controllers
         [ModelValidation("Function call not valid")]
         [Route("api/ValidateEquation")]
         [HttpPost]
-        public bool ValidateEquation(ValidateModel data) => validate.ValidateEquation(data,db);
+        public bool ValidateEquation(ValidateModel data)
+        {
+            if (data.isFunction)
+            {
+                return validate.ValidateEquation(data, db);
+            }
+            else
+            {
+                return validate.ValidateCriteria(data, db);
+            }
 
-        [ModelValidation("Function call not valid")]
-        [Route("api/ValidateCriteria/{criteria}")]
-        [HttpPost]
-        public bool ValidateCriteria(ValidateModel data) => validate.ValidateCriteria(data,db);
-    }
+           }
 }
