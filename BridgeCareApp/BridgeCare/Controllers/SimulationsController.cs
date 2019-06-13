@@ -68,7 +68,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult DeleteSimulatione(int simulationId)
         {
             simulations.Delete(simulationId);
-            return Ok();
+            return Ok(simulationId);
         }
 
         [Route("api/CreateNewSimulation")]
