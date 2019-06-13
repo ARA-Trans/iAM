@@ -91,7 +91,15 @@ namespace BridgeCare.Services
         {
             var sim = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == id);
 
-            if (sim == null) return;
+            if (sim == null)
+            {
+                return;
+            }
+            else
+            {
+                db.Entry(sim).State = EntityState.Deleted;
+                db.SaveChanges();
+            }
 
             int? networkId = sim.NETWORKID;
 
@@ -118,12 +126,7 @@ namespace BridgeCare.Services
             {
                 connection.Close();
                 HandleException.OutOfMemoryError(ex);
-            }
-
-
-            //db.Entry(sim).State = EntityState.Deleted;
-
-            //db.SaveChanges();
+            }           
         }
 
         public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
