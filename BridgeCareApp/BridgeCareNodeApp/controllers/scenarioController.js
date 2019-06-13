@@ -29,7 +29,7 @@ function scenarioController(Scenario) {
                     message: `Scenario not found with id ${req.params.scenarioId}`
                 });
             }
-            res.send({message: 'Scenario deleted successfully'});
+            res.status(202).send(req.params.scenarioId);
         })
         .catch(err => {
             if(err.name === 'NotFound'){

@@ -64,7 +64,7 @@ export default class ScenarioService {
             axiosInstance.delete(`/api/DeleteSimulation/${scenarioId}`)
                 .then((response: AxiosResponse<number>) => {
                     if (hasValue(response)) {
-                        nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
+                        nodejsAxiosInstance.delete(`api/scenarios/${response.data}`)
                             .then((res: AxiosResponse<number>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
