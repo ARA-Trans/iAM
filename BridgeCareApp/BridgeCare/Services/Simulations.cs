@@ -91,9 +91,39 @@ namespace BridgeCare.Services
         {
             var sim = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == id);
 
-            db.Entry(sim).State = EntityState.Deleted;
+            if (sim == null) return;
 
-            db.SaveChanges();
+            int? networkId = sim.NETWORKID;
+
+            var select = String.Format
+                ("DROP TABLE IF EXISTS SIMULATION_{0}_{1},REPORT_{0}_{1},BENEFITCOST_{0}_{1},TARGET_{0}_{1}",
+                networkId,id);
+
+            var connection = new SqlConnection(db.Database.Connection.ConnectionString);
+            try
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand(select, connection);
+                cmd.CommandType = CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                connection.Close();
+            }
+            catch (SqlException ex)
+            {
+                connection.Close();
+                HandleException.SqlError(ex, "Error " + select);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                connection.Close();
+                HandleException.OutOfMemoryError(ex);
+            }
+
+
+            //db.Entry(sim).State = EntityState.Deleted;
+
+            //db.SaveChanges();
         }
 
         public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
