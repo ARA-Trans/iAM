@@ -43,6 +43,8 @@ namespace BridgeCare.DataAccessLayer
                 OMS_IS_REPEAT = p.OMS_IS_REPEAT,
                 OMS_REPEAT_START = p.OMS_REPEAT_START,
                 OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
+                BeforeAny = p.BEFOREANY,
+                BeforeSame = p.BEFORESAME,
                 Costs = p.COST.Select(q => new CostModel
                 {
                   TreatmentId = p.TREATMENTID,
@@ -57,8 +59,6 @@ namespace BridgeCare.DataAccessLayer
                   TreatmentId = p.TREATMENTID,
                   Criteria = m.CRITERIA,
                   FeasibilityId = m.FEASIBILITYID,
-                  BeforeAny = p.BEFOREANY,
-                  BeforeSame = p.BEFORESAME
                 }).ToList(),
                 Consequences = p.CONSEQUENCES.Select(n => new ConsequenceModel
                 {
