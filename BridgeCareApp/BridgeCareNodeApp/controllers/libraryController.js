@@ -45,7 +45,7 @@ function libraryController(InvestmentLibrary) {
     }
 
     function deleteLibrary(req, res) {
-        InvestmentLibrary.findById(req.params.libraryId, (err, library) => {
+        InvestmentLibrary.findById({id: req.params.libraryId}, (err, library) => {
             if (err) {
                 return res.json(err);
             }
