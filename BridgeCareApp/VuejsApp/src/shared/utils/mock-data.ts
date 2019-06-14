@@ -17,7 +17,6 @@ export const mockPerformanceLibraries: PerformanceLibrary[] = [
 ];
 /*******************************************TREATMENT EDITOR MOCK DATA*************************************************/
 export const mockFeasibility: Feasibility = {
-    treatmentId: 1,
     id: 1,
     criteria: '[ROADWIDTH]>=\'60\' AND [ROADWIDTH]<\'75\' AND [TRUCKPCT]=\'Low\' AND [UNDERCLR]<\'75\' AND [SUFF_RATE]<\'2\'',
     yearsBeforeAny: 5,
@@ -25,7 +24,6 @@ export const mockFeasibility: Feasibility = {
 };
 
 export const mockCost: Cost = {
-    treatmentId: 1,
     id: 1,
     equation: '[DECK_AREA]*1.99',
     isFunction: false,
@@ -34,7 +32,6 @@ export const mockCost: Cost = {
 
 export const mockTreatments: Treatment[] = [
     {
-        treatmentLibraryId: 1,
         id: 1,
         name: 'Chip Seal',
         feasibility: mockFeasibility,
@@ -43,7 +40,6 @@ export const mockTreatments: Treatment[] = [
         budgets: []
     },
     {
-        treatmentLibraryId: 1,
         id: 2,
         name: '2\'\' Mill 2\'\' Fill',
         feasibility: emptyFeasibility,

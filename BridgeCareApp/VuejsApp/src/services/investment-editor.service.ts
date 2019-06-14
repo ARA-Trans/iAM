@@ -1,63 +1,58 @@
-import Vue from 'vue';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {AxiosPromise, AxiosResponse} from 'axios';
-import {InvestmentLibrary} from '@/shared/models/iAM/investment';
-import {db} from '@/firebase';
-import {isNil} from 'ramda';
-import DataSnapshot = firebase.database.DataSnapshot;
-import forEach from 'ramda/es/forEach';
+import {AxiosPromise} from 'axios';
+import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 
-export default class InvestmentEditorService extends Vue {
+const modifyDataForMongoDB = (investmentLibrary: InvestmentLibrary): any => {
+    const investmentLibraryData: any = {
+        ...investmentLibrary,
+        _id: investmentLibrary.id,
+        budgetYears: investmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => {
+            const budgetYearData: any = {...budgetYear, _id: budgetYear.id};
+            delete budgetYearData.id;
+            return budgetYearData;
+        })
+    };
+    delete investmentLibraryData.id;
+    return investmentLibraryData;
+};
+
+export default class InvestmentEditorService {
     /**
      * Gets all investment libraries
      */
-    getInvestmentLibraries(): AxiosPromise<InvestmentLibrary[]> {
-
-        return nodejsAxiosInstance.get<InvestmentLibrary[]>(`/api/investmentLibraries/`);
+    static getInvestmentLibraries(): AxiosPromise {
+        return nodejsAxiosInstance.get('/api/GetInvestmentLibraries');
     }
 
     /**
      * Creates an investment library
-     * @param createInvestmentLibraryData The investment library create data
+     * @param createdInvestmentLibrary The investment library create data
      */
-    createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-
-        return nodejsAxiosInstance.post<InvestmentLibrary[]>(`/api/investmentLibraries/`, createdInvestmentLibrary)
-            .then((response: any) => {
-                if (!isNil(response)) {
-                    return response;
-                }
-                return Promise.reject('Failed to get investment library');
-            });
+    static createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise {
+        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', modifyDataForMongoDB(createdInvestmentLibrary));
     }
 
     /**
      * Updates an investment library
-     * @param updateInvestmentLibraryData The investment library updated data
+     * @param updatedInvestmentLibrary The investment library update data
      */
-    updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-        return nodejsAxiosInstance.put<InvestmentLibrary[]>(`/api/investmentLibraries/${updatedInvestmentLibrary.id}`, updatedInvestmentLibrary)
-            .then((response: AxiosResponse) => {
-                if (!isNil(response)) {
-                    return response.data;
-                }
-                return Promise.reject('Failed to get investment library');
-            });
+    static updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise {
+        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', modifyDataForMongoDB(updatedInvestmentLibrary));
     }
 
     /**
      * Gets a scenario's investment library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
-    static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise<InvestmentLibrary> {
-        return axiosInstance.get<InvestmentLibrary>(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
+    static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise {
+        return axiosInstance.get(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
     }
 
     /**
      * Upserts a scenario's investment library data
      * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
-    static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise<InvestmentLibrary> {
-        return axiosInstance.post<InvestmentLibrary>('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
+    static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise {
+        return axiosInstance.post('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
     }
 }

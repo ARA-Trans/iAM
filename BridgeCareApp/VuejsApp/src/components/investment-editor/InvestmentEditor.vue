@@ -168,6 +168,7 @@
     } from '@/shared/models/modals/edit-budgets-dialog-data';
     import { getLatestPropertyValue, getPropertyValues } from '@/shared/utils/getter-utils';
     import { sortByProperty, sorter } from '@/shared/utils/sorter-utils';
+    const ObjectID = require('bson-objectid');
 
     @Component({
         components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog }
@@ -204,9 +205,6 @@
         createInvestmentLibraryDialogData: CreateInvestmentLibraryDialogData = clone(emptyCreateInvestmentLibraryDialogData);
         editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
-        allInvestmentLibraries: InvestmentLibrary[] = [];
-        latestLibraryId: number = 0;
-        latestBudgetYearId: number = 0;
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -299,8 +297,6 @@
                     text: investmentLibrary.name,
                     value: investmentLibrary.id.toString()
                 }));
-
-            this.setAllInvestmentLibraries();
         }
 
         /**
@@ -308,10 +304,7 @@
          */
         @Watch('selectItemValue')
         onInvestmentLibrariesSelectItemChanged() {
-            const id: number = hasValue(this.selectItemValue) ? parseInt(this.selectItemValue) : 0;
-            if (id !== this.selectedInvestmentLibrary.id) {
-                this.selectInvestmentLibraryAction({ investmentLibraryId: id });
-            }
+            this.selectInvestmentLibraryAction({ investmentLibraryId: this.selectItemValue });
         }
 
         /**
@@ -343,41 +336,6 @@
         @Watch('selectedGridRows')
         onSelectedGridRowsChanged() {
             this.selectedBudgetYears = getPropertyValues('year', this.selectedGridRows) as number[];
-        }
-
-        /**
-         * Sets the latest investment library id and the latest budget year id
-         */
-        @Watch('allInvestmentLibraries')
-        onAllInvestmentLibrariesChanged() {
-            this.latestLibraryId = getLatestPropertyValue('id', this.allInvestmentLibraries);
-
-            const budgetYears: InvestmentLibraryBudgetYear[] = [];
-            this.allInvestmentLibraries.forEach((library: InvestmentLibrary) => {
-                if (hasValue(library.budgetYears)) {
-                    budgetYears.push(...library.budgetYears);
-                }
-            });
-
-            this.latestBudgetYearId = getLatestPropertyValue('id', budgetYears);
-        }
-
-        /**
-         * Sets allInvestmentLibraries with the selected investment library, scenario investment library, and all
-         * investment libraries
-         */
-        setAllInvestmentLibraries() {
-            const libraries: InvestmentLibrary[] = clone(this.investmentLibraries);
-
-            if (this.scenarioInvestmentLibrary.id > 0) {
-                libraries.push(this.scenarioInvestmentLibrary);
-            }
-
-            if (this.selectedInvestmentLibrary.id > 0) {
-                libraries.push(this.selectedInvestmentLibrary);
-            }
-
-            this.allInvestmentLibraries = uniq(libraries);
         }
 
         /**
@@ -443,7 +401,7 @@
          * Clears the selected investment library by setting selectItemValue to an empty value or 0
          */
         onClearSelectedInvestmentLibrary() {
-            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
+            this.selectItemValue = '';
         }
 
         /**
@@ -464,18 +422,14 @@
             const latestYear: number = getLatestPropertyValue('year', this.selectedInvestmentLibrary.budgetYears);
             const nextYear = hasValue(latestYear) ? latestYear + 1 : moment().year();
 
-            let nextId = hasValue(this.latestBudgetYearId) ? this.latestBudgetYearId + 1 : 1;
-
             const newBudgetYears: InvestmentLibraryBudgetYear[] = this.selectedInvestmentLibrary.budgetOrder
                 .map((budget: string) => {
                     const newBudgetYear: InvestmentLibraryBudgetYear = {
-                        investmentLibraryId: this.selectedInvestmentLibrary.id,
-                        id: nextId,
+                        id: ObjectID.generate(),
                         year: nextYear,
                         budgetName: budget,
                         budgetAmount: 0
                     };
-                    nextId++;
                     return newBudgetYear;
                 });
 
@@ -504,19 +458,15 @@
                 const startYear: number = hasValue(latestYear) ? latestYear + 1 : moment().year();
                 const endYear = moment().year(startYear).add(range, 'years').year();
 
-                let nextId = hasValue(this.latestBudgetYearId) ? this.latestBudgetYearId + 1 : 1;
-
                 const newBudgetYears: InvestmentLibraryBudgetYear[] = [];
                 for (let currentYear = startYear; currentYear < endYear; currentYear++) {
                     this.selectedInvestmentLibrary.budgetOrder.forEach((budget: string) => {
                         newBudgetYears.push({
-                            investmentLibraryId: this.selectedInvestmentLibrary.id,
-                            id: nextId,
+                            id: ObjectID.generate(),
                             year: currentYear,
                             budgetName: budget,
                             budgetAmount: 0
                         });
-                        nextId++;
                     });
                 }
 
@@ -580,7 +530,6 @@
                 if (!isEmpty(editedBudgets)) {
                     const yearsForRemainingBudgetYears = getPropertyValues('year', remainingBudgetYears);
 
-                    let nextId = hasValue(this.latestBudgetYearId) ? this.latestBudgetYearId + 1 : 1;
                     yearsForRemainingBudgetYears.forEach((year: number) => {
                         const currentYearBudgetYears = remainingBudgetYears
                             .filter((budgetYear: InvestmentLibraryBudgetYear) => budgetYear.year === year);
@@ -588,13 +537,11 @@
                         editedBudgets.forEach((editedBudget: EditedBudget) => {
                             if (editedBudget.isNew) {
                                 editedBudgetYears.push({
-                                    investmentLibraryId: this.selectedInvestmentLibrary.id,
-                                    id: nextId,
+                                    id: ObjectID.generate(),
                                     year: year,
                                     budgetName: editedBudget.name,
                                     budgetAmount: 0,
                                 });
-                                nextId++;
                             } else {
                                 const editedBudgetYear = currentYearBudgetYears
                                     .find((budgetYear: InvestmentLibraryBudgetYear) =>
@@ -663,7 +610,7 @@
             this.createInvestmentLibraryDialogData = clone(emptyCreateInvestmentLibraryDialogData);
 
             if (!isNil(createdInvestmentLibrary)) {
-                createdInvestmentLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
+                createdInvestmentLibrary.id = ObjectID.generate();
                 createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
                 this.createInvestmentLibraryAction({ createdInvestmentLibrary: createdInvestmentLibrary });
@@ -675,13 +622,11 @@
          */
         setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary: InvestmentLibrary) {
             if (hasValue(createdInvestmentLibrary.budgetYears)) {
-                let nextBudgetYearId: number = hasValue(this.latestBudgetYearId) ? this.latestBudgetYearId + 1 : 1;
+                // let nextBudgetYearId: number = hasValue(this.latestBudgetYearId) ? this.latestBudgetYearId + 1 : 1;
 
                 createdInvestmentLibrary.budgetYears = sortByProperty('id', createdInvestmentLibrary.budgetYears)
                     .map((budgetYear: InvestmentLibraryBudgetYear) => {
-                        budgetYear.investmentLibraryId = createdInvestmentLibrary.id;
-                        budgetYear.id = nextBudgetYearId;
-                        nextBudgetYearId++;
+                        budgetYear.id = ObjectID.generate();
                         return budgetYear;
                     });
             }
@@ -694,11 +639,7 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.updateInvestmentLibraryAction({ updatedInvestmentLibrary: this.selectedInvestmentLibrary })
-                .then(() => {
-                    this.setSuccessMessageAction({ message: 'Library updated successfully' });
-                }).catch(() => {
-                });
+            this.updateInvestmentLibraryAction({ updatedInvestmentLibrary: this.selectedInvestmentLibrary });
         }
 
         /**
@@ -708,11 +649,6 @@
         onApplyToScenario() {
             const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
             appliedInvestmentLibrary.id = this.selectedScenarioId;
-            if (hasValue(appliedInvestmentLibrary.budgetYears)) {
-                appliedInvestmentLibrary.budgetYears.forEach((budgetYear: InvestmentLibraryBudgetYear) => {
-                    budgetYear.investmentLibraryId = this.selectedScenarioId;
-                });
-            }
             this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary });
         }
 

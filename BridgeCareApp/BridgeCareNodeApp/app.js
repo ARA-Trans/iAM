@@ -21,8 +21,9 @@ run().catch(error => console.error(error));
 
 async function run() {
   let connectionTest = process.env.NODE_ENV;
-  if (process.env.NODE_ENV == 'development') {
-    await mongoose.connect("mongodb://sbhardwaj:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=rs0", { useNewUrlParser: true })
+
+  if (process.env.NODE_ENV === 'development') {
+    await mongoose.connect("mongodb://localhost:27017/BridgeCare?replicaSet=r1", { useNewUrlParser: true })
       .then(() => {
         connectionTest = 'connected to mongo db on the local';
         debug('connected to mongo db on the local');
@@ -32,7 +33,8 @@ async function run() {
         debug('error has occured in connection');
       });
   }
-  if (process.env.NODE_ENV == 'production') {
+
+  if (process.env.NODE_ENV === 'production') {
     await mongoose.connect("mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=r1", { useNewUrlParser: true })
       .then(() => debug('connected to mongo db on the server'))
       .then(() => {
@@ -50,20 +52,34 @@ async function run() {
   io.on('disconnect', () => { debug('a user is disconnected'); });
 
   const InvestmentLibrary = require("./models/investmentLibraryModel");
-  const investmentLibraryrouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary, connectionTest);
+  const investmentLibraryRouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary, connectionTest);
+
+  const PerformanceLibrary = require('./models/performanceLibraryModel');
+  const performanceLibraryRouter = require('./routes/performanceLibraryRouters')(PerformanceLibrary, connectionTest);
+
+  const TreatmentLibrary = require('./models/treatmentLibraryModel');
+  const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary, connectionTest);
 
   app.use(cors());
   io.origins('*:*');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
-  const pipeline = [{ $match: { 'ns.db': 'BridgeCare', 'ns.coll': 'investmentLibraries' } }];
   const options = { fullDocument: 'updateLookup' };
-  InvestmentLibrary.watch(pipeline, options).on('change', data => {
+
+  InvestmentLibrary.watch(options).on('change', data => {
     io.emit('investmentLibrary', data);
   });
 
-  app.use("/api", investmentLibraryrouter);
+  PerformanceLibrary.watch(options).on('change', data => {
+    io.emit('performanceLibrary', data);
+  });
+
+  TreatmentLibrary.watch(options).on('change', data => {
+    io.emit('treatmentLibrary', data);
+  });
+
+  app.use("/api", [investmentLibraryRouter, performanceLibraryRouter, treatmentLibraryRouter]);
 }
 
 

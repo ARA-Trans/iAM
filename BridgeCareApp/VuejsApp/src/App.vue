@@ -19,9 +19,11 @@
     export default class AppComponent extends Vue {
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
+        @State(state => state.toastr.infoMessage) infoMessage: string;
 
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('setInfoMessage') setInfoMessageAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
 
         @Watch('successMessage')
@@ -49,6 +51,20 @@
                     timeout: 3000
                 });
                 this.setErrorMessageAction({message: ''});
+            }
+        }
+
+        @Watch('infoMessage')
+        onInfoMessageChanged() {
+            if (hasValue(this.infoMessage)) {
+                iziToast.info({
+                    title: 'Info',
+                    message: this.infoMessage,
+                    position: 'topRight',
+                    closeOnClick: true,
+                    timeout: 3000
+                });
+                this.setInfoMessageAction({message: ''});
             }
         }
 

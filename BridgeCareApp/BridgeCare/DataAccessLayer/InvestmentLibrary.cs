@@ -39,7 +39,7 @@ namespace BridgeCare.DataAccessLayer
                         BudgetNamesByOrder = p.INVESTMENTS.BUDGETORDER,
                         BudgetYears = p.YEARLYINVESTMENTs.Select(m => new InvestmentLibraryBudgetYearModel
                         {
-                            Id = m.YEARID,
+                            Id = m.YEARID.ToString(),
                             Year = m.YEAR_,
                             BudgetAmount = m.AMOUNT,
                             BudgetName = m.BUDGETNAME
