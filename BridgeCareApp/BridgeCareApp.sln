@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28917.181
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VuejsApp", "VuejsApp\VuejsApp.njsproj", "{1F55AF77-CE22-45A8-9188-793D16E07ABE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E40427E5-3F1C-41E4-90DE-5BEF926BCEDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BridgeCare", "BridgeCare\BridgeCare.csproj", "{74E9B84B-5902-457A-810C-618409DE4E45}"
-EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "BridgeCareNodeApp", "BridgeCareNodeApp\BridgeCareNodeApp.njsproj", "{D6D779E1-71FC-460B-86D7-E4C9C6643FC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{74E9B84B-5902-457A-810C-618409DE4E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74E9B84B-5902-457A-810C-618409DE4E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74E9B84B-5902-457A-810C-618409DE4E45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D6D779E1-71FC-460B-86D7-E4C9C6643FC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6D779E1-71FC-460B-86D7-E4C9C6643FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6D779E1-71FC-460B-86D7-E4C9C6643FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6D779E1-71FC-460B-86D7-E4C9C6643FC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

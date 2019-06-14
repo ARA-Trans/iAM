@@ -1,64 +1,34 @@
-﻿const compression = require('compression');
-const express = require("express");
+﻿const express = require("express");
 const debug = require('debug')('app');
-const cors = require('cors');
-const mongoose = require("mongoose");
-const morgan = require('morgan');
 const app = express();
-app.use(morgan('tiny'));
-app.use(compression());
+require('./config/express')(app);
 
-const bodyParser = require('body-parser');
-const port = process.env.PORT || 5000;
+const env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-const server = app.listen(port, () => {
-  debug(`Running on port ${port}`);
+const config = require('./config/config')[env];
+require('./config/mongoose')(config);
+
+const server = app.listen(config.port, () => {
+  debug(`Running on port ${config.port}`);
 });
 
-const io = require('socket.io')(server);
+const io = require('./config/socketIO')(server);
 
-run().catch(error => console.error(error));
+run().catch(error => debug(error));
 
 async function run() {
-  let connectionTest = process.env.NODE_ENV;
 
-  if (process.env.NODE_ENV === 'development') {
-    await mongoose.connect("mongodb://localhost:27017/BridgeCare?replicaSet=r1", { useNewUrlParser: true })
-      .then(() => {
-        connectionTest = 'connected to mongo db on the local';
-        debug('connected to mongo db on the local');
-      })
-      .catch((err) => {
-        connectionTest = 'error has occured in connection';
-        debug('error has occured in connection');
-      });
-  }
+  const InvestmentLibrary = require('./models/investmentLibraryModel');
+  const investmentLibraryRouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary);
 
-  if (process.env.NODE_ENV === 'production') {
-    await mongoose.connect("mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=r1", { useNewUrlParser: true })
-      .then(() => debug('connected to mongo db on the server'))
-      .then(() => {
-        connectionTest = 'connected to mongo db on the server';
-        debug('connected to mongo db on the server');
-      })
-      .catch((err) => {
-        connectionTest = 'server: error has occured in connection';
-        debug('server: error has occured in connection');
-      });
-
-  }
-
-  io.on('connect', (socket) => { debug('a user is connected'); });
-  io.on('disconnect', () => { debug('a user is disconnected'); });
-
-  const InvestmentLibrary = require("./models/investmentLibraryModel");
-  const investmentLibraryRouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary, connectionTest);
+  const Scenario = require('./models/scenarioModel');
+  const scenarioRouter = require('./routes/scenarioRouters')(Scenario);
 
   const PerformanceLibrary = require('./models/performanceLibraryModel');
-  const performanceLibraryRouter = require('./routes/performanceLibraryRouters')(PerformanceLibrary, connectionTest);
+  const performanceLibraryRouter = require('./routes/performanceLibraryRouters')(PerformanceLibrary);
 
   const TreatmentLibrary = require('./models/treatmentLibraryModel');
-  const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary, connectionTest);
+  const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary);
 
   app.use(cors());
   io.origins('*:*');
@@ -79,7 +49,7 @@ async function run() {
     io.emit('treatmentLibrary', data);
   });
 
-  app.use("/api", [investmentLibraryRouter, performanceLibraryRouter, treatmentLibraryRouter]);
+  app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter]);
 }
 
 

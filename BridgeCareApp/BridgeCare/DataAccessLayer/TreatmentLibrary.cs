@@ -39,7 +39,8 @@ namespace BridgeCare.DataAccessLayer
                             OMS_IS_REPEAT = p.OMS_IS_REPEAT,
                             OMS_REPEAT_START = p.OMS_REPEAT_START,
                             OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
-                            Costs = p.COST.Select(q => new CostModel
+                            BeforeAny = p.BEFOREANY,
+                BeforeSame = p.BEFORESAME,Costs = p.COST.Select(q => new CostModel
                             {
                                 Cost = q.COST_,
                                 CostId = q.COSTID.ToString(),
@@ -51,8 +52,7 @@ namespace BridgeCare.DataAccessLayer
                             {
                                 Criteria = m.CRITERIA,
                                 FeasibilityId = m.FEASIBILITYID.ToString(),
-                                BeforeAny = p.BEFOREANY,
-                                BeforeSame = p.BEFORESAME
+
                             }).ToList(),
                             Consequences = p.CONSEQUENCES.Select(n => new ConsequenceModel
                             {
@@ -106,7 +106,7 @@ namespace BridgeCare.DataAccessLayer
 
                 // the treatment tables get deleted index by index and when they do all the records in
                 // sub tables also get deleted, the records in the sub tables are tied to one treatment.
-                // if a cost or consequence record is deleted all the records for the particular treatment 
+                // if a cost or consequence record is deleted all the records for the particular treatment
                 // shift up and occupy the lower Id's
                 foreach (var existingTreatment in existingTreatments.ToList())
                 {

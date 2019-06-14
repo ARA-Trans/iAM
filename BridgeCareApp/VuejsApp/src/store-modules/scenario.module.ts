@@ -2,8 +2,8 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-import {hasValue} from '@/shared/utils/has-value-util';
-import {clone, append, any, propEq, findIndex} from 'ramda';
+import { hasValue } from '@/shared/utils/has-value-util';
+import { clone, append, any, propEq, findIndex, remove } from 'ramda';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -23,6 +23,13 @@ const mutations = {
             const index: number = findIndex(propEq('simulationId', updatedScenario.simulationId), scenarios);
             scenarios[index] = clone(updatedScenario);
             state.scenarios = scenarios;
+        }
+    },
+    removeScenarioMutator(state: any, simulationId: number) {
+        if (any(propEq('simulationId', simulationId), state.scenarios)) {
+            const scenarios: Scenario[] = clone(state.scenarios);
+            const index: number = findIndex(propEq('simulationId', simulationId), scenarios);
+            state.scenarios = remove(index, 1, scenarios);
         }
     }
 };
@@ -56,6 +63,17 @@ const actions = {
                     dispatch('setSuccessMessage', {message: 'Simulation started'});
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to start simulation${setStatusMessage(response)}`});
+                }
+            });
+    },
+    async deleteScenario({ dispatch, commit }: any, payload: any) {
+        return await ScenarioService.deleteScenario(payload.scenarioId)
+            .then((response: AxiosResponse<number>) => {
+                if (hasValue(response) && http2XX.test(response.status.toString())) {
+                    commit('removeScenarioMutator', response.data);
+                    dispatch('setSuccessMessage', { message: 'Successfully deleted scenario' });
+                } else {
+                    dispatch('setErrorMessage', { message: `Failed to delete scenario${setStatusMessage(response)}` });
                 }
             });
     }
