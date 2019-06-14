@@ -5,6 +5,10 @@ namespace BridgeCare.EntityClasses
 {
     public class COMMIT_CONSEQUENCES
     {
+        public COMMIT_CONSEQUENCES()
+        {
+        }
+
         public COMMIT_CONSEQUENCES(string attribute_, string change_)
         {            
             ATTRIBUTE_ = attribute_;

@@ -42,7 +42,7 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        public object GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
+        public COMMITTED_PROJECT GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
         {
             return db.COMMITTEDPROJECTs.FirstOrDefault(c => c.SIMULATIONID == simulationId && c.SECTIONID == sectionId && c.YEARS == years);
         }

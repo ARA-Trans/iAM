@@ -7,6 +7,10 @@ namespace BridgeCare.EntityClasses
     [Table("COMMITTED_")]
     public class COMMITTED_PROJECT
     {
+        public COMMITTED_PROJECT()
+        {
+        }
+
         public COMMITTED_PROJECT(int simulationId, int sectionId, int years, string treatmentName, int yearSame, int yearAny, string budget, double cost_)
         {
             SIMULATIONID = simulationId;
@@ -16,7 +20,8 @@ namespace BridgeCare.EntityClasses
             YEARSAME = yearSame;
             YEARANY = yearAny;
             BUDGET = budget;
-            COST_ = cost_;            
+            COST_ = cost_;
+            CommitConsequences = new List<COMMIT_CONSEQUENCES>();
         }
 
         [Key]                
