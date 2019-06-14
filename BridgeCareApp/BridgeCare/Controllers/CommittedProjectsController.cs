@@ -29,9 +29,11 @@ namespace BridgeCare.Controllers
             }
 
             if (!Request.Content.IsMimeMultipartContent())
-                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);           
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
 
-            committedProjects.SaveCommittedProjectsFiles(httpRequest.Files, db);
+            var selectedScenarioId = httpRequest.Form.Get("selectedScenarioId");
+            var networkId = httpRequest.Form.Get("networkId");
+            committedProjects.SaveCommittedProjectsFiles(httpRequest.Files, selectedScenarioId, networkId, db);
             return Ok();
         }
     }

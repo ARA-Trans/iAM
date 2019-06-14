@@ -5,6 +5,6 @@ namespace BridgeCare.Interfaces
 {
     public interface ICommittedProjects
     {
-        void SaveCommittedProjectsFiles(HttpFileCollection files, BridgeCareContext db);
+        void SaveCommittedProjectsFiles(HttpFileCollection files, string selectedScenarioId, string networkId, BridgeCareContext db);
     }
 }

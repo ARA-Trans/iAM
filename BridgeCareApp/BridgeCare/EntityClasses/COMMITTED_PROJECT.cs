@@ -22,6 +22,7 @@ namespace BridgeCare.EntityClasses
         [Key]                
         public int COMMITID { get; set; }
 
+        [ForeignKey("SIMULATION")]
         public int SIMULATIONID { get; set; }
 
         public int SECTIONID { get; set; }
@@ -43,5 +44,7 @@ namespace BridgeCare.EntityClasses
         public string OMS_IS_NOT_ALLOWED { get; set; }
 
         public virtual ICollection<COMMIT_CONSEQUENCES> CommitConsequences { get; set; }
+
+        public virtual SIMULATION SIMULATION { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using OfficeOpenXml;
-using System.IO;
 using BridgeCare.Models;
 
 namespace BridgeCare.Services
@@ -12,21 +11,21 @@ namespace BridgeCare.Services
     public class CommittedProjects : ICommittedProjects
     {
         readonly ICommitted committed;
+        private readonly ISections sections;
 
-        public CommittedProjects(ICommitted committed)
+        public CommittedProjects(ICommitted committed, ISections sections)
         {
             this.committed = committed;
+            this.sections = sections;
         }
 
-        public void SaveCommittedProjectsFiles(HttpFileCollection files, BridgeCareContext db)
+        public void SaveCommittedProjectsFiles(HttpFileCollection files, string selectedScenarioId, string networkId, BridgeCareContext db)
         {
-            foreach (string file in files)
-            {
-                var committedProjectModels = new List<CommittedProjectModel>();
-                var postedFile = files[file];
-                GetCommittedProjectModels(postedFile, committedProjectModels);
-                SaveCommittedProjects(committedProjectModels, db);
-            }
+            var committedProjectModels = new List<CommittedProjectModel>();
+            var postedFile = files[0];
+            GetCommittedProjectModels(postedFile, selectedScenarioId, networkId, committedProjectModels, db);
+            SaveCommittedProjects(committedProjectModels, db);
+
         }
 
         private void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
@@ -34,26 +33,28 @@ namespace BridgeCare.Services
             committed.SaveCommittedProjects(committedProjectModels, db);
         }
 
-        private void GetCommittedProjectModels(HttpPostedFile postedFile, List<CommittedProjectModel> committedProjectModels)
-        {
+        private void GetCommittedProjectModels(HttpPostedFile postedFile, string selectedScenarioId, string networkId, List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
+        {            
             // below should be done on server side??
             var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
 
-            //postedFile.SaveAs(filePath);
-            // NOTE: To store in memory use postedFile.InputStream                
-            var package = new ExcelPackage(new FileInfo(postedFile.FileName));
+            //postedFile.SaveAs(filePath);            
+            var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
             ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
             var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
             var start = worksheet.Dimension.Start;
             var end = worksheet.Dimension.End;
+            var brKey = Convert.ToInt32(GetCellValue(worksheet, 2, 1));
+            var sectionId = sections.GetSectionId(Convert.ToInt32(networkId), brKey, db);
             for (int row = start.Row + 1; row <= end.Row; row++)
             {
-                var column = start.Column;                
+                var column = start.Column + 2;
                 // BMSID till COST -> entry in COMMITTED_                    
                 var committedProjectModel = new CommittedProjectModel
                 {
-                    SectionId = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
-                    TreatmentName = GetCellValue(worksheet, row, ++column),
+                    SectionId = sectionId,
+                    SimulationId = Convert.ToInt32(selectedScenarioId),
+                    TreatmentName = GetCellValue(worksheet, row, column),
                     Years = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
                     YearAny = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
                     YearSame = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
