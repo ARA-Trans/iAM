@@ -17,11 +17,16 @@ namespace BridgeCare.DataAccessLayer
             {
                 foreach (var committedProjectModel in committedProjectModels)
                 {
-                    var committed = new COMMITTED_PROJECT(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
+                    var existingCommitted = db.COMMITTEDPROJECTs.FirstOrDefault(c => c.SECTIONID == committedProjectModel.SectionId && c.SIMULATIONID == committedProjectModel.SimulationId);
+                    if (existingCommitted != null)
+                    {
+                        continue;
+                    }
+                    var committed = CreateCommitted(committedProjectModel);
                     db.COMMITTEDPROJECTs.Add(committed);
                     db.SaveChanges();
 
-                    // get call for new insert
+                    // get
                     var Insertedcommitted = GetCommittedProject(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, db);
 
                     // Add consequences             
@@ -40,6 +45,11 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.OutOfMemoryError(ex);
             }
+        }
+
+        private COMMITTED_PROJECT CreateCommitted(CommittedProjectModel committedProjectModel)
+        {
+            return new COMMITTED_PROJECT(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
         }
 
         public COMMITTED_PROJECT GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
