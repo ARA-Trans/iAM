@@ -2,9 +2,9 @@
 using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace BridgeCare.DataAccessLayer
@@ -17,18 +17,18 @@ namespace BridgeCare.DataAccessLayer
 
             if (data.isPiecewise)
             {
-                checkPiecewise(data.equation);              
+                checkPiecewise(data.equation);
             }
-            else 
+            else
             {
                 string equation = data.equation.Trim();
-                equation = checkAttributes(equation,data.isFunction, db);
+                equation = checkAttributes(equation, data.isFunction, db);
                 if (data.isFunction)
                 {
                     calcEval.BuildFunctionClass(equation, "double", null);
                 }
                 else
-                { 
+                {
                     calcEval.BuildTemporaryClass(equation, true);
                 }
                 calcEval.CompileAssembly();
@@ -46,7 +46,7 @@ namespace BridgeCare.DataAccessLayer
             return NumberOfHits(criteria, db);
         }
 
-        private List<BridgeCare.EntityClasses.Attributes> GetAllowedAttributes(bool isFunction,BridgeCareContext db)
+        private List<BridgeCare.EntityClasses.Attributes> GetAllowedAttributes(bool isFunction, BridgeCareContext db)
         {
             if (isFunction)
             {
@@ -60,7 +60,7 @@ namespace BridgeCare.DataAccessLayer
 
         private string checkAttributes(string target, bool isFunction, BridgeCareContext db)
         {
-            List<BridgeCare.EntityClasses.Attributes> attributes = GetAllowedAttributes(isFunction,db);
+            List<BridgeCare.EntityClasses.Attributes> attributes = GetAllowedAttributes(isFunction, db);
             target = target.Replace('[', '?');
             foreach (BridgeCare.EntityClasses.Attributes allowedAttribute in attributes)
             {
@@ -146,6 +146,7 @@ namespace BridgeCare.DataAccessLayer
             }
             return;
         }
+
         public String NumberOfHits(String criteria, BridgeCareContext db)
         {
             var strNetworkID = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
@@ -172,7 +173,7 @@ namespace BridgeCare.DataAccessLayer
                 connection.Close();
                 return count + " results match query";
             }
-            catch(SqlException e)
+            catch (SqlException e)
             {
                 throw new System.InvalidOperationException(e.Message);
             }
@@ -184,7 +185,6 @@ namespace BridgeCare.DataAccessLayer
             {
                 throw new System.InvalidOperationException("Failed SQL Query:" + strSelect);
             }
-            
         }
     }
 }
