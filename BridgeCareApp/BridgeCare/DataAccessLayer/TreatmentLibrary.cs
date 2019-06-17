@@ -168,6 +168,8 @@ namespace BridgeCare.DataAccessLayer
                             CreateTreatment(treatment, existingSimulation.SIMULATIONID)
                         );
                     }
+
+                    db.SaveChanges();
                 }
             }
             catch (SqlException ex)
