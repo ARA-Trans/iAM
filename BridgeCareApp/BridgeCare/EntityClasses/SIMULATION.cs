@@ -65,11 +65,7 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<PRIORITY> PRIORITies { get; set; }
         public virtual ICollection<DEFICIENT> DEFICIENTS { get; set; }
         public virtual ICollection<TARGET_DEFICIENT> TARGET_DEFICIENT { get; set; }
-        public virtual ICollection<Targets> TARGETS { get; set; }
-
-
-
-
-        public virtual ICollection<COMMITTED_PROJECT> COMMITTED_PROJECTs { get; set; }
+        public virtual ICollection<Targets> TARGETS { get; set; }                     
+        public virtual ICollection<COMMITTED_> COMMITTEDPROJECTs { get; set; }
     }
 }

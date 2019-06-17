@@ -18,7 +18,7 @@ namespace BridgeCare.EntityClasses
         [Key]
         public int ID_ { get; set; }
 
-        [ForeignKey("COMMITTED_PROJECT")]
+        [ForeignKey("COMMITTED_")]
         public int COMMITID { get; set; }
 
         [ForeignKey("Attributes")]
@@ -26,7 +26,7 @@ namespace BridgeCare.EntityClasses
 
         public string CHANGE_ { get; set; }
 
-        public virtual COMMITTED_PROJECT COMMITTED_PROJECT { get; set; }
+        public virtual COMMITTED_ COMMITTED_ { get; set; }
 
         public virtual Attributes Attributes { get; set; }
     }

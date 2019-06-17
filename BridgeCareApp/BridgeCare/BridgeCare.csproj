@@ -212,9 +212,8 @@
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
     <Compile Include="EntityClasses\Attributes.cs" />
-    <Compile Include="EntityClasses\COMMITTED_PROJECT.cs" />
     <Compile Include="EntityClasses\COMMIT_CONSEQUENCES.cs" />
-    <Compile Include="EntityClasses\COMMITTED_.cs" />    
+    <Compile Include="EntityClasses\COMMITTED_.cs" />
     <Compile Include="EntityClasses\CONSEQUENCE.cs" />
     <Compile Include="EntityClasses\COST.cs" />
     <Compile Include="EntityClasses\DEFICIENT.cs" />

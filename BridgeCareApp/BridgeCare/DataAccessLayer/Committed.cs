@@ -32,14 +32,14 @@ namespace BridgeCare.DataAccessLayer
                     // Add consequences             
                     foreach (var commitConsequence in committedProjectModel.CommitConsequences)
                     {
-                        committed.CommitConsequences.Add(new COMMIT_CONSEQUENCES(commitConsequence.Attribute_, commitConsequence.Change_));
+                        committed.COMMIT_CONSEQUENCES.Add(new COMMIT_CONSEQUENCES(commitConsequence.Attribute_, commitConsequence.Change_));
                     }
                     db.SaveChanges();
                 }
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "COMMITTED_PROJECT");
+                HandleException.SqlError(ex, "COMMITTED_");
             }
             catch (OutOfMemoryException ex)
             {
@@ -47,12 +47,12 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        private COMMITTED_PROJECT CreateCommitted(CommittedProjectModel committedProjectModel)
+        private COMMITTED_ CreateCommitted(CommittedProjectModel committedProjectModel)
         {
-            return new COMMITTED_PROJECT(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
+            return new COMMITTED_(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
         }
 
-        public COMMITTED_PROJECT GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
+        public COMMITTED_ GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
         {
             return db.COMMITTEDPROJECTs.FirstOrDefault(c => c.SIMULATIONID == simulationId && c.SECTIONID == sectionId && c.YEARS == years);
         }
