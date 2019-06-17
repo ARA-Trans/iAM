@@ -154,7 +154,7 @@ namespace BridgeCare.DataAccessLayer
             string strWhere = criteria.Replace("[", "");
             strWhere = strWhere.Replace("]", "");
             strWhere = strWhere.Replace("@", "");
-            strWhere = strWhere.Replace("'", "");
+
             //oracle chokes on non-space whitespace
             Regex whiteSpaceMechanic = new Regex(@"\s+");
             strWhere = whiteSpaceMechanic.Replace(strWhere, " ");
@@ -168,7 +168,7 @@ namespace BridgeCare.DataAccessLayer
             {
                 SqlCommand cmd = new SqlCommand(strSelect, connection);
                 connection.Open();
-                string count = cmd.ExecuteNonQuery().ToString();
+                string count = cmd.ExecuteScalar().ToString();
                 connection.Close();
                 return count + " results match query";
             }
