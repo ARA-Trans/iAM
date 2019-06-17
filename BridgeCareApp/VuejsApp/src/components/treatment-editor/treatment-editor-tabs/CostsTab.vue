@@ -66,6 +66,7 @@
     import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {TabData} from '@/shared/models/child-components/tab-data';
+    const ObjectID = require('bson-objectid');
 
     @Component({
         components: {CriteriaEditorDialog, EquationEditorDialog}
@@ -76,7 +77,6 @@
         costsTabTreatmentLibraries: TreatmentLibrary[] = [];
         costsTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         costsTabSelectedTreatment: Treatment = clone(emptyTreatment);
-        costsTabLatestCostId: number = 0;
         costsGridHeaders: DataTableHeader[] = [
             {text: 'Equation', value: 'equation', align: 'left', sortable: false, class: '', width: ''},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''},
@@ -95,7 +95,6 @@
             this.costsTabTreatmentLibraries = this.costsTabData.tabTreatmentLibraries;
             this.costsTabSelectedTreatmentLibrary = this.costsTabData.tabSelectedTreatmentLibrary;
             this.costsTabSelectedTreatment = this.costsTabData.tabSelectedTreatment;
-            this.costsTabLatestCostId = this.costsTabData.latestCostId;
 
             this.setCostsGridData();
         }
@@ -104,11 +103,9 @@
          * Sets the component's grid data
          */
         setCostsGridData() {
-            if (this.costsTabSelectedTreatment.id !== 0 && this.costsTabSelectedTreatment.costs.length > 0) {
-                    this.costsGridData = this.costsTabSelectedTreatment.costs;
-            } else {
-                this.costsGridData = [];
-            }
+            this.costsGridData = hasValue(this.costsTabSelectedTreatment.costs)
+                ? this.costsTabSelectedTreatment.costs
+                : [];
         }
 
         /**
@@ -117,8 +114,7 @@
         onAddCost() {
             const newCost: Cost = {
                 ...clone(emptyCost),
-                treatmentId: this.costsTabSelectedTreatment.id,
-                id: hasValue(this.costsTabLatestCostId) ? this.costsTabLatestCostId + 1 : 1
+                id: ObjectID.generate()
             };
 
             this.submitChanges(newCost, false);

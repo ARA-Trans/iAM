@@ -10,8 +10,7 @@
                 <v-card-text>
                     <v-layout column fill-height>
                         <v-text-field label="Name" v-model="createdPerformanceLibrary.name" outline></v-text-field>
-                        <v-textarea rows="3" no-resize outline full-width
-                                    :label="createdPerformanceLibrary.description === '' ? 'Description' : ''"
+                        <v-textarea rows="3" no-resize outline label="Description"
                                     v-model="createdPerformanceLibrary.description">
                         </v-textarea>
                     </v-layout>

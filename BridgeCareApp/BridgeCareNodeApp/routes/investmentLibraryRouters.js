@@ -1,19 +1,28 @@
 const express = require('express');
-const libraryController = require('../controllers/libraryController');
+const investmentLibraryController = require('../controllers/investmentLibraryController');
 
-function routes(InvestmentLibrary){
+function investmentLibraryRoutes(InvestmentLibrary){
     const investmentLibraryRouter = express.Router();
-    const controller = libraryController(InvestmentLibrary);
-      investmentLibraryRouter.route("/investmentLibraries")
-        .post(controller.post)
+    const controller = investmentLibraryController(InvestmentLibrary);
+
+    investmentLibraryRouter.route("/GetInvestmentLibraries")
         .get(controller.get);
 
-        investmentLibraryRouter.route("/investmentLibraries/:libraryId")
-        .get(controller.getById)
-        .put(controller.put)
+    investmentLibraryRouter.route("/CreateInvestmentLibrary")
+        .post(controller.post);
+
+    investmentLibraryRouter.route("/UpdateInvestmentLibrary")
+        .put(controller.put);
+
+    investmentLibraryRouter.route("/GetInvestmentLibrary/:investmentLibraryId")
+        .get(controller.getById);
+
+    investmentLibraryRouter.route("/DeleteInvestmentLibrary/:investmentLibraryId")
         .delete(controller.deleteLibrary);
 
-        return investmentLibraryRouter;
+
+
+    return investmentLibraryRouter;
 }
 
-module.exports = routes;
+module.exports = investmentLibraryRoutes;

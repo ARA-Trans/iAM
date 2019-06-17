@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent max-width="250px">
+        <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center fill-height>
@@ -10,8 +10,7 @@
                 <v-card-text>
                     <v-layout column fill-height>
                         <v-text-field label="Name" v-model="createdTreatmentLibrary.name" outline></v-text-field>
-                        <v-textarea rows="3" no-resize outline full-width
-                                    :label="createdTreatmentLibrary.description === '' ? 'Description' : ''"
+                        <v-textarea rows="3" no-resize outline label="Description"
                                     v-model="createdTreatmentLibrary.description">
                         </v-textarea>
                     </v-layout>

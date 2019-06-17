@@ -17,20 +17,33 @@ const io = require('./config/socketIO')(server);
 run().catch(error => debug(error));
 
 async function run() {
-
   const InvestmentLibrary = require('./models/investmentLibraryModel');
-  const investmentLibraryrouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary);
+  const investmentLibraryRouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary);
 
   const Scenario = require('./models/scenarioModel');
   const scenarioRouter = require('./routes/scenarioRouters')(Scenario);
 
+  const PerformanceLibrary = require('./models/performanceLibraryModel');
+  const performanceLibraryRouter = require('./routes/performanceLibraryRouters')(PerformanceLibrary);
+
+  const TreatmentLibrary = require('./models/treatmentLibraryModel');
+  const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary);
+
   const options = { fullDocument: 'updateLookup' };
-  InvestmentLibrary.watch(options).on('change', data => {
+
+  InvestmentLibrary.watch([], options).on('change', data => {
     io.emit('investmentLibrary', data);
   });
 
-  app.use("/api", investmentLibraryrouter);
-  app.use("/api", scenarioRouter);
+  PerformanceLibrary.watch([], options).on('change', data => {
+    io.emit('performanceLibrary', data);
+  });
+
+  TreatmentLibrary.watch([], options).on('change', data => {
+    io.emit('treatmentLibrary', data);
+  });
+
+  app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter]);
 }
 
 
