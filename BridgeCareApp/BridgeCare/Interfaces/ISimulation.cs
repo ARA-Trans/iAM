@@ -12,6 +12,8 @@ namespace BridgeCare.Interfaces
 
         void UpdateName(SimulationModel model);
 
+        void Delete(int id);
+
         SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db);
     }
 }
