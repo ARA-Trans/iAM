@@ -63,8 +63,8 @@ namespace BridgeCare.DataAccessLayer
             string budgetNamesByOrder = data.GetBudgetOrder();
 
             // Derive FirstYear and NumberYears from the YearlyBudget list.
-            data.FirstYear = data.BudgetYears.Min(r => r.Year);
-            data.NumberYears = data.BudgetYears.Max(r => r.Year) - data.FirstYear;
+            data.FirstYear = data.BudgetYears.Any() ? data.BudgetYears.Min(r => r.Year) : DateTime.Now.Year;
+            data.NumberYears = data.BudgetYears.Any() ? data.BudgetYears.Max(r => r.Year) - data.FirstYear : 1;
 
             try
             {
@@ -73,8 +73,6 @@ namespace BridgeCare.DataAccessLayer
                     .Include(d => d.YEARLYINVESTMENTs)
                     .Single(_ => _.SIMULATIONID == data.Id);
 
-                simulation.COMMENTS = data.Description;
-                simulation.SIMULATION1 = data.Name;
                 simulation.INVESTMENTS.FIRSTYEAR = data.FirstYear;
                 simulation.INVESTMENTS.NUMBERYEARS = data.NumberYears;
                 simulation.INVESTMENTS.INFLATIONRATE = data.InflationRate;

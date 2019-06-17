@@ -1,5 +1,5 @@
 import {emptyPerformanceLibrary, PerformanceLibrary, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
-import {clone, append, any, propEq, findIndex} from 'ramda';
+import {clone, append, any, propEq, findIndex, equals} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
@@ -139,15 +139,16 @@ const actions = {
         if (payload.operationType == 'update' || payload.operationType == 'replace') {
             const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
             commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
-            if (state.selectedPerformanceLibrary.id == updatedPerformanceLibrary.id) {
+            if (state.selectedPerformanceLibrary.id === updatedPerformanceLibrary.id &&
+                !equals(state.selectedPerformanceLibrary, updatedPerformanceLibrary)) {
                 commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
+                dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
             }
-            dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
         }
+
         if (payload.operationType == 'insert') {
             const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('createdPerformanceLibrary', createdPerformanceLibrary);
-            dispatch('setInfoMessage', {message: 'A new library has been created from another source'});
+            commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
         }
     }
 };

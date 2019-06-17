@@ -118,11 +118,10 @@
                     </v-layout>
                 </v-flex>
                 <v-divider v-if="hasSelectedPerformanceLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedPerformanceLibrary">
+                <v-flex xs12 v-if="hasSelectedPerformanceLibrary  && selectedPerformanceLibrary.id !== scenarioPerformanceLibrary.id">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline full-width
-                                        :label="selectedPerformanceLibrary.description === '' ? 'Description' : ''"
+                            <v-textarea rows="4" no-resize outline label="Description"
                                         v-model="selectedPerformanceLibrary.description">
                             </v-textarea>
                         </v-flex>
@@ -180,7 +179,7 @@
     } from '@/shared/models/iAM/performance';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {any, propEq, clone, isNil, findIndex, append, isEmpty, uniq} from 'ramda';
+    import {any, propEq, clone, isNil, findIndex, append} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {
         CreatePerformanceLibraryDialogData,
@@ -392,7 +391,7 @@
          * Clears the stateSelectedPerformanceLibrary by setting selectItemValue to an empty string or '0'
          */
         onClearSelectedPerformanceLibrary() {
-            this.selectItemValue = '';
+            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
         }
 
         /**
@@ -639,7 +638,7 @@
     }
 
     .data-table {
-        height: 310px;
+        height: 290px;
         overflow-y: auto;
     }
 

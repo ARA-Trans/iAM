@@ -4,21 +4,18 @@ mongoose.set('useFindAndModify', false);
 const { Schema } = mongoose;
 
 const feasibilitySchema = new Schema({
-    _id: {type: String},
     criteria: {type: String},
     yearsBeforeAny: {type: Number},
     yearsBeforeSame: {type: Number}
 });
 
 const costSchema = new Schema({
-    _id: {type: String},
     equation: {type: String},
     isFunction: {type: Boolean},
     criteria: {type: String}
 });
 
 const consequenceSchema = new Schema({
-    _id: {type: String},
     attribute: {type: String},
     change: {type: String},
     equation: {type: String},
@@ -27,7 +24,6 @@ const consequenceSchema = new Schema({
 });
 
 const treatmentSchema = new Schema({
-    _id: {type: String},
     name: {type: String},
     feasibility: {type: feasibilitySchema},
     costs: [costSchema],
@@ -36,7 +32,6 @@ const treatmentSchema = new Schema({
 });
 
 const treatmentLibrarySchema = new Schema({
-    _id: {type: String},
     name: {type: String},
     description: {type: String},
     treatments: [treatmentSchema]

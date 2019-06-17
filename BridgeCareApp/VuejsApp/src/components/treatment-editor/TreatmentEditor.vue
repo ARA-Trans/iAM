@@ -79,11 +79,10 @@
                     </div>
                 </v-flex>
                 <v-divider v-if="hasSelectedTreatmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
+                <v-flex xs12 v-if="hasSelectedTreatmentLibrary && selectedTreatmentLibrary.id !== scenarioTreatmentLibrary.id">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline full-width
-                                        :label="selectedTreatmentLibrary.description === '' ? 'Description' : ''"
+                            <v-textarea rows="4" no-resize outline label="Description"
                                         v-model="selectedTreatmentLibrary.description">
                             </v-textarea>
                         </v-flex>
@@ -134,7 +133,7 @@
         Cost,
         emptyFeasibility,
         emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary
-    } from "@/shared/models/iAM/treatment";
+    } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
     import {isNil, append, any, propEq, clone} from 'ramda';
@@ -365,7 +364,7 @@
          * Clears the selected treatment library and resets the active tab to first tab
          */
         onClearSelectedTreatmentLibrary() {
-            this.treatmentLibrarySelectItemValue = '';
+            this.treatmentLibrarySelectItemValue = hasValue(this.treatmentLibrarySelectItemValue) ? '' : '0';
             this.activeTab = 0;
         }
 
@@ -451,7 +450,7 @@
                             treatment.feasibility = {
                                 ...emptyFeasibility,
                                 id: ObjectID.generate()
-                            }
+                            };
                         }
                         treatment.costs = treatment.costs.map((cost: Cost) => {
                             cost.id = ObjectID.generate();
@@ -542,5 +541,9 @@
         height: 305px;
         overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    .v-select {
+        height: 60px;
     }
 </style>

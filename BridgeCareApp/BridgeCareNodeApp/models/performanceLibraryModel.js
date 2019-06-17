@@ -4,7 +4,6 @@ mongoose.set('useFindAndModify', false);
 const { Schema } = mongoose;
 
 const performanceLibraryEquationSchema = new Schema({
-   _id: {type: String},
    attribute: {type: String},
    equationName: {type: String},
    equation: {type: String},
@@ -15,7 +14,6 @@ const performanceLibraryEquationSchema = new Schema({
 });
 
 const performanceLibrarySchema = new Schema({
-   _id: {type: String},
    name: {type: String},
    description: {type: String},
    equations: [performanceLibraryEquationSchema]

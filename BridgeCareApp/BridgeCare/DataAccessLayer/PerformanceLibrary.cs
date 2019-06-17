@@ -126,10 +126,6 @@ namespace BridgeCare.DataAccessLayer
                   .Include(d => d.PERFORMANCES)
                   .Single(s => s.SIMULATIONID == data.Id);
 
-                simulation.SIMULATION1 = data.Name;
-
-                db.SaveChanges();
-
                 UpsertPerformancesData(data, simulation, db);
 
                 // Update model to reflect latest ids (inserts)

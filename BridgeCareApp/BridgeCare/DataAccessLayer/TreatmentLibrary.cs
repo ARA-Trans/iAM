@@ -98,7 +98,6 @@ namespace BridgeCare.DataAccessLayer
             try
             {
                 var existingSimulation = db.SIMULATIONS.FirstOrDefault(p => p.SIMULATIONID == requestedModel.SimulationId);
-                if (existingSimulation != null) existingSimulation.SIMULATION1 = requestedModel.Name;
 
                 var existingTreatments = db.Treatments
                     .Include("CONSEQUENCES").Include("FEASIBILITY").Include("COST")

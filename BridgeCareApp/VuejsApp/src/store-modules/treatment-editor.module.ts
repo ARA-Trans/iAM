@@ -1,5 +1,5 @@
 import {emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
-import {any, propEq, findIndex, clone, append} from 'ramda';
+import {any, propEq, findIndex, clone, append, equals} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
@@ -172,15 +172,16 @@ const actions = {
         if (payload.operationType == 'update' || payload.operationType == 'replace') {
             const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
             commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
-            if (state.selectedTreatmentLibrary.id == updatedTreatmentLibrary.id) {
+            if (state.selectedTreatmentLibrary.id === updatedTreatmentLibrary.id &&
+                !equals(state.selectedTreatmentLibrary, updatedTreatmentLibrary)) {
                 commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);
+                dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
             }
-            dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
         }
+
         if (payload.operationType == 'insert') {
             const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
             commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
-            dispatch('setInfoMessage', {message: 'A new library has been created from another source'});
         }
     }
 };

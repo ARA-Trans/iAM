@@ -95,11 +95,10 @@
                     </v-layout>
                 </v-flex>
                 <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedInvestmentLibrary">
+                <v-flex xs12 v-if="hasSelectedInvestmentLibrary && selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline full-width
-                                        :label="selectedInvestmentLibrary.description === '' ? 'Description' : ''"
+                            <v-textarea rows="4" no-resize outline label="Description"
                                         v-model="selectedInvestmentLibrary.description">
                             </v-textarea>
                         </v-flex>
@@ -401,7 +400,7 @@
          * Clears the selected investment library by setting selectItemValue to an empty value or 0
          */
         onClearSelectedInvestmentLibrary() {
-            this.selectItemValue = '';
+            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
         }
 
         /**
@@ -683,7 +682,7 @@
     }
 
     .investment-editor-data-table {
-        height: 230px;
+        height: 205px;
         overflow-y: auto;
     }
 </style>

@@ -1,6 +1,6 @@
 import {emptyInvestmentLibrary, InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 import {hasValue} from '@/shared/utils/has-value-util';
@@ -135,15 +135,16 @@ const actions = {
         if (payload.operationType == 'update' || payload.operationType == 'replace') {
             const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
             commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
-            if (state.selectedInvestmentLibrary.id == updatedInvestmentLibrary.id) {
+            if (state.selectedInvestmentLibrary.id === updatedInvestmentLibrary.id &&
+                !equals(state.selectedInvestmentLibrary, updatedInvestmentLibrary)) {
                 commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
+                dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
             }
-            dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
         }
+
         if (payload.operationType == 'insert') {
             const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
             commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
-            dispatch('setInfoMessage', {message: 'A new library has been created from another source'});
         }
     }
 };

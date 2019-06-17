@@ -10,4 +10,4 @@ module.exports = function(config) {
     .catch((err) => {
       debug('error has occured in connection');
     });
-}
+};

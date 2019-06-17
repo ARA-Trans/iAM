@@ -17,7 +17,6 @@ const io = require('./config/socketIO')(server);
 run().catch(error => debug(error));
 
 async function run() {
-
   const InvestmentLibrary = require('./models/investmentLibraryModel');
   const investmentLibraryRouter = require('./routes/investmentLibraryRouters')(InvestmentLibrary);
 
@@ -30,22 +29,17 @@ async function run() {
   const TreatmentLibrary = require('./models/treatmentLibraryModel');
   const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary);
 
-  app.use(cors());
-  io.origins('*:*');
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
-
   const options = { fullDocument: 'updateLookup' };
 
-  InvestmentLibrary.watch(options).on('change', data => {
+  InvestmentLibrary.watch([], options).on('change', data => {
     io.emit('investmentLibrary', data);
   });
 
-  PerformanceLibrary.watch(options).on('change', data => {
+  PerformanceLibrary.watch([], options).on('change', data => {
     io.emit('performanceLibrary', data);
   });
 
-  TreatmentLibrary.watch(options).on('change', data => {
+  TreatmentLibrary.watch([], options).on('change', data => {
     io.emit('treatmentLibrary', data);
   });
 
