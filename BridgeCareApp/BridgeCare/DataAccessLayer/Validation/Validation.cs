@@ -15,15 +15,15 @@ namespace BridgeCare.DataAccessLayer
         {
             CalculateEvaluate calcEval = new CalculateEvaluate();
 
-            if (data.isPiecewise)
+            if (data.IsPiecewise)
             {
-                checkPiecewise(data.equation);
+                checkPiecewise(data.Equation);
             }
             else
             {
-                string equation = data.equation.Trim();
-                equation = checkAttributes(equation, data.isFunction, db);
-                if (data.isFunction)
+                string equation = data.Equation.Trim();
+                equation = checkAttributes(equation, data.IsFunction, db);
+                if (data.IsFunction)
                 {
                     calcEval.BuildFunctionClass(equation, "double", null);
                 }

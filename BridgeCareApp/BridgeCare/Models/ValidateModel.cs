@@ -2,8 +2,8 @@
 {
     public class ValidateEquationModel
     {
-        public string equation { get; set; }
-        public bool isFunction { get; set; }
-        public bool isPiecewise { get; set; }
+        public string Equation { get; set; }
+        public bool IsFunction { get; set; }
+        public bool IsPiecewise { get; set; }
     }
 }
