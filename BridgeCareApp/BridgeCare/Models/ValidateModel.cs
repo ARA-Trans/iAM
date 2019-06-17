@@ -5,7 +5,7 @@ using System.Web;
 
 namespace BridgeCare.Models
 {
-    public class ValidateModel
+    public class ValidateEquationModel
     {
         public string equation { get; set; }
         public bool isFunction { get; set; }

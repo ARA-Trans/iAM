@@ -9,7 +9,7 @@ namespace BridgeCare.Interfaces
 {
     public interface IValidation
     {
-        bool ValidateEquation(ValidateModel data, BridgeCareContext db);
-        bool ValidateCriteria(ValidateModel data, BridgeCareContext db);
+        void ValidateEquation(ValidateEquationModel data, BridgeCareContext db);
+        string ValidateCriteria(string data, BridgeCareContext db);
     }
 }

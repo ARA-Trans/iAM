@@ -1,7 +1,8 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
-using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
 
@@ -21,16 +22,33 @@ namespace BridgeCare.Controllers
         [ModelValidation("Function call not valid")]
         [Route("api/ValidateEquation")]
         [HttpPost]
-        public bool ValidateEquation(ValidateModel data)
+        public HttpResponseMessage ValidateEquation(ValidateEquationModel data)
         {
-            if (data.isFunction)
+            try
             {
-                return validate.ValidateEquation(data, db);
+                validate.ValidateEquation(data, db);
+                return Request.CreateResponse(HttpStatusCode.OK, "OK");
             }
-            else
+            catch (InvalidOperationException ex)
             {
-                return validate.ValidateCriteria(data, db);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
+        }
 
-           }
+        [ModelValidation("Function call not valid")]
+        [Route("api/ValidateCriteria")]
+        [HttpPost]
+        public HttpResponseMessage ValidateCriteria([FromBody]string data)
+        {
+            try
+            {
+                string numberHits = validate.ValidateCriteria(data, db);
+                return Request.CreateResponse(HttpStatusCode.OK, numberHits);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+    }
 }

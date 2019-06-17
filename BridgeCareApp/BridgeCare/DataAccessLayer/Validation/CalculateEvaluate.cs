@@ -354,11 +354,13 @@ namespace BridgeCare.DataAccessLayer
             if (results.Errors.HasErrors)
             {
                 string errorMessage = "";
+                string separator = "";
                 foreach (CompilerError error in results.Errors)
                 {
-                    errorMessage += error.Line + ":" + error.ErrorText + '\n';
+                    errorMessage += separator + error.ErrorText;
+                    separator = "  ";
                 }
-                throw new Exception("Error compiling code: " + errorMessage);
+                throw new InvalidOperationException("Error compiling code: " + errorMessage);
             }
             else
             {
@@ -686,7 +688,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (Exception exception)
             {
-                throw exception;
+                throw new InvalidOperationException(exception.Message);
             }
         }
 
