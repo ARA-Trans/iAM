@@ -618,8 +618,8 @@
                             this.onClearSelectedInvestmentLibrary();
                             setTimeout(() => {
                                 this.selectItemValue = createdInvestmentLibrary.id.toString();
-                            })
-                        })
+                            });
+                        });
                     });
             }
         }
@@ -666,7 +666,7 @@
                             this.updateSelectedInvestmentLibraryAction({
                                 updatedSelectedInvestmentLibrary: this.scenarioInvestmentLibrary
                             });
-                        })
+                        });
                     });
                 });
         }
