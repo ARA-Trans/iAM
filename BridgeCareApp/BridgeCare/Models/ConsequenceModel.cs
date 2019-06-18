@@ -8,10 +8,7 @@ namespace BridgeCare.Models
     public class ConsequenceModel
     {
         [DataMember(Name = "id")]
-        public int ConsequenceId { get; set; }
-
-        [DataMember(Name = "treatmentId")]
-        public int TreatmentId { get; set; }
+        public string ConsequenceId { get; set; }
 
         [DataMember(Name = "attribute")]
         public string Attribute_ { get; set; }

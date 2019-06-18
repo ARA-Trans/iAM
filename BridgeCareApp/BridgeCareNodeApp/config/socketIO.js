@@ -8,4 +8,4 @@ module.exports = function(server){
     io.origins('*:*');
 
     return io;
-}
+};

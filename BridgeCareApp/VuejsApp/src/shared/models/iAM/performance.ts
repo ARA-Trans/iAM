@@ -1,6 +1,5 @@
 export interface PerformanceLibraryEquation {
-    performanceLibraryId: number;
-    id: number;
+    id: number | string;
     attribute: string;
     equationName: string;
     equation: string;
@@ -11,14 +10,13 @@ export interface PerformanceLibraryEquation {
 }
 
 export interface PerformanceLibrary {
-    id: number;
+    id: number | string;
     name: string;
     description: string;
     equations: PerformanceLibraryEquation[];
 }
 
 export const emptyEquation: PerformanceLibraryEquation = {
-    performanceLibraryId: 0,
     id: 0,
     attribute: '',
     equationName: '',

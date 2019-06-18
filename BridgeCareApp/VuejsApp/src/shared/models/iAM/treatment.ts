@@ -1,22 +1,19 @@
 export interface Feasibility {
-    treatmentId: number;
-    id: number;
+    id: number | string;
     criteria: string;
     yearsBeforeAny: number;
     yearsBeforeSame: number;
 }
 
 export interface Cost {
-    treatmentId: number;
-    id: number;
+    id: number | string;
     equation: string;
     isFunction: boolean;
     criteria: string;
 }
 
 export interface Consequence {
-    treatmentId: number;
-    id: number;
+    id: number | string;
     attribute: string;
     change: string;
     equation: string;
@@ -25,8 +22,7 @@ export interface Consequence {
 }
 
 export interface Treatment {
-    treatmentLibraryId: number;
-    id: number;
+    id: number | string;
     name: string;
     feasibility: Feasibility;
     costs: Cost[];
@@ -35,7 +31,7 @@ export interface Treatment {
 }
 
 export interface TreatmentLibrary {
-    id: number;
+    id: number | string;
     name: string;
     description: string;
     treatments: Treatment[];
@@ -46,7 +42,6 @@ export interface BudgetGridRow {
 }
 
 export const emptyFeasibility: Feasibility = {
-    treatmentId: 0,
     id: 0,
     criteria: '',
     yearsBeforeAny: 0,
@@ -54,7 +49,6 @@ export const emptyFeasibility: Feasibility = {
 };
 
 export const emptyCost: Cost = {
-    treatmentId: 0,
     id: 0,
     equation: '',
     isFunction: false,
@@ -62,7 +56,6 @@ export const emptyCost: Cost = {
 };
 
 export const emptyConsequence: Consequence = {
-    treatmentId: 0,
     id: 0,
     attribute: '',
     change: '',
@@ -72,7 +65,6 @@ export const emptyConsequence: Consequence = {
 };
 
 export const emptyTreatment: Treatment = {
-    treatmentLibraryId: 0,
     id: 0,
     name: '',
     feasibility: emptyFeasibility,

@@ -1,13 +1,12 @@
 export interface InvestmentLibraryBudgetYear {
-    investmentLibraryId: number;
-    id: number;
+    id: number | string;
     year: number;
     budgetName: string;
     budgetAmount: number;
 }
 
 export interface InvestmentLibrary {
-    id: number;
+    id: number | string;
     name: string;
     inflationRate: number;
     discountRate: number;

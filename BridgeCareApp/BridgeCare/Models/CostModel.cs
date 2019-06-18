@@ -11,13 +11,14 @@ namespace BridgeCare.Models
     public class CostModel
     {
         [DataMember(Name = "Id")]
-        public int CostId { get; set; }
-        [DataMember(Name = "treatmentId")]
-        public int TreatmentId { get; set; }
+        public string CostId { get; set; }
+
         [DataMember(Name = "criteria")]
         public string Criteria { get; set; }
+
         [DataMember(Name = "isFunction")]
         public Nullable<bool> IsFunction { get; set; }
+
         [DataMember(Name = "equation")]
         public string Cost { get; set; }
 

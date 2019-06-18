@@ -10,10 +10,7 @@ namespace BridgeCare.Models
     public class TreatmentModel : CrudModel
     {
         [DataMember(Name = "id")]
-        public int TreatmentId { get; set; }
-
-        [DataMember(Name = "treatmentLibraryId")]
-        public int SimulationId { get; set; }
+        public string TreatmentId { get; set; }
 
         [DataMember(Name = "name")]
         public string Name { get; set; }
