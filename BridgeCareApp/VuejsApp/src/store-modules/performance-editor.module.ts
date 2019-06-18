@@ -102,7 +102,6 @@ const actions = {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
                     commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
-                    commit('selectedPerformanceLibraryMutator', createdPerformanceLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to create performance library${setStatusMessage(response)}`});
@@ -131,7 +130,6 @@ const actions = {
         await PerformanceEditorService.saveScenarioPerformanceLibrary(payload.saveScenarioPerformanceLibraryData)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
                 commit('scenarioPerformanceLibraryMutator', response.data);
-                commit('updatedSelectedPerformanceLibraryMutator', response.data);
                 dispatch('setSuccessMessage', {message: 'Successfully saved scenario performance library'});
             });
     },

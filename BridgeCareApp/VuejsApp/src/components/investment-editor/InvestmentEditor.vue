@@ -612,7 +612,15 @@
                 createdInvestmentLibrary.id = ObjectID.generate();
                 createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
-                this.createInvestmentLibraryAction({ createdInvestmentLibrary: createdInvestmentLibrary });
+                this.createInvestmentLibraryAction({ createdInvestmentLibrary: createdInvestmentLibrary })
+                    .then(() => {
+                        setTimeout(() => {
+                            this.onClearSelectedInvestmentLibrary();
+                            setTimeout(() => {
+                                this.selectItemValue = createdInvestmentLibrary.id.toString();
+                            })
+                        })
+                    });
             }
         }
 
@@ -648,7 +656,19 @@
         onApplyToScenario() {
             const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
             appliedInvestmentLibrary.id = this.selectedScenarioId;
-            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary });
+            appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
+
+            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary })
+                .then(() => {
+                    setTimeout(() => {
+                        this.onClearSelectedInvestmentLibrary();
+                        setTimeout(() => {
+                            this.updateSelectedInvestmentLibraryAction({
+                                updatedSelectedInvestmentLibrary: this.scenarioInvestmentLibrary
+                            });
+                        })
+                    });
+                });
         }
 
         /**
