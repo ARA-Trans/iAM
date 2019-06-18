@@ -43,6 +43,11 @@ async function run() {
     io.emit('treatmentLibrary', data);
   });
 
+  Scenario.watch([]).on('change', data => {
+    debug(data);
+    io.emit('scenarioStatus', data);
+  });
+
   app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter]);
 }
 
