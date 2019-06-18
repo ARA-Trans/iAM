@@ -15,10 +15,10 @@
                             </v-layout>
                         </form>
                         <v-btn class="file-select-btn" color="info" v-on:click="fileSelect.click()">
-                            Select Files
+                            Select File(s)
                         </v-btn>
                         <div v-show="false">
-                            <input id="file-select" type="file" v-on:change="onSelect($event.target.files)" />
+                            <input id="file-select" type="file" multiple v-on:change="onSelect($event.target.files)" />
                         </div>
                     </v-layout>
                     <div class="files-table">
