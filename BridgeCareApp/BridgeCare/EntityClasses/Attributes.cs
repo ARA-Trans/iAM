@@ -12,5 +12,7 @@ namespace BridgeCare.EntityClasses
         public string Attribute_ { get; set; }
 
         public bool Ascending { get; set; }
+
+        public string Type_ { get; set; }
     }
 }
