@@ -5,7 +5,7 @@ using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -83,6 +83,52 @@ namespace BridgeCare.Services
             return;
         }
 
+        // Deletes simulation record and all records with FK simulationId = id in
+        // other tables.
+        // The traverse of the DB is setup using [Key] and [ForeignKey] attributes
+        // in entity classes
+        public void Delete(int id)
+        {
+            var sim = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == id);
+
+            if (sim == null)
+            {
+                return;
+            }
+            else
+            {
+                db.Entry(sim).State = EntityState.Deleted;
+                db.SaveChanges();
+            }
+
+            int? networkId = sim.NETWORKID;
+
+            var select = String.Format
+                ("DROP TABLE IF EXISTS SIMULATION_{0}_{1},REPORT_{0}_{1},BENEFITCOST_{0}_{1},TARGET_{0}_{1}",
+                networkId,id);
+
+            var connection = new SqlConnection(db.Database.Connection.ConnectionString);
+            try
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand(select, connection);
+                cmd.CommandType = CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                connection.Close();
+            }
+            catch (SqlException ex)
+            {
+                connection.Close();
+                HandleException.SqlError(ex, "Error " + select);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                connection.Close();
+                HandleException.OutOfMemoryError(ex);
+            }           
+        }
+
         public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
         {
             try { 
@@ -116,9 +162,16 @@ namespace BridgeCare.Services
                                     ATTRIBUTE_ = "AGE",
                                     CHANGE_ = "+1"
                                 }
+                            },
+                            FEASIBILITY = new List<FEASIBILITY>
+                            {
+                                new FEASIBILITY
+                                {
+                                    CRITERIA = ""
+                                }
                             }
                         }
-                    }                 
+                    }
                 };
 
                 db.SIMULATIONS.Add(sim);

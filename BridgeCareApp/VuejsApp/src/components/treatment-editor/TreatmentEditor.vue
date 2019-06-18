@@ -79,11 +79,10 @@
                     </div>
                 </v-flex>
                 <v-divider v-if="hasSelectedTreatmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
+                <v-flex xs12 v-if="hasSelectedTreatmentLibrary && selectedTreatmentLibrary.id !== scenarioTreatmentLibrary.id">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline full-width
-                                        :label="selectedTreatmentLibrary.description === '' ? 'Description' : ''"
+                            <v-textarea rows="4" no-resize outline label="Description"
                                         v-model="selectedTreatmentLibrary.description">
                             </v-textarea>
                         </v-flex>
@@ -127,28 +126,25 @@
     import CreateTreatmentLibraryDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentLibraryDialog.vue';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {
-        CreateTreatmentLibraryDialogData,
-        emptyCreateTreatmentLibraryDialogData
+        CreateTreatmentLibraryDialogData, emptyCreateTreatmentLibraryDialogData
     } from '@/shared/models/modals/create-treatment-library-dialog-data';
     import {
         Consequence,
         Cost,
-        emptyTreatment, emptyTreatmentLibrary,
-        Feasibility,
-        Treatment,
-        TreatmentLibrary
+        emptyFeasibility,
+        emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
-    import {isNil, append, any, propEq, clone, uniq} from 'ramda';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
+    import {isNil, append, any, propEq, clone} from 'ramda';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
     import {TabData, emptyTabData} from '@/shared/models/child-components/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
-    import {sortByProperty} from '@/shared/utils/sorter-utils';
     import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
+    import {sortByProperty} from '@/shared/utils/sorter-utils';
+    const ObjectID = require('bson-objectid');
 
     @Component({
         components: {
@@ -186,12 +182,6 @@
         createTreatmentLibraryDialogData: CreateTreatmentLibraryDialogData = clone(emptyCreateTreatmentLibraryDialogData);
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = clone(emptyTabData);
-        allTreatmentLibraries: TreatmentLibrary[] = [];
-        latestTreatmentLibraryId: number = 0;
-        latestTreatmentId: number = 0;
-        latestFeasibilityId: number = 0;
-        latestCostId: number = 0;
-        latestConsequenceId: number = 0;
 
         /**
          * Sets component ui properties that triggers cascading ui updates
@@ -298,16 +288,6 @@
                     text: treatmentLibrary.name,
                     value: treatmentLibrary.id.toString()
                 }));
-
-            this.setAllTreatmentLibraries();
-        }
-
-        /**
-         * Calls setAllTreatments to push all treatment libraries into one list
-         */
-        @Watch('scenarioTreatmentLibrary')
-        onScenarioTreatmentLibraryChanged() {
-            this.setAllTreatmentLibraries();
         }
 
         /**
@@ -315,12 +295,7 @@
          */
         @Watch('treatmentLibrarySelectItemValue')
         onTreatmentLibrarySelectItemValueChanged() {
-            const id: number = hasValue(this.treatmentLibrarySelectItemValue)
-                ? parseInt(this.treatmentLibrarySelectItemValue)
-                : 0;
-            if (id !== this.selectedTreatmentLibrary.id) {
-                this.selectTreatmentLibraryAction({treatmentLibraryId: id});
-            }
+            this.selectTreatmentLibraryAction({treatmentLibraryId: this.treatmentLibrarySelectItemValue});
         }
 
         /**
@@ -331,8 +306,9 @@
             if (this.selectedTreatmentLibrary.id !== 0) {
                 this.hasSelectedTreatmentLibrary = true;
 
-                if (this.selectedTreatment.treatmentLibraryId !== this.selectedTreatmentLibrary.id) {
-                    this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
+                if (!hasValue(this.selectedTreatmentLibrary.treatments) ||
+                    !any(propEq('id', this.selectedTreatment.id), this.selectedTreatmentLibrary.treatments)) {
+                    this.treatmentSelectItemValue = '';
                 }
 
                 this.treatmentsSelectListItems = hasValue(this.selectedTreatmentLibrary.treatments)
@@ -343,11 +319,9 @@
                     : [];
             } else {
                 this.hasSelectedTreatmentLibrary = false;
-                this.treatmentSelectItemValue = hasValue(this.treatmentSelectItemValue) ? '' : '0';
+                this.treatmentSelectItemValue = '';
                 this.treatmentsSelectListItems = [];
             }
-
-            this.setAllTreatmentLibraries();
         }
 
         /**
@@ -355,72 +329,14 @@
          */
         @Watch('treatmentSelectItemValue')
         onTreatmentSelectItemValueChanged() {
-            const id: number = hasValue(this.treatmentSelectItemValue)
-                ? parseInt(this.treatmentSelectItemValue)
-                : 0;
-            if (id !== this.selectedTreatment.id) {
-                this.setSelectedTreatment(id);
-            }
-        }
-
-        /**
-         * Uses the allTreatments list to set the latestTreatmentId, latestFeasibilityId, latestCostId, & latestConsequenceId
-         */
-        @Watch('allTreatmentLibraries')
-        onAllTreatmentLibrariesChanged() {
-            this.latestTreatmentLibraryId = getLatestPropertyValue('id', this.allTreatmentLibraries);
-
-            const allTreatments: Treatment[] = [];
-            this.allTreatmentLibraries.forEach((treatmentLibrary: TreatmentLibrary) => {
-                if (hasValue(treatmentLibrary.treatments)) {
-                    allTreatments.push(...treatmentLibrary.treatments);
-                }
-            });
-
-            this.latestTreatmentId = getLatestPropertyValue('id', allTreatments);
-
-            const allFeasibilities: Feasibility[] = [];
-            const allCosts: Cost[] = [];
-            const allConsequences: Consequence [] = [];
-            allTreatments.forEach((treatment: Treatment) => {
-                if (hasValue(treatment.feasibility)) {
-                    allFeasibilities.push(treatment.feasibility as Feasibility);
-                }
-                if (hasValue(treatment.costs)) {
-                    allCosts.push(...treatment.costs);
-                }
-                if (hasValue(treatment.consequences)) {
-                    allConsequences.push(...treatment.consequences);
-                }
-            });
-
-            this.latestFeasibilityId = getLatestPropertyValue('id', allFeasibilities);
-            this.latestCostId = getLatestPropertyValue('id', allCosts);
-            this.latestConsequenceId = getLatestPropertyValue('id', allConsequences);
-        }
-
-        /**
-         * Pushes all treatments to a list from treatmentLibraries, selectedTreatmentLibrary, & scenarioTreatmentLibrary
-         */
-        setAllTreatmentLibraries() {
-            const treatmentLibraries: TreatmentLibrary[] = clone(this.treatmentLibraries);
-
-            if (this.scenarioTreatmentLibrary.id > 0) {
-                treatmentLibraries.push(this.scenarioTreatmentLibrary);
-            }
-
-            if (this.selectedTreatmentLibrary.id > 0) {
-                treatmentLibraries.push(this.selectedTreatmentLibrary);
-            }
-
-            this.allTreatmentLibraries = uniq(treatmentLibraries);
+            this.setSelectedTreatment(this.treatmentSelectItemValue);
         }
 
         /**
          * Sets selectedTreatment
          * @param id Treatment id to use in setting the selected treatment
          */
-        setSelectedTreatment(id: number) {
+        setSelectedTreatment(id: any) {
             if (any(propEq('id', id), this.selectedTreatmentLibrary.treatments as Treatment[])) {
                 this.selectedTreatment = clone(
                     this.selectedTreatmentLibrary.treatments.find((t: Treatment) => t.id === id) as Treatment
@@ -440,10 +356,7 @@
                 tabTreatmentLibraries: hasValue(this.treatmentLibraries) ? clone(this.treatmentLibraries) : [],
                 tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
                 tabSelectedTreatment: clone(this.selectedTreatment),
-                tabScenarioInvestmentLibrary: clone(this.scenarioInvestmentLibrary),
-                latestFeasibilityId: this.latestFeasibilityId,
-                latestCostId: this.latestCostId,
-                latestConsequenceId: this.latestConsequenceId
+                tabScenarioInvestmentLibrary: clone(this.scenarioInvestmentLibrary)
             };
         }
 
@@ -511,57 +424,45 @@
             this.createTreatmentLibraryDialogData =  clone(emptyCreateTreatmentLibraryDialogData);
 
             if (!isNil(createdTreatmentLibrary)) {
-                createdTreatmentLibrary.id = hasValue(this.latestTreatmentLibraryId) ? this.latestTreatmentLibraryId + 1 : 1;
+                createdTreatmentLibrary.id = ObjectID.generate();
                 createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
 
                 this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
                     .then(() => {
-                        this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
-                            this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
+                            this.onClearSelectedTreatmentLibrary();
+                            setTimeout(() => {
+                                this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
+                            });
                         });
                     });
             }
         }
 
         /**
-         * Sets the ids for new treatments and each new treatments' feasibility, costs, and consequences
+         * Sets the ids for the createdPerformanceLibrary object's equations
          */
         setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary: TreatmentLibrary) {
             if (hasValue(createdTreatmentLibrary.treatments)) {
-                let nextTreatmentId = hasValue(this.latestTreatmentId) ? this.latestTreatmentId + 1 : 1;
-                let nextFeasibilityId: number = hasValue(this.latestFeasibilityId) ? this.latestFeasibilityId + 1 : 1;
-                let nextCostId: number = hasValue(this.latestCostId) ? this.latestCostId + 1 : 1;
-                let nextConsequenceId: number = hasValue(this.latestConsequenceId) ? this.latestConsequenceId + 1 : 1;
-
                 createdTreatmentLibrary.treatments = sortByProperty('id', createdTreatmentLibrary.treatments)
                     .map((treatment: Treatment) => {
-                        treatment.treatmentLibraryId = createdTreatmentLibrary.id;
-                        treatment.id = nextTreatmentId;
-                        nextTreatmentId++;
-
+                        treatment.id = ObjectID.generate();
                         if (hasValue(treatment.feasibility)) {
-                            // @ts-ignore
-                            treatment.feasibility.id = nextFeasibilityId;
-                            nextFeasibilityId++;
+                            treatment.feasibility.id = ObjectID.generate();
+                        } else {
+                            treatment.feasibility = {
+                                ...emptyFeasibility,
+                                id: ObjectID.generate()
+                            };
                         }
-
-                        if (hasValue(treatment.costs)) {
-                            treatment.costs = sortByProperty('id', treatment.costs).map((cost: Cost) => {
-                                cost.id = nextCostId;
-                                nextCostId++;
-                                return cost;
-                            });
-                        }
-
-                        if (hasValue(treatment.consequences)) {
-                            treatment.consequences = sortByProperty('id', treatment.consequences).map((consequence: Consequence) => {
-                                consequence.id = nextConsequenceId;
-                                nextConsequenceId++;
-                                return consequence;
-                            });
-                        }
-
+                        treatment.costs = treatment.costs.map((cost: Cost) => {
+                            cost.id = ObjectID.generate();
+                            return cost;
+                        });
+                        treatment.consequences = treatment.consequences.map((consequence: Consequence) => {
+                            consequence.id = ObjectID.generate();
+                            return consequence;
+                        });
                         return treatment;
                     });
             }
@@ -576,15 +477,16 @@
             this.showCreateTreatmentDialog = false;
 
             if (!isNil(createdTreatment)) {
-                createdTreatment.treatmentLibraryId = this.selectedTreatmentLibrary.id;
-                createdTreatment.id = hasValue(this.latestTreatmentId) ? this.latestTreatmentId + 1 : 1;
-
+                createdTreatment.id = ObjectID.generate();
+                createdTreatment.feasibility.id = ObjectID.generate();
                 this.selectedTreatmentLibrary.treatments = append(createdTreatment, this.selectedTreatmentLibrary.treatments);
 
                 this.updateSelectedTreatmentLibraryAction({
                     updatedSelectedTreatmentLibrary: this.selectedTreatmentLibrary
                 })
-                .then(() => this.treatmentSelectItemValue = createdTreatment.id.toString());
+                .then(() => setTimeout(() => {
+                    this.treatmentSelectItemValue = createdTreatment.id.toString();
+                }));
             }
         }
 
@@ -601,12 +503,19 @@
         onApplyToScenario() {
             const appliedTreatmentLibrary: TreatmentLibrary = clone(this.selectedTreatmentLibrary);
             appliedTreatmentLibrary.id = this.selectedScenarioId;
-            if (hasValue(appliedTreatmentLibrary.treatments)) {
-                appliedTreatmentLibrary.treatments.forEach((treatment: Treatment) => {
-                    treatment.treatmentLibraryId = this.selectedScenarioId;
+            appliedTreatmentLibrary.name = this.scenarioTreatmentLibrary.name;
+
+            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary})
+                .then(() => {
+                    setTimeout(() => {
+                        this.onClearSelectedTreatmentLibrary();
+                        setTimeout(() => {
+                            this.updateSelectedTreatmentLibraryAction({
+                                updatedSelectedTreatmentLibrary: this.scenarioTreatmentLibrary
+                            });
+                        });
+                    });
                 });
-            }
-            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary});
         }
 
         /**
@@ -647,5 +556,9 @@
         height: 305px;
         overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    .v-select {
+        height: 60px;
     }
 </style>

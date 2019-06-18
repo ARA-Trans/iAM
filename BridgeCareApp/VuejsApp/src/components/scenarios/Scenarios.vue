@@ -34,7 +34,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="red" v-on:click="">
+                                        <v-btn flat icon color="red" v-on:click="onDeleteScenario(props.item.simulationId)">
                                             <v-icon>delete</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -138,6 +138,7 @@
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('createScenario') createScenarioAction: any;
+        @Action('deleteScenario') deleteScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
@@ -166,6 +167,9 @@
                 this.userScenarios = this.scenarios.filter((simulation: Scenario) => !simulation.shared);
                 // filter scenarios that are shared with the user
                 this.sharedScenarios = this.scenarios.filter((simulation: Scenario) => simulation.shared);
+            }
+            else {
+                this.userScenarios = [];
             }
 
         }
@@ -201,6 +205,10 @@
             this.$router.push({
                 path: '/EditScenario/', query: {selectedScenarioId: id.toString()}
             });
+        }
+
+        onDeleteScenario(id: number) {
+            this.deleteScenarioAction({scenarioId: id});
         }
         
         /**

@@ -1,25 +1,21 @@
 const mongoose = require("mongoose");
-const autoIncrement = require('mongoose-sequence')(mongoose);
-mongoose.set('useFindAndModify', false)
+mongoose.set('useFindAndModify', false);
 
 const { Schema } = mongoose;
 
-const budgetYearSchema = new Schema({
-    id: {type: Number},
+const investmentLibraryBudgetYearSchema = new Schema({
     budgetAmount: { type: Number },
     budgetName: { type: String },
-    year: { type: Number },
-    investmentLibraryId: { type: Number }
-}, {_id: false});
+    year: { type: Number }
+});
 
-const investmentLibraryModel = new Schema({
+const investmentLibrarySchema = new Schema({
     description: { type: String },
     discountRate: { type: Number },
     inflationRate: { type: Number },
     name: { type: String },
     budgetOrder: [{ type: String }],
-    budgetYears: [budgetYearSchema]
+    budgetYears: [investmentLibraryBudgetYearSchema]
 });
-investmentLibraryModel.plugin(autoIncrement,{inc_field: 'id'});
 
-module.exports = mongoose.model('InvestmentLibrary', investmentLibraryModel, 'investmentLibraries');
+module.exports = mongoose.model('InvestmentLibrary', investmentLibrarySchema, 'investmentLibraries');
