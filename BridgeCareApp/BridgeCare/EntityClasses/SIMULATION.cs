@@ -60,15 +60,12 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<TREATMENT> TREATMENTS { get; set; }
 
         public virtual ICollection<PERFORMANCE> PERFORMANCES { get; set; }
-
-        public virtual ICollection<COMMITTED_> COMMITTED_ { get; set; }
+                
         public virtual ICollection<PRIORITIZEDNEED> PRIORITIZEDNEEDs { get; set; }
         public virtual ICollection<PRIORITY> PRIORITies { get; set; }
         public virtual ICollection<DEFICIENT> DEFICIENTS { get; set; }
         public virtual ICollection<TARGET_DEFICIENT> TARGET_DEFICIENT { get; set; }
-        public virtual ICollection<Targets> TARGETS { get; set; }
-
-
-
+        public virtual ICollection<Targets> TARGETS { get; set; }                     
+        public virtual ICollection<COMMITTED_> COMMITTEDPROJECTs { get; set; }
     }
 }

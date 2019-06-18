@@ -10,14 +10,11 @@ namespace BridgeCare.Models
     {
         public FeasibilityModel()
         {
-            FeasibilityId = -1;
+            FeasibilityId = null;
             Criteria = "";
         }
         [DataMember(Name = "id")]
-        public int FeasibilityId { get; set; }
-
-        [DataMember(Name = "treatmentId")]
-        public int TreatmentId { get; set; }
+        public string FeasibilityId { get; set; }
 
         [DataMember(Name = "criteria")]
         public string Criteria { get; set; }
@@ -28,10 +25,12 @@ namespace BridgeCare.Models
         [DataMember(Name = "yearsBeforeSame")]
         public int BeforeSame { get; set; }
 
-        public void Agregate(FeasibilityModel model)
+        public void Aggregate(FeasibilityModel model)
         {
-            if (FeasibilityId <= 0) 
-                FeasibilityId= model.FeasibilityId;
+            if (FeasibilityId == null)
+            {
+              FeasibilityId = model.FeasibilityId;
+            }
 
             if (Criteria.Length <= 0)
             {

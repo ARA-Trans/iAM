@@ -61,7 +61,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {State} from 'vuex-class';
     import {isNil, findIndex, clone, append} from 'ramda';
     import EquationEditorDialog from '../../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
@@ -87,6 +87,7 @@
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    const ObjectID = require('bson-objectid');
 
     @Component({
         components: {CriteriaEditorDialog, EquationEditorDialog}
@@ -99,7 +100,6 @@
         consequencesTabTreatmentLibraries: TreatmentLibrary[] = [];
         consequencesTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         consequencesTabSelectedTreatment: Treatment = clone(emptyTreatment);
-        consequencesTabLatestConsequenceId: number = 0;
         consequencesGridHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: '200px'},
             {text: 'Change', value: 'change', align: 'left', sortable: false, class: '', width: '125px'},
@@ -130,7 +130,6 @@
             this.consequencesTabTreatmentLibraries = this.consequencesTabData.tabTreatmentLibraries;
             this.consequencesTabSelectedTreatmentLibrary = this.consequencesTabData.tabSelectedTreatmentLibrary;
             this.consequencesTabSelectedTreatment = this.consequencesTabData.tabSelectedTreatment;
-            this.consequencesTabLatestConsequenceId = this.consequencesTabData.latestConsequenceId;
 
             this.setConsequencesGridData();
         }
@@ -149,11 +148,9 @@
          * Sets the component's grid data
          */
         setConsequencesGridData() {
-            if (this.consequencesTabSelectedTreatment.id !== 0 && this.consequencesTabSelectedTreatment.consequences.length > 0) {
-                this.consequencesGridData = this.consequencesTabSelectedTreatment.consequences;
-            } else {
-                this.consequencesGridData = [];
-            }
+            this.consequencesGridData = hasValue(this.consequencesTabSelectedTreatment.consequences)
+                ? this.consequencesTabSelectedTreatment.consequences
+                : [];
         }
 
         /**
@@ -172,8 +169,7 @@
         onAddConsequence() {
             const newConsequence: Consequence = {
                 ...clone(emptyConsequence),
-                treatmentId: this.consequencesTabSelectedTreatment.id,
-                id: hasValue(this.consequencesTabLatestConsequenceId) ? this.consequencesTabLatestConsequenceId + 1 : 1
+                id: ObjectID.generate()
             };
             this.submitChanges(newConsequence, false);
         }

@@ -20,8 +20,7 @@
                                 </v-text-field>
                             </v-layout>
                         </v-flex>
-                        <v-textarea rows="3" no-resize outline full-width
-                                    :label="createdInvestmentStrategy.description === '' ? 'Description' : ''"
+                        <v-textarea rows="3" no-resize outline label="Description"
                                     v-model="createdInvestmentStrategy.description">
                         </v-textarea>
                     </v-layout>

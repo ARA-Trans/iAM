@@ -118,11 +118,10 @@
                     </v-layout>
                 </v-flex>
                 <v-divider v-if="hasSelectedPerformanceLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedPerformanceLibrary">
+                <v-flex xs12 v-if="hasSelectedPerformanceLibrary  && selectedPerformanceLibrary.id !== scenarioPerformanceLibrary.id">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline full-width
-                                        :label="selectedPerformanceLibrary.description === '' ? 'Description' : ''"
+                            <v-textarea rows="4" no-resize outline label="Description"
                                         v-model="selectedPerformanceLibrary.description">
                             </v-textarea>
                         </v-flex>
@@ -180,7 +179,7 @@
     } from '@/shared/models/iAM/performance';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {any, propEq, clone, isNil, findIndex, append, isEmpty, uniq} from 'ramda';
+    import {any, propEq, clone, isNil, findIndex, append} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {
         CreatePerformanceLibraryDialogData,
@@ -194,10 +193,10 @@
         emptyEquationEditorDialogData,
         EquationEditorDialogData
     } from '@/shared/models/modals/equation-editor-dialog-data';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    const ObjectID = require('bson-objectid');
 
     @Component({
         components: {CreatePerformanceLibraryDialog, CreatePerformanceLibraryEquationDialog, EquationEditorDialog, CriteriaEditorDialog}
@@ -241,9 +240,6 @@
         equationEditorDialogData: EquationEditorDialogData = clone(emptyEquationEditorDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         showCreatePerformanceLibraryEquationDialog = false;
-        allPerformanceLibraries: PerformanceLibrary[] = [];
-        latestLibraryId: number = 0;
-        latestEquationId: number = 0;
 
         /**
          * beforeRouteEnter event handler
@@ -353,18 +349,6 @@
                     text: performanceLibrary.name,
                     value: performanceLibrary.id.toString()
                 }));
-
-            this.setAllPerformanceLibraries();
-        }
-
-        /**
-         * Calls the setAllPerformanceLibraries function
-         */
-        @Watch('scenarioPerformanceLibrary')
-        onScenarioPerformanceLibraryChanged() {
-            if (this.scenarioPerformanceLibrary.id > 0) {
-                this.setAllPerformanceLibraries();
-            }
         }
 
         /**
@@ -372,10 +356,7 @@
          */
         @Watch('selectItemValue')
         onPerformanceLibrariesSelectItemChanged() {
-            const id: number = hasValue(this.selectItemValue) ? parseInt(this.selectItemValue) : 0;
-            if (id !== this.selectedPerformanceLibrary.id) {
-                this.selectPerformanceLibraryAction({performanceLibraryId: id});
-            }
+            this.selectPerformanceLibraryAction({performanceLibraryId: this.selectItemValue});
         }
 
         /**
@@ -394,42 +375,6 @@
                 this.hasSelectedPerformanceLibrary = false;
                 this.equationsGridData = [];
             }
-
-            this.setAllPerformanceLibraries();
-        }
-
-        /**
-         * Sets the latestLibraryId & laatestEquationId values using the allPerformanceLibraries array
-         */
-        @Watch('allPerformanceLibraries')
-        onAllPerformanceLibrariesChanged() {
-            this.latestLibraryId = getLatestPropertyValue('id', this.allPerformanceLibraries);
-
-            const equations: PerformanceLibraryEquation[] = [];
-            this.allPerformanceLibraries.forEach((performanceLibrary) => {
-                if (hasValue(performanceLibrary.equations)) {
-                    equations.push(...performanceLibrary.equations);
-                }
-            });
-
-            this.latestEquationId = getLatestPropertyValue('id', equations);
-        }
-
-        /**
-         * Pushes all PerformanceLibrary objects to the allPerformanceLibraries array
-         */
-        setAllPerformanceLibraries() {
-            const libraries: PerformanceLibrary[] = clone(this.performanceLibraries);
-
-            if (this.scenarioPerformanceLibrary.id > 0) {
-                libraries.push(this.scenarioPerformanceLibrary);
-            }
-
-            if (this.selectedPerformanceLibrary.id > 0) {
-                libraries.push(this.selectedPerformanceLibrary);
-            }
-
-            this.allPerformanceLibraries = uniq(libraries);
         }
 
         /**
@@ -474,8 +419,7 @@
             this.showCreatePerformanceLibraryEquationDialog = false;
 
             if (!isNil(createdEquation)) {
-                createdEquation.id = hasValue(this.latestEquationId) ? this.latestEquationId + 1 : 1;
-                createdEquation.performanceLibraryId = this.selectedPerformanceLibrary.id;
+                createdEquation.id = ObjectID.generate();
 
                 this.selectedPerformanceLibrary.equations = append(
                     createdEquation, this.selectedPerformanceLibrary.equations
@@ -493,7 +437,7 @@
          * @param property PerformanceLibraryEquation property
          * @param value Value to set PerformanceLibraryEquation property equal to
          */
-        onEditEquationProperty(id: number, property: string, value: any) {
+        onEditEquationProperty(id: string, property: string, value: any) {
             if (any(propEq('id', id), this.selectedPerformanceLibrary.equations)) {
                 const index = findIndex(propEq('id', id), this.selectedPerformanceLibrary.equations);
                 // @ts-ignore
@@ -511,7 +455,7 @@
          * selectedEquation object's equation, piecewise, & isFunction data
          * @param id PerformanceLibraryEquation id
          */
-        onShowEquationEditorDialog(id: number) {
+        onShowEquationEditorDialog(id: string) {
             this.selectedEquation = this.selectedPerformanceLibrary.equations
                 .find((equation: PerformanceLibraryEquation) => equation.id === id) as PerformanceLibraryEquation;
 
@@ -556,7 +500,7 @@
          * selectedEquation object's criteria data
          * @param id PerformanceLibraryEquation id
          */
-        onShowCriteriaEditorDialog(id: number) {
+        onShowCriteriaEditorDialog(id: string) {
             this.selectedEquation = this.selectedPerformanceLibrary.equations
                 .find((equation: PerformanceLibraryEquation) => equation.id === id) as PerformanceLibraryEquation;
 
@@ -595,7 +539,7 @@
          * parameter to find the specific equation to remove from the list, then dispatches an action to update the
          * selected performance library in state
          */
-        onDeleteEquation(id: number) {
+        onDeleteEquation(id: string) {
             this.selectedPerformanceLibrary.equations = this.selectedPerformanceLibrary.equations
                 .filter((equation: PerformanceLibraryEquation) => equation.id !== id);
 
@@ -623,7 +567,7 @@
             this.createPerformanceLibraryDialogData = clone(emptyCreatePerformanceLibraryDialogData);
 
             if (!isNil(createdPerformanceLibrary)) {
-                createdPerformanceLibrary.id = hasValue(this.latestLibraryId) ? this.latestLibraryId + 1 : 1;
+                createdPerformanceLibrary.id = ObjectID.generate();
                 createdPerformanceLibrary = this.setIdsForNewPerformanceLibraryRelatedData(createdPerformanceLibrary);
 
                 this.createPerformanceLibraryAction({createdPerformanceLibrary: createdPerformanceLibrary});
@@ -635,13 +579,9 @@
          */
         setIdsForNewPerformanceLibraryRelatedData(createdPerformanceLibrary: PerformanceLibrary) {
             if (hasValue(createdPerformanceLibrary.equations)) {
-                let nextEquationId: number = hasValue(this.latestEquationId) ? this.latestEquationId + 1 : 1;
-
                 createdPerformanceLibrary.equations = sortByProperty('id', createdPerformanceLibrary.equations)
                     .map((equation: PerformanceLibraryEquation) => {
-                        equation.performanceLibraryId = createdPerformanceLibrary.id;
-                        equation.id = nextEquationId;
-                        nextEquationId++;
+                        equation.id = ObjectID.generate();
                         return equation;
                     });
             }
@@ -664,11 +604,6 @@
         onApplyToScenario() {
             const appliedPerformanceLibrary: PerformanceLibrary = clone(this.selectedPerformanceLibrary);
             appliedPerformanceLibrary.id = this.selectedScenarioId;
-            if (hasValue(appliedPerformanceLibrary.equations)) {
-                appliedPerformanceLibrary.equations.forEach((equation: PerformanceLibraryEquation) => {
-                    equation.performanceLibraryId = this.selectedScenarioId;
-                });
-            }
             this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary});
         }
 
@@ -703,7 +638,7 @@
     }
 
     .data-table {
-        height: 310px;
+        height: 290px;
         overflow-y: auto;
     }
 

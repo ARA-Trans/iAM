@@ -162,9 +162,16 @@ namespace BridgeCare.Services
                                     ATTRIBUTE_ = "AGE",
                                     CHANGE_ = "+1"
                                 }
+                            },
+                            FEASIBILITY = new List<FEASIBILITY>
+                            {
+                                new FEASIBILITY
+                                {
+                                    CRITERIA = ""
+                                }
                             }
                         }
-                    }                 
+                    }
                 };
 
                 db.SIMULATIONS.Add(sim);

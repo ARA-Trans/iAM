@@ -51,9 +51,9 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {findIndex, isNil, clone} from 'ramda';
     import {TabData} from '@/shared/models/child-components/tab-data';
+    const ObjectID = require('bson-objectid');
 
     @Component({
         components: {CriteriaEditorDialog}
@@ -64,7 +64,6 @@
         feasibilityTabTreatmentLibraries: TreatmentLibrary[] = [];
         feasibilityTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         feasibilityTabSelectedTreatment: Treatment = clone(emptyTreatment);
-        feasibilityTabLatestFeasibilityId: number = 0;
         feasibility: Feasibility = clone(emptyFeasibility);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
@@ -76,7 +75,6 @@
             this.feasibilityTabTreatmentLibraries = this.feasibilityTabData.tabTreatmentLibraries;
             this.feasibilityTabSelectedTreatmentLibrary = this.feasibilityTabData.tabSelectedTreatmentLibrary;
             this.feasibilityTabSelectedTreatment = this.feasibilityTabData.tabSelectedTreatment;
-            this.feasibilityTabLatestFeasibilityId = this.feasibilityTabData.latestFeasibilityId;
 
             this.setFeasibility();
         }
@@ -100,8 +98,7 @@
         onCreateFeasibility() {
             const newFeasibility: Feasibility = {
                 ...clone(emptyFeasibility),
-                treatmentId: this.feasibilityTabSelectedTreatment.id,
-                id: hasValue(this.feasibilityTabLatestFeasibilityId) ? this.feasibilityTabLatestFeasibilityId + 1 : 1
+                id: ObjectID.generate()
             };
 
             this.submitChanges(newFeasibility);
@@ -143,7 +140,13 @@
          * Calls the submitChanges function with a null value parameter
          */
         onDeleteFeasibility() {
-            this.submitChanges(emptyFeasibility);
+            const deletedFeasibility: Feasibility = {
+                ...this.feasibility,
+                criteria: '',
+                yearsBeforeAny: 0,
+                yearsBeforeSame: 0
+            };
+            this.submitChanges(deletedFeasibility);
         }
 
         /**

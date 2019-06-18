@@ -1,6 +1,7 @@
 const state = {
     successMessage: '',
-    errorMessage: ''
+    errorMessage: '',
+    infoMessage: '',
 };
 
 const mutations = {
@@ -9,6 +10,9 @@ const mutations = {
     },
     errorMessageMutator(state: any, message: string) {
         state.errorMessage = message;
+    },
+    infoMessageMutator(state: any, message: string) {
+        state.infoMessage = message;
     }
 };
 
@@ -18,6 +22,9 @@ const actions = {
     },
     setErrorMessage({commit}: any, payload: any) {
         commit('errorMessageMutator', payload.message);
+    },
+    setInfoMessage({commit}: any, payload: any) {
+        commit('infoMessageMutator', payload.message);
     }
 };
 

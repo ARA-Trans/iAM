@@ -7,17 +7,11 @@ export interface TabData {
     tabSelectedTreatmentLibrary: TreatmentLibrary;
     tabSelectedTreatment: Treatment;
     tabScenarioInvestmentLibrary: InvestmentLibrary;
-    latestFeasibilityId: number;
-    latestCostId: number;
-    latestConsequenceId: number;
 }
 
 export const emptyTabData: TabData = {
     tabTreatmentLibraries: [],
     tabSelectedTreatmentLibrary: clone(emptyTreatmentLibrary),
     tabSelectedTreatment: clone(emptyTreatment),
-    tabScenarioInvestmentLibrary: clone(emptyInvestmentLibrary),
-    latestFeasibilityId: 0,
-    latestCostId: 0,
-    latestConsequenceId: 0
+    tabScenarioInvestmentLibrary: clone(emptyInvestmentLibrary)
 };
