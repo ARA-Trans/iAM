@@ -171,6 +171,7 @@
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BridgeCareContext.cs" />
+    <Compile Include="Controllers\CommittedProjectsController.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="DataAccessLayer\Attributes.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryData.cs" />
+    <Compile Include="DataAccessLayer\Committed.cs" />
     <Compile Include="DataAccessLayer\Inventory\Inventory.cs" />
     <Compile Include="DataAccessLayer\InvestmentLibrary.cs" />
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalk.cs" />
@@ -210,14 +212,18 @@
     <Compile Include="DataAccessLayer\Targets.cs" />
     <Compile Include="DataAccessLayer\TargetsMet.cs" />
     <Compile Include="EntityClasses\Attributes.cs" />
+    <Compile Include="EntityClasses\COMMIT_CONSEQUENCES.cs" />
+    <Compile Include="EntityClasses\COMMITTED_.cs" />
     <Compile Include="EntityClasses\CONSEQUENCE.cs" />
     <Compile Include="EntityClasses\COST.cs" />
+    <Compile Include="EntityClasses\DEFICIENT.cs" />
     <Compile Include="EntityClasses\DEFICIENTS.cs" />
     <Compile Include="EntityClasses\DetailedReportModel.cs" />
     <Compile Include="EntityClasses\FEASIBILITY.cs" />
     <Compile Include="EntityClasses\INVESTMENTS.cs" />
     <Compile Include="EntityClasses\NETWORK.cs" />
     <Compile Include="EntityClasses\PERFORMANCE.cs" />
+    <Compile Include="EntityClasses\PRIORITIZEDNEED.cs" />
     <Compile Include="EntityClasses\PRIORITY.cs" />
     <Compile Include="EntityClasses\PRIORITYFUND.cs" />
     <Compile Include="EntityClasses\SCHEDULED.cs" />
@@ -226,6 +232,7 @@
     <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
     <Compile Include="EntityClasses\SIMULATION.cs" />
     <Compile Include="EntityClasses\TARGETS.cs" />
+    <Compile Include="EntityClasses\TARGET_DEFICIENT.cs" />
     <Compile Include="EntityClasses\TREATMENT.cs" />
     <Compile Include="EntityClasses\TREATMENT_CONSEQUENCES.cs" />
     <Compile Include="EntityClasses\YEARLYINVESTMENT.cs" />
@@ -235,6 +242,8 @@
     <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
+    <Compile Include="Interfaces\ICommitted.cs" />
+    <Compile Include="Interfaces\ICommittedProjects.cs" />
     <Compile Include="Interfaces\IInventory.cs" />
     <Compile Include="Interfaces\IInvestmentLibrary.cs" />
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
@@ -260,6 +269,8 @@
     <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\CellAddress.cs" />
+    <Compile Include="Models\CommitConsequenceModel.cs" />
+    <Compile Include="Models\CommittedProjectModel.cs" />
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\CreateSimulationDataModel.cs" />
@@ -317,6 +328,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\CheckEquations.cs" />
+    <Compile Include="Services\CommittedProjects.cs" />
     <Compile Include="Services\DetailedReport\Budget.cs" />
     <Compile Include="Services\DetailedReport\Deficient.cs" />
     <Compile Include="Services\DetailedReport\Detailed.cs" />

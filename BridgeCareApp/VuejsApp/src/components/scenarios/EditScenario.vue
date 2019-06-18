@@ -49,6 +49,7 @@
     import {AxiosResponse} from 'axios';
     import CommittedProjectsService from '@/services/committed-projects.service';
     import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
+    import { Network } from '@/shared/models/iAM/network';
 
     @Component({
         components: {CommittedProjectsFileUploaderDialog}
@@ -56,6 +57,7 @@
     export default class EditScenario extends Vue {
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
+        @State(state => state.network.networks) networks: Network[];
 
         @Action('setNavigation') setNavigationAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -63,6 +65,7 @@
 
         selectedScenarioId: number = 0;
         showFileUploader: boolean = false;
+        networkId: number = 0;
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -151,12 +154,12 @@
         onUploadCommitedProjectFiles(files: File[]) {
             this.showFileUploader = false;
             if (!isNil(files)) {
-                CommittedProjectsService.saveCommittedProjectsFiles(files)
+                CommittedProjectsService.saveCommittedProjectsFiles(files, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
                     .then((response: AxiosResponse<any>) => {
                         if (http2XX.test(response.status.toString())) {
-                            this.setSuccessMessageAction({message: 'Successfully saved files'});
+                            this.setSuccessMessageAction({ message: 'Successfully saved file(s)' });
                         } else {
-                            this.setErrorMessageAction({message: `Failed to save files${setStatusMessage(response)}`});
+                            this.setErrorMessageAction({ message: `Failed to save file(s)${setStatusMessage(response)}` });
                         }
                     });
             }

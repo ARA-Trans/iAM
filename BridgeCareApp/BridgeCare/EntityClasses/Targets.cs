@@ -20,5 +20,5 @@ namespace BridgeCare.EntityClasses
 
     public virtual SIMULATION SIMULATION { get; set; }
     public virtual Attributes ATTRIBUTES_ { get; set; }
-  }
+    }
 }
