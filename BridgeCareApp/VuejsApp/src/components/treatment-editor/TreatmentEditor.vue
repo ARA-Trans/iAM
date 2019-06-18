@@ -426,11 +426,14 @@
             if (!isNil(createdTreatmentLibrary)) {
                 createdTreatmentLibrary.id = ObjectID.generate();
                 createdTreatmentLibrary = this.setIdsForNewTreatmentLibraryRelatedData(createdTreatmentLibrary);
+
                 this.createTreatmentLibraryAction({createdTreatmentLibrary: createdTreatmentLibrary})
                     .then(() => {
-                        this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
-                            this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
+                            this.onClearSelectedTreatmentLibrary();
+                            setTimeout(() => {
+                                this.treatmentLibrarySelectItemValue = createdTreatmentLibrary.id.toString();
+                            });
                         });
                     });
             }
@@ -500,7 +503,19 @@
         onApplyToScenario() {
             const appliedTreatmentLibrary: TreatmentLibrary = clone(this.selectedTreatmentLibrary);
             appliedTreatmentLibrary.id = this.selectedScenarioId;
-            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary});
+            appliedTreatmentLibrary.name = this.scenarioTreatmentLibrary.name;
+
+            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary})
+                .then(() => {
+                    setTimeout(() => {
+                        this.onClearSelectedTreatmentLibrary();
+                        setTimeout(() => {
+                            this.updateSelectedTreatmentLibraryAction({
+                                updatedSelectedTreatmentLibrary: this.scenarioTreatmentLibrary
+                            });
+                        });
+                    });
+                });
         }
 
         /**

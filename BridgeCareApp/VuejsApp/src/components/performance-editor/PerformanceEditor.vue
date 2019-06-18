@@ -570,7 +570,15 @@
                 createdPerformanceLibrary.id = ObjectID.generate();
                 createdPerformanceLibrary = this.setIdsForNewPerformanceLibraryRelatedData(createdPerformanceLibrary);
 
-                this.createPerformanceLibraryAction({createdPerformanceLibrary: createdPerformanceLibrary});
+                this.createPerformanceLibraryAction({createdPerformanceLibrary: createdPerformanceLibrary})
+                    .then(() => {
+                        setTimeout(() => {
+                            this.onClearSelectedPerformanceLibrary();
+                            setTimeout(() => {
+                                this.selectItemValue = createdPerformanceLibrary.id.toString();
+                            });
+                        });
+                    });
             }
         }
 
@@ -604,7 +612,19 @@
         onApplyToScenario() {
             const appliedPerformanceLibrary: PerformanceLibrary = clone(this.selectedPerformanceLibrary);
             appliedPerformanceLibrary.id = this.selectedScenarioId;
-            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary});
+            appliedPerformanceLibrary.name = this.scenarioPerformanceLibrary.name;
+
+            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary})
+                .then(() => {
+                    setTimeout(() => {
+                        this.onClearSelectedPerformanceLibrary();
+                        setTimeout(() => {
+                            this.updateSelectedPerformanceLibraryAction({
+                                updatedSelectedPerformanceLibrary: this.scenarioPerformanceLibrary
+                            });
+                        });
+                    });
+                });
         }
 
         /**
