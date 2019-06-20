@@ -1,5 +1,3 @@
-const debug = require('debug')('app*');
-
 function scenarioController(Scenario) {
     function post(req, res) {
         const scenario = new Scenario(req.body);
@@ -21,13 +19,10 @@ function scenarioController(Scenario) {
      */
     function put(req, res) {
         Scenario.findOneAndUpdate({_id: req.params.scenarioId}, req.body, {new: true}, (err, doc) => {
-            debug(req.params.scenarioId);
             debug(req.body);
             if (err) {
-                debug(err);
                 return res.status(400).json(err);
             }
-            debug(doc);
             return res.status(200).json(doc);
         });
     }
