@@ -2,11 +2,11 @@
 
 namespace BridgeCare.Models
 {
-  [DataContract]
-  public class SimulationAnalysisModel
-  {
-    [DataMember(Name = "id")]
-    public int simulationId { get; set; }
+    [DataContract]
+    public class SimulationAnalysisModel
+    {
+        [DataMember(Name = "id")]
+        public int simulationId { get; set; }
 
     [DataMember(Name = "startYear")]
     public int committed_start { get; set; }

@@ -103,7 +103,6 @@ const actions = {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
                     commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
-                    commit('selectedInvestmentLibraryMutator', createdInvestmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to create investment library${setStatusMessage(response)}`});
@@ -144,7 +143,6 @@ const actions = {
             .then((response: AxiosResponse<InvestmentLibrary>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioInvestmentLibraryMutator', response.data);
-                    commit('updatedSelectedInvestmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to save scenario investment library${setStatusMessage(response)}`});

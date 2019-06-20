@@ -125,7 +125,6 @@ const actions = {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
                     commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
-                    commit('selectedTreatmentLibraryMutator', createdTreatmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully created treatment library'});
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to create treatment library${setStatusMessage(response)}`});
@@ -161,7 +160,6 @@ const actions = {
             .then((response: AxiosResponse<TreatmentLibrary>) => {
                 if (hasValue(response) && http2XX.test(response.status.toString())) {
                     commit('scenarioTreatmentLibraryMutator', response.data);
-                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});
                 } else {
                     dispatch('setErrorMessage', {message: `Failed to update scenario treatment library${setStatusMessage(response)}`});
