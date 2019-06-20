@@ -299,7 +299,7 @@
             this.updateScenarioAction({
                 updateScenarioData: scenarioData,
                 scenarioId: id
-            })
+            });
         }
 
         onSubmitNewScenario(createScenarioData: CreateScenarioData) {
