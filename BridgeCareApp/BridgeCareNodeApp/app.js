@@ -43,7 +43,7 @@ async function run() {
     io.emit('treatmentLibrary', data);
   });
 
-  Scenario.watch([]).on('change', data => {
+  Scenario.watch([], options).on('change', data => {
     debug(data);
     io.emit('scenarioStatus', data);
   });

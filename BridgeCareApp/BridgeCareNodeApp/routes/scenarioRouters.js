@@ -11,6 +11,9 @@ function routes(Scenario){
         scenarioRouter.route("/scenarios/:scenarioId")
         .delete(controller.deleteScenario);
 
+        scenarioRouter.route("/updateScenarios/:scenarioId")
+        .put(controller.put);
+
         return scenarioRouter;
 }
 
