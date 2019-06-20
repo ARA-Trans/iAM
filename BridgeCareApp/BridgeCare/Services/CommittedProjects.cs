@@ -6,6 +6,7 @@ using System.Web;
 using OfficeOpenXml;
 using BridgeCare.Models;
 using BridgeCare.ApplicationLog;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Services
 {
@@ -27,6 +28,69 @@ namespace BridgeCare.Services
             {
                 GetCommittedProjectModels(files[i], selectedScenarioId, networkId, committedProjectModels, db);
                 SaveCommittedProjects(committedProjectModels, db);
+            }
+        }
+
+        public byte[] ExportCommittedProjects(int simulationId, int networkId, BridgeCareContext db)
+        {
+            using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("CommittedProjects.xlsx")))
+            {
+                // This method may stay here or if too long then move to helper class   Fill(worksheet, , db);
+                var committedProjects = committed.GetCommittedProjects(simulationId, db);
+                var worksheet = excelPackage.Workbook.Worksheets.Add("Committed Projects");
+                if (committedProjects.Count != 0)
+                {
+                    AddHeaderCells(worksheet, committedProjects.FirstOrDefault().COMMIT_CONSEQUENCES.ToList());
+                }
+                AddDataCells(worksheet, committedProjects, networkId, db);
+                return excelPackage.GetAsByteArray();
+            }
+        }
+
+        private void AddDataCells(ExcelWorksheet worksheet, List<COMMITTED_> committedProjects, int networkId, BridgeCareContext db)
+        {            
+            var networkModel = new NetworkModel { NetworkId = networkId };
+            var sectionModels = sections.GetSections(networkModel, db).ToList();
+            var row = 1;
+            foreach(var committedProject in committedProjects)
+            {                
+                var column = 1;
+                var sectionModel = sectionModels.FirstOrDefault(s => s.SectionId == committedProject.SECTIONID);
+                // BRKEY, BMSID
+                worksheet.Cells[row, column++].Value = Convert.ToInt32(sectionModel.ReferenceKey);
+                worksheet.Cells[row, column++].Value = sectionModel.ReferenceId;
+
+                // Committed_
+                worksheet.Cells[row, column++].Value = committedProject.TREATMENTNAME;
+                worksheet.Cells[row, column++].Value = committedProject.YEARS;
+                worksheet.Cells[row, column++].Value = committedProject.YEARANY;
+                worksheet.Cells[row, column++].Value = committedProject.YEARSAME;
+                worksheet.Cells[row, column++].Value = committedProject.BUDGET;
+                worksheet.Cells[row, column++].Value = committedProject.COST_;
+                worksheet.Cells[row, column++].Value = string.Empty; // AREA
+
+                // Consequences
+                foreach(var commitConsequence in committedProject.COMMIT_CONSEQUENCES)
+                {
+                    worksheet.Cells[row, column++].Value = commitConsequence.CHANGE_;
+                }
+
+                row++;
+            }
+        }
+
+        private void AddHeaderCells(ExcelWorksheet worksheet, List<COMMIT_CONSEQUENCES> commitConsequences)
+        {
+            var fixColumnHeaders = new List<string>() { "BRKEY", "BMSID", "TREATMENT", "YEAR", "YEARANY", "YEARSAME", "BUDGET", "COST", "AREA" };
+            int headerRow = 1;
+            for (int column = 0; column < fixColumnHeaders.Count; column++)
+            {
+                worksheet.Cells[headerRow, column + 1].Value = fixColumnHeaders[column];
+            }
+            var currentColumn = fixColumnHeaders.Count;
+            foreach (var commitConsequence in commitConsequences)
+            {
+                worksheet.Cells[headerRow, ++currentColumn].Value = commitConsequence.ATTRIBUTE_;
             }
         }
 
@@ -95,6 +159,6 @@ namespace BridgeCare.Services
         private string GetCellValue(ExcelWorksheet worksheet, int row, int col)
         {
             return worksheet.Cells[row, col].Value.ToString().Trim();
-        }
+        }       
     }
 }

@@ -47,14 +47,19 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        private COMMITTED_ CreateCommitted(CommittedProjectModel committedProjectModel)
-        {
-            return new COMMITTED_(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
-        }
-
         public COMMITTED_ GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
         {
             return db.COMMITTEDPROJECTs.FirstOrDefault(c => c.SIMULATIONID == simulationId && c.SECTIONID == sectionId && c.YEARS == years);
         }
+
+        public List<COMMITTED_> GetCommittedProjects(int simulationId, BridgeCareContext db)
+        {
+            return db.COMMITTEDPROJECTs.Include("COMMIT_CONSEQUENCES").Where(c => c.SIMULATIONID == simulationId).ToList();
+        }
+
+        private COMMITTED_ CreateCommitted(CommittedProjectModel committedProjectModel)
+        {
+            return new COMMITTED_(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
+        }       
     }
 }
