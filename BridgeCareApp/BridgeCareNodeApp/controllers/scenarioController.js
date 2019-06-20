@@ -12,6 +12,21 @@ function scenarioController(Scenario) {
         });
     }
 
+/**
+     * PUT Nodejs API endpoint for scenario; returns updates & returns a scenario
+     * @param req
+     * @param res
+     */
+    function put(req, res) {
+        Scenario.findOneAndUpdate({_id: req.params.scenarioId}, req.body, {new: true}, (err, doc) => {
+            debug(req.body);
+            if (err) {
+                return res.status(400).json(err);
+            }
+            return res.status(200).json(doc);
+        });
+    }
+
     function get(req, res) {
         Scenario.find((err, scenariostatus) => {
             if (err) {
@@ -22,14 +37,14 @@ function scenarioController(Scenario) {
     }
 
     function deleteScenario(req, res) {
-        Scenario.findOneAndDelete({simulationId: req.params.scenarioId})
+        Scenario.findOneAndDelete({_id: req.params.scenarioId})
         .then(scenario => {
             if(!scenario) {
                 return res.status(404).send({
                     message: `Scenario not found with id ${req.params.scenarioId}`
                 });
             }
-            res.status(202).send(req.params.scenarioId);
+            res.status(202).send(scenario._id);
         })
         .catch(err => {
             if(err.name === 'NotFound'){
@@ -40,7 +55,7 @@ function scenarioController(Scenario) {
             return res.status(500)
         });
     }
-    return { post, get, deleteScenario};
+    return { post, get, deleteScenario, put};
 }
 
 module.exports = scenarioController;

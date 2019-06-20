@@ -6,6 +6,7 @@ import DataSnapshot = firebase.database.DataSnapshot;
 import moment from 'moment';
 import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { Simulation } from '../shared/models/iAM/simulation';
 
 export default class ScenarioService {
     static getUserScenarios(userId: string): AxiosPromise<Scenario[]> {
@@ -59,12 +60,39 @@ export default class ScenarioService {
         });
     }
 
-    static deleteScenario(scenarioId: number): AxiosPromise<number> {
+    static updateScenario(updateScenarioData: Simulation, scenarioId: string): AxiosPromise<Scenario> {
+        return new Promise<AxiosResponse<Scenario>>((resolve) => {
+            axiosInstance.post<Scenario>('/api/UpdateSimulationName', updateScenarioData)
+                .then((response: AxiosResponse<Scenario>) => {
+                    if (hasValue(response)) {
+
+                        nodejsAxiosInstance.put<Scenario>(`api/updateScenarios/${scenarioId}`, updateScenarioData)
+                            .then((res: AxiosResponse<Scenario>) => {
+                                if (hasValue(res)) {
+                                    return resolve(res);
+                                }
+                            })
+                            .catch((error: any) => {
+                                const axiosResponse: AxiosResponse<Scenario> = {
+                                    data: {} as Scenario,
+                                    status: 500,
+                                    statusText: error.toString(),
+                                    headers: {},
+                                    config: {}
+                                };
+                                return resolve(axiosResponse);
+                            });
+                    }
+                });
+        });
+    }
+
+    static deleteScenario(simulationId: number, scenarioId: string): AxiosPromise<number> {
         return new Promise<AxiosResponse<number>>((resolve) => {
-            axiosInstance.delete(`/api/DeleteSimulation/${scenarioId}`)
+            axiosInstance.delete(`/api/DeleteSimulation/${simulationId}`)
                 .then((response: AxiosResponse<number>) => {
                     if (hasValue(response)) {
-                        nodejsAxiosInstance.delete(`api/scenarios/${response.data}`)
+                        nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
                             .then((res: AxiosResponse<number>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);

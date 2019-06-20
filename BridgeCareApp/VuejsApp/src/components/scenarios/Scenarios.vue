@@ -12,7 +12,18 @@
                     </v-card-title>
                     <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
                         <template slot="items" slot-scope="props">
-                            <td>{{props.item.simulationName}}</td>
+                            <td>
+                                <v-edit-dialog :return-value.sync="props.item.simulationName"
+                                               large lazy persistent
+                                               @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)">
+                                    {{props.item.simulationName}}
+                                    <template slot="input">
+                                        <v-text-field v-model="props.item.simulationName"
+                                                      label="Edit"
+                                                      single-line></v-text-field>
+                                    </template>
+                                </v-edit-dialog>
+                            </td>
                             <td>{{formatDate(props.item.createdDate)}}</td>
                             <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                             <td>{{props.item.status}}</td>
@@ -34,7 +45,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="red" v-on:click="onDeleteScenario(props.item.simulationId)">
+                                        <v-btn flat icon color="red" v-on:click="onDeleteScenario(props.item.simulationId, props.item.id)">
                                             <v-icon>delete</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -123,7 +134,8 @@
     import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
     import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
-    import {clone} from 'ramda';
+    import { clone } from 'ramda';
+    import { Simulation } from '../../shared/models/iAM/simulation';
 
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog}
@@ -139,6 +151,7 @@
         @Action('setNavigation') setNavigationAction: any;
         @Action('createScenario') createScenarioAction: any;
         @Action('deleteScenario') deleteScenarioAction: any;
+        @Action('updateScenario') updateScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
@@ -207,8 +220,11 @@
             });
         }
 
-        onDeleteScenario(id: number) {
-            this.deleteScenarioAction({scenarioId: id});
+        onDeleteScenario(simulationId: number, id: string) {
+            this.deleteScenarioAction({
+                simulationId: simulationId,
+                scenarioId: id
+            });
         }
         
         /**
@@ -271,6 +287,19 @@
 
         onCreateScenario() {
             this.showCreateScenarioDialog = true;
+        }
+
+        onEditScenarioName(scenarioName: string, id: string, simulationId: any) {
+            var scenarioData : Simulation = {
+                simulationId: simulationId,
+                simulationName: scenarioName,
+                networkId: this.networks[0].networkId,
+                networkName: this.networks[0].networkName
+            };
+            this.updateScenarioAction({
+                updateScenarioData: scenarioData,
+                scenarioId: id
+            });
         }
 
         onSubmitNewScenario(createScenarioData: CreateScenarioData) {
