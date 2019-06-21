@@ -68,13 +68,13 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {clone, isNil, append, concat} from 'ramda';
+    import EditBudgetsDialog from '../../../shared/modals/EditBudgetsDialog.vue';
+    import {clone, isNil, append, concat, contains, isEmpty} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CreatePriorityDialog from '@/components/priorities-targets-deficients/dialogs/priorities-dialogs/CreatePriorityDialog.vue';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
     import EditYearDialog from '@/components/priorities-targets-deficients/dialogs/shared/EditYearDialog.vue';
-    import EditBudgetsDialog from '@/shared/modals/EditBudgetsDialog.vue';
     import {EditedBudget} from '@/shared/models/modals/edit-budgets-dialog';
     import {EditBudgetsDialogData, emptyEditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog';
     import {sorter} from '@/shared/utils/sorter-utils';
@@ -250,7 +250,37 @@
         }
 
         onSubmitEditedBudgets(editedBudgets: EditedBudget[]) {
+            this.editBudgetsDialogData = clone(emptyEditBudgetsDialogData);
 
+            if (!isNil(editedBudgets)) {
+                const remainingBudgets: string[] = getPropertyValues('previousName', editedBudgets)
+                    .filter((budget: EditedBudget) => !budget.isNew);
+
+                const priorities = clone(this.priorities);
+                priorities.forEach((priority: Priority) => {
+                    priority.priorityFunds = priority.priorityFunds
+                        .filter((priorityFund: PriorityFund) => contains(priorityFund.budget, remainingBudgets));
+
+                    if (!isEmpty(editedBudgets)) {
+                        editedBudgets.forEach((editedBudget: EditedBudget) => {
+                            if (editedBudget.isNew) {
+                                priority.priorityFunds.push({
+                                    priorityId: priority.id,
+                                    id: ObjectID.generate(),
+                                    budget: editedBudget.name,
+                                    funding: 0
+                                });
+                            } else {
+                                const index = priority.priorityFunds
+                                    .findIndex((priorityFund: PriorityFund) => priorityFund.budget === editedBudget.previousName);
+                                priority.priorityFunds[index].budget = editedBudget.name;
+                            }
+                        });
+                    }
+                });
+
+
+            }
         }
 
         /**
