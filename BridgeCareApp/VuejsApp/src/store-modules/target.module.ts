@@ -21,7 +21,7 @@ const actions = {
             );
     },
     async saveTargets({dispatch, commit}: any, payload: any) {
-        await TargetService.saveTargets(payload.targetData)
+        await TargetService.saveTargets(payload.selectedScenarioId, payload.targetData)
             .then((response: AxiosResponse<Target[]>) => {
                 commit('targetsMutator', response.data);
                 dispatch('setSuccessMessage', {message: 'Target data successfully saved'});

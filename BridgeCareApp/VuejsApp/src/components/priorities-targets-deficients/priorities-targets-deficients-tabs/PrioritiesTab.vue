@@ -47,6 +47,8 @@
 
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitPriorityCriteria" />
 
+        <EditBudgetsDialog :dialogData="editBudgetsDialogData" @submit="onSubmitEditedBudgets" />
+
         <v-footer>
             <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
                 <v-btn color="info" @click="onSavePriorities">Save</v-btn>
@@ -58,25 +60,34 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import {Component, Watch, Prop} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {Priority} from '@/shared/models/iAM/priority';
+    import {PrioritiesDataTableRow, Priority, PriorityFund} from '@/shared/models/iAM/priority';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {clone, isNil, append} from 'ramda';
+    import {clone, isNil, append, concat} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CreatePriorityDialog from '@/components/priorities-targets-deficients/dialogs/priorities-dialogs/CreatePriorityDialog.vue';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
     import EditYearDialog from '@/components/priorities-targets-deficients/dialogs/shared/EditYearDialog.vue';
+    import EditBudgetsDialog from '@/shared/modals/EditBudgetsDialog.vue';
+    import {EditedBudget} from '@/shared/models/modals/edit-budgets-dialog';
+    import {EditBudgetsDialogData, emptyEditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog';
+    import {sorter} from '@/shared/utils/sorter-utils';
+    const ObjectID = require('bson-objectid');
 
     @Component({
-        components: {EditPriorityYearDialog: EditYearDialog, CreatePriorityDialog, CriteriaEditorDialog}
+        components: {
+            EditBudgetsDialog,
+            EditPriorityYearDialog: EditYearDialog, CreatePriorityDialog, CriteriaEditorDialog}
     })
     export default class PrioritiesTab extends Vue {
+        @Prop() selectedScenarioId: number;
+
         @State(state => state.priority.priorities) statePriorities: Priority[];
 
         @Action('savePriorities') savePrioritiesAction: any;
@@ -87,11 +98,13 @@
             {text: 'Year', value: 'year', align: 'left', sortable: true, class: '', width: '12.4%'},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: true, class: '', width: '75%'}
         ];
+        pioritiesDataTableRows: PrioritiesDataTableRow[] = [];
+        priorityBudgets: string[] = [];
         priorityYear: number = -1;
         selectedPriorityIndex: number = -1;
         showCreatePriorityDialog: boolean = false;
-        latestPriorityId: number = 0;
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
 
         /**
          * Sets the priorities list property with a copy of the statePriorities list property when statePriorities list
@@ -107,7 +120,63 @@
          */
         @Watch('priorities')
         onPrioritiesChanged() {
-            this.latestPriorityId = getLatestPropertyValue('id', this.priorities);
+            this.setPriorityBudgets();
+        }
+
+        @Watch('priorityBudgets')
+        onPriorityBudgetsChanged() {
+            this.setTableHeaders();
+            this.setTableData();
+        }
+
+        setPriorityBudgets() {
+            let priorityFunds: PriorityFund[] = [];
+            this.priorities.forEach((priority: Priority) => {
+                priorityFunds = concat(priorityFunds, hasValue(priority.priorityFunds) ? priority.priorityFunds : []);
+            });
+
+            this.priorityBudgets = sorter(getPropertyValues('budget', priorityFunds)) as string[];
+        }
+
+        setTableHeaders() {
+            if (hasValue(this.priorityBudgets)) {
+                const budgetHeaders: DataTableHeader[] = this.priorityBudgets.map((budgetName: string) => ({
+                    text: budgetName,
+                    value: budgetName,
+                    sortable: true,
+                    align: 'left',
+                    class: '',
+                    width: ''
+                }) as DataTableHeader);
+                this.priorityDataTableHeaders = [
+                    this.priorityDataTableHeaders[0],
+                    this.priorityDataTableHeaders[1],
+                    this.priorityDataTableHeaders[2],
+                    ...budgetHeaders
+                ];
+            }
+        }
+
+        setTableData() {
+            this.pioritiesDataTableRows = [];
+
+            this.priorities.forEach((priority: Priority) => {
+                // @ts-ignore
+                const row: PrioritiesDataTableRow = {
+                    priorityId: priority.id,
+                    priorityLevel: priority.priorityLevel,
+                    year: priority.year,
+                    criteria: priority.criteria
+                };
+
+                this.priorityBudgets.forEach((budgetName: string) => {
+                    const priorityFund: PriorityFund = priority.priorityFunds
+                        .find((priorityFund: PriorityFund) => priorityFund.budget === budgetName) as PriorityFund;
+                    row[budgetName] = priorityFund.funding;
+                });
+
+                this.pioritiesDataTableRows.push(row);
+            });
         }
 
         /**
@@ -125,7 +194,18 @@
             this.showCreatePriorityDialog = false;
 
             if (!isNil(newPriority)) {
-                newPriority.id = hasValue(this.latestPriorityId) ? this.latestPriorityId + 1 : 1;
+                newPriority.id = ObjectID.generate();
+                if (hasValue(this.priorityBudgets)) {
+                    this.priorityBudgets.forEach((budgetName: string) => {
+                        const newPriorityFund: PriorityFund = {
+                            priorityId: newPriority.id,
+                            id: ObjectID.generate(),
+                            budget: budgetName,
+                            funding: 0
+                        };
+                        newPriority.priorityFunds.push(newPriorityFund);
+                    })
+                }
                 this.priorities = append(newPriority, this.priorities);
             }
         }
@@ -162,11 +242,22 @@
             }
         }
 
+        onEditBudgets() {
+            this.editBudgetsDialogData = {
+                showDialog: true,
+                budgets: this.priorityBudgets
+            };
+        }
+
+        onSubmitEditedBudgets(editedBudgets: EditedBudget[]) {
+
+        }
+
         /**
          * Sends priority data changes to the server for upsert
          */
         onSavePriorities() {
-            this.savePrioritiesAction({priorityData: this.priorities});
+            this.savePrioritiesAction({selectedScenarioId: this.selectedScenarioId, priorityData: this.priorities});
         }
 
         /**

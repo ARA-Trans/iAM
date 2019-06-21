@@ -60,7 +60,7 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import {Component, Watch, Prop} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {Target} from '@/shared/models/iAM/target';
     import {clone, isNil, append} from 'ramda';
@@ -79,6 +79,8 @@
         components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, CriteriaEditorDialog}
     })
     export default class TargetsTab extends Vue {
+        @Prop() selectedScenarioId: number;
+
         @State(state => state.target.targets) stateTargets: Target[];
 
         @Action('saveTargets') saveTargetsAction: any;
@@ -165,7 +167,7 @@
          * Sends target data changes to the server for upsert
          */
         onSaveTargets() {
-            this.saveTargetsAction({targetData: this.targets});
+            this.saveTargetsAction({selectedScenarioId: this.selectedScenarioId, targetData: this.targets});
         }
 
         /**

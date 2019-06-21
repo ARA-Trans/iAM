@@ -1,3 +1,5 @@
+using System.Configuration;
+
 namespace BridgeCare
 {
     using BridgeCare.EntityClasses;
@@ -11,51 +13,51 @@ namespace BridgeCare
             Configuration.LazyLoadingEnabled = false;
         }
 
-        public virtual DbSet<NETWORK> NETWORKS { get; set; }
+        public virtual DbSet<NetworkEntity> NETWORKS { get; set; }
 
-        public virtual DbSet<SIMULATION> SIMULATIONS { get; set; }
-        public virtual DbSet<YEARLYINVESTMENT> YEARLYINVESTMENTs { get; set; }
-        public virtual DbSet<INVESTMENTS> INVESTMENTs { get; set; }
-        public virtual DbSet<PERFORMANCE> PERFORMANCEs { get; set; }
-        public virtual DbSet<PRIORITY> Priorities { get; set; }
-        public virtual DbSet<PRIORITYFUND> PriorityFunds { get; set; }
-        public virtual DbSet<DEFICIENTS> Deficient { get; set; }
-        public virtual DbSet<TARGETS> Target { get; set; }
-        public virtual DbSet<Attributes> Attributes { get; set; }
+        public virtual DbSet<SimulationEntity> Simulations { get; set; }
+        public virtual DbSet<YearlyInvestmentEntity> YearlyInvestments { get; set; }
+        public virtual DbSet<InvestmentsEntity> Investments { get; set; }
+        public virtual DbSet<PerformanceEntity> Performances { get; set; }
+        public virtual DbSet<PriorityEntity> Priorities { get; set; }
+        public virtual DbSet<PriorityFundEntity> PriorityFunds { get; set; }
+        public virtual DbSet<DeficientsEntity> Deficients { get; set; }
+        public virtual DbSet<TargetsEntity> Targets { get; set; }
+        public virtual DbSet<AttributeEntity> Attributes { get; set; }
         public virtual DbSet<PennDotBridgeData> PennDotBridgeData { get; set; }
         public virtual DbSet<PennDotReportAData> PennDotReportAData { get; set; }
         public virtual DbSet<SdRisk> SdRisks { get; set; }
-        public virtual DbSet<TREATMENT> Treatments { get; set; }
-        public virtual DbSet<COST> Costs { get; set; }
-        public virtual DbSet<FEASIBILITY> Feasibilities { get; set; }
-        public virtual DbSet<CONSEQUENCE> Consequences { get; set; }
-        public virtual DbSet<COMMITTED_> COMMITTEDPROJECTs { get; set; }
-        public virtual DbSet<COMMIT_CONSEQUENCES> COMMITCONSEQUENCEs { get; set; }
+        public virtual DbSet<TreatmentsEntity> Treatments { get; set; }
+        public virtual DbSet<CostsEntity> Costs { get; set; }
+        public virtual DbSet<FeasibilityEntity> Feasibilities { get; set; }
+        public virtual DbSet<ConsequencesEntity> Consequences { get; set; }
+        public virtual DbSet<CommittedEntity> CommittedProjects { get; set; }
+        public virtual DbSet<CommitConsequencesEntity> CommitConsequences { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<NETWORK>()
+            modelBuilder.Entity<NetworkEntity>()
                 .Property(e => e.NETWORK_NAME)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<NETWORK>()
+            modelBuilder.Entity<NetworkEntity>()
                 .HasMany(e => e.SIMULATIONS)
                 .WithOptional(e => e.NETWORK)
                 .WillCascadeOnDelete();
 
-            modelBuilder.Entity<SIMULATION>()
-                .Property(e => e.SIMULATION1)
+            modelBuilder.Entity<SimulationEntity>()
+                .Property(e => e.SIMULATION)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<YEARLYINVESTMENT>()
+            modelBuilder.Entity<YearlyInvestmentEntity>()
                 .Property(e => e.BUDGETNAME)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<INVESTMENTS>()
+            modelBuilder.Entity<InvestmentsEntity>()
                 .Property(e => e.BUDGETORDER)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<PRIORITY>()
+            modelBuilder.Entity<PriorityEntity>()
               .HasMany(e => e.PRIORITYFUNDS);
         }
     }

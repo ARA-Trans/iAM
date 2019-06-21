@@ -9,6 +9,6 @@ namespace BridgeCare.Interfaces
   public interface IPriority
   {
     List<PriorityModel> GetPriorities(int selectedScenarioId, BridgeCareContext db);
-    List<PriorityModel> SavePriorities(List<PriorityModel> data, BridgeCareContext db);
+    List<PriorityModel> SavePriorities(int simulationId, List<PriorityModel> data, BridgeCareContext db);
   }
 }

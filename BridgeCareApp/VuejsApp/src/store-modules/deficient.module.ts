@@ -21,7 +21,7 @@ const actions = {
             );
     },
     async saveDeficients({dispatch, commit}: any, payload: any) {
-        await DeficientService.saveDeficients(payload.deficientData)
+        await DeficientService.saveDeficients(payload.selectedScenarioId, payload.deficientData)
             .then((response: AxiosResponse<Deficient[]>) => {
                 commit('deficientsMutator', response.data);
                 dispatch('setSuccessMessage', {message: 'Deficient data successfully saved'});

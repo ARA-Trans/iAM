@@ -27,7 +27,7 @@ namespace BridgeCare.Controllers
         }
 
         // GET: api/Simulations/5
-        [ResponseType(typeof(SIMULATION))]
+        [ResponseType(typeof(SimulationEntity))]
         public IHttpActionResult GetSimulation(int id)
         {
             // this `id` is network id
@@ -50,7 +50,7 @@ namespace BridgeCare.Controllers
 
         private bool SimulationExists(int id)
         {
-            return db.SIMULATIONS.Count(e => e.SIMULATIONID == id) > 0;
+            return db.Simulations.Count(e => e.SIMULATIONID == id) > 0;
         }
 
         [ModelValidation("Given simulation is not valid")]

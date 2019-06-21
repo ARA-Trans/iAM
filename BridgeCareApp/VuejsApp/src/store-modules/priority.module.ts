@@ -21,7 +21,7 @@ const actions = {
             );
     },
     async savePriorities({dispatch, commit}: any, payload: any) {
-        await PriorityService.savePriorities(payload.priorityData)
+        await PriorityService.savePriorities(payload.selectedScenarioId, payload.priorityData)
             .then((response: AxiosResponse<Priority[]>) => {
                 commit('prioritiesMutator', response.data);
                 dispatch('setSuccessMessage', {message: 'Priority data successfully saved'});

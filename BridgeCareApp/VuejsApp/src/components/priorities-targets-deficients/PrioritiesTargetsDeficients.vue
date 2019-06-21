@@ -10,21 +10,21 @@
                         <v-tab-item>
                             <v-card>
                                 <v-card-text class="priorities-targets-deficients-card-text">
-                                    <PrioritiesTab />
+                                    <PrioritiesTab :selectedScenarioId="selectedScenarioId" />
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card>
                                 <v-card-text class="priorities-targets-deficients-card-text">
-                                    <TargetsTab />
+                                    <TargetsTab :selectedScenarioId="selectedScenarioId" />
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card>
                                 <v-card-text class="priorities-targets-deficients-card-text">
-                                    <DeficientsTab />
+                                    <DeficientsTab :selectedScenarioId="selectedScenarioId" />
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>

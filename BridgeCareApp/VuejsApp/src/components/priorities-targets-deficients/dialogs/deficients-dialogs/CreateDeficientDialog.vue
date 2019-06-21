@@ -7,18 +7,23 @@
                         <h3>New Deficient</h3>
                     </v-layout>
                 </v-card-title>
-                <v-card-text>
+                <v-card-text class="new-deficient-card-text">
                     <v-layout column fill-height>
-                        <v-text-field label="Name" v-model="newDeficient.name" outline></v-text-field>
-
-                        <v-select label="Select Attribute" :items="numericAttributes" v-model="newDeficient.attribute"
-                                  outline>
-                        </v-select>
-
-                        <v-text-field label="Deficient Level" v-model="newDeficient.deficient" outline></v-text-field>
-
-                        <v-text-field label="Allowed Deficient(%)" v-model="newDeficient.percentDeficient" outline>
-                        </v-text-field>
+                        <v-flex>
+                            <v-text-field label="Name" v-model="newDeficient.name" outline></v-text-field>
+                        </v-flex>
+                        <v-flex>
+                            <v-select label="Select Attribute" :items="numericAttributes" v-model="newDeficient.attribute"
+                                      outline>
+                            </v-select>
+                        </v-flex>
+                        <v-flex>
+                            <v-text-field label="Deficient Level" v-model="newDeficient.deficient" outline></v-text-field>
+                        </v-flex>
+                        <v-flex>
+                            <v-text-field label="Allowed Deficient(%)" v-model="newDeficient.percentDeficient" outline>
+                            </v-text-field>
+                        </v-flex>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>

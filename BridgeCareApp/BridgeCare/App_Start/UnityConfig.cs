@@ -47,43 +47,44 @@ namespace BridgeCare
 
             container.RegisterType<INetwork, Network>();
             container.RegisterType<ISimulation, Simulations>();
-            container.RegisterType<ISections, Sections>();
-            container.RegisterType<ISectionLocator, SectionLocator>();
-            container.RegisterType<IDetailedReport, DetailedReport>();
-            container.RegisterType<IAttributeNames, Attributes>();
-            container.RegisterType<IAttributesByYear, AttributesByYear>();
-            container.RegisterType<IPerformanceLibrary, PerformanceLibrary>();
+            container.RegisterType<ISections, SectionsDAL>();
+            container.RegisterType<ISectionLocator, SectionLocatorDAL>();
+            container.RegisterType<IDetailedReport, DetailedReportDAL>();
+            container.RegisterType<IAttributeNames, AttributesDAL>();
+            container.RegisterType<IAttributesByYear, AttributesByYearDAL>();
+            container.RegisterType<IPerformanceLibrary, PerformanceLibraryDAL>();
             container.RegisterType<BridgeCareContext>();
-            container.RegisterType<IBudgetReport, BudgetReport>();
-            container.RegisterType<IInventory, Inventory>();
-            container.RegisterType<ISimulationAnalysis, SimulationAnalysis>();
-            container.RegisterType<IDeficientReport, DeficientReport>();
-            container.RegisterType<IInvestmentLibrary, InvestmentLibrary>();
-            container.RegisterType<ITreatmentLibrary, TreatmentLibrary>();
+            container.RegisterType<IBudgetReport, BudgetReportDAL>();
+            container.RegisterType<IInventory, InventoryDAL>();
+            container.RegisterType<ISimulationAnalysis, SimulationAnalysisDAL>();
+            container.RegisterType<IDeficientReport, DeficientReportDAL>();
+            container.RegisterType<IInvestmentLibrary, InvestmentLibraryDAL>();
+            container.RegisterType<ITreatmentLibrary, TreatmentLibraryDAL>();
             container.RegisterType<CostDetails>();
-            container.RegisterType<ITarget, Targets>();
+            container.RegisterType<ITarget, TargetsDAL>();
             container.RegisterType<IReportCreator, ReportCreator>();
             container.RegisterType<FillDetailedSheet>();
-            container.RegisterType<TargetsMet>();
-            container.RegisterType<TargetResults>();
+            container.RegisterType<TargetsMetDAL>();
+            container.RegisterType<TargetResultsDAL>();
             container.RegisterType<Target>();
             container.RegisterType<Deficient>();
             container.RegisterType<Detailed>();
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
-            container.RegisterType<IRunSimulation, RunSimulation>();
-            container.RegisterType<IPriority, Priority>();
+            container.RegisterType<IRunSimulation, RunSimulationDAL>();
+            container.RegisterType<IPriority, PriorityDAL>();
+            container.RegisterType<IDeficient, DeficientDAL>();
 
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();
-            container.RegisterType<IBridgeData, BridgeData>();
+            container.RegisterType<IBridgeData, BridgeDataDAL>();
             container.RegisterType<SummaryReportBridgeData>();
-            container.RegisterType<ICommonSummaryReportData, CommonSummaryReportData>();
-            container.RegisterType<IBridgeWorkSummaryData, BridgeWorkSummaryData>();
+            container.RegisterType<ICommonSummaryReportData, CommonSummaryReportDataDAL>();
+            container.RegisterType<IBridgeWorkSummaryData, BridgeWorkSummaryDataDAL>();
 
             container.RegisterType<IInventoryItemDetailModelGenerator, InventoryItemDetailModelGenerator>();
             container.RegisterType<ICommittedProjects, CommittedProjects>();
-            container.RegisterType<ICommitted, Committed>();
+            container.RegisterType<ICommitted, CommittedDAL>();
         }
     }
 }

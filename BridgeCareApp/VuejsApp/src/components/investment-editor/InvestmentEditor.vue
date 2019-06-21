@@ -144,15 +144,14 @@
     import { Action, State } from 'vuex-class';
     import CreateInvestmentLibraryDialog from './investment-editor-dialogs/CreateInvestmentLibraryDialog.vue';
     import SetRangeForAddingBudgetYearsDialog from './investment-editor-dialogs/SetRangeForAddingBudgetYearsDialog.vue';
-    import EditBudgetsDialog from './investment-editor-dialogs/EditBudgetsDialog.vue';
+    import EditBudgetsDialog from '../../shared/modals/EditBudgetsDialog.vue';
     import {
         BudgetYearsGridData,
-        EditedBudget,
         emptyInvestmentLibrary,
         InvestmentLibrary,
         InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
-    import { any, clone, groupBy, isEmpty, isNil, keys, propEq, uniq, contains } from 'ramda';
+    import { any, clone, groupBy, isEmpty, isNil, keys, propEq, contains } from 'ramda';
     import { SelectItem } from '@/shared/models/vue/select-item';
     import { DataTableHeader } from '@/shared/models/vue/data-table-header';
     import { hasValue } from '@/shared/utils/has-value-util';
@@ -164,9 +163,10 @@
     import {
         EditBudgetsDialogData,
         emptyEditBudgetsDialogData
-    } from '@/shared/models/modals/edit-budgets-dialog-data';
+    } from '@/shared/models/modals/edit-budgets-dialog';
     import { getLatestPropertyValue, getPropertyValues } from '@/shared/utils/getter-utils';
     import { sortByProperty, sorter } from '@/shared/utils/sorter-utils';
+    import {EditedBudget} from '@/shared/models/modals/edit-budgets-dialog';
     const ObjectID = require('bson-objectid');
 
     @Component({

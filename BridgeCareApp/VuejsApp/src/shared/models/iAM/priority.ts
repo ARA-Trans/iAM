@@ -29,3 +29,12 @@ export const emptyPriority: Priority = {
     criteria: '',
     priorityFunds: []
 };
+
+export interface PrioritiesDataTableRow {
+    priorityId: number;
+    priorityLevel: number;
+    year: number;
+    // @ts-ignore
+    criteria: string;
+    [budgetName: string]: number;
+}
