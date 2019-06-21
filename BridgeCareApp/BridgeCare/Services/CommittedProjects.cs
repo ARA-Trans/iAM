@@ -20,7 +20,14 @@ namespace BridgeCare.Services
             this.committed = committed;
             this.sections = sections;
         }
-
+        
+        /// <summary>
+        /// Save committed projects from the template files
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="selectedScenarioId"></param>
+        /// <param name="networkId"></param>
+        /// <param name="db"></param>
         public void SaveCommittedProjectsFiles(HttpFileCollection files, string selectedScenarioId, string networkId, BridgeCareContext db)
         {
             var committedProjectModels = new List<CommittedProjectModel>();
@@ -31,6 +38,13 @@ namespace BridgeCare.Services
             }
         }
 
+        /// <summary>
+        /// Export committed projects for a simulation
+        /// </summary>
+        /// <param name="simulationId"></param>
+        /// <param name="networkId"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public byte[] ExportCommittedProjects(int simulationId, int networkId, BridgeCareContext db)
         {
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("CommittedProjects.xlsx")))
@@ -41,8 +55,8 @@ namespace BridgeCare.Services
                 if (committedProjects.Count != 0)
                 {
                     AddHeaderCells(worksheet, committedProjects.FirstOrDefault().COMMIT_CONSEQUENCES.ToList());
+                    AddDataCells(worksheet, committedProjects, networkId, db);
                 }
-                AddDataCells(worksheet, committedProjects, networkId, db);
                 return excelPackage.GetAsByteArray();
             }
         }
@@ -51,7 +65,7 @@ namespace BridgeCare.Services
         {            
             var networkModel = new NetworkModel { NetworkId = networkId };
             var sectionModels = sections.GetSections(networkModel, db).ToList();
-            var row = 1;
+            var row = 2;
             foreach(var committedProject in committedProjects)
             {                
                 var column = 1;
@@ -74,7 +88,6 @@ namespace BridgeCare.Services
                 {
                     worksheet.Cells[row, column++].Value = commitConsequence.CHANGE_;
                 }
-
                 row++;
             }
         }

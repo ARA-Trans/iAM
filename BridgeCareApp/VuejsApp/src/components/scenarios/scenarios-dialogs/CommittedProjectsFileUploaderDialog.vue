@@ -40,6 +40,7 @@
             <v-card-actions>
                 <v-layout justify-space-between row fill-height>
                     <v-btn color="info" v-on:click="onUpload">Upload</v-btn>
+                    <v-btn color="info" v-on:click="onExport">Export</v-btn>
                     <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
@@ -68,7 +69,7 @@
         dragEvents: string[] = ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'];
         fileSelect: HTMLInputElement = {} as HTMLInputElement;
         fileForm: HTMLFormElement = {} as HTMLFormElement;
-        files: File[] = [];
+        files: File[] = [];        
         filesTableHeaders: DataTableHeader[] = [
             {text: 'Name', value: 'name', align: 'left', sortable: true, class: '', width: '100px'},
             {text: 'Size', value: 'size', align: 'left', sortable: true, class: '', width: '50px'},
@@ -153,7 +154,7 @@
          * Submits 'null' to EditScenario parent component indicating user canceled file uploading
          */
         onCancel() {
-            this.$emit('submit', null);
+            this.$emit('submit', null, false);
             this.files = [];
         }
 
@@ -161,7 +162,15 @@
          * Submits user's selected file(s) to EditScenario parent component for upload
          */
         onUpload() {
-            this.$emit('submit', this.files);
+            this.$emit('submit', this.files, false);
+            this.files = [];
+        }
+
+        /**
+         * Submits user's action to EditScenario parent component for Export
+         */
+        onExport() {
+            this.$emit('submit', null, true);
             this.files = [];
         }
     }

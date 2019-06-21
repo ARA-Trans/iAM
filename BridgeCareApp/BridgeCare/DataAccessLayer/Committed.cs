@@ -11,6 +11,11 @@ namespace BridgeCare.DataAccessLayer
 {
     public class Committed : ICommitted
     {
+        /// <summary>
+        /// Save committed projects in the database
+        /// </summary>
+        /// <param name="committedProjectModels"></param>
+        /// <param name="db"></param>
         public void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
             try
@@ -47,11 +52,25 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
+        /// <summary>
+        /// Get committed project based on parameters
+        /// </summary>
+        /// <param name="simulationId"></param>
+        /// <param name="sectionId"></param>
+        /// <param name="years"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public COMMITTED_ GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
         {
             return db.COMMITTEDPROJECTs.FirstOrDefault(c => c.SIMULATIONID == simulationId && c.SECTIONID == sectionId && c.YEARS == years);
         }
 
+        /// <summary>
+        /// Get all the committed projects for a given simulation id
+        /// </summary>
+        /// <param name="simulationId"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public List<COMMITTED_> GetCommittedProjects(int simulationId, BridgeCareContext db)
         {
             return db.COMMITTEDPROJECTs.Include("COMMIT_CONSEQUENCES").Where(c => c.SIMULATIONID == simulationId).ToList();
