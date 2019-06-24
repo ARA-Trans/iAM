@@ -19,7 +19,6 @@ function scenarioController(Scenario) {
      */
     function put(req, res) {
         Scenario.findOneAndUpdate({_id: req.params.scenarioId}, req.body, {new: true}, (err, doc) => {
-            debug(req.body);
             if (err) {
                 return res.status(400).json(err);
             }
