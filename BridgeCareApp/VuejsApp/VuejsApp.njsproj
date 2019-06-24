@@ -75,6 +75,8 @@
     <Content Include="src\components\scenarios\EditAnalysis.vue" />
     <Content Include="src\components\scenarios\EditScenario.vue" />
     <Content Include="src\components\scenarios\scenarios-dialogs\CommittedProjectsFileUploaderDialog.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\CreateScenarioDialog.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\ReportsDownloaderDialog.vue" />
     <Content Include="src\components\scenarios\Scenarios.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentStrategyDialog.vue" />
