@@ -3,7 +3,7 @@
         <v-card>
             <v-card-title>
                 <v-layout justify-center fill-height>
-                    <h3>Committed Projects File Uploader</h3>
+                    <h3>Committed Projects</h3>
                 </v-layout>
             </v-card-title>
             <v-card-text>
