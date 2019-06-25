@@ -58,7 +58,7 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
         @State(state => state.network.networks) networks: Network[];
-
+        
         @Action('setNavigation') setNavigationAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
@@ -66,11 +66,13 @@
         selectedScenarioId: number = 0;
         showFileUploader: boolean = false;
         networkId: number = 0;
+        simulationName: string;
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 // set selectedScenarioId
                 vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
+                vm.simulationName = to.query.simulationName;
                 // set breadcrumbs
                 vm.setNavigationAction([
                     {
@@ -80,7 +82,7 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
+                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                         }
                     }
                 ]);
@@ -98,7 +100,7 @@
          */
         onEditAnalysis() {
             this.$router.push({
-                path: '/EditAnalysis/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                path: '/EditAnalysis/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
             });
         }
 
@@ -108,7 +110,8 @@
         onEditInvestment() {
             this.$router.push({
                 path: '/InvestmentEditor/FromScenario/', query: {
-                    selectedScenarioId: this.selectedScenarioId.toString()
+                    selectedScenarioId: this.selectedScenarioId.toString(),
+                    simulationName: this.simulationName
                 }
             });
         }
@@ -118,7 +121,7 @@
          */
         onEditPerformance() {
             this.$router.push({
-                path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
             });
         }
 
@@ -127,7 +130,7 @@
          */
         onEditTreatment() {
             this.$router.push({
-                path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
             });
         }
 

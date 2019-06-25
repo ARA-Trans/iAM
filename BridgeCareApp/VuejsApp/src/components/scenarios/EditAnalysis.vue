@@ -139,6 +139,7 @@
             'Targets/Deficient Met', 'Unlimited'];
         benefitAttributes: string[] = [];
         weightingAttributes: string[] = ['None'];
+        simulationName: string;
 
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
@@ -148,6 +149,8 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
+                vm.simulationName = to.query.simulationName;
+
                 if (vm.selectedScenarioId === 0) {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -161,13 +164,13 @@
                     {
                         text: 'Scenario editor',
                         to: {
-                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}
+                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                         }
                     },
                     {
                         text: 'Analysis editor',
                         to: {
-                            path: '/EditAnalysis/', query: {selectedScenarioId: to.query.selectedScenarioId}
+                            path: '/EditAnalysis/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                         }
                     }
                 ]);
@@ -275,7 +278,7 @@
                         // set 'analysis applied' success message, then navigate user to EditScenario page
                         this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
                         this.$router.push({
-                            path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                            path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
                         });
                     } else {
                         this.setErrorMessageAction({message: `Failed to save scenario analysis data${setStatusMessage(response)}`});
@@ -288,7 +291,7 @@
          */
         onCancelAnalysisEdit() {
             this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
             });
         }
     }
