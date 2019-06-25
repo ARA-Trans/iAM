@@ -19,7 +19,7 @@ namespace BridgeCare.EntityClasses
         public byte?[] BINARY_CRITERIA { get; set; }
 
         [ForeignKey("ATTRIBUTE_")]
-        public virtual AttributeEntity ATTRIBUTE { get; set; }
+        public virtual AttributesEntity ATTRIBUTE { get; set; }
         [ForeignKey("SIMULATIONID")]
         public virtual SimulationEntity SIMULATION { get; set; }
     }

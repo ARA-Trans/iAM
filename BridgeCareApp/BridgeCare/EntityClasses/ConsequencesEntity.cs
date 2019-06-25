@@ -17,7 +17,7 @@ namespace BridgeCare.EntityClasses
         public bool? ISFUNCTION { get; set; }
 
         [ForeignKey("ATTRIBUTE_")]
-        public virtual AttributeEntity ATTRIBUTE { get; set; }
+        public virtual AttributesEntity ATTRIBUTE { get; set; }
         [ForeignKey("TREATMENTID")]
         public virtual TreatmentsEntity TREATMENT { get; set; }
     }

@@ -23,6 +23,6 @@ namespace BridgeCare.EntityClasses
         [ForeignKey("COMMITID")]
         public virtual CommittedEntity COMMITTED { get; set; }
         [ForeignKey("ATTRIBUTE_")]
-        public virtual AttributeEntity ATTRIBUTE{ get; set; }
+        public virtual AttributesEntity ATTRIBUTE{ get; set; }
     }
 }

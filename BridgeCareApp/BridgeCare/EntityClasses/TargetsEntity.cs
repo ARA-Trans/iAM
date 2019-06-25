@@ -20,7 +20,7 @@ namespace BridgeCare.EntityClasses
         public byte?[] BINARY_CRITERIA { get; set; }
 
         public virtual SimulationEntity SIMULATION { get; set; }
-        public virtual AttributeEntity ATTRIBUTE { get; set; }
+        public virtual AttributesEntity ATTRIBUTE { get; set; }
 
         public TargetsEntity() { }
 

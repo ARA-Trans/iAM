@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BridgeCare.EntityClasses
 {
     [Table("ATTRIBUTES_")]
-    public class AttributeEntity
+    public class AttributesEntity
     {
         [Key]
         public string ATTRIBUTE_ { get; set; }

@@ -237,7 +237,7 @@
     <Compile Include="DataAccessLayer\Validation\Validation.cs" />
     <Compile Include="DataAccessLayer\TargetsDAL.cs" />
     <Compile Include="DataAccessLayer\TargetsMetDAL.cs" />
-    <Compile Include="EntityClasses\AttributeEntity.cs" />
+    <Compile Include="EntityClasses\AttributesEntity.cs" />
     <Compile Include="EntityClasses\CommitConsequencesEntity.cs" />
     <Compile Include="EntityClasses\CommittedEntity.cs" />
     <Compile Include="EntityClasses\ConsequencesEntity.cs" />
