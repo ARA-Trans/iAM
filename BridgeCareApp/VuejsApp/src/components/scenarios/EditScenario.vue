@@ -25,7 +25,7 @@
                                 <v-text-field :append-icon="'fas fa-heartbeat'" box readonly label="Treatments">
                                 </v-text-field>
                             </div>
-                            <div class="scenario-edit-text-field-div" v-on:click="">
+                            <div class="scenario-edit-text-field-div" v-on:click="onEditPrioritiesTargetsDeficients">
                                 <v-text-field :append-icon="'fas fa-copy'" box readonly label="Prioritization">
                                 </v-text-field>
                             </div>
@@ -50,13 +50,14 @@
     import CommittedProjectsService from '@/services/committed-projects.service';
     import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
     import { Network } from '@/shared/models/iAM/network';
+    import { hasValue } from '@/shared/utils/has-value-util';
+    import FileDownload from 'js-file-download';
 
     @Component({
-        components: {CommittedProjectsFileUploaderDialog}
+        components: { CommittedProjectsFileUploaderDialog }
     })
     export default class EditScenario extends Vue {
-        @State(state => state.breadcrumb.navigation) navigation: any[];
-        @State(state => state.scenario.selectedScenario) selectedScenario: Scenario;
+        @State(state => state.breadcrumb.navigation) navigation: any[];        
         @State(state => state.network.networks) networks: Network[];
         
         @Action('setNavigation') setNavigationAction: any;
@@ -67,6 +68,13 @@
         showFileUploader: boolean = false;
         networkId: number = 0;
         simulationName: string;
+        selectedScenario: Scenario = {
+            id: 0,
+            simulationId: this.selectedScenarioId,
+            networkId: this.networkId,
+            simulationName: '',
+            networkName: ''
+        };
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -89,7 +97,7 @@
                 // check that selectedScenarioId is set
                 if (vm.selectedScenarioId === 0) {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                    vm.setErrorMessageAction({ message: 'Found no selected scenario for edit' });
                     vm.$router.push('/Scenarios/');
                 }
             });
@@ -130,7 +138,16 @@
          */
         onEditTreatment() {
             this.$router.push({
-                path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
+                path: '/TreatmentEditor/FromScenario/', query: { selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName }
+            });
+        }
+
+        /**
+         * Navigates user to the PrioritiesTargetsDeficients page passing in the selected scenario's id
+         */
+        onEditPrioritiesTargetsDeficients() {
+            this.$router.push({
+                path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 
@@ -142,10 +159,12 @@
         }
 
         /**
-         * Uploads the files submitted via the CommittedProjectsFileUploaderDialog (if present)
-         * @param files File array
+         * Uploads the files submitted via the CommittedProjectsFileUploaderDialog (if present),
+         * exports committed projects if isExport is true
+         * @param files File array         
+         * @param isExport boolean
          */
-        onUploadCommitedProjectFiles(files: File[]) {
+        onUploadCommitedProjectFiles(files: File[], isExport: boolean) {
             this.showFileUploader = false;
             if (!isNil(files)) {
                 CommittedProjectsService.saveCommittedProjectsFiles(files, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
@@ -154,6 +173,20 @@
                             this.setSuccessMessageAction({ message: 'Successfully saved file(s)' });
                         } else {
                             this.setErrorMessageAction({ message: `Failed to save file(s)${setStatusMessage(response)}` });
+                        }
+                    });
+            }
+            if (isExport) {
+                this.selectedScenario.simulationId = this.selectedScenarioId;
+                this.selectedScenario.networkId = this.networks[0].networkId;
+                CommittedProjectsService.ExportCommittedProjects(this.selectedScenario)
+                    .then((response: AxiosResponse<any>) => {
+                        if (hasValue(response) && http2XX.test(response.status.toString())) {
+                            FileDownload(response.data, 'CommittedProjects.xlsx');
+                        }
+                        else {
+
+                            this.setErrorMessageAction({ message: `Failed to export committed projects${setStatusMessage(response)}` });
                         }
                     });
             }

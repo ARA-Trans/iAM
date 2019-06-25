@@ -1,9 +1,12 @@
-﻿using BridgeCare.Models;
+﻿using System.Collections.Generic;
+using BridgeCare.Models;
 
 namespace BridgeCare.Interfaces
 {
     public interface ITarget
     {
-        TargetModel GetTarget(SimulationModel data, int[] totalYears);
+        TargetReportModel GetTarget(SimulationModel data, int[] totalYears);
+        List<TargetModel> GetTargets(int simulationId, BridgeCareContext db);
+        List<TargetModel> SaveTargets(int simulationId, List<TargetModel> data, BridgeCareContext db);
     }
 }

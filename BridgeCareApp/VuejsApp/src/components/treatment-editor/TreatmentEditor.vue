@@ -13,7 +13,7 @@
                             </v-chip>
                             <v-select v-if="!hasSelectedTreatmentLibrary || selectedScenarioId > 0"
                                       :items="treatmentLibrariesSelectListItems" label="Select a Treatment Library"
-                                      outline v-model="treatmentLibrarySelectItemValue">
+                                      outline v-model="treatmentLibrarySelectItemValue" class="treatment-library-select">
                             </v-select>
                             <v-text-field v-if="hasSelectedTreatmentLibrary && selectedScenarioId === 0"
                                           label="Treatment Name" append-icon="clear"
@@ -508,10 +508,16 @@
             this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary})
                 .then(() => {
                     setTimeout(() => {
+                        const selectedTreatment = this.treatmentSelectItemValue;
+                        const activeTab = this.activeTab;
                         this.onClearSelectedTreatmentLibrary();
                         setTimeout(() => {
                             this.updateSelectedTreatmentLibraryAction({
                                 updatedSelectedTreatmentLibrary: this.scenarioTreatmentLibrary
+                            });
+                            setTimeout(() => {
+                                this.treatmentSelectItemValue = selectedTreatment;
+                                this.activeTab = activeTab;
                             });
                         });
                     });
@@ -558,7 +564,7 @@
         overflow-y: auto;
     }
 
-    .v-select {
+    .treatment-library-select {
         height: 60px;
     }
 </style>

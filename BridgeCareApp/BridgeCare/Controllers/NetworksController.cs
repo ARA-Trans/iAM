@@ -26,10 +26,10 @@ namespace BridgeCare.Controllers
         }
 
         // GET: api/NETWORKs/5
-        [ResponseType(typeof(NETWORK))]
+        [ResponseType(typeof(NetworkEntity))]
         public IHttpActionResult GetNetwork(int id)
         {
-            NETWORK network = db.NETWORKS.Find(id);
+            var network = db.NETWORKS.Find(id);
             if (network == null)
             {
                 return NotFound();

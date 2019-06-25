@@ -9,6 +9,6 @@ namespace BridgeCare.Interfaces
     {
         List<YearlyDataModel> GetYearsData(SimulationModel data);
 
-        IQueryable<DetailedReport> GetRawQuery(SimulationModel data, BridgeCareContext db);
+        IQueryable<DetailedReportDAL> GetRawQuery(SimulationModel data, BridgeCareContext db);
     }
 }

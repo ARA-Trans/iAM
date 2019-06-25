@@ -20,19 +20,6 @@ export interface BudgetYearsGridData {
     [budgetName: string]: number;
 }
 
-export interface EditBudgetsDialogGridData {
-    name: string;
-    index: number;
-    previousName: string;
-    isNew: boolean;
-}
-
-export interface EditedBudget {
-    name: string;
-    previousName: string;
-    isNew: boolean;
-}
-
 export const emptyInvestmentLibrary: InvestmentLibrary = {
     id: 0,
     name: '',
