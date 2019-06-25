@@ -24,11 +24,11 @@ namespace BridgeCare.Services
 
         public IQueryable<SimulationModel> GetAllSimulations()
         {
-            var filteredColumns = from contextTable in db.SIMULATIONS
+            var filteredColumns = from contextTable in db.Simulations
                                   select new SimulationModel
                                   {
                                       SimulationId = contextTable.SIMULATIONID,
-                                      SimulationName = contextTable.SIMULATION1,
+                                      SimulationName = contextTable.SIMULATION,
                                       NetworkId = contextTable.NETWORKID.Value,
                                       Created = contextTable.DATE_CREATED,
                                       LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
@@ -41,11 +41,11 @@ namespace BridgeCare.Services
         {
             try
             {
-                filterSimulation = db.SIMULATIONS.Where(_ => _.SIMULATIONID == id)
+                filterSimulation = db.Simulations.Where(_ => _.SIMULATIONID == id)
                 .Select(p => new SimulationModel
                 {
                     SimulationId = p.SIMULATIONID,
-                    SimulationName = p.SIMULATION1,
+                    SimulationName = p.SIMULATION,
                     NetworkId = p.NETWORKID.Value,
                     Created = p.DATE_CREATED,
                     LastRun = p.DATE_LAST_RUN
@@ -63,17 +63,17 @@ namespace BridgeCare.Services
             return filterSimulation;
         }
 
-        public SIMULATION FindWithKey(int id)
+        public SimulationEntity FindWithKey(int id)
         {
-            return db.SIMULATIONS.Find(id);
+            return db.Simulations.Find(id);
         }
 
         public void UpdateName(SimulationModel model)
         {
             try
             {
-                var result = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == model.SimulationId);
-                result.SIMULATION1 = model.SimulationName;
+                var result = db.Simulations.SingleOrDefault(b => b.SIMULATIONID == model.SimulationId);
+                result.SIMULATION = model.SimulationName;
                 db.SaveChanges();
             }
             catch (SqlException ex)
@@ -89,7 +89,7 @@ namespace BridgeCare.Services
         // in entity classes
         public void Delete(int id)
         {
-            var sim = db.SIMULATIONS.SingleOrDefault(b => b.SIMULATIONID == id);
+            var sim = db.Simulations.SingleOrDefault(b => b.SIMULATIONID == id);
 
             if (sim == null)
             {
@@ -132,21 +132,21 @@ namespace BridgeCare.Services
         public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
         {
             try { 
-                var sim = new SIMULATION()
+                var sim = new SimulationEntity()
                 {
                     NETWORKID = createSimulationData.NetworkId,
-                    SIMULATION1 = createSimulationData.Name,
+                    SIMULATION = createSimulationData.Name,
                     DATE_CREATED = DateTime.Now,
                     ANALYSIS = "Incremental Benefit/Cost",
                     BUDGET_CONSTRAINT = "As Budget Permits",
                     WEIGHTING = "none",
                     COMMITTED_START = DateTime.Now.Year,
                     COMMITTED_PERIOD = 5,
-                    TREATMENTS = new List<TREATMENT>
+                    TREATMENTS = new List<TreatmentsEntity>
                     {
-                        new TREATMENT()
+                        new TreatmentsEntity()
                         {
-                            TREATMENT1 = "No Treatment",
+                            TREATMENT = "No Treatment",
                             BEFOREANY = 1,
                             BEFORESAME = 1,
                             BUDGET = null,
@@ -155,17 +155,17 @@ namespace BridgeCare.Services
                             OMS_IS_REPEAT = null,
                             OMS_REPEAT_START = null,
                             OMS_REPEAT_INTERVAL = null,
-                            CONSEQUENCES = new List<CONSEQUENCE>
+                            CONSEQUENCES = new List<ConsequencesEntity>
                             {
-                                new CONSEQUENCE
+                                new ConsequencesEntity
                                     {
                                     ATTRIBUTE_ = "AGE",
                                     CHANGE_ = "+1"
                                 }
                             },
-                            FEASIBILITY = new List<FEASIBILITY>
+                            FEASIBILITIES = new List<FeasibilityEntity>
                             {
-                                new FEASIBILITY
+                                new FeasibilityEntity
                                 {
                                     CRITERIA = ""
                                 }
@@ -174,10 +174,10 @@ namespace BridgeCare.Services
                     }
                 };
 
-                db.SIMULATIONS.Add(sim);
+                db.Simulations.Add(sim);
                 db.SaveChanges();
 
-                sim.INVESTMENTS = new INVESTMENTS()
+                sim.INVESTMENTS = new InvestmentsEntity()
                 {
                     SIMULATIONID = sim.SIMULATIONID,
                     FIRSTYEAR = DateTime.Now.Year,
@@ -190,11 +190,11 @@ namespace BridgeCare.Services
 
                 db.SaveChanges();
 
-                var simulationModel = from contextTable in db.SIMULATIONS where contextTable.SIMULATIONID == sim.SIMULATIONID
+                var simulationModel = from contextTable in db.Simulations where contextTable.SIMULATIONID == sim.SIMULATIONID
                                       select new SimulationModel
                                       {
                                         SimulationId = contextTable.SIMULATIONID,
-                                        SimulationName = contextTable.SIMULATION1,
+                                        SimulationName = contextTable.SIMULATION,
                                         NetworkId = contextTable.NETWORKID.Value,
                                         Created = contextTable.DATE_CREATED,
                                         LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,

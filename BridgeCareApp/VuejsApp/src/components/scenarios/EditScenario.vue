@@ -25,7 +25,7 @@
                                 <v-text-field :append-icon="'fas fa-heartbeat'" box readonly label="Treatments">
                                 </v-text-field>
                             </div>
-                            <div class="scenario-edit-text-field-div" v-on:click="">
+                            <div class="scenario-edit-text-field-div" v-on:click="onEditPrioritiesTargetsDeficients">
                                 <v-text-field :append-icon="'fas fa-copy'" box readonly label="Prioritization">
                                 </v-text-field>
                             </div>
@@ -130,6 +130,15 @@
         onEditTreatment() {
             this.$router.push({
                 path: '/TreatmentEditor/FromScenario/', query: { selectedScenarioId: this.selectedScenarioId.toString() }
+            });
+        }
+
+        /**
+         * Navigates user to the PrioritiesTargetsDeficients page passing in the selected scenario's id
+         */
+        onEditPrioritiesTargetsDeficients() {
+            this.$router.push({
+                path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
             });
         }
 

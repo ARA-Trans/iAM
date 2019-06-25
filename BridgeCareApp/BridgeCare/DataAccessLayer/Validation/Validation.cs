@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -46,33 +47,33 @@ namespace BridgeCare.DataAccessLayer
             return NumberOfHits(criteria, db);
         }
 
-        private List<BridgeCare.EntityClasses.Attributes> GetAllowedAttributes(bool isFunction, BridgeCareContext db)
+        private List<AttributesEntity> GetAllowedAttributes(bool isFunction, BridgeCareContext db)
         {
             if (isFunction)
             {
-                return db.Attributes.ToList<BridgeCare.EntityClasses.Attributes>();
+                return db.Attributes.ToList();
             }
             else
             {
-                return db.Attributes.Where(e => e.Type_ == "NUMBER").ToList<BridgeCare.EntityClasses.Attributes>();
+                return db.Attributes.Where(e => e.Type_ == "NUMBER").ToList();
             }
         }
 
         private string checkAttributes(string target, bool isFunction, BridgeCareContext db)
         {
-            List<BridgeCare.EntityClasses.Attributes> attributes = GetAllowedAttributes(isFunction, db);
+            List<AttributesEntity> attributes = GetAllowedAttributes(isFunction, db);
             target = target.Replace('[', '?');
-            foreach (BridgeCare.EntityClasses.Attributes allowedAttribute in attributes)
+            foreach (AttributesEntity allowedAttribute in attributes)
             {
-                if (target.IndexOf("?" + allowedAttribute.Attribute_ + "]") >= 0)
+                if (target.IndexOf("?" + allowedAttribute.ATTRIBUTE_ + "]") >= 0)
                 {
                     if (allowedAttribute.Type_ == "STRING")
                     {
-                        target = target.Replace("?" + allowedAttribute.Attribute_ + "]", "[@" + allowedAttribute.Attribute_ + "]");
+                        target = target.Replace("?" + allowedAttribute.ATTRIBUTE_ + "]", "[@" + allowedAttribute.ATTRIBUTE_ + "]");
                     }
                     else
                     {
-                        target = target.Replace("?" + allowedAttribute.Attribute_ + "]", "[" + allowedAttribute.Attribute_ + "]");
+                        target = target.Replace("?" + allowedAttribute.ATTRIBUTE_ + "]", "[" + allowedAttribute.ATTRIBUTE_ + "]");
                     }
                 }
             }
