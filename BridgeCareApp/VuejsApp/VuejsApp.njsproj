@@ -144,6 +144,7 @@
     <Folder Include="src\shared\models\dialogs\performance-editor-dialogs\" />
     <Folder Include="src\shared\models\dialogs\treatment-editor-dialogs\" />
     <Folder Include="src\shared\models\iAM\" />
+    <Folder Include="src\shared\models\modals\" />
     <Folder Include="src\shared\models\vue\" />
     <Folder Include="src\shared\utils\" />
     <Folder Include="src\store-modules\" />
@@ -200,6 +201,16 @@
     <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\treatment.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\alert-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-investment-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-performance-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-treatment-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\criteria-editor-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\edit-budgets-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\equation-editor-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\equation-editor-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\reports-downloader-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\scenario-creation-data.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\data-table-row.ts" />
     <TypeScriptCompile Include="src\shared\models\vue\select-item.ts" />
@@ -211,7 +222,6 @@
     <TypeScriptCompile Include="src\shared\utils\has-value-util.ts" />
     <TypeScriptCompile Include="src\shared\utils\http-utils.ts" />
     <TypeScriptCompile Include="src\shared\utils\math-utils.ts" />
-    <TypeScriptCompile Include="src\shared\utils\mock-data.ts" />
     <TypeScriptCompile Include="src\shared\utils\sorter-utils.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />

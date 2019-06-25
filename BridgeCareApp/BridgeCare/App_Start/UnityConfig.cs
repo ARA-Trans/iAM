@@ -55,6 +55,7 @@ namespace BridgeCare
             container.RegisterType<IPerformanceLibrary, PerformanceLibraryDAL>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReportDAL>();
+            container.RegisterType<IValidation, Validation>();
             container.RegisterType<IInventory, InventoryDAL>();
             container.RegisterType<ISimulationAnalysis, SimulationAnalysisDAL>();
             container.RegisterType<IDeficientReport, DeficientReportDAL>();

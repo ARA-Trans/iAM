@@ -17,7 +17,7 @@ namespace BridgeCare.Controllers
             this.db = db ?? throw new ArgumentNullException(nameof(db));        
             this.committedProjects = committedProjects ?? throw new ArgumentNullException(nameof(committedProjects));
         }
-                
+
         [Route("api/SaveCommittedProjectsFiles")]
         [HttpPost]
         public IHttpActionResult Post()

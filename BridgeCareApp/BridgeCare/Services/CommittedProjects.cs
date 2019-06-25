@@ -23,10 +23,11 @@ namespace BridgeCare.Services
         public void SaveCommittedProjectsFiles(HttpFileCollection files, string selectedScenarioId, string networkId, BridgeCareContext db)
         {
             var committedProjectModels = new List<CommittedProjectModel>();
-            var postedFile = files[0];
-            GetCommittedProjectModels(postedFile, selectedScenarioId, networkId, committedProjectModels, db);
-            SaveCommittedProjects(committedProjectModels, db);
-
+            for (int i = 0; i < files.Count; i++)
+            {
+                GetCommittedProjectModels(files[i], selectedScenarioId, networkId, committedProjectModels, db);
+                SaveCommittedProjects(committedProjectModels, db);
+            }
         }
 
         private void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)

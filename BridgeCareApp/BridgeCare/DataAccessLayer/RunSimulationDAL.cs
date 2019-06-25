@@ -1,6 +1,7 @@
 ﻿using BridgeCare.ApplicationLog;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Properties;
 using DatabaseManager;
 using System;
 using System.Configuration;
@@ -34,9 +35,14 @@ namespace BridgeCare.DataAccessLayer
             {
                 var connectionString = ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString;
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
-
+                var mongoConnection = "";
+#if DEBUG
+                mongoConnection = Settings.Default.MongoDBDevConnectionString;
+#else
+                mongoConnection = Settings.Default.MongoDBProdConnectionString;
+#endif
                 var start = new RollupSegmentation.RollupSegmentation(data.SimulationName, data.NetworkName,
-                    data.SimulationId.ToString(), data.NetworkId.ToString(), true);
+                    data.SimulationId.ToString(), data.NetworkId.ToString(), true, mongoConnection);
                 start.strNetwork = data.NetworkName;
 
                 Thread rollUpandSimulation = new Thread(new ThreadStart(start.DoRollup));

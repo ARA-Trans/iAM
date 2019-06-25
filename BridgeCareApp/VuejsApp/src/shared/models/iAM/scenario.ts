@@ -33,6 +33,7 @@ export interface Scenario {
     lastModifiedDate?: Date;
     status?: string;
     shared?: boolean;
+    id: number | string;
 }
 
 export const emptyScenario: Scenario = {
@@ -44,4 +45,5 @@ export const emptyScenario: Scenario = {
     lastModifiedDate: new Date(),
     status: '',
     shared: false,
+    id: 0
 };
