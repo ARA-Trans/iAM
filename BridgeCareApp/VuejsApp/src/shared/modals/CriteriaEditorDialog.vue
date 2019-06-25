@@ -14,6 +14,12 @@
                             Current Criteria Output
                             <v-textarea rows="5" no-resize outline readonly full-width :value="currentCriteriaOutput">
                             </v-textarea>
+                            <div class="validation-message-div">
+                                <v-layout justify-end fill-height>
+                                    <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
+                                    <p class="valid-message" v-if="showValidMessage">{{validMessage}}</p>
+                                </v-layout>
+                            </div>
                         </v-flex>
                     </v-layout>
                 </v-card-title>
@@ -28,10 +34,16 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-layout justify-space-between row fill-height>
-                        <v-btn color="info" v-on:click="onSubmit(true)">
-                            Apply
-                        </v-btn>
-                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
+                        <v-flex xs2>
+                            <v-layout>
+                                <v-btn color="info lighten-1" @click="onCheckCriteria">Check</v-btn>
+                                <v-btn color="info" @click="onSubmit(true)" :disabled="cannotSubmit">
+                                    Apply
+                                </v-btn>
+                            </v-layout>
+                        </v-flex>
+                        
+                        <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -50,6 +62,9 @@
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
     import {isEmpty} from 'ramda';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import CriteriaEditorService from '@/services/criteria-editor.service';
+    import {AxiosResponse} from 'axios';
+    import {CriteriaValidation} from "@/shared/models/iAM/criteria-validation";
 
     @Component({
         components: {VueQueryBuilder}
@@ -76,6 +91,11 @@
             'textInputPlaceholder': 'value'
         };
         currentCriteriaOutput = '';
+        showInvalidMessage: boolean = false;
+        showValidMessage: boolean = false;
+        cannotSubmit: boolean = false;
+        validMessage: string = '';
+        invalidMessage: string = '';
 
         /**
          * Component mounted event handler
@@ -126,6 +146,11 @@
         @Watch('criteria')
         onCriteriaChanged() {
             this.setCurrentCriteriaOutput();
+            // reset criteria validation properties
+            this.showInvalidMessage = false;
+            this.showValidMessage = false;
+            this.cannotSubmit = !isEmpty(parseQueryBuilderJson(this.criteria).join('')) ||
+                                this.dialogData.criteria === parseQueryBuilderJson(this.criteria).join('');
         }
 
         /**
@@ -146,11 +171,38 @@
             return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
         }
 
+        onCheckCriteria() {
+            const criteriaValidation: CriteriaValidation = {
+                criteria: parseQueryBuilderJson(this.criteria).join('')
+            };
+
+            CriteriaEditorService.checkCriteriaValidity(criteriaValidation)
+                .then((response: AxiosResponse<string>) => {
+                    if (response.data.indexOf('results match query') !== -1) {
+                        this.validMessage = response.data;
+                        // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
+                        this.showValidMessage = true;
+                        this.cannotSubmit = false;
+                        this.showInvalidMessage = false;
+                    } else {
+                        this.invalidMessage = response.data;
+                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
+                        this.invalidMessage = response.data;
+                        this.showInvalidMessage = true;
+                        this.cannotSubmit = true;
+                        this.showValidMessage = false;
+                    }
+                });
+        }
+
         /**
          * Emits the parsed criteria object's data to the calling parent component, or null if the user clicked the
          * 'Cancel' button
          */
         onSubmit(submit: boolean) {
+            // reset component's calculated properties
+            this.resetComponentCalculatedProperties();
+
             if (submit) {
                 this.$emit('submit', parseQueryBuilderJson(this.criteria).join(''));
             } else {
@@ -158,11 +210,32 @@
             }
 
         }
+
+        /**
+         * Resets component's calculated properties
+         */
+        resetComponentCalculatedProperties() {
+            this.showInvalidMessage = false;
+            this.showValidMessage = false;
+            this.cannotSubmit = false;
+        }
     }
 </script>
 
 <style>
     .query-builder-card-text {
         height: 700px;
+    }
+
+    .validation-message-div {
+        height: 21px;
+    }
+
+    .invalid-message {
+        color: red;
+    }
+
+    .valid-message {
+        color: green;
     }
 </style>

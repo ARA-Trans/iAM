@@ -43,12 +43,16 @@ namespace BridgeCare.Controllers
         [ModelValidation("Function call not valid")]
         [Route("api/ValidateCriteria")]
         [HttpPost]
-        public HttpResponseMessage ValidateCriteria([FromBody]string data)
+        public HttpResponseMessage ValidateCriteria([FromBody]ValidateCriteriaModel data)
         {
             try
             {
-                string numberHits = validate.ValidateCriteria(data, db);
+                string numberHits = validate.ValidateCriteria(data.Criteria, db);
                 return Request.CreateResponse(HttpStatusCode.OK, numberHits);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, ex.Message);
             }
             catch (Exception ex)
             {

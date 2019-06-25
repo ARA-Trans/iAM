@@ -129,9 +129,7 @@
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
     import {formulas} from '@/shared/utils/formulas';
-    import {isEmpty} from 'ramda';
     import {AxiosResponse} from 'axios';
-    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
@@ -306,8 +304,8 @@
                         this.cannotSubmit = false;
                         this.showInvalidMessage = false;
                     } else {
-                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
                         this.invalidMessage = response.data;
+                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
                         this.showInvalidMessage = true;
                         this.cannotSubmit = true;
                         this.showValidMessage = false;
