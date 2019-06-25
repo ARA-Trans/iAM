@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
+using BridgeCare.ApplicationLog;
 
 namespace BridgeCare.Controllers
 {
@@ -30,6 +31,10 @@ namespace BridgeCare.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, "OK");
             }
             catch (InvalidOperationException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, ex.Message);
+            }
+            catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
