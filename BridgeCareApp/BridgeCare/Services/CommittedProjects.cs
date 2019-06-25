@@ -61,7 +61,7 @@ namespace BridgeCare.Services
             }
         }
 
-        private void AddDataCells(ExcelWorksheet worksheet, List<COMMITTED_> committedProjects, int networkId, BridgeCareContext db)
+        private void AddDataCells(ExcelWorksheet worksheet, List<CommittedEntity> committedProjects, int networkId, BridgeCareContext db)
         {            
             var networkModel = new NetworkModel { NetworkId = networkId };
             var sectionModels = sections.GetSections(networkModel, db).ToList();
@@ -92,7 +92,7 @@ namespace BridgeCare.Services
             }
         }
 
-        private void AddHeaderCells(ExcelWorksheet worksheet, List<COMMIT_CONSEQUENCES> commitConsequences)
+        private void AddHeaderCells(ExcelWorksheet worksheet, List<CommitConsequencesEntity> commitConsequences)
         {
             var fixColumnHeaders = new List<string>() { "BRKEY", "BMSID", "TREATMENT", "YEAR", "YEARANY", "YEARSAME", "BUDGET", "COST", "AREA" };
             int headerRow = 1;
