@@ -147,7 +147,7 @@
          */
         onEditPrioritiesTargetsDeficients() {
             this.$router.push({
-                path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: this.selectedScenarioId.toString()}
+                path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
             });
         }
 

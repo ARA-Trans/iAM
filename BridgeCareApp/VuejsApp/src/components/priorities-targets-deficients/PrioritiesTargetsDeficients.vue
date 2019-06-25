@@ -72,11 +72,11 @@
                     },
                     {
                         text: 'Scenario editor',
-                        to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
+                        to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
                     },
                     {
                         text: 'Priorities, Targets, & Deficients',
-                        to: {path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: to.query.selectedScenarioId}}
+                        to: {path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
                     }
                 ]);
 
