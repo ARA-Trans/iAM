@@ -67,7 +67,13 @@
         selectedScenarioId: number = 0;
         showFileUploader: boolean = false;
         networkId: number = 0;
-        selectedScenario: Scenario = { simulationId: this.selectedScenarioId, networkId: this.networkId, simulationName: '', networkName: '' };
+        selectedScenario: Scenario = {
+            id: 0,
+            simulationId: this.selectedScenarioId,
+            networkId: this.networkId,
+            simulationName: '',
+            networkName: ''
+        };
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {

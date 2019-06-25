@@ -91,7 +91,7 @@
                                     </v-textarea>
                                     <div class="validation-message-div">
                                         <v-layout justify-end fill-height>
-                                            <p class="invalid-message" v-if="showInvalidMessage">Equation is invalid.</p>
+                                            <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
                                             <p class="valid-message" v-if="showValidMessage">Equation is valid</p>
                                         </v-layout>
                                     </div>
@@ -135,6 +135,7 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {EquationValidation} from '@/shared/models/iAM/equation-validation';
 
     @Component
     export default class EquationEditorDialog extends Vue {
@@ -155,6 +156,7 @@
         showInvalidMessage: boolean = false;
         showValidMessage: boolean = false;
         cannotSubmit: boolean = false;
+        invalidMessage: string = '';
 
         /**
          * Component mounted event handler
@@ -291,22 +293,24 @@
          * 'Check' button has been clicked
          */
         onCheckEquation() {
-            EquationEditorService.checkEquationValidity(this.equation)
-                .then((response: AxiosResponse<boolean>) => {
-                    if (http2XX.test(response.status.toString())) {
-                        // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
-                        if (response.data) {
-                            this.showValidMessage = true;
-                            this.cannotSubmit = false;
-                            this.showInvalidMessage = false;
-                        } else {
-                            // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
-                            this.showInvalidMessage = true;
-                            this.cannotSubmit = true;
-                            this.showValidMessage = false;
-                        }
+            const equationValidation: EquationValidation = {
+                equation: this.equation,
+                isFunction: this.isFunction,
+                isPiecewise: this.isPiecewise
+            };
+            EquationEditorService.checkEquationValidity(equationValidation)
+                .then((response: AxiosResponse<string>) => {
+                    // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
+                    if (response.data === 'OK') {
+                        this.showValidMessage = true;
+                        this.cannotSubmit = false;
+                        this.showInvalidMessage = false;
                     } else {
-                        this.setErrorMessageAction({message: `Failed to validate equation${setStatusMessage(response)}`});
+                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
+                        this.invalidMessage = response.data;
+                        this.showInvalidMessage = true;
+                        this.cannotSubmit = true;
+                        this.showValidMessage = false;
                     }
                 });
         }
