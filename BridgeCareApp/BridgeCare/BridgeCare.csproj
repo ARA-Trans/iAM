@@ -346,6 +346,7 @@
     <Compile Include="Models\TargetModel.cs" />
     <Compile Include="Models\TargetParameters.cs" />
     <Compile Include="Models\UserInformationModel.cs" />
+    <Compile Include="Models\ValidateCriteriaModel.cs" />
     <Compile Include="Models\ValidateModel.cs" />
     <Compile Include="Models\YearlyBudgetAndCost.cs" />
     <Compile Include="Models\YearlyDataModel.cs" />

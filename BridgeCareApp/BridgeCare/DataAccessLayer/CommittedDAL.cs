@@ -4,6 +4,7 @@ using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -76,14 +77,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="simulationId"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public List<COMMITTED_> GetCommittedProjects(int simulationId, BridgeCareContext db)
+        public List<CommittedEntity> GetCommittedProjects(int simulationId, BridgeCareContext db)
         {
-            return db.COMMITTEDPROJECTs.Include("COMMIT_CONSEQUENCES").Where(c => c.SIMULATIONID == simulationId).ToList();
-        }
-
-        private COMMITTED_ CreateCommitted(CommittedProjectModel committedProjectModel)
-        {
-            return new COMMITTED_(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
+            return db.CommittedProjects.Include(committedProject => committedProject.COMMIT_CONSEQUENCES).Where(c => c.SIMULATIONID == simulationId).ToList();
         }
     }
 }

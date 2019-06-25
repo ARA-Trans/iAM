@@ -8,6 +8,6 @@ namespace BridgeCare.Interfaces
     {
         void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db);
 
-        List<COMMITTED_> GetCommittedProjects(int simulationId, BridgeCareContext db);
+        List<CommittedEntity> GetCommittedProjects(int simulationId, BridgeCareContext db);
     }
 }
