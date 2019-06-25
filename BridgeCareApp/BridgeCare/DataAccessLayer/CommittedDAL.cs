@@ -11,6 +11,11 @@ namespace BridgeCare.DataAccessLayer
 {
     public class CommittedDAL : ICommitted
     {
+        /// <summary>
+        /// Save committed projects in the database
+        /// </summary>
+        /// <param name="committedProjectModels"></param>
+        /// <param name="db"></param>
         public void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
             try
@@ -52,9 +57,33 @@ namespace BridgeCare.DataAccessLayer
             return new CommittedEntity(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
         }
 
+        /// <summary>
+        /// Get committed project based on parameters
+        /// </summary>
+        /// <param name="simulationId"></param>
+        /// <param name="sectionId"></param>
+        /// <param name="years"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public CommittedEntity GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
         {
             return db.CommittedProjects.FirstOrDefault(c => c.SIMULATIONID == simulationId && c.SECTIONID == sectionId && c.YEARS == years);
+        }
+
+        /// <summary>
+        /// Get all the committed projects for a given simulation id
+        /// </summary>
+        /// <param name="simulationId"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public List<COMMITTED_> GetCommittedProjects(int simulationId, BridgeCareContext db)
+        {
+            return db.COMMITTEDPROJECTs.Include("COMMIT_CONSEQUENCES").Where(c => c.SIMULATIONID == simulationId).ToList();
+        }
+
+        private COMMITTED_ CreateCommitted(CommittedProjectModel committedProjectModel)
+        {
+            return new COMMITTED_(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
         }
     }
 }
