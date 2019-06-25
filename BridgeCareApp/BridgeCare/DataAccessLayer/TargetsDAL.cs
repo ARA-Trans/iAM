@@ -141,7 +141,7 @@ namespace BridgeCare.DataAccessLayer
                     existingTargets.ForEach(existingTarget =>
                     {
                         // check for matching target model
-                        var targetModel = data.SingleOrDefault(model => model.Id == existingTarget.ID_);
+                        var targetModel = data.SingleOrDefault(model => model.Id == existingTarget.ID_.ToString());
                         if (targetModel != null)
                         {
                             // set target model as matched
@@ -149,38 +149,34 @@ namespace BridgeCare.DataAccessLayer
                             // update existing target
                             targetModel.UpdateTarget(existingTarget);
                         }
-                        else
-                        {
-                            // delete existing target
-                            db.Entry(existingTarget).State = EntityState.Deleted;
-                        }
                     });
                 }
-
-                db.SaveChanges();
 
                 // check for any targets that weren't matched
                 if (data.Any(targetModel => !targetModel.matched))
                 {
-                    // get all unmatched target models
-                    data.Where(targetModel => !targetModel.matched).ToList().ForEach(targetModel =>
-                    {
-                        // add new target to db context
-                        db.Targets.Add(new TargetsEntity(targetModel));
-                    });
-
-                    db.SaveChanges();
+                    // get all unmatched target models and create new target entities
+                    db.Targets.AddRange(data.Where(targetModel => !targetModel.matched).Select(targetModel => new TargetsEntity(targetModel)).ToList());
                 }
 
-                // return all upserted data
-                var targets = db.Targets.Where(target => target.SIMULATIONID == simulationId).ToList();
-                if (targets.Any())
+                db.SaveChanges();
+
+                // if there are any existing target models, get all of their ids and add them to a list as target models
+                var targetModels = new List<TargetModel>();
+                var existingTargetIds = new List<int>();
+                if (existingTargets.Any())
                 {
-                    var targetModels = new List<TargetModel>();
-                    targets.ForEach(target => targetModels.Add(new TargetModel(target)));
-
-                    return targetModels;
+                    targetModels.AddRange(existingTargets.Select(target => new TargetModel(target)).ToList());
+                    existingTargetIds.AddRange(existingTargets.Select(target => target.ID_).ToList());
                 }
+                // if there are any new targets, create target models from them and add them to the targetModels list
+                var newTargets = db.Targets.Where(target => target.SIMULATIONID == simulationId && !existingTargetIds.Contains(target.ID_)).ToList();
+                if (newTargets.Any())
+                {
+                    targetModels.AddRange(newTargets.Select(target => new TargetModel(target)).ToList());
+                }
+
+                return targetModels;
             }
             catch (SqlException ex)
             {

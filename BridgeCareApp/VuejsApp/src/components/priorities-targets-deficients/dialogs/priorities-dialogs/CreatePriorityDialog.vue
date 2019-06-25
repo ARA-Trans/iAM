@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="450px">
+        <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center fill-height>
@@ -41,17 +41,29 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {emptyPriority, Priority} from '@/shared/models/iAM/priority';
-    import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {CreatePrioritizationDialogData} from '@/shared/models/modals/create-prioritization-dialog-data';
+    const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreatePriorityDialog extends Vue {
-        @Prop() showDialog: boolean;
+        @Prop() dialogData: CreatePrioritizationDialogData;
 
         newPriority: Priority = {...emptyPriority, year: moment().year()};
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
+
+        /**
+         * Sets the newPriority.scenarioId property with the dialogData.scenarioId property value
+         */
+        @Watch('dialogData')
+        onDialogDataChanged() {
+            if (this.dialogData.showDialog) {
+                this.newPriority.scenarioId = this.dialogData.scenarioId;
+                this.newPriority.id = ObjectID.generate();
+            }
+        }
 
         /**
          * Sets the date picker to show year options on nextTrick when showDatePicker has changed

@@ -14,7 +14,8 @@
                             <template slot="items" slot-scope="props">
                                 <td v-for="header in deficientDataTableHeaders">
                                     <div v-if="header.value !== 'criteria'">
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent>
+                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
+                                                       @save="onEditDeficientProperty(props.item.id, header.value, props.item[header.value])">
                                             <v-text-field readonly :value="props.item[header.value]"></v-text-field>
                                             <template slot="input">
                                                 <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
@@ -35,9 +36,9 @@
             </v-layout>
         </div>
 
-        <CreateDeficientDialog :showDialog="showCreateDeficientDialog" @submit="onSubmitNewDeficient" />
+        <CreateDeficientDialog :dialogData="createDeficientDialogData" @submit="onSubmitNewDeficient" />
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
+        <DeficientsCriteriaEditor :dialogData="deficientsCriteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
 
         <v-footer>
             <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
@@ -54,17 +55,20 @@
     import {State, Action} from 'vuex-class';
     import {Deficient} from '@/shared/models/iAM/deficient';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {clone, isNil, append} from 'ramda';
+    import {clone, isNil, append, any, propEq} from 'ramda';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import CreateDeficientDialog from '@/components/priorities-targets-deficients/dialogs/deficients-dialogs/CreateDeficientDialog.vue';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
+    import {
+        CreatePrioritizationDialogData,
+        emptyCreatePrioritizationDialogData
+    } from '@/shared/models/modals/create-prioritization-dialog-data';
 
     @Component({
-        components: {CreateDeficientDialog, CriteriaEditorDialog}
+        components: {CreateDeficientDialog, DeficientsCriteriaEditor: CriteriaEditorDialog}
     })
     export default class DeficientsTab extends Vue {
         @Prop() selectedScenarioId: number;
@@ -82,9 +86,8 @@
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '50%'}
         ];
         selectedDeficientIndex: number = -1;
-        showCreateDeficientDialog: boolean = false;
-        latestDeficientId: number = 0;
-        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        createDeficientDialogData: CreatePrioritizationDialogData = clone(emptyCreatePrioritizationDialogData);
+        deficientsCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
         /**
          * Sets the deficients list property with a copy of the stateDeficients property when stateDeficients list
@@ -96,18 +99,13 @@
         }
 
         /**
-         * Sets the latestDeficientId property when deficients list changes are detected
-         */
-        @Watch('deficients')
-        onDeficientsChanged() {
-            this.latestDeficientId = getLatestPropertyValue('id', this.deficients);
-        }
-
-        /**
          * Sets showCreateDeficientDialog property to true
          */
         onAddDeficient() {
-            this.showCreateDeficientDialog = true;
+            this.createDeficientDialogData = {
+                showDialog: true,
+                scenarioId: this.selectedScenarioId
+            };
         }
 
         /**
@@ -115,10 +113,26 @@
          * @param newDeficient Deficient object
          */
         onSubmitNewDeficient(newDeficient: Deficient) {
-            this.showCreateDeficientDialog = false;
+            this.createDeficientDialogData = clone(emptyCreatePrioritizationDialogData);
 
             if (!isNil(newDeficient)) {
                 this.deficients = append(newDeficient, this.deficients);
+            }
+        }
+
+        onEditDeficientProperty(deficientId: any, property: string, value: any) {
+            if (any(propEq('id', deficientId), this.deficients)) {
+                const index: number = this.deficients.findIndex((deficient: Deficient) => deficient.id === deficientId);
+                switch (property) {
+                    case 'deficient':
+                    case 'percentDeficient':
+                        // @ts-ignore
+                        this.deficients[index][property] = parseInt(value);
+                        break;
+                    default:
+                        // @ts-ignore
+                        this.deficients[index][property] = value;
+                }
             }
         }
 
@@ -130,7 +144,7 @@
         onEditCriteria(deficient: Deficient) {
             this.selectedDeficientIndex = this.deficients.findIndex((d: Deficient) => d.id === deficient.id);
 
-            this.criteriaEditorDialogData = {
+            this.deficientsCriteriaEditorDialogData = {
                 showDialog: true,
                 criteria: deficient.criteria
             };
@@ -142,7 +156,7 @@
          * @param criteria CriteriaEditor criteria result
          */
         onSubmitDeficientCriteria(criteria: string) {
-            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+            this.deficientsCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
                 this.deficients[this.selectedDeficientIndex].criteria = criteria;

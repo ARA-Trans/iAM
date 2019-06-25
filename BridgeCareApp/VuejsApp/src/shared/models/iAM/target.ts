@@ -1,6 +1,6 @@
 export interface Target {
     scenarioId: number;
-    id: number;
+    id: string;
     attribute: string;
     name: string;
     year: number;
@@ -10,10 +10,10 @@ export interface Target {
 
 export const emptyTarget: Target = {
     scenarioId: 0,
-    id: 0,
+    id: '0',
     attribute: '',
     name: '',
     year: 0,
-    targetMean: 0,
+    targetMean: 1,
     criteria: ''
 };

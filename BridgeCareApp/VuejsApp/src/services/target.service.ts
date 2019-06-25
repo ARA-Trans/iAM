@@ -13,6 +13,7 @@ export default class TargetService {
 
     /**
      * Saves target data
+     * @param selectedScenarioId Scenario id
      * @param targets List of Target objects
      */
     static saveTargets(selectedScenarioId: number, targets: Target[]): AxiosPromise {

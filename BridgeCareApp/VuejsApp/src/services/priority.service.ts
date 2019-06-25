@@ -13,6 +13,7 @@ export default class PriorityService {
 
     /**
      * Saves priority data
+     * @param selectedScenarioId Scenario id
      * @param priorities List of Priority objects
      */
     static savePriorities(selectedScenarioId: number, priorities: Priority[]): AxiosPromise {

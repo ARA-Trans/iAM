@@ -497,7 +497,8 @@
         onEditBudgets() {
             this.editBudgetsDialogData = {
                 showDialog: true,
-                budgets: this.selectedInvestmentLibrary.budgetOrder
+                budgets: this.selectedInvestmentLibrary.budgetOrder,
+                canOrderBudgets: true
             };
         }
 

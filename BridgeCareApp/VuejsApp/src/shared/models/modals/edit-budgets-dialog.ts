@@ -1,11 +1,13 @@
 export interface EditBudgetsDialogData {
     showDialog: boolean;
     budgets: string[];
+    canOrderBudgets: boolean;
 }
 
 export const emptyEditBudgetsDialogData: EditBudgetsDialogData = {
     showDialog: false,
-    budgets: []
+    budgets: [],
+    canOrderBudgets: false
 };
 
 export interface EditBudgetsDialogGridData {

@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="450px">
+        <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center fill-height>
@@ -50,10 +50,12 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {CreatePrioritizationDialogData} from '@/shared/models/modals/create-prioritization-dialog-data';
+    const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateDeficientDialog extends Vue {
-        @Prop() showDialog: boolean;
+        @Prop() dialogData: CreatePrioritizationDialogData;
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
@@ -66,6 +68,17 @@
         mounted() {
             if (hasValue(this.stateNumericAttributes)) {
                 this.numericAttributes = getPropertyValues('name', this.stateNumericAttributes);
+            }
+        }
+
+        /**
+         * Sets newTarget.scenarioId property with dialogData.scenarioId property value
+         */
+        @Watch('dialogData')
+        onDialogDataChanged() {
+            if (this.dialogData.showDialog) {
+                this.newDeficient.scenarioId = this.dialogData.scenarioId;
+                this.newDeficient.id = ObjectID.generate();
             }
         }
 

@@ -1,13 +1,13 @@
 export interface PriorityFund {
-    priorityId: number;
-    id: number;
+    priorityId: string;
+    id: string;
     budget: string;
     funding: number;
 }
 
 export interface Priority {
     scenarioId: number;
-    id: number;
+    id: string;
     priorityLevel: number;
     year: number;
     criteria: string;
@@ -15,26 +15,25 @@ export interface Priority {
 }
 
 export const emptyPriorityFund: PriorityFund = {
-    priorityId: 0,
-    id: 0,
+    priorityId: '0',
+    id: '0',
     budget: '',
     funding: 0
 };
 
 export const emptyPriority: Priority = {
     scenarioId: 0,
-    id: 0,
-    priorityLevel: 0,
+    id: '0',
+    priorityLevel: 1,
     year: 0,
     criteria: '',
     priorityFunds: []
 };
 
 export interface PrioritiesDataTableRow {
-    priorityId: number;
-    priorityLevel: number;
-    year: number;
-    // @ts-ignore
+    priorityId: string;
+    priorityLevel: string;
+    year: string;
     criteria: string;
-    [budgetName: string]: number;
+    [budgetName: string]: string;
 }

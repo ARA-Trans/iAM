@@ -1,6 +1,6 @@
 export interface Deficient {
     scenarioId: number;
-    id: number;
+    id: string;
     attribute: string;
     name: string;
     deficient: number;
@@ -10,10 +10,10 @@ export interface Deficient {
 
 export const emptyDeficient: Deficient = {
     scenarioId: 0,
-    id: 0,
+    id: '0',
     attribute: '',
     name: '',
-    deficient: 0,
-    percentDeficient: 0,
+    deficient: 1,
+    percentDeficient: 1,
     criteria: ''
 };

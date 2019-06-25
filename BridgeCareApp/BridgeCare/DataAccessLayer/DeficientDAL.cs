@@ -18,15 +18,15 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="scenarioId"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public List<DeficientModel> GetDeficients(int scenarioId, BridgeCareContext db)
+        public List<DeficientModel> GetDeficients(int simulationId, BridgeCareContext db)
         {
             try
             {
                 // check if there are existing deficients with a simulation id that matches the given scenarioId
-                if (db.Deficients.Any(deficient => deficient.SIMULATIONID == scenarioId))
+                if (db.Deficients.Any(deficient => deficient.SIMULATIONID == simulationId))
                 {
                     // query for existing deficients
-                    var deficients = db.Deficients.Where(deficient => deficient.SIMULATIONID == scenarioId);
+                    var deficients = db.Deficients.Where(deficient => deficient.SIMULATIONID == simulationId);
                     if (deficients.Any())
                     {
                         // create DeficientModels from existing deficients and return
@@ -59,18 +59,18 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="data"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public List<DeficientModel> SaveDeficients(int scenarioId, List<DeficientModel> data, BridgeCareContext db)
+        public List<DeficientModel> SaveDeficients(int simulationId, List<DeficientModel> data, BridgeCareContext db)
         {
             try
             {
                 // query for existing deficients by matching the simulation id with the given scenarioId
-                var existingDeficients = db.Deficients.Where(deficient => deficient.SIMULATIONID == scenarioId);
+                var existingDeficients = db.Deficients.Where(deficient => deficient.SIMULATIONID == simulationId).ToList();
                 if (existingDeficients.Any())
                 {
-                    existingDeficients.ToList().ForEach(existingDeficient =>
+                    existingDeficients.ForEach(existingDeficient =>
                     {
                         // check for matching deficient model
-                        var deficientModel = data.SingleOrDefault(deficient => deficient.Id == existingDeficient.ID_);
+                        var deficientModel = data.SingleOrDefault(deficient => deficient.Id == existingDeficient.ID_.ToString());
                         if (deficientModel != null)
                         {
                             // set deficient model as matched
@@ -78,38 +78,36 @@ namespace BridgeCare.DataAccessLayer
                             // update existing deficient
                             deficientModel.UpdateDeficient(existingDeficient);
                         }
-                        else
-                        {
-                            // delete existing deficient
-                            db.Entry(existingDeficient).State = EntityState.Deleted;
-                        }
                     });
+                }
+
+                // check for any deficient models that weren't matched
+                if (data.Any(deficientModel => !deficientModel.matched))
+                {
+                    // get all unmatched deficient models and create new deficient entities with the data and insert
+                    db.Deficients.AddRange(data.Where(deficientModel => !deficientModel.matched).Select(deficientModel => new DeficientsEntity(deficientModel)).ToList());
                 }
 
                 db.SaveChanges();
 
-                // check for any deficients that weren't matched
-                if (data.Any(deficientModel => !deficientModel.matched))
+                // if there are any existing deficients, get all of their ids into a list and add the entities to a list as deficient models
+                var deficientModels = new List<DeficientModel>();
+                var existingDeficientIds = new List<int>();
+                if (existingDeficients.Any())
                 {
-                    // get all unmatched deficient models
-                    data.Where(deficientModel => !deficientModel.matched).ToList().ForEach(deficientModel =>
-                    {
-                        // add new deficient to db context
-                        db.Deficients.Add(new DeficientsEntity(deficientModel));
-                    });
-
-                    db.SaveChanges();
+                    deficientModels.AddRange(existingDeficients.Select(deficient => new DeficientModel(deficient)).ToList());
+                    existingDeficientIds.AddRange(existingDeficients.Select(deficient => deficient.ID_).ToList());
+                }
+                // if there are new deficients, create deficient models from them and add them to the deficientModels list
+                var newDeficients = db.Deficients
+                    .Where(deficient => deficient.SIMULATIONID == simulationId && !existingDeficientIds.Contains(deficient.ID_)).ToList();
+                if (newDeficients.Any())
+                {
+                    // convert all new deficients into deficient models
+                    deficientModels.AddRange(newDeficients.Select(deficient => new DeficientModel(deficient)).ToList());
                 }
 
-                // return all upserted data
-                var deficients = db.Deficients.Where(deficient => deficient.SIMULATIONID == scenarioId).ToList();
-                if (deficients.Any())
-                {
-                    var deficientModels = new List<DeficientModel>();
-                    deficients.ForEach(deficient => deficientModels.Add(new DeficientModel(deficient)));
-
-                    return deficientModels;
-                }
+                return deficientModels;
             }
             catch (SqlException ex)
             {

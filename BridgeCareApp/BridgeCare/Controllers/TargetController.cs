@@ -31,7 +31,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveTargets")]
         [ModelValidation("Given targets are not valid")]
-        public List<TargetModel> SaveTargets(int selectedScenarioId, [FromBody] List<TargetModel> data)
+        public List<TargetModel> SaveTargets(int selectedScenarioId, [FromBody]List<TargetModel> data)
         {
             return targetRepo.SaveTargets(selectedScenarioId, data, db);
         }

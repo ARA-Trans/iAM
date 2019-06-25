@@ -14,16 +14,19 @@
                             <template slot="items" slot-scope="props">
                                 <td v-for="header in targetDataTableHeaders">
                                     <div v-if="header.value !== 'criteria' && header.value !== 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent>
+                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
+                                                       @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
                                             <v-text-field readonly :value="props.item[header.value]"></v-text-field>
                                             <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
+                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line
+                                                              :type="header.value === 'attribute' || header.value === 'name' ? 'text' : 'number'">
                                                 </v-text-field>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
                                     <div v-if="header.value === 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item.year" large lazy persistent>
+                                        <v-edit-dialog :return-value.sync="props.item.year" large lazy persistent
+                                                       @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
                                             <v-text-field readonly :value="props.item.year"></v-text-field>
                                             <template slot="input">
                                                 <EditTargetYearDialog :itemYear="props.item.year.toString()"
@@ -32,8 +35,7 @@
                                         </v-edit-dialog>
                                     </div>
                                     <div v-if="header.value === 'criteria'">
-                                        <v-text-field readonly :value="props.item.criteria"
-                                                      append-outer-icon="edit"
+                                        <v-text-field readonly :value="props.item.criteria" append-outer-icon="edit"
                                                       @click:append-outer="onEditCriteria(props.item)">
                                         </v-text-field>
                                     </div>
@@ -45,9 +47,9 @@
             </v-layout>
         </div>
 
-        <CreateTargetDialog :showDialog="showCreateTargetDialog" @submit="onSubmitNewTarget" />
+        <CreateTargetDialog :dialogData="createTargetDialogData" @submit="onSubmitNewTarget" />
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitTargetCriteria" />
+        <TargetsCriteriaEditor :dialogData="targetscriteriaEditorDialogData" @submit="onSubmitTargetCriteria" />
 
         <v-footer>
             <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
@@ -63,7 +65,7 @@
     import {Component, Watch, Prop} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {Target} from '@/shared/models/iAM/target';
-    import {clone, isNil, append} from 'ramda';
+    import {clone, isNil, append, any, propEq} from 'ramda';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -71,12 +73,14 @@
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import CreateTargetDialog from '@/components/priorities-targets-deficients/dialogs/targets-dialogs/CreateTargetDialog.vue';
-    import {getLatestPropertyValue} from '@/shared/utils/getter-utils';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import EditYearDialog from '@/components/priorities-targets-deficients/dialogs/shared/EditYearDialog.vue';
+    import {
+        CreatePrioritizationDialogData,
+        emptyCreatePrioritizationDialogData
+    } from '@/shared/models/modals/create-prioritization-dialog-data';
 
     @Component({
-        components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, CriteriaEditorDialog}
+        components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, TargetsCriteriaEditor: CriteriaEditorDialog}
     })
     export default class TargetsTab extends Vue {
         @Prop() selectedScenarioId: number;
@@ -94,9 +98,8 @@
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '55%'}
         ];
         selectedTargetIndex: number = -1;
-        showCreateTargetDialog: boolean = false;
-        latestTargetId: number = 0;
-        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        createTargetDialogData: CreatePrioritizationDialogData = clone(emptyCreatePrioritizationDialogData);
+        targetscriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
         /**
          * Sets the targets list property with a copy of the stateTargets list property when stateTargets list changes
@@ -108,18 +111,13 @@
         }
 
         /**
-         * Sets the latestTargetId property when targets list changes are detected
-         */
-        @Watch('targets')
-        onTargetsChanged() {
-            this.latestTargetId = getLatestPropertyValue('id', this.targets);
-        }
-
-        /**
          * Sets the showCreateTargetDialog property to true
          */
         onAddTarget() {
-            this.showCreateTargetDialog = true;
+            this.createTargetDialogData = {
+                showDialog: true,
+                scenarioId: this.selectedScenarioId
+            };
         }
 
         /**
@@ -127,11 +125,18 @@
          * @param newTarget Target object
          */
         onSubmitNewTarget(newTarget: Target) {
-            this.showCreateTargetDialog = false;
+            this.createTargetDialogData = clone(emptyCreatePrioritizationDialogData);
 
             if (!isNil(newTarget)) {
-                newTarget.id = hasValue(this.latestTargetId) ? this.latestTargetId + 1 : 1;
                 this.targets = append(newTarget, this.targets);
+            }
+        }
+
+        onEditTargetProperty(targetId: any, property: string, value: any) {
+            if (any(propEq('id', targetId), this.targets)) {
+                const index: number = this.targets.findIndex((target: Target) => target.id === targetId);
+                // @ts-ignore
+                this.targets[index][property] = value;
             }
         }
 
@@ -143,7 +148,7 @@
         onEditCriteria(target: Target) {
             this.selectedTargetIndex = this.targets.findIndex((t: Target) => t.id === target.id);
 
-            this.criteriaEditorDialogData = {
+            this.targetscriteriaEditorDialogData = {
                 showDialog: true,
                 criteria: target.criteria
             };
@@ -155,7 +160,7 @@
          * @param criteria CriteriaEditor criteria string result
          */
         onSubmitTargetCriteria(criteria: string) {
-            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+            this.targetscriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
                 this.targets[this.selectedTargetIndex].criteria = criteria;

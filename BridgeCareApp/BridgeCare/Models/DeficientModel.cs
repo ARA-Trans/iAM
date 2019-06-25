@@ -5,7 +5,7 @@ namespace BridgeCare.Models
     public class DeficientModel: CrudModel
     {
         public int ScenarioId { get; set; }
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Attribute { get; set; }
         public string Name { get; set; }
         public double? Deficient { get; set; }
@@ -17,7 +17,7 @@ namespace BridgeCare.Models
         public DeficientModel(DeficientsEntity deficient)
         {
             ScenarioId = deficient.SIMULATIONID;
-            Id = deficient.ID_;
+            Id = deficient.ID_.ToString();
             Attribute = deficient.ATTRIBUTE_;
             Name = deficient.DEFICIENTNAME;
             Deficient = deficient.DEFICIENT ?? 0;

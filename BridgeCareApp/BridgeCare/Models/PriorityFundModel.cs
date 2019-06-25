@@ -4,8 +4,8 @@ namespace BridgeCare.Models
 {
     public class PriorityFundModel : CrudModel
     {
-        public int PriorityId { get; set; }
-        public int Id { get; set; }
+        public string PriorityId { get; set; }
+        public string Id { get; set; }
         public string Budget { get; set; }
         public double? Funding { get; set; }
 
@@ -13,8 +13,8 @@ namespace BridgeCare.Models
 
         public PriorityFundModel(PriorityFundEntity priorityFund)
         {
-            PriorityId = priorityFund.PRIORITYID;
-            Id = priorityFund.PRIORITYFUNDID;
+            PriorityId = priorityFund.PRIORITYID.ToString();
+            Id = priorityFund.PRIORITYFUNDID.ToString();
             Budget = priorityFund.BUDGET ?? "";
             Funding = priorityFund.FUNDING ?? 0;
         }

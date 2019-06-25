@@ -13,6 +13,7 @@ export default class DeficientService {
 
     /**
      * Saves deficient data
+     * @param selectedScenarioId Scenario id
      * @param deficients List of Deficient objects
      */
     static saveDeficients(selectedScenarioId: number, deficients: Deficient[]): AxiosPromise {
