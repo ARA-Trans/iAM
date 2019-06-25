@@ -1,8 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-// TODO: remove MockAdapter code when api is implemented
-import {mockAdapter, mockAxiosInstance} from '@/shared/utils/axios-mock-adapter-instance';
 import or from 'ramda/es/or';
+import { Scenario } from '@/shared/models/iAM/scenario';
 
 export default class CommittedProjectsService {
     /**
@@ -27,6 +26,14 @@ export default class CommittedProjectsService {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+    }
+
+    /**
+     * Saves committed projects files
+     * @param scenarioData
+     */
+    static ExportCommittedProjects(scenarioData: Scenario): AxiosPromise<any> {        
+        return axiosInstance.post<any>('/api/ExportCommittedProjects', scenarioData, { responseType: 'blob' });
     }
 }
     
