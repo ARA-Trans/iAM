@@ -227,13 +227,13 @@
                         {
                             text: 'Scenario editor',
                             to: {
-                                path: '/EditScenario/', query: { selectedScenarioId: to.query.selectedScenarioId }
+                                path: '/EditScenario/', query: { selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName }
                             }
                         },
                         {
                             text: 'Investment editor',
                             to: {
-                                path: '/InvestmentEditor/FromScenario/', query: { selectedScenarioId: to.query.selectedScenarioId }
+                                path: '/InvestmentEditor/FromScenario/', query: { selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName }
                             }
                         }
                     ]);

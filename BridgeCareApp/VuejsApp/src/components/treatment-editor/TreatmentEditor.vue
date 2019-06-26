@@ -204,11 +204,11 @@
                         },
                         {
                             text: 'Scenario Editor',
-                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
+                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
                         },
                         {
                             text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
+                            to: {path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
                         }
                     ]);
 

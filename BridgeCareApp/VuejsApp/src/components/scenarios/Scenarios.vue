@@ -40,7 +40,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.simulationId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.simulationId, props.item.simulationName)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -91,7 +91,7 @@
                                         </v-btn>
                                     </v-flex>
                                     <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditSharedScenario(props.item.scenarioId)">
+                                        <v-btn flat icon color="green" v-on:click="onEditSharedScenario(props.item.scenarioId, props.item.simulationName)">
                                             <v-icon>edit</v-icon>
                                         </v-btn>
                                     </v-flex>
@@ -214,9 +214,9 @@
          * Navigates user to EditScenario page passing in the simulation id of their scenario
          * @param id Scenario simulation id
          */
-        onEditScenario(id: number) {
+        onEditScenario(id: number, simulationName: string) {
             this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: id.toString()}
+                path: '/EditScenario/', query: {selectedScenarioId: id.toString(), simulationName: simulationName}
             });
         }
 
@@ -231,9 +231,9 @@
          * Navigates user to EditScenario page passing in the simulation id of a shared scenario
          * @param id Scenario simulation id
          */
-        onEditSharedScenario(id: number) {
+        onEditSharedScenario(id: number, simulationName: string) {
             this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: id.toString()}
+                path: '/EditScenario/', query: {selectedScenarioId: id.toString(), simulationName: simulationName}
             });
         }
 

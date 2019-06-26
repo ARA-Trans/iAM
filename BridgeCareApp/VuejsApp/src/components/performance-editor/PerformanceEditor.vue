@@ -260,11 +260,11 @@
                         },
                         {
                             text: 'Scenario editor',
-                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
+                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
                         },
                         {
                             text: 'Performance editor',
-                            to: {path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId}}
+                            to: {path: '/PerformanceEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
                         }
                     ]);
                 } else {
