@@ -51,7 +51,7 @@
                 <v-breadcrumbs :items="navigation" divider=">">
                     <v-breadcrumbs-item slot="item" slot-scope="{item}" exact :to="item.to">
                         {{item.text}}
-                        <div v-if="item.text.toLowerCase()=='analysis editor' || item.text.toLowerCase()=='investment editor' || item.text.toLowerCase()=='performance editor' || item.text.toLowerCase()=='treatment editor'">: {{item.to.query.simulationName}}</div>
+                        <div v-if="item.text.toLowerCase()=='analysis editor' || item.text.toLowerCase()=='investment editor' || item.text.toLowerCase()=='performance editor' || item.text.toLowerCase()=='treatment editor'|| item.text.toLowerCase()=='priorities, targets, & deficients'">: {{item.to.query.simulationName}}</div>
                     </v-breadcrumbs-item>
                 </v-breadcrumbs>
             </v-flex>
