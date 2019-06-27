@@ -12,6 +12,7 @@
     import iziToast from 'izitoast';
     import {axiosInstance} from '@/shared/utils/axios-instance';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {getErrorMessage} from '@/shared/utils/http-utils';
 
     @Component({
         components: {TopNavbar}
@@ -85,18 +86,7 @@
             };
             const errorHandler = (error: AxiosError) => {
                 this.setIsBusyAction({isBusy: false});
-                if (error.response && error.response.data) {
-                    if (error.response.data.exceptionMessage) {
-                        this.setErrorMessageAction({
-                            message: `${error.response.data.message} ${error.response.data.exceptionMessage}`
-                        });
-                    } else {
-                        this.setErrorMessageAction({message: error.response.data.message});
-                    }
-                } else {
-                    this.setErrorMessageAction({message: error.message});
-                }
-
+                this.setErrorMessageAction({message: getErrorMessage(error)});
             };
             // set axios response handler to use success & error Handler
             axiosInstance.interceptors.response.use(

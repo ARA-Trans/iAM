@@ -112,7 +112,6 @@
     import {isNil} from 'ramda';
     import AnalysisEditorService from '@/services/analysis-editor.service';
     import {AxiosResponse} from 'axios';
-    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
@@ -179,17 +178,10 @@
                     // get the selected scenario's analysis data
                     AnalysisEditorService.getScenarioAnalysisData(vm.selectedScenarioId)
                         .then((response: AxiosResponse<Analysis>) => {
-                            if (hasValue(response) && http2XX.test(response.status.toString())) {
-                                vm.analysis = {
-                                    ...response.data,
-                                    startYear: response.data.startYear > 0 ? response.data.startYear : moment().year()
-                                };
-                            } else {
-                                vm.setErrorMessageAction({
-                                    message: `Failed to retrieve scenario analysis data${setStatusMessage((response))}`
-                                });
-                            }
-
+                            vm.analysis = {
+                                ...response.data,
+                                startYear: response.data.startYear > 0 ? response.data.startYear : moment().year()
+                            };
                         });
                 } else {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
@@ -274,15 +266,13 @@
         onApplyAnalysisToScenario() {
             AnalysisEditorService.saveScenarioAnalysisData(this.analysis)
                 .then((response: AxiosResponse<any>) => {
-                    if (hasValue(response) && http2XX.test(response.status.toString())) {
-                        // set 'analysis applied' success message, then navigate user to EditScenario page
-                        this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
-                        this.$router.push({
-                            path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
-                        });
-                    } else {
-                        this.setErrorMessageAction({message: `Failed to save scenario analysis data${setStatusMessage(response)}`});
-                    }
+                    // set 'analysis applied' success message, then navigate user to EditScenario page
+                    this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
+                    this.$router.push({
+                        path: '/EditScenario/', query: {
+                            selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName
+                        }
+                    });
                 });
         }
 

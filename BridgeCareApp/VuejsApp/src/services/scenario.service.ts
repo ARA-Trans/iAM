@@ -9,10 +9,10 @@ import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 
 export default class ScenarioService {
-    static getUserScenarios(userId: string): AxiosPromise<Scenario[]> {
+    static getUserScenarios(userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
 
-            nodejsAxiosInstance.get<Scenario[]>('api/scenarios')
+            nodejsAxiosInstance.get('api/scenarios')
                 .then((response: AxiosResponse<Scenario[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);

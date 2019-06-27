@@ -48,9 +48,7 @@
     import {isNil} from 'ramda';
     import {AxiosResponse} from 'axios';
     import CommittedProjectsService from '@/services/committed-projects.service';
-    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-    import { Network } from '@/shared/models/iAM/network';
-    import { hasValue } from '@/shared/utils/has-value-util';
+    import {Network} from '@/shared/models/iAM/network';
     import FileDownload from 'js-file-download';
 
     @Component({
@@ -169,11 +167,7 @@
             if (!isNil(files)) {
                 CommittedProjectsService.saveCommittedProjectsFiles(files, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
                     .then((response: AxiosResponse<any>) => {
-                        if (http2XX.test(response.status.toString())) {
-                            this.setSuccessMessageAction({ message: 'Successfully saved file(s)' });
-                        } else {
-                            this.setErrorMessageAction({ message: `Failed to save file(s)${setStatusMessage(response)}` });
-                        }
+                        this.setSuccessMessageAction({ message: 'Successfully saved file(s)' });
                     });
             }
             if (isExport) {
@@ -181,13 +175,7 @@
                 this.selectedScenario.networkId = this.networks[0].networkId;
                 CommittedProjectsService.ExportCommittedProjects(this.selectedScenario)
                     .then((response: AxiosResponse<any>) => {
-                        if (hasValue(response) && http2XX.test(response.status.toString())) {
-                            FileDownload(response.data, 'CommittedProjects.xlsx');
-                        }
-                        else {
-
-                            this.setErrorMessageAction({ message: `Failed to export committed projects${setStatusMessage(response)}` });
-                        }
+                        FileDownload(response.data, 'CommittedProjects.xlsx');
                     });
             }
         }

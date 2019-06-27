@@ -53,12 +53,10 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {ReportsDownloaderDialogData} from '@/shared/models/modals/reports-downloader-dialog-data';
     import FileDownload from 'js-file-download';
     import ReportsService from '@/services/reports.service';
     import {AxiosResponse} from 'axios';
-    import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
     import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
     import {clone} from 'ramda';
 
@@ -103,26 +101,14 @@
                                 console.log('seriously?');
                                 await ReportsService.getDetailedReport(this.selectedScenarioData)
                                     .then((response: AxiosResponse<any>) => {
-                                        if (hasValue(response) && http2XX.test(response.status.toString())) {
-                                            FileDownload(response.data, 'DetailedReport.xlsx');
-                                        } else {
-                                            this.setErrorMessageAction(
-                                                {message: `Detailed Report Download Failed${setStatusMessage(response)}`}
-                                            );
-                                        }
+                                        FileDownload(response.data, 'DetailedReport.xlsx');
                                     });
                                 break;
                             }
                             case 'Summary Report': {
                                 await ReportsService.getSummaryReport(this.selectedScenarioData)
                                     .then((response: AxiosResponse<any>) => {
-                                        if (hasValue(response) && http2XX.test(response.status.toString())) {
-                                            FileDownload(response.data, 'SummaryReport.xlsx');
-                                        } else {
-                                            this.setErrorMessageAction(
-                                                {message: `Summary Report Download Failed${setStatusMessage(response)}`}
-                                            );
-                                        }
+                                        FileDownload(response.data, 'SummaryReport.xlsx');
                                     });
                                 break;
                             }

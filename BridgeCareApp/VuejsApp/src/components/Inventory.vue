@@ -313,6 +313,7 @@
         @Action('appendBmsIdSearchString') appendBmsIdSearchStringAction: any;
         @Action('appendBrKeySearchNumber') appendBrKeySearchNumberAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
+        @Action('clearInventoryItemDetail') clearInventoryItemDetailAction: any;
 
         /*referenceIndexTypes: number = 0;
         referenceIndexTypesLabels = ['BMS ID', 'BR KEY'];*/
@@ -466,6 +467,10 @@
             );
         }
 
+        beforeDestroy() {
+            this.clearInventoryItemDetailAction();
+        }
+
         setupSelectLists() {
             const data: any = {
                 inventoryItems: this.inventoryItems,
@@ -481,7 +486,7 @@
             });
         }
 
-        setLastFiveSearchesForInventorySelectList = (searchData: any[]) => {
+        setLastFiveSearchesForInventorySelectList(searchData: any[]) {
             const lastFiveSearches: any[] = [];
 
             searchData.forEach((searchValue: any, index: number) => {
@@ -500,7 +505,7 @@
             });
 
             return lastFiveSearches;
-        };
+        }
 
         createDataTableRowFromGrouping(labelValueList: LabelValue[]) {
             // group the LabelValue list by the label prop

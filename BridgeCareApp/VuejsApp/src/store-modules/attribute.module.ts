@@ -1,8 +1,6 @@
 import {clone} from 'ramda';
 import AttributeService from '@/services/attribute.service';
 import {AxiosResponse} from 'axios';
-import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-import {hasValue} from '@/shared/utils/has-value-util';
 import {Attribute} from '@/shared/models/iAM/attribute';
 
 const state = {
@@ -27,15 +25,11 @@ const actions = {
     async getAttributes({dispatch, commit}: any) {
         await AttributeService.getAttributes()
             .then((response: AxiosResponse<Attribute[]>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    commit('attributesMutator', response.data);
-                    commit('stringAttributesMutator', response.data
-                        .filter((attribute: Attribute) => attribute.type === 'STRING'));
-                    commit('numericAttributesMutator', response.data
-                        .filter((attribute: Attribute) => attribute.type === 'NUMBER'));
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to get attributes${setStatusMessage(response)}`});
-                }
+                commit('attributesMutator', response.data);
+                commit('stringAttributesMutator', response.data
+                    .filter((attribute: Attribute) => attribute.type === 'STRING'));
+                commit('numericAttributesMutator', response.data
+                    .filter((attribute: Attribute) => attribute.type === 'NUMBER'));
             });
     }
 };

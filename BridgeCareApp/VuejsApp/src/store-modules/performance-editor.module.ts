@@ -2,8 +2,6 @@ import {emptyPerformanceLibrary, PerformanceLibrary, PerformanceLibraryEquation}
 import {clone, append, any, propEq, findIndex, equals} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {AxiosResponse} from 'axios';
-import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-import {hasValue} from '@/shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const performanceLibrary: any = {
@@ -83,43 +81,33 @@ const actions = {
     updateSelectedPerformanceLibrary({commit}: any, payload: any) {
         commit('updatedSelectedPerformanceLibraryMutator', payload.updatedSelectedPerformanceLibrary);
     },
-    async getPerformanceLibraries({dispatch, commit}: any) {
+    async getPerformanceLibraries({commit}: any) {
         await PerformanceEditorService.getPerformanceLibraries()
             .then((response: AxiosResponse<any[]>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const performanceLibraries: PerformanceLibrary[] = response.data.map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
-                    commit('performanceLibrariesMutator', performanceLibraries);
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to get performance libraries${setStatusMessage(response)}`});
-                }
+                const performanceLibraries: PerformanceLibrary[] = response.data.map((data: any) => {
+                    return convertFromMongoToVueModel(data);
+                });
+                commit('performanceLibrariesMutator', performanceLibraries);
             });
     },
     async createPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.createPerformanceLibrary(payload.createdPerformanceLibrary)
             .then((response: AxiosResponse<any>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
-                    commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
-                    dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to create performance library${setStatusMessage(response)}`});
-                }
+                const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
+                commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
             });
     },
     async updatePerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.updatePerformanceLibrary(payload.updatedPerformanceLibrary)
             .then((response: AxiosResponse<any>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
-                    commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
-                    commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
-                    dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
-                }
+                const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
+                commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
+                commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
             });
     },
-    async getScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
+    async getScenarioPerformanceLibrary({commit}: any, payload: any) {
         await PerformanceEditorService.getScenarioPerformanceLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
                 commit('scenarioPerformanceLibraryMutator', response.data);
