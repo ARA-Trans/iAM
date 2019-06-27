@@ -2,8 +2,6 @@ import {emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/model
 import {any, propEq, findIndex, clone, append, equals} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
-import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-import {hasValue} from '@/shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const treatmentLibrary: any = {
@@ -106,70 +104,51 @@ const actions = {
     updateSelectedTreatmentLibrary({commit}: any, payload: any) {
         commit('updatedSelectedTreatmentLibraryMutator', payload.updatedSelectedTreatmentLibrary);
     },
-    async getTreatmentLibraries({dispatch, commit}: any) {
+    async getTreatmentLibraries({commit}: any) {
         await TreatmentEditorService.getTreatmentLibraries()
             .then((response: AxiosResponse<any[]>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const treatmentLibraries: TreatmentLibrary[] = response.data.map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
-                    commit('treatmentLibrariesMutator', treatmentLibraries);
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to get treatment libraries${setStatusMessage(response)}`});
-                }
+                const treatmentLibraries: TreatmentLibrary[] = response.data.map((data: any) => {
+                    return convertFromMongoToVueModel(data);
+                });
+                commit('treatmentLibrariesMutator', treatmentLibraries);
             });
     },
     async createTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.createTreatmentLibrary(payload.createdTreatmentLibrary)
             .then((response: AxiosResponse<any>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
-                    commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
-                    dispatch('setSuccessMessage', {message: 'Successfully created treatment library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to create treatment library${setStatusMessage(response)}`});
-                }
+                const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
+                commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully created treatment library'});
             });
     },
     async updateTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.updateTreatmentLibrary(payload.updatedTreatmentLibrary)
             .then((response: AxiosResponse<any>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
-                    commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
-                    commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);
-                    dispatch('setSuccessMessage', {message: 'Successfully updated treatment library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to update treatment library${setStatusMessage(response)}`});
-                }
+                const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
+                commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
+                commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully updated treatment library'});
             });
     },
-    async getScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
+    async getScenarioTreatmentLibrary({commit}: any, payload: any) {
         await TreatmentEditorService.getScenarioTreatmentLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    commit('scenarioTreatmentLibraryMutator', response.data);
-                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to get scenario treatment library${setStatusMessage(response)}`});
-                }
+                commit('scenarioTreatmentLibraryMutator', response.data);
+                commit('updatedSelectedTreatmentLibraryMutator', response.data);
             });
     },
     async saveScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.saveScenarioTreatmentLibraryData)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    commit('scenarioTreatmentLibraryMutator', response.data);
-                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to update scenario treatment library${setStatusMessage(response)}`});
-                }
+                commit('scenarioTreatmentLibraryMutator', response.data);
+                dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});
             });
     },
     async socket_treatmentLibrary({dispatch, state, commit}: any, payload: any) {
         if (payload.operationType == 'update' || payload.operationType == 'replace') {
             const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
             commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
+
             if (state.selectedTreatmentLibrary.id === updatedTreatmentLibrary.id &&
                 !equals(state.selectedTreatmentLibrary, updatedTreatmentLibrary)) {
                 commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);

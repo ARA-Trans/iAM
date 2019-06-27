@@ -6,13 +6,13 @@ import DataSnapshot = firebase.database.DataSnapshot;
 import moment from 'moment';
 import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
-import { Simulation } from '../shared/models/iAM/simulation';
+import { Simulation } from '@/shared/models/iAM/simulation';
 
 export default class ScenarioService {
-    static getUserScenarios(userId: string): AxiosPromise<Scenario[]> {
+    static getUserScenarios(userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
 
-            nodejsAxiosInstance.get<Scenario[]>('api/scenarios')
+            nodejsAxiosInstance.get('api/scenarios')
                 .then((response: AxiosResponse<Scenario[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);
@@ -29,9 +29,9 @@ export default class ScenarioService {
      * @param createScenarioData Scenario create data
      * @param userId Current user's id
      */
-    static createScenario(createScenarioData: CreateScenarioData, userId: string): AxiosPromise<Scenario> {
+    static createScenario(createScenarioData: CreateScenarioData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post<Scenario>('/api/CreateNewSimulation', createScenarioData)
+            axiosInstance.post('/api/CreateNewSimulation', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
@@ -39,7 +39,7 @@ export default class ScenarioService {
                             shared: false,
                             status: 'New scenario'
                         };
-                        nodejsAxiosInstance.post<Scenario>('api/scenarios', scenarioToTrackStatus)
+                        nodejsAxiosInstance.post('api/scenarios', scenarioToTrackStatus)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
@@ -60,13 +60,13 @@ export default class ScenarioService {
         });
     }
 
-    static updateScenario(updateScenarioData: Simulation, scenarioId: string): AxiosPromise<Scenario> {
+    static updateScenario(updateScenarioData: Simulation, scenarioId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post<Scenario>('/api/UpdateSimulationName', updateScenarioData)
+            axiosInstance.post('/api/UpdateSimulationName', updateScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
 
-                        nodejsAxiosInstance.put<Scenario>(`api/updateScenarios/${scenarioId}`, updateScenarioData)
+                        nodejsAxiosInstance.put(`api/updateScenarios/${scenarioId}`, updateScenarioData)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
@@ -87,7 +87,7 @@ export default class ScenarioService {
         });
     }
 
-    static deleteScenario(simulationId: number, scenarioId: string): AxiosPromise<number> {
+    static deleteScenario(simulationId: number, scenarioId: string): AxiosPromise {
         return new Promise<AxiosResponse<number>>((resolve) => {
             axiosInstance.delete(`/api/DeleteSimulation/${simulationId}`)
                 .then((response: AxiosResponse<number>) => {
@@ -114,7 +114,7 @@ export default class ScenarioService {
      * @param selectedScenario The scenario to run the simulation on
      * @param userId Current user's id
      */
-    static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise<any> {
+    static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<any>>((resolve) => {
             db.ref('scenarioStatus').once('value')
                 .then((snapshot: DataSnapshot) => {
@@ -132,7 +132,7 @@ export default class ScenarioService {
                         };
                         db.ref('scenarioStatus').child(selectedScenarioPath).update(firebaseScenario)
                             .then(() => {
-                                return axiosInstance.post<any>('/api/RunSimulation', selectedScenario);
+                                return axiosInstance.post('/api/RunSimulation', selectedScenario);
                             });
                     } else {
                         const firebaseScenario: any = {
@@ -145,7 +145,7 @@ export default class ScenarioService {
                         };
                         db.ref('scenarioStatus').child(selectedScenarioPath).set(firebaseScenario)
                             .then(() => {
-                                return axiosInstance.post<any>('/api/RunSimulation', selectedScenario);
+                                return axiosInstance.post('/api/RunSimulation', selectedScenario);
                             });
                     }
                 })

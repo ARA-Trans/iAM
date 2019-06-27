@@ -1,21 +1,44 @@
 <template>
     <v-container fluid grid-list-xl>
-        <v-layout row>
+        <!--<v-layout row>
             <v-flex xs1>
-                <v-slider class="slider" v-model="referenceIndexTypes" :tick-labels="referenceIndexTypesLabels" tick-size="2" ticks="always" step="1" :max="1" v-on:change="onToggleReferenceIndexTypeSelect">
+                <v-slider class="slider" v-model="referenceIndexTypes" :tick-labels="referenceIndexTypesLabels" tick-size="2" ticks="always" step="1" :max="1">
                 </v-slider>
             </v-flex>
-        </v-layout>
-        <v-layout row>
+        </v-layout>-->
+        <v-layout justify-space-between row fill-height>
+            <v-spacer></v-spacer>
             <v-flex xs2>
-                <v-select v-if="referenceIndexTypes === 0" :items="bmsIds" label="Select a BMS Id"
-                          v-on:change="onSelectInventoryItemByBMSId" outline>
-                </v-select>
-
-                <v-select v-if="referenceIndexTypes === 1" :items="brKeys" label="Select a BR Key"
-                          v-on:change="onSelectInventoryItemsByBRKey" outline>
-                </v-select>
+                <v-autocomplete :items="bmsIdsSelectList" label="Select by BMS Id" outline v-model="selectedBmsId"
+                                @change="onSelectInventoryItemByBMSId" item-text="identifier" item-value="identifier">
+                    <template slot="item" slot-scope="data">
+                        <template v-if="typeof data.item !== 'object'">
+                            <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                        </template>
+                        <template v-else>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="data.item.identifier"></v-list-tile-title>
+                            </v-list-tile-content>
+                        </template>
+                    </template>
+                </v-autocomplete>
             </v-flex>
+            <v-flex xs2>
+                <v-autocomplete :items="brKeysSelectList" label="Select by BR Key" outline v-model="selectedBrKey"
+                                @change="onSelectInventoryItemsByBRKey" item-text="identifier" item-value="identifier">
+                    <template slot="item" slot-scope="data">
+                        <template v-if="typeof data.item !== 'object'">
+                            <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                        </template>
+                        <template v-else>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="data.item.identifier"></v-list-tile-title>
+                            </v-list-tile-content>
+                        </template>
+                    </template>
+                </v-autocomplete>
+            </v-flex>
+            <v-spacer></v-spacer>
         </v-layout>
         <v-divider v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0"></v-divider>
         <v-layout v-if="inventoryItemDetail.bmsId > 0 || inventoryItemDetail.brKey > 0">
@@ -272,7 +295,7 @@
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import {InventoryItem, InventoryItemDetail, LabelValue, NbiLoadRating} from '@/shared/models/iAM/inventory';
-    import {uniq, groupBy} from 'ramda';
+    import {uniq, groupBy, contains, concat, isNil} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {DataTableRow} from '@/shared/models/vue/data-table-row';
@@ -281,15 +304,27 @@
     export default class Inventory extends Vue {
         @State(state => state.inventory.inventoryItems) inventoryItems: InventoryItem[];
         @State(state => state.inventory.inventoryItemDetail) inventoryItemDetail: InventoryItemDetail;
+        @State(state => state.inventory.lastFiveBmsIdSearches) stateLastFiveBmsIdSearches: string[];
+        @State(state => state.inventory.lastFiveBrKeySearches) stateLastFiveBrKeySearches: number[];
 
         @Action('getInventory') getInventoryAction: any;
         @Action('getInventoryItemDetailByBMSId') getInventoryItemDetailByBMSIdAction: any;
         @Action('getInventoryItemDetailByBRKey') getInventoryItemDetailByBRKeyAction: any;
+        @Action('appendBmsIdSearchString') appendBmsIdSearchStringAction: any;
+        @Action('appendBrKeySearchNumber') appendBrKeySearchNumberAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('clearInventoryItemDetail') clearInventoryItemDetailAction: any;
 
-        referenceIndexTypes: number = 0;
-        referenceIndexTypesLabels = ['BMS ID', 'BR KEY'];
-        bmsIds: string[] = [];
-        brKeys: number[] = [];
+        /*referenceIndexTypes: number = 0;
+        referenceIndexTypesLabels = ['BMS ID', 'BR KEY'];*/
+        // bmsIds: any[] = [];
+        lastFiveBmsIdSearches: any[] = [];
+        bmsIdsSelectList: any[] = [];
+        selectedBmsId: string = '';
+        // brKeys: any[] = [];
+        lastFiveBrKeySearches: any[] = [];
+        brKeysSelectList: any[] = [];
+        selectedBrKey: number = 0;
         conditionTableHeaders: DataTableHeader[] = [
             {text: '', value: '', align: 'center', sortable: false, class: '', width: ''},
             {text: 'Condition', value: '', align: 'center', sortable: false, class: '', width: ''},
@@ -299,14 +334,48 @@
         nbiLoadRatingTableRows: DataTableRow[] = [];
         postingTableHeaders: DataTableHeader[] = [];
         postingTableRows: DataTableRow[] = [];
+        inventorySelectListsWorker: any = null;
 
         /**
-         * Sets the bmsIds & brKeys arrays using the inventoryItems array
+         * Calls the setInventorySelectLists function to set both inventory type select lists
          */
         @Watch('inventoryItems')
-        onInventoryItemsChanged(inventoryItems: InventoryItem[]) {
-            this.bmsIds = inventoryItems.map((item: InventoryItem) => item.bmsId);
-            this.brKeys = inventoryItems.map((item: InventoryItem) => item.brKey);
+        onInventoryItemsChanged() {
+            this.setupSelectLists();
+            /*if (this.inventoryItems.length > 0) {
+                this.setInventorySelectLists();
+            }*/
+        }
+
+        /**
+         * Calls the setInventorySelectLists function to set both inventory type select lists
+         */
+        @Watch('stateLastFiveBmsIdSearches')
+        onLastFiveBmsIdSearchesChanged() {
+            if (hasValue(this.stateLastFiveBmsIdSearches)) {
+                this.lastFiveBmsIdSearches = this.setLastFiveSearchesForInventorySelectList(this.stateLastFiveBmsIdSearches);
+                this.setupSelectLists();
+            }
+
+            /*if (this.stateLastFiveBmsIdSearches.length > 0) {
+                this.setInventorySelectLists();
+            }*/
+        }
+
+        /**
+         * Calls the setInventorySelectLists function to set both inventory type select lists
+         */
+        @Watch('stateLastFiveBrKeySearches')
+        onLastFiveBrKeySearchesChanged() {
+            if (hasValue(this.stateLastFiveBrKeySearches)) {
+                this.lastFiveBrKeySearches = this.setLastFiveSearchesForInventorySelectList(this.stateLastFiveBrKeySearches);
+                this.setupSelectLists();
+            }
+
+            /*if (this.stateLastFiveBrKeySearches.length > 0) {
+                this.setInventorySelectLists();
+            }*/
+
         }
 
         @Watch('inventoryItemDetail')
@@ -338,6 +407,104 @@
             // set the postingTableRows using the createDataTableRowFromGrouping func.
             this.postingTableRows = this.createDataTableRowFromGrouping(inventoryItemDetail.posting);
 
+        }
+
+        /**
+         * Vue component has been mounted
+         */
+        mounted() {
+            //this.$forceUpdate();
+            this.getInventoryAction({network: {}});
+        }
+
+        created() {
+            this.inventorySelectListsWorker = this.$worker.create(
+                [
+                    {message: 'setInventorySelectLists', func: (data: any) =>
+                        {
+                            if(data) {
+                                const inventoryItems = data.inventoryItems;
+                                const stateLastFiveBmsIdSearches = data.stateLastFiveBmsIdSearches;
+                                const stateLastFiveBrKeySearches = data.stateLastFiveBrKeySearches;
+                                const lastFiveBmsIdSearches = data.lastFiveBmsIdSearches;
+                                const lastFiveBrKeySearches = data.lastFiveBrKeySearches;
+
+                                const bmsIds: any[] = [];
+                                const brKeys: any[] = [];
+
+                                inventoryItems.forEach((item: InventoryItem, index: number) => {
+                                    if (index === 0) {
+                                        bmsIds.push({header: 'BMS Ids'});
+
+                                        brKeys.push({header: 'BR Keys'});
+                                    }
+
+                                    if (stateLastFiveBmsIdSearches.indexOf(item.bmsId) === -1) {
+                                        bmsIds.push({
+                                            identifier: item.bmsId,
+                                            group: 'BMS Ids'
+                                        });
+                                    }
+
+                                    if (stateLastFiveBrKeySearches.indexOf(item.brKey) === -1) {
+                                        brKeys.push({
+                                            identifier: item.brKey,
+                                            group: 'BR Keys'
+                                        });
+                                    }
+                                });
+
+                                const bmsIdsSelectList = lastFiveBmsIdSearches.concat(bmsIds);
+                                const brKeysSelectList = lastFiveBrKeySearches.concat(brKeys);
+
+                                return {bmsIdsSelectList: bmsIdsSelectList, brKeysSelectList: brKeysSelectList};
+                            }
+
+                            return {bmsIdsSelectList: [], brKeysSelectList: []};
+                        }
+                    }
+                ]
+            );
+        }
+
+        beforeDestroy() {
+            this.clearInventoryItemDetailAction();
+        }
+
+        setupSelectLists() {
+            const data: any = {
+                inventoryItems: this.inventoryItems,
+                stateLastFiveBmsIdSearches: this.stateLastFiveBmsIdSearches,
+                stateLastFiveBrKeySearches: this.stateLastFiveBrKeySearches,
+                lastFiveBmsIdSearches: this.lastFiveBmsIdSearches,
+                lastFiveBrKeySearches: this.lastFiveBrKeySearches,
+            };
+            this.inventorySelectListsWorker.postMessage('setInventorySelectLists', [data])
+            .then((result: any) => {
+                this.bmsIdsSelectList = result.bmsIdsSelectList;
+                this.brKeysSelectList = result.brKeysSelectList;
+            });
+        }
+
+        setLastFiveSearchesForInventorySelectList(searchData: any[]) {
+            const lastFiveSearches: any[] = [];
+
+            searchData.forEach((searchValue: any, index: number) => {
+                if (index === 0) {
+                    lastFiveSearches.push({header: 'Last Five Searches'});
+                }
+
+                lastFiveSearches.push({
+                    identifier: searchValue,
+                    group: 'Last Five Searches'
+                });
+
+                if (index === searchData.length - 1) {
+                    lastFiveSearches.push({divider: true});
+                }
+            });
+
+            return lastFiveSearches;
         }
 
         createDataTableRowFromGrouping(labelValueList: LabelValue[]) {
@@ -388,32 +555,27 @@
         }
 
         /**
-         * Vue component has been mounted
-         */
-        mounted() {
-            //this.$forceUpdate();
-            this.getInventoryAction({network: {}});
-        }
-
-        /**
-         * Reference index type toggle has changed
-         */
-        onToggleReferenceIndexTypeSelect() {
-
-        }
-
-        /**
          * BMS id has been selected
          */
-        onSelectInventoryItemByBMSId(bmsId: number) {
-            this.getInventoryItemDetailByBMSIdAction({bmsId: bmsId});
+        onSelectInventoryItemByBMSId(bmsId: string) {
+            this.selectedBrKey = 0;
+            this.getInventoryItemDetailByBMSIdAction({bmsId: bmsId})
+                .then(() => setTimeout(() => {
+                    this.selectedBmsId = bmsId;
+                    this.appendBmsIdSearchStringAction({bmsId: bmsId});
+                }));
         }
 
         /**
          * BR key has been selected
          */
         onSelectInventoryItemsByBRKey(brKey: number) {
-            this.getInventoryItemDetailByBRKeyAction({ brKey: brKey });
+            this.selectedBmsId = '';
+            this.getInventoryItemDetailByBRKeyAction({brKey: brKey})
+                .then(() => setTimeout(() => {
+                    this.selectedBrKey = brKey;
+                    this.appendBrKeySearchNumberAction({brKey: brKey});
+                }));
         }
                 
         getGMapsUrl() {
