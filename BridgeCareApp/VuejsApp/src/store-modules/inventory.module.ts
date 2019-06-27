@@ -1,13 +1,15 @@
 import {emptyInventoryItemDetail, InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import InventoryService from '@/services/inventory.service';
-import {clone} from 'ramda';
+import {clone, append, contains} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
 import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     inventoryItems: [] as InventoryItem[],
-    inventoryItemDetail: emptyInventoryItemDetail as InventoryItemDetail
+    inventoryItemDetail: emptyInventoryItemDetail as InventoryItemDetail,
+    lastFiveBmsIdSearches: [] as string[],
+    lastFiveBrKeySearches: [] as number[]
 };
 
 const mutations = {
@@ -16,6 +18,28 @@ const mutations = {
     },
     inventoryItemDetailMutator(state: any, inventoryItemDetail: InventoryItemDetail) {
         state.inventoryItemDetail = clone(inventoryItemDetail);
+    },
+    lastFiveBmsIdSearchesMutator(state: any, searchString: string) {
+        if (!contains(searchString, state.lastFiveBmsIdSearches)) {
+            if (state.lastFiveBmsIdSearches.length === 5) {
+                const filteredSearches = state.lastFiveBmsIdSearches
+                    .filter((value: string) => value === state.lastFiveBmsIdSearches[0]);
+                state.lastFiveBmsIdSearches = append(searchString, filteredSearches);
+            } else {
+                state.lastFiveBmsIdSearches = append(searchString, state.lastFiveBmsIdSearches);
+            }
+        }
+    },
+    lastFiveBrKeySearchesMutator(state: any, searchNumber: number) {
+        if (!contains(searchNumber, state.lastFiveBrKeySearches)) {
+            if (state.lastFiveBrKeySearches.length === 5) {
+                const filteredSearches = state.lastFiveBrKeySearches
+                    .filter((value: number) => value === state.lastFiveBrKeySearches[0]);
+                state.lastFiveBrKeySearches = append(searchNumber, filteredSearches);
+            } else {
+                state.lastFiveBrKeySearches = append(searchNumber, state.lastFiveBrKeySearches);
+            }
+        }
     }
 };
 
@@ -49,6 +73,12 @@ const actions = {
                     dispatch('setErrorMessage', `Failed to get inventory item detail${setStatusMessage(response)}`);
                 }
             });
+    },
+    appendBmsIdSearchString({commit}: any, payload: any) {
+        commit('lastFiveBmsIdSearchesMutator', payload.bmsId);
+    },
+    appendBrKeySearchNumber({commit}: any, payload: any) {
+        commit('lastFiveBrKeySearchesMutator', payload.brKey);
     }
 };
 

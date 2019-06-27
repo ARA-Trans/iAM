@@ -35,7 +35,8 @@ namespace BridgeCare.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Some error has occured while running query agains NETWORKS table");
+                // throw new InvalidOperationException("Some error has occured while running query agains NETWORKS table");
+                HandleException.GeneralError(ex);
             }
 
             return filteredColumns;

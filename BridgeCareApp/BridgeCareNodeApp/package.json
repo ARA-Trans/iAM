@@ -9,7 +9,7 @@
   "scripts": {
     "start": "set DEBUG=app,app:* & nodemon --exec babel-node app.js",
     "test": "mocha tests/**/*Tests.js",
-    "prod": "set NODE_ENV=production&& nodemon app.js",
+    "prod": "set NODE_ENV=production && nodemon app.js",
     "lint": "eslint app.js"
   },
   "dependencies": {
