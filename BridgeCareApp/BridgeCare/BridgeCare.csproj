@@ -414,7 +414,6 @@
     <Content Include="Dependencies\SimulationDataAccess.dll" />
     <Content Include="Dependencies\CalculateEvaluate.pdb" />
     <Content Include="Dependencies\DatabaseManager.pdb" />
-    <Content Include="Dependencies\FireSharp.dll" />
     <Content Include="Dependencies\RestSharp.dll" />
     <Content Include="Dependencies\RestSharp.xml" />
     <Content Include="Dependencies\RoadCareGlobalOperations.pdb" />

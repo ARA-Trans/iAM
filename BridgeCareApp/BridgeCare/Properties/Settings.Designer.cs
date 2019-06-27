@@ -26,7 +26,7 @@ namespace BridgeCare.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://sbhardwaj:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=rs0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://localhost:27017/BridgeCare?replicaSet=rs0")]
         public string MongoDBDevConnectionString {
             get {
                 return ((string)(this["MongoDBDevConnectionString"]));
