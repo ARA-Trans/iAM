@@ -464,8 +464,7 @@
                     showDialog: true,
                     equation: this.selectedEquation.equation,
                     canBePiecewise: true,
-                    isPiecewise: this.selectedEquation.piecewise,
-                    isFunction: this.selectedEquation.isFunction
+                    isPiecewise: this.selectedEquation.piecewise
                 };
             }
         }
