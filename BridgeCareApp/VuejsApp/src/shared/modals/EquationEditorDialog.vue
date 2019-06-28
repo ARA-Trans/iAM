@@ -74,19 +74,17 @@
                             <v-layout justify-center fill-height>
                                 <v-flex xs11>
                                     <div>
-                                        <v-layout justify-center fill-height>
+                                        <v-layout justify-start fill-height>
                                             <v-flex xs5>
-                                                <v-layout justify-space-between row fill-height>
+                                                <v-layout justify-end fill-height>
                                                     <v-checkbox v-show="dialogData.canBePiecewise" label="Is piecewise?"
                                                                 v-model="isPiecewise">
-                                                    </v-checkbox>
-                                                    <v-checkbox class="right-checkbox" label="Is function?" v-model="isFunction">
                                                     </v-checkbox>
                                                 </v-layout>
                                             </v-flex>
                                         </v-layout>
                                     </div>
-                                    <v-textarea id="equation_textarea" rows="5" outline full-width no-resize spellcheck="false"
+                                    <v-textarea id="equation_textarea" :rows="dialogData.canBePiecewise ? '5' : '8'" outline full-width no-resize spellcheck="false"
                                                 v-model="equation" v-on:blur="setCursorPosition" v-on:focus="setTextareaCursorPosition">
                                     </v-textarea>
                                     <div class="validation-message-div">
@@ -148,7 +146,6 @@
         formulasList: string[] = formulas;
         equation: string = '';
         isPiecewise: boolean = false;
-        isFunction: boolean = false;
         textareaInput: HTMLTextAreaElement = {} as HTMLTextAreaElement;
         cursorPosition: number = 0;
         showInvalidMessage: boolean = false;
@@ -172,10 +169,9 @@
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            // set the equation, isPiecewise, and isFunction properties with the dialog data equation
+            // set the equation and isPiecewise properties with the dialog data equation
             this.equation = this.dialogData.equation;
             this.isPiecewise = this.dialogData.isPiecewise;
-            this.isFunction = this.dialogData.isFunction;
         }
 
         /**
@@ -293,8 +289,8 @@
         onCheckEquation() {
             const equationValidation: EquationValidation = {
                 equation: this.equation,
-                isFunction: this.isFunction,
-                isPiecewise: this.isPiecewise
+                isPiecewise: this.isPiecewise,
+                isFunction: false,
             };
             EquationEditorService.checkEquationValidity(equationValidation)
                 .then((response: AxiosResponse<string>) => {
@@ -323,7 +319,7 @@
             const result: EquationEditorDialogResult = {
                 equation: this.equation,
                 isPiecewise: this.isPiecewise,
-                isFunction: this.isFunction
+                isFunction: false
             };
             // submit result
             this.$emit('submit', result);
