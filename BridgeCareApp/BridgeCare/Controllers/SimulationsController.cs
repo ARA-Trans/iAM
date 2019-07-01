@@ -82,5 +82,17 @@ namespace BridgeCare.Controllers
             }
             return NotFound();
         }
+
+        [Route("api/CreateRunnableSimulation")]
+        [HttpPost]
+        public IHttpActionResult CreateRunnableSimulation([FromBody]CreateSimulationDataModel createSimulationData)
+        {
+            SimulationModel simulationData = simulations.CreateRunnableSimulation(createSimulationData, db);
+            if (simulationData != null && simulationData.SimulationId > 0)
+            {
+                return Ok(simulationData);
+            }
+            return NotFound();
+        }
     }
 }

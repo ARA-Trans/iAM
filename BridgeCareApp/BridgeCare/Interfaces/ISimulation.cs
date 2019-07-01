@@ -15,5 +15,8 @@ namespace BridgeCare.Interfaces
         void Delete(int id);
 
         SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db);
+
+        SimulationModel CreateRunnableSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db);
+
     }
 }
