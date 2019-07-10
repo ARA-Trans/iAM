@@ -130,8 +130,7 @@
             this.equationEditorDialogData = {
                 ...clone(emptyEquationEditorDialogData),
                 showDialog: true,
-                equation: this.selectedCost.equation,
-                isFunction: this.selectedCost.isFunction
+                equation: this.selectedCost.equation
             };
         }
 

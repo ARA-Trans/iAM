@@ -154,9 +154,6 @@
     <Folder Include="src\store\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\firebase.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\main.ts" />
     <TypeScriptCompile Include="src\plugins\vuetify.ts" />
     <TypeScriptCompile Include="src\register-hooks.ts">
@@ -171,13 +168,17 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\services\committed-projects.service.ts" />
+    <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\deficient.service.ts" />
     <TypeScriptCompile Include="src\services\equation-editor.service.ts" />
     <TypeScriptCompile Include="src\services\inventory.service.ts" />
     <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
     <TypeScriptCompile Include="src\services\network.service.ts" />
     <TypeScriptCompile Include="src\services\performance-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\priority.service.ts" />
     <TypeScriptCompile Include="src\services\reports.service.ts" />
     <TypeScriptCompile Include="src\services\scenario.service.ts" />
+    <TypeScriptCompile Include="src\services\target.service.ts" />
     <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
     <TypeScriptCompile Include="src\shared\models\child-components\treatment-editor\tab-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\create-scenario-dialog\scenario-creation-data.ts">
@@ -239,6 +240,8 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\deficient.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\priority.module.ts" />
     <TypeScriptCompile Include="src\store-modules\reports\detailed-report.module.ts" />
     <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />
     <TypeScriptCompile Include="src\store-modules\investment-editor.module.ts" />
@@ -248,6 +251,7 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\target.module.ts" />
     <TypeScriptCompile Include="src\store-modules\toastr.module.ts" />
     <TypeScriptCompile Include="src\store-modules\treatment-editor.module.ts" />
     <TypeScriptCompile Include="src\store\root-store.ts" />

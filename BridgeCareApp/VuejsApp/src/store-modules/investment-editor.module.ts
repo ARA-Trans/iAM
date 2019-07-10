@@ -2,8 +2,6 @@ import {emptyInvestmentLibrary, InvestmentLibrary, InvestmentLibraryBudgetYear} 
 import InvestmentEditorService from '@/services/investment-editor.service';
 import {clone, any, propEq, append, findIndex, equals} from 'ramda';
 import {AxiosResponse} from 'axios';
-import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-import {hasValue} from '@/shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const investmentLibrary: any = {
@@ -83,55 +81,39 @@ const actions = {
     updateSelectedInvestmentLibrary({commit}: any, payload: any) {
         commit('updatedSelectedInvestmentLibraryMutator', payload.updatedSelectedInvestmentLibrary);
     },
-    async getInvestmentLibraries({dispatch, commit}: any) {
+    async getInvestmentLibraries({commit}: any) {
         await InvestmentEditorService.getInvestmentLibraries()
             .then((response: AxiosResponse<any[]>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const investmentLibraries: InvestmentLibrary[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
-                    commit('investmentLibrariesMutator', investmentLibraries);
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to get investment libraries${setStatusMessage(response)}`});
-                }
+                const investmentLibraries: InvestmentLibrary[] = response.data
+                    .map((data: any) => {
+                        return convertFromMongoToVueModel(data);
+                    });
+                commit('investmentLibrariesMutator', investmentLibraries);
             });
     },
     async createInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then((response: AxiosResponse<any>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
-                    commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
-                    dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to create investment library${setStatusMessage(response)}`});
-                }
+                const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
+                commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
             });
     },
     async updateInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.updateInvestmentLibrary(payload.updatedInvestmentLibrary)
             .then((response: AxiosResponse<any>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
-                    commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
-                    commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
-                    dispatch('setSuccessMessage', {message: 'Successfully updated investment library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to update investment library${setStatusMessage(response)}`});
-                }
+                const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
+                commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
+                commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully updated investment library'});
             });
     },
     async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await InvestmentEditorService.getScenarioInvestmentLibrary(payload.selectedScenarioId)
                 .then((response: AxiosResponse<InvestmentLibrary>) => {
-                    if (hasValue(response) && http2XX.test(response.status.toString())) {
-                        commit('scenarioInvestmentLibraryMutator', response.data);
-                        commit('updatedSelectedInvestmentLibraryMutator', response.data);
-                    } else {
-                        dispatch('setErrorMessage', {message: `Failed to get scenario investment library${setStatusMessage(response)}`});
-                    }
+                    commit('scenarioInvestmentLibraryMutator', response.data);
+                    commit('updatedSelectedInvestmentLibraryMutator', response.data);
                 });
         } else {
             commit('scenarioInvestmentLibraryMutator', emptyInvestmentLibrary);
@@ -141,12 +123,8 @@ const actions = {
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         return await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
             .then((response: AxiosResponse<InvestmentLibrary>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    commit('scenarioInvestmentLibraryMutator', response.data);
-                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to save scenario investment library${setStatusMessage(response)}`});
-                }
+                commit('scenarioInvestmentLibraryMutator', response.data);
+                dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
             });
     },
     async socket_investmentLibrary({dispatch, state, commit}: any, payload: any) {

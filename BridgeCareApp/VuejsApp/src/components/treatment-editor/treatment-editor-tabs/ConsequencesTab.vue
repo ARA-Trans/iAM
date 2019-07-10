@@ -198,8 +198,7 @@
             this.equationEditorDialogData = {
                 ...clone(emptyEquationEditorDialogData),
                 showDialog: true,
-                equation: this.selectedConsequence.equation,
-                isFunction: this.selectedConsequence.isFunction
+                equation: this.selectedConsequence.equation
             };
         }
 

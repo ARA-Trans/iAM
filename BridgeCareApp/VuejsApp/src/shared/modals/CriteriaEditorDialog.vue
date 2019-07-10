@@ -64,7 +64,7 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import CriteriaEditorService from '@/services/criteria-editor.service';
     import {AxiosResponse} from 'axios';
-    import {CriteriaValidation} from "@/shared/models/iAM/criteria-validation";
+    import {CriteriaValidation} from '@/shared/models/iAM/criteria-validation';
 
     @Component({
         components: {VueQueryBuilder}

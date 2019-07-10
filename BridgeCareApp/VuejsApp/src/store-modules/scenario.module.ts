@@ -1,9 +1,7 @@
 import {Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
-import {http2XX, setStatusMessage} from '@/shared/utils/http-utils';
-import { hasValue } from '@/shared/utils/has-value-util';
-import { clone, append, any, propEq, findIndex, remove, equals } from 'ramda';
+import {clone, append, any, propEq, findIndex, remove} from 'ramda';
 
 const convertFromMongoToVueModel = (data: any) => {
     const scenarios: any = {
@@ -45,69 +43,43 @@ const mutations = {
 };
 
 const actions = {
-    async getUserScenarios({dispatch, commit}: any, payload: any) {
+    async getUserScenarios({commit}: any, payload: any) {
         return await ScenarioService.getUserScenarios(payload.userId)
             .then((response: AxiosResponse<Scenario[]>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-
-                    const scenarios: Scenario[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
-
-                    commit('scenariosMutator', scenarios);
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to get scenarios${setStatusMessage(response)}`});
-                }
+                const scenarios: Scenario[] = response.data
+                    .map((data: any) => {
+                        return convertFromMongoToVueModel(data);
+                    });
+                commit('scenariosMutator', scenarios);
             });
     },
     async createScenario({dispatch, commit}: any, payload: any) {
         return await ScenarioService.createScenario(payload.createScenarioData, payload.userId)
             .then((response: AxiosResponse<Scenario>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-
-                    const createdScenario: Scenario = convertFromMongoToVueModel(response.data);
-
-                    commit('createdScenarioMutator', createdScenario);
-                    dispatch('setSuccessMessage', {message: 'Successfully created scenario'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to create scenario${setStatusMessage(response)}`});
-                }
+                const createdScenario: Scenario = convertFromMongoToVueModel(response.data);
+                commit('createdScenarioMutator', createdScenario);
+                dispatch('setSuccessMessage', {message: 'Successfully created scenario'});
             });
     },
     async runSimulation({dispatch, commit}: any, payload: any) {
         await ScenarioService.runScenarioSimulation(payload.selectedScenario, payload.userId)
             .then((response: AxiosResponse<Scenario>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    dispatch('setSuccessMessage', {message: 'Simulation started'});
-                } else {
-                    dispatch('setErrorMessage', {message: `Failed to start simulation${setStatusMessage(response)}`});
-                }
+                dispatch('setSuccessMessage', {message: 'Simulation started'});
             });
     },
     async deleteScenario({ dispatch, commit }: any, payload: any) {
         return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
             .then((response: AxiosResponse<number>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-                    commit('removeScenarioMutator', response.data);
-                    dispatch('setSuccessMessage', { message: 'Successfully deleted scenario' });
-                } else {
-                    dispatch('setErrorMessage', { message: `Failed to delete scenario${setStatusMessage(response)}` });
-                }
+                commit('removeScenarioMutator', response.data);
+                dispatch('setSuccessMessage', { message: 'Successfully deleted scenario' });
             });
     },
     async updateScenario({ dispatch, commit }: any, payload: any) {
         return await ScenarioService.updateScenario(payload.updateScenarioData, payload.scenarioId)
             .then((response: AxiosResponse<Scenario>) => {
-                if (hasValue(response) && http2XX.test(response.status.toString())) {
-
-                    const updatedScenario: Scenario = convertFromMongoToVueModel(response.data);
-
-                    commit('updatedScenarioMutator', updatedScenario);
-                    dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
-                } else {
-                    dispatch('setErrorMessage', { message: `Failed to update scenario${setStatusMessage(response)}` });
-                }
+                const updatedScenario: Scenario = convertFromMongoToVueModel(response.data);
+                commit('updatedScenarioMutator', updatedScenario);
+                dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
             });
     },
     async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
@@ -118,18 +90,17 @@ const actions = {
 
         if (payload.operationType == 'insert') {
             const createdScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
-
             if (!any(propEq('id', createdScenario.id), state.scenarios)) {
                 commit('createdScenarioMutator', createdScenario);
-                dispatch('setInfoMessage', { message: 'New scenario has been inserted from another source' });
+                dispatch('setInfoMessage', {message: 'New scenario has been inserted from another source'});
             }
         }
+
         if (payload.operationType == 'delete') {
             const deletedScenario: Scenario = convertFromMongoToVueModel(payload.documentKey);
-
             if (any(propEq('id', deletedScenario.id), state.scenarios)) {
                 commit('removeScenarioMutator', deletedScenario.id);
-                dispatch('setInfoMessage', { message: 'A scenario has been deleted from another source' });
+                dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
             }
         }
     }

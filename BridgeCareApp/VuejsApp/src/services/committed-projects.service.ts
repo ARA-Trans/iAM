@@ -1,6 +1,5 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-import or from 'ramda/es/or';
 import { Scenario } from '@/shared/models/iAM/scenario';
 
 export default class CommittedProjectsService {
@@ -8,7 +7,7 @@ export default class CommittedProjectsService {
      * Saves committed projects files
      * @param files List of files to save
      */
-    static saveCommittedProjectsFiles(files: File[], selectedScenarioId: string, networkId: string): AxiosPromise<any> {        
+    static saveCommittedProjectsFiles(files: File[], selectedScenarioId: string, networkId: string): AxiosPromise {
         let formData = new FormData();
 
         // Add the form data      
@@ -20,7 +19,7 @@ export default class CommittedProjectsService {
         formData.append('networkId', networkId);
         
         // Make the request to the API      
-        return axiosInstance.post<any>('/api/SaveCommittedProjectsFiles', formData,
+        return axiosInstance.post('/api/SaveCommittedProjectsFiles', formData,
             {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -32,8 +31,8 @@ export default class CommittedProjectsService {
      * Saves committed projects files
      * @param scenarioData
      */
-    static ExportCommittedProjects(scenarioData: Scenario): AxiosPromise<any> {        
-        return axiosInstance.post<any>('/api/ExportCommittedProjects', scenarioData, { responseType: 'blob' });
+    static ExportCommittedProjects(scenarioData: Scenario): AxiosPromise {
+        return axiosInstance.post('/api/ExportCommittedProjects', scenarioData, { responseType: 'blob' });
     }
 }
     
