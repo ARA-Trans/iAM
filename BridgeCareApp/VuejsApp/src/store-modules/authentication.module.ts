@@ -1,6 +1,5 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
-import {db} from '@/firebase';
 import {UserInformation} from '@/shared/models/iAM/user-information';
 
 const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
@@ -36,15 +35,6 @@ const actions = {
                 commit('loginMutator', false);
                 commit('userNameMutator', response.data.name);
                 commit('userIdMutator', response.data.id);
-
-                db.ref('roles').once('value', (snapshot: any) => {
-                    let data = snapshot.val();
-                    for (let key in data) {
-                        if (usersData.includes(data[key])) {
-                            commit('userRoleMutator', key);
-                        }
-                    }
-                });
             });
     }
 };
