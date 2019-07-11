@@ -46,7 +46,8 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).FirstOrDefault();
 
-                investmentLibraryModel.SetBudgets();
+                investmentLibraryModel?.SetBudgets();
+
                 return investmentLibraryModel;
             }
             catch (SqlException ex)
@@ -55,6 +56,7 @@ namespace BridgeCare.DataAccessLayer
             }
             return new InvestmentLibraryModel();
         }
+
 
         public InvestmentLibraryModel SaveScenarioInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db)
         {
@@ -82,6 +84,9 @@ namespace BridgeCare.DataAccessLayer
                 UpsertYearlyData(data, simulation, db);
 
                 db.SaveChanges();
+
+                new PriorityDAL().SavePriorityFundInvestmentData(data.Id, budgetNamesByOrder.Split(',').ToList(), db);
+
                 return data;
             }
             catch (SqlException ex)
@@ -91,8 +96,9 @@ namespace BridgeCare.DataAccessLayer
             // Returning empty model in case of any exception.
             return new InvestmentLibraryModel();
         }
-        public void UpsertYearlyData(InvestmentLibraryModel investment,
-           SimulationEntity simulation, BridgeCareContext db)
+
+
+        public void UpsertYearlyData(InvestmentLibraryModel investment, SimulationEntity simulation, BridgeCareContext db)
         {
             int dataIndex = 0;
 
@@ -101,7 +107,7 @@ namespace BridgeCare.DataAccessLayer
                 if (investment.BudgetYears.Count() > dataIndex)
                 {
                     yearlyInvestment.YEAR_ = investment.BudgetYears[dataIndex].Year;
-                    yearlyInvestment.BUDGETNAME= investment.BudgetYears[dataIndex].BudgetName;
+                    yearlyInvestment.BUDGETNAME = investment.BudgetYears[dataIndex].BudgetName;
                     yearlyInvestment.AMOUNT = investment.BudgetYears[dataIndex].BudgetAmount;
                 }
                 else

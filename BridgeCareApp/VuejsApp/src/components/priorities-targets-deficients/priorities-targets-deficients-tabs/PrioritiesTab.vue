@@ -2,9 +2,17 @@
     <v-container fluid grid-list-xl>
         <div>
             <v-layout>
-                <v-flex>
-                    <v-btn color="info" @click="onAddPriority">Add</v-btn>
-                    <v-btn color="info lighten-1" @click="onEditBudgets" :disabled="priorities.length === 0">Edit Budgets</v-btn>
+                <v-flex xs3>
+                    <v-btn color="info" @click="onAddPriority"
+                           :disabled="budgetOrder.length === 0 || scenarioInvestmentLibrary.id === 0">
+                        Add
+                    </v-btn>
+                    <v-tooltip v-if="scenarioInvestmentLibrary === null" top>
+                        <template>
+                            <v-icon slot="activator" color="error" class="fas fa-exclamation-circle"></v-icon>
+                        </template>
+                        <span>No applied investment library found</span>
+                    </v-tooltip>
                 </v-flex>
             </v-layout>
             <v-layout>
@@ -30,7 +38,7 @@
                                             <v-text-field readonly :value="props.item.year" @click="setPriorityYear(props.item.year)">
                                             </v-text-field>
                                             <template slot="input">
-                                                <EditPriorityYearDialog :itemYear="priorityYear.toString()"
+                                                <EditPriorityYearDialog :itemYear="priorityYear.toString()" :itemLabel="'Year'"
                                                                         @editedYear="props.item.year = $event" />
                                             </template>
                                         </v-edit-dialog>
@@ -43,20 +51,16 @@
                                     <div v-else>
                                         <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
                                                        @save="onEditBudgetFunding(props.item.priorityId, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item[header.value]"></v-text-field>
+                                            <v-text-field readonly :value="props.item[header.value]" :rules="[rule.fundingPercent]">
+                                            </v-text-field>
                                             <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
+                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line
+                                                              :rules="[rule.fundingPercent]" :mask="'###'">
                                                 </v-text-field>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
                                 </td>
-                                <!--<td>
-
-                                </td>
-                                <td>
-
-                                </td>-->
                             </template>
                         </v-data-table>
                     </div>
@@ -66,14 +70,12 @@
 
         <CreatePriorityDialog :dialogData="createPriorityDialogData" @submit="onSubmitNewPriority" />
 
-        <PrioritiesCriteriaEditor :dialogData="prioritiescriteriaEditorDialogData" @submit="onSubmitPriorityCriteria" />
-
-        <EditBudgetsDialog :dialogData="editBudgetsDialogData" @submit="onSubmitEditedBudgets" />
+        <PrioritiesCriteriaEditor :dialogData="prioritiesCriteriaEditorDialogData" @submit="onSubmitPriorityCriteria" />
 
         <v-footer>
             <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
-                <v-btn color="info" @click="onSavePriorities">Save</v-btn>
-                <v-btn color="error" @click="onCancelChangesToPriorities">Cancel</v-btn>
+                <v-btn color="info" @click="onSavePriorities" :disabled="priorities.length === 0">Save</v-btn>
+                <v-btn color="error" @click="onCancelChangesToPriorities" :disabled="priorities.length === 0">Cancel</v-btn>
             </v-layout>
         </v-footer>
     </v-container>
@@ -83,52 +85,59 @@
     import Vue from 'vue';
     import {Component, Watch, Prop} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {PrioritiesDataTableRow, Priority, PriorityFund} from '@/shared/models/iAM/priority';
+    import {
+        PrioritiesDataTableRow,
+        Priority,
+        PriorityFund
+    } from '@/shared/models/iAM/priority';
     import CreatePriorityDialog from '@/components/priorities-targets-deficients/dialogs/priorities-dialogs/CreatePriorityDialog.vue';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
-    import EditBudgetsDialog from '../../../shared/modals/EditBudgetsDialog.vue';
-    import EditYearDialog from '@/components/priorities-targets-deficients/dialogs/shared/EditYearDialog.vue';
+    import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {clone, isNil, append, concat, isEmpty, any, propEq} from 'ramda';
+    import {clone, isNil, append, any, propEq, groupBy} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {EditedBudget} from '@/shared/models/modals/edit-budgets-dialog';
     import {EditBudgetsDialogData, emptyEditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog';
     import {
         CreatePrioritizationDialogData,
         emptyCreatePrioritizationDialogData
     } from '@/shared/models/modals/create-prioritization-dialog-data';
+    import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import {setItemPropertyValueInList} from '@/shared/utils/setter-utils';
     const ObjectID = require('bson-objectid');
 
     @Component({
         components: {
-            EditBudgetsDialog,
             EditPriorityYearDialog: EditYearDialog, CreatePriorityDialog, PrioritiesCriteriaEditor: CriteriaEditorDialog}
     })
     export default class PrioritiesTab extends Vue {
         @Prop() selectedScenarioId: number;
 
         @State(state => state.priority.priorities) statePriorities: Priority[];
+        @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary;
 
         @Action('savePriorities') savePrioritiesAction: any;
 
         priorities: Priority[] = [];
+        budgetOrder: string[] = [];
         priorityDataTableHeaders: DataTableHeader[] = [
             {text: 'Priority', value: 'priorityLevel', align: 'left', sortable: true, class: '', width: ''},
             {text: 'Year', value: 'year', align: 'left', sortable: true, class: '', width: ''},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''}
         ];
         prioritiesDataTableRows: PrioritiesDataTableRow[] = [];
-        priorityBudgets: string[] = [];
         priorityYear: number = -1;
         selectedPriorityIndex: number = -1;
         createPriorityDialogData: CreatePrioritizationDialogData = clone(emptyCreatePrioritizationDialogData);
-        prioritiescriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        prioritiesCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
+        rule: any = {
+            fundingPercent: (value: number) => (value >= 0 && value <= 100) || 'Value range is 0 to 100'
+        };
 
         /**
          * Sets the priorities list property with a copy of the statePriorities list property when statePriorities list
@@ -140,33 +149,23 @@
         }
 
         /**
-         * Sets the latestPriorityId property when priorities list changes are detected
+         * Sets data table properties by calling functions to set the table columns widths, table headers, and table data
          */
         @Watch('priorities')
         onPrioritiesChanged() {
-            this.setPriorityBudgets();
+            const priorityFunds: PriorityFund[] = [];
+            this.priorities.forEach((priority: Priority) => priorityFunds.push(...priority.priorityFunds));
+            this.budgetOrder = getPropertyValues('budget', priorityFunds);
         }
 
         /**
          * Sets data table properties by calling functions to set the table columns widths, table headers, and table data
          */
-        @Watch('priorityBudgets')
+        @Watch('budgetOrder')
         onPriorityBudgetsChanged() {
             this.setTableColumnsWidth();
             this.setTableHeaders();
             this.setTableData();
-        }
-
-        /**
-         * Sets the priorityBudgets property with the budget names of any priority funds found in the list of priorities
-         */
-        setPriorityBudgets() {
-            let priorityFunds: PriorityFund[] = [];
-            this.priorities.forEach((priority: Priority) => {
-                priorityFunds = concat(priorityFunds, hasValue(priority.priorityFunds) ? priority.priorityFunds : []);
-            });
-
-            this.priorityBudgets = getPropertyValues('budget', priorityFunds) as string[];
         }
 
         /**
@@ -176,7 +175,7 @@
             let criteriaColumnWidth = '';
             let otherColumnsWidth = '12.4%';
 
-            switch (this.priorityBudgets.length) {
+            switch (this.budgetOrder.length) {
                 case 0:
                     criteriaColumnWidth = '75%';
                     break;
@@ -209,10 +208,10 @@
          * priority fund budgets)
          */
         setTableHeaders() {
-            if (hasValue(this.priorityBudgets)) {
-                const budgetHeaders: DataTableHeader[] = this.priorityBudgets.map((budgetName: string) => {
+            if (hasValue(this.budgetOrder)) {
+                const budgetHeaders: DataTableHeader[] = this.budgetOrder.map((budgetName: string) => {
                     return {
-                        text: budgetName,
+                        text: `${budgetName} %`,
                         value: budgetName,
                         sortable: true,
                         align: 'left',
@@ -244,11 +243,16 @@
                     criteria: priority.criteria
                 };
 
-                this.priorityBudgets.forEach((budgetName: string) => {
-                    const priorityFund: PriorityFund = priority.priorityFunds
-                        .find((priorityFund: PriorityFund) => priorityFund.budget === budgetName) as PriorityFund;
+                this.budgetOrder.forEach((budgetName: any) => {
+                    let amount = 100;
+                    if (any(propEq('budget', budgetName), priority.priorityFunds)) {
+                        const priorityFund: PriorityFund = priority.priorityFunds
+                            .find((pf: PriorityFund) => pf.budget === budgetName) as PriorityFund;
+                        amount = priorityFund.funding;
+                    } else {
 
-                    row[budgetName] = hasValue(priorityFund.funding) ? priorityFund.funding.toString() : '0';
+                    }
+                    row[budgetName] = amount.toString();
                 });
 
                 this.prioritiesDataTableRows.push(row);
@@ -275,13 +279,13 @@
             if (!isNil(newPriority)) {
                 newPriority.id = ObjectID.generate();
 
-                if (hasValue(this.priorityBudgets)) {
-                    this.priorityBudgets.forEach((budgetName: string) => {
+                if (hasValue(this.budgetOrder)) {
+                    this.budgetOrder.forEach((budgetName: string) => {
                         newPriority.priorityFunds.push({
                             priorityId: newPriority.id,
                             id: ObjectID.generate(),
                             budget: budgetName,
-                            funding: 0
+                            funding: 100
                         });
                     });
                 }
@@ -290,14 +294,23 @@
             }
         }
 
+        /**
+         * Sets the specified priority's property with the given value in the priorities list
+         * @param priorityId Priority object's id
+         * @param property Priority object's property
+         * @param value The value to set for the Priority object's property
+         */
         onEditPriorityProperty(priorityId: any, property: string, value: any) {
             if (any(propEq('id', priorityId), this.priorities)) {
                 const index: number = this.priorities.findIndex((priority: Priority) => priority.id === priorityId);
-                // @ts-ignore
-                this.priorities[index][property] = value;
+                this.priorities = setItemPropertyValueInList(index, property, value, this.priorities);
             }
         }
 
+        /**
+         * Sets the priorityYear property with the given year value
+         * @param year The year value
+         */
         setPriorityYear(year: number) {
             this.priorityYear = year;
         }
@@ -305,12 +318,13 @@
         /**
          * Sets selectedPriority property with the specified target and sets the criteriaEditorDialogData property
          * values with the selectedPriority.criteria property
-         * @param priority Priority object
+         * @param priorityId Priority object id
+         * @param criteria Priority object criteria
          */
         onEditCriteria(priorityId: any, criteria: string) {
             this.selectedPriorityIndex = this.priorities.findIndex((p: Priority) => p.id === priorityId);
 
-            this.prioritiescriteriaEditorDialogData = {
+            this.prioritiesCriteriaEditorDialogData = {
                 showDialog: true,
                 criteria: criteria
             };
@@ -322,7 +336,7 @@
          * @param criteria CriteriaEditor criteria string result
          */
         onSubmitPriorityCriteria(criteria: string) {
-            this.prioritiescriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+            this.prioritiesCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
                 const priorities = clone(this.priorities);
@@ -330,61 +344,6 @@
                 this.selectedPriorityIndex = -1;
                 this.priorities = priorities;
 
-            }
-        }
-
-        /**
-         * Shows the EditBudgetsDialog by setting the editBudgetsDialogData.showDialog property to true & passes in the
-         * budget names by setting the editBudgetsDialogData.budgets property using the priorityBudgets property
-         */
-        onEditBudgets() {
-            this.editBudgetsDialogData = {
-                showDialog: true,
-                budgets: this.priorityBudgets,
-                canOrderBudgets: false
-            };
-        }
-
-        /**
-         * Re-orders existing priority funds & adds new priority funds for all priorities based on the result (if any)
-         * of the EditBudgetsDialog
-         */
-        onSubmitEditedBudgets(editedBudgets: EditedBudget[]) {
-            this.editBudgetsDialogData = clone(emptyEditBudgetsDialogData);
-
-            if (!isNil(editedBudgets)) {
-                const updatedPriorities: Priority[] = [];
-
-                clone(this.priorities).forEach((priority: Priority) => {
-                    const editedPriorityFunds: PriorityFund[] = [];
-
-                    if (!isEmpty(editedBudgets)) {
-                        editedBudgets.forEach((editedBudget: EditedBudget) => {
-                            if (editedBudget.isNew) {
-                                editedPriorityFunds.push({
-                                    priorityId: priority.id,
-                                    id: ObjectID.generate(),
-                                    budget: editedBudget.name,
-                                    funding: 0
-                                });
-                            } else {
-                                const priorityFund: PriorityFund = priority.priorityFunds
-                                    .find((priorityFund: PriorityFund) =>
-                                        priorityFund.budget === editedBudget.previousName
-                                    ) as PriorityFund;
-                                editedPriorityFunds.push({
-                                    ...priorityFund,
-                                    budget: editedBudget.name
-                                });
-                            }
-                        });
-                    }
-
-                    priority.priorityFunds = editedPriorityFunds;
-                    updatedPriorities.push(priority);
-                });
-
-                this.priorities = updatedPriorities;
             }
         }
 

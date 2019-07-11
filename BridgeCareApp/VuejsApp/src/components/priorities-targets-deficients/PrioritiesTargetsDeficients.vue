@@ -52,6 +52,7 @@
         @Action('getPriorities') getPrioritiesAction: any;
         @Action('getTargets') getTargetsAction: any;
         @Action('getDeficients') getDeficientsAction: any;
+        @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
         selectedScenarioId: number = 0;
         tabs: string[] = ['priorities', 'targets', 'deficients'];
@@ -83,6 +84,7 @@
                 vm.getPrioritiesAction({selectedScenarioId: vm.selectedScenarioId});
                 vm.getTargetsAction({selectedScenarioId: vm.selectedScenarioId});
                 vm.getDeficientsAction({selectedScenarioId: vm.selectedScenarioId});
+                vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId});
             });
         }
 

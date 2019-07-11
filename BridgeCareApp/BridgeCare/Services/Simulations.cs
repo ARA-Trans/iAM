@@ -184,8 +184,7 @@ namespace BridgeCare.Services
                     NUMBERYEARS = 5,
                     INFLATIONRATE = 2,
                     DISCOUNTRATE = 3,
-                    BUDGETORDER = "Rehabilitation,Maintenance,Construction",
-                    DESCRIPTION = "new simulation"
+                    BUDGETORDER = "Rehabilitation,Maintenance,Construction"
                 };
 
                 db.SaveChanges();
