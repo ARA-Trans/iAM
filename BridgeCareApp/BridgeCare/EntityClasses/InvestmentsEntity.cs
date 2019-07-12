@@ -15,8 +15,6 @@ namespace BridgeCare.EntityClasses
         public double? INFLATIONRATE { get; set; }
         public double? DISCOUNTRATE { get; set; }
         public string BUDGETORDER { get; set; }
-        [StringLength(4000)]
-        public string DESCRIPTION { get; set; }
 
         public virtual SimulationEntity SIMULATION { get; set; }
     }

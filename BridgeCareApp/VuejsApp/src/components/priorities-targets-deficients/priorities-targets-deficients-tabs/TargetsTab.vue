@@ -29,7 +29,7 @@
                                                        @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
                                             <v-text-field readonly :value="props.item.year"></v-text-field>
                                             <template slot="input">
-                                                <EditTargetYearDialog :itemYear="props.item.year.toString()"
+                                                <EditTargetYearDialog :itemYear="props.item.year.toString()" :itemLabel="'Year'"
                                                                 @editedYear="props.item.year = $event" />
                                             </template>
                                         </v-edit-dialog>
@@ -53,8 +53,8 @@
 
         <v-footer>
             <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
-                <v-btn color="info" @click="onSaveTargets">Save</v-btn>
-                <v-btn color="error" @click="onCancelChangesToTargets">Cancel</v-btn>
+                <v-btn color="info" @click="onSaveTargets" :disabled="targets.length === 0">Save</v-btn>
+                <v-btn color="error" @click="onCancelChangesToTargets" :disabled="targets.length === 0">Cancel</v-btn>
             </v-layout>
         </v-footer>
     </v-container>
@@ -73,7 +73,7 @@
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import CreateTargetDialog from '@/components/priorities-targets-deficients/dialogs/targets-dialogs/CreateTargetDialog.vue';
-    import EditYearDialog from '@/components/priorities-targets-deficients/dialogs/shared/EditYearDialog.vue';
+    import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
     import {
         CreatePrioritizationDialogData,
         emptyCreatePrioritizationDialogData
