@@ -69,6 +69,14 @@
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyDialog.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyEquationDialog.vue" />
     <Content Include="src\components\performance-editor\PerformanceEditor.vue" />
+    <Content Include="src\components\priorities-targets-deficients\dialogs\deficients-dialogs\CreateDeficientDialog.vue" />
+    <Content Include="src\components\priorities-targets-deficients\dialogs\priorities-dialogs\CreatePriorityDialog.vue" />
+    <Content Include="src\components\priorities-targets-deficients\dialogs\shared\EditYearDialog.vue" />
+    <Content Include="src\components\priorities-targets-deficients\dialogs\targets-dialogs\CreateTargetDialog.vue" />
+    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\DeficientsTab.vue" />
+    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\PrioritiesTab.vue" />
+    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\TargetsTab.vue" />
+    <Content Include="src\components\priorities-targets-deficients\PrioritiesTargetsDeficients.vue" />
     <Content Include="src\components\scenarios\create-scenario-dialog\ScenarioCreationDialog.vue">
       <SubType>Code</SubType>
     </Content>
@@ -124,6 +132,13 @@
     <Folder Include="src\components\investment-editor\investment-editor-dialogs\" />
     <Folder Include="src\components\performance-editor\" />
     <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
+    <Folder Include="src\components\priorities-targets-deficients\" />
+    <Folder Include="src\components\priorities-targets-deficients\dialogs\" />
+    <Folder Include="src\components\priorities-targets-deficients\dialogs\deficients-dialogs\" />
+    <Folder Include="src\components\priorities-targets-deficients\dialogs\priorities-dialogs\" />
+    <Folder Include="src\components\priorities-targets-deficients\dialogs\shared\" />
+    <Folder Include="src\components\priorities-targets-deficients\dialogs\targets-dialogs\" />
+    <Folder Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\" />
     <Folder Include="src\components\scenarios\" />
     <Folder Include="src\components\scenarios\create-scenario-dialog\" />
     <Folder Include="src\components\scenarios\scenarios-dialogs\" />

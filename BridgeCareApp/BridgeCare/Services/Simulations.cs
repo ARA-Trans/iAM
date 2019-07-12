@@ -232,19 +232,19 @@ namespace BridgeCare.Services
                         {
                             YEAR_ = DateTime.Now.Year,
                             BUDGETNAME = "Rehabilitation",
-                            AMOUNT = 10000
+                            AMOUNT = 5000000
                         },
                         new YearlyInvestmentEntity
                         {
                             YEAR_ = DateTime.Now.Year,
                             BUDGETNAME = "Maintenance",
-                            AMOUNT = 10000
+                            AMOUNT = 5000000
                         },
                         new YearlyInvestmentEntity
                         {
                             YEAR_ = DateTime.Now.Year,
                             BUDGETNAME = "Construction",
-                            AMOUNT = 10000
+                            AMOUNT = 5000000
                         }
                     },
                     DEFICIENTS = new List<DeficientsEntity>
@@ -305,8 +305,8 @@ namespace BridgeCare.Services
                     SIMULATIONID = sim.SIMULATIONID,
                     FIRSTYEAR = DateTime.Now.Year,
                     NUMBERYEARS = 5,
-                    INFLATIONRATE = 2,
-                    DISCOUNTRATE = 3,
+                    INFLATIONRATE = 0,
+                    DISCOUNTRATE = 0,
                     BUDGETORDER = "Rehabilitation,Maintenance,Construction",
                     DESCRIPTION = "new simulation"
                 };

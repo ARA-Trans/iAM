@@ -28,7 +28,7 @@ export default class ScenarioService {
      */
     static createScenario(createScenarioData: CreateScenarioData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/CreateNewSimulation', createScenarioData)
+            axiosInstance.post('/api/CreateRunnableSimulation', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
