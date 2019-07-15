@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class PriorityDAL : IPriority
+    public class PriorityDAL : IPriority//, IDisposable
     {
         /// <summary>
         /// Queries for the priorities having the specified scenario id foreign key; returns an empty list if no priorities were found
@@ -22,23 +22,28 @@ namespace BridgeCare.DataAccessLayer
         {
             try
             {
-                // check if there are existing priorities with the given simulation id
-                if (db.Priorities.Any(priority => priority.SIMULATIONID == simulationId))
+                if (db.Investments.Any(investment => investment.SIMULATIONID == simulationId))
                 {
+                    var concatenatedBudgets = db.Investments.Where(investment => investment.SIMULATIONID == simulationId)
+                        .Select(investment => investment.BUDGETORDER).ToList();
+
+                    var budgets = new List<string>();
+                    concatenatedBudgets.ForEach(concatenatedBudgetsString => budgets.AddRange(concatenatedBudgetsString.Split(',')));
+
+                    SavePriorityFundInvestmentData(simulationId, budgets, db);
+
                     // query for existing priorities and their priority funds
                     var priorities = db.Priorities
-                      .Include("PRIORITYFUNDS")
-                      .Where(priority => priority.SIMULATIONID == simulationId);
-                    // check if there are query results
-                    if (priorities.Any())
-                    {
-                        // create PriorityModels from existing priorities and return
-                        var priorityModels = new List<PriorityModel>();
-                        priorities.ToList().ForEach(priority => priorityModels.Add(new PriorityModel(priority)));
+                        .Include(priority => priority.PRIORITYFUNDS)
+                        .Where(priority => priority.SIMULATIONID == simulationId);
 
-                        return priorityModels;
-                    }
+                    // create PriorityModels from existing priorities and return
+                    var priorityModels = new List<PriorityModel>();
+                    priorities.ToList().ForEach(priority => priorityModels.Add(new PriorityModel(priority)));
+
+                    return priorityModels;
                 }
+                
             }
             catch (SqlException ex)
             {
@@ -67,7 +72,7 @@ namespace BridgeCare.DataAccessLayer
             try
             {
                 // query for priorities using the simulation id
-                var existingPriorities = db.Priorities.Include("PRIORITYFUNDS").Where(priority => priority.SIMULATIONID == simulationId).ToList();
+                var existingPriorities = db.Priorities.Include(priority => priority.PRIORITYFUNDS).Where(priority => priority.SIMULATIONID == simulationId).ToList();
                 // check if any priorities were found
                 if (existingPriorities.Any())
                 {
@@ -158,5 +163,67 @@ namespace BridgeCare.DataAccessLayer
             
             return new List<PriorityModel>();
         }
+
+        public void SavePriorityFundInvestmentData(int simulationId, List<string> budgets, BridgeCareContext db)
+        {
+            if (db.Priorities.Any(priority => priority.SIMULATIONID == simulationId))
+            {
+                var priorities = db.Priorities.Include(priority => priority.PRIORITYFUNDS)
+                    .Where(priority => priority.SIMULATIONID == simulationId).ToList();
+
+                priorities.ForEach(priority =>
+                {
+                    if (priority.PRIORITYFUNDS.Any())
+                    {
+                        priority.PRIORITYFUNDS.ToList().ForEach(priorityFund =>
+                        {
+                            if (!budgets.Contains(priorityFund.BUDGET))
+                            {
+                                db.Entry(priorityFund).State = EntityState.Deleted;
+                            }
+                        });
+                    }
+
+                    budgets.ForEach(budget =>
+                    {
+                        priority.PRIORITYFUNDS.Add(new PriorityFundEntity()
+                        {
+                            PRIORITYID = priority.PRIORITYID,
+                            BUDGET = budget,
+                            FUNDING = 100
+                        });
+                    });
+                });
+            }
+            else
+            {
+                List<PriorityFundEntity> newPriorityFunds = new List<PriorityFundEntity>();
+
+                budgets.ForEach(budget =>
+                {
+                    newPriorityFunds.Add(new PriorityFundEntity()
+                    {
+                        BUDGET = budget,
+                        FUNDING = 100
+                    });
+                });
+
+                db.Priorities.Add(new PriorityEntity()
+                {
+                    SIMULATIONID = simulationId,
+                    PRIORITYLEVEL = 1,
+                    CRITERIA = "",
+                    PRIORITYFUNDS = newPriorityFunds,
+                    YEARS = DateTime.Now.Year
+                });
+            }
+
+            db.SaveChanges();
+        }
+
+        /*public void Dispose()
+        {
+            throw new NotImplementedException();
+        }*/
     }
 }

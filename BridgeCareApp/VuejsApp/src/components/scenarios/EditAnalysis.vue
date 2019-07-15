@@ -4,26 +4,25 @@
             <v-layout>
                 <v-flex xs12>
                     <v-layout column fill-height>
+                        <v-layout justify-center fill-height>
+                            <v-spacer></v-spacer>
+                            <v-flex xs1>
+                                <EditYearDialog :itemYear="analysis.startYear.toString()" :itemLabel="'Start Year'"
+                                                :outline="true" @editedYear="onSetStartYear" />
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                        </v-layout>
                         <v-layout justify-center row fill-height>
                             <v-spacer></v-spacer>
-                            <v-flex xs3>
-                                <v-menu v-model="showDatePicker" :close-on-content-click="false"
-                                        :nudge-right="40" lazy transition="scale-transition" offset-y full-width
-                                        min-width="290px">
-                                    <template slot="activator">
-                                        <v-text-field v-model="analysis.startYear" label="Start year" append-icon="event"
-                                                      readonly outline>
-                                        </v-text-field>
-                                    </template>
-                                    <v-date-picker v-model="year" ref="picker" min="1950" reactive no-title
-                                                   @input="onSetStartYear">
-                                    </v-date-picker>
-                                </v-menu>
-                            </v-flex>
                             <v-flex xs3>
                                 <v-text-field v-model.number="analysis.analysisPeriod" type="number"
                                               label="Analysis period" outline>
                                 </v-text-field>
+                            </v-flex>
+                            <v-flex xs3>
+                                <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
+                                          outline>
+                                </v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
                         </v-layout>
@@ -51,16 +50,6 @@
                                 <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
                                 </v-text-field>
                             </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                        <v-layout justify-center fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs3>
-                                <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
-                                          outline>
-                                </v-select>
-                            </v-flex>
-                            <v-flex xs3></v-flex>
                             <v-spacer></v-spacer>
                         </v-layout>
                         <v-layout justify-center fill-height>
@@ -115,9 +104,10 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
 
     @Component({
-        components: {CriteriaEditorDialog}
+        components: {EditYearDialog, CriteriaEditorDialog}
     })
     export default class EditAnalysis extends Vue {
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
@@ -130,7 +120,6 @@
         selectedScenarioId: number = 0;
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
-        year: string = moment().year().toString();
         optimizationTypes: string[] = ['Incremental Benefit/Cost', 'Maximum Benefit', 'Remaining Life/Cost',
             'Conditional RSL/Cost', 'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost',
             'Multi-year Maximum Benefit', 'Multi-year Remaining Life/Cost', 'Multi-year Maximum Life'];
@@ -211,17 +200,6 @@
         }
 
         /**
-         * Sets the activePicker to use 'YEAR' input if showDatePicker is true
-         */
-        @Watch('showDatePicker')
-        onShowDatePickerChanged() {
-            if (this.showDatePicker) {
-                // @ts-ignore
-                this.$nextTick(() => this.$refs.picker.activePicker = 'YEAR');
-            }
-        }
-
-        /**
          * Sets the benefitAttributes & weightingAttributes lists using the numeric attributes from state
          */
         setBenefitAndWeightingAttributes() {
@@ -234,9 +212,7 @@
          * Sets year & analysis.startYear with user selected year
          */
         onSetStartYear(year: string) {
-            this.year = year.substr(0, 4);
-            this.analysis.startYear = parseInt(this.year);
-            this.showDatePicker = false;
+            this.analysis.startYear = parseInt(year);
         }
 
         /**

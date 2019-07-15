@@ -9,7 +9,11 @@
                                 New Library
                             </v-btn>
                             <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
-                                <v-icon left>label</v-icon>Scenario name: {{scenarioInvestmentLibrary.name}}
+                                <v-icon left>label</v-icon>
+                                <span v-if="scenarioInvestmentLibrary !== null">
+                                    Scenario name: {{scenarioInvestmentLibrary.name}}
+                                </span>
+                                <span v-else>Scenario name: No applied investment library</span>
                             </v-chip>
                             <v-select v-if="!hasSelectedInvestmentLibrary || selectedScenarioId > 0"
                                       :items="investmentLibrariesSelectListItems"
@@ -95,7 +99,7 @@
                     </v-layout>
                 </v-flex>
                 <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedInvestmentLibrary && selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id">
+                <v-flex xs12 v-if="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
                             <v-textarea rows="4" no-resize outline label="Description"
@@ -313,7 +317,7 @@
         onSelectedInvestmentLibraryChanged() {
             this.selectedGridRows = [];
 
-            if (this.selectedInvestmentLibrary.id !== 0) {
+            if (hasValue(this.selectedInvestmentLibrary) && this.selectedInvestmentLibrary.id !== 0) {
                 this.hasSelectedInvestmentLibrary = true;
 
                 if (!hasValue(this.selectedInvestmentLibrary.budgetOrder) &&

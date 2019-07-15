@@ -42,8 +42,8 @@
 
         <v-footer>
             <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
-                <v-btn color="info" @click="onSaveDeficients">Save</v-btn>
-                <v-btn color="error" @click="onCancelChangesToDeficients">Cancel</v-btn>
+                <v-btn color="info" @click="onSaveDeficients" :disabled="deficients.length === 0">Save</v-btn>
+                <v-btn color="error" @click="onCancelChangesToDeficients" :disabled="deficients.length === 0">Cancel</v-btn>
             </v-layout>
         </v-footer>
     </v-container>
