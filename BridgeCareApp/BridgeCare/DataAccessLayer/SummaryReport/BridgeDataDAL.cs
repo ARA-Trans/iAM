@@ -105,7 +105,7 @@ namespace BridgeCare.DataAccessLayer
                 var table = "Simulation_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId;
                 if (ex.Number == 207)
                 {
-                    throw new InvalidOperationException($"{table} table does not have all the required simulation variables in the database.");
+                    throw new InvalidOperationException($"{table} table does not have all the required simulation variables in the database to run summary report.");
                 }
                 HandleException.SqlError(ex, table);
             }
