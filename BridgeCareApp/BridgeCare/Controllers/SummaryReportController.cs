@@ -36,8 +36,7 @@ namespace BridgeCare.Controllers
             }
             catch (InvalidOperationException e)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
-                    "Selected Network table and/or simulation table are not present in the database.");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Invalid Operation: " + e.Message);
             }
             catch (OutOfMemoryException)
             {
