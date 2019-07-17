@@ -67,7 +67,11 @@ namespace BridgeCare.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteSimulation(int simulationId)
         {
-            simulations.Delete(simulationId);
+            var rowsAffected = simulations.Delete(simulationId);
+            if(rowsAffected == -1)
+            {
+                return NotFound();
+            }
             return Ok(simulationId);
         }
 

@@ -89,15 +89,20 @@ export default class ScenarioService {
             axiosInstance.delete(`/api/DeleteSimulation/${simulationId}`)
                 .then((response: AxiosResponse<number>) => {
                     if (hasValue(response)) {
-                        nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
-                            .then((res: AxiosResponse<number>) => {
-                                if (hasValue(res)) {
-                                    return resolve(res);
-                                }
-                            })
-                            .catch((error: any) => {
-                                return resolve(error.response);
-                            });
+                        if (response.status == 200) {
+                            nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
+                                .then((res: AxiosResponse<number>) => {
+                                    if (hasValue(res)) {
+                                        return resolve(res);
+                                    }
+                                })
+                                .catch((error: any) => {
+                                    return resolve(error.response);
+                                });
+                        }
+                        if (response.status == 404) {
+                            return resolve(response);
+                        }
                     }
                 })
                 .catch((error: any) => {
