@@ -132,86 +132,6 @@ namespace BridgeCare.DataAccessLayer
             return rowsAffected;
         }
 
-        public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
-        {
-            try
-            {
-                var sim = new SimulationEntity()
-                {
-                    NETWORKID = createSimulationData.NetworkId,
-                    SIMULATION = createSimulationData.Name,
-                    DATE_CREATED = DateTime.Now,
-                    ANALYSIS = "Incremental Benefit/Cost",
-                    BUDGET_CONSTRAINT = "As Budget Permits",
-                    WEIGHTING = "none",
-                    COMMITTED_START = DateTime.Now.Year,
-                    COMMITTED_PERIOD = 5,
-                    TREATMENTS = new List<TreatmentsEntity>
-                    {
-                        new TreatmentsEntity()
-                        {
-                            TREATMENT = "No Treatment",
-                            BEFOREANY = 1,
-                            BEFORESAME = 1,
-                            BUDGET = null,
-                            DESCRIPTION = "Default Treatment",
-                            OMS_IS_EXCLUSIVE = null,
-                            OMS_IS_REPEAT = null,
-                            OMS_REPEAT_START = null,
-                            OMS_REPEAT_INTERVAL = null,
-                            CONSEQUENCES = new List<ConsequencesEntity>
-                            {
-                                new ConsequencesEntity
-                                    {
-                                    ATTRIBUTE_ = "AGE",
-                                    CHANGE_ = "+1"
-                                }
-                            },
-                            FEASIBILITIES = new List<FeasibilityEntity>
-                            {
-                                new FeasibilityEntity
-                                {
-                                    CRITERIA = ""
-                                }
-                            }
-                        }
-                    }
-                };
-
-                db.Simulations.Add(sim);
-                db.SaveChanges();
-
-                sim.INVESTMENTS = new InvestmentsEntity()
-                {
-                    SIMULATIONID = sim.SIMULATIONID,
-                    FIRSTYEAR = DateTime.Now.Year,
-                    NUMBERYEARS = 5,
-                    INFLATIONRATE = 2,
-                    DISCOUNTRATE = 3,
-                    BUDGETORDER = "Rehabilitation,Maintenance,Construction"
-                };
-
-                db.SaveChanges();
-
-                var simulationModel = from contextTable in db.Simulations
-                                      where contextTable.SIMULATIONID == sim.SIMULATIONID
-                                      select new SimulationModel
-                                      {
-                                          SimulationId = contextTable.SIMULATIONID,
-                                          SimulationName = contextTable.SIMULATION,
-                                          NetworkId = contextTable.NETWORKID.Value,
-                                          Created = contextTable.DATE_CREATED,
-                                          LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
-                                          NetworkName = contextTable.NETWORK.NETWORK_NAME
-                                      };
-                return simulationModel.FirstOrDefault();
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "SQL error: New Simulation");
-            }
-            return null;
-        }
         public SimulationModel CreateRunnableSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
         {
             try
@@ -226,10 +146,7 @@ namespace BridgeCare.DataAccessLayer
                     WEIGHTING = "none",
                     COMMITTED_START = DateTime.Now.Year,
                     COMMITTED_PERIOD = 5,
-                    //BENEFIT_LIMIT = 1,
-                    //BENEFIT_VARIABLE = "CONDITIONINDEX",
-                    //JURISDICTION = "LENGTH >=| 8 |",
-                    //SIMULATION_VARIABLES = "AGE	BRIDGE_TYPE	BRIDGE_TYPE_ALT	BUS_PLAN_NETWORK	CONDITIONINDEX	CULV_SEEDED	DECK_AREA	DECK_SEEDED	SUB_SEEDED	SUP_SEEDED	YEAR_BUILT",
+
                     YEARLYINVESTMENTS = new List<YearlyInvestmentEntity>
                     {
                         new YearlyInvestmentEntity
@@ -251,24 +168,6 @@ namespace BridgeCare.DataAccessLayer
                             AMOUNT = 5000000
                         }
                     },
-                    //DEFICIENTS = new List<DeficientsEntity>
-                    //{
-                    //    new DeficientsEntity
-                    //    {
-                    //        ATTRIBUTE_ = "CULV_SEEDED",
-                    //        DEFICIENTNAME = "Culvert",
-                    //        DEFICIENT = 5,
-                    //        PERCENTDEFICIENT = 0
-                    //    }
-                    //},
-                    //PRIORITIES = new List<PriorityEntity>
-                    //{
-                    //    new PriorityEntity
-                    //    {
-                    //        PRIORITYLEVEL = 1,
-                    //        CRITERIA = "[BRIDGE_TYPE]=|B|  AND [BUS_PLAN_NETWORK]=|1| AND [YEAR_BUILT]<=|1983| AND  [DECK_AREA]<|30000| AND [SUB_SEEDED]<=|5|"
-                    //    }
-                    //},
                     TREATMENTS = new List<TreatmentsEntity>
                     {
                         new TreatmentsEntity()
@@ -290,13 +189,6 @@ namespace BridgeCare.DataAccessLayer
                                     CHANGE_ = "+1"
                                 }
                             }
-                            //FEASIBILITIES = new List<FeasibilityEntity>
-                            //{
-                            //    new FeasibilityEntity
-                            //    {
-                            //        CRITERIA = "[BRIDGE_TYPE]=|B|  AND [BUS_PLAN_NETWORK]=|1| AND [SUB_SEEDED]>=|5|  AND [DECK_AREA]>=|30000|"
-                            //    }
-                            //}
                         }
                     }
                 };

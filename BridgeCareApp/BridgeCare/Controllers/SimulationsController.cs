@@ -75,18 +75,6 @@ namespace BridgeCare.Controllers
             return Ok(simulationId);
         }
 
-        [Route("api/CreateNewSimulation")]
-        [HttpPost]
-        public IHttpActionResult CreateNewSimulation([FromBody]CreateSimulationDataModel createSimulationData)
-        {
-            SimulationModel simulationData = simulations.CreateNewSimulation(createSimulationData, db);
-            if (simulationData != null && simulationData.SimulationId > 0)
-            {
-              return Ok(simulationData);
-            }
-            return NotFound();
-        }
-
         [Route("api/CreateRunnableSimulation")]
         [HttpPost]
         public IHttpActionResult CreateRunnableSimulation([FromBody]CreateSimulationDataModel createSimulationData)

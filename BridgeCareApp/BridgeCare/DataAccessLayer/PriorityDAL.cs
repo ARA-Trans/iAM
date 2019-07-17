@@ -30,8 +30,6 @@ namespace BridgeCare.DataAccessLayer
                     var budgets = new List<string>();
                     concatenatedBudgets.ForEach(concatenatedBudgetsString => budgets.AddRange(concatenatedBudgetsString.Split(',')));
 
-                    //SavePriorityFundInvestmentData(simulationId, budgets, db);
-
                     // query for existing priorities and their priority funds
                     var priorities = db.Priorities
                         .Include(priority => priority.PRIORITYFUNDS)
