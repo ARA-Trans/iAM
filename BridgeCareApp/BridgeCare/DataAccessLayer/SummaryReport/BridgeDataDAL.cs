@@ -90,7 +90,7 @@ namespace BridgeCare.DataAccessLayer
 
             var selectSimulationStatement = "SELECT SECTIONID, " + Properties.Resources.DeckSeeded + "0, " + Properties.Resources.SupSeeded + "0, " + Properties.Resources.SubSeeded + "0, " + Properties.Resources.CulvSeeded + "0, " + Properties.Resources.DeckDurationN + "0, " + Properties.Resources.SupDurationN + "0, " + Properties.Resources.SubDurationN + "0, " + Properties.Resources.CulvDurationN + "0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
             try
-            {   
+            {
                 var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString);
                 using (var cmd = new SqlCommand(selectSimulationStatement, connection))
                 {
@@ -102,7 +102,12 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Simulation_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId);
+                var table = "Simulation_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId;
+                if (ex.Number == 207)
+                {
+                    throw new InvalidOperationException($"{table} table does not have all the required simulation variables in the database to run summary report.");
+                }
+                HandleException.SqlError(ex, table);
             }
             catch (OutOfMemoryException ex)
             {
