@@ -231,7 +231,7 @@
                 showDialog: true,
                 heading: 'Warning',
                 choice: true,
-                message: 'Are you sure, you want to delete?'
+                message: 'Are you sure you want to delete?'
             };
 
             this.simulationId = simulationId;
