@@ -28,7 +28,7 @@ export default class ScenarioService {
      */
     static createScenario(createScenarioData: CreateScenarioData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/CreateNewSimulation', createScenarioData)
+            axiosInstance.post('/api/CreateRunnableSimulation', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
@@ -89,15 +89,20 @@ export default class ScenarioService {
             axiosInstance.delete(`/api/DeleteSimulation/${simulationId}`)
                 .then((response: AxiosResponse<number>) => {
                     if (hasValue(response)) {
-                        nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
-                            .then((res: AxiosResponse<number>) => {
-                                if (hasValue(res)) {
-                                    return resolve(res);
-                                }
-                            })
-                            .catch((error: any) => {
-                                return resolve(error.response);
-                            });
+                        if (response.status == 200) {
+                            nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
+                                .then((res: AxiosResponse<number>) => {
+                                    if (hasValue(res)) {
+                                        return resolve(res);
+                                    }
+                                })
+                                .catch((error: any) => {
+                                    return resolve(error.response);
+                                });
+                        }
+                        if (response.status == 404) {
+                            return resolve(response);
+                        }
                     }
                 })
                 .catch((error: any) => {

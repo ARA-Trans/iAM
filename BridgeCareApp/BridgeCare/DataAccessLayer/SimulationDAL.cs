@@ -8,14 +8,15 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Web;
 
-namespace BridgeCare.Services
+namespace BridgeCare.DataAccessLayer
 {
-    public class Simulations : ISimulation
+    public class SimulationDAL : ISimulation
     {
         private readonly BridgeCareContext db;
 
-        public Simulations(BridgeCareContext context)
+        public SimulationDAL(BridgeCareContext context)
         {
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -87,25 +88,26 @@ namespace BridgeCare.Services
         // other tables.
         // The traverse of the DB is setup using [Key] and [ForeignKey] attributes
         // in entity classes
-        public void Delete(int id)
+        public int Delete(int id)
         {
             var sim = db.Simulations.SingleOrDefault(b => b.SIMULATIONID == id);
+            var rowsAffected = -1;
 
             if (sim == null)
             {
-                return;
+                return rowsAffected;
             }
             else
             {
                 db.Entry(sim).State = EntityState.Deleted;
-                db.SaveChanges();
+                rowsAffected  = db.SaveChanges();
             }
 
             int? networkId = sim.NETWORKID;
 
             var select = String.Format
                 ("DROP TABLE IF EXISTS SIMULATION_{0}_{1},REPORT_{0}_{1},BENEFITCOST_{0}_{1},TARGET_{0}_{1}",
-                networkId,id);
+                networkId, id);
 
             var connection = new SqlConnection(db.Database.Connection.ConnectionString);
             try
@@ -126,12 +128,14 @@ namespace BridgeCare.Services
             {
                 connection.Close();
                 HandleException.OutOfMemoryError(ex);
-            }           
+            }
+            return rowsAffected;
         }
 
-        public SimulationModel CreateNewSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
+        public SimulationModel CreateRunnableSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db)
         {
-            try { 
+            try
+            {
                 var sim = new SimulationEntity()
                 {
                     NETWORKID = createSimulationData.NetworkId,
@@ -142,6 +146,28 @@ namespace BridgeCare.Services
                     WEIGHTING = "none",
                     COMMITTED_START = DateTime.Now.Year,
                     COMMITTED_PERIOD = 5,
+
+                    YEARLYINVESTMENTS = new List<YearlyInvestmentEntity>
+                    {
+                        new YearlyInvestmentEntity
+                        {
+                            YEAR_ = DateTime.Now.Year,
+                            BUDGETNAME = "Rehabilitation",
+                            AMOUNT = 5000000
+                        },
+                        new YearlyInvestmentEntity
+                        {
+                            YEAR_ = DateTime.Now.Year,
+                            BUDGETNAME = "Maintenance",
+                            AMOUNT = 5000000
+                        },
+                        new YearlyInvestmentEntity
+                        {
+                            YEAR_ = DateTime.Now.Year,
+                            BUDGETNAME = "Construction",
+                            AMOUNT = 5000000
+                        }
+                    },
                     TREATMENTS = new List<TreatmentsEntity>
                     {
                         new TreatmentsEntity()
@@ -149,7 +175,7 @@ namespace BridgeCare.Services
                             TREATMENT = "No Treatment",
                             BEFOREANY = 1,
                             BEFORESAME = 1,
-                            BUDGET = null,
+                            BUDGET = "Construction,Maintenance,Rehabilitation",
                             DESCRIPTION = "Default Treatment",
                             OMS_IS_EXCLUSIVE = null,
                             OMS_IS_REPEAT = null,
@@ -161,13 +187,6 @@ namespace BridgeCare.Services
                                     {
                                     ATTRIBUTE_ = "AGE",
                                     CHANGE_ = "+1"
-                                }
-                            },
-                            FEASIBILITIES = new List<FeasibilityEntity>
-                            {
-                                new FeasibilityEntity
-                                {
-                                    CRITERIA = ""
                                 }
                             }
                         }
@@ -182,24 +201,29 @@ namespace BridgeCare.Services
                     SIMULATIONID = sim.SIMULATIONID,
                     FIRSTYEAR = DateTime.Now.Year,
                     NUMBERYEARS = 5,
-                    INFLATIONRATE = 2,
-                    DISCOUNTRATE = 3,
+                    INFLATIONRATE = 0,
+                    DISCOUNTRATE = 0,
                     BUDGETORDER = "Rehabilitation,Maintenance,Construction"
                 };
 
                 db.SaveChanges();
 
-                var simulationModel = from contextTable in db.Simulations where contextTable.SIMULATIONID == sim.SIMULATIONID
+                var priorities = new PriorityDAL();
+                var defaultBudgets = new List<string>{"Rehabilitation", "Maintenance" ,"Construction"};
+                priorities.SavePriorityFundInvestmentData(sim.SIMULATIONID, defaultBudgets, db);
+
+                var simulationModel = from contextTable in db.Simulations
+                                      where contextTable.SIMULATIONID == sim.SIMULATIONID
                                       select new SimulationModel
                                       {
-                                        SimulationId = contextTable.SIMULATIONID,
-                                        SimulationName = contextTable.SIMULATION,
-                                        NetworkId = contextTable.NETWORKID.Value,
-                                        Created = contextTable.DATE_CREATED,
-                                        LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
-                                        NetworkName = contextTable.NETWORK.NETWORK_NAME
+                                          SimulationId = contextTable.SIMULATIONID,
+                                          SimulationName = contextTable.SIMULATION,
+                                          NetworkId = contextTable.NETWORKID.Value,
+                                          Created = contextTable.DATE_CREATED,
+                                          LastRun = contextTable.DATE_LAST_RUN ?? DateTime.Now,
+                                          NetworkName = contextTable.NETWORK.NETWORK_NAME
                                       };
-              return simulationModel.FirstOrDefault();
+                return simulationModel.FirstOrDefault();
             }
             catch (SqlException ex)
             {

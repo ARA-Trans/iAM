@@ -46,7 +46,7 @@ namespace BridgeCare
             // Unity.Configuration to the using statements. container.LoadConfiguration();
 
             container.RegisterType<INetwork, Network>();
-            container.RegisterType<ISimulation, Simulations>();
+            container.RegisterType<ISimulation, SimulationDAL>();
             container.RegisterType<ISections, SectionsDAL>();
             container.RegisterType<ISectionLocator, SectionLocatorDAL>();
             container.RegisterType<IDetailedReport, DetailedReportDAL>();
