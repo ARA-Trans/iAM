@@ -222,6 +222,7 @@
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalkDAL.cs" />
     <Compile Include="DataAccessLayer\PriorityDAL.cs" />
     <Compile Include="DataAccessLayer\SimulationAnalysisDAL.cs" />
+    <Compile Include="DataAccessLayer\SimulationDAL.cs" />
     <Compile Include="DataAccessLayer\TreatmentLibraryDAL.cs" />
     <Compile Include="DataAccessLayer\PerformanceLibraryDAL.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\BridgeDataDAL.cs" />
@@ -371,7 +372,6 @@
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
     <Compile Include="Services\Network.cs" />
-    <Compile Include="Services\Simulations.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />

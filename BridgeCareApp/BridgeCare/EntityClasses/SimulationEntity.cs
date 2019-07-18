@@ -29,6 +29,7 @@ namespace BridgeCare.EntityClasses
         public int COMMITTED_PERIOD { get; set; }
         public double BENEFIT_LIMIT { get; set; }
         public string JURISDICTION { get; set; }
+        public string SIMULATION_VARIABLES { get; set; }
         public string BENEFIT_VARIABLE { get; set; }
         [StringLength(8000)]
         public string COMMENTS { get; set; }

@@ -67,18 +67,22 @@ namespace BridgeCare.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteSimulation(int simulationId)
         {
-            simulations.Delete(simulationId);
+            var rowsAffected = simulations.Delete(simulationId);
+            if(rowsAffected == -1)
+            {
+                return NotFound();
+            }
             return Ok(simulationId);
         }
 
-        [Route("api/CreateNewSimulation")]
+        [Route("api/CreateRunnableSimulation")]
         [HttpPost]
-        public IHttpActionResult CreateNewSimulation([FromBody]CreateSimulationDataModel createSimulationData)
+        public IHttpActionResult CreateRunnableSimulation([FromBody]CreateSimulationDataModel createSimulationData)
         {
-            SimulationModel simulationData = simulations.CreateNewSimulation(createSimulationData, db);
+            SimulationModel simulationData = simulations.CreateRunnableSimulation(createSimulationData, db);
             if (simulationData != null && simulationData.SimulationId > 0)
             {
-              return Ok(simulationData);
+                return Ok(simulationData);
             }
             return NotFound();
         }

@@ -109,6 +109,9 @@
             <Alert :dialogData="alertData" @submit="onSubmitAlertResult" />
         </v-flex>
         <v-flex xs12>
+            <Alert :dialogData="alertBeforeDelete" @submit="onSubmitResponse" />
+        </v-flex>
+        <v-flex xs12>
             <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
         </v-flex>
         <v-flex xs12>
@@ -154,6 +157,7 @@
         @Action('updateScenario') updateScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
         showCreateScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
@@ -171,6 +175,7 @@
         networkName: string = '';
         simulationId: number = 0;
         simulationName: string = '';
+        scenarioId: string = '';
         currentScenario: Scenario = clone(emptyScenario);
 
         @Watch('scenarios')
@@ -221,9 +226,30 @@
         }
 
         onDeleteScenario(simulationId: number, id: string) {
+
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+
+            this.simulationId = simulationId;
+            this.scenarioId = id;
+        }
+
+        onSubmitResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deleteScenario();
+            }
+        }
+
+        deleteScenario() {
             this.deleteScenarioAction({
-                simulationId: simulationId,
-                scenarioId: id
+                simulationId: this.simulationId,
+                scenarioId: this.scenarioId
             });
         }
         
