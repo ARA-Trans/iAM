@@ -4,11 +4,22 @@
             <v-flex xs12>
                 <v-card>
                     <v-card-title>
-                        My Scenarios
+                        <v-flex xs4>
+                            My Scenarios
+                        </v-flex>
                         <v-spacer></v-spacer>
-                        <v-text-field v-model="searchMine" append-icon="search" lablel="Search" single-line
-                                      hide-details>
-                        </v-text-field>
+                        <v-flex xs6>
+                            <v-text-field v-model="searchMine" append-icon="search" lablel="Search" single-line
+                                          hide-details>
+                            </v-text-field>
+                        </v-flex>
+                        <v-flex xs-2>
+                            <v-btn round
+                              color="blue-grey"
+                              class="white--text" v-on:click="onUpdateScenarioList()">
+                                Load legacy simulations
+                            </v-btn>
+                        </v-flex>
                     </v-card-title>
                     <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
                         <template slot="items" slot-scope="props">
@@ -150,6 +161,7 @@
         @State(state => state.network.networks) networks: Network[];
         
         @Action('getUserScenarios') getUserScenariosAction: any;
+        @Action('getLegacyScenarios') getLegacyScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('createScenario') createScenarioAction: any;
@@ -201,6 +213,10 @@
          */
         mounted() {
             this.getUserScenariosAction({ userId: this.userId });
+        }
+
+        onUpdateScenarioList() {
+            this.getLegacyScenariosAction({ scenarios: this.scenarios });
         }
 
         getStatus(isCompleted: boolean) {

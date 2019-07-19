@@ -21,6 +21,50 @@ export default class ScenarioService {
         });
     }
 
+    static getLegacyScenarios(scenarios: Scenario[]): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
+
+            axiosInstance.get('api/simulations')
+                .then((responseLegacy: AxiosResponse<Scenario[]>) => {
+                    if (hasValue(responseLegacy)) {
+                        var resultant: Scenario[] = [];
+                        responseLegacy.data.forEach(simulation => {
+
+                            if (hasValue(scenarios)) {
+                                var isPresent = false;
+                                scenarios.forEach(scenario => {
+                                    if (scenario.simulationId == simulation.simulationId) {
+                                        isPresent = true;
+                                        return;
+                                    }
+                                });
+                                if (isPresent == false) {
+                                    resultant.push(simulation);
+                                }
+                            }
+                        });
+                        resultant.forEach(value => { value.shared = false, value.status = 'N/A' });
+
+                        if (resultant.length != 0) {
+
+                            nodejsAxiosInstance.post('api/addMultipleScenarios', resultant)
+                                .then((res: AxiosResponse<Scenario[]>) => {
+                                    if (hasValue(res)) {
+                                        return resolve(res);
+                                    }
+                                })
+                                .catch((error: any) => {
+                                    return resolve(error.response);
+                                });
+                        }
+                    }
+                })
+                .catch((error: any) => {
+                    return resolve(error.response);
+                });
+        });
+    }
+
     /**
      * Creates a new scenario
      * @param createScenarioData Scenario create data

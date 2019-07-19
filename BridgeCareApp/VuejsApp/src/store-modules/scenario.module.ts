@@ -2,6 +2,7 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
 import {clone, append, any, propEq, findIndex, remove} from 'ramda';
+import { hasValue } from '../shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const scenarios: any = {
@@ -51,6 +52,18 @@ const actions = {
                         return convertFromMongoToVueModel(data);
                     });
                 commit('scenariosMutator', scenarios);
+            });
+    },
+    async getLegacyScenarios({ commit }: any, payload: any) {
+        return await ScenarioService.getLegacyScenarios(payload.scenarios)
+            .then((response: AxiosResponse<Scenario[]>) => {
+                if (hasValue(response)) {
+                    const scenarios: Scenario[] = response.data
+                        .map((data: any) => {
+                            return convertFromMongoToVueModel(data);
+                        });
+                    commit('scenariosMutator', scenarios);
+                }
             });
     },
     async createScenario({dispatch, commit}: any, payload: any) {

@@ -1,3 +1,5 @@
+const debug = require('debug')('app:scenarioController');
+
 function scenarioController(Scenario) {
     function post(req, res) {
         const scenario = new Scenario(req.body);
@@ -8,6 +10,30 @@ function scenarioController(Scenario) {
                 return res.json(err);
             }
             res.status(200);
+            return res.json(scenariostatus);
+        });
+    }
+
+    function postMultipleScenarios(req, res) {
+        const multipleScenarios = [];
+        multipleScenarios.push(...req.body);
+        const resultant = [];
+
+        multipleScenarios.forEach(item => {
+            const scenario = new Scenario(item);
+            scenario.save(function (err) {
+                if (err) {
+                    res.status(400);
+                    return res.json(err);
+                }
+                res.status(200);                
+            });
+        });
+
+        Scenario.find((err, scenariostatus) => {
+            if (err) {
+                return res.send(err);
+            }
             return res.json(scenariostatus);
         });
     }
@@ -54,7 +80,7 @@ function scenarioController(Scenario) {
             return res.status(500)
         });
     }
-    return { post, get, deleteScenario, put};
+    return { post, get, deleteScenario, put, postMultipleScenarios};
 }
 
 module.exports = scenarioController;
