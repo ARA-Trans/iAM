@@ -5,6 +5,7 @@ using BridgeCare.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -24,9 +25,13 @@ namespace BridgeCare.DataAccessLayer
             var projectedAttributesAndValues = new List<AttributeByYearModel>();
             try
             {
-                var selectStatement = string.Format("SELECT * FROM SIMULATION_{0}_{1} WHERE SectionID={2}",
-                segmentAddressModel.NetworkId, segmentAddressModel.SimulationId, segmentAddressModel.SectionId);
-                projectedAttributesAndValues = GeneralAttributeValueQuery(selectStatement);
+                var query = $"SELECT * FROM SIMULATION_{segmentAddressModel.NetworkId}_{segmentAddressModel.SimulationId} WHERE SectionID = @sectionId";
+                var sectionIdParameter = new SqlParameter()
+                {
+                    ParameterName = "@sectionId",
+                    Value = segmentAddressModel.SectionId
+                };
+                projectedAttributesAndValues = GeneralAttributeValueQuery(query, sectionIdParameter);
             }
             catch (SqlException ex)
             {
@@ -40,11 +45,13 @@ namespace BridgeCare.DataAccessLayer
             var historicalAttributes = new List<AttributeByYearModel>();
             try
             {
-                var selectStatement = String.Format(
-                    "SELECT * FROM SEGMENT_{0}_NS0 WHERE SectionID={1}",
-                    sectionModel.NetworkId, sectionModel.SectionId);
-
-                historicalAttributes = GeneralAttributeValueQuery(selectStatement);
+                var query = $"SELECT * FROM SEGMENT_{sectionModel.NetworkId}_NS0 WHERE SectionID = @sectionId";
+                var sectionIdParameter = new SqlParameter()
+                {
+                    ParameterName = "@sectionId",
+                    Value = sectionModel.SectionId
+                };
+                historicalAttributes = GeneralAttributeValueQuery(query, sectionIdParameter);
             }
             catch (SqlException ex)
             {
@@ -53,16 +60,26 @@ namespace BridgeCare.DataAccessLayer
             return historicalAttributes;
         }
 
-        public List<AttributeByYearModel> GeneralAttributeValueQuery(string selectStatement)
+        public List<AttributeByYearModel> GeneralAttributeValueQuery(string query, SqlParameter sectionIdParameter)
         {
             try
             {
-                DataTable queryReturnValues = UtilityFunctions.NonEntitySQLQuery(selectStatement, db);
+                // open db connection
+                var connection = new SqlConnection(db.Database.Connection.ConnectionString);
+                connection.Open();
+                // create sql command with parameterized query and connection
+                var sqlCommand = new SqlCommand(query, connection);
+                // add the sectionId parameter
+                sqlCommand.Parameters.Add(sectionIdParameter);
+                // create a data table from the reader
+                var queryReturnValues = new DataTable();
+                queryReturnValues.Load(sqlCommand.ExecuteReader());
+                // create the attributes list and return
                 return DataTableToAttributeList(queryReturnValues);
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Query:" + selectStatement);
+                HandleException.SqlError(ex, "Query:" + query);
             }
             catch (OutOfMemoryException ex)
             {
