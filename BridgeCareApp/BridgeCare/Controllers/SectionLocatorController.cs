@@ -20,6 +20,6 @@ namespace BridgeCare.Controllers
 
         // Get: api/SectionLocator
         [ModelValidation("Given section data is not valid")]
-        public IQueryable<SectionLocationModel> Get(SectionModel sectionModel) => SectionLocator.Locate(sectionModel, db);
+        public SectionLocationModel Get(SectionModel sectionModel) => SectionLocator.Locate(sectionModel, db);
     }
 }
