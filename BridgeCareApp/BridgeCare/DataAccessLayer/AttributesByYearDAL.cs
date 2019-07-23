@@ -73,7 +73,14 @@ namespace BridgeCare.DataAccessLayer
                 sqlCommand.Parameters.Add(sectionIdParameter);
                 // create a data table from the reader
                 var queryReturnValues = new DataTable();
-                queryReturnValues.Load(sqlCommand.ExecuteReader());
+                // create data reader from sql command
+                var dataReader = sqlCommand.ExecuteReader();
+                // use the data reader to load the data table
+                queryReturnValues.Load(dataReader);
+                // close the data reader
+                dataReader.Close();
+                // close the connection
+                connection.Close();
                 // create the attributes list and return
                 return DataTableToAttributeList(queryReturnValues);
             }
