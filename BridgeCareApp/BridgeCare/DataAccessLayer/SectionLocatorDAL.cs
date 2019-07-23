@@ -17,6 +17,7 @@ namespace BridgeCare.DataAccessLayer
         {
             try
             {
+                var sectionLocationModel = new SectionLocationModel();
                 // Including isnull statments to change these to '0' to avoid an
                 // exception as mapping a null to a non nullable data type
                 // crashes the entity framwork
@@ -35,20 +36,20 @@ namespace BridgeCare.DataAccessLayer
                 });
                 // create data reader from the sql command
                 var dataReader = sqlCommand.ExecuteReader();
-                // check if data reader has rows
-                if (dataReader.HasRows)
+                // check if data reader has rows and can execute a Read
+                if (dataReader.HasRows && dataReader.Read())
                 {
-                    // if data reader can execute a Read, then get the section location details and return
-                    if (dataReader.Read())
-                    {
-                        return new SectionLocationModel()
-                        {
-                            SectionId = dataReader.GetFieldValue<int>(0),
-                            Latitude = dataReader.GetFieldValue<double>(1),
-                            Longitude = dataReader.GetFieldValue<double>(2)
-                        };
-                    }
+                    // get the section location details
+                    sectionLocationModel.SectionId = dataReader.GetFieldValue<int>(0);
+                    sectionLocationModel.Latitude = dataReader.GetFieldValue<double>(1);
+                    sectionLocationModel.Longitude = dataReader.GetFieldValue<double>(2);
                 }
+                // close the data reader
+                dataReader.Close();
+                // close the connection
+                connection.Close();
+                // return the sectionLocationModel
+                return sectionLocationModel;
             }
             catch (SqlException ex)
             {
