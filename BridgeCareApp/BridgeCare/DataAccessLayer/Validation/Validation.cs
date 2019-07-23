@@ -148,44 +148,102 @@ namespace BridgeCare.DataAccessLayer
             return;
         }
 
-        public String NumberOfHits(String criteria, BridgeCareContext db)
+        public string NumberOfHits(string criteria, BridgeCareContext db)
         {
+            // create the sql select statement
             var strNetworkID = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
-            String strFrom = " FROM SECTION_" + strNetworkID + " INNER JOIN SEGMENT_" + strNetworkID + "_NS0 ON SECTION_" + strNetworkID + ".SECTIONID=SEGMENT_" + strNetworkID + "_NS0.SECTIONID";
-
-            string strWhere = criteria.Replace("[", "");
-            strWhere = strWhere.Replace("]", "");
-            strWhere = strWhere.Replace("@", "");
-
+            string strFrom = "FROM SECTION_" + strNetworkID + " INNER JOIN SEGMENT_" + strNetworkID + "_NS0 ON SECTION_" + strNetworkID + ".SECTIONID=SEGMENT_" + strNetworkID + "_NS0.SECTIONID";
             //oracle chokes on non-space whitespace
             Regex whiteSpaceMechanic = new Regex(@"\s+");
-            strWhere = whiteSpaceMechanic.Replace(strWhere, " ");
-
-            String strSelect = "SELECT COUNT(*)" + strFrom;
-            strSelect += " WHERE ";
-            strSelect += strWhere;
-
+            // modify the critiera string replacing all special characters and white space
+            var modifiedCriteria = whiteSpaceMechanic.Replace(criteria.Replace("[", "").Replace("]", "").Replace("@", ""), " ");
+            // parameterize the criteria pedicate and add it to the select
+            var parameterizedCriteriaData = parameterizeCriteria(modifiedCriteria);
+            string strSelect = $"SELECT COUNT(*) {strFrom} WHERE {parameterizedCriteriaData.ParameterizedPredicatesString}";
+            // create a sql connection
             var connection = new SqlConnection(db.Database.Connection.ConnectionString);
             try
             {
-                SqlCommand cmd = new SqlCommand(strSelect, connection);
+                // open the connection
                 connection.Open();
-                string count = cmd.ExecuteScalar().ToString();
+                // create a sql command with the select string and the connection
+                SqlCommand cmd = new SqlCommand(strSelect, connection);
+                // add the command parameters
+                cmd.Parameters.AddRange(parameterizedCriteriaData.SqlParameters.ToArray());
+                // execute the query
+                var dataReader = cmd.ExecuteReader();
+                // get the returned count
+                var count = dataReader.HasRows ? dataReader.GetValue(0) : 0;
+                // close the data reader
+                dataReader.Close();
+                // close the connection
                 connection.Close();
+                // return the results
                 return count + " results match query";
             }
             catch (SqlException e)
             {
-                throw new System.InvalidOperationException(e.Message);
+                throw new System.InvalidOperationException($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
             }
             catch (Exception e2)
             {
                 throw new System.InvalidOperationException(e2.Message);
             }
-            catch
+        }
+
+        public ParameterizedCriteriaData parameterizeCriteria(string criteria)
+        {
+            var parameterizedCriteriaPredicates = new List<string>();
+            var sqlParameters = new List<SqlParameter>();
+            var operators = new List<string>(){"<=", ">=", "<>", "=", "<", ">"};
+            var operatorsRegex = new Regex(@"<=|>=|<>|=|<|>");
+            var parameterCount = 0;
+
+            var predicates = criteria.Split(' ');
+            foreach (var predicate in predicates)
             {
-                throw new System.InvalidOperationException("Failed SQL Query:" + strSelect);
+                if (operatorsRegex.IsMatch(predicate))
+                {
+                    foreach (var @operator in operators)
+                    {
+                        if (predicate.Contains(@operator))
+                        {
+                            // count number of closed parentheses
+                            var closedParenthesesCount = predicate.Count(x => x == ')');
+                            // split the predicate at the operator
+                            var splitPredicate = predicate.Split(new[] { @operator }, StringSplitOptions.None);
+                            // create the parameter name
+                            var parameterName = $"@value{++parameterCount}";
+                            // create a parameterized predicate string
+                            var parameterizedPredicate = $"{splitPredicate[0]} {@operator} {parameterName}";
+                            // add a number of closed parentheses equal to closedParenthesesCount to end of parameterizedPredicate
+                            if (closedParenthesesCount > 0)
+                            {
+                                for (int i = 0; i < closedParenthesesCount; i++)
+                                {
+                                    parameterizedPredicate += ")";
+                                }
+                            }
+                            // create the parameter value
+                            var value = splitPredicate[1].Replace(")", "");
+                            // add the parameterizedPredicate to the criteriaParameterizedPredicates list
+                            parameterizedCriteriaPredicates.Add(parameterizedPredicate);
+                            // create a new sql parameter with parameterName and value
+                            sqlParameters.Add(new SqlParameter()
+                            {
+                                ParameterName = parameterName,
+                                Value = value
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    parameterizedCriteriaPredicates.Add(predicate);
+                }
             }
+
+            return new ParameterizedCriteriaData(string.Join(" ", parameterizedCriteriaPredicates), sqlParameters);
         }
     }
 }
