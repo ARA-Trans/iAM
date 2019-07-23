@@ -4,10 +4,11 @@
             <v-flex xs12>
                 <v-card>
                     <v-card-title>
-                        <v-flex xs4>
+                        <v-flex xs3>
                             My Scenarios
                         </v-flex>
                         <v-spacer></v-spacer>
+                        
                         <v-flex xs6>
                             <v-text-field v-model="searchMine" append-icon="search" lablel="Search" single-line
                                           hide-details>
