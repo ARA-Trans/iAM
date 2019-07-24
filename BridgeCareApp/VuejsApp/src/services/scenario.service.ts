@@ -4,6 +4,7 @@ import { axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance
 import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
+import { any, propEq } from 'ramda';
 
 export default class ScenarioService {
     static getUserScenarios(userId: string): AxiosPromise {
@@ -30,20 +31,12 @@ export default class ScenarioService {
                         var resultant: Scenario[] = [];
                         responseLegacy.data.forEach(simulation => {
 
-                            if (hasValue(scenarios)) {
-                                var isPresent = false;
-                                scenarios.forEach(scenario => {
-                                    if (scenario.simulationId == simulation.simulationId) {
-                                        isPresent = true;
-                                        return;
-                                    }
-                                });
-                                if (isPresent == false) {
-                                    resultant.push(simulation);
-                                }
+                            if (!any(propEq('simulationId', simulation.simulationId), scenarios)) {
+                                simulation.shared = false;
+                                simulation.status = 'N/A';
+                                resultant.push(simulation);
                             }
                         });
-                        resultant.forEach(value => { value.shared = false, value.status = 'N/A' });
 
                         if (resultant.length != 0) {
 
