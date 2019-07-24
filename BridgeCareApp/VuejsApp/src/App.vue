@@ -12,7 +12,8 @@
     import iziToast from 'izitoast';
     import {axiosInstance} from '@/shared/utils/axios-instance';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {getErrorMessage} from '@/shared/utils/http-utils';
+    import {getErrorMessage, setContentTypeCharset} from "@/shared/utils/http-utils";
+    import metaInfo from './meta';
 
     @Component({
         components: {TopNavbar}
@@ -72,6 +73,7 @@
         mounted() {
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
+                request.headers = setContentTypeCharset(request.headers);
                 this.setIsBusyAction({isBusy: true});
                 return request;
             };
@@ -81,10 +83,17 @@
             );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {
+                response.headers = setContentTypeCharset(response.headers);
                 this.setIsBusyAction({isBusy: false});
                 return response;
             };
             const errorHandler = (error: AxiosError) => {
+                if (error.request) {
+                    error.request.headers = setContentTypeCharset(error.request.headers);
+                }
+                if (error.response) {
+                    error.response.headers = setContentTypeCharset(error.response.headers);
+                }
                 this.setIsBusyAction({isBusy: false});
                 this.setErrorMessageAction({message: getErrorMessage(error)});
             };

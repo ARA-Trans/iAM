@@ -16,6 +16,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 import 'izitoast/dist/js/iziToast.min';
 // @ts-ignore
 import VueWorker from 'vue-worker';
+import Meta from 'vue-meta';
 
 Vue.use(Vuetify, {
     iconfont: 'fa'
@@ -24,6 +25,8 @@ Vue.use(Vuetify, {
 Vue.use(VueSocketio, io(process.env.VUE_APP_NODE_URL), { store });
 
 Vue.use(VueWorker);
+
+Vue.use(Meta);
 
 Vue.config.productionTip = false;
 

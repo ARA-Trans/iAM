@@ -14,6 +14,22 @@ export const setStatusMessage = (response: AxiosResponse) => {
     return ': An unknown error occurred. Make sure you have internet connectivity then try again.';
 };
 
+export const setContentTypeCharset = (headers: any) => {
+    if (headers.hasOwnProperty('Content-Type')) {
+        if (!headers['Content-Type'].match(/utf-8/gi)) {
+            headers['Content-Type'] = `${headers['Content-Type']}; charset=utf-8`;
+        }
+
+    }
+    if (headers.hasOwnProperty('content-type')) {
+        if (!headers['content-type'].match(/utf-8/gi)) {
+            headers['content-type'] = `${headers['content-type']}; charset=utf-8`;
+        }
+    }
+
+    return headers;
+};
+
 export const getErrorMessage = (error: AxiosError) => {
     if (hasValue(error)) {
         if (hasValue(prop('response', error))) {
