@@ -4,7 +4,7 @@
             <v-flex xs12>
                 <v-card>
                     <v-card-title>
-                        <v-flex xs3>
+                        <v-flex xs4>
                             My Scenarios
                         </v-flex>
                         <v-spacer></v-spacer>
@@ -18,7 +18,7 @@
                             <v-btn round
                               color="blue-grey"
                               class="white--text" v-on:click="onUpdateScenarioList()">
-                                Load legacy simulations
+                                Load legacy scenarios
                             </v-btn>
                         </v-flex>
                     </v-card-title>
