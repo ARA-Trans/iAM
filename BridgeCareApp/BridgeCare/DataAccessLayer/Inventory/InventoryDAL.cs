@@ -4,6 +4,8 @@ using BridgeCare.Models;
 using BridgeCare.Utility;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Configuration.Internal;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -20,10 +22,9 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         public InventoryModel GetInventoryByBMSId(string bmsId, BridgeCareContext db)
         {
-            var query = GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalkDAL.InventoryItems);
-            query += " FROM PennDot_Report_A WHERE BRIDGE_ID = '" + bmsId + "'";
+            var selectStatement = $"{GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalkDAL.InventoryItems)} FROM PennDot_Report_A WHERE BRIDGE_ID = @value";
             
-            var BridgeData = GetInventoryModelData(db, query);
+            var BridgeData = GetInventoryModelData(db, selectStatement, bmsId);
             return BridgeData;
         }
 
@@ -35,10 +36,9 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         public InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db)
         {
-            var query = GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalkDAL.InventoryItems);
-            query += " FROM PennDot_Report_A WHERE BRKEY = " + brKey;
+            var selectStatement = $"{GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalkDAL.InventoryItems)} FROM PennDot_Report_A WHERE BRKEY = @value";
            
-            var BridgeData = GetInventoryModelData(db, query);
+            var BridgeData = GetInventoryModelData(db, selectStatement, brKey);
             return BridgeData;
         }
 
@@ -70,7 +70,7 @@ namespace BridgeCare.DataAccessLayer
 
         private static string GetSelectColumnsForPennDotCrosswalk(List<InventoryItemModel> inventoryItems)
         {
-            var query = "SELECT ";
+            var query = "SELECT";
             var separator = " ";
             foreach (var inventoryItem in inventoryItems)
             {
@@ -81,19 +81,49 @@ namespace BridgeCare.DataAccessLayer
             return query;
         }
 
-        private InventoryModel GetInventoryModelData(BridgeCareContext db, string query)
+        private InventoryModel GetInventoryModelData<T>(BridgeCareContext db, String selectStatement, T paramValue)
         {
             InventoryModel BridgeData = new InventoryModel();
             try
             {
-                DataTable dataTable = UtilityFunctions.NonEntitySQLQuery(query, db);
-                foreach (InventoryItemModel inventoryItemModel in PennDotCrosswalkDAL.InventoryItems)
+                // create and open a connection to the database
+                var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString);
+                connection.Open();
+                // create a sql command and add the value parameter
+                var sqlCommand = new SqlCommand(selectStatement, connection);
+                sqlCommand.Parameters.Add(new SqlParameter()
                 {
-                    BridgeData.AddModel(inventoryItemModel, dataTable.Rows[0][inventoryItemModel.ColumnName].ToString());
+                    ParameterName = "@value",
+                    Value = paramValue
+                });
+                // get the data
+                var dataReader = sqlCommand.ExecuteReader();
+                // check for data returned
+                if (dataReader.HasRows)
+                {
+                    var dataContent = "";
+                    // read the data
+                    while (dataReader.Read())
+                    {
+                        var columnIndex = 0;
+                        // create inventory item models from data
+                        foreach (InventoryItemModel inventoryItemModel in PennDotCrosswalkDAL.InventoryItems)
+                        {
+                            if (columnIndex == 0)
+                            {
+                                // get the brkey value to add nbi load rating to the model
+                                var brKey = Convert.ToInt32(dataReader["BRKEY"]);
+                                AddNbiLoadRatingToModel(BridgeData, brKey, db);
+                            }
+                            BridgeData.AddModel(inventoryItemModel, dataReader.GetValue(columnIndex).ToString());
+                            columnIndex++;
+                        }
+                    }
                 }
-
-                var brKey = Convert.ToInt32(dataTable.Rows[0]["BRKEY"]);
-                AddNbiLoadRaingToModel(BridgeData, brKey, db);
+                // close the dataReader
+                dataReader.Close();
+                // close the connection
+                connection.Close();
             }
             catch (SqlException ex)
             {
@@ -103,10 +133,14 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.OutOfMemoryError(ex);
             }
+            catch (Exception ex)
+            {
+                HandleException.GeneralError(ex);
+            }
             return BridgeData;
         }
 
-        private static void AddNbiLoadRaingToModel(InventoryModel BridgeData, int brKey, BridgeCareContext db)
+        private static void AddNbiLoadRatingToModel(InventoryModel BridgeData, int brKey, BridgeCareContext db)
         {
             var nbiLoadRatingQuery = GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalkDAL.NbiLoadRatingInventoryItems);
             nbiLoadRatingQuery += " FROM PENNDOT_NBI_LOAD_RATING WHERE BRKEY = " + brKey;

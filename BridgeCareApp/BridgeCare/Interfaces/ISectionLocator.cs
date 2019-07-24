@@ -5,6 +5,6 @@ namespace BridgeCare.Interfaces
 {
     public interface ISectionLocator
     {
-        IQueryable<SectionLocationModel> Locate(SectionModel section, BridgeCareContext db);
+        SectionLocationModel Locate(SectionModel section, BridgeCareContext db);
     }
 }
