@@ -4,6 +4,7 @@ import { axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance
 import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
+import { any, propEq } from 'ramda';
 
 export default class ScenarioService {
     static getUserScenarios(userId: string): AxiosPromise {
@@ -13,6 +14,42 @@ export default class ScenarioService {
                 .then((response: AxiosResponse<Scenario[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);
+                    }
+                })
+                .catch((error: any) => {
+                    return resolve(error.response);
+                });
+        });
+    }
+
+    static getLegacyScenarios(scenarios: Scenario[]): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
+
+            axiosInstance.get('api/simulations')
+                .then((responseLegacy: AxiosResponse<Scenario[]>) => {
+                    if (hasValue(responseLegacy)) {
+                        var resultant: Scenario[] = [];
+                        responseLegacy.data.forEach(simulation => {
+
+                            if (!any(propEq('simulationId', simulation.simulationId), scenarios)) {
+                                simulation.shared = false;
+                                simulation.status = 'N/A';
+                                resultant.push(simulation);
+                            }
+                        });
+
+                        if (resultant.length != 0) {
+
+                            nodejsAxiosInstance.post('api/addMultipleScenarios', resultant)
+                                .then((res: AxiosResponse<Scenario[]>) => {
+                                    if (hasValue(res)) {
+                                        return resolve(res);
+                                    }
+                                })
+                                .catch((error: any) => {
+                                    return resolve(error.response);
+                                });
+                        }
                     }
                 })
                 .catch((error: any) => {

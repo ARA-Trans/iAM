@@ -14,6 +14,9 @@ function routes(Scenario){
         scenarioRouter.route("/updateScenarios/:scenarioId")
         .put(controller.put);
 
+        scenarioRouter.route("/addMultipleScenarios")
+        .post(controller.postMultipleScenarios);
+
         return scenarioRouter;
 }
 

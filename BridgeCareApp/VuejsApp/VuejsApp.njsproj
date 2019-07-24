@@ -62,16 +62,14 @@
     <Content Include="src\assets\images\under-construction.png" />
     <Content Include="src\assets\logo.svg" />
     <Content Include="src\components\Inventory.vue" />
-    <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentStrategyDialog.vue" />
-    <Content Include="src\components\investment-editor\investment-editor-dialogs\EditBudgetsDialog.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentLibraryDialog.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\SetRangeForAddingBudgetYearsDialog.vue" />
     <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
-    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyDialog.vue" />
-    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceStrategyEquationDialog.vue" />
+    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryDialog.vue" />
+    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryEquationDialog.vue" />
     <Content Include="src\components\performance-editor\PerformanceEditor.vue" />
     <Content Include="src\components\priorities-targets-deficients\dialogs\deficients-dialogs\CreateDeficientDialog.vue" />
     <Content Include="src\components\priorities-targets-deficients\dialogs\priorities-dialogs\CreatePriorityDialog.vue" />
-    <Content Include="src\components\priorities-targets-deficients\dialogs\shared\EditYearDialog.vue" />
     <Content Include="src\components\priorities-targets-deficients\dialogs\targets-dialogs\CreateTargetDialog.vue" />
     <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\DeficientsTab.vue" />
     <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\PrioritiesTab.vue" />
@@ -87,7 +85,7 @@
     <Content Include="src\components\scenarios\scenarios-dialogs\ReportsDownloaderDialog.vue" />
     <Content Include="src\components\scenarios\Scenarios.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
-    <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentStrategyDialog.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentLibraryDialog.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-tabs\BudgetsTab.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-tabs\ConsequencesTab.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-tabs\CostsTab.vue" />
@@ -111,6 +109,8 @@
     </Content>
     <Content Include="src\shared\modals\Alert.vue" />
     <Content Include="src\shared\modals\CriteriaEditorDialog.vue" />
+    <Content Include="src\shared\modals\EditBudgetsDialog.vue" />
+    <Content Include="src\shared\modals\EditYearDialog.vue" />
     <Content Include="src\shared\modals\EquationEditorDialog.vue" />
     <Content Include="src\shared\modals\Spinner.vue" />
     <Content Include="tsconfig.json" />
