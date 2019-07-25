@@ -27,7 +27,6 @@
     "socket.io-client": "^2.2.0",
     "vue": "2.5.17",
     "vue-class-component": "6.0.0",
-    "vue-meta": "2.0.5",
     "vue-property-decorator": "7.0.0",
     "vue-query-builder": "0.7.1",
     "vue-router": "^3.0.1",

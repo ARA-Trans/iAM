@@ -12,8 +12,7 @@
     import iziToast from 'izitoast';
     import {axiosInstance} from '@/shared/utils/axios-instance';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {getErrorMessage, setContentTypeCharset} from "@/shared/utils/http-utils";
-    import metaInfo from './meta';
+    import {getErrorMessage, setContentTypeCharset} from '@/shared/utils/http-utils';
 
     @Component({
         components: {TopNavbar}
@@ -79,7 +78,7 @@
             };
             // set axios request interceptor to use request handler
             axiosInstance.interceptors.request.use(
-                request => requestHandler(request)
+                (request: any) => requestHandler(request)
             );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {
@@ -99,8 +98,8 @@
             };
             // set axios response handler to use success & error Handler
             axiosInstance.interceptors.response.use(
-                response => successHandler(response),
-                error => errorHandler(error)
+                (response: any) => successHandler(response),
+                (error: any) => errorHandler(error)
             );
         }
     }
