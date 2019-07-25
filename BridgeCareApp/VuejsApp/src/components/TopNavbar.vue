@@ -69,6 +69,9 @@
     import {Component} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import Spinner from '../shared/modals/Spinner.vue';
+    import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+    import { getErrorMessage } from '@/shared/utils/http-utils';
+    import {axiosInstance} from '@/shared/utils/axios-instance';
 
     @Component({
         components: {Spinner}
@@ -82,8 +85,36 @@
         @Action('getNetworks') getNetworksAction: any;
         @Action('setNavigation') setNavigationAction: any;
         @Action('getAttributes') getAttributesAction: any;
+        @Action('setIsBusy') setIsBusyAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         drawer: boolean = false;
+
+        created() {
+            // create a request handler
+            const requestHandler = (request: AxiosRequestConfig) => {
+                this.setIsBusyAction({isBusy: true});
+                return request;
+            };
+            // set axios request interceptor to use request handler
+            axiosInstance.interceptors.request.use(
+                request => requestHandler(request)
+            );
+            // create a success & error handler
+            const successHandler = (response: AxiosResponse) => {
+                this.setIsBusyAction({isBusy: false});
+                return response;
+            };
+            const errorHandler = (error: AxiosError) => {
+                this.setIsBusyAction({isBusy: false});
+                this.setErrorMessageAction({message: getErrorMessage(error)});
+            };
+            // set axios response handler to use success & error Handler
+            axiosInstance.interceptors.response.use(
+                response => successHandler(response),
+                error => errorHandler(error)
+            );
+        }
 
         /**
          * Component has been mounted: Dispatches an action to authenticate the current user, then if user is authenticated
