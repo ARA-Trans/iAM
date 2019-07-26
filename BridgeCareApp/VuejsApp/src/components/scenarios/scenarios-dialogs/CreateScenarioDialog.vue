@@ -29,7 +29,7 @@
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
     import {
-        CreateScenarioData, emptyCreateScenarioData
+        ScenarioCreationData, emptyCreateScenarioData
     } from '@/shared/models/modals/scenario-creation-data';
     import {clone} from 'ramda';
 
@@ -37,7 +37,7 @@
     export default class CreateScenarioDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        createScenarioData: CreateScenarioData = clone(emptyCreateScenarioData);
+        createScenarioData: ScenarioCreationData = clone(emptyCreateScenarioData);
 
         /**
          * 'Submit' button has been clicked

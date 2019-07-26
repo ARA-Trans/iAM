@@ -23,7 +23,7 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Get: api/InventoryItemDetailByBMSId
         /// </summary>
-        [Route("api/InventoryItemDetailByBMSId")]
+        [Route("api/GetInventoryItemDetailByBmsId")]
         [ModelValidation("Given BMSId is not valid")]        
         [HttpGet]
         public InventoryItemDetailModel Get(string bmsId)
@@ -37,7 +37,7 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Get: api/InventoryItemDetailByBRKey
         /// </summary>
-        [Route("api/InventoryItemDetailByBRKey")]
+        [Route("api/GetInventoryItemDetailByBrKey")]
         [ModelValidation("Given BRKey is not valid")]
         [HttpGet]
         public InventoryItemDetailModel Get(int brKey)
@@ -51,7 +51,7 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Get: api/InventorySelectionModels
         /// </summary>
-        [Route("api/InventorySelectionModels")]       
+        [Route("api/GetInventory")]       
         [HttpGet]
         public List<InventorySelectionModel> Get()
         {
