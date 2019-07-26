@@ -70,8 +70,8 @@
     import {Action, State} from 'vuex-class';
     import Spinner from '../shared/modals/Spinner.vue';
     import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-    import { getErrorMessage } from '@/shared/utils/http-utils';
-    import {axiosInstance} from '@/shared/utils/axios-instance';
+    import { getErrorMessage, setContentTypeCharset } from '@/shared/utils/http-utils';
+    import { axiosInstance } from '@/shared/utils/axios-instance';
 
     @Component({
         components: {Spinner}
@@ -93,26 +93,34 @@
         created() {
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
+                request.headers = setContentTypeCharset(request.headers);
                 this.setIsBusyAction({isBusy: true});
                 return request;
             };
             // set axios request interceptor to use request handler
             axiosInstance.interceptors.request.use(
-                request => requestHandler(request)
+                (request: any) => requestHandler(request)
             );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {
+                response.headers = setContentTypeCharset(response.headers);
                 this.setIsBusyAction({isBusy: false});
                 return response;
             };
             const errorHandler = (error: AxiosError) => {
+                if (error.request) {
+                    error.request.headers = setContentTypeCharset(error.request.headers);
+                }
+                if (error.response) {
+                    error.response.headers = setContentTypeCharset(error.response.headers);
+                }
                 this.setIsBusyAction({isBusy: false});
                 this.setErrorMessageAction({message: getErrorMessage(error)});
             };
             // set axios response handler to use success & error Handler
             axiosInstance.interceptors.response.use(
-                response => successHandler(response),
-                error => errorHandler(error)
+                (response: any) => successHandler(response),
+                (error: any) => errorHandler(error)
             );
         }
 
