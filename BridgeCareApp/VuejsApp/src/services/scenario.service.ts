@@ -150,10 +150,6 @@ export default class ScenarioService {
      * @param userId Current user's id
      */
     static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
-        /*return new Promise<AxiosResponse<any>>((resolve) => {
-            return axiosInstance.post('/api/RunSimulation', selectedScenario);
-
-        });*/
         return axiosInstance.post('/api/RunSimulation', selectedScenario);
     }
 }
