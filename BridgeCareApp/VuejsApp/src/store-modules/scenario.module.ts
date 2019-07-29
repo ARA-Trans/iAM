@@ -1,8 +1,9 @@
 import {Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
-import {clone, append, any, propEq, findIndex, remove} from 'ramda';
+import {clone, any, propEq, findIndex, remove} from 'ramda';
 import { hasValue } from '../shared/utils/has-value-util';
+import prepend from 'ramda/es/prepend';
 
 const convertFromMongoToVueModel = (data: any) => {
     const scenarios: any = {
@@ -24,7 +25,7 @@ const mutations = {
         state.scenarios = clone(scenarios);
     },
     createdScenarioMutator(state: any, createdScenario: Scenario) {
-        state.scenarios = append(createdScenario, state.scenarios);
+        state.scenarios = prepend(createdScenario, state.scenarios);
     },
     updatedScenarioMutator(state: any, updatedScenario: Scenario) {
         if (any(propEq('id', updatedScenario.id), state.scenarios)) {

@@ -72,6 +72,7 @@
     import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
     import { getErrorMessage, setContentTypeCharset } from '@/shared/utils/http-utils';
     import { axiosInstance } from '@/shared/utils/axios-instance';
+    import { hasValue } from '../shared/utils/has-value-util';
 
     @Component({
         components: {Spinner}
@@ -108,7 +109,8 @@
                 return response;
             };
             const errorHandler = (error: AxiosError) => {
-                if (error.request) {
+
+                if (error.request && hasValue(error.request.header)) {
                     error.request.headers = setContentTypeCharset(error.request.headers);
                 }
                 if (error.response) {

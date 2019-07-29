@@ -1,6 +1,7 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {UserInformation} from '@/shared/models/iAM/user-information';
+import { hasValue } from '../shared/utils/has-value-util';
 
 const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
 
@@ -32,9 +33,11 @@ const actions = {
     async authenticateUser({dispatch, commit }: any) {
         return await AuthenticationService.authenticateUser()
             .then((response: AxiosResponse<UserInformation>) => {
-                commit('loginMutator', false);
-                commit('userNameMutator', response.data.name);
-                commit('userIdMutator', response.data.id);
+                if (hasValue(response)) {
+                    commit('loginMutator', false);
+                    commit('userNameMutator', response.data.name);
+                    commit('userIdMutator', response.data.id);
+                }
             });
     }
 };
