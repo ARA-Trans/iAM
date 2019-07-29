@@ -146,7 +146,7 @@
         emptyReportsDownloadDialogData,
         ReportsDownloaderDialogData
     } from '@/shared/models/modals/reports-downloader-dialog-data';
-    import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
+    import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
     import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
     import { clone } from 'ramda';
@@ -161,7 +161,7 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
         
-        @Action('getUserScenarios') getUserScenariosAction: any;
+        @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('getLegacyScenarios') getLegacyScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
         @Action('setNavigation') setNavigationAction: any;
@@ -213,7 +213,7 @@
          * Component has been mounted
          */
         mounted() {
-            this.getUserScenariosAction({ userId: this.userId });
+            this.getMongoScenariosAction({ userId: this.userId });
         }
 
         onUpdateScenarioList() {
@@ -345,7 +345,7 @@
             });
         }
 
-        onSubmitNewScenario(createScenarioData: CreateScenarioData) {
+        onSubmitNewScenario(createScenarioData: ScenarioCreationData) {
             this.showCreateScenarioDialog = false;
 
             if (hasValue(createScenarioData)) {

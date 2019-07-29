@@ -1,16 +1,15 @@
 import {AxiosPromise, AxiosResponse} from 'axios';
 import {Scenario} from '@/shared/models/iAM/scenario';
 import { axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {CreateScenarioData} from '@/shared/models/modals/scenario-creation-data';
+import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 import { any, propEq } from 'ramda';
 
 export default class ScenarioService {
-    static getUserScenarios(userId: string): AxiosPromise {
+    static getMongoScenarios(): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-
-            nodejsAxiosInstance.get('api/scenarios')
+            nodejsAxiosInstance.get('api/GetMongoScenarios')
                 .then((response: AxiosResponse<Scenario[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);
@@ -24,13 +23,11 @@ export default class ScenarioService {
 
     static getLegacyScenarios(scenarios: Scenario[]): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-
-            axiosInstance.get('api/simulations')
+            axiosInstance.get('api/GetScenarios')
                 .then((responseLegacy: AxiosResponse<Scenario[]>) => {
                     if (hasValue(responseLegacy)) {
                         var resultant: Scenario[] = [];
                         responseLegacy.data.forEach(simulation => {
-
                             if (!any(propEq('simulationId', simulation.simulationId), scenarios)) {
                                 simulation.shared = false;
                                 simulation.status = 'N/A';
@@ -39,8 +36,7 @@ export default class ScenarioService {
                         });
 
                         if (resultant.length != 0) {
-
-                            nodejsAxiosInstance.post('api/addMultipleScenarios', resultant)
+                            nodejsAxiosInstance.post('api/AddMultipleScenarios', resultant)
                                 .then((res: AxiosResponse<Scenario[]>) => {
                                     if (hasValue(res)) {
                                         return resolve(res);
@@ -63,9 +59,9 @@ export default class ScenarioService {
      * @param createScenarioData Scenario create data
      * @param userId Current user's id
      */
-    static createScenario(createScenarioData: CreateScenarioData, userId: string): AxiosPromise {
+    static createScenario(createScenarioData: ScenarioCreationData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/CreateRunnableSimulation', createScenarioData)
+            axiosInstance.post('/api/CreateRunnableScenario', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
@@ -73,7 +69,7 @@ export default class ScenarioService {
                             shared: false,
                             status: 'New scenario'
                         };
-                        nodejsAxiosInstance.post('api/scenarios', scenarioToTrackStatus)
+                        nodejsAxiosInstance.post('api/GetMongoScenarios', scenarioToTrackStatus)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
@@ -94,13 +90,13 @@ export default class ScenarioService {
         });
     }
 
-    static updateScenario(updateScenarioData: Simulation, scenarioId: string): AxiosPromise {
+    static updateScenario(scenarioUpdateData: Simulation, scenarioId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/UpdateSimulationName', updateScenarioData)
+            axiosInstance.post('/api/UpdateScenario', scenarioUpdateData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
 
-                        nodejsAxiosInstance.put(`api/updateScenarios/${scenarioId}`, updateScenarioData)
+                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenarioId}`, scenarioUpdateData)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
@@ -121,13 +117,13 @@ export default class ScenarioService {
         });
     }
 
-    static deleteScenario(simulationId: number, scenarioId: string): AxiosPromise {
+    static deleteScenario(scenarioId: number, scenarioMongoId: string): AxiosPromise {
         return new Promise<AxiosResponse<number>>((resolve) => {
-            axiosInstance.delete(`/api/DeleteSimulation/${simulationId}`)
+            axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`)
                 .then((response: AxiosResponse<number>) => {
                     if (hasValue(response)) {
                         if (response.status == 200) {
-                            nodejsAxiosInstance.delete(`api/scenarios/${scenarioId}`)
+                            nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${scenarioMongoId}`)
                                 .then((res: AxiosResponse<number>) => {
                                     if (hasValue(res)) {
                                         return resolve(res);
@@ -154,9 +150,6 @@ export default class ScenarioService {
      * @param userId Current user's id
      */
     static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
-        return new Promise<AxiosResponse<any>>((resolve) => {
-            return axiosInstance.post('/api/RunSimulation', selectedScenario);
-
-        });
+        return axiosInstance.post('/api/RunSimulation', selectedScenario);
     }
 }

@@ -2,7 +2,8 @@ import {Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
 import {clone, append, any, propEq, findIndex, remove} from 'ramda';
-import { hasValue } from '../shared/utils/has-value-util';
+import {hasValue} from '@/shared/utils/has-value-util';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const scenarios: any = {
@@ -44,8 +45,8 @@ const mutations = {
 };
 
 const actions = {
-    async getUserScenarios({commit}: any, payload: any) {
-        return await ScenarioService.getUserScenarios(payload.userId)
+    async getMongoScenarios({commit}: any, payload: any) {
+        return await ScenarioService.getMongoScenarios()
             .then((response: AxiosResponse<Scenario[]>) => {
                 const scenarios: Scenario[] = response.data
                     .map((data: any) => {
@@ -76,8 +77,10 @@ const actions = {
     },
     async runSimulation({dispatch, commit}: any, payload: any) {
         await ScenarioService.runScenarioSimulation(payload.selectedScenario, payload.userId)
-            .then((response: AxiosResponse<Scenario>) => {
-                dispatch('setSuccessMessage', {message: 'Simulation started'});
+            .then((response: AxiosResponse<any>) => {
+                if (http2XX.test(response.status.toString())) {
+                    dispatch('setSuccessMessage', {message: 'Simulation started'});
+                }
             });
     },
     async deleteScenario({ dispatch, commit }: any, payload: any) {

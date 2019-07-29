@@ -1,8 +1,10 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Mvc;
 
 namespace BridgeCare.Controllers
 {
@@ -20,11 +22,11 @@ namespace BridgeCare.Controllers
         // POST: api/RunSimulation
         public async Task<IHttpActionResult> Post([FromBody]SimulationModel data)
         {
-            var result = await Task.Factory.StartNew(() => { return simulation.Start(data); });
+            var result = await Task.Factory.StartNew(() => simulation.Start(data));
             if (result.IsCompleted)
             {
                 simulation.SetLastRunDate(data.SimulationId, db);
-                return Ok(result);
+                return Ok();
             }
             return NotFound();
         }

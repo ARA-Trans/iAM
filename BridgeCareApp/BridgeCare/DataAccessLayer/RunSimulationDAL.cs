@@ -26,7 +26,6 @@ namespace BridgeCare.DataAccessLayer
             {
                 HandleException.SqlError(ex, "Update Simulation Run Date");
             }
-            return;
         }
 
         public Task<string> Start(SimulationModel data)
