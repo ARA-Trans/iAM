@@ -6,7 +6,7 @@ export default class InventoryService {
      * Gets a list of inventory items
      */
     static getInventory(): AxiosPromise {
-        return axiosInstance.get('/api/InventorySelectionModels');
+        return axiosInstance.get('/api/GetInventory');
     }
 
     /**
@@ -14,7 +14,7 @@ export default class InventoryService {
      * @param bmsId number
      */
     static getInventoryItemDetailByBMSId(bmsId: number): AxiosPromise {
-        return axiosInstance.get('/api/InventoryItemDetailByBMSId', {params: {'bmsId': bmsId}});
+        return axiosInstance.get('/api/GetInventoryItemDetailByBmsId', {params: {'bmsId': bmsId}});
     }
 
     /**
@@ -22,6 +22,6 @@ export default class InventoryService {
      * @param brKey number
      */
     static getInventoryItemDetailByBRKey(brKey: number): AxiosPromise {
-        return axiosInstance.get('/api/InventoryItemDetailByBRKey', {params: {'brKey': brKey}});
+        return axiosInstance.get('/api/GetInventoryItemDetailByBrKey', {params: {'brKey': brKey}});
     }
 }

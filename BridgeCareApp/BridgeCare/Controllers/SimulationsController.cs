@@ -20,14 +20,19 @@ namespace BridgeCare.Controllers
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // GET: api/Simulations
+        // GET: api/GetScenarios
+        [Route("api/GetScenarios")]
+        [HttpGet]
         public IQueryable<SimulationModel> GetSimulations()
         {
             return simulations.GetAllSimulations();
         }
 
-        // GET: api/Simulations/5
+        // GET: api/GetScenario/#
+        [ModelValidation("Given scenario id is not valid")]
         [ResponseType(typeof(SimulationEntity))]
+        [Route("api/GetScenario/{scenarioId}")]
+        [HttpGet]
         public IHttpActionResult GetSimulation(int id)
         {
             // this `id` is network id
@@ -53,8 +58,8 @@ namespace BridgeCare.Controllers
             return db.Simulations.Count(e => e.SIMULATIONID == id) > 0;
         }
 
-        [ModelValidation("Given simulation is not valid")]
-        [Route("api/UpdateSimulationName")]
+        [ModelValidation("Given scenario data is not valid")]
+        [Route("api/UpdateScenario")]
         [HttpPost]
         public IHttpActionResult UpdateSimulationName([FromBody]SimulationModel data)
         {
@@ -62,20 +67,21 @@ namespace BridgeCare.Controllers
             return Ok();
         }
 
-        [ModelValidation("Given simulation is not valid")]
-        [Route("api/DeleteSimulation/{simulationId}")]
+        [ModelValidation("Given scenario id is not valid")]
+        [Route("api/DeleteScenario/{scenarioId}")]
         [HttpDelete]
-        public IHttpActionResult DeleteSimulation(int simulationId)
+        public IHttpActionResult DeleteSimulation(int scenarioId)
         {
-            var rowsAffected = simulations.Delete(simulationId);
+            var rowsAffected = simulations.Delete(scenarioId);
             if(rowsAffected == -1)
             {
                 return NotFound();
             }
-            return Ok(simulationId);
+            return Ok(scenarioId);
         }
 
-        [Route("api/CreateRunnableSimulation")]
+        [ModelValidation("Given scenario data is not valid")]
+        [Route("api/CreateRunnableScenario")]
         [HttpPost]
         public IHttpActionResult CreateRunnableSimulation([FromBody]CreateSimulationDataModel createSimulationData)
         {
