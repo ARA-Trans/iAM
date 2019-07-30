@@ -22,24 +22,13 @@
                                       class="elevation-1 fixed-header v-table__overflow" hide-actions>
                             <template slot="items" slot-scope="props">
                                 <td v-for="header in priorityDataTableHeaders">
-                                    <div v-if="header.value === 'priorityLevel'">
-                                        <v-edit-dialog :return-value.sync="props.item.priorityLevel" large lazy persistent
+                                    <div v-if="header.value === 'priorityLevel' || header.value === 'year'">
+                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
                                                        @save="onEditPriorityProperty(props.item.priorityId, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item.priorityLevel"></v-text-field>
+                                            <v-text-field readonly :value="props.item[header.value]"></v-text-field>
                                             <template slot="input">
-                                                <v-text-field v-model="props.item.priorityLevel" label="Edit" single-line>
+                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
                                                 </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                    <div v-else-if="header.value === 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item.year" large lazy persistent
-                                                       @save="onEditPriorityProperty(props.item.priorityId, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item.year" @click="setPriorityYear(props.item.year)">
-                                            </v-text-field>
-                                            <template slot="input">
-                                                <EditPriorityYearDialog :itemYear="priorityYear.toString()" :itemLabel="'Year'"
-                                                                        @editedYear="props.item.year = $event" />
                                             </template>
                                         </v-edit-dialog>
                                     </div>
@@ -303,7 +292,8 @@
         onEditPriorityProperty(priorityId: any, property: string, value: any) {
             if (any(propEq('id', priorityId), this.priorities)) {
                 const index: number = this.priorities.findIndex((priority: Priority) => priority.id === priorityId);
-                this.priorities = setItemPropertyValueInList(index, property, value, this.priorities);
+                const setValue = hasValue(value) ? value : 0;
+                this.priorities = setItemPropertyValueInList(index, property, setValue, this.priorities);
             }
         }
 
