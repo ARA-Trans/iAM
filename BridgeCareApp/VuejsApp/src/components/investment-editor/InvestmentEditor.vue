@@ -4,17 +4,12 @@
             <v-layout column>
                 <v-flex xs12>
                     <v-layout justify-center fill-height>
-                        <v-flex xs3>
-                            <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onNewLibrary">
+                        <v-flex xs2 v-if="selectedScenarioId === 0">
+                            <v-btn color="info" v-on:click="onNewLibrary">
                                 New Library
                             </v-btn>
-                            <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
-                                <v-icon left>label</v-icon>
-                                <span v-if="scenarioInvestmentLibrary !== null">
-                                    Scenario name: {{scenarioInvestmentLibrary.name}}
-                                </span>
-                                <span v-else>Scenario name: No applied investment library</span>
-                            </v-chip>
+                        </v-flex>
+                        <v-flex xs3>
                             <v-select v-if="!hasSelectedInvestmentLibrary || selectedScenarioId > 0"
                                       :items="investmentLibrariesSelectListItems"
                                       label="Select an Investment library" outline v-model="selectItemValue">
@@ -25,6 +20,7 @@
                             </v-text-field>
                         </v-flex>
                     </v-layout>
+                    <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
                     <v-layout v-if="hasSelectedInvestmentLibrary" justify-center fill-height>
                         <v-flex xs2>
                             <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
@@ -40,7 +36,6 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
                 <v-flex xs12 v-if="hasSelectedInvestmentLibrary">
                     <v-layout justify-center fill-height>
                         <v-flex xs6>
@@ -65,36 +60,34 @@
                     </v-layout>
                     <v-layout justify-center fill-height>
                         <v-flex xs8>
-                            <v-layout fill-height>
-                                <div class="investment-editor-data-table">
-                                    <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
-                                                  v-model="selectedGridRows" select-all item-key="year"
-                                                  class="elevation-1 fixed-header v-table__overflow" hide-actions>
-                                        <template slot="items" slot-scope="props">
-                                            <td>
-                                                <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                            </td>
-                                            <td v-for="header in budgetYearsGridHeaders">
-                                                <div v-if="header.value !== 'year'">
-                                                    <v-edit-dialog :return-value.sync="props.item[header.value]"
-                                                                   large lazy persistent
-                                                                   @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
-                                                        {{props.item[header.value]}}
-                                                        <template slot="input">
-                                                            <v-text-field v-model="props.item[header.value]"
-                                                                          label="Edit" single-line>
-                                                            </v-text-field>
-                                                        </template>
-                                                    </v-edit-dialog>
-                                                </div>
-                                                <div v-if="header.value === 'year'">
-                                                    {{props.item.year}}
-                                                </div>
-                                            </td>
-                                        </template>
-                                    </v-data-table>
-                                </div>
-                            </v-layout>
+                            <v-card>
+                                <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
+                                                v-model="selectedGridRows" select-all item-key="year"
+                                                class="elevation-1 fixed-header v-table__overflow">
+                                    <template slot="items" slot-scope="props">
+                                        <td>
+                                            <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                        </td>
+                                        <td v-for="header in budgetYearsGridHeaders">
+                                            <div v-if="header.value !== 'year'">
+                                                <v-edit-dialog :return-value.sync="props.item[header.value]"
+                                                                large lazy persistent
+                                                                @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
+                                                    {{props.item[header.value]}}
+                                                    <template slot="input">
+                                                        <v-text-field v-model="props.item[header.value]"
+                                                                        label="Edit" single-line>
+                                                        </v-text-field>
+                                                    </template>
+                                                </v-edit-dialog>
+                                            </div>
+                                            <div v-if="header.value === 'year'">
+                                                {{props.item.year}}
+                                            </div>
+                                        </td>
+                                    </template>
+                                </v-data-table>
+                            </v-card>
                         </v-flex>
                     </v-layout>
                 </v-flex>
@@ -703,11 +696,6 @@
     .investment-editor-container {
         height: 730px;
         overflow-x: hidden;
-        overflow-y: auto;
-    }
-
-    .investment-editor-data-table {
-        height: 205px;
         overflow-y: auto;
     }
 </style>
