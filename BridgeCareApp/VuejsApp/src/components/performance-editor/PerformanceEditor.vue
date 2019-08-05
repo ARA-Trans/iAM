@@ -31,96 +31,96 @@
                             </v-btn>
                         </v-flex>
                     </v-layout>
-                            <v-layout justify-center fill-height class="data-table">
-                                    <v-flex xs8>
-                                        <v-card>
-                                            <v-card-title>
-                                                Performance equation
-                                                <v-spacer></v-spacer>
-                                                <v-text-field v-model="searchEquation" append-icon="search" lablel="Search" single-line
-                                                              hide-details>
-                                                </v-text-field>
-                                            </v-card-title>
-                                            <v-data-table :headers="equationsGridHeaders"
-                                                          :items="equationsGridData"
-                                                          item-key="performanceLibraryEquationId"
-                                                          class="elevation-1 fixed-header v-table__overflow"
-                                                          :search="searchEquation">
-                                                <template slot="items" slot-scope="props">
-                                                    <td class="text-xs-center">
-                                                        <v-edit-dialog @save="onEditEquationProperty(props.item.id, 'equationName', props.item.equationName)"
-                                                                       :return-value.sync="props.item.equationName"
-                                                                       large lazy persistent>
-                                                            <v-text-field class="equation-name-text-field-output" readonly :value="props.item.equationName"></v-text-field>
-                                                            <template slot="input">
-                                                                <v-text-field v-model="props.item.equationName"
-                                                                              label="Edit" single-line>
-                                                                </v-text-field>
-                                                            </template>
-                                                        </v-edit-dialog>
-                                                    </td>
-                                                    <td class="text-xs-center">
-                                                        <v-edit-dialog @save="onEditEquationProperty(props.item.id, 'attribute', props.item.attribute)"
-                                                                       :return-value.sync="props.item.attribute"
-                                                                       large lazy persistent>
-                                                            <v-text-field class="attribute-text-field-output" readonly :value="props.item.attribute"></v-text-field>
-                                                            <template slot="input">
-                                                                <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
-                                                                          label="Edit">
-                                                                </v-select>
-                                                            </template>
-                                                        </v-edit-dialog>
-                                                    </td>
-                                                    <td class="text-xs-center">
-                                                        <v-menu v-if="props.item.equation !== ''" left min-width="500px"
-                                                                min-height="500px">
-                                                            <template slot="activator">
-                                                                <v-btn flat icon>
-                                                                    <v-icon>visibility</v-icon>
-                                                                </v-btn>
-                                                            </template>
-                                                            <v-card>
-                                                                <v-card-text>
-                                                                    <v-textarea rows="5" no-resize readonly full-width outline
-                                                                                :value="props.item.equation">
-                                                                    </v-textarea>
-                                                                </v-card-text>
-                                                            </v-card>
-                                                        </v-menu>
-                                                        <v-btn flat icon color="success" v-on:click="onShowEquationEditorDialog(props.item.id)">
-                                                            <v-icon>edit</v-icon>
-                                                        </v-btn>
-                                                    </td>
-                                                    <td class="text-xs-center">
-                                                        <v-menu v-if="props.item.criteria !== ''" right min-width="500px"
-                                                                min-height="500px">
-                                                            <template slot="activator">
-                                                                <v-btn flat icon>
-                                                                    <v-icon>visibility</v-icon>
-                                                                </v-btn>
-                                                            </template>
-                                                            <v-card>
-                                                                <v-card-text>
-                                                                    <v-textarea rows="5" no-resize readonly full-width outline
-                                                                                :value="props.item.criteria">
-                                                                    </v-textarea>
-                                                                </v-card-text>
-                                                            </v-card>
-                                                        </v-menu>
-                                                        <v-btn flat icon color="success" v-on:click="onShowCriteriaEditorDialog(props.item.id)">
-                                                            <v-icon>edit</v-icon>
-                                                        </v-btn>
-                                                    </td>
-                                                    <td class="text-xs-center">
-                                                        <v-btn flat icon color="error" v-on:click="onDeleteEquation(props.item.id)">
-                                                            <v-icon>delete</v-icon>
-                                                        </v-btn>
-                                                    </td>
+                    <v-layout justify-center fill-height>
+                        <v-flex xs8>
+                            <v-card>
+                                <v-card-title>
+                                    Performance equation
+                                    <v-spacer></v-spacer>
+                                    <v-text-field v-model="searchEquation" append-icon="search" lablel="Search" single-line
+                                                    hide-details>
+                                    </v-text-field>
+                                </v-card-title>
+                                <v-data-table :headers="equationsGridHeaders"
+                                                :items="equationsGridData"
+                                                item-key="performanceLibraryEquationId"
+                                                class="elevation-1 fixed-header v-table__overflow"
+                                                :search="searchEquation">
+                                    <template slot="items" slot-scope="props">
+                                        <td class="text-xs-center">
+                                            <v-edit-dialog @save="onEditEquationProperty(props.item.id, 'equationName', props.item.equationName)"
+                                                            :return-value.sync="props.item.equationName"
+                                                            large lazy persistent>
+                                                <v-text-field class="equation-name-text-field-output" readonly :value="props.item.equationName"></v-text-field>
+                                                <template slot="input">
+                                                    <v-text-field v-model="props.item.equationName"
+                                                                    label="Edit" single-line>
+                                                    </v-text-field>
                                                 </template>
-                                            </v-data-table>
-                                        </v-card>
-                                        </v-flex>
-                            </v-layout>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td class="text-xs-center">
+                                            <v-edit-dialog @save="onEditEquationProperty(props.item.id, 'attribute', props.item.attribute)"
+                                                            :return-value.sync="props.item.attribute"
+                                                            large lazy persistent>
+                                                <v-text-field class="attribute-text-field-output" readonly :value="props.item.attribute"></v-text-field>
+                                                <template slot="input">
+                                                    <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
+                                                                label="Edit">
+                                                    </v-select>
+                                                </template>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td class="text-xs-center">
+                                            <v-menu v-if="props.item.equation !== ''" left min-width="500px"
+                                                    min-height="500px">
+                                                <template slot="activator">
+                                                    <v-btn flat icon>
+                                                        <v-icon>visibility</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <v-card>
+                                                    <v-card-text>
+                                                        <v-textarea rows="5" no-resize readonly full-width outline
+                                                                    :value="props.item.equation">
+                                                        </v-textarea>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-menu>
+                                            <v-btn flat icon color="success" v-on:click="onShowEquationEditorDialog(props.item.id)">
+                                                <v-icon>edit</v-icon>
+                                            </v-btn>
+                                        </td>
+                                        <td class="text-xs-center">
+                                            <v-menu v-if="props.item.criteria !== ''" right min-width="500px"
+                                                    min-height="500px">
+                                                <template slot="activator">
+                                                    <v-btn flat icon>
+                                                        <v-icon>visibility</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <v-card>
+                                                    <v-card-text>
+                                                        <v-textarea rows="5" no-resize readonly full-width outline
+                                                                    :value="props.item.criteria">
+                                                        </v-textarea>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-menu>
+                                            <v-btn flat icon color="success" v-on:click="onShowCriteriaEditorDialog(props.item.id)">
+                                                <v-icon>edit</v-icon>
+                                            </v-btn>
+                                        </td>
+                                        <td class="text-xs-center">
+                                            <v-btn flat icon color="error" v-on:click="onDeleteEquation(props.item.id)">
+                                                <v-icon>delete</v-icon>
+                                            </v-btn>
+                                        </td>
+                                    </template>
+                                </v-data-table>
+                            </v-card>
+                            </v-flex>
+                    </v-layout>
                 </v-flex>
                 <v-divider v-if="hasSelectedPerformanceLibrary"></v-divider>
                 <v-flex xs12 v-if="hasSelectedPerformanceLibrary  && selectedPerformanceLibrary.id !== scenarioPerformanceLibrary.id">
@@ -663,11 +663,6 @@
         overflow-y: auto;
     }
 
-    .data-table {
-        height: 559px;
-        overflow-y: auto;
-    }
-
     .equation-name-text-field-output {
         margin-left: 10px;
     }
@@ -681,6 +676,6 @@
     }
 
     .header-height{
-        height: 50px;
+        height: 45px;
     }
 </style>
