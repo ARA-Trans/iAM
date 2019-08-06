@@ -145,7 +145,7 @@ namespace BridgeCare.DataAccessLayer
                     BUDGET_CONSTRAINT = "As Budget Permits",
                     WEIGHTING = "none",
                     COMMITTED_START = DateTime.Now.Year,
-                    COMMITTED_PERIOD = 5,
+                    COMMITTED_PERIOD = 1,
 
                     YEARLYINVESTMENTS = new List<YearlyInvestmentEntity>
                     {

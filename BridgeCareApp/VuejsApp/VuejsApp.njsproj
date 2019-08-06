@@ -240,6 +240,7 @@
     <TypeScriptCompile Include="src\shared\utils\has-value-util.ts" />
     <TypeScriptCompile Include="src\shared\utils\http-utils.ts" />
     <TypeScriptCompile Include="src\shared\utils\math-utils.ts" />
+    <TypeScriptCompile Include="src\shared\utils\setter-utils.ts" />
     <TypeScriptCompile Include="src\shared\utils\sorter-utils.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />

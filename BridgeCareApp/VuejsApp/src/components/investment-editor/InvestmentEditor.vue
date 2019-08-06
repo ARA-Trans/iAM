@@ -60,36 +60,34 @@
             </v-layout>
             <v-layout justify-center>
                 <v-flex xs8>
-                    <v-layout>
-                        <div class="investment-editor-data-table">
-                            <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
-                                          v-model="selectedGridRows" select-all item-key="year"
-                                          class="elevation-1 fixed-header v-table__overflow">
-                                <template slot="items" slot-scope="props">
-                                    <td>
-                                        <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                    </td>
-                                    <td v-for="header in budgetYearsGridHeaders">
-                                        <div v-if="header.value !== 'year'">
-                                            <v-edit-dialog :return-value.sync="props.item[header.value]"
-                                                           large lazy persistent
-                                                           @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
-                                                {{props.item[header.value]}}
-                                                <template slot="input">
-                                                    <v-text-field v-model="props.item[header.value]"
-                                                                  label="Edit" single-line>
-                                                    </v-text-field>
-                                                </template>
-                                            </v-edit-dialog>
-                                        </div>
-                                        <div v-if="header.value === 'year'">
-                                            {{props.item.year}}
-                                        </div>
-                                    </td>
-                                </template>
-                            </v-data-table>
-                        </div>
-                    </v-layout>
+                    <v-card>
+                        <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
+                                      v-model="selectedGridRows" select-all item-key="year"
+                                      class="elevation-1 fixed-header v-table__overflow">
+                            <template slot="items" slot-scope="props">
+                                <td>
+                                    <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                </td>
+                                <td v-for="header in budgetYearsGridHeaders">
+                                    <div v-if="header.value !== 'year'">
+                                        <v-edit-dialog :return-value.sync="props.item[header.value]"
+                                                       large lazy persistent
+                                                       @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
+                                            {{props.item[header.value]}}
+                                            <template slot="input">
+                                                <v-text-field v-model="props.item[header.value]"
+                                                              label="Edit" single-line>
+                                                </v-text-field>
+                                            </template>
+                                        </v-edit-dialog>
+                                    </div>
+                                    <div v-if="header.value === 'year'">
+                                        {{props.item.year}}
+                                    </div>
+                                </td>
+                            </template>
+                        </v-data-table>
+                    </v-card>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -675,11 +673,6 @@
     .investment-editor-container {
         height: 730px;
         overflow-x: hidden;
-        overflow-y: auto;
-    }
-
-    .investment-editor-data-table {
-        height: 205px;
         overflow-y: auto;
     }
 </style>

@@ -636,11 +636,6 @@
         overflow-y: auto;
     }
 
-    .data-table {
-        height: 559px;
-        overflow-y: auto;
-    }
-
     .equation-name-text-field-output {
         margin-left: 10px;
     }
@@ -654,6 +649,6 @@
     }
 
     .header-height{
-        height: 50px;
+        height: 45px;
     }
 </style>
