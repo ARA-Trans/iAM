@@ -1,122 +1,120 @@
 <template>
-    <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
-            <v-card class="equation-container-card">
-                <v-card-title class="card-title">
-                    <v-layout justify-center fill-height>
-                        <h3>Equation Editor</h3>
-                    </v-layout>
-                </v-card-title>
-                <v-card-text>
-                    <v-layout column fill-height>
-                        <v-flex xs12>
-                            <v-layout justify-space-between row fill-height>
-                                <v-flex xs5>
-                                    <v-card>
-                                        <v-card-title>Attributes: Click once to add</v-card-title>
-                                        <v-card-text class="list-card-text">
-                                            <v-list>
-                                                <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
-                                                             ripple @click="onAddAttributeToEquation(attribute)">
-                                                    <v-list-tile-content>
-                                                        <v-list-tile-title>{{attribute}}</v-list-tile-title>
-                                                    </v-list-tile-content>
-                                                </v-list-tile>
-                                            </v-list>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-flex>
+    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
+        <v-card class="equation-container-card">
+            <v-card-title class="card-title">
+                <v-layout justify-center>
+                    <h3>Equation Editor</h3>
+                </v-layout>
+            </v-card-title>
+            <v-card-text>
+                <v-layout column>
+                    <v-flex xs12>
+                        <v-layout justify-space-between row>
+                            <v-flex xs5>
+                                <v-card>
+                                    <v-card-title>Attributes: Click once to add</v-card-title>
+                                    <v-card-text class="list-card-text">
+                                        <v-list>
+                                            <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
+                                                         ripple @click="onAddAttributeToEquation(attribute)">
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{attribute}}</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list>
+                                    </v-card-text>
+                                </v-card>
+                            </v-flex>
 
-                                <v-flex xs5>
-                                    <v-card>
-                                        <v-card-title>Formulas: Click once to add</v-card-title>
-                                        <v-card-text class="list-card-text">
-                                            <v-list>
-                                                <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
-                                                             ripple @click="onAddFormulaToEquation(formula)">
-                                                    <v-list-tile-content>
-                                                        <v-list-tile-title>{{formula}}</v-list-tile-title>
-                                                    </v-list-tile-content>
-                                                </v-list-tile>
-                                            </v-list>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
-                        <v-flex xs12>
-                            <v-layout justify-center fill-height>
-                                <v-flex xs6>
-                                    <v-layout justify-space-between row fill-height>
-                                        <v-btn class="math-button add" fab small v-on:click="onAddStringToEquation('+')">
-                                            <span>+</span>
-                                        </v-btn>
-                                        <v-btn class="math-button subtract" fab small v-on:click="onAddStringToEquation('-')">
-                                            <span>-</span>
-                                        </v-btn>
-                                        <v-btn class="math-button multiply" fab small v-on:click="onAddStringToEquation('*')">
-                                            <span>*</span>
-                                        </v-btn>
-                                        <v-btn class="math-button divide" fab small v-on:click="onAddStringToEquation('/')">
-                                            <span>/</span>
-                                        </v-btn>
-                                        <v-btn class="math-button parentheses" fab small v-on:click="onAddStringToEquation('(')">
-                                            <span>(</span>
-                                        </v-btn>
-                                        <v-btn class="math-button parentheses" fab small v-on:click="onAddStringToEquation(')')">
-                                            <span>)</span>
-                                        </v-btn>
+                            <v-flex xs5>
+                                <v-card>
+                                    <v-card-title>Formulas: Click once to add</v-card-title>
+                                    <v-card-text class="list-card-text">
+                                        <v-list>
+                                            <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
+                                                         ripple @click="onAddFormulaToEquation(formula)">
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{formula}}</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list>
+                                    </v-card-text>
+                                </v-card>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-layout justify-center>
+                            <v-flex xs6>
+                                <v-layout justify-space-between row>
+                                    <v-btn class="math-button add" fab small @click="onAddStringToEquation('+')">
+                                        <span>+</span>
+                                    </v-btn>
+                                    <v-btn class="math-button subtract" fab small @click="onAddStringToEquation('-')">
+                                        <span>-</span>
+                                    </v-btn>
+                                    <v-btn class="math-button multiply" fab small @click="onAddStringToEquation('*')">
+                                        <span>*</span>
+                                    </v-btn>
+                                    <v-btn class="math-button divide" fab small @click="onAddStringToEquation('/')">
+                                        <span>/</span>
+                                    </v-btn>
+                                    <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation('(')">
+                                        <span>(</span>
+                                    </v-btn>
+                                    <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation(')')">
+                                        <span>)</span>
+                                    </v-btn>
+                                </v-layout>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-layout justify-center>
+                            <v-flex xs11>
+                                <div>
+                                    <v-layout justify-start>
+                                        <v-flex xs5>
+                                            <v-layout justify-end>
+                                                <v-checkbox v-show="dialogData.canBePiecewise" label="Is piecewise?"
+                                                            v-model="isPiecewise">
+                                                </v-checkbox>
+                                            </v-layout>
+                                        </v-flex>
                                     </v-layout>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
-                        <v-flex xs12>
-                            <v-layout justify-center fill-height>
-                                <v-flex xs11>
-                                    <div>
-                                        <v-layout justify-start fill-height>
-                                            <v-flex xs5>
-                                                <v-layout justify-end fill-height>
-                                                    <v-checkbox v-show="dialogData.canBePiecewise" label="Is piecewise?"
-                                                                v-model="isPiecewise">
-                                                    </v-checkbox>
-                                                </v-layout>
-                                            </v-flex>
-                                        </v-layout>
-                                    </div>
-                                    <v-textarea id="equation_textarea" :rows="dialogData.canBePiecewise ? '5' : '8'" outline full-width no-resize spellcheck="false"
-                                                v-model="equation" v-on:blur="setCursorPosition" v-on:focus="setTextareaCursorPosition">
-                                    </v-textarea>
-                                    <div class="validation-message-div">
-                                        <v-layout justify-end fill-height>
-                                            <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
-                                            <p class="valid-message" v-if="showValidMessage">Equation is valid</p>
-                                        </v-layout>
-                                    </div>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
-                    </v-layout>
-                </v-card-text>
-                <v-card-actions>
-                    <v-layout justify-space-between row fill-height>
-                        <v-spacer></v-spacer>
-                        <v-flex xs2>
-                            <v-layout justify-end row fill-height>
-                                <v-btn color="info lighten-1" v-on:click="onCheckEquation">Check</v-btn>
-                                <v-btn color="info" v-on:click="onSubmit" :disabled="cannotSubmit">Submit</v-btn>
-                            </v-layout>
-                        </v-flex>
-                        <v-spacer></v-spacer>
-                        <v-flex xs1>
-                            <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
-                        </v-flex>
-                        <v-spacer></v-spacer>
-                    </v-layout>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-layout>
+                                </div>
+                                <v-textarea id="equation_textarea" :rows="dialogData.canBePiecewise ? '5' : '8'" outline full-width no-resize spellcheck="false"
+                                            v-model="equation" @blur="setCursorPosition" @focus="setTextareaCursorPosition">
+                                </v-textarea>
+                                <div class="validation-message-div">
+                                    <v-layout justify-end>
+                                        <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
+                                        <p class="valid-message" v-if="showValidMessage">Equation is valid</p>
+                                    </v-layout>
+                                </div>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                </v-layout>
+            </v-card-text>
+            <v-card-actions>
+                <v-layout justify-space-between row>
+                    <v-spacer></v-spacer>
+                    <v-flex xs2>
+                        <v-layout justify-end row>
+                            <v-btn class="ara-blue-bg white--text" @click="onCheckEquation">Check</v-btn>
+                            <v-btn class="ara-blue-bg white--text" @click="onSubmit" :disabled="cannotSubmit">Submit</v-btn>
+                        </v-layout>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                    <v-flex xs1>
+                        <v-btn class="ara-orange-bg white--text" @click="onCancel">Cancel</v-btn>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script lang="ts">
@@ -349,7 +347,7 @@
 
 <style>
     .equation-container-card {
-        height: 800px;
+        height: 810px;
         overflow-y: auto;
         overflow-x: hidden;
     }

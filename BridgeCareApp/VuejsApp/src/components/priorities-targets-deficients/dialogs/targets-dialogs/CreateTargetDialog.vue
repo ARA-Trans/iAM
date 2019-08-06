@@ -1,47 +1,45 @@
 <template>
-    <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
-            <v-card>
-                <v-card-title>
-                    <v-layout justify-center fill-height>
-                        <h3>New Target</h3>
-                    </v-layout>
-                </v-card-title>
-                <v-card-text>
-                    <v-layout column fill-height>
-                        <v-text-field label="Name" v-model="newTarget.name" outline></v-text-field>
+    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+        <v-card>
+            <v-card-title>
+                <v-layout justify-center>
+                    <h3>New Target</h3>
+                </v-layout>
+            </v-card-title>
+            <v-card-text>
+                <v-layout column>
+                    <v-text-field label="Name" v-model="newTarget.name" outline></v-text-field>
 
-                        <v-select label="Select Attribute" :items="numericAttributes"
-                                       v-model="newTarget.attribute" outline>
-                        </v-select>
+                    <v-select label="Select Attribute" :items="numericAttributes"
+                              v-model="newTarget.attribute" outline>
+                    </v-select>
 
-                        <v-menu v-model="showDatePicker" :close-on-content-click="false" :nudge-right="40" lazy
-                                transition="scale-transition" offset-y full-width min-width="290px">
-                            <template slot="activator">
-                                <v-text-field label="Year" v-model="newTarget.year" outline append-icon="event">
-                                </v-text-field>
-                            </template>
-                            <v-date-picker v-model="year" ref="createTargetPicker" min="1950" reactive no-title @input="onSetYear">
-                            </v-date-picker>
-                        </v-menu>
+                    <v-menu v-model="showDatePicker" :close-on-content-click="false" :nudge-right="40" lazy
+                            transition="scale-transition" offset-y full-width min-width="290px">
+                        <template slot="activator">
+                            <v-text-field label="Year" v-model="newTarget.year" outline append-icon="fas fa-calendar-day">
+                            </v-text-field>
+                        </template>
+                        <v-date-picker v-model="year" ref="createTargetPicker" min="1950" reactive no-title @input="onSetYear">
+                        </v-date-picker>
+                    </v-menu>
 
-                        <v-text-field label="Target" v-model="newTarget.targetMean" outline>
-                        </v-text-field>
-                    </v-layout>
-                </v-card-text>
-                <v-card-actions>
-                    <v-layout justify-space-between row fill-height>
-                        <v-btn color="info" @click="onSubmit(true)" :disabled="disableSubmit()">
-                            Submit
-                        </v-btn>
-                        <v-btn color="error" @click="onSubmit(false)">
-                            Cancel
-                        </v-btn>
-                    </v-layout>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-layout>
+                    <v-text-field label="Target" v-model="newTarget.targetMean" outline>
+                    </v-text-field>
+                </v-layout>
+            </v-card-text>
+            <v-card-actions>
+                <v-layout justify-space-between row>
+                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
+                        Submit
+                    </v-btn>
+                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                        Cancel
+                    </v-btn>
+                </v-layout>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script lang="ts">

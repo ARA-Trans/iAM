@@ -30,54 +30,51 @@ const router = new VueRouter({
             path: '/EditScenario/',
             name: 'EditScenario',
             component: EditScenario,
+            children: [
+                {
+                    path: '/EditAnalysis/',
+                    name: 'EditAnalysis',
+                    component: EditAnalysis,
+                },
+                {
+                    path: '/InvestmentEditor/Scenario/',
+                    component: InvestmentEditor,
+                    props: true
+                },
+                {
+                    path: '/PerformanceEditor/Scenario/',
+                    component: PerformanceEditor,
+                    props: true
+                },
+                {
+                    path: '/TreatmentEditor/Scenario/',
+                    component: TreatmentEditor,
+                    props: true
+                },
+                {
+                    path: '/Prioritization/',
+                    component: PrioritiesTargetsDeficients,
+                    props: true
+                },
+            ]
         },
+
         {
-            path: '/EditAnalysis/',
-            name: 'EditAnalysis',
-            component: EditAnalysis,
-        },
-        {
-            path: '/InvestmentEditor/',
+            path: '/InvestmentEditor/Library/',
             name: 'InvestmentEditor',
             component: InvestmentEditor,
-            props: true,
-            alias: '/InvestmentEditor/Library/',
+            props: true
         },
         {
-            path: '/PerformanceEditor/',
+            path: '/PerformanceEditor/Library/',
             name: 'PerformanceEditor',
             component: PerformanceEditor,
-            props: true,
-            alias: '/PerformanceEditor/Library/'
+            props: true
         },
         {
-            path: '/TreatmentEditor/',
+            path: '/TreatmentEditor/Library/',
             name: 'TreatmentEditor',
             component: TreatmentEditor,
-            props: true,
-            alias: '/TreatmentEditor/Library/',
-        },
-        {
-            path: '/InvestmentEditor/',
-            component: InvestmentEditor,
-            props: true,
-            alias: '/InvestmentEditor/FromScenario/'
-        },
-        {
-            path: '/PerformanceEditor/',
-            component: PerformanceEditor,
-            props: true,
-            alias: '/PerformanceEditor/FromScenario/'
-        },
-        {
-            path: '/TreatmentEditor/',
-            component: TreatmentEditor,
-            props: true,
-            alias: '/TreatmentEditor/FromScenario/'
-        },
-        {
-            path: '/PrioritiesTargetsDeficients/',
-            component: PrioritiesTargetsDeficients,
             props: true
         },
         {

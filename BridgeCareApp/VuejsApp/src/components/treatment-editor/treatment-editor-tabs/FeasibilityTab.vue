@@ -1,40 +1,46 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <v-layout class="feasibility-tab-content" fill-height>
-            <v-flex xs12>
-                <v-layout justify-center fill-height v-if="feasibility.id === 0">
-                    <v-btn color="info" v-on:click="onCreateFeasibility">Create Feasibility</v-btn>
-                </v-layout>
-                <v-layout v-if="feasibility.id !== 0" justify-center column fill-height>
-                    <v-btn color="error" icon v-on:click="onDeleteFeasibility"><v-icon>delete</v-icon></v-btn>
-                    <v-textarea no-resize full-width outline readonly append-outer-icon="edit"
-                                @click:append-outer="onEditFeasibilityCriteria"
-                                v-model="feasibility.criteria">
-                    </v-textarea>
-                    <v-layout>
-                        <v-spacer></v-spacer>
-                        <v-layout justify-space-between row fill-height>
-                            <v-flex xs5>
-                                <v-text-field label="Years Before Any" :mask="'####'" outline
-                                              v-model="feasibility.yearsBeforeAny"
-                                              v-on:change="onChangeYears">
-                                </v-text-field>
-                            </v-flex>
-                            <v-flex xs5>
-                                <v-text-field label="Years Before Same" :mask="'####'" outline
-                                              v-model="feasibility.yearsBeforeSame"
-                                              v-on:change="onChangeYears">
-                                </v-text-field>
-                            </v-flex>
+    <v-layout class="feasibility-tab-content">
+        <v-flex xs12>
+            <v-layout justify-center v-if="feasibility.id === 0">
+                <v-btn class="ara-blue-bg white--text" @click="onCreateFeasibility">Create Feasibility</v-btn>
+            </v-layout>
+            <v-layout v-if="feasibility.id !== 0" justify-center column>
+                <v-textarea no-resize full-width outline readonly prepend-outer-icon="fas fa-trash"
+                            v-model="feasibility.criteria">
+                    <template slot="append-outer">
+                        <v-layout row align-center fill-height>
+                            <v-btn class="ara-yellow" icon @click="onEditFeasibilityCriteria">
+                                <v-icon>fas fa-edit</v-icon>
+                            </v-btn>
+                            <v-btn class="ara-orange" icon @click="onDeleteFeasibility">
+                                <v-icon>fas fa-minus-square</v-icon>
+                            </v-btn>
                         </v-layout>
-                        <v-spacer></v-spacer>
+                    </template>
+                </v-textarea>
+                <v-layout>
+                    <v-spacer></v-spacer>
+                    <v-layout justify-space-between row>
+                        <v-flex xs5>
+                            <v-text-field label="Years Before Any" :mask="'####'" outline
+                                          v-model="feasibility.yearsBeforeAny"
+                                          @change="onChangeYears">
+                            </v-text-field>
+                        </v-flex>
+                        <v-flex xs5>
+                            <v-text-field label="Years Before Same" :mask="'####'" outline
+                                          v-model="feasibility.yearsBeforeSame"
+                                          @change="onChangeYears">
+                            </v-text-field>
+                        </v-flex>
                     </v-layout>
+                    <v-spacer></v-spacer>
                 </v-layout>
-            </v-flex>
-        </v-layout>
+            </v-layout>
+        </v-flex>
 
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitFeasibilityCriteria" />
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">

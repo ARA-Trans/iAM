@@ -1,88 +1,88 @@
 ﻿<template>
-    <v-container fluid grid-list-xl>
-        <div class="analysis-container">
-            <v-layout>
-                <v-flex xs12>
-                    <v-layout column fill-height>
-                        <v-layout justify-center fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs1>
-                                <EditYearDialog :itemYear="analysis.startYear.toString()" :itemLabel="'Start Year'"
-                                                :outline="true" @editedYear="onSetStartYear" />
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                        <v-layout justify-center row fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs3>
-                                <v-text-field v-model.number="analysis.analysisPeriod" type="number"
-                                              label="Analysis period" outline>
-                                </v-text-field>
-                            </v-flex>
-                            <v-flex xs3>
-                                <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
-                                          outline>
-                                </v-select>
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                        <v-layout justify-center fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs3>
-                                <v-select v-model="analysis.optimizationType" :items="optimizationTypes"
-                                          label="Optimization type" outline>
-                                </v-select>
-                            </v-flex>
-                            <v-flex xs3>
-                                <v-select v-model="analysis.budgetType" :items="budgetTypes" label="Budget type" outline>
-                                </v-select>
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                        <v-layout justify-center fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs3>
-                                <v-select v-model="analysis.benefitAttribute" :items="benefitAttributes" label="Benefit"
-                                          outline>
-                                </v-select>
-                            </v-flex>
-                            <v-flex xs3>
-                                <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
-                                </v-text-field>
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                        <v-layout justify-center fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs6>
-                                <v-textarea v-model="analysis.description" rows="5" label="Description" no-resize outline>
-                                </v-textarea>
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                        <v-layout justify-center fill-height>
-                            <v-spacer></v-spacer>
-                            <v-flex xs6>
-                                <v-textarea v-model="analysis.criteria" rows="5" label="Criteria" readonly no-resize outline
-                                            append-outer-icon="edit" @click:append-outer="onEditScopeCriteria">
-                                </v-textarea>
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                        </v-layout>
-                    </v-layout>
-                </v-flex>
+    <v-layout column>
+        <v-flex xs12>
+            <v-layout column>
+                <v-layout justify-center>
+                    <v-spacer></v-spacer>
+                    <v-flex xs1>
+                        <EditYearDialog :itemYear="analysis.startYear.toString()" :itemLabel="'Start Year'"
+                                        :outline="true" @editedYear="onSetStartYear" />
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
+                <v-layout justify-center row>
+                    <v-spacer></v-spacer>
+                    <v-flex xs3>
+                        <v-text-field v-model.number="analysis.analysisPeriod" type="number"
+                                      label="Analysis period" outline>
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs3>
+                        <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
+                                  outline>
+                        </v-select>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
+                <v-layout justify-center>
+                    <v-spacer></v-spacer>
+                    <v-flex xs3>
+                        <v-select v-model="analysis.optimizationType" :items="optimizationTypes"
+                                  label="Optimization type" outline>
+                        </v-select>
+                    </v-flex>
+                    <v-flex xs3>
+                        <v-select v-model="analysis.budgetType" :items="budgetTypes" label="Budget type" outline>
+                        </v-select>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
+                <v-layout justify-center>
+                    <v-spacer></v-spacer>
+                    <v-flex xs3>
+                        <v-select v-model="analysis.benefitAttribute" :items="benefitAttributes" label="Benefit"
+                                  outline>
+                        </v-select>
+                    </v-flex>
+                    <v-flex xs3>
+                        <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
+                        </v-text-field>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
+                <v-layout justify-center>
+                    <v-spacer></v-spacer>
+                    <v-flex xs6>
+                        <v-textarea v-model="analysis.description" rows="5" label="Description" no-resize outline>
+                        </v-textarea>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
+                <v-layout justify-center>
+                    <v-spacer></v-spacer>
+                    <v-flex xs6>
+                        <v-textarea v-model="analysis.criteria" rows="5" label="Criteria" readonly no-resize outline>
+                            <template slot="append-outer">
+                                <v-btn icon class="ara-yellow" @click="onEditScopeCriteria">
+                                    <v-icon>fas fa-edit</v-icon>
+                                </v-btn>
+                            </template>
+                        </v-textarea>
+                    </v-flex>
+                    <v-spacer></v-spacer>
+                </v-layout>
             </v-layout>
-        </div>
+        </v-flex>
 
-        <v-footer>
-            <v-layout justify-end row fill-height>
-                <v-btn depressed color="primary" @click="onApplyAnalysisToScenario">Apply</v-btn>
-                <v-btn depressed color="error" @click="onCancelAnalysisEdit">Cancel</v-btn>
+        <v-flex xs12>
+            <v-layout justify-end row>
+                <v-btn class="ara-blue-bg white--text" @click="onApplyAnalysisToScenario">Apply</v-btn>
+                <v-btn class="ara-orange-bg white--text" @click="onCancelAnalysisEdit">Cancel</v-btn>
             </v-layout>
-        </v-footer>
+        </v-flex>
 
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitScopeCriteria" />
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -112,7 +112,6 @@
     export default class EditAnalysis extends Vue {
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        @Action('setNavigation') setNavigationAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getBenefitAttributes') getBenefitAttributesAction: any;
@@ -144,24 +143,7 @@
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
                 }
-                vm.setNavigationAction([
-                    {
-                        text: 'Scenario dashboard',
-                        to: '/Scenarios/'
-                    },
-                    {
-                        text: 'Scenario editor',
-                        to: {
-                            path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
-                        }
-                    },
-                    {
-                        text: 'Analysis editor',
-                        to: {
-                            path: '/EditAnalysis/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
-                        }
-                    }
-                ]);
+
                 // check that selectedScenarioId is set
                 if (vm.selectedScenarioId > 0) {
                     // get the selected scenario's analysis data

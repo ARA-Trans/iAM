@@ -3,23 +3,25 @@
         <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="300px">
             <v-card>
                 <v-card-title>
-                    <v-layout justify-center fill-height>
+                    <v-layout justify-center>
                         <h3>Edit Budgets</h3>
                     </v-layout>
                 </v-card-title>
                 <v-toolbar>
-                    <v-layout justify-center row fill-height>
-                        <v-btn v-if="dialogData.canOrderBudgets" fab small icon v-on:click="onMoveBudgetUp" :disabled="disableMoveUpButton()">
-                            <v-icon>arrow_upward</v-icon>
+                    <v-layout justify-center row>
+                        <v-btn v-if="dialogData.canOrderBudgets" class="ara-black" icon @click="onMoveBudgetUp"
+                               :disabled="disableMoveUpButton()">
+                            <v-icon>fas fa-arrow-up</v-icon>
                         </v-btn>
-                        <v-btn v-if="dialogData.canOrderBudgets" fab small icon v-on:click="onMoveBudgetDown" :disabled="disableMoveDownButton()">
-                            <v-icon>arrow_downward</v-icon>
+                        <v-btn v-if="dialogData.canOrderBudgets" class="ara-black" icon @click="onMoveBudgetDown"
+                               :disabled="disableMoveDownButton()">
+                            <v-icon>fas fa-arrow-down</v-icon>
                         </v-btn>
-                        <v-btn fab small icon color="green" v-on:click="onAddBudget">
-                            <v-icon>add</v-icon>
+                        <v-btn icon class="ara-blue" @click="onAddBudget">
+                            <v-icon>fas fa-plus</v-icon>
                         </v-btn>
-                        <v-btn fab small icon color="red" v-on:click="onDeleteBudget" :disabled="disableDeleteButton()">
-                            <v-icon>delete</v-icon>
+                        <v-btn icon class="ara-orange" @click="onDeleteBudget" :disabled="disableDeleteButton()">
+                            <v-icon>fas fa-trash</v-icon>
                         </v-btn>
                     </v-layout>
                 </v-toolbar>
@@ -49,9 +51,9 @@
                     </v-data-table>
                 </v-card-text>
                 <v-card-actions>
-                    <v-layout justify-space-between fill-height>
-                        <v-btn color="info" v-on:click="onSubmit(true)">Submit</v-btn>
-                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
+                    <v-layout justify-space-between>
+                        <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)">Submit</v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>

@@ -3,19 +3,19 @@
         <v-dialog v-model="showDialog" persistent max-width="250px">
             <v-card>
                 <v-card-title>
-                    <v-layout justify-center fill-height>
+                    <v-layout justify-center>
                         <h3>New Treatment</h3>
                     </v-layout>
                 </v-card-title>
                 <v-card-text>
-                    <v-layout fill-height>
+                    <v-layout>
                         <v-text-field label="Name" v-model="createdTreatment.name" outline></v-text-field>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
-                    <v-layout justify-space-between row fill-height>
-                        <v-btn color="info" v-on:click="onSubmit(true)" :disabled="createdTreatment.name === ''">Submit</v-btn>
-                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
+                    <v-layout justify-space-between row>
+                        <v-btn color="info" @click="onSubmit(true)" :disabled="createdTreatment.name === ''">Submit</v-btn>
+                        <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>

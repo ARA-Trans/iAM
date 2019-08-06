@@ -53,3 +53,51 @@
 .fixed-header .v-datatable.v-table .v-datatable__actions .v-datatable__actions__pagination {
     white-space: nowrap;
 }
+
+.paper-white-bg {
+    background-color: #FFFFFF !important;
+}
+
+.ara-blue-pantone-281-bg {
+    background-color: #002E6C !important;
+}
+
+.ara-blue-pantone-289-bg {
+    background-color: #00204B !important;
+}
+
+.ara-blue-bg {
+    background-color: #008FCA !important;
+}
+
+.ara-orange-bg {
+    background-color: #F05632 !important;
+}
+
+.ara-light-gray-bg {
+    background-color: #B0BFC8 !important;
+}
+
+.ara-blue {
+    color: #008FCA !important;
+}
+
+.ara-orange {
+    color: #F05632 !important;
+}
+
+.ara-yellow {
+    color: #D1DD30 !important;
+}
+
+.ara-dark-gray {
+    color: #798899 !important;
+}
+
+.ara-blue-pantone-281 {
+    color: #002E6C !important;
+}
+
+.ara-black {
+    color: #000000 !important;
+}

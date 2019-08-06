@@ -19,17 +19,19 @@ namespace BridgeCare.DataAccessLayer
         {
             try
             {
+                var performanceLibraryModel = new PerformanceLibraryModel();
+
                 var simulation = db.Simulations
                   .Include(d => d.PERFORMANCES)
-                  .Single(s => s.SIMULATIONID == selectedScenarioId);
+                  .SingleOrDefault(s => s.SIMULATIONID == selectedScenarioId);
 
-                var performanceLibraryModel = new PerformanceLibraryModel()
+                if (simulation != null)
                 {
-                    Id = selectedScenarioId,
-                    Name = simulation.SIMULATION,
-                    Description = simulation.COMMENTS,
-                    Equations = GetEquations(simulation.PERFORMANCES)
-                };
+                    performanceLibraryModel.Id = selectedScenarioId;
+                    performanceLibraryModel.Name = simulation.SIMULATION;
+                    performanceLibraryModel.Description = simulation.COMMENTS;
+                    performanceLibraryModel.Equations = GetEquations(simulation.PERFORMANCES);
+                }
 
                 return performanceLibraryModel;
             }

@@ -1,135 +1,127 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <div class="investment-editor-container">
-            <v-layout column>
-                <v-flex xs12>
-                    <v-layout justify-center fill-height>
-                        <v-flex xs3>
-                            <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onNewLibrary">
-                                New Library
+    <v-layout column>
+        <v-flex xs12>
+            <v-layout justify-center>
+                <v-flex xs3>
+                    <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onNewLibrary">
+                        New Library
+                    </v-btn>
+                    <v-select v-if="!hasSelectedInvestmentLibrary || selectedScenarioId > 0"
+                              :items="investmentLibrariesSelectListItems"
+                              label="Select an Investment library" outline v-model="selectItemValue">
+                    </v-select>
+                    <v-text-field v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0" label="Library Name"
+                                  v-model="selectedInvestmentLibrary.name">
+                        <template slot="append">
+                            <v-btn class="ara-orange" icon @click="onClearSelectedInvestmentLibrary">
+                                <v-icon>fas fa-times</v-icon>
                             </v-btn>
-                            <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
-                                <v-icon left>label</v-icon>
-                                <span v-if="scenarioInvestmentLibrary !== null">
-                                    Scenario name: {{scenarioInvestmentLibrary.name}}
-                                </span>
-                                <span v-else>Scenario name: No applied investment library</span>
-                            </v-chip>
-                            <v-select v-if="!hasSelectedInvestmentLibrary || selectedScenarioId > 0"
-                                      :items="investmentLibrariesSelectListItems"
-                                      label="Select an Investment library" outline v-model="selectItemValue">
-                            </v-select>
-                            <v-text-field v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0"
-                                          label="Library Name" append-icon="clear" v-model="selectedInvestmentLibrary.name"
-                                          @click:append="onClearSelectedInvestmentLibrary">
-                            </v-text-field>
-                        </v-flex>
-                    </v-layout>
-                    <v-layout v-if="hasSelectedInvestmentLibrary" justify-center fill-height>
-                        <v-flex xs2>
-                            <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
-                                          v-model="selectedInvestmentLibrary.inflationRate"
-                                          :disabled="!hasSelectedInvestmentLibrary">
-                            </v-text-field>
-                        </v-flex>
-                        <v-flex xs2>
-                            <v-text-field label="Discount Rate (%)" outline :mask="'##########'"
-                                          v-model="selectedInvestmentLibrary.discountRate"
-                                          :disabled="!hasSelectedInvestmentLibrary">
-                            </v-text-field>
-                        </v-flex>
-                    </v-layout>
+                        </template>
+                    </v-text-field>
                 </v-flex>
-                <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedInvestmentLibrary">
-                    <v-layout justify-center fill-height>
-                        <v-flex xs6>
-                            <v-layout justify-space-between fill-height>
-                                <v-btn color="info" v-on:click="onEditBudgets">
-                                    Edit Budgets
-                                </v-btn>
-                                <v-btn color="info lighten-1" v-on:click="onAddBudgetYear"
-                                       :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
-                                    Add Year
-                                </v-btn>
-                                <v-btn color="info lighten-1" v-on:click="onAddBudgetYearsByRange"
-                                       :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
-                                    Add Years by Range
-                                </v-btn>
-                                <v-btn color="error lighten-1" v-on:click="onDeleteBudgetYears"
-                                       :disabled="selectedGridRows.length === 0">
-                                    Delete Budget Year(s)
-                                </v-btn>
-                            </v-layout>
-                        </v-flex>
-                    </v-layout>
-                    <v-layout justify-center fill-height>
-                        <v-flex xs8>
-                            <v-layout fill-height>
-                                <div class="investment-editor-data-table">
-                                    <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
-                                                  v-model="selectedGridRows" select-all item-key="year"
-                                                  class="elevation-1 fixed-header v-table__overflow" hide-actions>
-                                        <template slot="items" slot-scope="props">
-                                            <td>
-                                                <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                            </td>
-                                            <td v-for="header in budgetYearsGridHeaders">
-                                                <div v-if="header.value !== 'year'">
-                                                    <v-edit-dialog :return-value.sync="props.item[header.value]"
-                                                                   large lazy persistent
-                                                                   @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
-                                                        {{props.item[header.value]}}
-                                                        <template slot="input">
-                                                            <v-text-field v-model="props.item[header.value]"
-                                                                          label="Edit" single-line>
-                                                            </v-text-field>
-                                                        </template>
-                                                    </v-edit-dialog>
-                                                </div>
-                                                <div v-if="header.value === 'year'">
-                                                    {{props.item.year}}
-                                                </div>
-                                            </td>
-                                        </template>
-                                    </v-data-table>
-                                </div>
-                            </v-layout>
-                        </v-flex>
-                    </v-layout>
+            </v-layout>
+            <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
+                <v-flex xs2>
+                    <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
+                                  v-model="selectedInvestmentLibrary.inflationRate"
+                                  :disabled="!hasSelectedInvestmentLibrary">
+                    </v-text-field>
                 </v-flex>
-                <v-divider v-if="hasSelectedInvestmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
-                    <v-layout justify-center fill-height>
-                        <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline label="Description"
-                                        v-model="selectedInvestmentLibrary.description">
-                            </v-textarea>
-                        </v-flex>
+                <v-flex xs2>
+                    <v-text-field label="Discount Rate (%)" outline :mask="'##########'"
+                                  v-model="selectedInvestmentLibrary.discountRate"
+                                  :disabled="!hasSelectedInvestmentLibrary">
+                    </v-text-field>
+                </v-flex>
+            </v-layout>
+        </v-flex>
+        <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
+        <v-flex xs12 v-show="hasSelectedInvestmentLibrary">
+            <v-layout justify-center>
+                <v-flex xs6>
+                    <v-layout justify-space-between>
+                        <v-btn class="ara-blue-bg white--text" @click="onEditBudgets">
+                            Edit Budgets
+                        </v-btn>
+                        <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYear"
+                               :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
+                            Add Year
+                        </v-btn>
+                        <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYearsByRange"
+                               :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
+                            Add Years by Range
+                        </v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="onDeleteBudgetYears"
+                               :disabled="selectedGridRows.length === 0">
+                            Delete Budget Year(s)
+                        </v-btn>
                     </v-layout>
                 </v-flex>
             </v-layout>
-        </div>
-
-        <v-footer>
-            <v-layout justify-end row fill-height>
-                <v-btn v-show="selectedScenarioId > 0" color="info" v-on:click="onApplyToScenario"
+            <v-layout justify-center>
+                <v-flex xs8>
+                    <v-layout>
+                        <div class="investment-editor-data-table">
+                            <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
+                                          v-model="selectedGridRows" select-all item-key="year"
+                                          class="elevation-1 fixed-header v-table__overflow">
+                                <template slot="items" slot-scope="props">
+                                    <td>
+                                        <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                    </td>
+                                    <td v-for="header in budgetYearsGridHeaders">
+                                        <div v-if="header.value !== 'year'">
+                                            <v-edit-dialog :return-value.sync="props.item[header.value]"
+                                                           large lazy persistent
+                                                           @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
+                                                {{props.item[header.value]}}
+                                                <template slot="input">
+                                                    <v-text-field v-model="props.item[header.value]"
+                                                                  label="Edit" single-line>
+                                                    </v-text-field>
+                                                </template>
+                                            </v-edit-dialog>
+                                        </div>
+                                        <div v-if="header.value === 'year'">
+                                            {{props.item.year}}
+                                        </div>
+                                    </td>
+                                </template>
+                            </v-data-table>
+                        </div>
+                    </v-layout>
+                </v-flex>
+            </v-layout>
+        </v-flex>
+        <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
+        <v-flex xs12 v-show="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
+            <v-layout justify-center>
+                <v-flex xs6>
+                    <v-textarea rows="4" no-resize outline label="Description"
+                                v-model="selectedInvestmentLibrary.description">
+                    </v-textarea>
+                </v-flex>
+            </v-layout>
+        </v-flex>
+        <v-flex xs12>
+            <v-layout v-show="hasSelectedInvestmentLibrary" justify-end row>
+                <v-btn v-show="selectedScenarioId > 0" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedInvestmentLibrary">
                     Apply
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onUpdateLibrary"
+                <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedInvestmentLibrary">
                     Update Library
                 </v-btn>
-                <v-btn color="info lighten-1" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
+                <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
+                <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedInvestmentLibrary">
                     Discard changes
                 </v-btn>
             </v-layout>
-        </v-footer>
+        </v-flex>
 
         <CreateInvestmentLibraryDialog :dialogData="createInvestmentLibraryDialogData"
                                        @submit="onCreateInvestmentLibrary" />
@@ -138,7 +130,7 @@
                                             @submit="onSubmitBudgetYearRange" />
 
         <EditBudgetsDialog :dialogData="editBudgetsDialogData" @submit="onSubmitEditedBudgets" />
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -181,7 +173,6 @@
         @State(state => state.investmentEditor.selectedInvestmentLibrary) stateSelectedInvestmentLibrary: InvestmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
 
-        @Action('setNavigation') setNavigationAction: any;
         @Action('getInvestmentLibraries') getInvestmentLibrariesAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
         @Action('selectInvestmentLibrary') selectInvestmentLibraryAction: any;
@@ -214,34 +205,15 @@
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                if (to.path === '/InvestmentEditor/FromScenario/') {
+                if (to.path === '/InvestmentEditor/Scenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
                         vm.setErrorMessageAction({ message: 'Found no selected scenario for edit' });
                         vm.$router.push('/Scenarios/');
                     }
-                    vm.setNavigationAction([
-                        {
-                            text: 'Scenario dashboard',
-                            to: {
-                                path: '/Scenarios/', query: {}
-                            }
-                        },
-                        {
-                            text: 'Scenario editor',
-                            to: {
-                                path: '/EditScenario/', query: { selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName }
-                            }
-                        },
-                        {
-                            text: 'Investment editor',
-                            to: {
-                                path: '/InvestmentEditor/FromScenario/', query: { selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName }
-                            }
-                        }
-                    ]);
                 }
+
                 vm.onClearSelectedInvestmentLibrary();
                 setTimeout(() => {
                     vm.getInvestmentLibrariesAction()

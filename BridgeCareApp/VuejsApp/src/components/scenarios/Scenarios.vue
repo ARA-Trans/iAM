@@ -1,135 +1,125 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <v-layout row wrap>
-            <v-flex xs12>
-                <v-card>
-                    <v-card-title>
-                        <v-flex xs4>
-                            My Scenarios
-                        </v-flex>
-                        <v-spacer></v-spacer>
-                        
-                        <v-flex xs6>
-                            <v-text-field v-model="searchMine" append-icon="search" lablel="Search" single-line
-                                          hide-details>
-                            </v-text-field>
-                        </v-flex>
-                        <v-flex xs-2>
-                            <v-btn round
-                              color="blue-grey"
-                              class="white--text" v-on:click="onUpdateScenarioList()">
-                                Load legacy scenarios
-                            </v-btn>
-                        </v-flex>
-                    </v-card-title>
-                    <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
-                        <template slot="items" slot-scope="props">
-                            <td>
-                                <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                               large lazy persistent
-                                               @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)">
-                                    {{props.item.simulationName}}
-                                    <template slot="input">
-                                        <v-text-field v-model="props.item.simulationName"
-                                                      label="Edit"
-                                                      single-line></v-text-field>
-                                    </template>
-                                </v-edit-dialog>
-                            </td>
-                            <td>{{formatDate(props.item.createdDate)}}</td>
-                            <td>{{formatDate(props.item.lastModifiedDate)}}</td>
-                            <td>{{props.item.status}}</td>
-                            <td>
-                                <v-layout row wrap>
-                                    <v-flex>
-                                        <v-btn flat icon color="blue" v-on:click="onShowRunSimulationAlert(props.item)">
-                                            <v-icon>fas fa-play</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex>
-                                        <v-btn flat icon color="info" v-on:click="onShowReportsDownloaderDialog(props.item)">
-                                            <v-icon>fas fa-chart-line</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditScenario(props.item.simulationId, props.item.simulationName)">
-                                            <v-icon>edit</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex>
-                                        <v-btn flat icon color="red" v-on:click="onDeleteScenario(props.item.simulationId, props.item.id)">
-                                            <v-icon>delete</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </td>
-                        </template>
-                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
-                            Your search for "{{searchMine}}" found no results.
-                        </v-alert>
-                    </v-data-table>
-                    <v-card-actions>
-                        <v-btn color="info lighten-1" v-on:click="onCreateScenario">Create new</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-flex>
-        </v-layout>
-        <v-layout row wrap>
-            <v-flex xs12>
-                <v-card>
-                    <v-card-title>
-                        Shared with Me
-                        <v-spacer></v-spacer>
-                        <v-text-field v-model="searchShared" append-icon="search" lablel="Search" single-line
-                                      hide-details>
+    <v-layout column>
+        <v-flex xs12>
+            <v-card>
+                <v-card-title>
+                    <v-flex xs4>My Scenarios</v-flex>
+                    <v-spacer></v-spacer>
+                    <v-flex xs6>
+                        <v-text-field v-model="searchMine" append-icon="fas fa-search" lablel="Search" single-line hide-details>
                         </v-text-field>
-                    </v-card-title>
-                    <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
-                        <template slot="items" slot-scope="props">
-                            <td>{{props.item.simulationName}}</td>
-                            <td>{{formatDate(props.item.createdDate)}}</td>
-                            <td>{{formatDate(props.item.lastModifiedDate)}}</td>
-                            <td>{{getStatus(props.item.status)}}</td>
-                            <td>
-                                <v-layout row wrap>
-                                    <v-flex>
-                                        <v-btn flat icon color="blue" v-on:click="onShowRunSimulationAlert(props.item)">
-                                            <v-icon>fas fa-play</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onShowReportsDownloaderDialog(props.item)">
-                                            <v-icon>fas fa-chart-line</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex>
-                                        <v-btn flat icon color="green" v-on:click="onEditSharedScenario(props.item.scenarioId, props.item.simulationName)">
-                                            <v-icon>edit</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </td>
-                        </template>
-                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
-                            Your search for "{{searchShared}}" found no results.
-                        </v-alert>
-                    </v-data-table>
-                </v-card>
-            </v-flex>
-        </v-layout>
-        <v-flex xs12>
-            <Alert :dialogData="alertData" @submit="onSubmitAlertResult" />
+                    </v-flex>
+                    <v-flex xs-2>
+                        <v-btn round class="ara-blue-bg white--text" @click="onUpdateScenarioList()">
+                            Load legacy scenarios
+                        </v-btn>
+                    </v-flex>
+                </v-card-title>
+                <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
+                    <template slot="items" slot-scope="props">
+                        <td>
+                            <v-edit-dialog :return-value.sync="props.item.simulationName"
+                                           large lazy persistent
+                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)">
+                                {{props.item.simulationName}}
+                                <template slot="input">
+                                    <v-text-field v-model="props.item.simulationName"
+                                                  label="Edit"
+                                                  single-line></v-text-field>
+                                </template>
+                            </v-edit-dialog>
+                        </td>
+                        <td>{{formatDate(props.item.createdDate)}}</td>
+                        <td>{{formatDate(props.item.lastModifiedDate)}}</td>
+                        <td>{{props.item.status}}</td>
+                        <td>
+                            <v-layout row wrap>
+                                <v-flex>
+                                    <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)">
+                                        <v-icon>fas fa-play</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)">
+                                        <v-icon>fas fa-chart-line</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon class="ara-yellow"
+                                           @click="onEditScenario(props.item.simulationId, props.item.simulationName)">
+                                        <v-icon>fas fa-edit</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon class="ara-orange"
+                                           @click="onDeleteScenario(props.item.simulationId, props.item.id)">
+                                        <v-icon>fas fa-trash</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                            </v-layout>
+                        </td>
+                    </template>
+                    <v-alert class="ara-orange-bg" slot="no-results" :value="true" icon="fas fa-exclamation">
+                        Your search for "{{searchMine}}" found no results.
+                    </v-alert>
+                </v-data-table>
+                <v-card-actions>
+                    <v-btn color="ara-blue-bg white--text" @click="onCreateScenario">Create new</v-btn>
+                </v-card-actions>
+            </v-card>
         </v-flex>
+
         <v-flex xs12>
-            <Alert :dialogData="alertBeforeDelete" @submit="onSubmitResponse" />
+            <v-card>
+                <v-card-title>
+                    Shared with Me
+                    <v-spacer></v-spacer>
+                    <v-text-field v-model="searchShared" append-icon="fas fa-search" lablel="Search" single-line
+                                  hide-details>
+                    </v-text-field>
+                </v-card-title>
+                <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
+                    <template slot="items" slot-scope="props">
+                        <td>{{props.item.simulationName}}</td>
+                        <td>{{formatDate(props.item.createdDate)}}</td>
+                        <td>{{formatDate(props.item.lastModifiedDate)}}</td>
+                        <td>{{getStatus(props.item.status)}}</td>
+                        <td>
+                            <v-layout row wrap>
+                                <v-flex>
+                                    <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)">
+                                        <v-icon>fas fa-play</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn flat icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)">
+                                        <v-icon>fas fa-chart-line</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn flat icon class="ara-yellow"
+                                           @click="onEditSharedScenario(props.item.scenarioId, props.item.simulationName)">
+                                        <v-icon>fas fa-edit</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                            </v-layout>
+                        </td>
+                    </template>
+                    <v-alert class="ara-orange-bg" slot="no-results" :value="true" icon="fas fa-exclamation">
+                        Your search for "{{searchShared}}" found no results.
+                    </v-alert>
+                </v-data-table>
+            </v-card>
         </v-flex>
-        <v-flex xs12>
-            <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
-        </v-flex>
-        <v-flex xs12>
-            <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario" />
-        </v-flex>
-    </v-container>
+
+        <Alert :dialogData="alertData" @submit="onSubmitAlertResult" />
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitResponse" />
+
+        <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario" />
+
+        <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -164,7 +154,6 @@
         @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('getLegacyScenarios') getLegacyScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
-        @Action('setNavigation') setNavigationAction: any;
         @Action('createScenario') createScenarioAction: any;
         @Action('deleteScenario') deleteScenarioAction: any;
         @Action('updateScenario') updateScenarioAction: any;
@@ -203,10 +192,6 @@
                 this.userScenarios = [];
             }
 
-        }
-
-        created() {
-            this.setNavigationAction([]);
         }
 
         /**
@@ -358,3 +343,7 @@
         }
     }
 </script>
+
+<style>
+
+</style>

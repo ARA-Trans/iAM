@@ -1,28 +1,26 @@
 ﻿<template>
-    <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="450px">
-            <v-card>
-                <v-card-title>
-                    <v-layout justify-center fill-height>
-                        <h3>New Scenario</h3>
-                    </v-layout>
-                </v-card-title>
-                <v-card-text>
-                    <v-layout column fill-height>
-                        <v-text-field label="Name" v-model="createScenarioData.name" outline></v-text-field>
-                    </v-layout>
-                </v-card-text>
-                <v-card-actions>
-                    <v-layout justify-space-between row fill-height>
-                        <v-btn color="info" v-on:click="onSubmit(true)" :disabled="createScenarioData.name === ''">
-                            Submit
-                        </v-btn>
-                        <v-btn v-on:click="onSubmit(false)">Cancel</v-btn>
-                    </v-layout>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-layout>
+    <v-dialog v-model="showDialog" persistent max-width="450px">
+        <v-card>
+            <v-card-title>
+                <v-layout justify-center>
+                    <h3>New Scenario</h3>
+                </v-layout>
+            </v-card-title>
+            <v-card-text>
+                <v-layout column>
+                    <v-text-field label="Name" v-model="createScenarioData.name" outline></v-text-field>
+                </v-layout>
+            </v-card-text>
+            <v-card-actions>
+                <v-layout justify-space-between row>
+                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="createScenarioData.name === ''">
+                        Submit
+                    </v-btn>
+                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                </v-layout>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script lang="ts">

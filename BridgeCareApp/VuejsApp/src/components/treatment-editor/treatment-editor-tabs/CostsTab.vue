@@ -1,41 +1,45 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <v-layout class="costs-tab-content" fill-height>
-            <v-flex xs12>
-                <v-btn color="info" v-on:click="onAddCost">Add Cost</v-btn>
-                <div class="costs-data-table">
-                    <v-data-table :headers="costsGridHeaders" :items="costsGridData" hide-actions
-                                  class="elevation-1 fixed-header v-table__overflow">
-                        <template slot="items" slot-scope="props">
-                            <td>
-                                <v-textarea rows="3" readonly no-resize full-width outline append-outer-icon="edit"
-                                            @click:append-outer="onEditCostEquation(props.item)"
-                                            v-model="props.item.equation">
-                                </v-textarea>
-                            </td>
-                            <td>
-                                <v-textarea rows="3" readonly no-resize full-width outline append-outer-icon="edit"
-                                            @click:append-outer="onEditCostCriteria(props.item)"
-                                            v-model="props.item.criteria">
-                                </v-textarea>
-                            </td>
-                            <td>
-                                <v-layout align-start fill-height>
-                                    <v-btn color="error" icon v-on:click="onDeleteCost(props.item)">
-                                        <v-icon>delete</v-icon>
+    <v-layout class="costs-tab-content">
+        <v-flex xs12>
+            <v-btn class="ara-blue-bg white--text" @click="onAddCost">Add Cost</v-btn>
+            <div class="costs-data-table">
+                <v-data-table :headers="costsGridHeaders" :items="costsGridData" hide-actions
+                              class="elevation-1 fixed-header v-table__overflow">
+                    <template slot="items" slot-scope="props">
+                        <td>
+                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.equation">
+                                <template slot="append-outer">
+                                    <v-btn class="ara-yellow" icon @click="onEditCostEquation(props.item)">
+                                        <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
-                                </v-layout>
-                            </td>
-                        </template>
-                    </v-data-table>
-                </div>
-            </v-flex>
-        </v-layout>
+                                </template>
+                            </v-textarea>
+                        </td>
+                        <td>
+                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.criteria">
+                                <template slot="append-outer">
+                                    <v-btn class="ara-yellow" icon @click="onEditCostCriteria(props.item)">
+                                        <v-icon>fas fa-edit</v-icon>
+                                    </v-btn>
+                                </template>
+                            </v-textarea>
+                        </td>
+                        <td>
+                            <v-layout align-start>
+                                <v-btn class="ara-orange" icon @click="onDeleteCost(props.item)">
+                                    <v-icon>fas fa-trash</v-icon>
+                                </v-btn>
+                            </v-layout>
+                        </td>
+                    </template>
+                </v-data-table>
+            </div>
+        </v-flex>
 
         <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedCostEquation" />
 
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedCostCriteria"/>
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">

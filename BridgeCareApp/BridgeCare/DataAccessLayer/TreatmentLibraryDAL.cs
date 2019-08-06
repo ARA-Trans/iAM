@@ -70,24 +70,30 @@ namespace BridgeCare.DataAccessLayer
                         }).ToList()
                     }).SingleOrDefault();
 
-                foreach (var treatment in treatmentLibraryModel.Treatments)
+                if (treatmentLibraryModel != null)
                 {
-                    treatment.SetBudgets();
-                    if (!treatment.Feasibilities.Any())
+                    treatmentLibraryModel.Treatments.ToList().ForEach(treatment =>
                     {
-                        treatment.Feasilbility = null;
-                        continue;
-                    }
+                        treatment.SetBudgets();
 
-                    treatment.Feasilbility = new FeasibilityModel();
+                        if (!treatment.Feasibilities.Any())
+                        {
+                            treatment.Feasilbility = null;
+                        }
+                        else
+                        {
+                            treatment.Feasilbility = new FeasibilityModel();
 
-                    foreach (var feasibility in treatment.Feasibilities)
-                    {
-                        treatment.Feasilbility.Aggregate(feasibility);
-                        treatment.Feasilbility.BeforeAny = treatment.BeforeAny;
-                        treatment.Feasilbility.BeforeSame = treatment.BeforeSame;
-                    }
+                            treatment.Feasibilities.ForEach(feasibility =>
+                            {
+                                treatment.Feasilbility.Aggregate(feasibility);
+                                treatment.Feasilbility.BeforeAny = treatment.BeforeAny;
+                                treatment.Feasilbility.BeforeSame = treatment.BeforeSame;
+                            });
+                        }
+                    });
                 }
+
                 return treatmentLibraryModel;
             }
             catch (SqlException ex)

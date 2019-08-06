@@ -1,54 +1,52 @@
 <template>
-    <v-layout row justify-center>
-        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
-            <v-card>
-                <v-card-title>
-                    <v-layout column fill-height>
-                        <v-flex>
-                            <v-layout justify-center fill-height>
-                                <h3>Criteria Editor</h3>
-                            </v-layout>
-                        </v-flex>
+    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
+        <v-card>
+            <v-card-title>
+                <v-layout column>
+                    <v-flex>
+                        <v-layout justify-center>
+                            <h3>Criteria Editor</h3>
+                        </v-layout>
+                    </v-flex>
 
-                        <v-flex>
-                            Current Criteria Output
-                            <v-textarea rows="5" no-resize outline readonly full-width :value="currentCriteriaOutput">
-                            </v-textarea>
-                            <div class="validation-message-div">
-                                <v-layout justify-end fill-height>
-                                    <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
-                                    <p class="valid-message" v-if="showValidMessage">{{validMessage}}</p>
-                                </v-layout>
-                            </div>
-                        </v-flex>
-                    </v-layout>
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-card-text class="query-builder-card-text">
-                    <div v-if="editorRules.length > 0">
-                        <vue-query-builder :labels="queryBuilderLabels" :rules="editorRules" :maxDepth="25" :styled="true"
-                                           v-model="criteria">
-                        </vue-query-builder>
-                    </div>
-                </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-layout justify-space-between row fill-height>
-                        <v-flex xs2>
-                            <v-layout>
-                                <v-btn color="info lighten-1" @click="onCheckCriteria">Check</v-btn>
-                                <v-btn color="info" @click="onSubmit(true)" :disabled="cannotSubmit">
-                                    Apply
-                                </v-btn>
+                    <v-flex>
+                        Current Criteria Output
+                        <v-textarea rows="5" no-resize outline readonly full-width :value="currentCriteriaOutput">
+                        </v-textarea>
+                        <div class="validation-message-div">
+                            <v-layout justify-end>
+                                <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
+                                <p class="valid-message" v-if="showValidMessage">{{validMessage}}</p>
                             </v-layout>
-                        </v-flex>
-                        
-                        <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
-                    </v-layout>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-layout>
+                        </div>
+                    </v-flex>
+                </v-layout>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="query-builder-card-text">
+                <div v-if="editorRules.length > 0">
+                    <vue-query-builder :labels="queryBuilderLabels" :rules="editorRules" :maxDepth="25" :styled="true"
+                                       v-model="criteria">
+                    </vue-query-builder>
+                </div>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+                <v-layout justify-space-between row>
+                    <v-flex xs2>
+                        <v-layout>
+                            <v-btn class="ara-blue-bg white--text" @click="onCheckCriteria">Check</v-btn>
+                            <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">
+                                Apply
+                            </v-btn>
+                        </v-layout>
+                    </v-flex>
+
+                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                </v-layout>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script lang="ts">

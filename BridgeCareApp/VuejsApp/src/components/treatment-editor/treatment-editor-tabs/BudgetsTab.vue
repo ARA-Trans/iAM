@@ -4,7 +4,7 @@
             <v-flex xs12>
                 <v-layout justify-center>
                     <v-flex xs6>
-                        <v-layout v-if="budgets.length === 0" column fill-height>
+                        <v-layout v-if="budgets.length === 0" column>
                             <h3>Investment Library Not Found</h3>
                             <div>
                                 No investment library data was found for the selected scenario.
@@ -13,7 +13,7 @@
                                 To add investment library data, go to the scenario's investment editor.
                             </div>
                         </v-layout>
-                        <v-layout v-else fill-height>
+                        <v-layout v-else>
                             <v-data-table :items="budgets" :headers="budgetHeaders" v-model="selectedBudgets" select-all
                                           item-key="budget" hide-actions
                                           class="elevation-1 fixed-header v-table__overflow budgets-data-table">
