@@ -1,121 +1,116 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <div class="treatment-editor-container">
-            <v-layout column>
-                <v-flex xs12>
-                    <v-layout justify-center fill-height>
-                        <v-flex xs3>
-                            <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onNewLibrary">
-                                New Library
+    <v-layout column>
+        <v-flex xs12>
+            <v-layout justify-center>
+                <v-flex xs3>
+                    <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onNewLibrary">
+                        New Library
+                    </v-btn>
+                    <v-select v-if="!hasSelectedTreatmentLibrary || selectedScenarioId > 0"
+                              :items="treatmentLibrariesSelectListItems" label="Select a Treatment Library"
+                              outline v-model="treatmentLibrarySelectItemValue" class="treatment-library-select">
+                    </v-select>
+                    <v-text-field v-if="hasSelectedTreatmentLibrary && selectedScenarioId === 0"
+                                  label="Treatment Name" v-model="selectedTreatmentLibrary.name">
+                        <template slot="append">
+                            <v-btn class="ara-orange" icon @click="onClearSelectedTreatmentLibrary">
+                                <v-icon>fas fa-times</v-icon>
                             </v-btn>
-                            <v-chip label v-show="selectedScenarioId > 0" color="indigo" text-color="white">
-                                <v-icon left>label</v-icon>Scenario name: {{scenarioTreatmentLibrary.name}}
-                            </v-chip>
-                            <v-select v-if="!hasSelectedTreatmentLibrary || selectedScenarioId > 0"
-                                      :items="treatmentLibrariesSelectListItems" label="Select a Treatment Library"
-                                      outline v-model="treatmentLibrarySelectItemValue" class="treatment-library-select">
-                            </v-select>
-                            <v-text-field v-if="hasSelectedTreatmentLibrary && selectedScenarioId === 0"
-                                          label="Treatment Name" append-icon="clear"
-                                          v-model="selectedTreatmentLibrary.name"
-                                          @click:append="onClearSelectedTreatmentLibrary">
-                            </v-text-field>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
-                <v-divider v-if="hasSelectedTreatmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedTreatmentLibrary">
-                    <div class="treatments-div">
-                        <v-layout justify-center row fill-height>
-                            <v-flex xs3>
-                                <v-btn color="info" v-on:click="onAddTreatment">
-                                    Add Treatment
-                                </v-btn>
-                                <v-select :items="treatmentsSelectListItems" label="Select a Treatment" outline
-                                          clearable v-model="treatmentSelectItemValue">
-                                </v-select>
-                            </v-flex>
-                            <v-flex xs9>
-                                <div v-show="selectedTreatment.id !== 0">
-                                    <v-tabs v-model="activeTab">
-                                        <v-tab v-for="(treatmentTab, index) in treatmentTabs" :key="index" ripple
-                                               v-on:click="setAsActiveTab(index)">
-                                            {{treatmentTab}}
-                                        </v-tab>
-                                        <v-tabs-items v-model="activeTab">
-                                            <v-tab-item>
-                                                <v-card>
-                                                    <v-card-text class="card-tab-content">
-                                                        <FeasibilityTab :feasibilityTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-tab-item>
-                                            <v-tab-item>
-                                                <v-card>
-                                                    <v-card-text class="card-tab-content">
-                                                        <CostsTab :costsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-tab-item>
-                                            <v-tab-item>
-                                                <v-card>
-                                                    <v-card-text class="card-tab-content">
-                                                        <ConsequencesTab :consequencesTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-tab-item>
-                                            <v-tab-item>
-                                                <v-card>
-                                                    <v-card-text class="card-tab-content">
-                                                        <BudgetsTab :budgetsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-tab-item>
-                                        </v-tabs-items>
-                                    </v-tabs>
-                                </div>
-                            </v-flex>
-                        </v-layout>
-                    </div>
-                </v-flex>
-                <v-divider v-if="hasSelectedTreatmentLibrary"></v-divider>
-                <v-flex xs12 v-if="hasSelectedTreatmentLibrary && selectedTreatmentLibrary.id !== scenarioTreatmentLibrary.id">
-                    <v-layout justify-center fill-height>
-                        <v-flex xs6>
-                            <v-textarea rows="4" no-resize outline label="Description"
-                                        v-model="selectedTreatmentLibrary.description">
-                            </v-textarea>
-                        </v-flex>
-                    </v-layout>
+                        </template>
+                    </v-text-field>
                 </v-flex>
             </v-layout>
-        </div>
-
-        <v-footer>
-            <v-layout justify-end row fill-height>
-                <v-btn v-show="selectedScenarioId > 0" color="info" v-on:click="onApplyToScenario"
+        </v-flex>
+        <v-divider v-show="hasSelectedTreatmentLibrary"></v-divider>
+        <v-flex xs12 v-show="hasSelectedTreatmentLibrary">
+            <div class="treatments-div">
+                <v-layout justify-center row>
+                    <v-flex xs3>
+                        <v-btn class="ara-blue-bg white--text" @click="onAddTreatment">
+                            Add Treatment
+                        </v-btn>
+                        <v-select :items="treatmentsSelectListItems" label="Select a Treatment" outline
+                                  clearable v-model="treatmentSelectItemValue">
+                        </v-select>
+                    </v-flex>
+                    <v-flex xs9>
+                        <div v-show="selectedTreatment.id !== 0">
+                            <v-tabs v-model="activeTab">
+                                <v-tab v-for="(treatmentTab, index) in treatmentTabs" :key="index" ripple
+                                       @click="setAsActiveTab(index)">
+                                    {{treatmentTab}}
+                                </v-tab>
+                                <v-tabs-items v-model="activeTab">
+                                    <v-tab-item>
+                                        <v-card>
+                                            <v-card-text class="card-tab-content">
+                                                <FeasibilityTab :feasibilityTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-tab-item>
+                                    <v-tab-item>
+                                        <v-card>
+                                            <v-card-text class="card-tab-content">
+                                                <CostsTab :costsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-tab-item>
+                                    <v-tab-item>
+                                        <v-card>
+                                            <v-card-text class="card-tab-content">
+                                                <ConsequencesTab :consequencesTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-tab-item>
+                                    <v-tab-item>
+                                        <v-card>
+                                            <v-card-text class="card-tab-content">
+                                                <BudgetsTab :budgetsTabData="tabData" @submit="updateSelectedTreatmentLibrary" />
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-tab-item>
+                                </v-tabs-items>
+                            </v-tabs>
+                        </div>
+                    </v-flex>
+                </v-layout>
+            </div>
+        </v-flex>
+        <v-divider v-show="hasSelectedTreatmentLibrary"></v-divider>
+        <v-flex xs12 v-show="hasSelectedTreatmentLibrary && (scenarioTreatmentLibrary === null || selectedTreatmentLibrary.id !== scenarioTreatmentLibrary.id)">
+            <v-layout justify-center>
+                <v-flex xs6>
+                    <v-textarea rows="4" no-resize outline label="Description"
+                                v-model="selectedTreatmentLibrary.description">
+                    </v-textarea>
+                </v-flex>
+            </v-layout>
+        </v-flex>
+        <v-flex xs12>
+            <v-layout v-show="hasSelectedTreatmentLibrary" justify-end row>
+                <v-btn v-show="selectedScenarioId > 0" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Apply
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" color="info" v-on:click="onUpdateLibrary"
+                <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Update Library
                 </v-btn>
-                <v-btn color="info lighten-1" v-on:click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
+                <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId > 0" color="error lighten-1" v-on:click="onDiscardChanges"
+                <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
-        </v-footer>
+        </v-flex>
 
         <CreateTreatmentLibraryDialog :dialogData="createTreatmentLibraryDialogData"
                                       @submit="onCreateTreatmentLibrary" />
 
         <CreateTreatmentDialog :showDialog="showCreateTreatmentDialog" @submit="onCreateTreatment" />
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -157,7 +152,6 @@
         @State(state => state.treatmentEditor.scenarioTreatmentLibrary) stateScenarioTreatmentLibrary: TreatmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary;
 
-        @Action('setNavigation') setNavigationAction: any;
         @Action('getTreatmentLibraries') getTreatmentLibrariesAction: any;
         @Action('getScenarioTreatmentLibrary') getScenarioTreatmentLibraryAction: any;
         @Action('selectTreatmentLibrary') selectTreatmentLibraryAction: any;
@@ -188,7 +182,7 @@
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                if (to.path === '/TreatmentEditor/FromScenario/') {
+                if (to.path === '/TreatmentEditor/Scenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
 
                     if (vm.selectedScenarioId === 0) {
@@ -197,23 +191,9 @@
                         vm.$router.push('/Scenarios/');
                     }
 
-                    vm.setNavigationAction([
-                        {
-                            text: 'Scenario Dashboard',
-                            to: {path: '/Scenarios/', query: {}}
-                        },
-                        {
-                            text: 'Scenario Editor',
-                            to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
-                        },
-                        {
-                            text: 'Treatment Editor',
-                            to: {path: '/TreatmentEditor/FromScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
-                        }
-                    ]);
-
                     vm.treatmentTabs = [...vm.treatmentTabs, 'budgets'];
                 }
+
                 vm.onClearSelectedTreatmentLibrary();
 
                 setTimeout(() => {

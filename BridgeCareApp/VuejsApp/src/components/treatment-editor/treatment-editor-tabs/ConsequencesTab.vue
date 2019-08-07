@@ -1,61 +1,65 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <v-layout class="consequences-tab-content" fill-height>
-            <v-flex xs12>
-                <v-btn color="info" v-on:click="onAddConsequence">Add Consequence</v-btn>
-                <div class="consequences-data-table">
-                    <v-data-table :headers="consequencesGridHeaders" :items="consequencesGridData" hide-actions
-                                  class="elevation-1 fixed-header v-table__overflow">
-                        <template slot="items" slot-scope="props">
-                            <td>
-                                <v-edit-dialog @save="onEditConsequenceProperty(props.item, 'attribute', props.item.attribute)"
-                                               :return-value.sync="props.item.attribute" large lazy persistent>
-                                    <v-text-field readonly :value="props.item.attribute"></v-text-field>
-                                    <template slot="input">
-                                        <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
-                                                  label="Edit">
-                                        </v-select>
-                                    </template>
-                                </v-edit-dialog>
-                            </td>
-                            <td>
-                                <v-edit-dialog @save="onEditConsequenceProperty(props.item, 'change', props.item.change)"
-                                               :return-value.sync="props.item.change" large lazy persistent>
-                                    <v-text-field readonly :value="props.item.change"></v-text-field>
-                                    <template slot="input">
-                                        <v-text-field v-model="props.item.change" label="Edit"></v-text-field>
-                                    </template>
-                                </v-edit-dialog>
-                            </td>
-                            <td>
-                                <v-textarea rows="3" readonly no-resize full-width outline append-outer-icon="edit"
-                                            @click:append-outer="onEditConsequenceEquation(props.item)"
-                                            v-model="props.item.equation">
-                                </v-textarea>
-                            </td>
-                            <td>
-                                <v-textarea rows="3" readonly no-resize full-width outline append-outer-icon="edit"
-                                            @click:append-outer="onEditConsequenceCriteria(props.item)"
-                                            v-model="props.item.criteria">
-                                </v-textarea>
-                            </td>
-                            <td>
-                                <v-layout align-start fill-height>
-                                    <v-btn color="error" icon v-on:click="onDeleteConsequence(props.item)">
-                                        <v-icon>delete</v-icon>
+    <v-layout class="consequences-tab-content">
+        <v-flex xs12>
+            <v-btn class="ara-blue-bg white--text" @click="onAddConsequence">Add Consequence</v-btn>
+            <div class="consequences-data-table">
+                <v-data-table :headers="consequencesGridHeaders" :items="consequencesGridData" hide-actions
+                              class="elevation-1 fixed-header v-table__overflow">
+                    <template slot="items" slot-scope="props">
+                        <td>
+                            <v-edit-dialog @save="onEditConsequenceProperty(props.item, 'attribute', props.item.attribute)"
+                                           :return-value.sync="props.item.attribute" large lazy persistent>
+                                <v-text-field readonly :value="props.item.attribute"></v-text-field>
+                                <template slot="input">
+                                    <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
+                                              label="Edit">
+                                    </v-select>
+                                </template>
+                            </v-edit-dialog>
+                        </td>
+                        <td>
+                            <v-edit-dialog @save="onEditConsequenceProperty(props.item, 'change', props.item.change)"
+                                           :return-value.sync="props.item.change" large lazy persistent>
+                                <v-text-field readonly :value="props.item.change"></v-text-field>
+                                <template slot="input">
+                                    <v-text-field v-model="props.item.change" label="Edit"></v-text-field>
+                                </template>
+                            </v-edit-dialog>
+                        </td>
+                        <td>
+                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.equation">
+                                <template slot="append-outer">
+                                    <v-btn class="ara-yellow" icon @click="onEditConsequenceEquation(props.item)">
+                                        <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
-                                </v-layout>
-                            </td>
-                        </template>
-                    </v-data-table>
-                </div>
-            </v-flex>
-        </v-layout>
+                                </template>
+                            </v-textarea>
+                        </td>
+                        <td>
+                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.criteria">
+                                <template slot="append-outer">
+                                    <v-btn class="ara-yellow" icon @click="onEditConsequenceCriteria(props.item)">
+                                        <v-icon>fas fa-edit</v-icon>
+                                    </v-btn>
+                                </template>
+                            </v-textarea>
+                        </td>
+                        <td>
+                            <v-layout align-start>
+                                <v-btn class="ara-orange" icon @click="onDeleteConsequence(props.item)">
+                                    <v-icon>fas fa-trash</v-icon>
+                                </v-btn>
+                            </v-layout>
+                        </td>
+                    </template>
+                </v-data-table>
+            </div>
+        </v-flex>
 
         <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedConsequenceEquation" />
 
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedConsequenceCriteria"/>
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">

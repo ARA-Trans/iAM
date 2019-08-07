@@ -2,23 +2,25 @@
     <v-dialog v-model="showDialog" persistent max-width="500px">
         <v-card>
             <v-card-title>
-                <v-layout justify-center fill-height>
+                <v-layout justify-center>
                     <h3>Committed Projects</h3>
                 </v-layout>
             </v-card-title>
             <v-card-text>
-                <v-layout column fill-height>
+                <v-layout column>
                     <v-layout column>
-                        <form v-show="dragAndDropCapable" id="file-form">
-                            <v-layout align-center justify-center fill-height>
-                                <span class="drop-files">Drag & Drop Files Here</span>
-                            </v-layout>
+                        <form v-show="dragAndDropCapable" class="ara-light-gray-bg" id="file-form">
+                            <v-layout align-center justify-center fill-height><div>Drag & Drop Files Here</div></v-layout>
                         </form>
-                        <v-btn class="file-select-btn" color="info" v-on:click="fileSelect.click()">
-                            Select File(s)
-                        </v-btn>
+                        <v-flex xs12>
+                            <v-layout justify-start>
+                                <v-btn class="ara-blue-bg white--text" @click="fileSelect.click()">
+                                    Select File(s)
+                                </v-btn>
+                            </v-layout>
+                        </v-flex>
                         <div v-show="false">
-                            <input id="file-select" type="file" multiple v-on:change="onSelect($event.target.files)" />
+                            <input id="file-select" type="file" multiple @change="onSelect($event.target.files)" />
                         </div>
                     </v-layout>
                     <div class="files-table">
@@ -28,8 +30,8 @@
                                 <td>{{props.item.name}}</td>
                                 <td>{{convertBytesToMegabytes(props.item.size)}}</td>
                                 <td>
-                                    <v-btn flat icon color="error" v-on:click="onRemoveFile(props.item.name)">
-                                        <v-icon>delete</v-icon>
+                                    <v-btn icon class="ara-orange" @click="onRemoveFile(props.item.name)">
+                                        <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </td>
                             </template>
@@ -38,10 +40,10 @@
                 </v-layout>
             </v-card-text>
             <v-card-actions>
-                <v-layout justify-space-between row fill-height>
-                    <v-btn color="info" v-on:click="onUpload">Upload</v-btn>
-                    <v-btn color="info" v-on:click="onExport">Export</v-btn>
-                    <v-btn color="error" v-on:click="onCancel">Cancel</v-btn>
+                <v-layout justify-space-between row>
+                    <v-btn class="ara-blue-bg white--text" @click="onUpload">Upload</v-btn>
+                    <v-btn class="ara-blue-bg white--text" @click="onExport">Export</v-btn>
+                    <v-btn class="ara-orange-bg white--text" @click="onCancel">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -178,14 +180,13 @@
 
 <style>
     form {
-        display: block;
+        /*display: block;*/
         height: 100px;
-        width: 100%;
-        background: #ccc;
+        /*width: 100%;
         margin: auto;
         margin-top: 40px;
         text-align: center;
-        line-height: 400px;
+        line-height: 400px;*/
         border-radius: 4px;
     }
 

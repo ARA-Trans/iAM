@@ -4,12 +4,12 @@
                 transition="slide-y-transition" origin="center center" offset-y full-width min-width="290px">
             <template slot="activator">
                 <div v-if="outline">
-                    <v-text-field :label="itemLabel" readonly outline v-model="currentYear" append-icon="event"
+                    <v-text-field :label="itemLabel" readonly outline v-model="currentYear" append-icon="fas fa-calendar-day"
                                   @click="focusOnActiveDate">
                     </v-text-field>
                 </div>
                 <div v-else>
-                    <v-text-field :label="itemLabel" readonly v-model="currentYear" append-icon="event"
+                    <v-text-field :label="itemLabel" readonly v-model="currentYear" append-icon="fas fa-calendar-day"
                                   @click="focusOnActiveDate">
                     </v-text-field>
                 </div>

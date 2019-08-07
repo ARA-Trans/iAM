@@ -1,38 +1,34 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <div class="priorities-targets-deficients-container">
-            <v-layout class="priorities-targets-deficients-layout">
-                <v-tabs v-model="activeTab">
-                    <v-tab v-for="(tab, index) in tabs" :key="index" ripple @click="setAsActiveTab(index)">
-                        {{tab}}
-                    </v-tab>
-                    <v-tabs-items v-model="activeTab">
-                        <v-tab-item>
-                            <v-card>
-                                <v-card-text class="priorities-targets-deficients-card-text">
-                                    <PrioritiesTab :selectedScenarioId="selectedScenarioId" />
-                                </v-card-text>
-                            </v-card>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-card>
-                                <v-card-text class="priorities-targets-deficients-card-text">
-                                    <TargetsTab :selectedScenarioId="selectedScenarioId" />
-                                </v-card-text>
-                            </v-card>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-card>
-                                <v-card-text class="priorities-targets-deficients-card-text">
-                                    <DeficientsTab :selectedScenarioId="selectedScenarioId" />
-                                </v-card-text>
-                            </v-card>
-                        </v-tab-item>
-                    </v-tabs-items>
-                </v-tabs>
-            </v-layout>
-        </div>
-    </v-container>
+    <v-layout class="priorities-targets-deficients-layout">
+        <v-tabs v-model="activeTab">
+            <v-tab v-for="(tab, index) in tabs" :key="index" ripple @click="setAsActiveTab(index)">
+                {{tab}}
+            </v-tab>
+            <v-tabs-items v-model="activeTab">
+                <v-tab-item>
+                    <v-card>
+                        <v-card-text class="priorities-targets-deficients-card-text">
+                            <PrioritiesTab :selectedScenarioId="selectedScenarioId" />
+                        </v-card-text>
+                    </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-card>
+                        <v-card-text class="priorities-targets-deficients-card-text">
+                            <TargetsTab :selectedScenarioId="selectedScenarioId" />
+                        </v-card-text>
+                    </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-card>
+                        <v-card-text class="priorities-targets-deficients-card-text">
+                            <DeficientsTab :selectedScenarioId="selectedScenarioId" />
+                        </v-card-text>
+                    </v-card>
+                </v-tab-item>
+            </v-tabs-items>
+        </v-tabs>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -48,7 +44,6 @@
     })
     export default class PrioritiesTargetsDeficients extends Vue {
         @Action('setErrorMessage') setErrorMessageAction: any;
-        @Action('setNavigation') setNavigationAction: any;
         @Action('getPriorities') getPrioritiesAction: any;
         @Action('getTargets') getTargetsAction: any;
         @Action('getDeficients') getDeficientsAction: any;
@@ -65,21 +60,6 @@
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
                 }
-
-                vm.setNavigationAction([
-                    {
-                        text: 'Scenario dashboard',
-                        to: {path: '/Scenarios/', query: {}}
-                    },
-                    {
-                        text: 'Scenario editor',
-                        to: {path: '/EditScenario/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
-                    },
-                    {
-                        text: 'Priorities, Targets, & Deficients',
-                        to: {path: '/PrioritiesTargetsDeficients/', query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}}
-                    }
-                ]);
 
                 vm.getPrioritiesAction({selectedScenarioId: vm.selectedScenarioId});
                 vm.getTargetsAction({selectedScenarioId: vm.selectedScenarioId});
@@ -106,7 +86,7 @@
     }
 
     .priorities-targets-deficients-layout {
-        padding: 15px;
+        /*padding: 15px;*/
     }
 
     .priorities-targets-deficients-card-text {
@@ -116,9 +96,5 @@
     .priorities-data-table, .targets-data-table, .deficients-data-table {
         height: 490px;
         overflow-y: auto;
-    }
-
-    .priorities-targets-deficients-buttons {
-        background: white;
     }
 </style>

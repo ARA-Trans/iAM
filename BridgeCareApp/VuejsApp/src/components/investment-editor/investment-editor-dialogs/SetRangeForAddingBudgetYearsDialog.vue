@@ -1,22 +1,20 @@
 <template>
-    <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="200px">
-            <v-card>
-                <v-card-title>
-                    <v-layout justify-center fill-height>
-                        <h3>Set Range</h3>
-                    </v-layout>
-                </v-card-title>
-                <v-card-text>
-                    <v-text-field v-model="range" label="Edit" single-line :mask="'####'"></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn color="info" v-on:click="onSubmit(true)" :disabled="range === ''">Submit</v-btn>
-                    <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-layout>
+    <v-dialog v-model="showDialog" persistent max-width="200px">
+        <v-card>
+            <v-card-title>
+                <v-layout justify-center>
+                    <h3>Set Range</h3>
+                </v-layout>
+            </v-card-title>
+            <v-card-text>
+                <v-text-field v-model="range" label="Edit" single-line :mask="'####'"></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="range === ''">Submit</v-btn>
+                <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script lang="ts">

@@ -3,12 +3,12 @@
         <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
             <v-card>
                 <v-card-title>
-                    <v-layout justify-center fill-height>
+                    <v-layout justify-center>
                         <h3>New Treatment Library</h3>
                     </v-layout>
                 </v-card-title>
                 <v-card-text>
-                    <v-layout column fill-height>
+                    <v-layout column>
                         <v-text-field label="Name" v-model="createdTreatmentLibrary.name" outline></v-text-field>
                         <v-textarea rows="3" no-resize outline label="Description"
                                     v-model="createdTreatmentLibrary.description">
@@ -16,13 +16,13 @@
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
-                    <v-layout justify-space-between row fill-height>
-                        <v-btn color="info" v-on:click="onSubmit(true)"
+                    <v-layout justify-space-between row>
+                        <v-btn color="info" @click="onSubmit(true)"
                                :disabled="createdTreatmentLibrary.name === '' ||
                                           createdTreatmentLibrary.description === ''">
                             Submit
                         </v-btn>
-                        <v-btn color="error" v-on:click="onSubmit(false)">Cancel</v-btn>
+                        <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>

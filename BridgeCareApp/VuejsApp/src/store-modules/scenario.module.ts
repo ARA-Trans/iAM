@@ -18,7 +18,8 @@ const convertFromMongoToVueModel = (data: any) => {
 
 const state = {
     scenarios: [] as Scenario[],
-    benefitAttributes: [] as string[]
+    benefitAttributes: [] as string[],
+    selectedScenarioName: ''
 };
 
 const mutations = {
@@ -42,6 +43,9 @@ const mutations = {
             const index: number = findIndex(propEq('id', documentKey), scenarios);
             state.scenarios = remove(index, 1, scenarios);
         }
+    },
+    selectedScenarioNameMutator(state: any, selectedScenarioName: string) {
+        state.selectedScenarioName = selectedScenarioName;
     }
 };
 
@@ -120,6 +124,9 @@ const actions = {
                 dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
             }
         }
+    },
+    setSelectedScenarioName({commit}: any, payload: any) {
+        commit('selectedScenarioNameMutator', payload.selectedScenarioName);
     }
 };
 

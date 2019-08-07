@@ -1,52 +1,53 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <div>
-            <v-layout>
-                <v-flex>
-                    <v-btn color="info" @click="onAddDeficient">Add</v-btn>
-                </v-flex>
-            </v-layout>
-            <v-layout>
-                <v-flex>
-                    <div class="deficients-data-table">
-                        <v-data-table :headers="deficientDataTableHeaders" :items="deficients"
-                                      class="elevation-1 fixed-header v-table__overflow" hide-actions>
-                            <template slot="items" slot-scope="props">
-                                <td v-for="header in deficientDataTableHeaders">
-                                    <div v-if="header.value !== 'criteria'">
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
-                                                       @save="onEditDeficientProperty(props.item.id, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item[header.value]"></v-text-field>
-                                            <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                    <div v-else>
-                                        <v-text-field readonly :value="props.item.criteria" append-outer-icon="edit"
-                                                      @click:append-outer="onEditCriteria(props.item)">
+    <v-layout column>
+        <v-flex xs12>
+            <v-btn class="ara-blue-bg white--text" @click="onAddDeficient">Add</v-btn>
+        </v-flex>
+        <v-flex xs12>
+            <div class="deficients-data-table">
+                <v-data-table :headers="deficientDataTableHeaders" :items="deficients"
+                              class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                    <template slot="items" slot-scope="props">
+                        <td v-for="header in deficientDataTableHeaders">
+                            <div v-if="header.value !== 'criteria'">
+                                <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
+                                               @save="onEditDeficientProperty(props.item.id, header.value, props.item[header.value])">
+                                    <v-text-field readonly :value="props.item[header.value]"></v-text-field>
+                                    <template slot="input">
+                                        <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
                                         </v-text-field>
-                                    </div>
-                                </td>
-                            </template>
-                        </v-data-table>
-                    </div>
-                </v-flex>
+                                    </template>
+                                </v-edit-dialog>
+                            </div>
+                            <div v-else>
+                                <v-text-field readonly :value="props.item.criteria">
+                                    <template slot="append-outer">
+                                        <v-icon class="ara-yellow" @click="onEditCriteria(props.item)">
+                                            fas fa-edit
+                                        </v-icon>
+                                    </template>
+                                </v-text-field>
+                            </div>
+                        </td>
+                    </template>
+                </v-data-table>
+            </div>
+        </v-flex>
+        <v-flex xs12>
+            <v-layout justify-end row>
+                <v-btn class="ara-blue-bg white--text" @click="onSaveDeficients" :disabled="deficients.length === 0">
+                    Save
+                </v-btn>
+                <v-btn class="ara-orange-bg white--text" @click="onCancelChangesToDeficients" :disabled="deficients.length === 0">
+                    Cancel
+                </v-btn>
             </v-layout>
-        </div>
+        </v-flex>
 
         <CreateDeficientDialog :dialogData="createDeficientDialogData" @submit="onSubmitNewDeficient" />
 
         <DeficientsCriteriaEditor :dialogData="deficientsCriteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
-
-        <v-footer>
-            <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
-                <v-btn color="info" @click="onSaveDeficients" :disabled="deficients.length === 0">Save</v-btn>
-                <v-btn color="error" @click="onCancelChangesToDeficients" :disabled="deficients.length === 0">Cancel</v-btn>
-            </v-layout>
-        </v-footer>
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">

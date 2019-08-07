@@ -1,63 +1,64 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <div>
-            <v-layout>
-                <v-flex>
-                    <v-btn color="info" @click="onAddTarget">Add</v-btn>
-                </v-flex>
-            </v-layout>
-            <v-layout>
-                <v-flex>
-                    <div class="targets-data-table">
-                        <v-data-table :headers="targetDataTableHeaders" :items="targets"
-                                      class="elevation-1 fixed-header v-table__overflow" hide-actions>
-                            <template slot="items" slot-scope="props">
-                                <td v-for="header in targetDataTableHeaders">
-                                    <div v-if="header.value !== 'criteria' && header.value !== 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
-                                                       @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item[header.value]"></v-text-field>
-                                            <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line
-                                                              :type="header.value === 'attribute' || header.value === 'name' ? 'text' : 'number'">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                    <div v-if="header.value === 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item.year" large lazy persistent
-                                                       @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item.year"></v-text-field>
-                                            <template slot="input">
-                                                <EditTargetYearDialog :itemYear="props.item.year.toString()" :itemLabel="'Year'"
-                                                                @editedYear="props.item.year = $event" />
-                                            </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                    <div v-if="header.value === 'criteria'">
-                                        <v-text-field readonly :value="props.item.criteria" append-outer-icon="edit"
-                                                      @click:append-outer="onEditCriteria(props.item)">
+    <layout column>
+        <v-flex xs12>
+            <v-btn class="ara-blue-bg white--text" @click="onAddTarget">Add</v-btn>
+        </v-flex>
+        <v-flex xs12>
+            <div class="targets-data-table">
+                <v-data-table :headers="targetDataTableHeaders" :items="targets"
+                              class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                    <template slot="items" slot-scope="props">
+                        <td v-for="header in targetDataTableHeaders">
+                            <div v-if="header.value !== 'criteria' && header.value !== 'year'">
+                                <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
+                                               @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
+                                    <v-text-field readonly :value="props.item[header.value]"></v-text-field>
+                                    <template slot="input">
+                                        <v-text-field v-model="props.item[header.value]" label="Edit" single-line
+                                                      :type="header.value === 'attribute' || header.value === 'name' ? 'text' : 'number'">
                                         </v-text-field>
-                                    </div>
-                                </td>
-                            </template>
-                        </v-data-table>
-                    </div>
-                </v-flex>
+                                    </template>
+                                </v-edit-dialog>
+                            </div>
+                            <div v-if="header.value === 'year'">
+                                <v-edit-dialog :return-value.sync="props.item.year" large lazy persistent
+                                               @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
+                                    <v-text-field readonly :value="props.item.year"></v-text-field>
+                                    <template slot="input">
+                                        <EditTargetYearDialog :itemYear="props.item.year.toString()" :itemLabel="'Year'"
+                                                              @editedYear="props.item.year = $event" />
+                                    </template>
+                                </v-edit-dialog>
+                            </div>
+                            <div v-if="header.value === 'criteria'">
+                                <v-text-field readonly :value="props.item.criteria">
+                                    <template slot="append-outer">
+                                        <v-icon class="ara-yellow" @click="onEditCriteria(props.item)">
+                                            fas fa-edit
+                                        </v-icon>
+                                    </template>
+                                </v-text-field>
+                            </div>
+                        </td>
+                    </template>
+                </v-data-table>
+            </div>
+        </v-flex>
+        <v-flex xs12>
+            <v-layout justify-end row>
+                <v-btn class="ara-blue-bg white--text" @click="onSaveTargets" :disabled="targets.length === 0">
+                    Save
+                </v-btn>
+                <v-btn class="ara-orange-bg white--text" @click="onCancelChangesToTargets" :disabled="targets.length === 0">
+                    Cancel
+                </v-btn>
             </v-layout>
-        </div>
+        </v-flex>
 
         <CreateTargetDialog :dialogData="createTargetDialogData" @submit="onSubmitNewTarget" />
 
         <TargetsCriteriaEditor :dialogData="targetscriteriaEditorDialogData" @submit="onSubmitTargetCriteria" />
-
-        <v-footer>
-            <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
-                <v-btn color="info" @click="onSaveTargets" :disabled="targets.length === 0">Save</v-btn>
-                <v-btn color="error" @click="onCancelChangesToTargets" :disabled="targets.length === 0">Cancel</v-btn>
-            </v-layout>
-        </v-footer>
-    </v-container>
+    </layout>
 </template>
 
 <script lang="ts">

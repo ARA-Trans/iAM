@@ -2,7 +2,7 @@
     <v-container fluid grid-list-xl>
         <v-layout>
             <v-flex xs12>
-                <v-layout justify-center fill-height>
+                <v-layout justify-center>
                     <v-card class="under-construction-card">
                         <div class="under-construction-img-div">
                             <v-img :src="require('@/assets/images/under-construction.png')"

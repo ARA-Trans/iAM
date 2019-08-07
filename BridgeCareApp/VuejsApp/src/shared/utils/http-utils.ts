@@ -15,22 +15,24 @@ export const setStatusMessage = (response: AxiosResponse) => {
 };
 
 export const setContentTypeCharset = (headers: any) => {
-    if (headers['common']) {
-        if (headers['common']['Content-Type']) {
-            headers['common']['Content-Type'] = `${headers['common']['Content-Type']}; charset=utf-8`;
+    if (headers) {
+        if (headers['common']) {
+            if (headers['common']['Content-Type']) {
+                headers['common']['Content-Type'] = `${headers['common']['Content-Type']}; charset=utf-8`;
+            } else {
+                headers['common']['Content-Type'] = 'charset=utf-8';
+            }
+        } else if (headers['Content-Type']) {
+            if (!headers['Content-Type'].match(/charset=utf-8/gi)) {
+                headers['Content-Type'] = `${headers['Content-Type']}; charset=utf-8`;
+            }
+        } else if (headers['content-type']) {
+            if (!headers['content-type'].match(/charset=utf-8/gi)) {
+                headers['content-type'] = `${headers['content-type']}; charset=utf-8`;
+            }
         } else {
-            headers['common']['Content-Type'] = 'charset=utf-8';
+            headers['Content-Type'] = 'charset=utf-8';
         }
-    } else if (headers['Content-Type']) {
-        if (!headers['Content-Type'].match(/charset=utf-8/gi)) {
-            headers['Content-Type'] = `${headers['Content-Type']}; charset=utf-8`;
-        }
-    } else if (headers['content-type']) {
-        if (!headers['content-type'].match(/charset=utf-8/gi)) {
-            headers['content-type'] = `${headers['content-type']}; charset=utf-8`;
-        }
-    } else {
-        headers['Content-Type'] = 'charset=utf-8';
     }
 
     return headers;

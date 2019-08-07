@@ -1,73 +1,77 @@
 <template>
-    <v-container fluid grid-list-xl>
-        <div>
-            <v-layout>
-                <v-flex xs3>
-                    <v-btn color="info" @click="onAddPriority"
-                           :disabled="budgetOrder.length === 0 || scenarioInvestmentLibrary.id === 0">
-                        Add
-                    </v-btn>
-                    <v-tooltip v-if="scenarioInvestmentLibrary === null" top>
-                        <template>
-                            <v-icon slot="activator" color="error" class="fas fa-exclamation-circle"></v-icon>
-                        </template>
-                        <span>No applied investment library found</span>
-                    </v-tooltip>
-                </v-flex>
-            </v-layout>
-            <v-layout>
-                <v-flex>
-                    <div class="priorities-data-table">
-                        <v-data-table :headers="priorityDataTableHeaders" :items="prioritiesDataTableRows"
-                                      class="elevation-1 fixed-header v-table__overflow" hide-actions>
-                            <template slot="items" slot-scope="props">
-                                <td v-for="header in priorityDataTableHeaders">
-                                    <div v-if="header.value === 'priorityLevel' || header.value === 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
-                                                       @save="onEditPriorityProperty(props.item.priorityId, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item[header.value]"></v-text-field>
-                                            <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                    <div v-else-if="header.value === 'criteria'">
-                                        <v-text-field readonly :value="props.item.criteria" append-outer-icon="edit"
-                                                      @click:append-outer="onEditCriteria(props.item.priorityId, props.item.criteria)">
+    <v-layout column>
+        <v-flex xs12>
+            <v-flex xs3>
+                <v-btn class="ara-blue-bg white--text" @click="onAddPriority"
+                       :disabled="budgetOrder.length === 0 || scenarioInvestmentLibrary.id === 0">
+                    Add
+                </v-btn>
+                <v-tooltip v-if="scenarioInvestmentLibrary === null" top>
+                    <template>
+                        <v-icon slot="activator" class="ara-orange">fas fa-exclamation-circle</v-icon>
+                    </template>
+                    <span>No applied investment library found</span>
+                </v-tooltip>
+            </v-flex>
+        </v-flex>
+        <v-flex xs12>
+            <div class="priorities-data-table">
+                <v-data-table :headers="priorityDataTableHeaders" :items="prioritiesDataTableRows"
+                              class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                    <template slot="items" slot-scope="props">
+                        <td v-for="header in priorityDataTableHeaders">
+                            <div v-if="header.value === 'priorityLevel' || header.value === 'year'">
+                                <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
+                                               @save="onEditPriorityProperty(props.item.priorityId, header.value, props.item[header.value])">
+                                    <v-text-field readonly :value="props.item[header.value]"></v-text-field>
+                                    <template slot="input">
+                                        <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
                                         </v-text-field>
-                                    </div>
-                                    <div v-else>
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
-                                                       @save="onEditBudgetFunding(props.item.priorityId, header.value, props.item[header.value])">
-                                            <v-text-field readonly :value="props.item[header.value]" :rules="[rule.fundingPercent]">
-                                            </v-text-field>
-                                            <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line
-                                                              :rules="[rule.fundingPercent]" :mask="'###'">
-                                                </v-text-field>
-                                            </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                </td>
-                            </template>
-                        </v-data-table>
-                    </div>
-                </v-flex>
+                                    </template>
+                                </v-edit-dialog>
+                            </div>
+                            <div v-else-if="header.value === 'criteria'">
+                                <v-text-field readonly :value="props.item.criteria">
+                                    <template slot="append-outer">
+                                        <v-icon class="ara-yellow"
+                                                @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
+                                            fas fa-edit
+                                        </v-icon>
+                                    </template>
+                                </v-text-field>
+                            </div>
+                            <div v-else>
+                                <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
+                                               @save="onEditBudgetFunding(props.item.priorityId, header.value, props.item[header.value])">
+                                    <v-text-field readonly :value="props.item[header.value]" :rules="[rule.fundingPercent]">
+                                    </v-text-field>
+                                    <template slot="input">
+                                        <v-text-field v-model="props.item[header.value]" label="Edit" single-line
+                                                      :rules="[rule.fundingPercent]" :mask="'###'">
+                                        </v-text-field>
+                                    </template>
+                                </v-edit-dialog>
+                            </div>
+                        </td>
+                    </template>
+                </v-data-table>
+            </div>
+        </v-flex>
+        <v-flex xs12>
+            <v-layout justify-end row>
+                <v-btn class="ara-blue-bg white--text" @click="onSavePriorities" :disabled="priorities.length === 0">
+                    Save
+                </v-btn>
+                <v-btn class="ara-orange-bg white--text" @click="onCancelChangesToPriorities" :disabled="priorities.length === 0">
+                    Cancel
+                </v-btn>
             </v-layout>
-        </div>
+        </v-flex>
 
         <CreatePriorityDialog :dialogData="createPriorityDialogData" @submit="onSubmitNewPriority" />
 
         <PrioritiesCriteriaEditor :dialogData="prioritiesCriteriaEditorDialogData" @submit="onSubmitPriorityCriteria" />
-
-        <v-footer>
-            <v-layout class="priorities-targets-deficients-buttons" justify-end row fill-height>
-                <v-btn color="info" @click="onSavePriorities" :disabled="priorities.length === 0">Save</v-btn>
-                <v-btn color="error" @click="onCancelChangesToPriorities" :disabled="priorities.length === 0">Cancel</v-btn>
-            </v-layout>
-        </v-footer>
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">
