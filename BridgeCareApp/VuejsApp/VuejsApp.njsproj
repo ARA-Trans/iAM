@@ -44,6 +44,7 @@
     <Content Include=".env.production">
       <SubType>Code</SubType>
     </Content>
+    <Content Include=".env.staging" />
     <Content Include=".fimbullinter.yaml" />
     <Content Include=".wotanrc.yaml" />
     <Content Include="libman.json" />
