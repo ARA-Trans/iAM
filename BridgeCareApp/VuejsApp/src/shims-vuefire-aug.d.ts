@@ -1,11 +1,4 @@
 ﻿import Vue from 'vue';
-
-declare module 'vue/types/options' {
-    interface ComponentOptions<V extends Vue> {
-        firebase?: any;
-    }
-}
-
 /*
   Allow any property access on Vue instances.
   VueFire adds properties that Typescript doesnt understand.

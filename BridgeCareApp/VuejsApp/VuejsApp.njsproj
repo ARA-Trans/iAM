@@ -96,9 +96,6 @@
     <Content Include="src\shared\AppShowProgress.vue">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\components\TopNavbar.vue">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="src\shared\dialogs\AppModalPopup.vue" />
@@ -116,6 +113,7 @@
     <Content Include="src\shared\modals\Spinner.vue" />
     <Content Include="tsconfig.json" />
     <Content Include="tslint.json" />
+    <Content Include="vue.config.js" />
     <Content Include="Web.config" />
     <None Include="Web.Debug.config">
       <SubType>Code</SubType>
@@ -245,17 +243,9 @@
     <TypeScriptCompile Include="src\shared\utils\sorter-utils.ts" />
     <TypeScriptCompile Include="src\shims-vue.d.ts" />
     <TypeScriptCompile Include="src\shims-tsx.d.ts" />
-    <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\shims-vuefire.d.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts" />
     <TypeScriptCompile Include="src\store-modules\attribute.module.ts" />
     <TypeScriptCompile Include="src\store-modules\authentication.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\breadcrumb.module.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
     <TypeScriptCompile Include="src\store-modules\deficient.module.ts" />
     <TypeScriptCompile Include="src\store-modules\priority.module.ts" />
