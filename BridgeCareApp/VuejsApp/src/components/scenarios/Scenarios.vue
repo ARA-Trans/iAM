@@ -150,6 +150,7 @@
         @State(state => state.authentication.userId) userId: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
+        @State(state => state.authentication.loginFailed) loginFailed: boolean;
         
         @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('getLegacyScenarios') getLegacyScenariosAction: any;
@@ -194,11 +195,20 @@
 
         }
 
+        @Watch('loginFailed')
+        onLoginFailed() {
+            if (this.loginFailed == false) {
+                this.getMongoScenariosAction({ userId: this.userId });
+            }
+        }
+
         /**
          * Component has been mounted
          */
         mounted() {
-            this.getMongoScenariosAction({ userId: this.userId });
+            if (this.loginFailed == false) {
+                this.getMongoScenariosAction({ userId: this.userId });
+            }
         }
 
         onUpdateScenarioList() {

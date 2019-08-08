@@ -5,7 +5,6 @@ import 'vuetify/dist/vuetify.min.css';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Vuetify from 'vuetify';
-import VueFire from 'vuefire';
 import VueSocketio from 'vue-socket.io-extended';
 import io from 'socket.io-client';
 import App from './App.vue';
@@ -19,7 +18,7 @@ import VueWorker from 'vue-worker';
 
 Vue.use(Vuetify, {
     iconfont: 'fa'
-}, VueFire);
+});
 
 Vue.use(VueSocketio, io(process.env.VUE_APP_NODE_URL), { store });
 

@@ -2,14 +2,15 @@
 import VueRouter from 'vue-router';
 import './register-hooks';
 import Inventory from '@/components/Inventory.vue';
-import Scenario from '@/components/scenarios/Scenarios.vue';
-import EditScenario from '@/components/scenarios/EditScenario.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
-import InvestmentEditor from '@/components/investment-editor/InvestmentEditor.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
-import PerformanceEditor from '@/components/performance-editor/PerformanceEditor.vue';
-import TreatmentEditor from '@/components/treatment-editor/TreatmentEditor.vue';
 import PrioritiesTargetsDeficients from '@/components/priorities-targets-deficients/PrioritiesTargetsDeficients.vue';
+
+const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
+const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
+const InvestmentEditor = () => import(/* webpackChunkName: "investmentEditor" */ '@/components/investment-editor/InvestmentEditor.vue');
+const PerformanceEditor = () => import(/* webpackChunkName: "performanceEditor" */ '@/components/performance-editor/PerformanceEditor.vue');
+const TreatmentEditor = () => import(/* webpackChunkName: "treatmentEditor" */ '@/components/treatment-editor/TreatmentEditor.vue');
 
 Vue.use(VueRouter);
 

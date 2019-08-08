@@ -117,7 +117,7 @@
             </v-layout>
         </v-flex>
         <v-divider v-show="hasSelectedPerformanceLibrary"></v-divider>
-        <v-flex xs12 v-show="hasSelectedPerformanceLibrary && (scenarioInvestmentLibrary === null || selectedPerformanceLibrary.id !== scenarioPerformanceLibrary.id)">
+        <v-flex xs12 v-show="hasSelectedPerformanceLibrary && (scenarioPerformanceLibrary === null || selectedPerformanceLibrary.id !== scenarioPerformanceLibrary.id)">
             <v-layout justify-center>
                 <v-flex xs6>
                     <v-textarea rows="4" no-resize outline label="Description"
