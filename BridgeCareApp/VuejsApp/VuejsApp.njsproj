@@ -65,6 +65,7 @@
     <Content Include="src\components\Inventory.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentLibraryDialog.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\SetRangeForAddingBudgetYearsDialog.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-tabs\InvestmentsTab.vue" />
     <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryDialog.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryEquationDialog.vue" />
@@ -129,6 +130,7 @@
     <Folder Include="src\components\" />
     <Folder Include="src\components\investment-editor\" />
     <Folder Include="src\components\investment-editor\investment-editor-dialogs\" />
+    <Folder Include="src\components\investment-editor\investment-editor-tabs\" />
     <Folder Include="src\components\performance-editor\" />
     <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
     <Folder Include="src\components\priorities-targets-deficients\" />

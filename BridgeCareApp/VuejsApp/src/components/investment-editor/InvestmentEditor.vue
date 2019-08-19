@@ -36,61 +36,97 @@
             </v-layout>
         </v-flex>
         <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
-        <v-flex xs12 v-show="hasSelectedInvestmentLibrary">
-            <v-layout justify-center>
-                <v-flex xs6>
-                    <v-layout justify-space-between>
-                        <v-btn class="ara-blue-bg white--text" @click="onEditBudgets">
-                            Edit Budgets
-                        </v-btn>
-                        <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYear"
-                               :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
-                            Add Year
-                        </v-btn>
-                        <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYearsByRange"
-                               :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
-                            Add Years by Range
-                        </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onDeleteBudgetYears"
-                               :disabled="selectedGridRows.length === 0">
-                            Delete Budget Year(s)
-                        </v-btn>
-                    </v-layout>
-                </v-flex>
-            </v-layout>
-            <v-layout justify-center>
-                <v-flex xs8>
-                    <v-card>
-                        <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
-                                      v-model="selectedGridRows" select-all item-key="year"
-                                      class="elevation-1 fixed-header v-table__overflow">
-                            <template slot="items" slot-scope="props">
-                                <td>
-                                    <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                </td>
-                                <td v-for="header in budgetYearsGridHeaders">
-                                    <div v-if="header.value !== 'year'">
-                                        <v-edit-dialog :return-value.sync="props.item[header.value]"
-                                                       large lazy persistent
-                                                       @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
-                                            {{props.item[header.value]}}
-                                            <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]"
-                                                              label="Edit" single-line>
-                                                </v-text-field>
+        <v-tabs v-model="activeTab">
+            <v-tab v-for="(tab, index) in tabs" :key="index" ripple @click="setAsActiveTab(index)">
+                {{tab}}
+            </v-tab>
+            <v-tabs-items v-model="activeTab">
+                <v-tab-item>
+                    <v-flex xs12 v-show="hasSelectedInvestmentLibrary">
+                        <v-layout justify-center>
+                            <v-flex xs6>
+                                <v-layout justify-space-between>
+                                    <v-btn class="ara-blue-bg white--text" @click="onEditBudgets">
+                                        Edit Budgets
+                                    </v-btn>
+                                    <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYear"
+                                           :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
+                                        Add Year
+                                    </v-btn>
+                                    <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYearsByRange"
+                                           :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
+                                        Add Years by Range
+                                    </v-btn>
+                                    <v-btn class="ara-orange-bg white--text" @click="onDeleteBudgetYears"
+                                           :disabled="selectedGridRows.length === 0">
+                                        Delete Budget Year(s)
+                                    </v-btn>
+                                </v-layout>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout justify-center>
+                            <v-flex xs8>
+                                <v-card>
+                                    <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
+                                                  v-model="selectedGridRows" select-all item-key="year"
+                                                  class="elevation-1 fixed-header v-table__overflow">
+                                        <template slot="items" slot-scope="props">
+                                            <td>
+                                                <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                            </td>
+                                            <td v-for="header in budgetYearsGridHeaders">
+                                                <div v-if="header.value !== 'year'">
+                                                    <v-edit-dialog :return-value.sync="props.item[header.value]"
+                                                                   large lazy persistent
+                                                                   @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
+                                                        {{props.item[header.value]}}
+                                                        <template slot="input">
+                                                            <v-text-field v-model="props.item[header.value]"
+                                                                          label="Edit" single-line>
+                                                            </v-text-field>
+                                                        </template>
+                                                    </v-edit-dialog>
+                                                </div>
+                                                <div v-if="header.value === 'year'">
+                                                    {{props.item.year}}
+                                                </div>
+                                            </td>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-layout justify-center>
+                        <v-flex xs8>
+                            <v-data-table :headers="budgetCriteriaHeaders" :items="budgetCriteriaData"
+                                          item-key="name"
+                                          class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                                <template slot="items" slot-scope="props">
+                                    <td>
+                                        <v-select no-resize full-width outline
+                                                  :items="budgetCriteriaData">
+                                        </v-select>
+                                    </td>
+                                    <td>
+                                        <v-text-field readonly :value="props.item.criteria">
+                                            <template slot="append-outer">
+                                                <v-icon class="ara-yellow"
+                                                        @click="onEditCriteria()">
+                                                    fas fa-edit
+                                                </v-icon>
                                             </template>
-                                        </v-edit-dialog>
-                                    </div>
-                                    <div v-if="header.value === 'year'">
-                                        {{props.item.year}}
-                                    </div>
-                                </td>
-                            </template>
-                        </v-data-table>
-                    </v-card>
-                </v-flex>
-            </v-layout>
-        </v-flex>
+                                        </v-text-field>
+                                    </td>
+                                </template>
+                            </v-data-table>
+                        </v-flex>
+                    </v-layout>
+                </v-tab-item>
+            </v-tabs-items>
+        </v-tabs>
         <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
         <v-flex xs12 v-show="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
             <v-layout justify-center>
@@ -160,7 +196,8 @@
     } from '@/shared/models/modals/edit-budgets-dialog';
     import { getLatestPropertyValue, getPropertyValues } from '@/shared/utils/getter-utils';
     import { sortByProperty, sorter } from '@/shared/utils/sorter-utils';
-    import {EditedBudget} from '@/shared/models/modals/edit-budgets-dialog';
+    import { EditedBudget } from '@/shared/models/modals/edit-budgets-dialog';
+    //import InvestmentsTab from '@/components/investment-editor/investment-editor-tabs/InvestmentsTab.vue';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -180,6 +217,9 @@
         @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
 
+        tabs: string[] = ['investments', 'budget criteria'];
+        activeTab: number = 0;
+
         investmentLibraries: InvestmentLibrary[] = [];
         selectedInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
         scenarioInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
@@ -191,6 +231,12 @@
         budgetYearsGridHeaders: DataTableHeader[] = [
             { text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: '' }
         ];
+        budgetCriteriaHeaders: DataTableHeader[] = [
+            { text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: '' },
+            { text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: '' }
+        ];
+        budgetCriteriaData: any[] = ['Foo', 'Bar', 'Fizz', 'Buzz'];
+
         budgetYearsGridData: BudgetYearsGridData[] = [];
         selectedGridRows: BudgetYearsGridData[] = [];
         selectedBudgetYears: number[] = [];
@@ -309,6 +355,14 @@
         @Watch('selectedGridRows')
         onSelectedGridRowsChanged() {
             this.selectedBudgetYears = getPropertyValues('year', this.selectedGridRows) as number[];
+        }
+
+        /**
+         * Sets the activeTab to the specified tab index
+         * @param tabIndex The tab index of one of the specified tabs in the tabs array
+         */
+        setAsActiveTab(tabIndex: number) {
+            this.activeTab = tabIndex;
         }
 
         /**
@@ -665,6 +719,10 @@
                     this.getScenarioInvestmentLibraryAction({ selectedScenarioId: this.selectedScenarioId });
                 });
             }
+        }
+
+        onEditCriteria() {
+            
         }
     }
 </script>
