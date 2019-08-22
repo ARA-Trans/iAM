@@ -78,7 +78,7 @@
     import iziToast from 'izitoast';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
-    import {axiosInstance} from '@/shared/utils/axios-instance';
+    import {axiosInstance, nodejsAxiosInstance} from "@/shared/utils/axios-instance";
     import {getErrorMessage, setContentTypeCharset} from '@/shared/utils/http-utils';
 
     @Component({
@@ -162,6 +162,10 @@
             axiosInstance.interceptors.request.use(
                 (request: any) => requestHandler(request)
             );
+            // set nodejs axios request interceptor to use request handler
+            nodejsAxiosInstance.interceptors.request.use(
+                (request: any) => requestHandler(request)
+            );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {
                 response.headers = setContentTypeCharset(response.headers);
@@ -178,8 +182,13 @@
                 this.setIsBusyAction({isBusy: false});
                 this.setErrorMessageAction({message: getErrorMessage(error)});
             };
-            // set axios response handler to use success & error Handler
+            // set axios response handler to use success & error handlers
             axiosInstance.interceptors.response.use(
+                (response: any) => successHandler(response),
+                (error: any) => errorHandler(error)
+            );
+            // set nodejs axios response handler to user success & error handlers
+            nodejsAxiosInstance.interceptors.response.use(
                 (response: any) => successHandler(response),
                 (error: any) => errorHandler(error)
             );
