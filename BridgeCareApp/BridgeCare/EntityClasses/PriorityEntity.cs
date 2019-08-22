@@ -23,9 +23,9 @@ namespace BridgeCare.EntityClasses
 
         public PriorityEntity() { }
 
-        public PriorityEntity(PriorityModel priorityModel)
+        public PriorityEntity(int simulationId, PriorityModel priorityModel)
         {
-            SIMULATIONID = priorityModel.ScenarioId;
+            SIMULATIONID = simulationId;
             PRIORITYLEVEL = priorityModel.PriorityLevel;
             CRITERIA = priorityModel.Criteria;
             YEARS = priorityModel.Year;

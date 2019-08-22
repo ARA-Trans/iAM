@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+        <v-dialog v-model="showDialog" persistent max-width="450px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -50,12 +50,11 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {CreatePrioritizationDialogData} from '@/shared/models/modals/create-prioritization-dialog-data';
     const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateDeficientDialog extends Vue {
-        @Prop() dialogData: CreatePrioritizationDialogData;
+        @Prop() showDialog: boolean;
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
@@ -97,7 +96,7 @@
          */
         disableSubmit() {
             return !hasValue(this.newDeficient.name) || !hasValue(this.newDeficient.attribute) ||
-                   !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
+                !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
         }
 
         /**

@@ -18,13 +18,22 @@
                             </v-list-tile>
                         </template>
                         <v-list-tile @click="onNavigate('/InvestmentEditor/Library/')">
-                            <v-list-tile-title>Investment Editor</v-list-tile-title>
+                            <v-list-tile-title>Investment</v-list-tile-title>
                         </v-list-tile>
                         <v-list-tile @click="onNavigate('/PerformanceEditor/Library/')">
-                            <v-list-tile-title>Performance Editor</v-list-tile-title>
+                            <v-list-tile-title>Performance</v-list-tile-title>
                         </v-list-tile>
                         <v-list-tile @click="onNavigate('/TreatmentEditor/Library/')">
-                            <v-list-tile-title>Treatment Editor</v-list-tile-title>
+                            <v-list-tile-title>Treatment</v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile @click="onNavigate('/PriorityEditor/Library/')">
+                            <v-list-tile-title>Priority</v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile @click="onNavigate('/TargetEditor/Library/')">
+                            <v-list-tile-title>Target</v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile @click="onNavigate('/DeficientEditor/Library/')">
+                            <v-list-tile-title>Deficient</v-list-tile-title>
                         </v-list-tile>
                     </v-list-group>
                     <v-list-tile @click="onNavigate('/UnderConstruction/')">

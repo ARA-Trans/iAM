@@ -72,9 +72,9 @@
     <Content Include="src\components\priorities-targets-deficients\dialogs\deficients-dialogs\CreateDeficientDialog.vue" />
     <Content Include="src\components\priorities-targets-deficients\dialogs\priorities-dialogs\CreatePriorityDialog.vue" />
     <Content Include="src\components\priorities-targets-deficients\dialogs\targets-dialogs\CreateTargetDialog.vue" />
-    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\DeficientsTab.vue" />
-    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\PrioritiesTab.vue" />
-    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\TargetsTab.vue" />
+    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-navigationTabs\DeficientsTab.vue" />
+    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-navigationTabs\PrioritiesTab.vue" />
+    <Content Include="src\components\priorities-targets-deficients\priorities-targets-deficients-navigationTabs\TargetsTab.vue" />
     <Content Include="src\components\priorities-targets-deficients\PrioritiesTargetsDeficients.vue" />
     <Content Include="src\components\scenarios\create-scenario-dialog\ScenarioCreationDialog.vue">
       <SubType>Code</SubType>
@@ -87,10 +87,10 @@
     <Content Include="src\components\scenarios\Scenarios.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
     <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentLibraryDialog.vue" />
-    <Content Include="src\components\treatment-editor\treatment-editor-tabs\BudgetsTab.vue" />
-    <Content Include="src\components\treatment-editor\treatment-editor-tabs\ConsequencesTab.vue" />
-    <Content Include="src\components\treatment-editor\treatment-editor-tabs\CostsTab.vue" />
-    <Content Include="src\components\treatment-editor\treatment-editor-tabs\FeasibilityTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-navigationTabs\BudgetsTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-navigationTabs\ConsequencesTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-navigationTabs\CostsTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-navigationTabs\FeasibilityTab.vue" />
     <Content Include="src\components\treatment-editor\TreatmentEditor.vue" />
     <Content Include="src\components\UnderConstruction.vue" />
     <Content Include="src\shared\AppShowProgress.vue">
@@ -137,13 +137,13 @@
     <Folder Include="src\components\priorities-targets-deficients\dialogs\priorities-dialogs\" />
     <Folder Include="src\components\priorities-targets-deficients\dialogs\shared\" />
     <Folder Include="src\components\priorities-targets-deficients\dialogs\targets-dialogs\" />
-    <Folder Include="src\components\priorities-targets-deficients\priorities-targets-deficients-tabs\" />
+    <Folder Include="src\components\priorities-targets-deficients\priorities-targets-deficients-navigationTabs\" />
     <Folder Include="src\components\scenarios\" />
     <Folder Include="src\components\scenarios\create-scenario-dialog\" />
     <Folder Include="src\components\scenarios\scenarios-dialogs\" />
     <Folder Include="src\components\treatment-editor\" />
     <Folder Include="src\components\treatment-editor\treatment-editor-dialogs\" />
-    <Folder Include="src\components\treatment-editor\treatment-editor-tabs\" />
+    <Folder Include="src\components\treatment-editor\treatment-editor-navigationTabs\" />
     <Folder Include="src\plugins\" />
     <Folder Include="src\services\" />
     <Folder Include="src\shared\" />

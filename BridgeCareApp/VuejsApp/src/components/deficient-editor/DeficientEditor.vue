@@ -44,15 +44,16 @@
             </v-layout>
         </v-flex>
 
-        <CreateDeficientDialog :dialogData="createDeficientDialogData" @submit="onSubmitNewDeficient" />
+        <CreateDeficientDialog :showDialog="showCreateDeficientDialog" @submit="onSubmitNewDeficient" />
 
-        <DeficientsCriteriaEditor :dialogData="deficientsCriteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
+        <DeficientCriteriaEditor :dialogData="deficientCriteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch, Prop} from 'vue-property-decorator';
+    import Component from 'vue-class-component';
+    import {Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {Deficient} from '@/shared/models/iAM/deficient';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
@@ -62,22 +63,18 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
-    import CreateDeficientDialog from '@/components/priorities-targets-deficients/dialogs/deficients-dialogs/CreateDeficientDialog.vue';
-    import {
-        CreatePrioritizationDialogData,
-        emptyCreatePrioritizationDialogData
-    } from '@/shared/models/modals/create-prioritization-dialog-data';
+    import CreateDeficientDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientDialog.vue';
 
     @Component({
-        components: {CreateDeficientDialog, DeficientsCriteriaEditor: CriteriaEditorDialog}
+        components: {CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog}
     })
     export default class DeficientsTab extends Vue {
-        @Prop() selectedScenarioId: number;
-
         @State(state => state.deficient.deficients) stateDeficients: Deficient[];
 
+        @Action('getDeficients') getDeficientsAction: any;
         @Action('saveDeficients') saveDeficientsAction: any;
 
+        selectedScenarioId: number = 0;
         deficients: Deficient[] = [];
         deficientDataTableHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: '14%'},
@@ -87,8 +84,44 @@
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '50%'}
         ];
         selectedDeficientIndex: number = -1;
-        createDeficientDialogData: CreatePrioritizationDialogData = clone(emptyCreatePrioritizationDialogData);
-        deficientsCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        showCreateDeficientDialog: boolean = false;
+        deficientCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
+        /**
+         * Sets component UI properties that triggers cascading UI updates
+         */
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                if (to.path === '/DeficientEditor/Scenario/') {
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
+                    if (vm.selectedScenarioId === 0) {
+                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                        vm.$router.push('/Scenarios/');
+                    }
+                }
+
+                // vm.onClearSelectedPriorityLibrary();
+                setTimeout(() => {
+                    vm.getDeficientsAction({selectedScenarioId: vm.selectedScenarioId})
+                    /*.then(() => {
+                        if (vm.selectedScenarioId > 0) {
+                            vm.getScenarioTargetLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                        }
+                    })*/;
+                });
+            });
+        }
+
+        /**
+         * Resets component UI properties that triggers cascading UI updates
+         */
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            if (to.path === '/DeficientEditor/Library/') {
+                this.selectedScenarioId = 0;
+                // this.onClearSelectedTargetLibrary();
+                next();
+            }
+        }
 
         /**
          * Sets the deficients list property with a copy of the stateDeficients property when stateDeficients list
@@ -103,10 +136,7 @@
          * Sets showCreateDeficientDialog property to true
          */
         onAddDeficient() {
-            this.createDeficientDialogData = {
-                showDialog: true,
-                scenarioId: this.selectedScenarioId
-            };
+            this.showCreateDeficientDialog = true;
         }
 
         /**
@@ -114,7 +144,7 @@
          * @param newDeficient Deficient object
          */
         onSubmitNewDeficient(newDeficient: Deficient) {
-            this.createDeficientDialogData = clone(emptyCreatePrioritizationDialogData);
+            this.showCreateDeficientDialog = false;
 
             if (!isNil(newDeficient)) {
                 this.deficients = append(newDeficient, this.deficients);
@@ -145,7 +175,7 @@
         onEditCriteria(deficient: Deficient) {
             this.selectedDeficientIndex = this.deficients.findIndex((d: Deficient) => d.id === deficient.id);
 
-            this.deficientsCriteriaEditorDialogData = {
+            this.deficientCriteriaEditorDialogData = {
                 showDialog: true,
                 criteria: deficient.criteria
             };
@@ -157,7 +187,7 @@
          * @param criteria CriteriaEditor criteria result
          */
         onSubmitDeficientCriteria(criteria: string) {
-            this.deficientsCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+            this.deficientCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
                 this.deficients[this.selectedDeficientIndex].criteria = criteria;

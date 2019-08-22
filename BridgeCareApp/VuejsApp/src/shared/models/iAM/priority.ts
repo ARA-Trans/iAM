@@ -1,33 +1,43 @@
 export interface PriorityFund {
-    priorityId: string;
-    id: string;
+    id: string | number;
     budget: string;
     funding: number;
 }
 
 export interface Priority {
-    scenarioId: number;
-    id: string;
+    id: string | number;
     priorityLevel: number;
     year: number;
     criteria: string;
     priorityFunds: PriorityFund[];
 }
 
+export interface PriorityLibrary {
+    id: number | string;
+    name: string;
+    description: string;
+    priorities: Priority[];
+}
+
 export const emptyPriorityFund: PriorityFund = {
-    priorityId: '0',
-    id: '0',
+    id: 0,
     budget: '',
     funding: 0
 };
 
 export const emptyPriority: Priority = {
-    scenarioId: 0,
-    id: '0',
+    id: 0,
     priorityLevel: 1,
     year: 0,
     criteria: '',
     priorityFunds: []
+};
+
+export const emptyPriorityLibrary: PriorityLibrary = {
+    id: 0,
+    name: '',
+    description: '',
+    priorities: []
 };
 
 export interface PrioritiesDataTableRow {
