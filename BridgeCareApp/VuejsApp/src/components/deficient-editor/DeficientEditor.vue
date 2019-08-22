@@ -6,7 +6,7 @@
         <v-flex xs12>
             <div class="deficients-data-table">
                 <v-data-table :headers="deficientDataTableHeaders" :items="deficients"
-                              class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                              class="elevation-1 fixed-header v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td v-for="header in deficientDataTableHeaders">
                             <div v-if="header.value !== 'criteria'">

@@ -6,7 +6,7 @@
         <v-flex xs12>
             <div class="targets-data-table">
                 <v-data-table :headers="targetDataTableHeaders" :items="targets"
-                              class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                              class="elevation-1 fixed-header v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td v-for="header in targetDataTableHeaders">
                             <div v-if="header.value !== 'criteria' && header.value !== 'year'">
