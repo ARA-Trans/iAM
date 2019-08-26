@@ -34,7 +34,7 @@ const mutations = {
         // update state.investmentLibraries with a clone of the incoming list of investment libraries
         state.investmentLibraries = clone(investmentLibraries);
     },
-    selectedInvestmentLibraryMutator(state: any, investmentLibraryId: number) {
+    selectedInvestmentLibraryMutator(state: any, investmentLibraryId: any) {
         if (any(propEq('id', investmentLibraryId), state.investmentLibraries)) {
             // find the existing investment library in state.investmentLibraries where the id matches investmentLibraryId,
             // clone it, then update state.selectedInvestmentLibrary with the cloned, existing investment library
@@ -68,9 +68,9 @@ const mutations = {
             state.investmentLibraries = investmentLibraries;
         }
     },
-    scenarioInvestmentLibraryMutator(state: any, investmentForScenario: InvestmentLibrary[]) {
+    scenarioInvestmentLibraryMutator(state: any, scenarioInvestmentLibrary: InvestmentLibrary) {
         // update state.investmentLibraries with a clone of the incoming list of investment libraries
-        state.scenarioInvestmentLibrary = clone(investmentForScenario);
+        state.scenarioInvestmentLibrary = clone(scenarioInvestmentLibrary);
     }
 };
 
@@ -111,7 +111,7 @@ const actions = {
     async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await InvestmentEditorService.getScenarioInvestmentLibrary(payload.selectedScenarioId)
-                .then((response: AxiosResponse<InvestmentLibrary>) => {
+                .then((response: AxiosResponse<any>) => {
                     commit('scenarioInvestmentLibraryMutator', response.data);
                     commit('updatedSelectedInvestmentLibraryMutator', response.data);
                 });
@@ -121,8 +121,8 @@ const actions = {
         }
     },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        return await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
-            .then((response: AxiosResponse<InvestmentLibrary>) => {
+        await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
+            .then((response: AxiosResponse<any>) => {
                 commit('scenarioInvestmentLibraryMutator', response.data);
                 dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
             });

@@ -7,7 +7,6 @@ namespace BridgeCare.Models
 {
     public class PriorityModel : CrudModel
     {
-        public int ScenarioId { get; set; }
         public string Id { get; set; }
         public int PriorityLevel { get; set; }
         public int Year { get; set; }
@@ -18,7 +17,6 @@ namespace BridgeCare.Models
 
         public PriorityModel(PriorityEntity priority)
         {
-            ScenarioId = priority.SIMULATIONID;
             Id = priority.PRIORITYID.ToString();
             PriorityLevel = priority.PRIORITYLEVEL ?? 1;
             Year = priority.YEARS ?? DateTime.Now.Year;

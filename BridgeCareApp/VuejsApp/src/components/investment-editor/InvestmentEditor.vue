@@ -152,7 +152,7 @@
                 </v-btn>
                 <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedInvestmentLibrary">
-                    Discard changes
+                    Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
@@ -268,8 +268,6 @@
                         });
                 });
             });
-
-
         }
         /**
          * Resets component UI properties that triggers cascading UI updates

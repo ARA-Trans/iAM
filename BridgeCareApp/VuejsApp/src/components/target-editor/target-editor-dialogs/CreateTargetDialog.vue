@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog v-model="showDialog" persistent max-width="450px">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -51,17 +51,16 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
-    import {CreatePrioritizationDialogData} from '@/shared/models/modals/create-prioritization-dialog-data';
     import {clone} from 'ramda';
     const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateTargetDialog extends Vue {
-        @Prop() dialogData: CreatePrioritizationDialogData;
+        @Prop() showDialog: boolean;
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        newTarget: Target = clone(emptyTarget);
+        newTarget: Target = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         numericAttributes: string[] = [];
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
@@ -69,18 +68,6 @@
         mounted() {
             if (hasValue(this.stateNumericAttributes)) {
                 this.numericAttributes = getPropertyValues('name', this.stateNumericAttributes);
-            }
-        }
-
-        /**
-         * Sets newTarget.scenarioId property with dialogData.scenarioId property value
-         */
-        @Watch('dialogData')
-        onDialogDataChanged() {
-            if (this.dialogData.showDialog) {
-                this.newTarget.scenarioId = this.dialogData.scenarioId;
-                this.newTarget.id = ObjectID.generate();
-                this.newTarget.year = moment().year();
             }
         }
 
@@ -120,7 +107,7 @@
          */
         disableSubmit() {
             return !hasValue(this.newTarget.name) || !hasValue(this.newTarget.attribute) ||
-                   !hasValue(this.newTarget.year) || !hasValue(this.newTarget.targetMean);
+                !hasValue(this.newTarget.year) || !hasValue(this.newTarget.targetMean);
         }
 
         /**

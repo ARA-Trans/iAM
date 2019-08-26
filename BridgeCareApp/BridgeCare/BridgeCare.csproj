@@ -320,6 +320,7 @@
     <Compile Include="Models\Inventory\LabelValue.cs" />
     <Compile Include="Models\PerformanceLibraryEquationModel.cs" />
     <Compile Include="Models\PriorityFundModel.cs" />
+    <Compile Include="Models\PriorityLibraryModel.cs" />
     <Compile Include="Models\PriorityModel.cs" />
     <Compile Include="Models\SimulationAnalysisModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />

@@ -21,19 +21,19 @@ namespace BridgeCare.Controllers
         }
 
         [HttpGet]
-        [Route("api/GetPriorities")]
+        [Route("api/GetScenarioPriorityLibrary/{selectedScenarioId}")]
         [ModelValidation("Given Scenario Id is not valid")]
-        public List<PriorityModel> GetPriorities(int selectedScenarioId)
+        public PriorityLibraryModel GetScenarioPriorityLibrary(int selectedScenarioId)
         {
-            return priorityRepo.GetPriorities(selectedScenarioId, db);
+            return priorityRepo.GetScenarioPriorityLibrary(selectedScenarioId, db);
         }
 
         [HttpPost]
-        [Route("api/SavePriorities")]
+        [Route("api/SaveScenarioPriorityLibrary")]
         [ModelValidation("Given priorities are not valid")]
-        public List<PriorityModel> SavePriorities(int selectedScenarioId, [FromBody]List<PriorityModel> data)
+        public PriorityLibraryModel SaveScenarioPriorityLibrary([FromBody]PriorityLibraryModel data)
         {
-            return priorityRepo.SavePriorities(selectedScenarioId, data, db);
+            return priorityRepo.SaveScenarioPriorityLibrary(data, db);
         }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog v-model="showDialog" persistent max-width="450px">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -41,27 +41,15 @@
     import {emptyPriority, Priority} from '@/shared/models/iAM/priority';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
-    import {CreatePrioritizationDialogData} from '@/shared/models/modals/create-prioritization-dialog-data';
     const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreatePriorityDialog extends Vue {
-        @Prop() dialogData: CreatePrioritizationDialogData;
+        @Prop() showDialog: boolean;
 
-        newPriority: Priority = {...emptyPriority, year: moment().year()};
+        newPriority: Priority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
-
-        /**
-         * Sets the newPriority.scenarioId property with the dialogData.scenarioId property value
-         */
-        @Watch('dialogData')
-        onDialogDataChanged() {
-            if (this.dialogData.showDialog) {
-                this.newPriority.scenarioId = this.dialogData.scenarioId;
-                this.newPriority.id = ObjectID.generate();
-            }
-        }
 
         /**
          * Sets the date picker to show year options on nextTrick when showDatePicker has changed
@@ -102,7 +90,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newPriority = {...emptyPriority, year: moment().year()};
+            this.newPriority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
         }
     }
 </script>
