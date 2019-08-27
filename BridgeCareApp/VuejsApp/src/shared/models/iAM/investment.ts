@@ -1,3 +1,5 @@
+import { CriteriaDrivenBudgets } from './criteria-driven-budgets';
+
 export interface InvestmentLibraryBudgetYear {
     id: number | string;
     year: number;

@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="300px">
+        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="800px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -47,6 +47,16 @@
                                     </template>
                                 </v-edit-dialog>
                             </td>
+                            <td>
+                                <v-text-field readonly :value="props.item.criteriaBudgets.criteria">
+                                    <template slot="append-outer">
+                                        <v-icon class="ara-yellow"
+                                                @click="onEditCriteria(props.item.criteriaBudgets.criteria)">
+                                            fas fa-edit
+                                        </v-icon>
+                                    </template>
+                                </v-text-field>
+                            </td>
                         </template>
                     </v-data-table>
                 </v-card-text>
@@ -72,13 +82,15 @@
         EditBudgetsDialogGridData,
         EditedBudget
     } from '@/shared/models/modals/edit-budgets-dialog';
+    import { CriteriaDrivenBudgets } from '../models/iAM/criteria-driven-budgets';
 
     @Component
     export default class EditBudgetsDialog extends Vue {
         @Prop() dialogData: EditBudgetsDialogData;
 
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
-            {text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: ''}
+            { text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: '' },
+            { text: 'Criteria', value: 'criteriaHeader', sortable: false, align: 'center', class: '', width: '' }
         ];
         editBudgetsDialogGridData: EditBudgetsDialogGridData[] = [];
         selectedGridRows: EditBudgetsDialogGridData[] = [];
@@ -88,11 +100,12 @@
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            this.editBudgetsDialogGridData = this.dialogData.budgets.map((budget: string, index: number) => ({
-                name: budget,
+            this.editBudgetsDialogGridData = this.dialogData.criteriaBudgets.map((budgetCriteria: CriteriaDrivenBudgets, index: number) => ({
+                name: budgetCriteria.budgetName,
                 index: index,
-                previousName: budget,
-                isNew: false
+                previousName: budgetCriteria.budgetName,
+                isNew: false,
+                criteriaBudgets: budgetCriteria
             }));
         }
 
@@ -185,11 +198,14 @@
 
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
 
+            let newCriteria: CriteriaDrivenBudgets = { budgetCriteriaId: 0, budgetName: newBudget, criteria: 'new criteria', scenarioId: this.dialogData.scenarioId };
+
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
                 index: this.editBudgetsDialogGridData.length,
                 previousName: '',
-                isNew: true
+                isNew: true,
+                criteriaBudgets: newCriteria
             });
         }
 
@@ -222,7 +238,8 @@
                     name: budget.name,
                     index: index,
                     previousName: budget.previousName,
-                    isNew: budget.isNew
+                    isNew: budget.isNew,
+                    criteriaBudgets: budget.criteriaBudgets
                 }));
 
             this.selectedGridRows = [];
@@ -238,7 +255,8 @@
                     .map((budget: EditBudgetsDialogGridData) => ({
                         name: budget.name,
                         previousName: budget.previousName,
-                        isNew: budget.isNew
+                        isNew: budget.isNew,
+                        criteriaBudgets: budget.criteriaBudgets
                     }));
 
                 this.$emit('submit', editedBudgets);
@@ -255,6 +273,10 @@
         resetDialogDataTableProperties() {
             this.editBudgetsDialogGridData = [];
             this.selectedGridRows = [];
+        }
+
+        onEditCriteria() {
+
         }
     }
 </script>

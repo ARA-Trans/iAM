@@ -192,6 +192,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\CommittedProjectsController.cs" />
+    <Compile Include="Controllers\CriteriaDrivenBudgetsController.cs" />
     <Compile Include="Controllers\DeficientController.cs" />
     <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeController.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryDataDAL.cs" />
     <Compile Include="DataAccessLayer\CommittedDAL.cs" />
+    <Compile Include="DataAccessLayer\CriteriaDrivenBudgets\CriteriaDrivenBudgetsDAL.cs" />
     <Compile Include="DataAccessLayer\DeficientDAL.cs" />
     <Compile Include="DataAccessLayer\Inventory\InventoryDAL.cs" />
     <Compile Include="DataAccessLayer\InvestmentLibraryDAL.cs" />
@@ -243,6 +245,7 @@
     <Compile Include="EntityClasses\CommittedEntity.cs" />
     <Compile Include="EntityClasses\ConsequencesEntity.cs" />
     <Compile Include="EntityClasses\CostsEntity.cs" />
+    <Compile Include="EntityClasses\CriteriaDrivenBudgets\CriteriaDrivenBudgetsEntity.cs" />
     <Compile Include="EntityClasses\DeficientsEntity.cs" />
     <Compile Include="EntityClasses\FeasibilityEntity.cs" />
     <Compile Include="EntityClasses\InvestmentsEntity.cs" />
@@ -263,6 +266,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\CriteriaDrivenBudgets\ICriteriaDrivenBudgets.cs" />
     <Compile Include="Interfaces\IAttributesByYear.cs" />
     <Compile Include="Interfaces\IAttributeNames.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
@@ -300,6 +304,7 @@
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\CreateSimulationDataModel.cs" />
+    <Compile Include="Models\CriteriaDrivenBudgets\CriteriaDrivenBudgetsModel.cs" />
     <Compile Include="Models\ParameterizedCriteriaData.cs" />
     <Compile Include="Models\CrudModel.cs" />
     <Compile Include="Models\DeficientModel.cs" />

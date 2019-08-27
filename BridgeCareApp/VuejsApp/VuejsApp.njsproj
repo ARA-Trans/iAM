@@ -65,7 +65,6 @@
     <Content Include="src\components\Inventory.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentLibraryDialog.vue" />
     <Content Include="src\components\investment-editor\investment-editor-dialogs\SetRangeForAddingBudgetYearsDialog.vue" />
-    <Content Include="src\components\investment-editor\investment-editor-tabs\InvestmentsTab.vue" />
     <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryDialog.vue" />
     <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryEquationDialog.vue" />
@@ -183,6 +182,7 @@
     <TypeScriptCompile Include="src\services\authentication.service.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\budget-criteria.service.ts" />
     <TypeScriptCompile Include="src\services\committed-projects.service.ts" />
     <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
     <TypeScriptCompile Include="src\services\deficient.service.ts" />
@@ -210,16 +210,24 @@
     <TypeScriptCompile Include="src\shared\models\dialogs\investment-editor-dialogs\edit-budgets-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\performance-editor-dialogs\create-performance-strategy-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\dialogs\treatment-editor-dialogs\create-treatment-strategy-dialog-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\iAM\alert.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\attribute.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\criteria-driven-budgets.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\criteria-validation.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\criteria.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\deficient.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\edit-scenario-navigation-tab.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\equation-validation.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\inventory.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\investment.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\network.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\performance.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\priority.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\route.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\target.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\treatment.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\user-information.ts" />
     <TypeScriptCompile Include="src\shared\models\modals\alert-data.ts" />
     <TypeScriptCompile Include="src\shared\models\modals\create-investment-library-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\modals\create-performance-library-dialog-data.ts" />
@@ -248,17 +256,14 @@
     <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts" />
     <TypeScriptCompile Include="src\store-modules\attribute.module.ts" />
     <TypeScriptCompile Include="src\store-modules\authentication.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\budget-criteria.module.ts" />
     <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
     <TypeScriptCompile Include="src\store-modules\deficient.module.ts" />
     <TypeScriptCompile Include="src\store-modules\priority.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\reports\detailed-report.module.ts" />
     <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />
     <TypeScriptCompile Include="src\store-modules\investment-editor.module.ts" />
     <TypeScriptCompile Include="src\store-modules\network.module.ts" />
     <TypeScriptCompile Include="src\store-modules\performance-editor.module.ts" />
-    <TypeScriptCompile Include="src\store-modules\reports\reports.module.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\target.module.ts" />
     <TypeScriptCompile Include="src\store-modules\toastr.module.ts" />

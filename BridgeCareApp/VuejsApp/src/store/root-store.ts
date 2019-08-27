@@ -14,6 +14,7 @@ import toastr from '@/store-modules/toastr.module';
 import deficient from '@/store-modules/deficient.module';
 import priority from '@/store-modules/priority.module';
 import target from '@/store-modules/target.module';
+import criteriaDrivenBudgets from '@/store-modules/budget-criteria.module';
 
 Vue.use(Vuex);
 
@@ -31,6 +32,7 @@ export default new Vuex.Store({
         toastr,
         deficient,
         priority,
-        target
+        target,
+        criteriaDrivenBudgets
     }
 });

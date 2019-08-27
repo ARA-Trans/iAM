@@ -3,6 +3,7 @@ using System.Configuration;
 namespace BridgeCare
 {
     using BridgeCare.EntityClasses;
+    using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
     using System.Data.Entity;
 
     public partial class BridgeCareContext : DbContext
@@ -33,6 +34,7 @@ namespace BridgeCare
         public virtual DbSet<ConsequencesEntity> Consequences { get; set; }
         public virtual DbSet<CommittedEntity> CommittedProjects { get; set; }
         public virtual DbSet<CommitConsequencesEntity> CommitConsequences { get; set; }
+        public virtual DbSet<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
