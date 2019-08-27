@@ -78,7 +78,7 @@
     import iziToast from 'izitoast';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
-    import {axiosInstance, nodejsAxiosInstance} from "@/shared/utils/axios-instance";
+    import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
     import {getErrorMessage, setContentTypeCharset} from '@/shared/utils/http-utils';
 
     @Component({
