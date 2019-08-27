@@ -205,7 +205,6 @@
             { text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: '' },
             { text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: '' }
         ];
-        budgetCriteriaData: any[] = ['Foo', 'Bar', 'Fizz', 'Buzz'];
         intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
 
         budgetYearsGridData: BudgetYearsGridData[] = [];
@@ -405,7 +404,7 @@
          * Clears the selected investment library by setting selectItemValue to an empty value or 0
          */
         onClearSelectedInvestmentLibrary() {
-            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
+            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '';
         }
 
         /**
