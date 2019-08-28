@@ -12,7 +12,9 @@ const server = app.listen(config.port, () => {
   debug(`Running on port ${config.port}`);
 });
 
-const io = require('./config/socketIO')(server);
+const io = require('./config/socketIO')(server, {
+  pingTimeout: 60000
+});
 
 run().catch(error => debug(error));
 
@@ -28,6 +30,9 @@ async function run() {
 
   const TreatmentLibrary = require('./models/treatmentLibraryModel');
   const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary);
+
+  const CriteriaDrivenBudgets = require('./models/criteriaDrivenBudgetsModel');
+  const criteriaDrivenBudgetsRouter = require('./routes/criteriaDrivenBudgetsRouters')(CriteriaDrivenBudgets);
 
   const options = { fullDocument: 'updateLookup' };
 
@@ -47,7 +52,7 @@ async function run() {
     io.emit('scenarioStatus', data);
   });
 
-  app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter]);
+  app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter, criteriaDrivenBudgetsRouter]);
 }
 
 
