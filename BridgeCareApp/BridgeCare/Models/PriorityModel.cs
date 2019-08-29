@@ -21,11 +21,9 @@ namespace BridgeCare.Models
             PriorityLevel = priority.PRIORITYLEVEL ?? 1;
             Year = priority.YEARS ?? DateTime.Now.Year;
             Criteria = priority.CRITERIA;
-            PriorityFunds = new List<PriorityFundModel>();
-            if (priority.PRIORITYFUNDS.Any())
-            {
-                priority.PRIORITYFUNDS.ToList().ForEach(priorityFund => PriorityFunds.Add(new PriorityFundModel(priorityFund)));
-            }
+            PriorityFunds = priority.PRIORITYFUNDS.Any()
+                ? priority.PRIORITYFUNDS.Select(pf => new PriorityFundModel(pf)).ToList()
+                : new List<PriorityFundModel>();
         }
 
         public void UpdatePriority(PriorityEntity priority)

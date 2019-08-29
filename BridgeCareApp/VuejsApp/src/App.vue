@@ -35,6 +35,9 @@
                         <v-list-tile @click="onNavigate('/DeficientEditor/Library/')">
                             <v-list-tile-title>Deficient</v-list-tile-title>
                         </v-list-tile>
+                        <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
+                            <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
+                        </v-list-tile>
                     </v-list-group>
                     <v-list-tile @click="onNavigate('/UnderConstruction/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>

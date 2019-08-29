@@ -14,7 +14,7 @@ const modifyDataForMongoDB = (remainingLifeLimitLibrary: RemainingLifeLimitLibra
             })
     };
     delete remainingLifeLimitLibraryData.id;
-    return remainingLifeLimitLibrary;
+    return remainingLifeLimitLibraryData;
 };
 
 export default class RemainingLifeLimitService {

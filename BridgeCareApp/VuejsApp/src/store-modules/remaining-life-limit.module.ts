@@ -28,7 +28,7 @@ const convertFromMongoToVueModel = (data: any) => {
 
 const state = {
     remainingLifeLimitLibraries: [] as RemainingLifeLimitLibrary[],
-    scenarioLifeLimitLibrary: clone(emptyRemainingLifeLimitLibrary) as RemainingLifeLimitLibrary,
+    scenarioRemainingLifeLimitLibrary: clone(emptyRemainingLifeLimitLibrary) as RemainingLifeLimitLibrary,
     selectedRemainingLifeLimitLibrary: clone(emptyRemainingLifeLimitLibrary) as RemainingLifeLimitLibrary
 };
 
@@ -47,7 +47,7 @@ const mutations = {
      * @param state App state
      * @param remainingLifeLimitLibraryId Remaining life limit library id
      */
-    selectedRemainingLifeLimitLibraryMutator(state: any, remainingLifeLimitLibraryId: any) {
+    selectedRemainingLifeLimitLibraryMutator(state: any, remainingLifeLimitLibraryId: string) {
         if (any(propEq('id', remainingLifeLimitLibraryId), state.remainingLifeLimitLibraries)) {
             state.selectedRemainingLifeLimitLibrary = clone(state.remainingLifeLimitLibraries
                 .find((remainingLifeLimitLibrary: RemainingLifeLimitLibrary) =>
@@ -102,7 +102,7 @@ const actions = {
         commit('selectedRemainingLifeLimitLibraryMutator', payload.remainingLifeLimitLibraryId);
     },
     updateSelectedRemainingLifeLimitLibrary({commit}: any, payload: any) {
-        commit('updatedSelectedRemainingLifeLimitLibrary', payload.updatedRemainingLifeLimitLibrary);
+        commit('updatedSelectedRemainingLifeLimitLibraryMutator', payload.updatedSelectedRemainingLifeLimitLibrary);
     },
     async getRemainingLifeLimitLibraries({commit}: any) {
         await RemainingLifeLimitService.getRemainingLifeLimitLibraries()
@@ -144,7 +144,7 @@ const actions = {
         }
     },
     async saveScenarioRemainingLifeLimitLibrary({dispatch, commit}: any, payload: any) {
-        await RemainingLifeLimitService.updateRemainingLifeLimitLibrary(payload.saveScenarioRemainingLifeLimitLibraryData)
+        await RemainingLifeLimitService.saveScenarioRemainingLifeLimitLibrary(payload.saveScenarioRemainingLifeLimitLibraryData)
             .then((response: AxiosResponse<any>) => {
                 commit('scenarioRemainingLifeLimitLibraryMutator', response.data);
                 dispatch('setSuccessMessage', {message: 'Successfully saved scenario remaining life limit library'});
@@ -163,7 +163,7 @@ const actions = {
 
         if (payload.operationType === 'insert') {
             const createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('createdRemainingLifeLimitLibrary', createdRemainingLifeLimitLibrary);
+            commit('createdRemainingLifeLimitLibraryMutator', createdRemainingLifeLimitLibrary);
         }
     }
 };

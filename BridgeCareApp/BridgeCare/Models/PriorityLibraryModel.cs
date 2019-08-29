@@ -8,7 +8,7 @@ namespace BridgeCare.Models
 {
     public class PriorityLibraryModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public List<PriorityModel> Priorities { get; set; }
@@ -18,12 +18,14 @@ namespace BridgeCare.Models
             Priorities = new List<PriorityModel>();
         }
 
-        public PriorityLibraryModel(SimulationEntity simulation, List<PriorityModel> priorities)
+        public PriorityLibraryModel(SimulationEntity simulationEntity)
         {
-            Id = simulation.SIMULATIONID;
-            Name = simulation.SIMULATION;
-            Description = simulation.COMMENTS;
-            Priorities = priorities;
+            Id = simulationEntity.SIMULATIONID.ToString();
+            Name = simulationEntity.SIMULATION;
+            Description = simulationEntity.COMMENTS;
+            Priorities = simulationEntity.PRIORITIES.Any()
+                ? simulationEntity.PRIORITIES.Select(p => new PriorityModel(p)).ToList()
+                : new List<PriorityModel>();
         }
     }
 }

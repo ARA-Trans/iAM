@@ -3,14 +3,14 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onNewLibrary">
+                    <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onNewLibrary">
                         New Library
                     </v-btn>
-                    <v-select v-if="!hasSelectedPriorityLibrary || selectedScenarioId > 0"
+                    <v-select v-if="!hasSelectedPriorityLibrary || selectedScenarioId !== '0'"
                               :items="priorityLibrariesSelectListItems" label="Select a Priority Library" outline
                               v-model="selectItemValue">
                     </v-select>
-                    <v-text-field v-if="hasSelectedPriorityLibrary && selectedScenarioId === 0" label="Library Name"
+                    <v-text-field v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'" label="Library Name"
                                   v-model="selectedPriorityLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedPriorityLibrary">
@@ -46,7 +46,7 @@
                                 <v-text-field readonly :value="props.item.criteria">
                                     <template slot="append-outer">
                                         <v-icon class="ara-yellow"
-                                                @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
+                                                @click="onEditCriteria(props.item.id, props.item.criteria)">
                                             fas fa-edit
                                         </v-icon>
                                     </template>
@@ -71,18 +71,18 @@
         </v-flex>
         <v-flex xs12>
             <v-layout v-show="hasSelectedPriorityLibrary" justify-end row>
-                <v-btn v-show="selectedScenarioId > 0" class="ara-blue-bg white--text" @click="onApplyToScenario"
+                <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedPriorityLibrary">
                     Apply
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onUpdateLibrary"
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedPriorityLibrary">
                     Update Library
                 </v-btn>
                 <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedPriorityLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
+                <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedPriorityLibrary">
                     Discard Changes
                 </v-btn>
@@ -149,7 +149,7 @@
         @Action('updatePriorityLibrary') updatePriorityLibraryAction: any;
         @Action('saveScenarioPriorityLibrary') saveScenarioPriorityLibraryAction: any;
 
-        selectedScenarioId: number = 0;
+        selectedScenarioId: string = '0';
         hasSelectedPriorityLibrary: boolean = false;
         priorityLibrariesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
@@ -178,19 +178,21 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/PriorityEditor/Scenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
-                    if (vm.selectedScenarioId === 0) {
+                    vm.selectedScenarioId = to.query.selectedScenarioId;
+                    if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
                 }
 
-                vm.onClearSelectedPriorityLibrary();
+                vm.selectItemValue = '0';
                 setTimeout(() => {
                     vm.getPriorityLibrariesAction()
                         .then(() => {
-                            if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioPriorityLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                            if (vm.selectedScenarioId !== '0') {
+                                vm.getScenarioPriorityLibraryAction({
+                                    selectedScenarioId: parseInt(vm.selectedScenarioId)
+                                });
                             }
                         });
                 });
@@ -202,8 +204,8 @@
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/PriorityEditor/Library/') {
-                this.selectedScenarioId = 0;
-                this.onClearSelectedPriorityLibrary();
+                this.selectedScenarioId = '0';
+                this.selectItemValue = '0';
                 next();
             }
         }
@@ -251,7 +253,7 @@
          */
         @Watch('selectedPriorityLibrary')
         onSelectedPriorityLibraryChanged() {
-            if (hasValue(this.selectedPriorityLibrary) && this.selectedPriorityLibrary.id !== 0) {
+            if (hasValue(this.selectedPriorityLibrary) && this.selectedPriorityLibrary.id !== '0') {
                 this.hasSelectedPriorityLibrary = true;
 
                 const priorityFunds: PriorityFund[] = [];
@@ -376,13 +378,6 @@
                 description: '',
                 priorities: []
             };
-        }
-
-        /**
-         * Sets selectItemValue to an empty string or string 0
-         */
-        onClearSelectedPriorityLibrary() {
-            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
         }
 
         /**
@@ -515,11 +510,9 @@
 
                 this.createPriorityLibraryAction({createdPriorityLibrary: createdPriorityLibrary})
                     .then(() => {
+                        this.selectItemValue = '0';
                         setTimeout(() => {
-                            this.onClearSelectedPriorityLibrary();
-                            setTimeout(() => {
-                                this.selectItemValue = createdPriorityLibrary.id.toString();
-                            });
+                            this.selectItemValue = createdPriorityLibrary.id.toString();
                         });
                     });
             }
@@ -568,12 +561,10 @@
 
             this.saveScenarioPriorityLibraryAction({saveScenarioPriorityLibraryData: appliedPriorityLibrary})
                 .then(() => {
+                    this.selectItemValue = '0';
                     setTimeout(() => {
-                        this.onClearSelectedPriorityLibrary();
-                        setTimeout(() => {
-                            this.updateSelectedPriorityLibraryAction({
-                                updatedSelectedPriorityLibrary: this.scenarioPriorityLibrary
-                            });
+                        this.updateSelectedPriorityLibraryAction({
+                            updatedSelectedPriorityLibrary: this.scenarioPriorityLibrary
                         });
                     });
                 });
@@ -585,9 +576,9 @@
          * library from the server to update the selected priority library in state
          */
         onDiscardChanges() {
-            this.onClearSelectedPriorityLibrary();
+            this.selectItemValue = '0';
 
-            if (this.scenarioPriorityLibrary.id > 0) {
+            if (this.scenarioPriorityLibrary.id !== '0') {
                 setTimeout(() => {
                     this.updateSelectedPriorityLibraryAction({
                         updatedPriorityLibrary: this.scenarioPriorityLibrary

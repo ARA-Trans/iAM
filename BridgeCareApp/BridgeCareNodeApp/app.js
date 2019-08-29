@@ -32,6 +32,9 @@ async function run() {
   const PriorityLibrary = require('./models/priorityLibraryModel');
   const priorityLibraryRouter = require('./routes/priorityLibraryRouters')(PriorityLibrary);
 
+  const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
+  const remainingLifeLimitLibraryRouter = require('./routes/remainingLifeLimitLibraryRouters')(RemainingLifeLimitLibrary);
+
   const options = { fullDocument: 'updateLookup' };
 
   InvestmentLibrary.watch([], options).on('change', data => {
@@ -54,7 +57,18 @@ async function run() {
     io.emit('priorityLibrary', data);
   });
 
-  app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter, priorityLibraryRouter]);
+  RemainingLifeLimitLibrary.watch([], options).on('change', data => {
+    io.emit('remainingLifeLimitLibrary', data);
+  });
+
+  app.use("/api", [
+      investmentLibraryRouter,
+      scenarioRouter,
+      performanceLibraryRouter,
+      treatmentLibraryRouter,
+      priorityLibraryRouter,
+      remainingLifeLimitLibraryRouter
+  ]);
 }
 
 

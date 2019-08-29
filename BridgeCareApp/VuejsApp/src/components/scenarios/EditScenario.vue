@@ -43,6 +43,7 @@
     import {Network} from '@/shared/models/iAM/network';
     import FileDownload from 'js-file-download';
     import {NavigationTab} from '@/shared/models/iAM/navigation-tab';
+    import {hasValue} from "@/shared/utils/has-value-util";
 
     @Component({
         components: { CommittedProjectsFileUploaderDialog }
@@ -119,7 +120,7 @@
                             tabIcon: 'fas fa-copy',
                             navigation: {
                                 path: '/PriorityEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                             }
                         },
                         {
@@ -127,7 +128,7 @@
                             tabIcon: 'fas fa-bullseye',
                             navigation: {
                                 path: '/TargetEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                             }
                         },
                         {
@@ -135,7 +136,15 @@
                             tabIcon: 'fas fa-level-down-alt',
                             navigation: {
                                 path: '/DeficientEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                            }
+                        },
+                        {
+                            tabName: 'Remaining Life Limit',
+                            tabIcon: 'fas fa-business-time',
+                            navigation: {
+                                path: '/RemainingLifeLimitEditor/Scenario/',
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                             }
                         }
                     ];
