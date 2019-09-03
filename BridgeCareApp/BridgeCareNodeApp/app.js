@@ -49,6 +49,7 @@ async function run() {
   });
 
   Scenario.watch([], options).on('change', data => {
+    debug(data);
     io.emit('scenarioStatus', data);
   });
 

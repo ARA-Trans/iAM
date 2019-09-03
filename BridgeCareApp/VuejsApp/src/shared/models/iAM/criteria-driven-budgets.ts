@@ -1,6 +1,6 @@
 export interface CriteriaDrivenBudgets {
     scenarioId: number;
-    budgetCriteriaId: number;
+    _id: number | string;
     budgetName: string;
     criteria: string;
 }

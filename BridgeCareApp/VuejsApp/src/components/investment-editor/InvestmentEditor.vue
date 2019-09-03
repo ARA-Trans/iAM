@@ -183,8 +183,8 @@
         @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getBudgetCriteria') getBudgetCriteriaAction: any;
-        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
         @Action('saveBudgetCriteria') saveBudgetCriteriaAction: any
+        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
         @Action('saveIntermittentStateToBudgetCriteria') saveIntermittentStateToBudgetCriteriaAction: any;
 
         tabs: string[] = ['investments', 'budget criteria'];
@@ -267,6 +267,9 @@
         @Watch('stateSelectedInvestmentLibrary')
         onStateSelectedInvestmentLibraryChanged() {
             this.selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
+            if (this.selectItemValue != '') {
+            this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria });
+            }
         }
 
         /**
@@ -570,6 +573,7 @@
 
                 this.selectedInvestmentLibrary.budgetOrder = getPropertyValues('name', editedBudgets);
                 this.selectedInvestmentLibrary.budgetYears = editedBudgetYears;
+                this.selectedInvestmentLibrary.budgetCriteria = intermittentCriteria;
 
                 this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
 

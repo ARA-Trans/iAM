@@ -9,13 +9,20 @@ const investmentLibraryBudgetYearSchema = new Schema({
     year: { type: Number }
 });
 
+const budgetNameCriteriaSchema = new Schema({
+    budgetName: { type: String },
+    criteria: { type: String },
+    scenarioId: {type: Number}
+});
+
 const investmentLibrarySchema = new Schema({
     description: { type: String },
     discountRate: { type: Number },
     inflationRate: { type: Number },
     name: { type: String },
     budgetOrder: [{ type: String }],
-    budgetYears: [investmentLibraryBudgetYearSchema]
+    budgetYears: [investmentLibraryBudgetYearSchema],
+    budgetCriteria: [budgetNameCriteriaSchema]
 });
 
 module.exports = mongoose.model('InvestmentLibrary', investmentLibrarySchema, 'investmentLibraries');

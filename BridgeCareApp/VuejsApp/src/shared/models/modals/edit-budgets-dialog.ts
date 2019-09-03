@@ -12,7 +12,7 @@ export const emptyEditBudgetsDialogData: EditBudgetsDialogData = {
     showDialog: false,
     budgets: [],
     canOrderBudgets: false,
-    criteriaBudgets: [{ budgetName: '', criteria: '', budgetCriteriaId: 0, scenarioId: 0 }],
+    criteriaBudgets: [{ budgetName: '', criteria: '', _id: '', scenarioId: 0 }],
     scenarioId: 0
 };
 

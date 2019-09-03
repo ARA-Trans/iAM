@@ -198,7 +198,7 @@
 
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
 
-            let newCriteria: CriteriaDrivenBudgets = { budgetCriteriaId: 0, budgetName: newBudget, criteria: 'new criteria', scenarioId: this.dialogData.scenarioId };
+            let newCriteria: CriteriaDrivenBudgets = { _id: '', budgetName: newBudget, criteria: 'new criteria', scenarioId: this.dialogData.scenarioId };
 
             this.editBudgetsDialogGridData.push({
                 name: newBudget,

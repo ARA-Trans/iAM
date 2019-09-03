@@ -5,13 +5,13 @@ function criteriaDrivenBudgetsyRoutes(CriteriaDrivenBudgets){
     const criteriaDrivenBudgetsRouter = express.Router();
     const controller = criteriaDrivenBudgetsController(CriteriaDrivenBudgets);
 
-    criteriaDrivenBudgetsRouter.route("/CreateCriteriaDrivenBudgets/:scenarioId")
+    criteriaDrivenBudgetsRouter.route("/CreateCriteriaDrivenBudgets/")
         .post(controller.post);
 
-        criteriaDrivenBudgetsRouter.route("/UpdateCriteriaDrivenBudgets")
+        criteriaDrivenBudgetsRouter.route("/UpdateCriteriaDrivenBudgets/:id")
         .put(controller.put);
 
-        criteriaDrivenBudgetsRouter.route("/GetCriteriaDrivenBudgets/:scenarioId")
+        criteriaDrivenBudgetsRouter.route("/GetCriteriaDrivenBudgets/:id")
         .get(controller.getById);
 
     return criteriaDrivenBudgetsRouter;
