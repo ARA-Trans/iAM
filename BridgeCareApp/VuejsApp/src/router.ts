@@ -4,6 +4,7 @@ import './register-hooks';
 import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
+import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
 
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
@@ -68,6 +69,11 @@ const router = new VueRouter({
                     path: '/DeficientEditor/Scenario/',
                     component: DeficientEditor,
                     props: true
+                },
+                {
+                    path: '/RemainingLifeLimitEditor/Scenario/',
+                    component: RemainingLifeLimitEditor,
+                    props: true
                 }
             ]
         },
@@ -105,6 +111,12 @@ const router = new VueRouter({
             path: '/DeficientEditor/Library/',
             name: 'DeficientEditor',
             component: DeficientEditor,
+            props: true
+        },
+        {
+            path: '/RemainingLifeLimitEditor/Library/',
+            name: 'RemainingLifeLimitEditor',
+            component: RemainingLifeLimitEditor,
             props: true
         },
         {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Linq;
 using BridgeCare.Models;
 
@@ -39,6 +40,16 @@ namespace BridgeCare.EntityClasses
                     PRIORITYFUNDS.Add(new PriorityFundEntity(priorityFund));
                 });
             }
+        }
+
+        public static void DeleteEntry(PriorityEntity priority, BridgeCareContext db)
+        {
+            if (priority.PRIORITYFUNDS.Any())
+            {
+                priority.PRIORITYFUNDS.ToList().ForEach(pf => db.Entry(pf).State = EntityState.Deleted);
+            }
+
+            db.Entry(priority).State = EntityState.Deleted;
         }
     }
 }
