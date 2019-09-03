@@ -226,7 +226,7 @@
     }
 
     .v-list__group__header__prepend-icon .v-icon {
-        color: #798899;
+        color: #798899 !important;
     }
 
     .v-list__group__header__prepend-icon .primary--text .v-icon {
