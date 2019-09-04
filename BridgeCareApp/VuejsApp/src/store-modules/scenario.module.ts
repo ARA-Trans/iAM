@@ -1,10 +1,11 @@
-import {Scenario} from '@/shared/models/iAM/scenario';
+import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
 import {clone, append, any, propEq, findIndex, remove} from 'ramda';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
+import AnalysisEditorService from '@/services/analysis-editor.service';
 
 const convertFromMongoToVueModel = (data: any) => {
     const scenarios: any = {
@@ -19,7 +20,8 @@ const convertFromMongoToVueModel = (data: any) => {
 const state = {
     scenarios: [] as Scenario[],
     benefitAttributes: [] as string[],
-    selectedScenarioName: ''
+    selectedScenarioName: '',
+    analysis: clone(emptyAnalysis) as Analysis
 };
 
 const mutations = {
@@ -46,6 +48,9 @@ const mutations = {
     },
     selectedScenarioNameMutator(state: any, selectedScenarioName: string) {
         state.selectedScenarioName = selectedScenarioName;
+    },
+    analysisMutator(state: any, analysis: Analysis) {
+        state.analysis = clone(analysis);
     }
 };
 
@@ -127,6 +132,21 @@ const actions = {
     },
     setSelectedScenarioName({commit}: any, payload: any) {
         commit('selectedScenarioNameMutator', payload.selectedScenarioName);
+    },
+    async getScenarioAnalysis({commit}: any, payload: any) {
+        await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
+            .then((response: AxiosResponse<any>) => {
+                commit('analysisMutator', response.data);
+            });
+    },
+    async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {
+        await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData)
+            .then((response: AxiosResponse<any>) => {
+                if (http2XX.test(response.status.toString())) {
+                    commit('analysisMutator', payload.scenarioAnalysisData);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario analysis'});
+                }
+            });
     }
 };
 
