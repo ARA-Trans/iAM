@@ -1,17 +1,17 @@
-function investmentLibraryController(InvestmentLibrary) {
+function priorityLibraryController(PriorityLibrary) {
     /**
-     * POST Nodejs API endpoint for investment libraries; creates & returns an investment library
+     * POST NodeJS API endpoint for priority libraries; creates & returns a priority library
      * @param req Http request
      * @param res Http response
      */
     function post(req, res) {
-        const investmentLibrary = new InvestmentLibrary(req.body);
+        const priorityLibrary = new PriorityLibrary(req.body);
 
         if (!req.body.name) {
             return res.status(400).send('name is required');
         }
 
-        investmentLibrary.save(function (err, library) {
+        priorityLibrary.save(function(err, library) {
             if (err) {
                 return res.status(400).json(err);
             }
@@ -21,27 +21,27 @@ function investmentLibraryController(InvestmentLibrary) {
     }
 
     /**
-     * GET Nodejs API endpoint for investment libraries; returns investment libraries if found
+     * GET NodeJS API endpoint for priority libraries; returns priority libraries if found
      * @param req Http request
      * @param res Http response
      */
     function get(req, res) {
-        InvestmentLibrary.find((err, investments) => {
+        PriorityLibrary.find((err, priorities) => {
             if (err) {
                 return res.send(err);
             }
 
-            return res.json(investments);
+            return res.json(priorities);
         });
     }
 
     /**
-     *
+     * GET NodeJS API endpoint for priority libraries; gets & returns a priority library by id
      * @param req Http request
      * @param res Http response
      */
     function getById(req, res) {
-        InvestmentLibrary.findById(req.params.investmentLibraryId, (err, library) => {
+        PriorityLibrary.findById(req.params.priorityLibraryId, (err, library) => {
             if (err) {
                 return res.send(err);
             }
@@ -51,12 +51,12 @@ function investmentLibraryController(InvestmentLibrary) {
     }
 
     /**
-     * PUT Nodejs API endpoint for investment libraries; updates & returns an investment library
-     * @param req
-     * @param res
+     * PUT NodeJS API endpoint for priority libraries; updates & returns a priority library
+     * @param req Http request
+     * @param res Http response
      */
     function put(req, res) {
-        InvestmentLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
+        PriorityLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
             if (err) {
                 return res.status(400).json(err);
             }
@@ -66,12 +66,12 @@ function investmentLibraryController(InvestmentLibrary) {
     }
 
     /**
-     * DELETE Nodejs API endpoint for investment libraries; returns 204 status code on success
-     * @param req
-     * @param res
+     * DELETE NodeJS API endpoint for priority libraries; returns 204 status code on success
+     * @param req Http request
+     * @param res Http response
      */
     function deleteLibrary(req, res) {
-        InvestmentLibrary.findById(req.params.investmentLibraryId, (err, library) => {
+        PriorityLibrary.findById(req.params.priorityLibraryId, (err, library) => {
             if (err) {
                 return res.json(err);
             }
@@ -80,11 +80,13 @@ function investmentLibraryController(InvestmentLibrary) {
                 if (err) {
                     return res.status(400).json(err);
                 }
+
                 return res.status(204);
             });
         });
     }
+
     return { post, get, getById, put, deleteLibrary };
 }
 
-module.exports = investmentLibraryController;
+module.exports = priorityLibraryController;

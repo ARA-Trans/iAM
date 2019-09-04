@@ -1,12 +1,12 @@
 <template>
-    <layout column>
+    <v-layout column>
         <v-flex xs12>
             <v-btn class="ara-blue-bg white--text" @click="onAddTarget">Add</v-btn>
         </v-flex>
         <v-flex xs12>
             <div class="targets-data-table">
                 <v-data-table :headers="targetDataTableHeaders" :items="targets"
-                              class="elevation-1 fixed-header v-table__overflow" hide-actions>
+                              class="elevation-1 fixed-header v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td v-for="header in targetDataTableHeaders">
                             <div v-if="header.value !== 'criteria' && header.value !== 'year'">
@@ -55,15 +55,16 @@
             </v-layout>
         </v-flex>
 
-        <CreateTargetDialog :dialogData="createTargetDialogData" @submit="onSubmitNewTarget" />
+        <CreateTargetDialog :showDialog="showCreateTargetDialog" @submit="onSubmitNewTarget" />
 
-        <TargetsCriteriaEditor :dialogData="targetscriteriaEditorDialogData" @submit="onSubmitTargetCriteria" />
-    </layout>
+        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData" @submit="onSubmitTargetCriteria" />
+    </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch, Prop} from 'vue-property-decorator';
+    import Component from 'vue-class-component';
+    import {Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {Target} from '@/shared/models/iAM/target';
     import {clone, isNil, append, any, propEq} from 'ramda';
@@ -73,23 +74,19 @@
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
-    import CreateTargetDialog from '@/components/priorities-targets-deficients/dialogs/targets-dialogs/CreateTargetDialog.vue';
+    import CreateTargetDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetDialog.vue';
     import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
-    import {
-        CreatePrioritizationDialogData,
-        emptyCreatePrioritizationDialogData
-    } from '@/shared/models/modals/create-prioritization-dialog-data';
 
     @Component({
-        components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, TargetsCriteriaEditor: CriteriaEditorDialog}
+        components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
     })
-    export default class TargetsTab extends Vue {
-        @Prop() selectedScenarioId: number;
-
+    export default class TargetEditor extends Vue {
         @State(state => state.target.targets) stateTargets: Target[];
 
+        @Action('getTargets') getTargetsAction: any;
         @Action('saveTargets') saveTargetsAction: any;
 
+        selectedScenarioId: number = 0;
         targets: Target[] = [];
         targetDataTableHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: '15%'},
@@ -99,8 +96,44 @@
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '55%'}
         ];
         selectedTargetIndex: number = -1;
-        createTargetDialogData: CreatePrioritizationDialogData = clone(emptyCreatePrioritizationDialogData);
-        targetscriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        showCreateTargetDialog: boolean = false;
+        targetCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
+        /**
+         * Sets component UI properties that triggers cascading UI updates
+         */
+        beforeRouteEnter(to: any, from: any, next: any) {
+            next((vm: any) => {
+                if (to.path === '/TargetEditor/Scenario/') {
+                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
+                    if (vm.selectedScenarioId === 0) {
+                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
+                        vm.$router.push('/Scenarios/');
+                    }
+                }
+
+                // vm.onClearSelectedPriorityLibrary();
+                setTimeout(() => {
+                    vm.getTargetsAction({selectedScenarioId: vm.selectedScenarioId})
+                        /*.then(() => {
+                            if (vm.selectedScenarioId > 0) {
+                                vm.getScenarioTargetLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                            }
+                        })*/;
+                });
+            });
+        }
+
+        /**
+         * Resets component UI properties that triggers cascading UI updates
+         */
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            if (to.path === '/TargetEditor/Library/') {
+                this.selectedScenarioId = 0;
+                // this.onClearSelectedTargetLibrary();
+                next();
+            }
+        }
 
         /**
          * Sets the targets list property with a copy of the stateTargets list property when stateTargets list changes
@@ -115,10 +148,7 @@
          * Sets the showCreateTargetDialog property to true
          */
         onAddTarget() {
-            this.createTargetDialogData = {
-                showDialog: true,
-                scenarioId: this.selectedScenarioId
-            };
+            this.showCreateTargetDialog = true;
         }
 
         /**
@@ -126,7 +156,7 @@
          * @param newTarget Target object
          */
         onSubmitNewTarget(newTarget: Target) {
-            this.createTargetDialogData = clone(emptyCreatePrioritizationDialogData);
+            this.showCreateTargetDialog = false;
 
             if (!isNil(newTarget)) {
                 this.targets = append(newTarget, this.targets);
@@ -149,7 +179,7 @@
         onEditCriteria(target: Target) {
             this.selectedTargetIndex = this.targets.findIndex((t: Target) => t.id === target.id);
 
-            this.targetscriteriaEditorDialogData = {
+            this.targetCriteriaEditorDialogData = {
                 showDialog: true,
                 criteria: target.criteria
             };
@@ -161,7 +191,7 @@
          * @param criteria CriteriaEditor criteria string result
          */
         onSubmitTargetCriteria(criteria: string) {
-            this.targetscriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+            this.targetCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
                 this.targets[this.selectedTargetIndex].criteria = criteria;

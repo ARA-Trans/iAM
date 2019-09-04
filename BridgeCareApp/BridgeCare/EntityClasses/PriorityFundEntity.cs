@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
@@ -29,6 +30,11 @@ namespace BridgeCare.EntityClasses
             PRIORITYID = priorityId;
             BUDGET = priorityFund.Budget;
             FUNDING = priorityFund.Funding;
+        }
+
+        public static void DeleteEntry(PriorityFundEntity priorityFundEntity, BridgeCareContext db)
+        {
+            db.Entry(priorityFundEntity).State = EntityState.Deleted;
         }
     }
 }

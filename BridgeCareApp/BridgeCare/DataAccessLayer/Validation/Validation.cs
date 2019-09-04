@@ -173,7 +173,7 @@ namespace BridgeCare.DataAccessLayer
                 // execute the query
                 var dataReader = cmd.ExecuteReader();
                 // get the returned count
-                var count = dataReader.HasRows ? dataReader.GetValue(0) : 0;
+                var count = dataReader.HasRows && dataReader.Read() ? dataReader.GetValue(0) : 0;
                 // close the data reader
                 dataReader.Close();
                 // close the connection
@@ -234,6 +234,7 @@ namespace BridgeCare.DataAccessLayer
                                 ParameterName = parameterName,
                                 Value = value
                             });
+                            break;
                         }
                     }
                 }

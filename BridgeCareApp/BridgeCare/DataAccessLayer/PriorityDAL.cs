@@ -10,38 +10,28 @@ using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class PriorityDAL : IPriority//, IDisposable
+    public class PriorityDAL : IPriority
     {
         /// <summary>
-        /// Queries for the priorities having the specified scenario id foreign key; returns an empty list if no priorities were found
+        /// Queries for the priorities having the specified simulation id foreign key; returns an PriorityLibraryModel if no priorities found
         /// </summary>
         /// <param name="simulationId">int; simulation id</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns></returns>
-        public List<PriorityModel> GetPriorities(int simulationId, BridgeCareContext db)
+        public PriorityLibraryModel GetScenarioPriorityLibrary(int simulationId, BridgeCareContext db)
         {
             try
             {
-                if (db.Investments.Any(investment => investment.SIMULATIONID == simulationId))
+                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId) && db.Investments.Any(investment => investment.SIMULATIONID == simulationId))
                 {
-                    var concatenatedBudgets = db.Investments.Where(investment => investment.SIMULATIONID == simulationId)
-                        .Select(investment => investment.BUDGETORDER).ToList();
-
-                    var budgets = new List<string>();
-                    concatenatedBudgets.ForEach(concatenatedBudgetsString => budgets.AddRange(concatenatedBudgetsString.Split(',')));
-
-                    // query for existing priorities and their priority funds
-                    var priorities = db.Priorities
-                        .Include(priority => priority.PRIORITYFUNDS)
-                        .Where(priority => priority.SIMULATIONID == simulationId);
-
-                    // create PriorityModels from existing priorities and return
-                    var priorityModels = new List<PriorityModel>();
-                    priorities.ToList().ForEach(priority => priorityModels.Add(new PriorityModel(priority)));
-
-                    return priorityModels;
+                    // query for an existing simulation and include priorities and priority funds
+                    var simulation = db.Simulations
+                        .Include(s => s.PRIORITIES)
+                        .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
+                        .Single(s => s.SIMULATIONID == simulationId);
+                    // return the simulation's data and any priority & priority funds data
+                    return new PriorityLibraryModel(simulation);
                 }
-                
             }
             catch (SqlException ex)
             {
@@ -56,95 +46,95 @@ namespace BridgeCare.DataAccessLayer
                 HandleException.GeneralError(ex);
             }
 
-            return new List<PriorityModel>();
+            return new PriorityLibraryModel();
         }
 
         /// <summary>
-        /// Performs an upsert/delete operation on the PRIORITY/PRIORITYFUND tables using the provided list of PriorityModel data
+        /// Performs an upsert/delete operation on the PRIORITY/PRIORITYFUND tables using the provided PriorityLibraryModel data
         /// </summary>
-        /// <param name="data">List<PriorityModel></param>
+        /// <param name="data">List<PriorityLibraryModel></param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns></returns>
-        public List<PriorityModel> SavePriorities(int simulationId, List<PriorityModel> data, BridgeCareContext db)
+        public PriorityLibraryModel SaveScenarioPriorityLibrary(PriorityLibraryModel data, BridgeCareContext db)
         {
             try
             {
-                // query for priorities using the simulation id
-                var existingPriorities = db.Priorities.Include(priority => priority.PRIORITYFUNDS).Where(priority => priority.SIMULATIONID == simulationId).ToList();
-                // check if any priorities were found
-                if (existingPriorities.Any())
+                // check for an existing simulation
+                var simulationId = int.Parse(data.Id);
+                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
                 {
-                    existingPriorities.ForEach(existingPriority =>
+                    // query for the simulation and include priorities and priority funds
+                    var simulation = db.Simulations.Include(s => s.PRIORITIES)
+                        .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
+                        .Single(s => s.SIMULATIONID == simulationId);
+                    // update the simulation comments
+                    simulation.COMMENTS = data.Description;
+                    // check if any priorities were found
+                    if (simulation.PRIORITIES.Any())
                     {
-                        // check for matching priority model
-                        var priorityModel = data.SingleOrDefault(model => model.Id == existingPriority.PRIORITYID.ToString());
-                        if (priorityModel != null)
+                        simulation.PRIORITIES.ToList().ForEach(existingPriority =>
                         {
-                            // set priority model as matched
-                            priorityModel.matched = true;
-                            // update existingPriority
-                            priorityModel.UpdatePriority(existingPriority);
-                            // check for existing priority funds on existing priority
-                            if (existingPriority.PRIORITYFUNDS.Any())
+                            // check for a PriorityModel that has a matching id with a priority id
+                            var priorityModel = data.Priorities.SingleOrDefault(model => model.Id == existingPriority.PRIORITYID.ToString());
+                            if (priorityModel != null)
                             {
-                                existingPriority.PRIORITYFUNDS.ToList().ForEach(existingPriorityFund =>
+                                // update the priority record with the matched model data
+                                priorityModel.matched = true;
+                                priorityModel.UpdatePriority(existingPriority);
+                                // check for existing priority funds on existing priority
+                                if (existingPriority.PRIORITYFUNDS.Any())
                                 {
-                                    // check for matching priority fund model
-                                    var priorityFundModel = priorityModel.PriorityFunds
-                                      .SingleOrDefault(model => model.Id == existingPriorityFund.PRIORITYFUNDID.ToString());
-                                    if (priorityFundModel != null)
+                                    existingPriority.PRIORITYFUNDS.ToList().ForEach(existingPriorityFund =>
                                     {
-                                        // set priority fund model as matched
-                                        priorityFundModel.matched = true;
-                                        // update existing priority fund
-                                        priorityFundModel.UpdatePriorityFund(existingPriorityFund);
-                                    }
-                                });
-                            }
-
-                            // check for priority fund models that were not matched
-                            if (priorityModel.PriorityFunds.Any(model => !model.matched))
-                            {
-                                // create a new priority fund for the existing priority
-                                priorityModel.PriorityFunds.Where(model => !model.matched)
-                                    .ToList().ForEach(model =>
-                                    {
-                                        db.PriorityFunds
-                                            .Add(new PriorityFundEntity(existingPriority.PRIORITYID, model));
+                                        // check for a PriorityFundModel that has a matching id with a priority fund id
+                                        var priorityFundModel = priorityModel.PriorityFunds
+                                          .SingleOrDefault(model => model.Id == existingPriorityFund.PRIORITYFUNDID.ToString());
+                                        if (priorityFundModel != null)
+                                        {
+                                            // update the priority fund record with the matched model data
+                                            priorityFundModel.matched = true;
+                                            priorityFundModel.UpdatePriorityFund(existingPriorityFund);
+                                        }
+                                        else
+                                        {
+                                            PriorityFundEntity.DeleteEntry(existingPriorityFund, db);
+                                        }
                                     });
+                                }
+
+                                // check for PriorityFundModels that didn't have a priority fund record match
+                                if (priorityModel.PriorityFunds.Any(model => !model.matched))
+                                {
+                                    // create a new priority funds with the unmatched models' data
+                                    db.PriorityFunds.AddRange(priorityModel.PriorityFunds
+                                        .Where(model => !model.matched)
+                                        .Select(model => new PriorityFundEntity(existingPriority.PRIORITYID, model))
+                                        .ToList()
+                                    );
+                                }
                             }
-                        }
-                    });
+                            else
+                            {
+                                PriorityEntity.DeleteEntry(existingPriority, db);
+                            }
+                        });
+                    }
 
-                }
+                    // check for any priority models that weren't matched
+                    if (data.Priorities.Any(priorityModel => !priorityModel.matched))
+                    {
+                        // get all unmatched priority models and create new priority entities with the data and insert
+                        db.Priorities.AddRange(data.Priorities
+                            .Where(priorityModel => !priorityModel.matched)
+                            .Select(priorityModel => new PriorityEntity(simulationId, priorityModel))
+                            .ToList()
+                        );
+                    }
 
-                // check for any priority models that weren't matched
-                if (data.Any(priorityModel => !priorityModel.matched))
-                {
-                    // get all unmatched priority models and create new priority entities with the data and insert
-                    db.Priorities.AddRange(data.Where(priorityModel => !priorityModel.matched).Select(priorityModel => new PriorityEntity(priorityModel)).ToList());
-                }
+                    db.SaveChanges();
 
-                db.SaveChanges();
-
-                // if there are any existing priorities, get all of their ids into a list and add the entities to a list as priority models
-                var priorityModels = new List<PriorityModel>();
-                var existingPriorityIds = new List<int>();
-                if (existingPriorities.Any())
-                {
-                    priorityModels.AddRange(existingPriorities.Select(priority => new PriorityModel(priority)).ToList());
-                    existingPriorityIds.AddRange(existingPriorities.Select(priority => priority.PRIORITYID).ToList());
+                    return new PriorityLibraryModel(simulation);
                 }
-                // if there are any new priorities, create priority models from them and add them to the priorityModels list
-                var newPriorities = db.Priorities.Include("PRIORITYFUNDS")
-                    .Where(priority => priority.SIMULATIONID == simulationId && !existingPriorityIds.Contains(priority.PRIORITYID)).ToList();
-                if (newPriorities.Any())
-                {
-                    // convert all new priorities into priority models
-                    priorityModels.AddRange(newPriorities.Select(priority => new PriorityModel(priority)).ToList());
-                }
-                
-                return priorityModels;
             }
             catch (SqlException ex)
             {
@@ -159,7 +149,7 @@ namespace BridgeCare.DataAccessLayer
                 HandleException.GeneralError(ex);
             }
             
-            return new List<PriorityModel>();
+            return new PriorityLibraryModel();
         }
 
         public void SavePriorityFundInvestmentData(int simulationId, List<string> budgets, BridgeCareContext db)

@@ -31,6 +31,12 @@ async function run() {
   const TreatmentLibrary = require('./models/treatmentLibraryModel');
   const treatmentLibraryRouter = require('./routes/treatmentLibraryRouters')(TreatmentLibrary);
 
+  const PriorityLibrary = require('./models/priorityLibraryModel');
+  const priorityLibraryRouter = require('./routes/priorityLibraryRouters')(PriorityLibrary);
+
+  const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
+  const remainingLifeLimitLibraryRouter = require('./routes/remainingLifeLimitLibraryRouters')(RemainingLifeLimitLibrary);
+
   const CriteriaDrivenBudgets = require('./models/criteriaDrivenBudgetsModel');
   const criteriaDrivenBudgetsRouter = require('./routes/criteriaDrivenBudgetsRouters')(CriteriaDrivenBudgets);
 
@@ -53,7 +59,23 @@ async function run() {
     io.emit('scenarioStatus', data);
   });
 
-  app.use("/api", [investmentLibraryRouter, scenarioRouter, performanceLibraryRouter, treatmentLibraryRouter, criteriaDrivenBudgetsRouter]);
+  PriorityLibrary.watch([], options).on('change', data => {
+    io.emit('priorityLibrary', data);
+  });
+
+  RemainingLifeLimitLibrary.watch([], options).on('change', data => {
+    io.emit('remainingLifeLimitLibrary', data);
+  });
+
+  app.use("/api", [
+      investmentLibraryRouter,
+      scenarioRouter,
+      performanceLibraryRouter,
+      treatmentLibraryRouter,
+      priorityLibraryRouter,
+      remainingLifeLimitLibraryRouter,
+      criteriaDrivenBudgetsRouter
+  ]);
 }
 
 

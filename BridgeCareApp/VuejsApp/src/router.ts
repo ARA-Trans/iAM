@@ -4,13 +4,16 @@ import './register-hooks';
 import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
-import PrioritiesTargetsDeficients from '@/components/priorities-targets-deficients/PrioritiesTargetsDeficients.vue';
+import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
 
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
 const InvestmentEditor = () => import(/* webpackChunkName: "investmentEditor" */ '@/components/investment-editor/InvestmentEditor.vue');
 const PerformanceEditor = () => import(/* webpackChunkName: "performanceEditor" */ '@/components/performance-editor/PerformanceEditor.vue');
 const TreatmentEditor = () => import(/* webpackChunkName: "treatmentEditor" */ '@/components/treatment-editor/TreatmentEditor.vue');
+const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@/components/priority-editor/PriorityEditor.vue');
+const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
+const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
 
 Vue.use(VueRouter);
 
@@ -53,13 +56,27 @@ const router = new VueRouter({
                     props: true
                 },
                 {
-                    path: '/Prioritization/',
-                    component: PrioritiesTargetsDeficients,
+                    path: '/PriorityEditor/Scenario/',
+                    component: PriorityEditor,
                     props: true
                 },
+                {
+                    path: '/TargetEditor/Scenario/',
+                    component: TargetEditor,
+                    props: true
+                },
+                {
+                    path: '/DeficientEditor/Scenario/',
+                    component: DeficientEditor,
+                    props: true
+                },
+                {
+                    path: '/RemainingLifeLimitEditor/Scenario/',
+                    component: RemainingLifeLimitEditor,
+                    props: true
+                }
             ]
         },
-
         {
             path: '/InvestmentEditor/Library/',
             name: 'InvestmentEditor',
@@ -76,6 +93,30 @@ const router = new VueRouter({
             path: '/TreatmentEditor/Library/',
             name: 'TreatmentEditor',
             component: TreatmentEditor,
+            props: true
+        },
+        {
+            path: '/PriorityEditor/Library/',
+            name: 'PriorityEditor',
+            component: PriorityEditor,
+            props: true
+        },
+        {
+            path: '/TargetEditor/Library/',
+            name: 'TargetEditor',
+            component: TargetEditor,
+            props: true
+        },
+        {
+            path: '/DeficientEditor/Library/',
+            name: 'DeficientEditor',
+            component: DeficientEditor,
+            props: true
+        },
+        {
+            path: '/RemainingLifeLimitEditor/Library/',
+            name: 'RemainingLifeLimitEditor',
+            component: RemainingLifeLimitEditor,
             props: true
         },
         {

@@ -3,12 +3,12 @@
         <v-flex xs12>
             <v-layout fixed justify-space-between>
                 <div>
-                    <v-tabs vertical>
-                        <v-tab v-for="editScenarioNavigationTab in editScenarioNavigationTabs"
-                               :key="editScenarioNavigationTab.tabName"
-                               :to="editScenarioNavigationTab.navigation">
-                            {{editScenarioNavigationTab.tabName}}
-                            <v-icon right>{{editScenarioNavigationTab.tabIcon}}</v-icon>
+                    <v-tabs>
+                        <v-tab v-for="navigationTab in navigationTabs"
+                               :key="navigationTab.tabName"
+                               :to="navigationTab.navigation">
+                            {{navigationTab.tabName}}
+                            <v-icon right>{{navigationTab.tabIcon}}</v-icon>
                         </v-tab>
                     </v-tabs>
                 </div>
@@ -42,7 +42,8 @@
     import CommittedProjectsService from '@/services/committed-projects.service';
     import {Network} from '@/shared/models/iAM/network';
     import FileDownload from 'js-file-download';
-    import {EditScenarioNavigationTab} from '@/shared/models/iAM/edit-scenario-navigation-tab';
+    import {NavigationTab} from '@/shared/models/iAM/navigation-tab';
+    import {hasValue} from "@/shared/utils/has-value-util";
 
     @Component({
         components: { CommittedProjectsFileUploaderDialog }
@@ -65,7 +66,7 @@
             simulationName: '',
             networkName: ''
         };
-        editScenarioNavigationTabs: EditScenarioNavigationTab[] = [];
+        navigationTabs: NavigationTab[] = [];
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -81,7 +82,7 @@
                 } else {
                     vm.setSelectedScenarioNameAction({selectedScenarioName: to.query.simulationName});
 
-                    vm.editScenarioNavigationTabs = [
+                    vm.navigationTabs = [
                         {
                             tabName: 'Analysis',
                             tabIcon: 'fas fa-chart-bar',
@@ -107,7 +108,7 @@
                             }
                         },
                         {
-                            tabName: 'Treatments',
+                            tabName: 'Treatment',
                             tabIcon: 'fas fa-heartbeat',
                             navigation: {
                                 path: '/TreatmentEditor/Scenario/',
@@ -115,10 +116,34 @@
                             }
                         },
                         {
-                            tabName: 'Prioritization',
+                            tabName: 'Priority',
                             tabIcon: 'fas fa-copy',
                             navigation: {
-                                path: '/Prioritization/',
+                                path: '/PriorityEditor/Scenario/',
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                            }
+                        },
+                        {
+                            tabName: 'Target',
+                            tabIcon: 'fas fa-bullseye',
+                            navigation: {
+                                path: '/TargetEditor/Scenario/',
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                            }
+                        },
+                        {
+                            tabName: 'Deficient',
+                            tabIcon: 'fas fa-level-down-alt',
+                            navigation: {
+                                path: '/DeficientEditor/Scenario/',
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                            }
+                        },
+                        {
+                            tabName: 'Remaining Life Limit',
+                            tabIcon: 'fas fa-business-time',
+                            navigation: {
+                                path: '/RemainingLifeLimitEditor/Scenario/',
                                 query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                             }
                         }
@@ -126,14 +151,14 @@
 
                     // get the window href
                     const href = window.location.href;
-                    // check each EditScenarioNavigationTab object to see if it has a matching navigation path with the href
+                    // check each NavigationTab object to see if it has a matching navigation path with the href
                     const hasChildPath = any(
-                        (navigationTab: EditScenarioNavigationTab) => href.indexOf(navigationTab.navigation.path) !== -1,
-                        vm.editScenarioNavigationTabs
+                        (navigationTab: NavigationTab) => href.indexOf(navigationTab.navigation.path) !== -1,
+                        vm.navigationTabs
                     );
-                    // if no matching navigation path was found in the href, then route with path of first editScenarioNavigationTabs entry
+                    // if no matching navigation path was found in the href, then route with path of first navigationTabs entry
                     if (!hasChildPath) {
-                        vm.$router.push(vm.editScenarioNavigationTabs[0].navigation);
+                        vm.$router.push(vm.navigationTabs[0].navigation);
                     }
                 }
             });
