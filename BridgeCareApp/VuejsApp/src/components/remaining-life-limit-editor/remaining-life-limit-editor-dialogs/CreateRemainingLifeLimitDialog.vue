@@ -30,9 +30,9 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
-    import {emptyRemainingLifeLimit, RemainingLifeLimit} from "@/shared/models/iAM/remaining-life-limit";
-    import {CreateRemainingLifeLimitDialogData} from "@/shared/models/modals/create-remaining-life-limit-dialog-data";
-    import {hasValue} from "@/shared/utils/has-value-util";
+    import {emptyRemainingLifeLimit, RemainingLifeLimit} from '@/shared/models/iAM/remaining-life-limit';
+    import {CreateRemainingLifeLimitDialogData} from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
+    import {hasValue} from '@/shared/utils/has-value-util';
     var ObjectID = require('bson-objectid');
 
     @Component
