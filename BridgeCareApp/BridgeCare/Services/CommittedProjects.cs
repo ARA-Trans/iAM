@@ -24,13 +24,15 @@ namespace BridgeCare.Services
         /// <summary>
         /// Save committed projects from the template files
         /// </summary>
-        /// <param name="files"></param>
-        /// <param name="selectedScenarioId"></param>
-        /// <param name="networkId"></param>
+        /// <param name="httpRequest"></param>
         /// <param name="db"></param>
-        public void SaveCommittedProjectsFiles(HttpFileCollection files, string selectedScenarioId, string networkId, BridgeCareContext db)
+        public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db)
         {
+            var selectedScenarioId = httpRequest.Form.Get("selectedScenarioId");
+            var networkId = httpRequest.Form.Get("networkId");
+            var files = httpRequest.Files;
             var committedProjectModels = new List<CommittedProjectModel>();
+
             for (int i = 0; i < files.Count; i++)
             {
                 GetCommittedProjectModels(files[i], selectedScenarioId, networkId, committedProjectModels, db);
@@ -116,11 +118,7 @@ namespace BridgeCare.Services
         {
             try
             {
-                // below should be done on server side??
-                var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
-
-                //postedFile.SaveAs(filePath);            
-                var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
+                var package = new ExcelPackage(postedFile.InputStream);
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
                 var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
                 var start = worksheet.Dimension.Start;
@@ -144,17 +142,17 @@ namespace BridgeCare.Services
                         Cost = Convert.ToInt32(GetCellValue(worksheet, row, ++column))
                     };
 
-                    var CommitConsequences = new List<CommitConsequenceModel>();
+                    var commitConsequences = new List<CommitConsequenceModel>();
                     // Ignore AREA column, from current column till end.Column -> attributes i.e. entry in COMMIT_CONSEQUENCES
                     for (var col = column + 2; col <= end.Column; col++)
                     {
-                        CommitConsequences.Add(new CommitConsequenceModel
+                        commitConsequences.Add(new CommitConsequenceModel
                         {
                             Attribute_ = GetHeader(headers, col),
                             Change_ = GetCellValue(worksheet, row, col)
                         });
                     }
-                    committedProjectModel.CommitConsequences = CommitConsequences;
+                    committedProjectModel.CommitConsequences = commitConsequences;
                     committedProjectModels.Add(committedProjectModel);
                 }
             }
