@@ -229,10 +229,9 @@
          */
         @Watch('stateNumericAttributes')
         onStateNumericAttributesChanged() {
-            this.numericAttributesSelectListItems = this.stateNumericAttributes.map((numericAttribute: Attribute) => ({
-                text: numericAttribute.name,
-                value: numericAttribute.name
-            }));
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
+            }
         }
 
         /**
@@ -266,6 +265,25 @@
                 this.hasSelectedRemainingLifeLimitLibrary = false;
                 this.gridData = [];
             }
+        }
+
+        /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
+            }
+        }
+
+        /**
+         * Sets the attributes select items using the numeric attributes from state
+         */
+        setAttributesSelectListItems() {
+            this.numericAttributesSelectListItems = this.stateNumericAttributes.map((attribute: Attribute) => ({
+                text: attribute.name,
+                value: attribute.name
+            }));
         }
 
         /**
