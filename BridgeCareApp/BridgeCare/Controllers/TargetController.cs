@@ -21,19 +21,19 @@ namespace BridgeCare.Controllers
         }
 
         [HttpGet]
-        [Route("api/GetTargets")]
+        [Route("api/GetScenarioTargetLibrary/{selectedScenarioId}")]
         [ModelValidation("Given Scenario Id is not valid")]
-        public List<TargetModel> GetTargets(int selectedScenarioId)
+        public TargetLibraryModel GetScenarioTargetLibrary(int selectedScenarioId)
         {
-            return targetRepo.GetTargets(selectedScenarioId, db);
+            return targetRepo.GetScenarioTargetLibrary(selectedScenarioId, db);
         }
 
         [HttpPost]
-        [Route("api/SaveTargets")]
+        [Route("api/SaveScenarioTargetLibrary")]
         [ModelValidation("Given targets are not valid")]
-        public List<TargetModel> SaveTargets(int selectedScenarioId, [FromBody]List<TargetModel> data)
+        public TargetLibraryModel SaveScenarioTargetLibrary([FromBody]TargetLibraryModel data)
         {
-            return targetRepo.SaveTargets(selectedScenarioId, data, db);
+            return targetRepo.SaveScenarioTargetLibrary(data, db);
         }
     }
 }

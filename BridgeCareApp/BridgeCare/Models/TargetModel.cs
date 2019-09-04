@@ -5,7 +5,6 @@ namespace BridgeCare.Models
 {
     public class TargetModel : CrudModel
     {
-        public int ScenarioId { get; set; }
         public string Id { get; set; }
         public string Attribute { get; set; }
         public string Name { get; set; }
@@ -17,7 +16,6 @@ namespace BridgeCare.Models
 
         public TargetModel(TargetsEntity target)
         {
-            ScenarioId = target.SIMULATIONID;
             Id = target.ID_.ToString();
             Attribute = target.ATTRIBUTE_;
             Name = target.TARGETNAME;
