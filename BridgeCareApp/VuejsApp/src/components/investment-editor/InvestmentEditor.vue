@@ -113,7 +113,7 @@
                                     <td>
                                         <v-text-field readonly :value="props.item.criteria">
                                             <template slot="append-outer">
-                                                <v-icon class="ara-yellow"
+                                                <v-icon class="ara-orange"
                                                         @click="onEditCriteria()">
                                                     fas fa-edit
                                                 </v-icon>
