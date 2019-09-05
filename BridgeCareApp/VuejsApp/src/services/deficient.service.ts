@@ -1,22 +1,21 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-import {Deficient} from '@/shared/models/iAM/deficient';
+import {DeficientLibrary} from '@/shared/models/iAM/deficient';
 
 export default class DeficientService {
     /**
-     * Gets deficient data
+     * Gets scenario deficient library data
      * @param selectedScenarioId Scenario object id
      */
-    static getDeficients(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetDeficients?selectedScenarioId=${selectedScenarioId}`);
+    static getScenarioDeficientLibrary(selectedScenarioId: number): AxiosPromise {
+        return axiosInstance.get(`/api/GetScenarioDeficientLibrary/${selectedScenarioId}`);
     }
 
     /**
-     * Saves deficient data
-     * @param selectedScenarioId Scenario id
-     * @param deficients List of Deficient objects
+     * Saves scenario deficient library data
+     * @param scenarioDeficientLibraryData Scenario deficient library data
      */
-    static saveDeficients(selectedScenarioId: number, deficients: Deficient[]): AxiosPromise {
-        return axiosInstance.post(`/api/SaveDeficients?selectedScenarioId=${selectedScenarioId}`, deficients);
+    static saveScenarioDeficientLibrary(scenarioDeficientLibraryData: DeficientLibrary): AxiosPromise {
+        return axiosInstance.post('/api/SaveScenarioDeficientLibrary', scenarioDeficientLibraryData);
     }
 }
