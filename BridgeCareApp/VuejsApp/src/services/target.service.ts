@@ -1,22 +1,21 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-import {Target} from '@/shared/models/iAM/target';
+import {TargetLibrary} from '@/shared/models/iAM/target';
 
 export default class TargetService {
     /**
-     * Gets target data
+     * Gets a scenario's target library data
      * @param selectedScenarioId Scenario object id
      */
-    static getTargets(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetTargets?selectedScenarioId=${selectedScenarioId}`);
+    static getScenarioTargetLibrary(selectedScenarioId: number): AxiosPromise {
+        return axiosInstance.get(`/api/GetScenarioTargetLibrary/${selectedScenarioId}`);
     }
 
     /**
-     * Saves target data
-     * @param selectedScenarioId Scenario id
-     * @param targets List of Target objects
+     * Upserts a scenario's target library data
+     * @param scenarioTargetLibraryData Scenario target library upsert data
      */
-    static saveTargets(selectedScenarioId: number, targets: Target[]): AxiosPromise {
-        return axiosInstance.post(`/api/SaveTargets?selectedScenarioId=${selectedScenarioId}`, targets);
+    static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary): AxiosPromise {
+        return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData);
     }
 }

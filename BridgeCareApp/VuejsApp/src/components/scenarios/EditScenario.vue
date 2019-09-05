@@ -43,7 +43,7 @@
     import {Network} from '@/shared/models/iAM/network';
     import FileDownload from 'js-file-download';
     import {NavigationTab} from '@/shared/models/iAM/navigation-tab';
-    import {hasValue} from "@/shared/utils/has-value-util";
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component({
         components: { CommittedProjectsFileUploaderDialog }

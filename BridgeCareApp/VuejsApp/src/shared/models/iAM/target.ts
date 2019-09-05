@@ -1,5 +1,4 @@
 export interface Target {
-    scenarioId: number;
     id: string;
     attribute: string;
     name: string;
@@ -8,12 +7,25 @@ export interface Target {
     criteria: string;
 }
 
+export interface TargetLibrary {
+    id: string;
+    name: string;
+    description: string;
+    targets: Target[];
+}
+
 export const emptyTarget: Target = {
-    scenarioId: 0,
     id: '0',
     attribute: '',
     name: '',
     year: 0,
     targetMean: 1,
     criteria: ''
+};
+
+export const emptyTargetLibrary: TargetLibrary = {
+    id: '0',
+    name: '',
+    description: '',
+    targets: []
 };

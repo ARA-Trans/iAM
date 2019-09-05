@@ -117,7 +117,7 @@ const actions = {
                 dispatch('setSuccessMessage', {message: 'Successfully updated priority library'});
             });
     },
-    async getScenarioPriorityLibrary({dispatch, commit}: any, payload: any) {
+    async getScenarioPriorityLibrary({commit}: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await PriorityService.getScenarioPriorityLibrary(payload.selectedScenarioId)
                 .then((response: AxiosResponse<any>) => {

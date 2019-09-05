@@ -106,23 +106,21 @@
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {Attribute} from '@/shared/models/iAM/attribute';
-    import CreateRemainingLifeLimitDialog
-        from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitDialog.vue';
+    import CreateRemainingLifeLimitDialog from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
-    } from "@/shared/models/modals/criteria-editor-dialog-data";
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
         CreateRemainingLifeLimitLibraryDialogData,
         emptyCreateRemainingLifeLimitLibraryDialogData
-    } from "@/shared/models/modals/create-remaining-life-limit-library-dialog-data";
-    import CreateRemainingLifeLimitLibraryDialog
-        from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitLibraryDialog.vue';
+    } from '@/shared/models/modals/create-remaining-life-limit-library-dialog-data';
+    import CreateRemainingLifeLimitLibraryDialog from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitLibraryDialog.vue';
     import {
         CreateRemainingLifeLimitDialogData,
         emptyCreateRemainingLifeLimitDialogData
-    } from "@/shared/models/modals/create-remaining-life-limit-dialog-data";
+    } from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
     const ObjectID = require('bson-objectid');
     @Component({
         components: {CreateRemainingLifeLimitLibraryDialog, CreateRemainingLifeLimitDialog, CriteriaEditorDialog}
@@ -231,10 +229,9 @@
          */
         @Watch('stateNumericAttributes')
         onStateNumericAttributesChanged() {
-            this.numericAttributesSelectListItems = this.stateNumericAttributes.map((numericAttribute: Attribute) => ({
-                text: numericAttribute.name,
-                value: numericAttribute.name
-            }));
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
+            }
         }
 
         /**
@@ -268,6 +265,25 @@
                 this.hasSelectedRemainingLifeLimitLibrary = false;
                 this.gridData = [];
             }
+        }
+
+        /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateNumericAttributes)) {
+                this.setAttributesSelectListItems();
+            }
+        }
+
+        /**
+         * Sets the attributes select items using the numeric attributes from state
+         */
+        setAttributesSelectListItems() {
+            this.numericAttributesSelectListItems = this.stateNumericAttributes.map((attribute: Attribute) => ({
+                text: attribute.name,
+                value: attribute.name
+            }));
         }
 
         /**
@@ -440,7 +456,7 @@
             } else {
                 setTimeout(() => {
                     this.getScenarioRemainingLifeLimitLibraryAction({selectedScenarioId: this.selectedScenarioId});
-                })
+                });
             }
         }
     }

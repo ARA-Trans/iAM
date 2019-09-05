@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
@@ -24,14 +25,19 @@ namespace BridgeCare.EntityClasses
 
         public TargetsEntity() { }
 
-        public TargetsEntity(TargetModel targetModel)
+        public TargetsEntity(int simulationId, TargetModel targetModel)
         {
-            SIMULATIONID = targetModel.ScenarioId;
+            SIMULATIONID = simulationId;
             ATTRIBUTE_ = targetModel.Attribute;
             YEARS = targetModel.Year;
             TARGETMEAN = targetModel.TargetMean;
             TARGETNAME = targetModel.Name;
             CRITERIA = targetModel.Criteria;
+        }
+
+        public static void DeleteEntry(TargetsEntity target, BridgeCareContext db)
+        {
+            db.Entry(target).State = EntityState.Deleted;
         }
     }
 }

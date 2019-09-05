@@ -90,7 +90,6 @@
     import {Watch} from 'vue-property-decorator';
     import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
-
     import moment from 'moment';
     import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
@@ -99,8 +98,6 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {isNil} from 'ramda';
-    import AnalysisEditorService from '@/services/analysis-editor.service';
-    import {AxiosResponse} from 'axios';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
@@ -110,11 +107,12 @@
         components: {EditYearDialog, CriteriaEditorDialog}
     })
     export default class EditAnalysis extends Vue {
+        @State(state => state.scenario.analysis) stateAnalysis: Analysis;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('getScenarioAnalysis') getScenarioAnalysisAction: any;
+        @Action('saveScenarioAnalysis') saveScenarioAnalysisAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
-        @Action('getBenefitAttributes') getBenefitAttributesAction: any;
 
         selectedScenarioId: number = 0;
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
@@ -127,7 +125,6 @@
         benefitAttributes: string[] = [];
         weightingAttributes: string[] = ['None'];
         simulationName: string;
-
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
         /**
@@ -144,21 +141,8 @@
                     vm.$router.push('/Scenarios/');
                 }
 
-                // check that selectedScenarioId is set
-                if (vm.selectedScenarioId > 0) {
-                    // get the selected scenario's analysis data
-                    AnalysisEditorService.getScenarioAnalysisData(vm.selectedScenarioId)
-                        .then((response: AxiosResponse<Analysis>) => {
-                            vm.analysis = {
-                                ...response.data,
-                                startYear: response.data.startYear > 0 ? response.data.startYear : moment().year()
-                            };
-                        });
-                } else {
-                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                    vm.$router.push('/Scenarios/');
-                }
+                // get the selected scenario's analysis data
+                vm.getScenarioAnalysisAction({selectedScenarioId: vm.selectedScenarioId});
             });
         }
 
@@ -169,6 +153,14 @@
             if (hasValue(this.stateNumericAttributes)) {
                 this.setBenefitAndWeightingAttributes();
             }
+        }
+
+        @Watch('stateAnalysis')
+        onStateAnalysisChanged() {
+            this.analysis = {
+                ...this.stateAnalysis,
+                startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
+            };
         }
 
         /**
@@ -219,28 +211,20 @@
 
         /**
          * Dispatch an action that sends the current analysis data to the server to apply the analysis data to the
-         * selected scenario (will redirect user to EditScenario on a success)
+         * selected scenario
          */
         onApplyAnalysisToScenario() {
-            AnalysisEditorService.saveScenarioAnalysisData(this.analysis)
-                .then((response: AxiosResponse<any>) => {
-                    // set 'analysis applied' success message, then navigate user to EditScenario page
-                    this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
-                    this.$router.push({
-                        path: '/EditScenario/', query: {
-                            selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName
-                        }
-                    });
-                });
+            this.saveScenarioAnalysisAction({scenarioAnalysisData: this.analysis});
         }
 
         /**
-         * Navigates user to the EditScenario page passing in the selected scenario's id
+         * Resets the analysis object with a copy of the analysis object found in state
          */
         onCancelAnalysisEdit() {
-            this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
-            });
+            this.analysis = {
+                ...this.stateAnalysis,
+                startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
+            };
         }
     }
 </script>

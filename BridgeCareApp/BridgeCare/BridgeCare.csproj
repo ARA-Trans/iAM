@@ -336,6 +336,7 @@
     <Compile Include="Models\RemainingLifeLimitModel.cs" />
     <Compile Include="Models\SimulationAnalysisModel.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryModel.cs" />
+    <Compile Include="Models\TargetLibraryModel.cs" />
     <Compile Include="Models\TargetReportModel.cs" />
     <Compile Include="Models\TreatmentLibraryModel.cs" />
     <Compile Include="Models\TreatmentModel.cs" />

@@ -66,7 +66,7 @@
     import Component from 'vue-class-component';
     import {Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {Target} from '@/shared/models/iAM/target';
+    import {Target, TargetLibrary} from '@/shared/models/iAM/target';
     import {clone, isNil, append, any, propEq} from 'ramda';
     import {
         CriteriaEditorDialogData,
@@ -81,10 +81,10 @@
         components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
     })
     export default class TargetEditor extends Vue {
-        @State(state => state.target.targets) stateTargets: Target[];
+        @State(state => state.target.scenarioTargetLibrary) stateScenarioTargetLibrary: TargetLibrary;
 
-        @Action('getTargets') getTargetsAction: any;
-        @Action('saveTargets') saveTargetsAction: any;
+        @Action('getScenarioTargetLibrary') getScenarioTargetLibraryAction: any;
+        @Action('saveScenarioTargetLibrary') saveScenarioTargetLibraryAction: any;
 
         selectedScenarioId: number = 0;
         targets: Target[] = [];
@@ -105,8 +105,8 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/TargetEditor/Scenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
-                    if (vm.selectedScenarioId === 0) {
+                    vm.selectedScenarioId = to.query.selectedScenarioId;
+                    if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
@@ -114,10 +114,10 @@
 
                 // vm.onClearSelectedPriorityLibrary();
                 setTimeout(() => {
-                    vm.getTargetsAction({selectedScenarioId: vm.selectedScenarioId})
+                    vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
                         /*.then(() => {
                             if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioTargetLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                                vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                             }
                         })*/;
                 });
@@ -139,9 +139,9 @@
          * Sets the targets list property with a copy of the stateTargets list property when stateTargets list changes
          * are detected
          */
-        @Watch('stateTargets')
+        @Watch('stateScenarioTargetLibrary')
         onStateTargetsChanged() {
-            this.targets = clone(this.stateTargets);
+            this.targets = clone(this.stateScenarioTargetLibrary.targets);
         }
 
         /**
@@ -203,14 +203,17 @@
          * Sends target data changes to the server for upsert
          */
         onSaveTargets() {
-            this.saveTargetsAction({selectedScenarioId: this.selectedScenarioId, targetData: this.targets});
+            this.saveScenarioTargetLibraryAction({saveScenarioTargetLibraryData: {
+                ...this.stateScenarioTargetLibrary,
+                targets: this.targets
+            }});
         }
 
         /**
          * Discards target data changes by resetting the targets list with a new copy of the stateTargets list
          */
         onCancelChangesToTargets() {
-            this.targets = clone(this.stateTargets);
+            this.targets = clone(this.stateScenarioTargetLibrary.targets);
         }
     }
 </script>
