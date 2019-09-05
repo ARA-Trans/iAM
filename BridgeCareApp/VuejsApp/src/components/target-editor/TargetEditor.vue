@@ -112,15 +112,17 @@
                     }
                 }
 
-                // vm.onClearSelectedPriorityLibrary();
+                vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+
+                /*vm.onClearSelectedPriorityLibrary();
                 setTimeout(() => {
-                    vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
-                        /*.then(() => {
+                    vm.getTargetLibrariesAction()
+                        .then(() => {
                             if (vm.selectedScenarioId > 0) {
                                 vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                             }
-                        })*/;
-                });
+                        });
+                });*/
             });
         }
 
@@ -205,7 +207,7 @@
         onSaveTargets() {
             this.saveScenarioTargetLibraryAction({saveScenarioTargetLibraryData: {
                 ...this.stateScenarioTargetLibrary,
-                targets: this.targets
+                targets: clone(this.targets)
             }});
         }
 

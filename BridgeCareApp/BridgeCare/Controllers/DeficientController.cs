@@ -21,19 +21,19 @@ namespace BridgeCare.Controllers
         }
 
         [HttpGet]
-        [Route("api/GetDeficients")]
+        [Route("api/GetScenarioDeficientLibrary/{selectedScenarioId}")]
         [ModelValidation("Given Scenario Id is not valid")]
-        public List<DeficientModel> GetDeficients(int selectedScenarioId)
+        public DeficientLibraryModel GetScenarioDeficientLibrary(int selectedScenarioId)
         {
-            return deficientRepo.GetDeficients(selectedScenarioId, db);
+            return deficientRepo.GetScenarioDeficientLibrary(selectedScenarioId, db);
         }
 
         [HttpPost]
-        [Route("api/SaveDeficients")]
+        [Route("api/SaveScenarioDeficientLibrary")]
         [ModelValidation("Given deficients are not valid")]
-        public List<DeficientModel> SaveDeficients(int selectedScenarioId, [FromBody] List<DeficientModel> data)
+        public DeficientLibraryModel SaveScenarioDeficientLibrary([FromBody] DeficientLibraryModel data)
         {
-            return deficientRepo.SaveDeficients(selectedScenarioId, data, db);
+            return deficientRepo.SaveScenarioDeficientLibrary(data, db);
         }
     }
 }

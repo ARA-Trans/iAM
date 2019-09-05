@@ -309,6 +309,7 @@
     <Compile Include="Models\ConsequenceModel.cs" />
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\CreateSimulationDataModel.cs" />
+    <Compile Include="Models\DeficientLibraryModel.cs" />
     <Compile Include="Models\CriteriaDrivenBudgets\CriteriaDrivenBudgetsModel.cs" />
     <Compile Include="Models\ParameterizedCriteriaData.cs" />
     <Compile Include="Models\CrudModel.cs" />
