@@ -4,10 +4,13 @@ import { Scenario } from '@/shared/models/iAM/scenario';
 
 export default class CommittedProjectsService {
     /**
-     * Saves committed projects files
+     * * Saves committed projects files
      * @param files List of files to save
+     * @param selectedScenarioId Selected scenario's id
+     * @param networkId Selected network's id
+     * @param applyNoTreatment Whether or not to apply a 'No Treatment' for years prior
      */
-    static saveCommittedProjectsFiles(files: File[], selectedScenarioId: string, networkId: string): AxiosPromise {
+    static saveCommittedProjectsFiles(files: File[], applyNoTreatment: boolean, selectedScenarioId: string, networkId: string): AxiosPromise {
         let formData = new FormData();
 
         // Add the form data      
@@ -15,6 +18,7 @@ export default class CommittedProjectsService {
             let file = files[i];
             formData.append('files[' + i + ']', file);
         }
+        formData.append('applyNoTreatment', applyNoTreatment ? '1' : '0');
         formData.append('selectedScenarioId', selectedScenarioId);
         formData.append('networkId', networkId);
         

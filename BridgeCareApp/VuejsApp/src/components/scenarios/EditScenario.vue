@@ -44,6 +44,7 @@
     import FileDownload from 'js-file-download';
     import {NavigationTab} from '@/shared/models/iAM/navigation-tab';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {CommittedProjectsDialogResult} from '@/shared/models/modals/committed-projects-dialog-result';
 
     @Component({
         components: { CommittedProjectsFileUploaderDialog }
@@ -178,13 +179,14 @@
         /**
          * Uploads the files submitted via the CommittedProjectsFileUploaderDialog (if present),
          * exports committed projects if isExport is true
-         * @param files File array         
+         * @param result CommmittedProjectsDialogResult object
          * @param isExport boolean
          */
-        onUploadCommittedProjectFiles(files: File[], isExport: boolean) {
+        onUploadCommittedProjectFiles(result: CommittedProjectsDialogResult, isExport: boolean) {
             this.showFileUploader = false;
-            if (!isNil(files)) {
-                CommittedProjectsService.saveCommittedProjectsFiles(files, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
+            if (!isNil(result)) {
+                CommittedProjectsService
+                    .saveCommittedProjectsFiles(result.files, result.applyNoTreatment, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
                     .then((response: AxiosResponse<any>) => {
                         this.setSuccessMessageAction({ message: 'Successfully saved file(s)' });
                     });

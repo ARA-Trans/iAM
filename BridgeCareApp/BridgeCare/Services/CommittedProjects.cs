@@ -30,12 +30,13 @@ namespace BridgeCare.Services
         {
             var selectedScenarioId = httpRequest.Form.Get("selectedScenarioId");
             var networkId = httpRequest.Form.Get("networkId");
+            var noTreatment = httpRequest.Form.Get("applyNoTreatment") == "1" ? true : false;
             var files = httpRequest.Files;
             var committedProjectModels = new List<CommittedProjectModel>();
 
             for (int i = 0; i < files.Count; i++)
             {
-                GetCommittedProjectModels(files[i], selectedScenarioId, networkId, committedProjectModels, db);
+                GetCommittedProjectModels(files[i], selectedScenarioId, networkId, noTreatment, committedProjectModels, db);
                 SaveCommittedProjects(committedProjectModels, db);
             }
         }
@@ -114,7 +115,7 @@ namespace BridgeCare.Services
             committed.SaveCommittedProjects(committedProjectModels, db);
         }
 
-        private void GetCommittedProjectModels(HttpPostedFile postedFile, string selectedScenarioId, string networkId, List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
+        private void GetCommittedProjectModels(HttpPostedFile postedFile, string selectedScenarioId, string networkId, bool applyNoTreatment, List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
             try
             {
@@ -141,6 +142,11 @@ namespace BridgeCare.Services
                         Budget = GetCellValue(worksheet, row, ++column),
                         Cost = Convert.ToInt32(GetCellValue(worksheet, row, ++column))
                     };
+
+                    if (applyNoTreatment && committedProjectModel.Years < DateTime.Now.Year)
+                    {
+                        committedProjectModel.TreatmentName = "No Treatment";
+                    }
 
                     var commitConsequences = new List<CommitConsequenceModel>();
                     // Ignore AREA column, from current column till end.Column -> attributes i.e. entry in COMMIT_CONSEQUENCES
