@@ -1,30 +1,30 @@
-import {Deficient} from '@/shared/models/iAM/deficient';
+import {Deficient, DeficientLibrary, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
 import {clone} from 'ramda';
 import DeficientService from '@/services/deficient.service';
 import {AxiosResponse} from 'axios';
 
 const state = {
-    deficients: [] as Deficient[]
+    scenarioDeficientLibrary: clone(emptyDeficientLibrary) as DeficientLibrary
 };
 
 const mutations = {
-    deficientsMutator(state: any, deficients: Deficient[]) {
-        state.deficients = clone(deficients);
+    scenarioDeficientLibraryMutator(state: any, scenarioDeficientLibrary: DeficientLibrary) {
+        state.scenarioDeficientLibrary = clone(scenarioDeficientLibrary);
     }
 };
 
 const actions = {
-    async getDeficients({commit}: any, payload: any) {
-        await DeficientService.getDeficients(payload.selectedScenarioId)
+    async getScenarioDeficientLibrary({commit}: any, payload: any) {
+        await DeficientService.getScenarioDeficientLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<Deficient[]>) =>
-                commit('deficientsMutator', response.data)
+                commit('scenarioDeficientLibraryMutator', response.data)
             );
     },
-    async saveDeficients({dispatch, commit}: any, payload: any) {
-        await DeficientService.saveDeficients(payload.selectedScenarioId, payload.deficientData)
+    async saveScenarioDeficientLibrary({dispatch, commit}: any, payload: any) {
+        await DeficientService.saveScenarioDeficientLibrary(payload.scenarioDeficientLibraryData)
             .then((response: AxiosResponse<Deficient[]>) => {
-                commit('deficientsMutator', response.data);
-                dispatch('setSuccessMessage', {message: 'Deficient data successfully saved'});
+                commit('scenarioDeficientLibraryMutator', response.data);
+                dispatch('setSuccessMessage', {message: 'Successfully saved scenario deficient library'});
             });
     }
 };

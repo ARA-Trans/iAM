@@ -5,7 +5,7 @@ namespace BridgeCare.Interfaces
 {
     public interface IDeficient
     {
-        List<DeficientModel> GetDeficients(int simulationId, BridgeCareContext db);
-        List<DeficientModel> SaveDeficients(int simulationId, List<DeficientModel> data, BridgeCareContext db);
+        DeficientLibraryModel GetScenarioDeficientLibrary(int simulationId, BridgeCareContext db);
+        DeficientLibraryModel SaveScenarioDeficientLibrary(DeficientLibraryModel data, BridgeCareContext db);
     }
 }
