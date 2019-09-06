@@ -53,6 +53,10 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
                 var existingBudgets = db.CriteriaDrivenBudgets.Where(budgets => budgets.SIMULATIONID == selectedScenarioId).ToList();
 
                 db.CriteriaDrivenBudgets.RemoveRange(existingBudgets);
+                data.ForEach((item) =>
+                {
+                    item.ScenarioId = selectedScenarioId;
+                });
                 db.CriteriaDrivenBudgets.AddRange(data.Select(criteriaModel => new CriteriaDrivenBudgetsEntity(criteriaModel)).ToList());
 
                 db.SaveChanges();

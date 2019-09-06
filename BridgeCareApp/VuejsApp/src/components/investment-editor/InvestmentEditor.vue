@@ -608,13 +608,17 @@
          * with this data
          */
         onCreateAsNewLibrary() {
+            if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
+               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria
+            }
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
                 inflationRate: this.selectedInvestmentLibrary.inflationRate,
                 discountRate: this.selectedInvestmentLibrary.discountRate,
                 description: this.selectedInvestmentLibrary.description,
                 budgetOrder: this.selectedInvestmentLibrary.budgetOrder,
-                budgetYears: this.selectedInvestmentLibrary.budgetYears
+                budgetYears: this.selectedInvestmentLibrary.budgetYears,
+                budgetCriteria: this.selectedInvestmentLibrary.budgetCriteria
             };
         }
 

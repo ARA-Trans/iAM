@@ -39,7 +39,7 @@
                             </td>
                             <td>
                                 <v-edit-dialog :return-value.sync="props.item.name" large lazy persistent
-                                               @save="onEditBudgetName(props.item.index)">
+                                               @save="onEditBudgetName(props.item.name, props.item.index)">
                                     {{props.item.name}}
                                     <template slot="input">
                                         <v-text-field v-model="props.item.name" label="Edit" single-line>
@@ -213,6 +213,7 @@
          * Modifies the budget name at the specified index in the grid data list
          */
         onEditBudgetName(newName: string, index: number) {
+            this.editBudgetsDialogGridData[index].criteriaBudgets.budgetName = newName;
             this.editBudgetsDialogGridData[index] = {
                 ...this.editBudgetsDialogGridData[index],
                 name: newName
