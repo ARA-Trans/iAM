@@ -214,19 +214,19 @@ namespace BridgeCare.DataAccessLayer
                     new CriteriaDrivenBudgetsEntity
                     {
                         BUDGET_NAME = "Maintenance",
-                        CRITERIA = "Default",
+                        CRITERIA = "",
                         SIMULATIONID = sim.SIMULATIONID
                     },
                     new CriteriaDrivenBudgetsEntity
                     {
                         BUDGET_NAME = "Rehabilitation",
-                        CRITERIA = "Default",
+                        CRITERIA = "",
                         SIMULATIONID = sim.SIMULATIONID
                     },
                     new CriteriaDrivenBudgetsEntity
                     {
                         BUDGET_NAME = "Construction",
-                        CRITERIA = "Default",
+                        CRITERIA = "",
                         SIMULATIONID = sim.SIMULATIONID
                     }
                 };

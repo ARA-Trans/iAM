@@ -59,7 +59,6 @@ function investmentLibraryController(InvestmentLibrary) {
      */
     function put(req, res) {
         InvestmentLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
-debug(req.body);
             if (err) {
                 return res.status(400).json(err);
             }
