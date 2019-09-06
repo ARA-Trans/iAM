@@ -109,24 +109,34 @@ const actions = {
             });
     },
     async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
-        if (payload.operationType == 'update' || payload.operationType == 'replace') {
-            const updatedScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
-            commit('updatedScenarioMutator', updatedScenario);
-        }
-
-        if (payload.operationType == 'insert') {
-            const createdScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
-            if (!any(propEq('id', createdScenario.id), state.scenarios)) {
-                commit('createdScenarioMutator', createdScenario);
-                dispatch('setInfoMessage', {message: 'New scenario has been inserted from another source'});
-            }
-        }
-
-        if (payload.operationType == 'delete') {
-            const deletedScenario: Scenario = convertFromMongoToVueModel(payload.documentKey);
-            if (any(propEq('id', deletedScenario.id), state.scenarios)) {
-                commit('removeScenarioMutator', deletedScenario.id);
-                dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
+        if (hasValue(payload, 'operationType')) {
+            const operationType: string = payload.operationType as string;
+            switch (operationType) {
+                case 'update':
+                case 'replace':
+                    if (hasValue(payload, 'fullDocument')) {
+                        const updatedScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
+                        commit('updatedScenarioMutator', updatedScenario);
+                    }
+                    break;
+                case 'insert':
+                    if (hasValue(payload, 'fullDocument')) {
+                        const createdScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
+                        if (!any(propEq('id', createdScenario.id), state.scenarios)) {
+                            commit('createdScenarioMutator', createdScenario);
+                            dispatch('setInfoMessage', {message: 'New scenario has been inserted from another source'});
+                        }
+                    }
+                    break;
+                case 'delete':
+                    if (hasValue(payload, 'documentKey')) {
+                        const deletedScenario: Scenario = convertFromMongoToVueModel(payload.documentKey);
+                        if (any(propEq('id', deletedScenario.id), state.scenarios)) {
+                            commit('removeScenarioMutator', deletedScenario.id);
+                            dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
+                        }
+                    }
+                    break;
             }
         }
     },
@@ -136,13 +146,13 @@ const actions = {
     async getScenarioAnalysis({commit}: any, payload: any) {
         await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
             .then((response: AxiosResponse<any>) => {
-                commit('analysisMutator', response.data);
+                commit('analysisMutator', hasValue(response, 'data') ? response.data : clone(emptyAnalysis));
             });
     },
     async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {
         await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData)
             .then((response: AxiosResponse<any>) => {
-                if (http2XX.test(response.status.toString())) {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     commit('analysisMutator', payload.scenarioAnalysisData);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario analysis'});
                 }
