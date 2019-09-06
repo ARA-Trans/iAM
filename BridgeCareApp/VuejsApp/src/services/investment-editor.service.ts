@@ -13,6 +13,7 @@ const modifyDataForMongoDB = (investmentLibrary: InvestmentLibrary): any => {
         }),
         budgetCriteria: investmentLibrary.budgetCriteria.map((criteria: any) => {
             delete criteria._id;
+            delete criteria.scenarioId;
             return criteria;
         })
     };

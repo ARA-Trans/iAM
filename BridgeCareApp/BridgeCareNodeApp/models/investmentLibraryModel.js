@@ -11,8 +11,8 @@ const investmentLibraryBudgetYearSchema = new Schema({
 
 const budgetNameCriteriaSchema = new Schema({
     budgetName: { type: String },
-    criteria: { type: String },
-    scenarioId: {type: Number}
+    criteria: { type: String }
+    //scenarioId: {type: Number}
 });
 
 const investmentLibrarySchema = new Schema({

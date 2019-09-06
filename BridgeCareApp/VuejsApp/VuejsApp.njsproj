@@ -143,13 +143,6 @@
     <Folder Include="src\shared\modals\" />
     <Folder Include="src\shared\models\" />
     <Folder Include="src\shared\models\child-components\" />
-    <Folder Include="src\shared\models\dialogs\" />
-    <Folder Include="src\shared\models\dialogs\criteria-editor-dialog\" />
-    <Folder Include="src\shared\models\dialogs\equation-editor-dialog\" />
-    <Folder Include="src\shared\models\dialogs\investment-editor-dialogs\" />
-    <Folder Include="src\shared\models\dialogs\create-scenario-dialog\" />
-    <Folder Include="src\shared\models\dialogs\performance-editor-dialogs\" />
-    <Folder Include="src\shared\models\dialogs\treatment-editor-dialogs\" />
     <Folder Include="src\shared\models\iAM\" />
     <Folder Include="src\shared\models\modals\" />
     <Folder Include="src\shared\models\vue\" />
@@ -187,19 +180,6 @@
     <TypeScriptCompile Include="src\services\target.service.ts" />
     <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
     <TypeScriptCompile Include="src\shared\models\child-components\tab-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\create-scenario-dialog\scenario-creation-data.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\shared\models\dialogs\criteria-editor-dialog\criteria-editor-dialog-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\download-reports-dialog.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\equation-editor-dialog\equation-editor-dialog-result.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\investment-editor-dialogs\create-investment-strategy-dialog-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\investment-editor-dialogs\edit-budgets-dialog-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\performance-editor-dialogs\create-performance-strategy-dialog-data.ts" />
-    <TypeScriptCompile Include="src\shared\models\dialogs\treatment-editor-dialogs\create-treatment-strategy-dialog-data.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\attribute.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\criteria-driven-budgets.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\criteria-validation.ts" />

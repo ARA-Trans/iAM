@@ -37,9 +37,6 @@ async function run() {
   const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
   const remainingLifeLimitLibraryRouter = require('./routes/remainingLifeLimitLibraryRouters')(RemainingLifeLimitLibrary);
 
-  const CriteriaDrivenBudgets = require('./models/criteriaDrivenBudgetsModel');
-  const criteriaDrivenBudgetsRouter = require('./routes/criteriaDrivenBudgetsRouters')(CriteriaDrivenBudgets);
-
   const options = { fullDocument: 'updateLookup' };
 
   InvestmentLibrary.watch([], options).on('change', data => {
@@ -73,8 +70,7 @@ async function run() {
       performanceLibraryRouter,
       treatmentLibraryRouter,
       priorityLibraryRouter,
-      remainingLifeLimitLibraryRouter,
-      criteriaDrivenBudgetsRouter
+      remainingLifeLimitLibraryRouter
   ]);
 }
 

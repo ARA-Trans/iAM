@@ -51,7 +51,7 @@
                                 <v-text-field readonly :value="props.item.criteriaBudgets.criteria">
                                     <template slot="append-outer">
                                         <v-icon class="ara-yellow"
-                                                @click="onEditCriteria(props.item.criteriaBudgets.criteria)">
+                                                @click="onEditCriteria(props.item.criteriaBudgets.criteria, props.item.index)">
                                             fas fa-edit
                                         </v-icon>
                                     </template>
@@ -68,24 +68,37 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria" />
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {hasValue} from '@/shared/utils/has-value-util';
-    import {any, propEq, clone} from 'ramda';
-    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
+    import { hasValue } from '@/shared/utils/has-value-util';
+    import { Action, State } from 'vuex-class';
+    import { any, propEq, clone, isNil } from 'ramda';
+    import { DataTableHeader } from '@/shared/models/vue/data-table-header';
+    import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
         EditBudgetsDialogData,
         EditBudgetsDialogGridData,
         EditedBudget
     } from '@/shared/models/modals/edit-budgets-dialog';
     import { CriteriaDrivenBudgets } from '../models/iAM/criteria-driven-budgets';
+    import {
+        CriteriaEditorDialogData,
+        emptyCriteriaEditorDialogData
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
 
-    @Component
+    @Component({
+        components: {
+            CriteriaEditorDialog}
+    })
     export default class EditBudgetsDialog extends Vue {
+
+        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
+
         @Prop() dialogData: EditBudgetsDialogData;
 
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
@@ -94,6 +107,8 @@
         ];
         editBudgetsDialogGridData: EditBudgetsDialogGridData[] = [];
         selectedGridRows: EditBudgetsDialogGridData[] = [];
+        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        selectedCriteriaIndex: number = -1;
 
         /**
          * Sets the editBudgetsDialogGridData array using the dialogData object's budgets data property
@@ -198,7 +213,7 @@
 
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
 
-            let newCriteria: CriteriaDrivenBudgets = { _id: '', budgetName: newBudget, criteria: 'new criteria', scenarioId: this.dialogData.scenarioId };
+            let newCriteria: CriteriaDrivenBudgets = { _id: '', budgetName: newBudget, criteria: '', scenarioId: this.dialogData.scenarioId };
 
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
@@ -276,8 +291,25 @@
             this.selectedGridRows = [];
         }
 
-        onEditCriteria() {
+        onEditCriteria(criteria: string, index: number) {
+            this.selectedCriteriaIndex = index;
 
+            this.criteriaEditorDialogData = {
+                showDialog: true,
+                criteria: criteria
+            };
+        }
+        onSubmitCriteria(criteria: string) {
+            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
+            if (!isNil(criteria)) {
+                this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets.criteria = criteria;
+
+                this.saveIntermittentCriteriaDrivenBudgetAction(
+                    { updateIntermittentCriteriaDrivenBudget: this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets }
+                );
+                this.selectedCriteriaIndex = -1;
+            }
         }
     }
 </script>
