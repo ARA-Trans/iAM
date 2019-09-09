@@ -1,5 +1,6 @@
 ﻿using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
+using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
@@ -200,10 +201,34 @@ namespace BridgeCare.DataAccessLayer
                 {
                     SIMULATIONID = sim.SIMULATIONID,
                     FIRSTYEAR = DateTime.Now.Year,
-                    NUMBERYEARS = 5,
+                    NUMBERYEARS = 1,
                     INFLATIONRATE = 0,
                     DISCOUNTRATE = 0,
                     BUDGETORDER = "Rehabilitation,Maintenance,Construction"
+                };
+
+                db.SaveChanges();
+
+                sim.CriteriaDrivenBudgets= new List<CriteriaDrivenBudgetsEntity>
+                {
+                    new CriteriaDrivenBudgetsEntity
+                    {
+                        BUDGET_NAME = "Maintenance",
+                        CRITERIA = "",
+                        SIMULATIONID = sim.SIMULATIONID
+                    },
+                    new CriteriaDrivenBudgetsEntity
+                    {
+                        BUDGET_NAME = "Rehabilitation",
+                        CRITERIA = "",
+                        SIMULATIONID = sim.SIMULATIONID
+                    },
+                    new CriteriaDrivenBudgetsEntity
+                    {
+                        BUDGET_NAME = "Construction",
+                        CRITERIA = "",
+                        SIMULATIONID = sim.SIMULATIONID
+                    }
                 };
 
                 db.SaveChanges();
