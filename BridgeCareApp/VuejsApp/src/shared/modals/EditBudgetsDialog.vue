@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="300px">
+        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="800px">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -39,13 +39,23 @@
                             </td>
                             <td>
                                 <v-edit-dialog :return-value.sync="props.item.name" large lazy persistent
-                                               @save="onEditBudgetName(props.item.index)">
+                                               @save="onEditBudgetName(props.item.name, props.item.index)">
                                     {{props.item.name}}
                                     <template slot="input">
                                         <v-text-field v-model="props.item.name" label="Edit" single-line>
                                         </v-text-field>
                                     </template>
                                 </v-edit-dialog>
+                            </td>
+                            <td>
+                                <v-text-field readonly :value="props.item.criteriaBudgets.criteria">
+                                    <template slot="append-outer">
+                                        <v-icon class="ara-yellow"
+                                                @click="onEditCriteria(props.item.criteriaBudgets.criteria, props.item.index)">
+                                            fas fa-edit
+                                        </v-icon>
+                                    </template>
+                                </v-text-field>
                             </td>
                         </template>
                     </v-data-table>
@@ -58,41 +68,59 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria" />
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {hasValue} from '@/shared/utils/has-value-util';
-    import {any, propEq, clone} from 'ramda';
-    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
+    import { hasValue } from '@/shared/utils/has-value-util';
+    import { Action, State } from 'vuex-class';
+    import { any, propEq, clone, isNil } from 'ramda';
+    import { DataTableHeader } from '@/shared/models/vue/data-table-header';
+    import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
         EditBudgetsDialogData,
         EditBudgetsDialogGridData,
         EditedBudget
     } from '@/shared/models/modals/edit-budgets-dialog';
+    import { CriteriaDrivenBudgets } from '../models/iAM/criteria-driven-budgets';
+    import {
+        CriteriaEditorDialogData,
+        emptyCriteriaEditorDialogData
+    } from '@/shared/models/modals/criteria-editor-dialog-data';
 
-    @Component
+    @Component({
+        components: {
+            CriteriaEditorDialog}
+    })
     export default class EditBudgetsDialog extends Vue {
+
+        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
+
         @Prop() dialogData: EditBudgetsDialogData;
 
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
-            {text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: ''}
+            { text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: '' },
+            { text: 'Criteria', value: 'criteriaHeader', sortable: false, align: 'center', class: '', width: '' }
         ];
         editBudgetsDialogGridData: EditBudgetsDialogGridData[] = [];
         selectedGridRows: EditBudgetsDialogGridData[] = [];
+        criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        selectedCriteriaIndex: number = -1;
 
         /**
          * Sets the editBudgetsDialogGridData array using the dialogData object's budgets data property
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            this.editBudgetsDialogGridData = this.dialogData.budgets.map((budget: string, index: number) => ({
-                name: budget,
+            this.editBudgetsDialogGridData = this.dialogData.criteriaBudgets.map((budgetCriteria: CriteriaDrivenBudgets, index: number) => ({
+                name: budgetCriteria.budgetName,
                 index: index,
-                previousName: budget,
-                isNew: false
+                previousName: budgetCriteria.budgetName,
+                isNew: false,
+                criteriaBudgets: budgetCriteria
             }));
         }
 
@@ -185,11 +213,14 @@
 
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
 
+            let newCriteria: CriteriaDrivenBudgets = { _id: '', budgetName: newBudget, criteria: '', scenarioId: this.dialogData.scenarioId };
+
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
                 index: this.editBudgetsDialogGridData.length,
                 previousName: '',
-                isNew: true
+                isNew: true,
+                criteriaBudgets: newCriteria
             });
         }
 
@@ -197,6 +228,7 @@
          * Modifies the budget name at the specified index in the grid data list
          */
         onEditBudgetName(newName: string, index: number) {
+            this.editBudgetsDialogGridData[index].criteriaBudgets.budgetName = newName;
             this.editBudgetsDialogGridData[index] = {
                 ...this.editBudgetsDialogGridData[index],
                 name: newName
@@ -222,7 +254,8 @@
                     name: budget.name,
                     index: index,
                     previousName: budget.previousName,
-                    isNew: budget.isNew
+                    isNew: budget.isNew,
+                    criteriaBudgets: budget.criteriaBudgets
                 }));
 
             this.selectedGridRows = [];
@@ -238,7 +271,8 @@
                     .map((budget: EditBudgetsDialogGridData) => ({
                         name: budget.name,
                         previousName: budget.previousName,
-                        isNew: budget.isNew
+                        isNew: budget.isNew,
+                        criteriaBudgets: budget.criteriaBudgets
                     }));
 
                 this.$emit('submit', editedBudgets);
@@ -255,6 +289,27 @@
         resetDialogDataTableProperties() {
             this.editBudgetsDialogGridData = [];
             this.selectedGridRows = [];
+        }
+
+        onEditCriteria(criteria: string, index: number) {
+            this.selectedCriteriaIndex = index;
+
+            this.criteriaEditorDialogData = {
+                showDialog: true,
+                criteria: criteria
+            };
+        }
+        onSubmitCriteria(criteria: string) {
+            this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+
+            if (!isNil(criteria)) {
+                this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets.criteria = criteria;
+
+                this.saveIntermittentCriteriaDrivenBudgetAction(
+                    { updateIntermittentCriteriaDrivenBudget: this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets }
+                );
+                this.selectedCriteriaIndex = -1;
+            }
         }
     }
 </script>

@@ -12,7 +12,9 @@ const server = app.listen(config.port, () => {
   debug(`Running on port ${config.port}`);
 });
 
-const io = require('./config/socketIO')(server);
+const io = require('./config/socketIO')(server, {
+  pingTimeout: 60000
+});
 
 run().catch(error => debug(error));
 

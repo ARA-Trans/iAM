@@ -1,3 +1,5 @@
+const debug = require('debug')('investmentController');
+
 function investmentLibraryController(InvestmentLibrary) {
     /**
      * POST Nodejs API endpoint for investment libraries; creates & returns an investment library

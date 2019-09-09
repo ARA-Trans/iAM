@@ -1,3 +1,4 @@
+using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -49,5 +50,6 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<TargetsEntity> TARGETS { get; set; }                     
         public virtual ICollection<CommittedEntity> COMMITTEDPROJECTS { get; set; }
         public virtual ICollection<RemainingLifeLimitsEntity> REMAINING_LIFE_LIMITS { get; set; }
+        public virtual ICollection<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
     }
 }

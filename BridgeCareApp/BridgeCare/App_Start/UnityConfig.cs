@@ -1,5 +1,7 @@
 using BridgeCare.DataAccessLayer;
+using BridgeCare.DataAccessLayer.CriteriaDrivenBudgets;
 using BridgeCare.Interfaces;
+using BridgeCare.Interfaces.CriteriaDrivenBudgets;
 using BridgeCare.Models;
 using BridgeCare.Services;
 using BridgeCare.Services.SummaryReport;
@@ -87,6 +89,8 @@ namespace BridgeCare
             container.RegisterType<IInventoryItemDetailModelGenerator, InventoryItemDetailModelGenerator>();
             container.RegisterType<ICommittedProjects, CommittedProjects>();
             container.RegisterType<ICommitted, CommittedDAL>();
+
+            container.RegisterType<ICriteriaDrivenBudgets, CriteriaDrivenBudgetsDAL>();
         }
     }
 }
