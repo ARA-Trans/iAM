@@ -292,7 +292,7 @@
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import {InventoryItem, InventoryItemDetail, LabelValue, NbiLoadRating} from '@/shared/models/iAM/inventory';
-    import {uniq, groupBy, contains, concat, isNil} from 'ramda';
+    import {uniq, groupBy, find, propEq} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {DataTableRow} from '@/shared/models/vue/data-table-row';
@@ -555,10 +555,11 @@
          * BMS id has been selected
          */
         onSelectInventoryItemByBMSId(bmsId: string) {
-            this.selectedBrKey = 0;
             this.getInventoryItemDetailByBMSIdAction({bmsId: bmsId})
                 .then(() => setTimeout(() => {
                     this.selectedBmsId = bmsId;
+                    const inventoryItem: InventoryItem = find(propEq('bmsId', bmsId), this.inventoryItems) as InventoryItem;
+                    this.selectedBrKey = inventoryItem.brKey;
                     this.appendBmsIdSearchStringAction({bmsId: bmsId});
                 }));
         }
@@ -567,10 +568,11 @@
          * BR key has been selected
          */
         onSelectInventoryItemsByBRKey(brKey: number) {
-            this.selectedBmsId = '';
             this.getInventoryItemDetailByBRKeyAction({brKey: brKey})
                 .then(() => setTimeout(() => {
                     this.selectedBrKey = brKey;
+                    const inventoryItem: InventoryItem = find(propEq('brKey', brKey), this.inventoryItems) as InventoryItem;
+                    this.selectedBmsId = inventoryItem.bmsId;
                     this.appendBrKeySearchNumberAction({brKey: brKey});
                 }));
         }

@@ -183,7 +183,7 @@
         @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getBudgetCriteria') getBudgetCriteriaAction: any;
-        @Action('saveBudgetCriteria') saveBudgetCriteriaAction: any
+        @Action('saveBudgetCriteria') saveBudgetCriteriaAction: any;
         @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
         @Action('saveIntermittentStateToBudgetCriteria') saveIntermittentStateToBudgetCriteriaAction: any;
 
@@ -609,7 +609,7 @@
          */
         onCreateAsNewLibrary() {
             if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
-               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria
+               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
             }
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
