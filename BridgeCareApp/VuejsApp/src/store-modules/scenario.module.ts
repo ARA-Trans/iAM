@@ -136,7 +136,7 @@ const actions = {
     async getScenarioAnalysis({commit}: any, payload: any) {
         await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
             .then((response: AxiosResponse<any>) => {
-                commit('analysisMutator', response.data);
+                commit('analysisMutator', response.data ? response.data : clone(emptyAnalysis));
             });
     },
     async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {

@@ -3,52 +3,34 @@
         <v-flex xs12>
             <v-layout column>
                 <v-layout justify-center>
-                    <v-spacer></v-spacer>
-                    <v-flex xs1>
-                        <EditYearDialog :itemYear="analysis.startYear.toString()" :itemLabel="'Start Year'"
-                                        :outline="true" @editedYear="onSetStartYear" />
+                    <v-flex xs2>
+                        <v-text-field v-model="analysis.startYear" label="Start Year" outline :mask="'####'"></v-text-field>
                     </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-                <v-layout justify-center row>
-                    <v-spacer></v-spacer>
-                    <v-flex xs3>
-                        <v-text-field v-model.number="analysis.analysisPeriod" type="number"
-                                      label="Analysis period" outline>
-                        </v-text-field>
-                    </v-flex>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
                                   outline>
                         </v-select>
                     </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-                <v-layout justify-center>
-                    <v-spacer></v-spacer>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-select v-model="analysis.optimizationType" :items="optimizationTypes"
                                   label="Optimization type" outline>
                         </v-select>
                     </v-flex>
-                    <v-flex xs3>
+                </v-layout>
+                <v-layout justify-center>
+                    <v-flex xs2>
                         <v-select v-model="analysis.budgetType" :items="budgetTypes" label="Budget type" outline>
                         </v-select>
                     </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-                <v-layout justify-center>
-                    <v-spacer></v-spacer>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-select v-model="analysis.benefitAttribute" :items="benefitAttributes" label="Benefit"
                                   outline>
                         </v-select>
                     </v-flex>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
                         </v-text-field>
                     </v-flex>
-                    <v-spacer></v-spacer>
                 </v-layout>
                 <v-layout justify-center>
                     <v-spacer></v-spacer>
@@ -101,10 +83,9 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
 
     @Component({
-        components: {EditYearDialog, CriteriaEditorDialog}
+        components: {CriteriaEditorDialog}
     })
     export default class EditAnalysis extends Vue {
         @State(state => state.scenario.analysis) stateAnalysis: Analysis;
@@ -183,13 +164,6 @@
         }
 
         /**
-         * Sets year & analysis.startYear with user selected year
-         */
-        onSetStartYear(year: string) {
-            this.analysis.startYear = parseInt(year);
-        }
-
-        /**
          * Opens the CriteriaEditorDialog passing in the analysis criteria
          */
         onEditScopeCriteria() {
@@ -228,6 +202,3 @@
         }
     }
 </script>
-
-<style scoped>
-</style>
