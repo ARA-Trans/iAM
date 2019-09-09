@@ -15,6 +15,7 @@ import deficient from '@/store-modules/deficient.module';
 import priority from '@/store-modules/priority.module';
 import target from '@/store-modules/target.module';
 import remainingLifeLimitEditor from '@/store-modules/remaining-life-limit.module';
+import criteriaDrivenBudgets from '@/store-modules/budget-criteria.module';
 
 Vue.use(Vuex);
 
@@ -33,6 +34,7 @@ export default new Vuex.Store({
         deficient,
         priority,
         target,
-        remainingLifeLimitEditor
+        remainingLifeLimitEditor,
+        criteriaDrivenBudgets
     }
 });
