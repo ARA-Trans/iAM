@@ -406,7 +406,7 @@
          * Clears the selected investment library by setting selectItemValue to an empty value or 0
          */
         onClearSelectedInvestmentLibrary() {
-            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '';
+            this.selectItemValue = '';
         }
 
         /**
