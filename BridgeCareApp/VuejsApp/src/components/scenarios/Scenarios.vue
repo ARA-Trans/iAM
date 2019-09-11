@@ -158,6 +158,7 @@
         @Action('createScenario') createScenarioAction: any;
         @Action('deleteScenario') deleteScenarioAction: any;
         @Action('updateScenario') updateScenarioAction: any;
+        @Action('getSummaryReportMissingAttributes') getSummaryReportMissingAttributesAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
@@ -317,10 +318,16 @@
          * @param scenario Scenario object to use for setting the ReportsDownloaderDialogData object
          */
         onShowReportsDownloaderDialog(scenario: Scenario) {
-            this.reportsDownloaderDialogData = {
-                showModal: true,
-                scenario: scenario
-            };
+            this.getSummaryReportMissingAttributesAction({
+                selectedScenarioId: scenario.simulationId, selectedNetworkId: this.networks[0].networkId}
+            ).then(() => {
+                setTimeout(() => {
+                    this.reportsDownloaderDialogData = {
+                        showModal: true,
+                        scenario: scenario
+                    };
+                });
+            });
         }
 
         onCreateScenario() {

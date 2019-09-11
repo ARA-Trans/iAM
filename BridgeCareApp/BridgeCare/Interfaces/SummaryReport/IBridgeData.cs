@@ -14,5 +14,7 @@ namespace BridgeCare.Interfaces
         DataTable GetSimulationData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears);
 
         IQueryable<ReportProjectCost> GetReportData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears);
+
+        List<string> GetSummaryReportMissingAttributes(int simulationId, int networkId, BridgeCareContext db);
     }
 }

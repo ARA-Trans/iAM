@@ -75,6 +75,59 @@ namespace BridgeCare.DataAccessLayer
             return rawQueryForSectionData;
         }
 
+        public List<string> GetSummaryReportMissingAttributes(int simulationId, int networkId, BridgeCareContext db)
+        {
+            var simulationYears = db.YearlyInvestments.Where(y => y.SIMULATIONID == simulationId)
+                .Select(y => y.YEAR_).Distinct().ToList();
+            var dynamicColumns = GetDynamicColumns(simulationYears);
+
+            var requiredColumns = new List<string>()
+            {
+                $"{Properties.Resources.DeckSeeded}0",
+                $"{Properties.Resources.SupSeeded}0",
+                $"{Properties.Resources.SubSeeded}0",
+                $"{Properties.Resources.CulvSeeded}0",
+                $"{Properties.Resources.DeckDurationN}0",
+                $"{Properties.Resources.SupDurationN}0",
+                $"{Properties.Resources.SubDurationN}0",
+                $"{Properties.Resources.CulvDurationN}0"
+            };
+
+            if (dynamicColumns.Length > 0)
+            {
+                requiredColumns.AddRange(dynamicColumns.Replace(" ", "").Split(','));
+            }
+
+            var selectAvailableColumns =
+                $"select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='SIMULATION_{networkId}_{simulationId}'";
+
+            var informationSchemaDataTable = new DataTable();
+            var connection = new SqlConnection(db.Database.Connection.ConnectionString);
+            using (var cmd = new SqlCommand(selectAvailableColumns, connection))
+            {
+                cmd.CommandTimeout = 180;
+                var dataAdapter = new SqlDataAdapter(cmd);
+                dataAdapter.Fill(informationSchemaDataTable);
+                dataAdapter.Dispose();
+            }
+
+            var foundColumns = informationSchemaDataTable.Columns
+                .Cast<DataColumn>()
+                .Select(dt => dt.ColumnName)
+                .ToList();
+
+            var missingAttributes = new List<string>();
+            requiredColumns.ForEach(requiredCol =>
+            {
+                if (!foundColumns.Contains(requiredCol))
+                {
+                    missingAttributes.Add(requiredCol);
+                }
+            });
+
+            return missingAttributes;
+        }
+
         /// <summary>
         /// Get Simulation_x_y dynamic table data, x = Newtwork Id, y = Simulation Id
         /// </summary>
@@ -84,9 +137,9 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>Datatable for run time selected columns</returns>
         public DataTable GetSimulationData(SimulationModel simulationModel, BridgeCareContext dbContext, List<int> simulationYears)
         {
-            var dynamicColumns = string.Empty;
+
             var simulationDataTable = new DataTable();
-            dynamicColumns = GetDynamicColumns(simulationYears, dynamicColumns);
+            var dynamicColumns = GetDynamicColumns(simulationYears);
 
             var selectSimulationStatement = "SELECT SECTIONID, " + Properties.Resources.DeckSeeded + "0, " + Properties.Resources.SupSeeded + "0, " + Properties.Resources.SubSeeded + "0, " + Properties.Resources.CulvSeeded + "0, " + Properties.Resources.DeckDurationN + "0, " + Properties.Resources.SupDurationN + "0, " + Properties.Resources.SubDurationN + "0, " + Properties.Resources.CulvDurationN + "0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
             try
@@ -146,11 +199,12 @@ namespace BridgeCare.DataAccessLayer
         }
 
         #region private methods
-        private string GetDynamicColumns(List<int> simulationYears, string dynamicColumns)
+        private string GetDynamicColumns(List<int> simulationYears)
         {
+            var dynamicColumns = "";
             foreach (var year in simulationYears)
             {
-                dynamicColumns = dynamicColumns + ", " + Properties.Resources.DeckSeeded + year + ", " + Properties.Resources.SupSeeded + year + ", " + Properties.Resources.SubSeeded + year + ", " + Properties.Resources.CulvSeeded + year + ", " + Properties.Resources.DeckDurationN + year + ", " + Properties.Resources.SupDurationN + year + ", " + Properties.Resources.SubDurationN + year + ", " + Properties.Resources.CulvDurationN + year;
+                dynamicColumns = Properties.Resources.DeckSeeded + year + ", " + Properties.Resources.SupSeeded + year + ", " + Properties.Resources.SubSeeded + year + ", " + Properties.Resources.CulvSeeded + year + ", " + Properties.Resources.DeckDurationN + year + ", " + Properties.Resources.SupDurationN + year + ", " + Properties.Resources.SubDurationN + year + ", " + Properties.Resources.CulvDurationN + year;
             }
 
             return dynamicColumns;
