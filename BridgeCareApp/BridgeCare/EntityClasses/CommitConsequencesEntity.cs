@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
 {
@@ -8,10 +9,10 @@ namespace BridgeCare.EntityClasses
     {
         public CommitConsequencesEntity() { }
 
-        public CommitConsequencesEntity(string attribute, string change)
+        public CommitConsequencesEntity(CommitConsequenceModel model)
         {            
-            ATTRIBUTE_ = attribute;
-            CHANGE_ = change;
+            ATTRIBUTE_ = model.Attribute_;
+            CHANGE_ = model.Change_;
         }
 
         [Key]

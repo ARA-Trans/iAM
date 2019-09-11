@@ -37,7 +37,7 @@ namespace BridgeCare.Services
             for (int i = 0; i < files.Count; i++)
             {
                 GetCommittedProjectModels(files[i], selectedScenarioId, networkId, noTreatment, committedProjectModels, db);
-                SaveCommittedProjects(committedProjectModels, db);
+                committed.SaveCommittedProjects(committedProjectModels, db);
             }
         }
 
@@ -65,18 +65,46 @@ namespace BridgeCare.Services
         }
 
         private void AddDataCells(ExcelWorksheet worksheet, List<CommittedEntity> committedProjects, int networkId, BridgeCareContext db)
-        {            
-            var networkModel = new NetworkModel { NetworkId = networkId };
-            var sectionModels = sections.GetSections(networkModel, db).ToList();
+        {
+            var committedProjectsSectionIds = committedProjects.Select(cproj => cproj.SECTIONID).ToList();
+            var sectionModels = sections.GetSections(networkId, db);
+            // get all committed projects that have a matching section, if any, and add them to the excel file
             var row = 2;
-            foreach(var committedProject in committedProjects)
-            {                
-                var column = 1;
-                var sectionModel = sectionModels.FirstOrDefault(s => s.SectionId == committedProject.SECTIONID);
-                // BRKEY, BMSID
-                worksheet.Cells[row, column++].Value = Convert.ToInt32(sectionModel.ReferenceKey);
-                worksheet.Cells[row, column++].Value = sectionModel.ReferenceId;
+            sectionModels?.Where(sec => committedProjectsSectionIds.Contains(sec.SectionId)).OrderBy(sec => sec.ReferenceKey).ToList().ForEach(model =>
+            {
+                committedProjects.Where(cproj => cproj.SECTIONID == model.SectionId).OrderByDescending(cproj => cproj.YEARS).ToList()
+                    .ForEach(committedProject =>
+                    {
+                        var column = 1;
+                        // BRKEY, BMSID
+                        worksheet.Cells[row, column++].Value = Convert.ToInt32(model.ReferenceKey);
+                        worksheet.Cells[row, column++].Value = model.ReferenceId;
+                        // Committed_
+                        worksheet.Cells[row, column++].Value = committedProject.TREATMENTNAME;
+                        worksheet.Cells[row, column++].Value = committedProject.YEARS;
+                        worksheet.Cells[row, column++].Value = committedProject.YEARANY;
+                        worksheet.Cells[row, column++].Value = committedProject.YEARSAME;
+                        worksheet.Cells[row, column++].Value = committedProject.BUDGET;
+                        worksheet.Cells[row, column++].Value = committedProject.COST_;
+                        worksheet.Cells[row, column++].Value = string.Empty; // AREA
+                        // Consequences
+                        committedProject.COMMIT_CONSEQUENCES.ToList().ForEach(commitConsequence =>
+                        {
+                            worksheet.Cells[row, column++].Value = commitConsequence.CHANGE_;
+                        });
+                        row++;
+                    });
+            });
 
+            // get all the committed projects that didn't have a matching section, if any, and add them to the excel file noting that the section was not found
+            var sectionIds = sectionModels != null ? sectionModels.Select(model => model.SectionId).ToList() : new List<int>();
+            committedProjects.Where(cproj => !sectionIds.Contains(cproj.SECTIONID)).OrderByDescending(cproj => cproj.YEARS).ToList()
+            .ForEach(committedProject =>
+            {
+                var column = 1;
+                // note section not found here
+                worksheet.Cells[row, column++].Value = "Section Not Found";
+                worksheet.Cells[row, column++].Value = "Section Not Found";
                 // Committed_
                 worksheet.Cells[row, column++].Value = committedProject.TREATMENTNAME;
                 worksheet.Cells[row, column++].Value = committedProject.YEARS;
@@ -85,14 +113,13 @@ namespace BridgeCare.Services
                 worksheet.Cells[row, column++].Value = committedProject.BUDGET;
                 worksheet.Cells[row, column++].Value = committedProject.COST_;
                 worksheet.Cells[row, column++].Value = string.Empty; // AREA
-
                 // Consequences
-                foreach(var commitConsequence in committedProject.COMMIT_CONSEQUENCES)
+                committedProject.COMMIT_CONSEQUENCES.ToList().ForEach(commitConsequence =>
                 {
                     worksheet.Cells[row, column++].Value = commitConsequence.CHANGE_;
-                }
+                });
                 row++;
-            }
+            });
         }
 
         private void AddHeaderCells(ExcelWorksheet worksheet, List<CommitConsequencesEntity> commitConsequences)
@@ -110,15 +137,11 @@ namespace BridgeCare.Services
             }
         }
 
-        private void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
-        {
-            committed.SaveCommittedProjects(committedProjectModels, db);
-        }
-
         private void GetCommittedProjectModels(HttpPostedFile postedFile, string selectedScenarioId, string networkId, bool applyNoTreatment, List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
             try
             {
+                var simulationId = Convert.ToInt32(selectedScenarioId);
                 var package = new ExcelPackage(postedFile.InputStream);
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
                 var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
@@ -143,11 +166,6 @@ namespace BridgeCare.Services
                         Cost = Convert.ToInt32(GetCellValue(worksheet, row, ++column))
                     };
 
-                    if (applyNoTreatment && committedProjectModel.Years < DateTime.Now.Year)
-                    {
-                        committedProjectModel.TreatmentName = "No Treatment";
-                    }
-
                     var commitConsequences = new List<CommitConsequenceModel>();
                     // Ignore AREA column, from current column till end.Column -> attributes i.e. entry in COMMIT_CONSEQUENCES
                     for (var col = column + 2; col <= end.Column; col++)
@@ -160,6 +178,31 @@ namespace BridgeCare.Services
                     }
                     committedProjectModel.CommitConsequences = commitConsequences;
                     committedProjectModels.Add(committedProjectModel);
+
+                    var simulation = db.Simulations.SingleOrDefault(s => s.SIMULATIONID == simulationId);
+                    if (applyNoTreatment && simulation != null)
+                    {
+                        if (simulation.COMMITTED_START < committedProjectModel.Years)
+                        {
+                            var year = committedProjectModel.Years - 1;
+                            while (year >= simulation.COMMITTED_START)
+                            {
+                                committedProjectModels.Add(new CommittedProjectModel()
+                                {
+                                    SectionId = committedProjectModel.SectionId,
+                                    SimulationId = committedProjectModel.SimulationId,
+                                    TreatmentName = "No Treatment",
+                                    Years = year,
+                                    YearAny = committedProjectModel.YearAny,
+                                    YearSame = committedProjectModel.YearSame,
+                                    Budget = committedProjectModel.Budget,
+                                    Cost = 0,
+                                    CommitConsequences = committedProjectModel.CommitConsequences
+                                });
+                                year--;
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)

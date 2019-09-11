@@ -5,7 +5,7 @@ namespace BridgeCare.Interfaces
 {
     public interface ISections
     {
-        IQueryable<SectionModel> GetSections(NetworkModel data, BridgeCareContext db);
+        IQueryable<SectionModel> GetSections(int networkId, BridgeCareContext db);
 
         int GetBrKey(int networkID, int sectionID, BridgeCareContext db);
 
