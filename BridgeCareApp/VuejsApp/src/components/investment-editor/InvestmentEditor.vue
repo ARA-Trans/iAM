@@ -21,17 +21,13 @@
                 </v-flex>
             </v-layout>
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
-                <v-flex xs2>
-                    <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
-                                  v-model="selectedInvestmentLibrary.inflationRate"
-                                  :disabled="!hasSelectedInvestmentLibrary">
-                    </v-text-field>
-                </v-flex>
-                <v-flex xs2>
-                    <v-text-field label="Discount Rate (%)" outline :mask="'##########'"
-                                  v-model="selectedInvestmentLibrary.discountRate"
-                                  :disabled="!hasSelectedInvestmentLibrary">
-                    </v-text-field>
+                <v-flex xs12>
+                    <v-layout justify-center>
+                        <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
+                                      v-model="selectedInvestmentLibrary.inflationRate"
+                                      :disabled="!hasSelectedInvestmentLibrary">
+                        </v-text-field>
+                    </v-layout>
                 </v-flex>
             </v-layout>
         </v-flex>

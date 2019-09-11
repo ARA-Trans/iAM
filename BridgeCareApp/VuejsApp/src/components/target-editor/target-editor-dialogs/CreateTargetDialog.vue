@@ -14,15 +14,7 @@
                               v-model="newTarget.attribute" outline>
                     </v-select>
 
-                    <v-menu v-model="showDatePicker" :close-on-content-click="false" :nudge-right="40" lazy
-                            transition="scale-transition" offset-y full-width min-width="290px">
-                        <template slot="activator">
-                            <v-text-field label="Year" v-model="newTarget.year" outline append-icon="fas fa-calendar-day">
-                            </v-text-field>
-                        </template>
-                        <v-date-picker v-model="year" ref="createTargetPicker" min="1950" reactive no-title @input="onSetYear">
-                        </v-date-picker>
-                    </v-menu>
+                    <v-text-field v-model="newTarget.year" label="Year" outline :mask="'####'"></v-text-field>
 
                     <v-text-field label="Target" v-model="newTarget.targetMean" outline>
                     </v-text-field>
@@ -51,9 +43,7 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
-    import {clone} from 'ramda';
     const ObjectID = require('bson-objectid');
-
     @Component
     export default class CreateTargetDialog extends Vue {
         @Prop() showDialog: boolean;
@@ -82,27 +72,6 @@
         }
 
         /**
-         * Sets the date picker to show year options on nextTrick when showDatePicker has changed
-         */
-        @Watch('showDatePicker')
-        onShowDatePickerChanged() {
-            if (this.showDatePicker) {
-                // @ts-ignore
-                this.$nextTick(() => this.$refs.createTargetPicker.activePicker = 'YEAR');
-            }
-        }
-
-        /**
-         * Sets the newPriority.year property with the currently selected year
-         * @param year Currently selected year as a string
-         */
-        onSetYear(year: string) {
-            this.year = year.substr(0, 4);
-            this.newTarget.year = parseInt(this.year);
-            this.showDatePicker = false;
-        }
-
-        /**
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
@@ -121,7 +90,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newTarget = clone(emptyTarget);
+            this.newTarget = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         }
     }
 </script>
