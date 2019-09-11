@@ -45,7 +45,7 @@
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="ara-yellow"
+                                    <v-btn icon class="ara-orange"
                                            @click="onEditScenario(props.item.simulationId, props.item.simulationName)">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
@@ -97,7 +97,7 @@
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn flat icon class="ara-yellow"
+                                    <v-btn flat icon class="ara-orange"
                                            @click="onEditSharedScenario(props.item.scenarioId, props.item.simulationName)">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>

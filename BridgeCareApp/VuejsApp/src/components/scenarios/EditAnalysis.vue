@@ -63,7 +63,7 @@
                     <v-flex xs6>
                         <v-textarea v-model="analysis.criteria" rows="5" label="Criteria" readonly no-resize outline>
                             <template slot="append-outer">
-                                <v-btn icon class="ara-yellow" @click="onEditScopeCriteria">
+                                <v-btn icon class="ara-orange" @click="onEditScopeCriteria">
                                     <v-icon>fas fa-edit</v-icon>
                                 </v-btn>
                             </template>

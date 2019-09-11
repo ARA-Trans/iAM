@@ -45,7 +45,7 @@
                             <div v-else-if="header.value === 'criteria'">
                                 <v-text-field readonly :value="props.item.criteria">
                                     <template slot="append-outer">
-                                        <v-icon class="ara-yellow"
+                                        <v-icon class="ara-orange"
                                                 @click="onEditCriteria(props.item.id, props.item.criteria)">
                                             fas fa-edit
                                         </v-icon>
