@@ -22,7 +22,7 @@
                             <div v-else>
                                 <v-text-field readonly :value="props.item.criteria">
                                     <template slot="append-outer">
-                                        <v-icon class="ara-yellow" @click="onEditCriteria(props.item)">
+                                        <v-icon class="ara-orange" @click="onEditCriteria(props.item)">
                                             fas fa-edit
                                         </v-icon>
                                     </template>
@@ -55,7 +55,7 @@
     import Component from 'vue-class-component';
     import {Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
-    import {Deficient} from '@/shared/models/iAM/deficient';
+    import {Deficient, DeficientLibrary} from '@/shared/models/iAM/deficient';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {clone, isNil, append, any, propEq} from 'ramda';
     import {
@@ -69,10 +69,10 @@
         components: {CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog}
     })
     export default class DeficientsTab extends Vue {
-        @State(state => state.deficient.deficients) stateDeficients: Deficient[];
+        @State(state => state.deficient.scenarioDeficientLibrary) stateScenarioDeficientLibrary: DeficientLibrary;
 
-        @Action('getDeficients') getDeficientsAction: any;
-        @Action('saveDeficients') saveDeficientsAction: any;
+        @Action('getScenarioDeficientLibrary') getScenarioDeficientLibraryAction: any;
+        @Action('saveScenarioDeficientLibrary') saveScenarioDeficientLibraryAction: any;
 
         selectedScenarioId: number = 0;
         deficients: Deficient[] = [];
@@ -93,22 +93,24 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/DeficientEditor/Scenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
-                    if (vm.selectedScenarioId === 0) {
+                    vm.selectedScenarioId = to.query.selectedScenarioId;
+                    if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
                 }
 
-                // vm.onClearSelectedPriorityLibrary();
+                vm.getScenarioDeficientLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+
+                /*vm.onClearSelectedPriorityLibrary();
                 setTimeout(() => {
-                    vm.getDeficientsAction({selectedScenarioId: vm.selectedScenarioId})
-                    /*.then(() => {
+                    vm.getDeficientLibrariesAction()
+                    .then(() => {
                         if (vm.selectedScenarioId > 0) {
-                            vm.getScenarioTargetLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                            vm.getScenarioDeficientLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
-                    })*/;
-                });
+                    });
+                });*/
             });
         }
 
@@ -127,9 +129,9 @@
          * Sets the deficients list property with a copy of the stateDeficients property when stateDeficients list
          * changes are detected
          */
-        @Watch('stateDeficients')
+        @Watch('stateScenarioDeficientLibrary')
         onStateDeficientsChanged() {
-            this.deficients = clone(this.stateDeficients);
+            this.deficients = clone(this.stateScenarioDeficientLibrary.deficients);
         }
 
         /**
@@ -199,14 +201,18 @@
          * Sends deficient data changes to the server for upsert
          */
         onSaveDeficients() {
-            this.saveDeficientsAction({selectedScenarioId: this.selectedScenarioId, deficientData: this.deficients});
+            this.saveScenarioDeficientLibraryAction({scenarioDeficientLibraryData: {
+                    ...this.stateScenarioDeficientLibrary,
+                    deficients: clone(this.deficients)
+                }
+            });
         }
 
         /**
          * Discards deficient data changes by resetting the deficients list with a new copy of the stateDeficients list
          */
         onCancelChangesToDeficients() {
-            this.deficients = clone(this.stateDeficients);
+            this.deficients = clone(this.stateScenarioDeficientLibrary.deficients);
         }
     }
 </script>

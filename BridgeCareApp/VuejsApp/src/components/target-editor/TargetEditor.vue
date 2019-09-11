@@ -21,19 +21,17 @@
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value === 'year'">
-                                <v-edit-dialog :return-value.sync="props.item.year" large lazy persistent
-                                               @save="onEditTargetProperty(props.item.id, header.value, props.item[header.value])">
+                                <v-edit-dialog large lazy persistent>
                                     <v-text-field readonly :value="props.item.year"></v-text-field>
                                     <template slot="input">
-                                        <EditTargetYearDialog :itemYear="props.item.year.toString()" :itemLabel="'Year'"
-                                                              @editedYear="props.item.year = $event" />
+                                        <v-text-field v-model="props.item.year" label="Year" :mask="'####'"></v-text-field>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value === 'criteria'">
                                 <v-text-field readonly :value="props.item.criteria">
                                     <template slot="append-outer">
-                                        <v-icon class="ara-yellow" @click="onEditCriteria(props.item)">
+                                        <v-icon class="ara-orange" @click="onEditCriteria(props.item)">
                                             fas fa-edit
                                         </v-icon>
                                     </template>
@@ -75,10 +73,9 @@
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import CreateTargetDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetDialog.vue';
-    import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
 
     @Component({
-        components: {EditTargetYearDialog: EditYearDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
+        components: {CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
     })
     export default class TargetEditor extends Vue {
         @State(state => state.target.scenarioTargetLibrary) stateScenarioTargetLibrary: TargetLibrary;
@@ -112,15 +109,17 @@
                     }
                 }
 
-                // vm.onClearSelectedPriorityLibrary();
+                vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+
+                /*vm.onClearSelectedPriorityLibrary();
                 setTimeout(() => {
-                    vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
-                        /*.then(() => {
+                    vm.getTargetLibrariesAction()
+                        .then(() => {
                             if (vm.selectedScenarioId > 0) {
                                 vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                             }
-                        })*/;
-                });
+                        });
+                });*/
             });
         }
 
@@ -205,7 +204,7 @@
         onSaveTargets() {
             this.saveScenarioTargetLibraryAction({saveScenarioTargetLibraryData: {
                 ...this.stateScenarioTargetLibrary,
-                targets: this.targets
+                targets: clone(this.targets)
             }});
         }
 

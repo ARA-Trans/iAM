@@ -3,52 +3,34 @@
         <v-flex xs12>
             <v-layout column>
                 <v-layout justify-center>
-                    <v-spacer></v-spacer>
-                    <v-flex xs1>
-                        <EditYearDialog :itemYear="analysis.startYear.toString()" :itemLabel="'Start Year'"
-                                        :outline="true" @editedYear="onSetStartYear" />
+                    <v-flex xs2>
+                        <v-text-field v-model="analysis.startYear" label="Start Year" outline :mask="'####'"></v-text-field>
                     </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-                <v-layout justify-center row>
-                    <v-spacer></v-spacer>
-                    <v-flex xs3>
-                        <v-text-field v-model.number="analysis.analysisPeriod" type="number"
-                                      label="Analysis period" outline>
-                        </v-text-field>
-                    </v-flex>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
                                   outline>
                         </v-select>
                     </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-                <v-layout justify-center>
-                    <v-spacer></v-spacer>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-select v-model="analysis.optimizationType" :items="optimizationTypes"
                                   label="Optimization type" outline>
                         </v-select>
                     </v-flex>
-                    <v-flex xs3>
+                </v-layout>
+                <v-layout justify-center>
+                    <v-flex xs2>
                         <v-select v-model="analysis.budgetType" :items="budgetTypes" label="Budget type" outline>
                         </v-select>
                     </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-                <v-layout justify-center>
-                    <v-spacer></v-spacer>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-select v-model="analysis.benefitAttribute" :items="benefitAttributes" label="Benefit"
                                   outline>
                         </v-select>
                     </v-flex>
-                    <v-flex xs3>
+                    <v-flex xs2>
                         <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
                         </v-text-field>
                     </v-flex>
-                    <v-spacer></v-spacer>
                 </v-layout>
                 <v-layout justify-center>
                     <v-spacer></v-spacer>
@@ -63,7 +45,7 @@
                     <v-flex xs6>
                         <v-textarea v-model="analysis.criteria" rows="5" label="Criteria" readonly no-resize outline>
                             <template slot="append-outer">
-                                <v-btn icon class="ara-yellow" @click="onEditScopeCriteria">
+                                <v-btn icon class="ara-orange" @click="onEditScopeCriteria">
                                     <v-icon>fas fa-edit</v-icon>
                                 </v-btn>
                             </template>
@@ -90,7 +72,6 @@
     import {Watch} from 'vue-property-decorator';
     import Component from 'vue-class-component';
     import {State, Action} from 'vuex-class';
-
     import moment from 'moment';
     import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
@@ -99,22 +80,20 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {isNil} from 'ramda';
-    import AnalysisEditorService from '@/services/analysis-editor.service';
-    import {AxiosResponse} from 'axios';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import EditYearDialog from '@/shared/modals/EditYearDialog.vue';
 
     @Component({
-        components: {EditYearDialog, CriteriaEditorDialog}
+        components: {CriteriaEditorDialog}
     })
     export default class EditAnalysis extends Vue {
+        @State(state => state.scenario.analysis) stateAnalysis: Analysis;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('getScenarioAnalysis') getScenarioAnalysisAction: any;
+        @Action('saveScenarioAnalysis') saveScenarioAnalysisAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
-        @Action('getBenefitAttributes') getBenefitAttributesAction: any;
 
         selectedScenarioId: number = 0;
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
@@ -127,7 +106,6 @@
         benefitAttributes: string[] = [];
         weightingAttributes: string[] = ['None'];
         simulationName: string;
-
         criteriaEditorDialogData: CriteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
 
         /**
@@ -144,21 +122,8 @@
                     vm.$router.push('/Scenarios/');
                 }
 
-                // check that selectedScenarioId is set
-                if (vm.selectedScenarioId > 0) {
-                    // get the selected scenario's analysis data
-                    AnalysisEditorService.getScenarioAnalysisData(vm.selectedScenarioId)
-                        .then((response: AxiosResponse<Analysis>) => {
-                            vm.analysis = {
-                                ...response.data,
-                                startYear: response.data.startYear > 0 ? response.data.startYear : moment().year()
-                            };
-                        });
-                } else {
-                    // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
-                    vm.$router.push('/Scenarios/');
-                }
+                // get the selected scenario's analysis data
+                vm.getScenarioAnalysisAction({selectedScenarioId: vm.selectedScenarioId});
             });
         }
 
@@ -169,6 +134,14 @@
             if (hasValue(this.stateNumericAttributes)) {
                 this.setBenefitAndWeightingAttributes();
             }
+        }
+
+        @Watch('stateAnalysis')
+        onStateAnalysisChanged() {
+            this.analysis = {
+                ...this.stateAnalysis,
+                startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
+            };
         }
 
         /**
@@ -188,13 +161,6 @@
             const numericAttributes: string[] = getPropertyValues('name', this.stateNumericAttributes);
             this.benefitAttributes = numericAttributes;
             this.weightingAttributes = [...this.weightingAttributes, ...numericAttributes];
-        }
-
-        /**
-         * Sets year & analysis.startYear with user selected year
-         */
-        onSetStartYear(year: string) {
-            this.analysis.startYear = parseInt(year);
         }
 
         /**
@@ -219,31 +185,20 @@
 
         /**
          * Dispatch an action that sends the current analysis data to the server to apply the analysis data to the
-         * selected scenario (will redirect user to EditScenario on a success)
+         * selected scenario
          */
         onApplyAnalysisToScenario() {
-            AnalysisEditorService.saveScenarioAnalysisData(this.analysis)
-                .then((response: AxiosResponse<any>) => {
-                    // set 'analysis applied' success message, then navigate user to EditScenario page
-                    this.setSuccessMessageAction({message: 'Saved scenario analysis data'});
-                    this.$router.push({
-                        path: '/EditScenario/', query: {
-                            selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName
-                        }
-                    });
-                });
+            this.saveScenarioAnalysisAction({scenarioAnalysisData: this.analysis});
         }
 
         /**
-         * Navigates user to the EditScenario page passing in the selected scenario's id
+         * Resets the analysis object with a copy of the analysis object found in state
          */
         onCancelAnalysisEdit() {
-            this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: this.selectedScenarioId.toString(), simulationName: this.simulationName}
-            });
+            this.analysis = {
+                ...this.stateAnalysis,
+                startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
+            };
         }
     }
 </script>
-
-<style scoped>
-</style>

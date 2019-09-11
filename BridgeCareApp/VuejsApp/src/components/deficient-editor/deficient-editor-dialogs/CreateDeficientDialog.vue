@@ -76,7 +76,6 @@
         @Watch('dialogData')
         onDialogDataChanged() {
             if (this.dialogData.showDialog) {
-                this.newDeficient.scenarioId = this.dialogData.scenarioId;
                 this.newDeficient.id = ObjectID.generate();
             }
         }

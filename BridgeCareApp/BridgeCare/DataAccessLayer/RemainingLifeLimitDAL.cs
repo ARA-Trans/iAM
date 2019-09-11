@@ -76,17 +76,17 @@ namespace BridgeCare.DataAccessLayer
                                 RemainingLifeLimitsEntity.DeleteEntry(remainingLifeLimit, db);
                             }
                         });
-                        // check for models that didn't have a remaining life limit record match
-                        if (data.RemainingLifeLimits.Any(model => !model.matched))
-                        {
-                            // create new remaining life limits from the unmatched models' data
-                            db.RemainingLifeLimits
-                                .AddRange(data.RemainingLifeLimits
-                                    .Where(model => !model.matched)
-                                    .Select(model => new RemainingLifeLimitsEntity(simulationId, model))
-                                    .ToList()
-                                );
-                        }
+                    }
+                    // check for models that didn't have a remaining life limit record match
+                    if (data.RemainingLifeLimits.Any(model => !model.matched))
+                    {
+                        // create new remaining life limits from the unmatched models' data
+                        db.RemainingLifeLimits
+                            .AddRange(data.RemainingLifeLimits
+                                .Where(model => !model.matched)
+                                .Select(model => new RemainingLifeLimitsEntity(simulationId, model))
+                                .ToList()
+                            );
                     }
                     // save all changes
                     db.SaveChanges();

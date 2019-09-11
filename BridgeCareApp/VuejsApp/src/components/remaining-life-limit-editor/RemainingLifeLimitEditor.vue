@@ -49,7 +49,7 @@
                         <td>
                             <v-text-field readonly :value="props.item.criteria">
                                 <template slot="append-outer">
-                                    <v-icon class="ara-yellow" @click="onEditCriteria(props.item.id, props.item.criteria)">
+                                    <v-icon class="ara-orange" @click="onEditCriteria(props.item.id, props.item.criteria)">
                                         fas fa-edit
                                     </v-icon>
                                 </template>

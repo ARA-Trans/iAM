@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
@@ -22,14 +23,19 @@ namespace BridgeCare.EntityClasses
 
         public DeficientsEntity() { }
 
-        public DeficientsEntity(DeficientModel deficientModel)
+        public DeficientsEntity(int simulationId, DeficientModel deficientModel)
         {
-            SIMULATIONID = deficientModel.ScenarioId;
+            SIMULATIONID = simulationId;
             ATTRIBUTE_ = deficientModel.Attribute;
             DEFICIENTNAME = deficientModel.Name;
             DEFICIENT = deficientModel.Deficient ?? 0;
             PERCENTDEFICIENT = deficientModel.PercentDeficient ?? 0;
             CRITERIA = deficientModel.Criteria;
+        }
+
+        public static void DeleteEntry(DeficientsEntity deficient, BridgeCareContext db)
+        {
+            db.Entry(deficient).State = EntityState.Deleted;
         }
     }
 }

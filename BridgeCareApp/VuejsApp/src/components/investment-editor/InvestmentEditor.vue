@@ -21,112 +21,72 @@
                 </v-flex>
             </v-layout>
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
-                <v-flex xs2>
-                    <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
-                                  v-model="selectedInvestmentLibrary.inflationRate"
-                                  :disabled="!hasSelectedInvestmentLibrary">
-                    </v-text-field>
-                </v-flex>
-                <v-flex xs2>
-                    <v-text-field label="Discount Rate (%)" outline :mask="'##########'"
-                                  v-model="selectedInvestmentLibrary.discountRate"
-                                  :disabled="!hasSelectedInvestmentLibrary">
-                    </v-text-field>
+                <v-flex xs12>
+                    <v-layout justify-center>
+                        <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
+                                      v-model="selectedInvestmentLibrary.inflationRate"
+                                      :disabled="!hasSelectedInvestmentLibrary">
+                        </v-text-field>
+                    </v-layout>
                 </v-flex>
             </v-layout>
         </v-flex>
         <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
-        <v-tabs v-model="activeTab">
-            <v-tab v-for="(tab, index) in tabs" :key="index" ripple @click="setAsActiveTab(index)">
-                {{tab}}
-            </v-tab>
-            <v-tabs-items v-model="activeTab">
-                <v-tab-item>
-                    <v-flex xs12 v-show="hasSelectedInvestmentLibrary">
-                        <v-layout justify-center>
-                            <v-flex xs6>
-                                <v-layout justify-space-between>
-                                    <v-btn class="ara-blue-bg white--text" @click="onEditBudgets">
-                                        Edit Budgets
-                                    </v-btn>
-                                    <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYear"
-                                           :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
-                                        Add Year
-                                    </v-btn>
-                                    <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYearsByRange"
-                                           :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
-                                        Add Years by Range
-                                    </v-btn>
-                                    <v-btn class="ara-orange-bg white--text" @click="onDeleteBudgetYears"
-                                           :disabled="selectedGridRows.length === 0">
-                                        Delete Budget Year(s)
-                                    </v-btn>
-                                </v-layout>
-                            </v-flex>
-                        </v-layout>
-                        <v-layout justify-center>
-                            <v-flex xs8>
-                                <v-card>
-                                    <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
-                                                  v-model="selectedGridRows" select-all item-key="year"
-                                                  class="elevation-1 fixed-header v-table__overflow">
-                                        <template slot="items" slot-scope="props">
-                                            <td>
-                                                <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                            </td>
-                                            <td v-for="header in budgetYearsGridHeaders">
-                                                <div v-if="header.value !== 'year'">
-                                                    <v-edit-dialog :return-value.sync="props.item[header.value]"
-                                                                   large lazy persistent
-                                                                   @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
-                                                        {{props.item[header.value]}}
-                                                        <template slot="input">
-                                                            <v-text-field v-model="props.item[header.value]"
-                                                                          label="Edit" single-line>
-                                                            </v-text-field>
-                                                        </template>
-                                                    </v-edit-dialog>
-                                                </div>
-                                                <div v-if="header.value === 'year'">
-                                                    {{props.item.year}}
-                                                </div>
-                                            </td>
-                                        </template>
-                                    </v-data-table>
-                                </v-card>
-                            </v-flex>
-                        </v-layout>
-                    </v-flex>
-                </v-tab-item>
-                <v-tab-item>
-                    <v-layout justify-center>
-                        <v-flex xs8>
-                            <v-data-table :headers="budgetCriteriaHeaders" :items="budgetCriteriaData"
-                                          item-key="name"
-                                          class="elevation-1 fixed-header v-table__overflow" hide-actions>
-                                <template slot="items" slot-scope="props">
-                                    <td>
-                                        <v-select no-resize full-width outline
-                                                  :items="budgetCriteriaData">
-                                        </v-select>
-                                    </td>
-                                    <td>
-                                        <v-text-field readonly :value="props.item.criteria">
-                                            <template slot="append-outer">
-                                                <v-icon class="ara-yellow"
-                                                        @click="onEditCriteria()">
-                                                    fas fa-edit
-                                                </v-icon>
-                                            </template>
-                                        </v-text-field>
-                                    </td>
-                                </template>
-                            </v-data-table>
-                        </v-flex>
+        <v-flex xs12 v-show="hasSelectedInvestmentLibrary">
+            <v-layout justify-center>
+                <v-flex xs6>
+                    <v-layout justify-space-between>
+                        <v-btn class="ara-blue-bg white--text" @click="onEditBudgets">
+                            Edit Budgets
+                        </v-btn>
+                        <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYear"
+                               :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
+                            Add Year
+                        </v-btn>
+                        <v-btn class="ara-blue-bg white--text" @click="onAddBudgetYearsByRange"
+                               :disabled="selectedInvestmentLibrary.budgetOrder.length === 0">
+                            Add Years by Range
+                        </v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="onDeleteBudgetYears"
+                               :disabled="selectedGridRows.length === 0">
+                            Delete Budget Year(s)
+                        </v-btn>
                     </v-layout>
-                </v-tab-item>
-            </v-tabs-items>
-        </v-tabs>
+                </v-flex>
+            </v-layout>
+            <v-layout justify-center>
+                <v-flex xs8>
+                    <v-card>
+                        <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
+                                      v-model="selectedGridRows" select-all item-key="year"
+                                      class="elevation-1 fixed-header v-table__overflow">
+                            <template slot="items" slot-scope="props">
+                                <td>
+                                    <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                </td>
+                                <td v-for="header in budgetYearsGridHeaders">
+                                    <div v-if="header.value !== 'year'">
+                                        <v-edit-dialog :return-value.sync="props.item[header.value]"
+                                                       large lazy persistent
+                                                       @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
+                                            {{props.item[header.value]}}
+                                            <template slot="input">
+                                                <v-text-field v-model="props.item[header.value]"
+                                                              label="Edit" single-line>
+                                                </v-text-field>
+                                            </template>
+                                        </v-edit-dialog>
+                                    </div>
+                                    <div v-if="header.value === 'year'">
+                                        {{props.item.year}}
+                                    </div>
+                                </td>
+                            </template>
+                        </v-data-table>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-flex>
         <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
         <v-flex xs12 v-show="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
             <v-layout justify-center>
@@ -197,7 +157,7 @@
     import { getLatestPropertyValue, getPropertyValues } from '@/shared/utils/getter-utils';
     import { sortByProperty, sorter } from '@/shared/utils/sorter-utils';
     import { EditedBudget } from '@/shared/models/modals/edit-budgets-dialog';
-    //import InvestmentsTab from '@/components/investment-editor/investment-editor-tabs/InvestmentsTab.vue';
+    import { CriteriaDrivenBudgets } from '../../shared/models/iAM/criteria-driven-budgets';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -207,6 +167,8 @@
         @State(state => state.investmentEditor.investmentLibraries) stateInvestmentLibraries: InvestmentLibrary[];
         @State(state => state.investmentEditor.selectedInvestmentLibrary) stateSelectedInvestmentLibrary: InvestmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
+        @State(state => state.criteriaDrivenBudgets.budgetCriteria) stateBudgetCriteria: CriteriaDrivenBudgets[];
+        @State(state => state.criteriaDrivenBudgets.intermittentBudgetCriteria) stateIntermittentBudgetCriteria: CriteriaDrivenBudgets[];
 
         @Action('getInvestmentLibraries') getInvestmentLibrariesAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
@@ -216,6 +178,10 @@
         @Action('updateInvestmentLibrary') updateInvestmentLibraryAction: any;
         @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('getBudgetCriteria') getBudgetCriteriaAction: any;
+        @Action('saveBudgetCriteria') saveBudgetCriteriaAction: any;
+        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
+        @Action('saveIntermittentStateToBudgetCriteria') saveIntermittentStateToBudgetCriteriaAction: any;
 
         tabs: string[] = ['investments', 'budget criteria'];
         activeTab: number = 0;
@@ -235,7 +201,7 @@
             { text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: '' },
             { text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: '' }
         ];
-        budgetCriteriaData: any[] = ['Foo', 'Bar', 'Fizz', 'Buzz'];
+        intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
 
         budgetYearsGridData: BudgetYearsGridData[] = [];
         selectedGridRows: BudgetYearsGridData[] = [];
@@ -264,11 +230,13 @@
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
                                 vm.getScenarioInvestmentLibraryAction({ selectedScenarioId: vm.selectedScenarioId });
+                                vm.getBudgetCriteriaAction({ selectedScenarioId: vm.selectedScenarioId });
                             }
                         });
                 });
             });
         }
+
         /**
          * Resets component UI properties that triggers cascading UI updates
          */
@@ -294,6 +262,9 @@
         @Watch('stateSelectedInvestmentLibrary')
         onStateSelectedInvestmentLibraryChanged() {
             this.selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
+            if (this.selectItemValue != '') {
+            this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria });
+            }
         }
 
         /**
@@ -353,6 +324,11 @@
         @Watch('selectedGridRows')
         onSelectedGridRowsChanged() {
             this.selectedBudgetYears = getPropertyValues('year', this.selectedGridRows) as number[];
+        }
+
+        @Watch('stateIntermittentBudgetCriteria')
+        onStateIntermittentBudgetCriteriaChanged() {
+            this.intermittentBudgetsCriteria = clone(this.stateIntermittentBudgetCriteria);
         }
 
         /**
@@ -426,7 +402,7 @@
          * Clears the selected investment library by setting selectItemValue to an empty value or 0
          */
         onClearSelectedInvestmentLibrary() {
-            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
+            this.selectItemValue = '';
         }
 
         /**
@@ -524,7 +500,9 @@
             this.editBudgetsDialogData = {
                 showDialog: true,
                 budgets: this.selectedInvestmentLibrary.budgetOrder,
-                canOrderBudgets: true
+                canOrderBudgets: true,
+                criteriaBudgets: this.intermittentBudgetsCriteria,
+                scenarioId: this.selectedScenarioId
             };
         }
 
@@ -539,6 +517,8 @@
             if (!isNil(editedBudgets)) {
                 const remainingBudgets: string[] = getPropertyValues('previousName', editedBudgets
                     .filter((budget: EditedBudget) => !budget.isNew));
+
+                let intermittentCriteria: CriteriaDrivenBudgets[] = [];
 
                 const deletedBudgetYearIds = [
                     ...getPropertyValues('id', this.selectedInvestmentLibrary.budgetYears
@@ -580,12 +560,19 @@
                             }
                         });
                     });
+
+                    editedBudgets.forEach((editBudgets: EditedBudget) => {
+                        intermittentCriteria.push(editBudgets.criteriaBudgets);
+                    });
                 }
 
                 this.selectedInvestmentLibrary.budgetOrder = getPropertyValues('name', editedBudgets);
                 this.selectedInvestmentLibrary.budgetYears = editedBudgetYears;
+                this.selectedInvestmentLibrary.budgetCriteria = intermittentCriteria;
 
                 this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+
+                this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: intermittentCriteria });
             }
         }
 
@@ -617,13 +604,17 @@
          * with this data
          */
         onCreateAsNewLibrary() {
+            if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
+               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
+            }
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
                 inflationRate: this.selectedInvestmentLibrary.inflationRate,
                 discountRate: this.selectedInvestmentLibrary.discountRate,
                 description: this.selectedInvestmentLibrary.description,
                 budgetOrder: this.selectedInvestmentLibrary.budgetOrder,
-                budgetYears: this.selectedInvestmentLibrary.budgetYears
+                budgetYears: this.selectedInvestmentLibrary.budgetYears,
+                budgetCriteria: this.selectedInvestmentLibrary.budgetCriteria
             };
         }
 
@@ -685,6 +676,11 @@
             appliedInvestmentLibrary.id = this.selectedScenarioId;
             appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
 
+            this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
+                .then(() => {
+                    this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
+                });
+
             this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary })
                 .then(() => {
                     setTimeout(() => {
@@ -704,6 +700,7 @@
          * scenario investment library from the server to update the selected investment library in state
          */
         onDiscardChanges() {
+            this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: this.stateBudgetCriteria });
             this.onClearSelectedInvestmentLibrary();
 
             if (this.scenarioInvestmentLibrary.id > 0) {
@@ -717,10 +714,6 @@
                     this.getScenarioInvestmentLibraryAction({ selectedScenarioId: this.selectedScenarioId });
                 });
             }
-        }
-
-        onEditCriteria() {
-            
         }
     }
 </script>

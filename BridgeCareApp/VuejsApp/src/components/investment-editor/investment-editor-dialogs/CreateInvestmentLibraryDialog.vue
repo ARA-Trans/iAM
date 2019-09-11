@@ -63,7 +63,8 @@
                 discountRate: hasValue(this.dialogData.discountRate) ? this.dialogData.discountRate : 0,
                 description: hasValue(this.dialogData.description) ? this.dialogData.description : '',
                 budgetOrder: hasValue(this.dialogData.budgetOrder) ? this.dialogData.budgetOrder : [],
-                budgetYears: hasValue(this.dialogData.budgetYears) ? this.dialogData.budgetYears : []
+                budgetYears: hasValue(this.dialogData.budgetYears) ? this.dialogData.budgetYears : [],
+                budgetCriteria: hasValue(this.dialogData.budgetCriteria) ? this.dialogData.budgetCriteria : []
             };
         }
 
