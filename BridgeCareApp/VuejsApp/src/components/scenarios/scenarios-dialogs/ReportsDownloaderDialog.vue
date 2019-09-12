@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="dialogData.showModal" persistent scrollable max-width="600px">
+    <v-dialog v-model="dialogData.showModal" persistent scrollable max-width="500px">
         <v-card>
             <v-card-title primary-title>
                 <v-layout column>
@@ -15,12 +15,37 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-list-tile v-for="item in reports" :key="item" avatar :disabled="isBusy">
-                    <v-list-tile-content>
-                        <v-list-tile-title>{{item}}</v-list-tile-title>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
-                        <v-checkbox :value="item" color="primary lighten-1" v-model="selectedReports"></v-checkbox>
-                    </v-list-tile-action>
+                    <v-layout align-start row v-if="item === 'Summary Report'">
+                        <v-flex xs4>
+                            <v-checkbox :value="item" :label="item" color="primary lighten-1" v-model="selectedReports"
+                                        :disabled="showMissingAttributesMessage">
+                            </v-checkbox>
+                        </v-flex>
+                        <v-flex xs1>
+                            <v-menu v-if="showMissingAttributesMessage" top>
+                                <template slot="activator">
+                                    <v-btn icon class="ara-dark-gray"><v-icon>fas fa-info-circle</v-icon></v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-text class="missing-attributes-card-text">
+                                        <v-list>
+                                            <v-subheader>MISSING SCENARIO ATTRIBUTES</v-subheader>
+                                            <v-list-tile v-for="attribute in missingSummaryReportAttributes" :key="attribute">
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{attribute}}</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
+                                        </v-list>
+                                    </v-card-text>
+                                </v-card>
+                            </v-menu>
+                        </v-flex>
+                        <v-spacer></v-spacer>
+                    </v-layout>
+                    <v-layout align-start row v-else>
+                        <v-checkbox :value="item" :label="item" color="primary lighten-1" v-model="selectedReports">
+                        </v-checkbox>
+                    </v-layout>
                 </v-list-tile>
                 <v-alert :value="showError" color="error" icon="warning" outline>{{errorMessage}}</v-alert>
             </v-card-text>
@@ -49,6 +74,7 @@
     import {AxiosResponse} from 'axios';
     import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
     import {clone} from 'ramda';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component({
     })
@@ -56,6 +82,7 @@
         @Prop() dialogData: ReportsDownloaderDialogData;
 
         @State(state => state.busy.isBusy) isBusy: boolean;
+        @State(state => state.scenario.missingSummaryReportAttributes) missingSummaryReportAttributes: string[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
 
@@ -64,6 +91,7 @@
         selectedReports: string[] = [];
         errorMessage: string = '';
         showError: boolean = false;
+        showMissingAttributesMessage: boolean = false;
 
         @Watch('dialogData.showModal')
         onshowModalChanged(showModal: boolean) {
@@ -77,6 +105,11 @@
                 this.selectedReports = [];
             }
 
+        }
+
+        @Watch('missingSummaryReportAttributes')
+        onMissingSummaryReportAttributesChanged() {
+            this.showMissingAttributesMessage = hasValue(this.missingSummaryReportAttributes);
         }
 
         async onDownload(download: boolean) {
@@ -111,3 +144,11 @@
         }
     }
 </script>
+
+<style>
+    .missing-attributes-card-text {
+        max-height: 300px;
+        max-width: 300px;
+        overflow-y: auto;
+    }
+</style>

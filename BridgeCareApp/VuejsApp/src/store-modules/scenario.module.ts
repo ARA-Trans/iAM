@@ -6,6 +6,7 @@ import {hasValue} from '@/shared/utils/has-value-util';
 import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
 import AnalysisEditorService from '@/services/analysis-editor.service';
+import ReportsService from '@/services/reports.service';
 
 const convertFromMongoToVueModel = (data: any) => {
     const scenarios: any = {
@@ -21,7 +22,8 @@ const state = {
     scenarios: [] as Scenario[],
     benefitAttributes: [] as string[],
     selectedScenarioName: '',
-    analysis: clone(emptyAnalysis) as Analysis
+    analysis: clone(emptyAnalysis) as Analysis,
+    missingSummaryReportAttributes: [] as string[]
 };
 
 const mutations = {
@@ -51,6 +53,9 @@ const mutations = {
     },
     analysisMutator(state: any, analysis: Analysis) {
         state.analysis = clone(analysis);
+    },
+    missingSummaryReportAttributesMutator(state: any, missingAttributes: string[]) {
+        state.missingSummaryReportAttributes = clone(missingAttributes);
     }
 };
 
@@ -146,6 +151,12 @@ const actions = {
                     commit('analysisMutator', payload.scenarioAnalysisData);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario analysis'});
                 }
+            });
+    },
+    async getSummaryReportMissingAttributes({commit}: any, payload: any) {
+        await ReportsService.getSummaryReportMissingAttributes(payload.selectedScenarioId, payload.selectedNetworkId)
+            .then((response: AxiosResponse<any[]>) => {
+                commit('missingSummaryReportAttributesMutator', response.data);
             });
     }
 };

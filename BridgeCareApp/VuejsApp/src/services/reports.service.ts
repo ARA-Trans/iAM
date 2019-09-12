@@ -18,4 +18,9 @@ export default class ReportsService {
     static getSummaryReport(selectedScenarioData: Scenario): AxiosPromise {
         return axiosInstance.post('/api/SummaryReport', selectedScenarioData, {responseType: 'blob'});
     }
+
+    static getSummaryReportMissingAttributes(selectedScenarioId: number, selectedNetworkId: number) {
+        return axiosInstance
+            .get(`/api/GetSummaryReportMissingAttributes?simulationId=${selectedScenarioId}&networkId=${selectedNetworkId}`);
+    }
 }
