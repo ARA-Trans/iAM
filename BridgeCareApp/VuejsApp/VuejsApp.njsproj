@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>VuejsApp</Name>
+    <RootNamespace>VuejsApp</RootNamespace>
+    <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
+    <NameOfLastUsedPublishProfile>File</NameOfLastUsedPublishProfile>
+    <ToolsVersionPromptShown>3.0</ToolsVersionPromptShown>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>1f55af77-ce22-45a8-9188-793d16e07abe</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>node_modules\@vue\cli-service\bin\vue-cli-service.js</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <NodejsPort>1337</NodejsPort>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
+    <EnableTypeScript>true</EnableTypeScript>
+    <StartWebBrowser>False</StartWebBrowser>
+    <ScriptArguments>serve</ScriptArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include=".env.development">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include=".env.production">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include=".env.staging" />
+    <Content Include=".fimbullinter.yaml" />
+    <Content Include=".wotanrc.yaml" />
+    <Content Include="libman.json" />
+    <Content Include="public\favicon.ico" />
+    <Content Include="public\index.html" />
+    <Content Include="src\App.vue" />
+    <Content Include="src\assets\css\main.css" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\1.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\2.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\3.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\4.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\5.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\6.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\7.jpg" />
+    <Content Include="src\assets\images\inventory_mock_bridge_images\8.jpg" />
+    <Content Include="src\assets\images\under-construction.png" />
+    <Content Include="src\assets\logo.svg" />
+    <Content Include="src\components\deficient-editor\deficient-editor-dialogs\CreateDeficientDialog.vue" />
+    <Content Include="src\components\deficient-editor\DeficientEditor.vue" />
+    <Content Include="src\components\Inventory.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-dialogs\CreateInvestmentLibraryDialog.vue" />
+    <Content Include="src\components\investment-editor\investment-editor-dialogs\SetRangeForAddingBudgetYearsDialog.vue" />
+    <Content Include="src\components\investment-editor\InvestmentEditor.vue" />
+    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryDialog.vue" />
+    <Content Include="src\components\performance-editor\performance-editor-dialogs\CreatePerformanceLibraryEquationDialog.vue" />
+    <Content Include="src\components\performance-editor\PerformanceEditor.vue" />
+    <Content Include="src\components\priority-editor\priority-editor-dialogs\CreatePriorityDialog.vue" />
+    <Content Include="src\components\priority-editor\priority-editor-dialogs\CreatePriorityLibraryDialog.vue" />
+    <Content Include="src\components\priority-editor\PriorityEditor.vue" />
+    <Content Include="src\components\remaining-life-limit-editor\remaining-life-limit-editor-dialogs\CreateRemainingLifeLimitDialog.vue" />
+    <Content Include="src\components\remaining-life-limit-editor\remaining-life-limit-editor-dialogs\CreateRemainingLifeLimitLibraryDialog.vue" />
+    <Content Include="src\components\remaining-life-limit-editor\RemainingLifeLimitEditor.vue" />
+    <Content Include="src\components\scenarios\EditAnalysis.vue" />
+    <Content Include="src\components\scenarios\EditScenario.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\CommittedProjectsFileUploaderDialog.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\CreateScenarioDialog.vue" />
+    <Content Include="src\components\scenarios\scenarios-dialogs\ReportsDownloaderDialog.vue" />
+    <Content Include="src\components\scenarios\Scenarios.vue" />
+    <Content Include="src\components\target-editor\target-editor-dialogs\CreateTargetDialog.vue" />
+    <Content Include="src\components\target-editor\TargetEditor.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentDialog.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-dialogs\CreateTreatmentLibraryDialog.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\BudgetsTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\ConsequencesTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\CostsTab.vue" />
+    <Content Include="src\components\treatment-editor\treatment-editor-tabs\FeasibilityTab.vue" />
+    <Content Include="src\components\treatment-editor\TreatmentEditor.vue" />
+    <Content Include="src\components\UnderConstruction.vue" />
+    <Content Include="src\shared\AppShowProgress.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Content Include="src\shared\modals\Alert.vue" />
+    <Content Include="src\shared\modals\CriteriaEditorDialog.vue" />
+    <Content Include="src\shared\modals\EditBudgetsDialog.vue" />
+    <Content Include="src\shared\modals\EditYearDialog.vue" />
+    <Content Include="src\shared\modals\EquationEditorDialog.vue" />
+    <Content Include="src\shared\modals\Spinner.vue" />
+    <Content Include="tsconfig.json" />
+    <Content Include="tslint.json" />
+    <Content Include="vue.config.js" />
+    <Content Include="Web.config" />
+    <None Include="Web.Debug.config">
+      <SubType>Code</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="public\" />
+    <Folder Include="src\" />
+    <Folder Include="src\assets\" />
+    <Folder Include="src\assets\css\" />
+    <Folder Include="src\assets\images\" />
+    <Folder Include="src\assets\images\inventory_mock_bridge_images\" />
+    <Folder Include="src\components\" />
+    <Folder Include="src\components\deficient-editor\" />
+    <Folder Include="src\components\deficient-editor\deficient-editor-dialogs\" />
+    <Folder Include="src\components\investment-editor\" />
+    <Folder Include="src\components\investment-editor\investment-editor-dialogs\" />
+    <Folder Include="src\components\performance-editor\" />
+    <Folder Include="src\components\performance-editor\performance-editor-dialogs\" />
+    <Folder Include="src\components\priority-editor\" />
+    <Folder Include="src\components\priority-editor\priority-editor-dialogs\" />
+    <Folder Include="src\components\remaining-life-limit-editor\" />
+    <Folder Include="src\components\remaining-life-limit-editor\remaining-life-limit-editor-dialogs\" />
+    <Folder Include="src\components\scenarios\" />
+    <Folder Include="src\components\scenarios\scenarios-dialogs\" />
+    <Folder Include="src\components\target-editor\" />
+    <Folder Include="src\components\target-editor\target-editor-dialogs\" />
+    <Folder Include="src\components\treatment-editor\" />
+    <Folder Include="src\components\treatment-editor\treatment-editor-dialogs\" />
+    <Folder Include="src\components\treatment-editor\treatment-editor-tabs\" />
+    <Folder Include="src\plugins\" />
+    <Folder Include="src\services\" />
+    <Folder Include="src\shared\" />
+    <Folder Include="src\shared\modals\" />
+    <Folder Include="src\shared\models\" />
+    <Folder Include="src\shared\models\child-components\" />
+    <Folder Include="src\shared\models\iAM\" />
+    <Folder Include="src\shared\models\modals\" />
+    <Folder Include="src\shared\models\vue\" />
+    <Folder Include="src\shared\utils\" />
+    <Folder Include="src\store-modules\" />
+    <Folder Include="src\store\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\plugins\vuetify.ts" />
+    <TypeScriptCompile Include="src\register-hooks.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\router.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\analysis-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\attribute.service.ts" />
+    <TypeScriptCompile Include="src\services\authentication.service.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\services\budget-criteria.service.ts" />
+    <TypeScriptCompile Include="src\services\committed-projects.service.ts" />
+    <TypeScriptCompile Include="src\services\criteria-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\deficient.service.ts" />
+    <TypeScriptCompile Include="src\services\equation-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\inventory.service.ts" />
+    <TypeScriptCompile Include="src\services\investment-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\network.service.ts" />
+    <TypeScriptCompile Include="src\services\performance-editor.service.ts" />
+    <TypeScriptCompile Include="src\services\priority.service.ts" />
+    <TypeScriptCompile Include="src\services\remaining-life-limit.service.ts" />
+    <TypeScriptCompile Include="src\services\reports.service.ts" />
+    <TypeScriptCompile Include="src\services\scenario.service.ts" />
+    <TypeScriptCompile Include="src\services\target.service.ts" />
+    <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
+    <TypeScriptCompile Include="src\shared\models\child-components\tab-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\attribute.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\criteria-driven-budgets.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\criteria-validation.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\criteria.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\deficient.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\equation-validation.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\inventory.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\investment.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\navigation-tab.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\network.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\performance.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\priority.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\remaining-life-limit.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\route.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\target.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\treatment.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\user-information.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\alert-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-investment-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-performance-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-priority-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-remaining-life-limit-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-remaining-life-limit-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\create-treatment-library-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\criteria-editor-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\edit-budgets-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\edit-budgets-dialog.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\equation-editor-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\equation-editor-dialog-result.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\reports-downloader-dialog-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\modals\scenario-creation-data.ts" />
+    <TypeScriptCompile Include="src\shared\models\vue\data-table-header.ts" />
+    <TypeScriptCompile Include="src\shared\models\vue\data-table-row.ts" />
+    <TypeScriptCompile Include="src\shared\models\vue\select-item.ts" />
+    <TypeScriptCompile Include="src\shared\utils\axios-instance.ts" />
+    <TypeScriptCompile Include="src\shared\utils\axios-mock-adapter-instance.ts" />
+    <TypeScriptCompile Include="src\shared\utils\criteria-editor-parsers.ts" />
+    <TypeScriptCompile Include="src\shared\utils\formulas.ts" />
+    <TypeScriptCompile Include="src\shared\utils\getter-utils.ts" />
+    <TypeScriptCompile Include="src\shared\utils\has-value-util.ts" />
+    <TypeScriptCompile Include="src\shared\utils\http-utils.ts" />
+    <TypeScriptCompile Include="src\shared\utils\math-utils.ts" />
+    <TypeScriptCompile Include="src\shared\utils\setter-utils.ts" />
+    <TypeScriptCompile Include="src\shared\utils\sorter-utils.ts" />
+    <TypeScriptCompile Include="src\shims-vue.d.ts" />
+    <TypeScriptCompile Include="src\shims-tsx.d.ts" />
+    <TypeScriptCompile Include="src\shims-vuefire-aug.d.ts" />
+    <TypeScriptCompile Include="src\store-modules\attribute.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\authentication.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\budget-criteria.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\busy.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\deficient.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\priority.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\remaining-life-limit.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\inventory.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\investment-editor.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\network.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\performance-editor.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\target.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\toastr.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\treatment-editor.module.ts" />
+    <TypeScriptCompile Include="src\store\root-store.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="babel.config.js" />
+  </ItemGroup>
+  <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <PropertyGroup>
+    <PostBuildEvent>
+      npm run build
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
