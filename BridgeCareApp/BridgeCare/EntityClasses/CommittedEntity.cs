@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
 {
@@ -14,17 +16,19 @@ namespace BridgeCare.EntityClasses
             COMMIT_CONSEQUENCES = new List<CommitConsequencesEntity>();
         }
        
-        public CommittedEntity(int simulationId, int sectionId, int years, string treatmentName, int yearSame, int yearAny, string budget, double cost_)
+        public CommittedEntity(CommittedProjectModel model)
         {
-            SIMULATIONID = simulationId;
-            SECTIONID = sectionId;
-            YEARS = years;
-            TREATMENTNAME = treatmentName;
-            YEARSAME = yearSame;
-            YEARANY = yearAny;
-            BUDGET = budget;
-            COST_ = cost_;
-            COMMIT_CONSEQUENCES = new List<CommitConsequencesEntity>();
+            SIMULATIONID = model.SimulationId;
+            SECTIONID = model.SectionId;
+            YEARS = model.Years;
+            TREATMENTNAME = model.TreatmentName;
+            YEARSAME = model.YearSame;
+            YEARANY = model.YearAny;
+            BUDGET = model.Budget;
+            COST_ = model.Cost;
+            COMMIT_CONSEQUENCES = model.CommitConsequences.Any()
+                ? model.CommitConsequences.Select(cc => new CommitConsequencesEntity(cc)).ToList()
+                : new List<CommitConsequencesEntity>();
         }
 
         [Key]

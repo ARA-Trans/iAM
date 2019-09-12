@@ -28,20 +28,10 @@ namespace BridgeCare.DataAccessLayer
                     {
                         continue;
                     }
-                    var committed = CreateCommitted(committedProjectModel);
-                    db.CommittedProjects.Add(committed);
-                    db.SaveChanges();
 
-                    // get
-                    var Insertedcommitted = GetCommittedProject(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, db);
-
-                    // Add consequences             
-                    foreach (var commitConsequence in committedProjectModel.CommitConsequences)
-                    {
-                        committed.COMMIT_CONSEQUENCES.Add(new CommitConsequencesEntity(commitConsequence.Attribute_, commitConsequence.Change_));
-                    }
-                    db.SaveChanges();
+                    db.CommittedProjects.Add(new CommittedEntity(committedProjectModel));
                 }
+                db.SaveChanges();
             }
             catch (SqlException ex)
             {
@@ -53,24 +43,6 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        private CommittedEntity CreateCommitted(CommittedProjectModel committedProjectModel)
-        {
-            return new CommittedEntity(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, committedProjectModel.TreatmentName, committedProjectModel.YearSame, committedProjectModel.YearAny, committedProjectModel.Budget, committedProjectModel.Cost);
-        }
-
-        /// <summary>
-        /// Get committed project based on parameters
-        /// </summary>
-        /// <param name="simulationId"></param>
-        /// <param name="sectionId"></param>
-        /// <param name="years"></param>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        public CommittedEntity GetCommittedProject(int simulationId, int sectionId, int years, BridgeCareContext db)
-        {
-            return db.CommittedProjects.FirstOrDefault(c => c.SIMULATIONID == simulationId && c.SECTIONID == sectionId && c.YEARS == years);
-        }
-
         /// <summary>
         /// Get all the committed projects for a given simulation id
         /// </summary>
@@ -79,7 +51,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         public List<CommittedEntity> GetCommittedProjects(int simulationId, BridgeCareContext db)
         {
-            return db.CommittedProjects.Include(committedProject => committedProject.COMMIT_CONSEQUENCES).Where(c => c.SIMULATIONID == simulationId).ToList();
+            return db.CommittedProjects.Include(c => c.COMMIT_CONSEQUENCES).Where(c => c.SIMULATIONID == simulationId).ToList();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace BridgeCare.Controllers
 
         // Get: api/section
         [ModelValidation("Given network data is not valid")]
-        public IQueryable<SectionModel> Get(NetworkModel data) => section.GetSections(data, db);
+        public IQueryable<SectionModel> Get(NetworkModel data) => section.GetSections(data.NetworkId, db);
 
         [ModelValidation("Function call not valid")]
         [Route("api/GetSectionID/{networkID}/{BrKey}")]

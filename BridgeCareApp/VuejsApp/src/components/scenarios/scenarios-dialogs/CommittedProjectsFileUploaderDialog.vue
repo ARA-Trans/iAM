@@ -14,6 +14,11 @@
                         </form>
                         <v-flex xs12>
                             <v-layout justify-start>
+                                <v-checkbox label="No Treatment" v-model="applyNoTreatment"></v-checkbox>
+                            </v-layout>
+                        </v-flex>
+                        <v-flex xs12>
+                            <v-layout justify-start>
                                 <v-btn class="ara-blue-bg white--text" @click="fileSelect.click()">
                                     Select File(s)
                                 </v-btn>
@@ -59,6 +64,7 @@
     import {last, any, propEq, clone} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {bytesToMegabytes} from '@/shared/utils/math-utils.ts';
+    import {CommittedProjectsDialogResult} from '@/shared/models/modals/committed-projects-dialog-result';
 
     @Component
     export default class CommittedProjectsFileUploaderDialog extends Vue {
@@ -77,6 +83,7 @@
             {text: 'Size', value: 'size', align: 'left', sortable: true, class: '', width: '50px'},
             {text: '', value: '', align: 'center', sortable: false, class: '', width: '25px'}
         ];
+        applyNoTreatment: boolean = true;
 
         /**
          * Component has been mounted
@@ -164,7 +171,11 @@
          * Submits user's selected file(s) to EditScenario parent component for upload
          */
         onUpload() {
-            this.$emit('submit', this.files, false);
+            const results: CommittedProjectsDialogResult = {
+                applyNoTreatment: this.applyNoTreatment,
+                files: this.files
+            };
+            this.$emit('submit', results, false);
             this.files = [];
         }
 

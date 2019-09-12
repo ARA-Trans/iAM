@@ -26,6 +26,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult Post()
         {
             var httpRequest = HttpContext.Current.Request;
+
             if (httpRequest.Files.Count < 1)
             {
                 return BadRequest();
@@ -34,9 +35,8 @@ namespace BridgeCare.Controllers
             if (!Request.Content.IsMimeMultipartContent())
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
 
-            var selectedScenarioId = httpRequest.Form.Get("selectedScenarioId");
-            var networkId = httpRequest.Form.Get("networkId");
-            committedProjects.SaveCommittedProjectsFiles(httpRequest.Files, selectedScenarioId, networkId, db);
+            committedProjects.SaveCommittedProjectsFiles(httpRequest, db);
+
             return Ok();
         }
 
