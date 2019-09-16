@@ -1,0 +1,57 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DBSpy.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ConnString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="CurrentDataModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="CurrentDatabaseType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="ProviderString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="ServerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="InitialCatalog" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="ServerPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="DatabaseName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="UserID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)">temp</Value>
+    </Setting>
+    <Setting Name="NetworkAlias" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SID" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Port" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="IntegratedSecurity" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AttributeName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ProviderText" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ConnectionName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

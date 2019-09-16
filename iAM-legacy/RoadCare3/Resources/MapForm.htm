@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Map Form</title>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAARoNP0_tid_QVS8gxotN8whRyRnF0N0MjABz1ZimboXYZzBto2RS4I8yi2uTbm7nZlWIdKqRpF9_kSA"
+      type="text/javascript"></script>
+    <script type="text/javascript">
+    	//<![CDATA[
+    	var browser;
+    	var map;
+    	var marker;
+    	var polyline
+    	function load() {
+    		//var mapSize = null;
+    		//mapDiv.style = "height:" + height.toString();
+    		// for netscape, we can get innerHeight, window.innerWidth.
+    		var height = window.innerHeight;
+    		if (!height) {
+    			browser = "ie";
+    		}
+    		else {
+    			browser = "firefox";
+    		}
+    		
+    		if (GBrowserIsCompatible()) {
+    			map = new GMap2(document.getElementById("map"));
+    			map.setCenter(new GLatLng(40.09, -88.19), 8);
+    			var mapControl = new GMapTypeControl();
+    			map.addControl(mapControl);
+    			map.addMapType(G_SATELLITE_3D_MAP);
+    			var zoomControl = new GSmallMapControl();
+    			map.addControl(zoomControl);
+    			var latlng  = new GLatLng(40.09, -88.19)
+    			marker = new GMarker(latlng);
+    			map.addOverlay(marker);
+
+    			polyline = new GPolyline([
+                    new GLatLng(40.09, -88.19),
+                    new GLatLng(40.09, -88.19)
+                    ], "#ff0000", 10);
+    			map.addOverlay(polyline);
+    		}
+    	}
+    	function CenterMap(lat, lng) {
+    		if (GBrowserIsCompatible()) {
+    			if (map != null) {
+    				map.setCenter(new GLatLng(lat, lng));
+    				marker.setLatLng(new GLatLng(lat, lng));
+    				//	map.checkResize();
+    			}
+    		}
+    	}
+
+
+    	function DrawLookVector(lat, lng, lat1, lng1) {
+    	    if (GBrowserIsCompatible()) {
+    	        if (map != null) {
+    	            map.setCenter(new GLatLng(lat, lng));
+    	            
+    	        map.clearOverlays();
+    			var latlng  = new GLatLng(lat, lng)
+    			var latlng1 = new GLatLng(lat1, lng1)
+    			marker = new GMarker(latlng);
+    			map.addOverlay(marker);
+
+    			polyline = new GPolyline([
+                    latlng,
+                    latlng1
+                    ], "#ff0000", 10);
+    			map.addOverlay(polyline);
+    	            
+    	        }
+    	    }
+    	}
+    	function loadKML(kmlFile) {
+
+    	    if (map != null) {
+    	        var fileLoaded = map.parseKml(kmlFile);
+    	        map.getFeatures().appendChild(fileLoaded);
+    	    }
+    	}
+
+    function test(message) {
+    	alert(message);
+    }
+    	//]]>
+    </script>
+  </head>
+  <body onload="load()" onunload="GUnload()">
+    <div id="map" style="position:absolute;top:0px;left:0px;width:100%;height:100%"></div>
+  </body>
+</html>

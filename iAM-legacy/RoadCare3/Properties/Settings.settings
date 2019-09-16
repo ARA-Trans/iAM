@@ -1,0 +1,288 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RoadCare3.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="IMAGE_PATH" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ImagePath</Value>
+    </Setting>
+    <Setting Name="LOCAL_PATH" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ASSETS_COLORS" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DATABASE_DIU" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PROVIDER_DIU" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="USERNAME_DIU" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SERVER_DIU" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ATTRIBUTE_DEFAULT" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="PROVIDER_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)">MSSQL</Value>
+    </Setting>
+    <Setting Name="TYPE_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NUMBER</Value>
+    </Setting>
+    <Setting Name="MAXIMUM_DEFAULT" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MINIMUM_DEFAULT" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LEVEL1_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LEVEL2_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LEVEL3_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LEVEL4_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LEVEL5_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DEFAULT_VALUE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ACTIVE_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LIGHTON.ICO</Value>
+    </Setting>
+    <Setting Name="ACTIVE_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LIGHTON.ICO</Value>
+    </Setting>
+    <Setting Name="NETWORK_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="NETWORK_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="ATTRIBUTE_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">db.ico</Value>
+    </Setting>
+    <Setting Name="ATTRIBUTE_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">db.ico</Value>
+    </Setting>
+    <Setting Name="SEGMENTATION_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SEGMENTATION_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SEGMENTATION_LOGIC_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SEGMENTATION_LOGIC_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SEGMENTATION_RESULTS_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SEGMENTATION_RESULTS_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="ROLLUP_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="ROLLUP_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="CONSTRUCTION_HISTORY_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">construction.ico</Value>
+    </Setting>
+    <Setting Name="CONSTRUCTION_HISTORY_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">construction.ico</Value>
+    </Setting>
+    <Setting Name="ASSET_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">bluedb.ico</Value>
+    </Setting>
+    <Setting Name="ASSET_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">bluedb.ico</Value>
+    </Setting>
+    <Setting Name="CONSTRUCTION_HISTORY_VIEW_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">construction.ico</Value>
+    </Setting>
+    <Setting Name="CONSTRUCTION_HISTORY_VIEW_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">construction.ico</Value>
+    </Setting>
+    <Setting Name="SECTION_VIEW_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orange.ico</Value>
+    </Setting>
+    <Setting Name="SECTION_VIEW_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orange.ico</Value>
+    </Setting>
+    <Setting Name="ASSET_VIEW_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">blue.ico</Value>
+    </Setting>
+    <Setting Name="ASSET_VIEW_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">blue.ico</Value>
+    </Setting>
+    <Setting Name="GIS_VIEW_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">map.ico</Value>
+    </Setting>
+    <Setting Name="GIS_VIEW_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">map.ico</Value>
+    </Setting>
+    <Setting Name="SIMULATION_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pink.ico</Value>
+    </Setting>
+    <Setting Name="SIMULATION_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pink.ico</Value>
+    </Setting>
+    <Setting Name="ATTRIBUTE_VIEW_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">class.ico</Value>
+    </Setting>
+    <Setting Name="ATTRIBUTE_VIEW_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">class.ico</Value>
+    </Setting>
+    <Setting Name="ATTRIBUTE_VIEW_SPECIFIC_YEAR_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orange.ico</Value>
+    </Setting>
+    <Setting Name="ATTRIBUTE_VIEW_SPECIFIC_YEAR_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orange.ico</Value>
+    </Setting>
+    <Setting Name="SIMULATION_ATTRIBUTE_YEAR_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orange.ico</Value>
+    </Setting>
+    <Setting Name="SIMULATION_ATTRIBUTE_YEAR_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orange.ico</Value>
+    </Setting>
+    <Setting Name="LINEAR_NETWORK_DEFINITION_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="LINEAR_NETWORK_DEFINITION_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SECTION_NETWORK_DEFINITION_IMAGE_KEY" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="SECTION_NETWORK_DEFINITION_IMAGE_KEY_SELECTED" Type="System.String" Scope="User">
+      <Value Profile="(Default)">roadnetwork.ico</Value>
+    </Setting>
+    <Setting Name="ROADCARE_FILE_PATH" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBDATABASE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBSERVER" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBPORT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBSID" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBNETWORKALIAS" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DefaultTab" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_DB_TYPE" Type="System.String" Scope="User">
+      <Value Profile="(Default)">MSSQL</Value>
+    </Setting>
+    <Setting Name="LAST_DB_SERVER" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_DB" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_GROUP" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_ONE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_TWO" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_THREE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_FOUR" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_FIVE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_DEFAULT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_FORMAT" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_MINIMUM" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_MAXIMUM" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_PASSWORD" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LAST_LOGIN" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="USE_INTEGRATED_SECURITY" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CONNECTION_TYPE" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ORACLE_USE_SID" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ORACLE_DB_USERNAME" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ORACLE_DB_PASSWORD" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NETWORK_DEFINITION_NAME" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDDatabase" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDUserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDSID" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDNetworkAlias" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NNDIntegratedSec" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="NNDLastQuery" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TablePrefix" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

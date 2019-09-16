@@ -1,0 +1,139 @@
+HIGHESTEST 111!1!11) Make Assets cool, like John wants it.
+
+Highest 13) Create DatabaseChecker class to standardize RoadCare table and DB schema changes.
+Highest 9) Get committed table and results table completed.
+Highest 8) Double click editing of equations and criteria.
+Highest 10) Fix output window closed, if you try to write to it, and its closed, it should auto open.
+Highest 11) Generate first level HTML reports for simulation results.
+Highest 12) Asset History Table.  Any changes to the database, creates a new line in the change log, for that asset.
+Highest 4) Icons to pretty up the page on all avail pages, soln. explorer first.
+Highest 2) Fix SQL adapter update on FormAttributeDocument (fixed everything save for Delete).
+Highest 3) Create node specific menus for all nodes in the Solution Explorer.
+Highest 7) Make creating new simulations easier (right click - add new)
+	-Replicate(bare-bones, period, method, budgets) or full (committed projects).
+	-Blank
+	-Default
+	
+
+
+
+Highest 6) DC databases converted to the new RC3 format.
+Highest 13) Check for valid criteria and equations before database entry.
+
+
+Apply old committed on Roll Forward (John thinks this is stupid - discuss).
+
+When edit Budget Order/List.  Close Analysis, Treatments, Results, Committed 
+When edit Treatments. Close Committed so can update treatment list.
+
+Determine color scheme for possible, committed and spent. (light for treatment, dark for committed).
+
+Single section update (with treatments).
+Summary (header/footer) targets/deficiency/budget.
+Excel/Powerpoint and Word outputs.
+PCI input data.
+Targets/Deficient optimization
+Multi-year optimizations
+Error checking criteria/equations.
+Recheck mass uploading of raw data.
+Help utilities.
+Tool tips on all controls.
+Make sure lanes are added to Simualtion variable list.
+Update last run.
+
+When Add New Simulation
+Need to fill in Simulations, Investments, Treatments (No treatments)
+Allow blank Priority
+Compound (multiple deterioration - not working).  RL calculated for performance.
+
+
+High 23) Feature: Import data from shapefile directly into ASSET or PAVEMENT raw attribute tables.
+High 22) Add date select control to the asset manager.  The current of what it is, and prior inspections.
+High 21) Create filter control for applicable pages.
+High 1.) Make Printing work on all pages, with applicable grids. (Print button will be on the form).
+High 15.) Add to menu: Copy (With Header) Should column headers copy with data?
+High 14.) Refresh Attribute View on rollup (i.e. update years) (can be done by closing window from FormManager).
+High 10.) Attached errors somehow to the window that threw them.  If window is closed.  Error perhaps should go away.
+High 11.) Button and menu motif from attribute view, needs to be implemented on all other forms.  Make sure that Bill and John both agree to the motif first!
+High 20.) Implement Network Delete.  Drop all SEGMENTED, COMMITTED and SIMULATION tables for this network.Make sure all tables with NETWORKID enforce ForeignKey.  NETWORK_TREE is complete.  Use as template.
+
+Medium 19) Copy and pasting reports and simulations from network to network.
+
+
+Medium 5.) Make list of budgets readonly and edited through ... button.
+Medium 6.) Use geometry checker to check geoms inputted by the user through the Import Geometry interface.
+
+Medium 6.) Prove transactional logging works (by login).
+Medium 7.) Create Users tree branch + properties (add and manage users).  Should only be visible to administrators.
+Medium 16.) Figure out how to set tool window docking size.
+Medium 17.) Add Network ID to criteria segmentation (Logical segmentation page).  Values should be defined by Network.  Currently they are global.  Copy and paste between networks should work.
+Medium 18.) Add area units to Network Defintion.
+
+Low 4) Create config file format for Login information and other logging information (remember last user login information).
+Low 8) Make call to Dynamic Segmentation multithreaded.
+Low 17.) Default icons for all tree nodes.
+Low 26) Use a different ICON for STRING and NUMBER fields.  Maybe a stylize Abc for strings and a 123 for Numeric.
+Low 18.) Allow users to set whether or not to have their tabs come up for each run of the program.
+Low 19.) Develop Report function for Attribute View.
+Low 26.)Make flag to suppress MessageBox on Error sent to WriteOutput.
+Low 21.) Get copy and paste working construction history (with error checking).
+Low 23.) Property page Modal.  OK not Ok.  Better yet, think of button OK icons for a splash of color throughout program.
+Low 24.) On updating/newing atttributes check Max > Min, that levels ascend or descend OR default is in between maximum and minimum.
+Low 25) Add error exclamation point to erroneous fields.
+Low 26) Add multiple attribute display order to config so that it remembers on re-open.
+
+DISCUSS 13.) Discussion.  Allow hand editing of sections under SegmentationResults(need verify  function then).
+
+
+~) Double Click in Solution Explorer - Open document, and expand tree?
+~) Allow user to set font for program
+~) Why does little grey box breifly appear on treeview when first document is opened.
+~) Make dockable toolbars?
+~) Set RoadCare title from config file (FORMROADCARE)
+~)On Dyamic Segmentation, replace add remove with LEFT and RIGHT arrows.
+
+
+
+
+
+
+
+
+Gregg:
+
+Get copy and paste working again on attribute views.
+	- Add checkbox to allow editing on attribute views.
+	
+Create property classes to be assigned to the property grid on the right.
+Create Construction History (Raw)/Segmented pages
+Create Asset View
+Create Segmented View
+
+
+
+DONE: HUGE SUCCESS
+- Put list of treatments on committed projects. Gregg
+- Figure out how to but budgets into list on Committed projects. Gregg
+- Default order of muliple open. Gregg
+- Add right most column, MOST RECENT to rollup.  Attribute (ADT) is most recent (ADT_1999) is ADT for 1999. Gregg
+- Simulation pages need to be added to FormManager. Chad
+- Fix spaces in database names for bulk loads. Gregg
+- ICMPA Database conversion - Gregg
+- If solution window is pinned then you cannot create a window in it.  So deal with that by having the application check if the window is pinned, if it is, create the new window as a dialog. Additionally, Re-Create disposed/closed tabs from view menu. - Chad
+- Create docked property window on the right. - Chad
+- Treeview text display funky on Gregg's widescreen laptop. - Chad
+- It is very difficult to see that an error has been added (reflect error to MessageBox by adding to WriteOutput). - Chad, Gregg
+- Consider search for construction history.  Does not presently exist. - Gregg
+- Buttons on Attribute View select columns are not wide enough.  - Gregg
+- Need to update OutputWindow with progress.  Maybe windows messaging?  If not, move dynamic segmentation into RoadCare3 name space so it can do it directly. - Chad
+- When Add Network fails (bad characters in name).  It is written to ouptput (output will give msgbox if desired) - Gregg
+- Custom Property Boxes.  Create Materials Property Viewer. This is a user defined property grid, with database table creation.
+- Make rollup multithreaded. - Gregg
+- Add begin, end direction to attribute. - Gregg
+- Create Rollup page - Gregg
+- Create Segmentation Results page - Split drop/add - Gregg
+- Updating information in Attribute Properties is not saved! - Chad
+- If All GIS windows are closed, close GIS property view. Shape up the GIS viewer, make it look "pretty" - Chad
+- Get Dynamic segmentation working on GIS view. - Chad and Gregg
+- Viewers should not be on the Network list if they have not been rolled up. - Chad
+- Change GIS dynamic segmentation after layer draw function to create a shape file.
