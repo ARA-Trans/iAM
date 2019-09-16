@@ -70,14 +70,6 @@
       <HintPath>..\packages\MongoDB.Driver.Core.2.8.1\lib\net452\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="RollupSegmentation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\RollupSegmentation.dll</HintPath>
-    </Reference>
-    <Reference Include="Simulation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\BridgeCareCodeFirst\Dependencies\Simulation.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
@@ -408,33 +400,6 @@
     <Compile Include="Services\SummaryReport\BridgeDataHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dependencies\CalculateEvaluate.dll" />
-    <Content Include="Dependencies\DatabaseManager.dll" />
-    <Content Include="Dependencies\IntegrationOMS.dll" />
-    <Content Include="Dependencies\IntegrationOMS.pdb" />
-    <Content Include="Dependencies\Microsoft.SqlServer.ConnectionInfo.dll" />
-    <Content Include="Dependencies\Microsoft.SqlServer.Dmf.dll" />
-    <Content Include="Dependencies\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
-    <Content Include="Dependencies\Microsoft.SqlServer.ServiceBrokerEnum.dll" />
-    <Content Include="Dependencies\Microsoft.SqlServer.Smo.dll" />
-    <Content Include="Dependencies\Microsoft.SqlServer.SqlEnum.dll" />
-    <Content Include="Dependencies\OpenGISExtension.dll" />
-    <Content Include="Dependencies\OpenGISExtension.pdb" />
-    <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
-    <Content Include="Dependencies\RoadCareSecurityOperations.dll" />
-    <Content Include="Dependencies\RollupSegmentation.dll" />
-    <Content Include="Dependencies\RollupSegmentation.pdb" />
-    <Content Include="Dependencies\SharpMap.dll" />
-    <Content Include="Dependencies\SharpMap.pdb" />
-    <Content Include="Dependencies\Simulation.dll" />
-    <Content Include="Dependencies\SimulationDataAccess.dll" />
-    <Content Include="Dependencies\CalculateEvaluate.pdb" />
-    <Content Include="Dependencies\DatabaseManager.pdb" />
-    <Content Include="Dependencies\RestSharp.dll" />
-    <Content Include="Dependencies\RestSharp.xml" />
-    <Content Include="Dependencies\RoadCareGlobalOperations.pdb" />
-    <Content Include="Dependencies\Simulation.pdb" />
-    <Content Include="Dependencies\SimulationDataAccess.pdb" />
     <Content Include="Global.asax" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -454,9 +419,6 @@
     <Content Include="connection.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Dependencies\RollupSegmentation.dll.config" />
-    <Content Include="Dependencies\IntegrationOMS.dll.config" />
-    <Content Include="Dependencies\Simulation.dll.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -470,6 +432,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\iAM-legacy\RollupSegmentation\RollupSegmentation.csproj">
+      <Project>{81a7b2fe-7b9f-42e3-a9f1-4bc0c76a9817}</Project>
+      <Name>RollupSegmentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\iAM-legacy\Simulation\Simulation.csproj">
+      <Project>{31db6cda-70a3-4c94-a002-fa1bd1df9b02}</Project>
+      <Name>Simulation</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

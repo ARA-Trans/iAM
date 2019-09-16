@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RoadCareSecurityOperations.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="appId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="RoadCareSecurityOperations_AuthenticateCS_AuthenticateCS" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://170.93.50.24/sms/AuthenticateCS.asmx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

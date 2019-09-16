@@ -1,0 +1,1462 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95538685-450B-4CAE-BDD5-87925C0191A1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RoadCare3</RootNamespace>
+    <AssemblyName>RoadCare3</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <ApplicationIcon>rc.ico</ApplicationIcon>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>http://localhost/RoadCare3/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDSHARelease|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\MDSHARelease\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDSHA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDSHADebug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\MDSHADebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDSHA;TESTING</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AACOUNTY|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\AACOUNTY\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;AACOUNTY</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DDOT|AnyCPU' ">
+    <OutputPath>bin\DDOT\</OutputPath>
+    <DefineConstants>TRACE;DDOT</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDSHARelease|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\MDSHARelease\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDSHA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDSHADebug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\MDSHADebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDSHA;TESTING</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AACOUNTY|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\AACOUNTY\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;AACOUNTY</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DDOT|x86' ">
+    <OutputPath>bin\x86\DDOT\</OutputPath>
+    <DefineConstants>TRACE;DDOT</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDSHARelease|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\MDSHARelease\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDSHA</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MDSHADebug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\MDSHADebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDSHA;TESTING</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AACOUNTY|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\AACOUNTY\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;AACOUNTY</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DDOT|x64' ">
+    <OutputPath>bin\x64\DDOT\</OutputPath>
+    <DefineConstants>TRACE;DDOT</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Controls">
+      <HintPath>..\Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="EGIS.Controls, Version=2.5.1.0, Culture=neutral, PublicKeyToken=05b98c869b5ffe6a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\EGIS.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="EGIS.ShapeFileLib, Version=2.5.1.0, Culture=neutral, PublicKeyToken=05b98c869b5ffe6a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\EGIS.ShapeFileLib.dll</HintPath>
+    </Reference>
+    <Reference Include="ImageComboBox, Version=1.0.2008.18717, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ImageComboBox.dll</HintPath>
+    </Reference>
+    <Reference Include="LogicNP.CryptoLicensing, Version=5.1.0.0, Culture=neutral, PublicKeyToken=4a3c0a4c668b48b4">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LogicNP.CryptoLicensing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Visual Studio Tools for Office\PIA\Office14\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Microsoft SQL Server assemblies\2012 (v11)\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Microsoft SQL Server assemblies\2012 (v11)\Microsoft.SqlServer.Smo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Microsoft SQL Server assemblies\2012 (v11)\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Microsoft SQL Server assemblies\2012 (v11)\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XPicbox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\XPicbox.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBoxRoadCare.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBoxRoadCare.Designer.cs">
+      <DependentUpon>AboutBoxRoadCare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AssetProperties.cs" />
+    <Compile Include="AssetTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssetTab.Designer.cs">
+      <DependentUpon>AssetTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AttributeTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AttributeTab.Designer.cs">
+      <DependentUpon>AttributeTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CalculatedFieldsProperties.cs" />
+    <Compile Include="CCBoxItem.cs" />
+    <Compile Include="CheckedComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FormActivateLicense.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormActivateLicense.Designer.cs">
+      <DependentUpon>FormActivateLicense.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAddAssetToAttribute.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddAssetToAttribute.Designer.cs">
+      <DependentUpon>FormAddAssetToAttribute.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAlterRemoteAttributes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAlterRemoteAttributes.Designer.cs">
+      <DependentUpon>FormAlterRemoteAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAssetToAttribute.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssetToAttribute.Designer.cs">
+      <DependentUpon>FormAssetToAttribute.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAttributeResults.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAttributeResults.Designer.cs">
+      <DependentUpon>FormAttributeResults.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAttributeValidation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAttributeValidation.Designer.cs">
+      <DependentUpon>FormAttributeValidation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCompoundTreatment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCompoundTreatment.Designer.cs">
+      <DependentUpon>FormCompoundTreatment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SpecialReports\FormConfigurableInputSummary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpecialReports\FormConfigurableInputSummary.Designer.cs">
+      <DependentUpon>FormConfigurableInputSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCreateRemoteNetworkDefinition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCreateRemoteNetworkDefinition.Designer.cs">
+      <DependentUpon>FormCreateRemoteNetworkDefinition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormEditAssetEquation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEditAssetEquation.Designer.cs">
+      <DependentUpon>FormEditAssetEquation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomClass.cs" />
+    <Compile Include="DeleteAsset.cs" />
+    <Compile Include="DeleteAttribute.cs" />
+    <Compile Include="DoImport.cs" />
+    <Compile Include="EventPublisher.cs" />
+    <Compile Include="FormAssetKML.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssetKML.Designer.cs">
+      <DependentUpon>FormAssetKML.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAssetsCalculated.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssetsCalculated.Designer.cs">
+      <DependentUpon>FormAssetsCalculated.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCalculatedField.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCalculatedField.Designer.cs">
+      <DependentUpon>FormCalculatedField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormEditAsset.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEditAsset.Designer.cs">
+      <DependentUpon>FormEditAsset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAdvancedSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAdvancedSearch.Designer.cs">
+      <DependentUpon>FormAdvancedSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAnalysis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnalysis.Designer.cs">
+      <DependentUpon>FormAnalysis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAssetFilter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssetFilter.Designer.cs">
+      <DependentUpon>FormAssetFilter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAssets.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssets.Designer.cs">
+      <DependentUpon>FormAssets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAssetView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssetView.Designer.cs">
+      <DependentUpon>FormAssetView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAttributeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAttributeView.Designer.cs">
+      <DependentUpon>FormAttributeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAttributeViewSelectColumns.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAttributeViewSelectColumns.Designer.cs">
+      <DependentUpon>FormAttributeViewSelectColumns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormConstructionHistory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormConstructionHistory.Designer.cs">
+      <DependentUpon>FormConstructionHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCreateSubnetwork.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCreateSubnetwork.Designer.cs">
+      <DependentUpon>FormCreateSubnetwork.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormEditBudgets.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEditBudgets.Designer.cs">
+      <DependentUpon>FormEditBudgets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormEditEquation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEditEquation.Designer.cs">
+      <DependentUpon>FormEditEquation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SpecialReports\FormFyTargetsSuggestedProjects.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpecialReports\FormFyTargetsSuggestedProjects.Designer.cs">
+      <DependentUpon>FormFyTargetsSuggestedProjects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGISLayerManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGISLayerManager.Designer.cs">
+      <DependentUpon>FormGISLayerManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGISView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGISView.Designer.cs">
+      <DependentUpon>FormGISView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHPMS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHPMS.Designer.cs">
+      <DependentUpon>FormHPMS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHPMSFilter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHPMSFilter.Designer.cs">
+      <DependentUpon>FormHPMSFilter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormImportAsset.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImportAsset.Designer.cs">
+      <DependentUpon>FormImportAsset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormImportGeometries.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImportGeometries.Designer.cs">
+      <DependentUpon>FormImportGeometries.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormImportShapeFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormImportShapeFile.Designer.cs">
+      <DependentUpon>FormImportShapeFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormInvestment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInvestment.Designer.cs">
+      <DependentUpon>FormInvestment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLayerProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLayerProperties.Designer.cs">
+      <DependentUpon>FormLayerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SpecialReports\FormLmDmVmtConditionDualReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpecialReports\FormLmDmVmtConditionDualReport.Designer.cs">
+      <DependentUpon>FormLmDmVmtConditionDualReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLogin.Designer.cs">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormManager.cs" />
+    <Compile Include="FormMultiLineStringDefinition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMultiLineStringDefinition.Designer.cs">
+      <DependentUpon>FormMultiLineStringDefinition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMultiLineStringJoin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMultiLineStringJoin.Designer.cs">
+      <DependentUpon>FormMultiLineStringJoin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNetworkLicenseActivation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNetworkLicenseActivation.Designer.cs">
+      <DependentUpon>FormNetworkLicenseActivation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOptions.Designer.cs">
+      <DependentUpon>FormOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPCIBulkLoad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPCIBulkLoad.Designer.cs">
+      <DependentUpon>FormPCIBulkLoad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPCIDistressManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPCIDistressManager.Designer.cs">
+      <DependentUpon>FormPCIDistressManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPCIDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPCIDocument.Designer.cs">
+      <DependentUpon>FormPCIDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPerformanceEquations.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPerformanceEquations.Designer.cs">
+      <DependentUpon>FormPerformanceEquations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormProperties.Designer.cs">
+      <DependentUpon>FormProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAttributeDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAttributeDocument.Designer.cs">
+      <DependentUpon>FormAttributeDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNetworkDefinition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNetworkDefinition.Designer.cs">
+      <DependentUpon>FormNetworkDefinition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormOutputWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOutputWindow.Designer.cs">
+      <DependentUpon>FormOutputWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPropertiesModal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPropertiesModal.Designer.cs">
+      <DependentUpon>FormPropertiesModal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormQueryRaw.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormQueryRaw.Designer.cs">
+      <DependentUpon>FormQueryRaw.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormReasonAssetChanged.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormReasonAssetChanged.Designer.cs">
+      <DependentUpon>FormReasonAssetChanged.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormResultsBudget.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormResultsBudget.Designer.cs">
+      <DependentUpon>FormResultsBudget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormResultsDeficient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormResultsDeficient.Designer.cs">
+      <DependentUpon>FormResultsDeficient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormResultsTarget.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormResultsTarget.Designer.cs">
+      <DependentUpon>FormResultsTarget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRoadCare.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRoadCare.Designer.cs">
+      <DependentUpon>FormRoadCare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRollupSegmentation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRollupSegmentation.Designer.cs">
+      <DependentUpon>FormRollupSegmentation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSectionView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSectionView.Designer.cs">
+      <DependentUpon>FormSectionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSecurityActionGroups.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSecurityActionGroups.Designer.cs">
+      <DependentUpon>FormSecurityActionGroups.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSecurityActions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSecurityActions.Designer.cs">
+      <DependentUpon>FormSecurityActions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSecurityPermissions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSecurityPermissions.Designer.cs">
+      <DependentUpon>FormSecurityPermissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSecurityUserGroups.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSecurityUserGroups.Designer.cs">
+      <DependentUpon>FormSecurityUserGroups.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSecurityUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSecurityUsers.Designer.cs">
+      <DependentUpon>FormSecurityUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSegmentation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSegmentation.Designer.cs">
+      <DependentUpon>FormSegmentation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSegmentationCriteria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSegmentationCriteria.Designer.cs">
+      <DependentUpon>FormSegmentationCriteria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSegmentationResult.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSegmentationResult.Designer.cs">
+      <DependentUpon>FormSegmentationResult.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSegmentedConstruction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSegmentedConstruction.Designer.cs">
+      <DependentUpon>FormSegmentedConstruction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSettings.Designer.cs">
+      <DependentUpon>FormSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSimulationAttributes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSimulationAttributes.Designer.cs">
+      <DependentUpon>FormSimulationAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSimulationName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSimulationName.Designer.cs">
+      <DependentUpon>FormSimulationName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSimulationResults.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSimulationResults.Designer.cs">
+      <DependentUpon>FormSimulationResults.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSimulationRunSingleSection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSimulationRunSingleSection.Designer.cs">
+      <DependentUpon>FormSimulationRunSingleSection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SpecialReports\FormSpecialReportConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpecialReports\FormSpecialReportConfig.Designer.cs">
+      <DependentUpon>FormSpecialReportConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSummaryCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSummaryCheck.Designer.cs">
+      <DependentUpon>FormSummaryCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTreatment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTreatment.Designer.cs">
+      <DependentUpon>FormTreatment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DialogImportData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogImportData.Designer.cs">
+      <DependentUpon>DialogImportData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormWorkstationOrUnlimitedLicenseActivation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormWorkstationOrUnlimitedLicenseActivation.Designer.cs">
+      <DependentUpon>FormWorkstationOrUnlimitedLicenseActivation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GISNetworkSettings.cs" />
+    <Compile Include="GISSettings.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="FormDynamicProperty.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Initalization.cs" />
+    <Compile Include="LicenseInfo.cs" />
+    <Compile Include="LockInformation.cs" />
+    <Compile Include="NetWorkBrowser.cs" />
+    <Compile Include="NetworkDefinitionData.cs" />
+    <Compile Include="NetworkDefinition.cs" />
+    <Compile Include="NetworkProperties.cs" />
+    <Compile Include="FormNetworkSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNetworkSelector.Designer.cs">
+      <DependentUpon>FormNetworkSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AboutBoxRoadCare.resx">
+      <DependentUpon>AboutBoxRoadCare.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AssetTab.resx">
+      <DependentUpon>AssetTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AttributeTab.resx">
+      <DependentUpon>AttributeTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormActivateLicense.resx">
+      <DependentUpon>FormActivateLicense.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAddAssetToAttribute.resx">
+      <DependentUpon>FormAddAssetToAttribute.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAlterRemoteAttributes.resx">
+      <DependentUpon>FormAlterRemoteAttributes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssetToAttribute.resx">
+      <DependentUpon>FormAssetToAttribute.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAttributeResults.resx">
+      <DependentUpon>FormAttributeResults.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAttributeValidation.resx">
+      <DependentUpon>FormAttributeValidation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCompoundTreatment.resx">
+      <DependentUpon>FormCompoundTreatment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpecialReports\FormConfigurableInputSummary.resx">
+      <DependentUpon>FormConfigurableInputSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCreateRemoteNetworkDefinition.resx">
+      <DependentUpon>FormCreateRemoteNetworkDefinition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEditAssetEquation.resx">
+      <DependentUpon>FormEditAssetEquation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssetKML.resx">
+      <DependentUpon>FormAssetKML.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssetsCalculated.resx">
+      <DependentUpon>FormAssetsCalculated.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCalculatedField.resx">
+      <DependentUpon>FormCalculatedField.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEditAsset.resx">
+      <DependentUpon>FormEditAsset.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAdvancedSearch.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAdvancedSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAnalysis.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAnalysis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssetFilter.resx">
+      <DependentUpon>FormAssetFilter.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssets.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAssets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssetView.resx">
+      <DependentUpon>FormAssetView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAttributeView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAttributeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAttributeViewSelectColumns.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAttributeViewSelectColumns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormConstructionHistory.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormConstructionHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCreateSubnetwork.resx">
+      <DependentUpon>FormCreateSubnetwork.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEditBudgets.resx">
+      <DependentUpon>FormEditBudgets.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEditEquation.resx">
+      <DependentUpon>FormEditEquation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpecialReports\FormFyTargetsSuggestedProjects.resx">
+      <DependentUpon>FormFyTargetsSuggestedProjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGISLayerManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormGISLayerManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGISView.resx">
+      <DependentUpon>FormGISView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHPMS.resx">
+      <DependentUpon>FormHPMS.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHPMSFilter.resx">
+      <DependentUpon>FormHPMSFilter.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormImportAsset.resx">
+      <DependentUpon>FormImportAsset.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormImportGeometries.resx">
+      <DependentUpon>FormImportGeometries.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormImportShapeFile.resx">
+      <DependentUpon>FormImportShapeFile.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInvestment.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormInvestment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLayerProperties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormLayerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpecialReports\FormLmDmVmtConditionDualReport.resx">
+      <DependentUpon>FormLmDmVmtConditionDualReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLogin.resx">
+      <DependentUpon>FormLogin.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMultiLineStringDefinition.resx">
+      <DependentUpon>FormMultiLineStringDefinition.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMultiLineStringJoin.resx">
+      <DependentUpon>FormMultiLineStringJoin.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNetworkLicenseActivation.resx">
+      <DependentUpon>FormNetworkLicenseActivation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNetworkSelector.resx">
+      <DependentUpon>FormNetworkSelector.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormOptions.resx">
+      <DependentUpon>FormOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPCIBulkLoad.resx">
+      <DependentUpon>FormPCIBulkLoad.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPCIDistressManager.resx">
+      <DependentUpon>FormPCIDistressManager.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPCIDocument.resx">
+      <DependentUpon>FormPCIDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPerformanceEquations.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormPerformanceEquations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormProperties.resx">
+      <DependentUpon>FormProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAttributeDocument.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormAttributeDocument.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNetworkDefinition.resx">
+      <DependentUpon>FormNetworkDefinition.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormOutputWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormOutputWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPropertiesModal.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormPropertiesModal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormQueryRaw.resx">
+      <DependentUpon>FormQueryRaw.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormReasonAssetChanged.resx">
+      <DependentUpon>FormReasonAssetChanged.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormResultsBudget.resx">
+      <DependentUpon>FormResultsBudget.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormResultsDeficient.resx">
+      <DependentUpon>FormResultsDeficient.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormResultsTarget.resx">
+      <DependentUpon>FormResultsTarget.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRoadCare.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormRoadCare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRollupSegmentation.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormRollupSegmentation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSectionView.resx">
+      <DependentUpon>FormSectionView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSecurityActionGroups.resx">
+      <DependentUpon>FormSecurityActionGroups.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSecurityActions.resx">
+      <DependentUpon>FormSecurityActions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSecurityPermissions.resx">
+      <DependentUpon>FormSecurityPermissions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSecurityUserGroups.resx">
+      <DependentUpon>FormSecurityUserGroups.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSecurityUsers.resx">
+      <DependentUpon>FormSecurityUsers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSegmentation.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSegmentation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSegmentationCriteria.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSegmentationCriteria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSegmentationResult.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSegmentationResult.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSegmentedConstruction.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSegmentedConstruction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormDynamicProperty.resx">
+      <DependentUpon>FormDynamicProperty.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSettings.resx">
+      <DependentUpon>FormSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSimulationAttributes.resx">
+      <DependentUpon>FormSimulationAttributes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSimulationName.resx">
+      <DependentUpon>FormSimulationName.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSimulationResults.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSimulationResults.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSimulationRunSingleSection.resx">
+      <DependentUpon>FormSimulationRunSingleSection.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpecialReports\FormSpecialReportConfig.resx">
+      <DependentUpon>FormSpecialReportConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSummaryCheck.resx">
+      <DependentUpon>FormSummaryCheck.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTreatment.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTreatment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogImportData.resx">
+      <DependentUpon>DialogImportData.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormWorkstationOrUnlimitedLicenseActivation.resx">
+      <DependentUpon>FormWorkstationOrUnlimitedLicenseActivation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SolutionExplorer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SolutionExplorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabAssetBySelection.resx">
+      <DependentUpon>TabAssetBySelection.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabByAssetType.resx">
+      <DependentUpon>TabByAssetType.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToolWindow.resx">
+      <DependentUpon>ToolWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="PropertySorter.cs" />
+    <Compile Include="AttributeProperties.cs" />
+    <Compile Include="RoadCareSettings.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SimulationManager.cs" />
+    <Compile Include="SolutionExplorer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SolutionExplorer.Designer.cs">
+      <DependentUpon>SolutionExplorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SolutionExplorerTreeNode.cs" />
+    <Compile Include="TabAssetBySelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabAssetBySelection.Designer.cs">
+      <DependentUpon>TabAssetBySelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabByAssetType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabByAssetType.Designer.cs">
+      <DependentUpon>TabByAssetType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToolWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ToolWindow.designer.cs">
+      <DependentUpon>ToolWindow.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AssetRollup\AssetRollup.csproj">
+      <Project>{079A9D92-569A-4DE5-AEED-D97AF90124FE}</Project>
+      <Name>AssetRollup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CalculateEvaluate\CalculateEvaluate.csproj">
+      <Project>{3BA8AF00-58AE-4086-8E32-FE302711E899}</Project>
+      <Name>CalculateEvaluate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CompileEquationCriteria\CompileEquationCriteria.csproj">
+      <Project>{237DC7CC-9D67-4502-B3EE-4D8ACD8FE7AC}</Project>
+      <Name>CompileEquationCriteria</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj">
+      <Project>{0f2fa112-cbd1-4f2b-8f4b-8648656af6e0}</Project>
+      <Name>DataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj">
+      <Project>{0370C578-5D1E-41DC-B0FF-E40DCF942CFF}</Project>
+      <Name>DatabaseManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataEntryChecker\DataEntryChecker.csproj">
+      <Project>{91E1FAB8-E05F-4109-8C69-13B223E930EC}</Project>
+      <Name>DataEntryChecker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataObjects\DataObjects.csproj">
+      <Project>{90B01168-5053-42CF-9C9C-DB7901807259}</Project>
+      <Name>DataObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DBSpy\DBSpy\DBSpy.csproj">
+      <Project>{613A2135-3CB0-4F39-B74D-746E592BE5EF}</Project>
+      <Name>DBSpy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DynamicSegmentation\DynamicSegmentation.csproj">
+      <Project>{7A46601B-1900-4BD3-90C4-5199BE26FDFF}</Project>
+      <Name>DynamicSegmentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jace\Jace.csproj">
+      <Project>{91cc2c02-72ea-43af-95b0-f45edf91538e}</Project>
+      <Name>Jace</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KMLManager\KMLManager.csproj">
+      <Project>{32626ABF-9CE5-405C-8372-4D2BF8BE4BB2}</Project>
+      <Name>KMLManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenGISExtension\OpenGISExtension.csproj">
+      <Project>{B4586234-FC3B-4959-AD07-81DDA133DD77}</Project>
+      <Name>OpenGISExtension</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PCI\PCI.vcxproj">
+      <Project>{D5101E8F-AD1C-4629-87A2-D86B5A84E6B5}</Project>
+      <Name>PCI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PropertyGridEx.CS\PropertyGridEx\PropertyGridEx.csproj">
+      <Project>{B0BB47F2-21C4-41FC-B6E6-40757ADFC4A1}</Project>
+      <Name>PropertyGridEx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Reports\Reports.csproj">
+      <Project>{9AEBD150-585B-416E-89ED-57ECF7D1980C}</Project>
+      <Name>Reports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RoadCareDatabaseOperations\RoadCareDatabaseOperations.csproj">
+      <Project>{D77852C3-51EF-425D-BB4C-6E1418C38F29}</Project>
+      <Name>RoadCareDatabaseOperations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RoadCareGlobalOperations\RoadCareGlobalOperations.csproj">
+      <Project>{994D28D2-2A90-484A-B436-8EA830E7B4F0}</Project>
+      <Name>RoadCareGlobalOperations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RoadCareSecurityOperations\RoadCareSecurityOperations.csproj">
+      <Project>{55A1CFCE-D87F-42D6-9797-26B9758FAC29}</Project>
+      <Name>RoadCareSecurityOperations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RollupSegmentation\RollupSegmentation.csproj">
+      <Project>{81A7B2FE-7B9F-42E3-A9F1-4BC0C76A9817}</Project>
+      <Name>RollupSegmentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpMap\SharpMap.UI\SharpMap.UI.csproj">
+      <Project>{DD1CC1DB-4BF9-4C88-A100-733D84795F3A}</Project>
+      <Name>SharpMap.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpMap\SharpMap\SharpMap.csproj">
+      <Project>{C83777FC-AABB-47D9-911F-D76255D4D541}</Project>
+      <Name>SharpMap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimulationDataAccess\SimulationDataAccess.csproj">
+      <Project>{3457D089-C858-4031-9286-BD9DE6E06691}</Project>
+      <Name>SimulationDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Simulation\Simulation.csproj">
+      <Project>{31DB6CDA-70A3-4C94-A002-FA1BD1DF9B02}</Project>
+      <Name>Simulation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserConfiguration\UserConfiguration.csproj">
+      <Project>{826D1BAC-9806-44E4-BCF9-C802AFCF1C05}</Project>
+      <Name>UserConfiguration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Validation\Validation_.csproj">
+      <Project>{F7D18370-236A-436E-8455-12BAB9A53954}</Project>
+      <Name>Validation_</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WeifenLuo\Src\WinFormsUI\WinFormsUI.csproj">
+      <Project>{c75532c4-765b-418e-b09b-46d36b2abdb1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="database.bmp" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\addLayer.bmp" />
+    <None Include="Resources\addLayerPressed.bmp" />
+    <None Include="Resources\600px-Green_Arrow_Down.svg.bmp" />
+    <None Include="Resources\600px-Green_Arrow_Up.svg.bmp" />
+    <None Include="Resources\ARW03UP.ICO" />
+    <None Include="Resources\ARW04DN.ICO" />
+    <None Include="Resources\ARW04UP.ICO" />
+    <Content Include="rc.ico" />
+    <Content Include="RCLogon.ico" />
+    <None Include="Resources\circle.png" />
+    <Content Include="Resources\backhoe.ico" />
+    <None Include="Resources\bluedatabase.png" />
+    <None Include="Resources\bigclass.png" />
+    <None Include="Resources\bigorange.png" />
+    <None Include="Resources\bigorange1.png" />
+    <None Include="Resources\bigpink.png" />
+    <Content Include="Resources\bigblue.png" />
+    <Content Include="Resources\bluedb.ico" />
+    <Content Include="Resources\calculator.ico" />
+    <Content Include="Resources\class.ico" />
+    <None Include="Resources\Class.png" />
+    <Content Include="Resources\construction.bmp" />
+    <None Include="Resources\rollup.bmp" />
+    <None Include="Resources\graph.gif" />
+    <None Include="Resources\export.PNG" />
+    <None Include="Resources\greenCircle.bmp" />
+    <None Include="Resources\pan_icon.bmp" />
+    <None Include="Resources\pan_iconPressed.bmp" />
+    <None Include="Resources\dynamicSeg1.bmp" />
+    <None Include="Resources\PlusMinus.bmp" />
+    <None Include="Resources\ModalPopup.ico" />
+    <None Include="Resources\PropertyWindow.ico" />
+    <None Include="Resources\propertysheets.ico" />
+    <None Include="Resources\Point3.bmp" />
+    <None Include="Resources\cross.png" />
+    <None Include="Resources\redDiamond.png" />
+    <None Include="Resources\delete.jpg" />
+    <None Include="Resources\delete1.jpg" />
+    <None Include="Resources\download.jpg" />
+    <Content Include="Resources\MapForm.htm" />
+    <Content Include="Resources\network.ico" />
+    <Content Include="Resources\route.bmp" />
+    <None Include="Resources\update.bmp" />
+    <None Include="Resources\selectColumns.bmp" />
+    <None Include="Resources\summary.PNG" />
+    <Content Include="Resources\route.bmp" />
+    <None Include="Resources\zoomIn.bmp" />
+    <None Include="Resources\zoomInPressed.bmp" />
+    <None Include="Resources\zoomOut.bmp" />
+    <None Include="Resources\zoomOutPressed.bmp" />
+    <None Include="Resources\select.bmp" />
+    <None Include="Resources\selectPressed.bmp" />
+    <None Include="Resources\routeSmall.bmp" />
+    <None Include="Roadcare_Help.chm" />
+    <Content Include="Resources\sign.ico" />
+    <Content Include="Resources\Users.ico" />
+    <Content Include="RoadCare.ico" />
+    <Content Include="ToDo.txt" />
+    <Content Include="Update.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>7</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
