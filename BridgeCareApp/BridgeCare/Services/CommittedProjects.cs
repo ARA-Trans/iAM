@@ -1,8 +1,11 @@
 ﻿using BridgeCare.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
 using System.Web;
+using System.Web.Http;
 using OfficeOpenXml;
 using BridgeCare.Models;
 using BridgeCare.ApplicationLog;
@@ -12,29 +15,34 @@ namespace BridgeCare.Services
 {
     public class CommittedProjects : ICommittedProjects
     {
-        readonly ICommitted committed;
-        private readonly ISections sections;
+        readonly ICommitted committedRepo;
+        private readonly ISections sectionsRepo;
 
-        public CommittedProjects(ICommitted committed, ISections sections)
+        public CommittedProjects(ICommitted committedRepo, ISections sectionsRepo)
         {
-            this.committed = committed;
-            this.sections = sections;
+            this.committedRepo = committedRepo;
+            this.sectionsRepo = sectionsRepo;
         }
-        
+
         /// <summary>
         /// Save committed projects from the template files
         /// </summary>
-        /// <param name="files"></param>
-        /// <param name="selectedScenarioId"></param>
-        /// <param name="networkId"></param>
+        /// <param name="httpRequest"></param>
         /// <param name="db"></param>
-        public void SaveCommittedProjectsFiles(HttpFileCollection files, string selectedScenarioId, string networkId, BridgeCareContext db)
+        public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db)
         {
+            if (httpRequest.Files.Count < 1)
+                throw new ConstraintException("Files Not Found");
+
+            var files = httpRequest.Files;
+            var selectedScenarioId = httpRequest.Form.Get("selectedScenarioId");
+            var networkId = httpRequest.Form.Get("networkId");
+
             var committedProjectModels = new List<CommittedProjectModel>();
             for (int i = 0; i < files.Count; i++)
             {
                 GetCommittedProjectModels(files[i], selectedScenarioId, networkId, committedProjectModels, db);
-                SaveCommittedProjects(committedProjectModels, db);
+                committedRepo.SaveCommittedProjects(committedProjectModels, db);
             }
         }
 
@@ -50,7 +58,7 @@ namespace BridgeCare.Services
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("CommittedProjects.xlsx")))
             {
                 // This method may stay here or if too long then move to helper class   Fill(worksheet, , db);
-                var committedProjects = committed.GetCommittedProjects(simulationId, db);
+                var committedProjects = committedRepo.GetCommittedProjects(simulationId, db);
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Committed Projects");
                 if (committedProjects.Count != 0)
                 {
@@ -64,7 +72,7 @@ namespace BridgeCare.Services
         private void AddDataCells(ExcelWorksheet worksheet, List<CommittedEntity> committedProjects, int networkId, BridgeCareContext db)
         {            
             var networkModel = new NetworkModel { NetworkId = networkId };
-            var sectionModels = sections.GetSections(networkModel, db).ToList();
+            var sectionModels = sectionsRepo.GetSections(networkModel, db).ToList();
             var row = 2;
             foreach(var committedProject in committedProjects)
             {                
@@ -107,19 +115,10 @@ namespace BridgeCare.Services
             }
         }
 
-        private void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
-        {
-            committed.SaveCommittedProjects(committedProjectModels, db);
-        }
-
         private void GetCommittedProjectModels(HttpPostedFile postedFile, string selectedScenarioId, string networkId, List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
             try
             {
-                // below should be done on server side??
-                var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
-
-                //postedFile.SaveAs(filePath);            
                 var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
                 var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
@@ -129,7 +128,7 @@ namespace BridgeCare.Services
                 {
                     var column = start.Column + 2;
                     var brKey = Convert.ToInt32(GetCellValue(worksheet, row, 1));
-                    var sectionId = sections.GetSectionId(Convert.ToInt32(networkId), brKey, db);
+                    var sectionId = sectionsRepo.GetSectionId(Convert.ToInt32(networkId), brKey, db);
 
                     // BMSID till COST -> entry in COMMITTED_                    
                     var committedProjectModel = new CommittedProjectModel

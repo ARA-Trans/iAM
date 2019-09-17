@@ -9,7 +9,7 @@ export const hasValue = (item: any, itemProp: string = '') => {
     const itemHasValue = !isNil(item) && !isEmpty(item);
 
     let itemPropHasValue = true;
-    if (itemProp !== '') {
+    if (itemHasValue && itemProp !== '') {
         itemPropHasValue = item.hasOwnProperty(itemProp) && !isNil(item[itemProp]) && !isEmpty(item[itemProp]);
     }
 

@@ -9,31 +9,27 @@ namespace BridgeCare.Controllers
 {
     public class DeficientController: ApiController
     {
+        private readonly IDeficient repo;
         private readonly BridgeCareContext db;
-        private readonly IDeficient deficientRepo;
 
         public DeficientController() { }
 
-        public DeficientController(IDeficient deficientRepository, BridgeCareContext context)
+        public DeficientController(IDeficient repo, BridgeCareContext db)
         {
-            deficientRepo = deficientRepository ?? throw new ArgumentNullException(nameof(deficientRepository));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
         [HttpGet]
         [Route("api/GetScenarioDeficientLibrary/{selectedScenarioId}")]
-        [ModelValidation("Given Scenario Id is not valid")]
-        public DeficientLibraryModel GetScenarioDeficientLibrary(int selectedScenarioId)
-        {
-            return deficientRepo.GetScenarioDeficientLibrary(selectedScenarioId, db);
-        }
+        [ModelValidation("The scenario id is not valid.")]
+        public IHttpActionResult GetScenarioDeficientLibrary(int selectedScenarioId)
+            => Ok(repo.GetScenarioDeficientLibrary(selectedScenarioId, db));
 
         [HttpPost]
         [Route("api/SaveScenarioDeficientLibrary")]
-        [ModelValidation("Given deficients are not valid")]
-        public DeficientLibraryModel SaveScenarioDeficientLibrary([FromBody] DeficientLibraryModel data)
-        {
-            return deficientRepo.SaveScenarioDeficientLibrary(data, db);
-        }
+        [ModelValidation("The deficient data is not valid.")]
+        public IHttpActionResult SaveScenarioDeficientLibrary([FromBody] DeficientLibraryModel data)
+            => Ok(repo.SaveScenarioDeficientLibrary(data, db));
     }
 }

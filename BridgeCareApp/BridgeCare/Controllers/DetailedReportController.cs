@@ -11,41 +11,26 @@ namespace BridgeCare.Controllers
 {
     public class DetailedReportController : ApiController
     {
-        private readonly IReportCreator detailedReport;
+        private readonly IReportCreator reportCreator;
 
-        public DetailedReportController(IReportCreator detailedReport)
+        public DetailedReportController(IReportCreator reportCreator)
         {
-            this.detailedReport = detailedReport ?? throw new ArgumentNullException(nameof(detailedReport));
+            this.reportCreator = reportCreator ?? throw new ArgumentNullException(nameof(reportCreator));
         }
 
         // POST: api/DetailedReport
         [HttpPost]
         [ModelValidation("Given Network Id and/or Simulation Id are not valid")]
-        public HttpResponseMessage Post([FromBody] SimulationModel data)
+        public IHttpActionResult CreateDetailedReport([FromBody] SimulationModel data)
         {
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-            MediaTypeHeaderValue mediaType = new MediaTypeHeaderValue("application/octet-stream");
-            try
+            var response = Request.CreateResponse();
+            response.Content = new ByteArrayContent(reportCreator.CreateExcelReport(data));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
-                response.Content = new  ByteArrayContent(detailedReport.CreateExcelReport(data));
-            }
-            catch (TimeoutException)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try again later");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
-                    "Selected Network table and/or simulation table are not present in the database");
-            }
-            catch (OutOfMemoryException)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server is out of Memory. Please try again later");
-            }
-            response.Content.Headers.ContentType = mediaType;
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-            response.Content.Headers.ContentDisposition.FileName = "DetailedReport.xlsx";
-            return response;
+                FileName = "DetailedReport.xlsx"
+            };
+            return Ok(response);
         }
     }
 }

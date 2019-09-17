@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLog\HandleException.cs" />
+    <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />
     <Compile Include="ApplicationLog\Logger.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\ModelValidationAttribute.cs" />
@@ -193,7 +194,6 @@
     <Compile Include="BridgeCareContext.cs" />
     <Compile Include="Controllers\CommittedProjectsController.cs" />
     <Compile Include="Controllers\DeficientController.cs" />
-    <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
@@ -204,7 +204,6 @@
     <Compile Include="Controllers\TreatmentLibraryController.cs" />
     <Compile Include="Controllers\PerformanceLibraryController.cs" />
     <Compile Include="Controllers\SectionLocatorController.cs" />
-    <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
     <Compile Include="Controllers\DetailedReportController.cs" />
     <Compile Include="Controllers\NetworksController.cs" />
@@ -212,7 +211,6 @@
     <Compile Include="Controllers\SimulationsController.cs" />
     <Compile Include="Controllers\ValidationController.cs" />
     <Compile Include="Controllers\WindowsAuthorizationController.cs" />
-    <Compile Include="DataAccessLayer\AttributesByYearDAL.cs" />
     <Compile Include="DataAccessLayer\AttributesDAL.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryDataDAL.cs" />
@@ -267,7 +265,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IAttributesByYear.cs" />
-    <Compile Include="Interfaces\IAttributeNames.cs" />
+    <Compile Include="Interfaces\IAttributeRepo.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
     <Compile Include="Interfaces\ICommitted.cs" />
     <Compile Include="Interfaces\ICommittedProjects.cs" />
@@ -381,7 +379,7 @@
     <Compile Include="Services\DetailedReport\ReportCreator.cs" />
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
-    <Compile Include="Services\Network.cs" />
+    <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
@@ -405,7 +403,6 @@
     <Content Include="Dependencies\CalculateEvaluate.dll" />
     <Content Include="Dependencies\DatabaseManager.dll" />
     <Content Include="Dependencies\IntegrationOMS.dll" />
-    <Content Include="Dependencies\IntegrationOMS.pdb" />
     <Content Include="Dependencies\Microsoft.SqlServer.ConnectionInfo.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.Dmf.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
@@ -413,22 +410,14 @@
     <Content Include="Dependencies\Microsoft.SqlServer.Smo.dll" />
     <Content Include="Dependencies\Microsoft.SqlServer.SqlEnum.dll" />
     <Content Include="Dependencies\OpenGISExtension.dll" />
-    <Content Include="Dependencies\OpenGISExtension.pdb" />
     <Content Include="Dependencies\RoadCareGlobalOperations.dll" />
     <Content Include="Dependencies\RoadCareSecurityOperations.dll" />
     <Content Include="Dependencies\RollupSegmentation.dll" />
-    <Content Include="Dependencies\RollupSegmentation.pdb" />
     <Content Include="Dependencies\SharpMap.dll" />
-    <Content Include="Dependencies\SharpMap.pdb" />
     <Content Include="Dependencies\Simulation.dll" />
     <Content Include="Dependencies\SimulationDataAccess.dll" />
-    <Content Include="Dependencies\CalculateEvaluate.pdb" />
-    <Content Include="Dependencies\DatabaseManager.pdb" />
     <Content Include="Dependencies\RestSharp.dll" />
     <Content Include="Dependencies\RestSharp.xml" />
-    <Content Include="Dependencies\RoadCareGlobalOperations.pdb" />
-    <Content Include="Dependencies\Simulation.pdb" />
-    <Content Include="Dependencies\SimulationDataAccess.pdb" />
     <Content Include="Global.asax" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

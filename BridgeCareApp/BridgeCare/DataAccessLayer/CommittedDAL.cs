@@ -19,37 +19,23 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db"></param>
         public void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
-            try
+            foreach (var committedProjectModel in committedProjectModels)
             {
-                foreach (var committedProjectModel in committedProjectModels)
+                var existingCommitted = db.CommittedProjects.FirstOrDefault(c => c.SECTIONID == committedProjectModel.SectionId && c.SIMULATIONID == committedProjectModel.SimulationId);
+                if (existingCommitted != null)
                 {
-                    var existingCommitted = db.CommittedProjects.FirstOrDefault(c => c.SECTIONID == committedProjectModel.SectionId && c.SIMULATIONID == committedProjectModel.SimulationId);
-                    if (existingCommitted != null)
-                    {
-                        continue;
-                    }
-                    var committed = CreateCommitted(committedProjectModel);
-                    db.CommittedProjects.Add(committed);
-                    db.SaveChanges();
-
-                    // get
-                    var Insertedcommitted = GetCommittedProject(committedProjectModel.SimulationId, committedProjectModel.SectionId, committedProjectModel.Years, db);
-
-                    // Add consequences             
-                    foreach (var commitConsequence in committedProjectModel.CommitConsequences)
-                    {
-                        committed.COMMIT_CONSEQUENCES.Add(new CommitConsequencesEntity(commitConsequence.Attribute_, commitConsequence.Change_));
-                    }
-                    db.SaveChanges();
+                    continue;
                 }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "COMMITTED_");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
+                var committed = CreateCommitted(committedProjectModel);
+                db.CommittedProjects.Add(committed);
+                db.SaveChanges();
+
+                // Add consequences             
+                foreach (var commitConsequence in committedProjectModel.CommitConsequences)
+                {
+                    committed.COMMIT_CONSEQUENCES.Add(new CommitConsequencesEntity(commitConsequence.Attribute_, commitConsequence.Change_));
+                }
+                db.SaveChanges();
             }
         }
 
