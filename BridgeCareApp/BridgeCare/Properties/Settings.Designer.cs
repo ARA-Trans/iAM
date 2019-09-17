@@ -12,7 +12,7 @@ namespace BridgeCare.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,20 +26,20 @@ namespace BridgeCare.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://localhost:27017/BridgeCare?replicaSet=r1")]
-        public string MongoDBDevConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=r1")]
+        public string MongoDBProdConnectionString {
             get {
-                return ((string)(this["MongoDBDevConnectionString"]));
+                return ((string)(this["MongoDBProdConnectionString"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=r1")]
-        public string MongoDBProdConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://localhost:27017/BridgeCare?replicaSet=rs0")]
+        public string MongoDBDevConnectionString {
             get {
-                return ((string)(this["MongoDBProdConnectionString"]));
+                return ((string)(this["MongoDBDevConnectionString"]));
             }
         }
     }

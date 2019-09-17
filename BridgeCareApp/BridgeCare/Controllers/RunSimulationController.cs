@@ -4,7 +4,6 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Mvc;
 
 namespace BridgeCare.Controllers
 {

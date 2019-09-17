@@ -193,6 +193,7 @@
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
     <Compile Include="Controllers\PriorityController.cs" />
     <Compile Include="Controllers\RemainingLifeLimitController.cs" />
+    <Compile Include="Controllers\RunRollupController.cs" />
     <Compile Include="Controllers\SimulationAnalysisController.cs" />
     <Compile Include="Controllers\TargetController.cs" />
     <Compile Include="Controllers\TreatmentLibraryController.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="DataAccessLayer\Inventory\PennDotCrosswalkDAL.cs" />
     <Compile Include="DataAccessLayer\PriorityDAL.cs" />
     <Compile Include="DataAccessLayer\RemainingLifeLimitDAL.cs" />
+    <Compile Include="DataAccessLayer\RunRollupDAL.cs" />
     <Compile Include="DataAccessLayer\SimulationAnalysisDAL.cs" />
     <Compile Include="DataAccessLayer\SimulationDAL.cs" />
     <Compile Include="DataAccessLayer\TreatmentLibraryDAL.cs" />
@@ -274,6 +276,7 @@
     <Compile Include="Interfaces\IInventoryItemDetailModelGenerator.cs" />
     <Compile Include="Interfaces\IPriority.cs" />
     <Compile Include="Interfaces\IRemainingLifeLimit.cs" />
+    <Compile Include="Interfaces\IRunRollup.cs" />
     <Compile Include="Interfaces\ISimulationAnalysis.cs" />
     <Compile Include="Interfaces\ITreatmentLibrary.cs" />
     <Compile Include="Interfaces\IPerformanceLibrary.cs" />

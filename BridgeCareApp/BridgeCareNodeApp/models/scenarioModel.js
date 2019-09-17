@@ -11,6 +11,7 @@ const scenarioModel = new Schema({
     networkName: { type: String },
     simulationName: { type: String },
     status: { type: String },
+    rollupStatus: {type: String},
     shared: {type: Boolean }
 });
 

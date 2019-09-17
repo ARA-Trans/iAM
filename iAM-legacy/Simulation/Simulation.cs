@@ -69,6 +69,8 @@ namespace Simulation
         private bool _isUpdateOMS = false;
 
         private IMongoCollection<SimulationModel> Simulations;
+        string mongoConnection = "";
+        public IMongoDatabase MongoDatabase;
 
         public bool IsUpdateOMS
         {
@@ -188,13 +190,13 @@ namespace Simulation
             cgOMS.Prefix = "cgDE_";
         }
 
-        public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, IMongoCollection<SimulationModel> simulations)
+        public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, string connection)
         {
             m_strNetwork = strNetwork;
             m_strSimulation = strSimulation;
             m_strNetworkID = networkID.ToString();
             m_strSimulationID = simulationID.ToString();
-            Simulations = simulations;
+            mongoConnection = connection;
             _isUpdateOMS = false;
         }
 
@@ -205,6 +207,7 @@ namespace Simulation
             public string networkName { get; set; }
             public int networkId { get; set; }
             public string status { get; set; }
+            public string rollupStatus { get; set; }
 
             public DateTime? Created { get; set; }
 
@@ -230,12 +233,24 @@ namespace Simulation
             SimulationMessaging.AddMessage(new SimulationMessage("Begin compile simulation: " + DateTime.Now.ToString("HH:mm:ss")));
 
             UpdateDefinition<SimulationModel> updateStatus;
+
             if (isAPICall.Equals(true))
             {
+                MongoClient client = new MongoClient(mongoConnection);
+                MongoDatabase = client.GetDatabase("BridgeCare");
+                Simulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
+
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Begin compile simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
+
+            //if (isAPICall.Equals(true))
+            //{
+            //    updateStatus = Builders<SimulationModel>.Update
+            //        .Set(s => s.status, "Begin compile simulation");
+            //    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+            //}
 
             // Clear the compound treatments from the new structure.
             Simulation.CompoundTreatments.Clear();

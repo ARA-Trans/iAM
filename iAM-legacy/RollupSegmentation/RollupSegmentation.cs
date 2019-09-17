@@ -112,7 +112,7 @@ namespace RollupSegmentation
                 AllSimulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
 
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Running rollup");
+                    .Set(s => s.rollupStatus, "Running rollup");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
             Boolean isOMS = false;
@@ -141,7 +141,7 @@ namespace RollupSegmentation
                 if(apiCall == true)
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Rollup aborted");
+                    .Set(s => s.rollupStatus, "Rollup aborted");
                     AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
 				return;
@@ -208,7 +208,7 @@ namespace RollupSegmentation
             if (apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Getting ATTRIBUTE list from ATTRIBUTES table");
+                    .Set(s => s.rollupStatus, "Getting ATTRIBUTE list from ATTRIBUTES table");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
@@ -256,7 +256,7 @@ namespace RollupSegmentation
             if (apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Finished selection of all ATTIRBUTES");
+                    .Set(s => s.rollupStatus, "Finished selection of all ATTIRBUTES");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
@@ -376,7 +376,7 @@ namespace RollupSegmentation
                 if (apiCall == true)
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Inserting SEGMENT_ table attributes");
+                    .Set(s => s.rollupStatus, "Inserting SEGMENT_ table attributes");
                     AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
 
@@ -468,7 +468,7 @@ namespace RollupSegmentation
             if (apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Starting through dynamic segmentation table for geometries");
+                    .Set(s => s.rollupStatus, "Starting through dynamic segmentation table for geometries");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
@@ -526,7 +526,7 @@ namespace RollupSegmentation
                                         if (apiCall == true)
                                         {
                                             var updateStatus = Builders<SimulationModel>.Update
-                                                 .Set(s => s.status, "Error processing INESTRING segment");
+                                                 .Set(s => s.rollupStatus, "Error processing INESTRING segment");
                                             AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                                         }
                                     }
@@ -576,7 +576,7 @@ namespace RollupSegmentation
             if (apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Finished Geometries");
+                    .Set(s => s.rollupStatus, "Finished Geometries");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
             dr.Close();
@@ -705,7 +705,7 @@ namespace RollupSegmentation
             if (apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Bulk loading SECTION_ table");
+                    .Set(s => s.rollupStatus, "Bulk loading SECTION_ table");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
@@ -743,7 +743,7 @@ namespace RollupSegmentation
             if (apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Finished Bulk Loading SECTION_ table");
+                    .Set(s => s.rollupStatus, "Finished Bulk Loading SECTION_ table");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
@@ -998,7 +998,7 @@ namespace RollupSegmentation
                 if (apiCall == true)
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Linear attribute rollup complete");
+                    .Set(s => s.rollupStatus, "Linear attribute rollup complete");
                     AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
 
@@ -1047,7 +1047,7 @@ namespace RollupSegmentation
                 if (apiCall == true)
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Linear Calculated Field rollup complete");
+                    .Set(s => s.rollupStatus, "Linear Calculated Field rollup complete");
                     AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
 
@@ -1128,7 +1128,7 @@ namespace RollupSegmentation
                     if (apiCall == true)
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Rolling up Section Attribute");
+                    .Set(s => s.rollupStatus, "Rolling up Section Attribute");
                         AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     bRollupError = false;
@@ -1217,7 +1217,7 @@ namespace RollupSegmentation
                 if (apiCall == true)
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Section attribute rollup complete");
+                    .Set(s => s.rollupStatus, "Section attribute rollup complete");
                     AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
 
@@ -1267,7 +1267,7 @@ namespace RollupSegmentation
                 if (apiCall == true)
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "SRS Bulk Load beginning");
+                    .Set(s => s.rollupStatus, "SRS Bulk Load beginning");
                     AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
 
@@ -1365,17 +1365,17 @@ namespace RollupSegmentation
             if(bRollupError && apiCall == true)
             {
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Rollup aborted");
+                    .Set(s => s.rollupStatus, "Rollup aborted");
                 AllSimulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
 
                 return;
             }
 
-            if(apiCall == true && !bRollupError)
-            {
-                var simulation = new Simulation.Simulation(m_strSimulation, strNetwork, Convert.ToInt32(m_strSimulationID), Convert.ToInt32(m_strNetworkID), AllSimulations);
-                simulation.CompileSimulation(true);
-            }
+            //if(apiCall == true && !bRollupError)
+            //{
+            //    var simulation = new Simulation.Simulation(m_strSimulation, strNetwork, Convert.ToInt32(m_strSimulationID), Convert.ToInt32(m_strNetworkID), AllSimulations);
+            //    simulation.CompileSimulation(true);
+            //}
 		}
 
 
