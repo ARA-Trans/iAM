@@ -13,7 +13,7 @@
                     <v-text-field v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'" label="Library Name"
                                   v-model="selectedPriorityLibrary.name">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="onClearSelectedPriorityLibrary">
+                            <v-btn class="ara-orange" icon @click="selectItemValue = '0'">
                                 <v-icon>fas fa-times</v-icon>
                             </v-btn>
                         </template>
@@ -29,7 +29,7 @@
         <v-flex xs12 v-show="hasSelectedPriorityLibrary">
             <div class="priorities-data-table">
                 <v-data-table :headers="priorityDataTableHeaders" :items="prioritiesDataTableRows"
-                              class="elevation-1 fixed-header v-table__overflow">
+                              class="elevation-1 v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td v-for="header in priorityDataTableHeaders">
                             <div v-if="header.value === 'priorityLevel' || header.value === 'year'">
@@ -43,14 +43,50 @@
                                 </v-edit-dialog>
                             </div>
                             <div v-else-if="header.value === 'criteria'">
-                                <v-text-field readonly :value="props.item.criteria">
-                                    <template slot="append-outer">
-                                        <v-icon class="ara-orange"
-                                                @click="onEditCriteria(props.item.id, props.item.criteria)">
-                                            fas fa-edit
-                                        </v-icon>
-                                    </template>
-                                </v-text-field>
+                                <div v-if="budgetOrder.length > 5">
+                                    <v-layout row>
+                                        <v-menu v-show="props.item.criteria !== ''" left min-width="500px" min-height="500px">
+                                            <template slot="activator">
+                                                <v-btn icon class="ara-blue"><v-icon>fas fa-eye</v-icon></v-btn>
+                                            </template>
+                                            <v-card>
+                                                <v-card-text>
+                                                    <v-textarea rows="5" no-resize readonly full-width outline
+                                                                :value="props.item.criteria">
+                                                    </v-textarea>
+                                                </v-card-text>
+                                            </v-card>
+                                        </v-menu>
+                                        <v-btn icon class="ara-orange" @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
+                                            <v-icon>fas fa-edit</v-icon>
+                                        </v-btn>
+                                    </v-layout>
+                                </div>
+                                <div v-else>
+                                    <v-text-field :id="'priority' + props.item.priorityId" readonly :value="props.item.criteria">
+                                        <template slot="append-outer">
+                                            <v-layout row class="criteria-input-icons">
+                                                <v-menu left min-width="500px"
+                                                        min-height="500px">
+                                                    <template slot="activator">
+                                                        <v-btn :id="'priority' + props.item.priorityId + 'EyeIcon'" hidden icon class="ara-blue"><v-icon>fas fa-eye</v-icon></v-btn>
+                                                    </template>
+                                                    <v-card>
+                                                        <v-card-text>
+                                                            <v-textarea rows="5" no-resize readonly full-width outline
+                                                                        :value="props.item.criteria">
+                                                            </v-textarea>
+                                                        </v-card-text>
+                                                    </v-card>
+                                                </v-menu>
+                                                <v-icon class="ara-orange"
+                                                        @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
+                                                    fas fa-edit
+                                                </v-icon>
+                                            </v-layout>
+                                        </template>
+                                    </v-text-field>
+                                </div>
                             </div>
                             <div v-else>
                                 <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
@@ -138,7 +174,6 @@
         @State(state => state.priority.priorityLibraries) statePriorityLibraries: PriorityLibrary[];
         @State(state => state.priority.selectedPriorityLibrary) stateSelectedPriorityLibrary: PriorityLibrary;
         @State(state => state.priority.scenarioPriorityLibrary) stateScenarioPriorityLibrary: PriorityLibrary;
-        @State(state => state.investmentEditor.scenarioInvestmentLibrary) scenarioInvestmentLibrary: InvestmentLibrary;
 
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getPriorityLibraries') getPriorityLibrariesAction: any;
@@ -210,8 +245,15 @@
             }
         }
 
+        updated() {
+            if (hasValue(this.selectedPriorityLibrary) && hasValue(this.selectedPriorityLibrary.priorities) &&
+            this.budgetOrder.length <= 5) {
+                this.selectedPriorityLibrary.priorities.forEach(priority => this.showEyeIcon(priority.id));
+            }
+        }
+
         /**
-         * Sets the priorityLibraries list property with a copy of the statePriorityLibiraries list property when
+         * Sets the priorityLibraries list property with a copy of the statePriorityLibraries list property when
          * statePriorityLibraries list changes are detected
          */
         @Watch('statePriorityLibraries')
@@ -405,9 +447,10 @@
                     });
                 }
 
-                this.selectedPriorityLibrary.priorities = append(newPriority, this.selectedPriorityLibrary.priorities);
-
-                this.updateSelectedPriorityLibraryAction({updatedSelectedPriorityLibrary: this.selectedPriorityLibrary});
+                this.updateSelectedPriorityLibraryAction({updatedSelectedPriorityLibrary: {
+                    ...this.selectedPriorityLibrary,
+                    priorities: append(newPriority, this.selectedPriorityLibrary.priorities)
+                }});
             }
         }
 
@@ -463,6 +506,14 @@
 
                 this.updateSelectedPriorityLibraryAction({updatedSelectedPriorityLibrary: this.selectedPriorityLibrary});
             }
+        }
+
+        showEyeIcon(priorityId: any) {
+            const inputElementId = `priority${priorityId}`;
+            const inputElement = document.getElementById(inputElementId) as HTMLInputElement;
+            const eyeIconElementId = `${inputElementId}EyeIcon`;
+            const eyeIconElement = document.getElementById(eyeIconElementId) as HTMLElement;
+            eyeIconElement.hidden = inputElement.scrollWidth <= inputElement.clientWidth;
         }
 
         /**
@@ -592,3 +643,9 @@
         }
     }
 </script>
+
+<style>
+    .criteria-input-icons {
+        margin-left: 1px;
+    }
+</style>
