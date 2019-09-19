@@ -60,6 +60,12 @@
       <HintPath>..\packages\EPPlus.4.5.3\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.Dmf, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.ServiceBrokerEnum, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.Smo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="MongoDB.Bson, Version=2.8.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.8.1\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -70,6 +76,9 @@
       <HintPath>..\packages\MongoDB.Driver.Core.2.8.1\lib\net452\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="RestSharp, Version=106.6.10.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.6.10\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
@@ -422,6 +431,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -434,9 +444,29 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\iAM-legacy\CalculateEvaluate\CalculateEvaluate.csproj">
+      <Project>{3ba8af00-58ae-4086-8e32-fe302711e899}</Project>
+      <Name>CalculateEvaluate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\iAM-legacy\OpenGISExtension\OpenGISExtension.csproj">
+      <Project>{b4586234-fc3b-4959-ad07-81dda133dd77}</Project>
+      <Name>OpenGISExtension</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\iAM-legacy\RoadCareGlobalOperations\RoadCareGlobalOperations.csproj">
+      <Project>{994d28d2-2a90-484a-b436-8ea830e7b4f0}</Project>
+      <Name>RoadCareGlobalOperations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\iAM-legacy\RoadCareSecurityOperations\RoadCareSecurityOperations.csproj">
+      <Project>{55a1cfce-d87f-42d6-9797-26b9758fac29}</Project>
+      <Name>RoadCareSecurityOperations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\iAM-legacy\RollupSegmentation\RollupSegmentation.csproj">
       <Project>{81a7b2fe-7b9f-42e3-a9f1-4bc0c76a9817}</Project>
       <Name>RollupSegmentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\iAM-legacy\SharpMap\SharpMap\SharpMap.csproj">
+      <Project>{c83777fc-aabb-47d9-911f-d76255d4d541}</Project>
+      <Name>SharpMap</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\iAM-legacy\Simulation\Simulation.csproj">
       <Project>{31db6cda-70a3-4c94-a002-fa1bd1df9b02}</Project>
