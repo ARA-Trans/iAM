@@ -13,7 +13,7 @@
                     <v-text-field v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'" label="Library Name"
                                   v-model="selectedPriorityLibrary.name">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="selectItemValue = '0'">
+                            <v-btn class="ara-orange" icon @click="onClearSelectedPriorityLibrary">
                                 <v-icon>fas fa-times</v-icon>
                             </v-btn>
                         </template>
@@ -220,7 +220,7 @@
                     }
                 }
 
-                vm.selectItemValue = '0';
+                vm.onClearSelectedPriorityLibrary();
                 setTimeout(() => {
                     vm.getPriorityLibrariesAction()
                         .then(() => {
@@ -240,7 +240,7 @@
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/PriorityEditor/Library/') {
                 this.selectedScenarioId = '0';
-                this.selectItemValue = '0';
+                this.onClearSelectedPriorityLibrary();
                 next();
             }
         }
@@ -316,6 +316,10 @@
             this.setTableColumnsWidth();
             this.setTableHeaders();
             this.setTableData();
+        }
+
+        onClearSelectedPriorityLibrary() {
+            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
         }
 
         /**
@@ -400,8 +404,6 @@
                             const priorityFund: PriorityFund = priority.priorityFunds
                                 .find((pf: PriorityFund) => pf.budget === budgetName) as PriorityFund;
                             amount = priorityFund.funding;
-                        } else {
-
                         }
                         row[budgetName] = amount.toString();
                     });
