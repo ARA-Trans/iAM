@@ -23,10 +23,12 @@
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
                 <v-flex xs12>
                     <v-layout justify-center>
-                        <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
-                                      v-model="selectedInvestmentLibrary.inflationRate"
-                                      :disabled="!hasSelectedInvestmentLibrary">
-                        </v-text-field>
+                        <v-flex xs3>
+                            <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
+                                          v-model="selectedInvestmentLibrary.inflationRate"
+                                          :disabled="!hasSelectedInvestmentLibrary">
+                            </v-text-field>
+                        </v-flex>
                     </v-layout>
                 </v-flex>
             </v-layout>
@@ -59,7 +61,7 @@
                     <v-card>
                         <v-data-table :headers="budgetYearsGridHeaders" :items="budgetYearsGridData"
                                       v-model="selectedGridRows" select-all item-key="year"
-                                      class="elevation-1 fixed-header v-table__overflow">
+                                      class="elevation-1 v-table__overflow">
                             <template slot="items" slot-scope="props">
                                 <td>
                                     <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
