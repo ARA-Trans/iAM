@@ -32,15 +32,12 @@ namespace BridgeCare.DataAccessLayer
 #else
                 mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var start = new RollupSegmentation.RollupSegmentation(data.SimulationName, data.NetworkName,
-                    data.SimulationId.ToString(), data.NetworkId.ToString(), true, mongoConnection);
+                var start = new RollupSegmentation.RollupSegmentation(data.NetworkName, data.NetworkId.ToString(), true, mongoConnection);
                 start.strNetwork = data.NetworkName;
-
-                //Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
 
                 Thread rollUpandSimulation = new Thread(new ThreadStart(start.DoRollup));
                 rollUpandSimulation.Start();
-                return Task.FromResult("Simulation running...");
+                return Task.FromResult("Rolling up...");
             }
             catch (Exception ex)
             {

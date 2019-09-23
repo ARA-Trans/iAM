@@ -4,7 +4,7 @@ const rollupController = require('../controllers/rollupController');
 function routes(Rollup){
     const rollupRouter = express.Router();
     const controller = rollupController(Rollup);
-    rollupRouter.route("/GetMongoRollup")
+    rollupRouter.route("/GetMongoRollups")
         .post(controller.post)
         .get(controller.get);
 

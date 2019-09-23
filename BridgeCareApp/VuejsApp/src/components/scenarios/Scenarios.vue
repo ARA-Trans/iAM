@@ -2,6 +2,30 @@
     <v-layout column>
         <v-flex xs12>
             <v-card>
+                <v-flex xs6 offset-xs6>
+                    <v-data-table :headers="rollupGridHeader"
+                                  :items="adminRollup"
+                                  :items-per-page="5"
+                                  hide-actions
+                                  class="elevation-1">
+                        <template slot="items" slot-scope="props">
+                            <td>{{ props.item.networkName }}</td>
+                            <td>{{ props.item.createdDate }}</td>
+                            <td>{{ props.item.lastModifiedDate }}</td>
+                            <td>{{ props.item.rollupStatus }}</td>
+                            <td>
+                                <v-layout row wrap>
+                                    <v-flex>
+                                        <v-btn icon class="ara-blue" @click="onShowRunRollupAlert(props.item)">
+                                            <v-icon>fas fa-play</v-icon>
+                                        </v-btn>
+                                    </v-flex>
+                                </v-layout>
+                            </td>
+                        </template>
+                    </v-data-table>
+                </v-flex>
+                <v-spacer></v-spacer>
                 <v-card-title>
                     <v-flex xs4>My Scenarios</v-flex>
                     <v-spacer></v-spacer>
@@ -115,6 +139,7 @@
         <Alert :dialogData="alertData" @submit="onSubmitAlertResult" />
 
         <Alert :dialogData="alertBeforeDelete" @submit="onSubmitResponse" />
+        <Alert :dialogData="alertBeforeRunRollup" @submit="onSubmitRollupDecision" />
 
         <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario" />
 
@@ -141,6 +166,7 @@
     import {Network} from '@/shared/models/iAM/network';
     import { clone } from 'ramda';
     import { Simulation } from '../../shared/models/iAM/simulation';
+    import { Rollup, emptyRollup } from '../../shared/models/iAM/rollup';
 
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog}
@@ -151,6 +177,7 @@
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.authentication.loginFailed) loginFailed: boolean;
+        @State(state => state.rollup.rollups) rollups: Rollup[];
         
         @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('getLegacyScenarios') getLegacyScenariosAction: any;
@@ -159,9 +186,12 @@
         @Action('deleteScenario') deleteScenarioAction: any;
         @Action('updateScenario') updateScenarioAction: any;
         @Action('getSummaryReportMissingAttributes') getSummaryReportMissingAttributesAction: any;
+        @Action('getMongoRollups') getMongoRollupsAction: any;
+        @Action('rollupNetwork') rollupNetworkAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        alertBeforeRunRollup: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
         showCreateScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
@@ -171,7 +201,15 @@
             {text: 'Status', sortable: false, value: 'status' },
             {text: '', sortable: false, value: 'actions'}
         ];
+        rollupGridHeader: object[] = [
+            {text: 'Network name', align: 'left', sortable: false, value: 'rollupName'},
+            {text: 'Date Created', sortable: false, value: 'createdDate'},
+            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
+            {text: 'Status', sortable: false, value: 'rollupStatus' },
+            {text: '', sortable: false, value: 'actions'}
+        ];
         userScenarios: Scenario[] = [];
+        adminRollup: any[] = [];
         sharedScenarios: Scenario[] = [];
         searchMine = '';
         searchShared = '';
@@ -181,6 +219,7 @@
         simulationName: string = '';
         scenarioId: string = '';
         currentScenario: Scenario = clone(emptyScenario);
+        currentRollup: Rollup = clone(emptyRollup);
 
         @Watch('scenarios')
         onScenariosChanged() {
@@ -196,10 +235,22 @@
 
         }
 
+        @Watch('rollups')
+        onRollupsChanged() {
+            if (hasValue(this.rollups)) {
+                this.adminRollup = this.rollups;
+            }
+            else {
+                this.adminRollup = [];
+            }
+
+        }
+
         @Watch('loginFailed')
         onLoginFailed() {
             if (this.loginFailed == false) {
                 this.getMongoScenariosAction({ userId: this.userId });
+                this.getMongoRollupsAction({ });
             }
         }
 
@@ -209,6 +260,7 @@
         mounted() {
             if (this.loginFailed == false) {
                 this.getMongoScenariosAction({ userId: this.userId });
+                this.getMongoRollupsAction({ });
             }
         }
 
@@ -292,6 +344,28 @@
         }
 
         /**
+         * Shows the Alert
+         */
+        onShowRunRollupAlert(rollup: Rollup) {
+            this.currentRollup = rollup;
+            this.alertBeforeRunRollup = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'The rollup can take around five minutes to finish. ' +
+                    'Are you sure that you want to continue?'
+            };
+        }
+
+        onSubmitRollupDecision(response: boolean) {
+            this.alertBeforeRunRollup = clone(emptyAlertData);
+            
+            if (response) {
+                this.rollupNetwork();
+            }
+        }
+
+        /**
          * Takes in a boolean parameter from the AppPopupModal to determine if a scenario's simulation should be executed
          * @param runScenarioSimulation Alert result
          */
@@ -310,6 +384,12 @@
             this.runSimulationAction({
                 selectedScenario: this.currentScenario,
                 userId: this.userId
+            });
+        }
+
+        rollupNetwork() {
+            this.rollupNetworkAction({
+                selectedNetwork: this.currentRollup
             });
         }
 

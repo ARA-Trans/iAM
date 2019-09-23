@@ -29,9 +29,7 @@ namespace RollupSegmentation
         String m_strUserID="";
         String m_strPassword="";
 
-        string m_strSimulation = "";
         string m_strNetworkID = "";
-        string m_strSimulationID = "";
         bool apiCall = false;
         string mongoConnection = "";
 
@@ -90,12 +88,10 @@ namespace RollupSegmentation
 
         }
 
-        public RollupSegmentation(String strSimulation, String m_strNetwork, String strSimulationID, String strNetworkID, bool isAPI, string connection)
+        public RollupSegmentation(String m_strNetwork, String strNetworkID, bool isAPI, string connection)
         {
             strNetwork = m_strNetwork;
-            m_strSimulation = strSimulation;
             m_strNetworkID = strNetworkID;
-            m_strSimulationID = strSimulationID;
             apiCall = isAPI;
             mongoConnection = connection;
         }
@@ -1138,7 +1134,7 @@ namespace RollupSegmentation
                     if (apiCall == true)
                     {
                         var updateStatus = Builders<RollupModel>.Update
-                    .Set(s => s.rollupStatus, "Rolling up Section Attribute");
+                    .Set(s => s.rollupStatus, "Rolling up Section Attribute: " + attribute);
                         Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
                     }
                     bRollupError = false;
@@ -1372,7 +1368,14 @@ namespace RollupSegmentation
 			CleanCommittedOnSectionNumberChange( strNetworkID );
 			RollupMessaging.AddMessge( "End rollup of network: " + strNetwork + " at " + DateTime.Now.ToString( "HH:mm:ss" ) );
 
-            if(bRollupError && apiCall == true)
+            if (apiCall == true)
+            {
+                var updateStatus = Builders<RollupModel>.Update
+                .Set(s => s.rollupStatus, "End rollup of network: " + strNetwork);
+                Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+            }
+
+            if (bRollupError && apiCall == true)
             {
                 var updateStatus = Builders<RollupModel>.Update
                     .Set(s => s.rollupStatus, "Rollup aborted");

@@ -27,7 +27,6 @@ namespace BridgeCare.Controllers
             var result = await Task.Factory.StartNew(() => rollup.Start(data));
             if (result.IsCompleted)
             {
-                rollup.SetLastRunDate(data.SimulationId, db);
                 return Ok();
             }
             return NotFound();
