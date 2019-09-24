@@ -89,9 +89,9 @@
          * Sets the component's grid data
          */
         setFeasibility() {
-            if (this.feasibilityTabSelectedTreatment.id !== 0 &&
+            if (this.feasibilityTabSelectedTreatment.id !== '0' &&
                 !isNil(this.feasibilityTabSelectedTreatment.feasibility) &&
-                this.feasibilityTabSelectedTreatment.feasibility.id !== 0) {
+                this.feasibilityTabSelectedTreatment.feasibility.id !== '0') {
                     this.feasibility = this.feasibilityTabSelectedTreatment.feasibility;
             } else {
                 this.feasibility = clone(emptyFeasibility);

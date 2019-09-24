@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
@@ -13,101 +14,68 @@ namespace BridgeCare.DataAccessLayer
 {
     public class RemainingLifeLimitDAL : IRemainingLifeLimit
     {
-        public RemainingLifeLimitLibraryModel GetScenarioRemainingLifeLimitLibrary(int simulationId,
-            BridgeCareContext db)
+        /// <summary>
+        /// Fetches a simulation with remaining life limits
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>RemainingLifeLimitLibraryModel</returns>
+        public RemainingLifeLimitLibraryModel GetSimulationRemainingLifeLimitLibrary(int id, BridgeCareContext db)
         {
-            try
-            {
-                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
-                {
-                    // query for an existing simulation and include remaining life limits
-                    var simulation = db.Simulations.Include(s => s.REMAINING_LIFE_LIMITS)
-                        .Single(s => s.SIMULATIONID == simulationId);
-                    // return the simulation's data and any remaining life limits data as a RemainingLifeLimitLibraryModel
-                    return new RemainingLifeLimitLibraryModel(simulation);
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "REMAINING_LIFE_LIMITS");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+            if (db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}");
+                
+            var simulation = db.Simulations.Include(s => s.REMAINING_LIFE_LIMITS).Single(s => s.SIMULATIONID == id);
 
-            return new RemainingLifeLimitLibraryModel();
+            return new RemainingLifeLimitLibraryModel(simulation);
         }
 
-        public RemainingLifeLimitLibraryModel SaveScenarioRemainingLifeLimitLibrary(RemainingLifeLimitLibraryModel data,
+        /// <summary>
+        /// Executes an upsert/delete operation on the remaining life limits table
+        /// </summary>
+        /// <param name="model">RemainingLifeLimitLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>RemainingLifeLimitLibraryModel</returns>
+        public RemainingLifeLimitLibraryModel SaveSimulationRemainingLifeLimitLibrary(RemainingLifeLimitLibraryModel model,
             BridgeCareContext db)
         {
-            try
+            var id = int.Parse(model.Id);
+
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}");
+
+            var simulation = db.Simulations.Include(s => s.REMAINING_LIFE_LIMITS).Single(s => s.SIMULATIONID == id);
+ 
+            simulation.COMMENTS = model.Description;
+
+            if (simulation.REMAINING_LIFE_LIMITS.Any())
             {
-                var simulationId = int.Parse(data.Id);
-                
-                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
+                simulation.REMAINING_LIFE_LIMITS.ToList().ForEach(remainingLifeLimitEntity =>
                 {
-                    // query for an existing simulation
-                    var simulation = db.Simulations.Include(s => s.REMAINING_LIFE_LIMITS)
-                        .Single(s => s.SIMULATIONID == simulationId);
-                    // update the simulation comments
-                    simulation.COMMENTS = data.Description;
-                    // check for existing remaining life limits
-                    if (simulation.REMAINING_LIFE_LIMITS.Any())
+                    var remainingLifeLimitModel = model.RemainingLifeLimits.SingleOrDefault(m =>
+                        m.Id == remainingLifeLimitEntity.REMAINING_LIFE_ID.ToString());
+
+                    if (remainingLifeLimitModel == null)
+                        RemainingLifeLimitsEntity.DeleteEntry(remainingLifeLimitEntity, db);
+                    else
                     {
-                        simulation.REMAINING_LIFE_LIMITS.ToList().ForEach(remainingLifeLimit =>
-                        {
-                            // check for a RemainingLifeLimitModel that has a matching id with a remaining life limit id
-                            var model = data.RemainingLifeLimits.SingleOrDefault(m =>
-                                m.Id == remainingLifeLimit.REMAINING_LIFE_ID.ToString());
-                            if (model != null)
-                            {
-                                // update the remaining life limit record with the matched model data
-                                model.matched = true;
-                                model.Update(remainingLifeLimit);
-                            }
-                            else
-                            {
-                                RemainingLifeLimitsEntity.DeleteEntry(remainingLifeLimit, db);
-                            }
-                        });
+                        remainingLifeLimitModel.matched = true;
+                        remainingLifeLimitModel.Update(remainingLifeLimitEntity);
                     }
-                    // check for models that didn't have a remaining life limit record match
-                    if (data.RemainingLifeLimits.Any(model => !model.matched))
-                    {
-                        // create new remaining life limits from the unmatched models' data
-                        db.RemainingLifeLimits
-                            .AddRange(data.RemainingLifeLimits
-                                .Where(model => !model.matched)
-                                .Select(model => new RemainingLifeLimitsEntity(simulationId, model))
-                                .ToList()
-                            );
-                    }
-                    // save all changes
-                    db.SaveChanges();
-                    // return the updated/inserted records as a RemainingLifeLimitLibraryModel
-                    return new RemainingLifeLimitLibraryModel(simulation);
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "REMAINING_LIFE_LIMITS");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
+                });
             }
 
-            return new RemainingLifeLimitLibraryModel();
+            if (model.RemainingLifeLimits.Any(m => !m.matched))
+                db.RemainingLifeLimits
+                    .AddRange(model.RemainingLifeLimits
+                        .Where(remainingLifeLimitModel => !remainingLifeLimitModel.matched)
+                        .Select(remainingLifeLimitModel => new RemainingLifeLimitsEntity(id, remainingLifeLimitModel))
+                        .ToList()
+                    );
+
+            db.SaveChanges();
+
+            return new RemainingLifeLimitLibraryModel(simulation);
         }
     }
 }

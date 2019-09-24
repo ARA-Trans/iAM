@@ -9,54 +9,53 @@ namespace BridgeCare.Controllers
 {
     public class InventoryController : ApiController
     {
+        private readonly IInventory repo;
+        private readonly IInventoryItemDetailModelGenerator modelGenerator;
         private readonly BridgeCareContext db;
-        private readonly IInventory inventory;
-        private readonly IInventoryItemDetailModelGenerator inventoryItemDetailModelGenerator;
 
-        public InventoryController(IInventory inventoryInterface, IInventoryItemDetailModelGenerator inventoryItemDetailModelGenerator, BridgeCareContext context)
+        public InventoryController(IInventory repo, IInventoryItemDetailModelGenerator modelGenerator, BridgeCareContext db)
         {
-            inventory = inventoryInterface ?? throw new ArgumentNullException(nameof(inventoryInterface));
-            this.inventoryItemDetailModelGenerator = inventoryItemDetailModelGenerator ?? throw new ArgumentNullException(nameof(inventoryItemDetailModelGenerator));
-            db = context ?? throw new ArgumentNullException(nameof(context));
-        }        
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.modelGenerator = modelGenerator ?? throw new ArgumentNullException(nameof(modelGenerator));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
+        }
 
         /// <summary>
-        /// Get: api/InventoryItemDetailByBMSId
+        /// API endpoint for fetching inventory data
         /// </summary>
+        /// <returns>IHttpActionResult</returns>
+        [HttpGet]
+        [Route("api/GetInventory")]
+        public IHttpActionResult GetInventory() => Ok(repo.GetInventorySelectionModels(db));
+
+        /// <summary>
+        /// API endpoint for fetching inventory item detail data by bms id
+        /// </summary>
+        /// <param name="bmsId">BMS identifier</param>
+        /// <returns>IHttpActionResult</returns>
+        [HttpGet]
         [Route("api/GetInventoryItemDetailByBmsId")]
-        [ModelValidation("Given BMSId is not valid")]        
-        [HttpGet]
-        public InventoryItemDetailModel Get(string bmsId)
+        [ModelValidation("The BMS id is not valid")]
+        public IHttpActionResult GetInventoryItemDetailByBmsId(string bmsId)
         {
-            var inventoryModel = inventory.GetInventoryByBMSId(bmsId, db);
-            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
+            var inventoryItemDetailModel = modelGenerator.MakeInventoryItemDetailModel(repo.GetInventoryByBMSId(bmsId, db));
             inventoryItemDetailModel.BMSId = bmsId;
-            return inventoryItemDetailModel;
+            return Ok(inventoryItemDetailModel);
         }
 
         /// <summary>
-        /// Get: api/InventoryItemDetailByBRKey
+        /// API endpoint for fetching inventory item detail data by BR key
         /// </summary>
+        /// <param name="brKey">BR key identifier</param>
+        /// <returns>IHttpActionResult</returns>
+        [HttpGet]
         [Route("api/GetInventoryItemDetailByBrKey")]
-        [ModelValidation("Given BRKey is not valid")]
-        [HttpGet]
-        public InventoryItemDetailModel Get(int brKey)
+        [ModelValidation("The BR key is not valid.")]
+        public IHttpActionResult GetInventoryItemDetailByBrKey(int brKey)
         {
-            var inventoryModel = inventory.GetInventoryByBRKey(brKey, db);
-            var inventoryItemDetailModel = inventoryItemDetailModelGenerator.MakeInventoryItemDetailModel(inventoryModel);
+            var inventoryItemDetailModel = modelGenerator.MakeInventoryItemDetailModel(repo.GetInventoryByBRKey(brKey, db));
             inventoryItemDetailModel.BRKey = brKey;
-            return inventoryItemDetailModel;
-        }
-
-        /// <summary>
-        /// Get: api/InventorySelectionModels
-        /// </summary>
-        [Route("api/GetInventory")]       
-        [HttpGet]
-        public List<InventorySelectionModel> Get()
-        {
-            var inventorySelectionModels = inventory.GetInventorySelectionModels(db);
-            return inventorySelectionModels;
+            return Ok(inventoryItemDetailModel);
         }
     }
 }

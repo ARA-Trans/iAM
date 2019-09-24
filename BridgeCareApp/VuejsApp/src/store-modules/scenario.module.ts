@@ -1,7 +1,7 @@
 import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
-import {clone, append, any, propEq, findIndex, remove} from 'ramda';
+import {clone, any, propEq, findIndex, remove} from 'ramda';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
@@ -41,11 +41,13 @@ const mutations = {
             state.scenarios = scenarios;
         }
     },
-    removeScenarioMutator(state: any, documentKey: any) {
-        if (any(propEq('id', documentKey), state.scenarios)) {
-            const scenarios: Scenario[] = clone(state.scenarios);
-            const index: number = findIndex(propEq('id', documentKey), scenarios);
-            state.scenarios = remove(index, 1, scenarios);
+    removeScenarioMutator(state: any, identifiers: any) {
+        if (any(propEq('simulationId', identifiers.id), state.scenarios)) {
+            const index: number = findIndex(propEq('simulationId', identifiers.id), state.scenarios);
+            state.scenarios = remove(index, 1, state.scenarios);
+        } else if (any(propEq('id', identifiers.mongoId), state.scenarios)) {
+            const index: number = findIndex(propEq('id', identifiers.mongoId), state.scenarios);
+            state.scenarios = remove(index, 1, state.scenarios);
         }
     },
     selectedScenarioNameMutator(state: any, selectedScenarioName: string) {
@@ -60,20 +62,13 @@ const mutations = {
 };
 
 const actions = {
-    async getMongoScenarios({commit}: any, payload: any) {
-        return await ScenarioService.getMongoScenarios()
-            .then((response: AxiosResponse<Scenario[]>) => {
-                const scenarios: Scenario[] = response.data
-                    .map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
-                commit('scenariosMutator', scenarios);
-            });
+    setSelectedScenarioName({commit}: any, payload: any) {
+        commit('selectedScenarioNameMutator', payload.selectedScenarioName);
     },
-    async getLegacyScenarios({ commit }: any, payload: any) {
-        return await ScenarioService.getLegacyScenarios(payload.scenarios)
-            .then((response: AxiosResponse<Scenario[]>) => {
-                if (hasValue(response)) {
+    async getMongoScenarios({commit}: any) {
+        return await ScenarioService.getMongoScenarios()
+            .then((response: AxiosResponse<any[]>) => {
+                if (hasValue(response, 'data')) {
                     const scenarios: Scenario[] = response.data
                         .map((data: any) => {
                             return convertFromMongoToVueModel(data);
@@ -82,27 +77,34 @@ const actions = {
                 }
             });
     },
-    async createScenario({dispatch, commit}: any, payload: any) {
-        return await ScenarioService.createScenario(payload.createScenarioData, payload.userId)
-            .then((response: AxiosResponse<Scenario>) => {
-                const createdScenario: Scenario = convertFromMongoToVueModel(response.data);
-                commit('createdScenarioMutator', createdScenario);
-                dispatch('setSuccessMessage', {message: 'Successfully created scenario'});
+    async getLegacyScenarios({ commit }: any, payload: any) {
+        return await ScenarioService.getLegacyScenarios(payload.scenarios)
+            .then((response: AxiosResponse<Scenario[]>) => {
+                if (hasValue(response, 'data')) {
+                    const scenarios: Scenario[] = response.data
+                        .map((data: any) => {
+                            return convertFromMongoToVueModel(data);
+                        });
+                    commit('scenariosMutator', scenarios);
+                }
             });
     },
     async runSimulation({dispatch, commit}: any, payload: any) {
         await ScenarioService.runScenarioSimulation(payload.selectedScenario, payload.userId)
-            .then((response: AxiosResponse<any>) => {
-                if (http2XX.test(response.status.toString())) {
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     dispatch('setSuccessMessage', {message: 'Simulation started'});
                 }
             });
     },
-    async deleteScenario({ dispatch, commit }: any, payload: any) {
-        return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
-            .then((response: AxiosResponse<number>) => {
-                commit('removeScenarioMutator', response.data);
-                dispatch('setSuccessMessage', { message: 'Successfully deleted scenario' });
+    async createScenario({dispatch, commit}: any, payload: any) {
+        return await ScenarioService.createScenario(payload.createScenarioData, payload.userId)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'data')) {
+                    const createdScenario: Scenario = convertFromMongoToVueModel(response.data);
+                    commit('createdScenarioMutator', createdScenario);
+                    dispatch('setSuccessMessage', {message: 'Successfully created scenario'});
+                }
             });
     },
     async updateScenario({ dispatch, commit }: any, payload: any) {
@@ -113,41 +115,25 @@ const actions = {
                 dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
             });
     },
-    async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
-        if (payload.operationType == 'update' || payload.operationType == 'replace') {
-            const updatedScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
-            commit('updatedScenarioMutator', updatedScenario);
-        }
-
-        if (payload.operationType == 'insert') {
-            const createdScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
-            if (!any(propEq('id', createdScenario.id), state.scenarios)) {
-                commit('createdScenarioMutator', createdScenario);
-                dispatch('setInfoMessage', {message: 'New scenario has been inserted from another source'});
-            }
-        }
-
-        if (payload.operationType == 'delete') {
-            const deletedScenario: Scenario = convertFromMongoToVueModel(payload.documentKey);
-            if (any(propEq('id', deletedScenario.id), state.scenarios)) {
-                commit('removeScenarioMutator', deletedScenario.id);
-                dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
-            }
-        }
-    },
-    setSelectedScenarioName({commit}: any, payload: any) {
-        commit('selectedScenarioNameMutator', payload.selectedScenarioName);
+    async deleteScenario({ dispatch, commit }: any, payload: any) {
+        return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                    commit('removeScenarioMutator', {id: payload.simulationId, mongoId: payload.scenarioId});
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted scenario'});
+                }
+            });
     },
     async getScenarioAnalysis({commit}: any, payload: any) {
         await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
             .then((response: AxiosResponse<any>) => {
-                commit('analysisMutator', response.data ? response.data : clone(emptyAnalysis));
+                commit('analysisMutator', hasValue(response, 'data') ? response.data : emptyAnalysis);
             });
     },
     async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {
         await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData)
-            .then((response: AxiosResponse<any>) => {
-                if (http2XX.test(response.status.toString())) {
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     commit('analysisMutator', payload.scenarioAnalysisData);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario analysis'});
                 }
@@ -155,9 +141,42 @@ const actions = {
     },
     async getSummaryReportMissingAttributes({commit}: any, payload: any) {
         await ReportsService.getSummaryReportMissingAttributes(payload.selectedScenarioId, payload.selectedNetworkId)
-            .then((response: AxiosResponse<any[]>) => {
-                commit('missingSummaryReportAttributesMutator', response.data);
+            .then((response: AxiosResponse<string[]>) => {
+                if (hasValue(response, 'data')) {
+                    commit('missingSummaryReportAttributesMutator', response.data);
+                }
             });
+    },
+    async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
+        if (hasValue(payload, 'operationType')) {
+            switch (payload.operationType) {
+                case 'update':
+                case 'replace':
+                    if (hasValue(payload, 'fullDocument')) {
+                        const updatedScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
+                        commit('updatedScenarioMutator', updatedScenario);
+                    }
+                    break;
+                case 'insert':
+                    if (hasValue(payload, 'fullDocument')) {
+                        const createdScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
+                        if (!any(propEq('id', createdScenario.id), state.scenarios)) {
+                            commit('createdScenarioMutator', createdScenario);
+                            dispatch('setInfoMessage', {message: 'New scenario has been inserted from another source'});
+                        }
+                    }
+                    break;
+                case 'delete':
+                    if (hasValue(payload, 'documentKey')) {
+                        const deletedScenario: Scenario = convertFromMongoToVueModel(payload.documentKey);
+                        if (any(propEq('id', deletedScenario.id), state.scenarios)) {
+                            commit('removeScenarioMutator', deletedScenario.id);
+                            dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
+                        }
+                    }
+                    break;
+            }
+        }
     }
 };
 

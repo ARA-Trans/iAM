@@ -47,13 +47,12 @@ namespace BridgeCare
             // NOTE: To load from web.config uncomment the line below. Make sure to add a
             // Unity.Configuration to the using statements. container.LoadConfiguration();
 
-            container.RegisterType<INetwork, Network>();
+            container.RegisterType<INetwork, NetworkDAL>();
             container.RegisterType<ISimulation, SimulationDAL>();
             container.RegisterType<ISections, SectionsDAL>();
             container.RegisterType<ISectionLocator, SectionLocatorDAL>();
             container.RegisterType<IDetailedReport, DetailedReportDAL>();
-            container.RegisterType<IAttributeNames, AttributesDAL>();
-            container.RegisterType<IAttributesByYear, AttributesByYearDAL>();
+            container.RegisterType<IAttributeRepo, AttributesDAL>();
             container.RegisterType<IPerformanceLibrary, PerformanceLibraryDAL>();
             container.RegisterType<BridgeCareContext>();
             container.RegisterType<IBudgetReport, BudgetReportDAL>();
@@ -74,7 +73,6 @@ namespace BridgeCare
             container.RegisterType<Detailed>();
             container.RegisterType<Budget>();
             container.RegisterType<CellAddress>();
-            container.RegisterType<IRunSimulation, RunSimulationDAL>();
             container.RegisterType<IPriority, PriorityDAL>();
             container.RegisterType<IDeficient, DeficientDAL>();
             container.RegisterType<IRemainingLifeLimit, RemainingLifeLimitDAL>();

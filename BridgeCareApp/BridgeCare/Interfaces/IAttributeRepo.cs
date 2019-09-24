@@ -3,8 +3,8 @@ using BridgeCare.Models;
 
 namespace BridgeCare.Interfaces
 {
-    public interface INetwork
+    public interface IAttributeRepo
     {
-        List<NetworkModel> GetAllNetworks(BridgeCareContext db);
+        List<AttributeModel> GetAttributes(BridgeCareContext db);
     }
 }

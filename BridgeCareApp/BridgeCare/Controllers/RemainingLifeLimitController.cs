@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using BridgeCare.Interfaces;
@@ -11,23 +8,34 @@ namespace BridgeCare.Controllers
 {
     public class RemainingLifeLimitController : ApiController
     {
-        private readonly IRemainingLifeLimit remainingLifeLimitDAL;
+        private readonly IRemainingLifeLimit repo;
         private readonly BridgeCareContext db;
 
-        public RemainingLifeLimitController(IRemainingLifeLimit remainingLifeLimitInterface, BridgeCareContext context)
+        public RemainingLifeLimitController(IRemainingLifeLimit repo, BridgeCareContext db)
         {
-            remainingLifeLimitDAL = remainingLifeLimitInterface ??
-                                 throw new ArgumentNullException(nameof(remainingLifeLimitInterface));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        [Route("api/GetScenarioRemainingLifeLimitLibrary/{selectedScenarioId}")]
-        [ModelValidation("Given call is not valid")]
+        /// <summary>
+        /// API endpoint for fetching a simulation's remaining life limit library data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        public RemainingLifeLimitLibraryModel Get(int selectedScenarioId) => remainingLifeLimitDAL.GetScenarioRemainingLifeLimitLibrary(selectedScenarioId, db);
+        [Route("api/GetScenarioRemainingLifeLimitLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetSimulationRemainingLifeLimitLibrary(int id) =>
+            Ok(repo.GetSimulationRemainingLifeLimitLibrary(id, db));
 
-        [Route("api/SaveScenarioRemainingLifeLimitLibrary")]
+        /// <summary>
+        /// API endpoint for upserting/deleting a simulation's remaining life limit library data
+        /// </summary>
+        /// <param name="model">RemainingLifeLimitLibraryModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        public RemainingLifeLimitLibraryModel Post([FromBody]RemainingLifeLimitLibraryModel data) => remainingLifeLimitDAL.SaveScenarioRemainingLifeLimitLibrary(data, db);
+        [Route("api/SaveScenarioRemainingLifeLimitLibrary")]
+        public IHttpActionResult SaveSimulationRemainingLifeLimitLibrary([FromBody]RemainingLifeLimitLibraryModel model) =>
+            Ok(repo.SaveSimulationRemainingLifeLimitLibrary(model, db));
     }
 }

@@ -13,63 +13,47 @@ namespace BridgeCare.Controllers
 {
     public class SummaryReportController : ApiController
     {
-        private readonly ISummaryReportGenerator summaryReportGenerator;
-        private readonly IBridgeData bridgeData;
+        private readonly IBridgeData repo;
         private readonly BridgeCareContext db;
+        private readonly ISummaryReportGenerator summaryReportGenerator;
 
-        public SummaryReportController(ISummaryReportGenerator summaryReportGenerator, IBridgeData bridgeDataInterface, BridgeCareContext context)
+        public SummaryReportController(IBridgeData repo, BridgeCareContext db, ISummaryReportGenerator summaryReportGenerator)
         {
+            this.repo = repo;
+            this.db = db;
             this.summaryReportGenerator = summaryReportGenerator;
-            this.bridgeData = bridgeDataInterface;
-            this.db = context;
         }
 
+        /// <summary>
+        /// API endpoint for fetching a simulation's missing attributes for a summary report
+        /// </summary>
+        /// <param name="simulationId">Simulation identifier</param>
+        /// <param name="networkId">Network identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetSummaryReportMissingAttributes")]
-        public IHttpActionResult GetSummaryReportMissingAttributes(int simulationId, int networkId)
-        {
-            try
-            {
-                return Ok(bridgeData.GetSummaryReportMissingAttributes(simulationId, networkId, db));
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+        public IHttpActionResult GetSummaryReportMissingAttributes(int simulationId, int networkId) =>
+            Ok(repo.GetSummaryReportMissingAttributes(simulationId, networkId, db));
 
-        // POST: api/SummaryReport
+        /// <summary>
+        /// API endpoint for fetching simulation data for a summary report
+        /// </summary>
+        /// <param name="model">SimulationModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        [ModelValidation("Given simulation data is not valid")]
-        public HttpResponseMessage Post([FromBody] SimulationModel simulationModel)
+        [Route("api/GetSummaryReport")]
+        [ModelValidation("The scenario data is invalid.")]
+        public IHttpActionResult GetSummaryReport([FromBody] SimulationModel model)
         {
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-            MediaTypeHeaderValue mediaTypeHeaderValue = new MediaTypeHeaderValue("application/octet-stream");
-
-            try
-            {
-                response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(simulationModel));
-            }
-            catch (TimeoutException)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server has timed out. Please try again later.");
-            }
-            catch (InvalidOperationException e)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Invalid Operation: " + e.Message);
-            }
-            catch (OutOfMemoryException)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "The server is out of Memory. Please try again later.");
-            }
-
-            response.Content.Headers.ContentType = mediaTypeHeaderValue;
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(model));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
                 FileName = "SummaryReport.xlsx"
             };
 
-            return response;
+            return Ok(response);
         }
     }
 }

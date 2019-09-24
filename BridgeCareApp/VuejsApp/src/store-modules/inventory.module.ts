@@ -2,6 +2,7 @@ import {emptyInventoryItemDetail, InventoryItem, InventoryItemDetail} from '@/sh
 import InventoryService from '@/services/inventory.service';
 import {clone, append, contains} from 'ramda';
 import {AxiosResponse} from 'axios';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     inventoryItems: [] as InventoryItem[],
@@ -42,24 +43,6 @@ const mutations = {
 };
 
 const actions = {
-    async getInventory({commit}: any) {
-        await InventoryService.getInventory()
-            .then((response: AxiosResponse<InventoryItem[]>) => {
-                commit('inventoryItemsMutator', response.data);
-            });
-    },
-    async getInventoryItemDetailByBMSId({commit}: any, payload: any) {
-        await InventoryService.getInventoryItemDetailByBMSId(payload.bmsId)
-            .then((response: AxiosResponse<InventoryItemDetail>) => {
-                commit('inventoryItemDetailMutator', response.data);
-            });
-    },
-    async getInventoryItemDetailByBRKey({commit}: any, payload: any) {
-        await InventoryService.getInventoryItemDetailByBRKey(payload.brKey)
-            .then((response: AxiosResponse<InventoryItemDetail>) => {
-                commit('inventoryItemDetailMutator', response.data);
-            });
-    },
     clearInventoryItemDetail({commit}: any) {
         commit('inventoryItemDetailMutator', emptyInventoryItemDetail);
     },
@@ -68,6 +51,30 @@ const actions = {
     },
     appendBrKeySearchNumber({commit}: any, payload: any) {
         commit('lastFiveBrKeySearchesMutator', payload.brKey);
+    },
+    async getInventory({commit}: any) {
+        await InventoryService.getInventory()
+            .then((response: AxiosResponse<InventoryItem[]>) => {
+                if (hasValue(response, 'data')) {
+                    commit('inventoryItemsMutator', response.data);
+                }
+            });
+    },
+    async getInventoryItemDetailByBMSId({commit}: any, payload: any) {
+        await InventoryService.getInventoryItemDetailByBMSId(payload.bmsId)
+            .then((response: AxiosResponse<InventoryItemDetail>) => {
+                if (hasValue(response, 'data')) {
+                    commit('inventoryItemDetailMutator', response.data);
+                }
+            });
+    },
+    async getInventoryItemDetailByBRKey({commit}: any, payload: any) {
+        await InventoryService.getInventoryItemDetailByBRKey(payload.brKey)
+            .then((response: AxiosResponse<InventoryItemDetail>) => {
+                if (hasValue(response, 'data')) {
+                    commit('inventoryItemDetailMutator', response.data);
+                }
+            });
     }
 };
 

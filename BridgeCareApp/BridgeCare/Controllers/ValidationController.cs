@@ -11,53 +11,38 @@ namespace BridgeCare.Controllers
 {
     public class ValidationController : ApiController
     {
+        private readonly IValidation repo;
         private readonly BridgeCareContext db;
-        private readonly IValidation validate;
 
-        public ValidationController(IValidation validateMethods, BridgeCareContext context)
+        public ValidationController(IValidation repo, BridgeCareContext db)
         {
-            validate = validateMethods ?? throw new ArgumentNullException(nameof(validateMethods));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        [ModelValidation("Function call not valid")]
+        /// <summary>
+        /// API endpoint for validating an equation
+        /// </summary>
+        /// <param name="model">ValidateEquationModel</param>
+        /// <returns>IHttpActionResult</returns>
+        [HttpPost]
         [Route("api/ValidateEquation")]
-        [HttpPost]
-        public HttpResponseMessage ValidateEquation(ValidateEquationModel data)
+        [ModelValidation("The equation data is invalid.")]
+        public IHttpActionResult ValidateEquation(ValidateEquationModel model)
         {
-            try
-            {
-                validate.ValidateEquation(data, db);
-                return Request.CreateResponse(HttpStatusCode.OK, "OK");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
+            repo.ValidateEquation(model, db);
+            return Ok();
         }
 
-        [ModelValidation("Function call not valid")]
-        [Route("api/ValidateCriteria")]
+        /// <summary>
+        /// API endpoint for validating a criteria
+        /// </summary>
+        /// <param name="model">ValidateCriteriaModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        public HttpResponseMessage ValidateCriteria([FromBody]ValidateCriteriaModel data)
-        {
-            try
-            {
-                string numberHits = validate.ValidateCriteria(data.Criteria, db);
-                return Request.CreateResponse(HttpStatusCode.OK, numberHits);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
+        [Route("api/ValidateCriteria")]
+        [ModelValidation("The criteria data is invalid.")]
+        public IHttpActionResult ValidateCriteria([FromBody]ValidateCriteriaModel model) =>
+            Ok(repo.ValidateCriteria(model.Criteria, db));
     }
 }

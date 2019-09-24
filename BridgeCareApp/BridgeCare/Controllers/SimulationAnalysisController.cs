@@ -7,24 +7,35 @@ namespace BridgeCare.Controllers
 {
     public class SimulationAnalysisController : ApiController
     {
+        private ISimulationAnalysis repo;
         private readonly BridgeCareContext db;
-        private ISimulationAnalysis analysis;
 
         public SimulationAnalysisController(ISimulationAnalysis simulationAnalysis, BridgeCareContext context)
         {
-            analysis = simulationAnalysis ?? throw new ArgumentNullException(nameof(simulationAnalysis));
+            repo = simulationAnalysis ?? throw new ArgumentNullException(nameof(simulationAnalysis));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        [Route("api/GetScenarioAnalysisData/{simulationId}")]
+        /// <summary>
+        /// API endpoint for fetching a simulation's analysis data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        public SimulationAnalysisModel GetSimulationAnalysis(int SimulationId) => analysis.GetSimulationAnalysis(SimulationId, db);
+        [Route("api/GetScenarioAnalysisData/{id}")]
+        public IHttpActionResult GetSimulationAnalysis(int id) =>
+            Ok(repo.GetSimulationAnalysis(id, db));
 
-        [Route("api/SaveScenarioAnalysisData")]
+        /// <summary>
+        /// API endpoint for upserting a simulation's analysis data
+        /// </summary>
+        /// <param name="model">SimulationAnalysisModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
+        [Route("api/SaveScenarioAnalysisData")]
         public IHttpActionResult UpdateSimulationAnalysis([FromBody]SimulationAnalysisModel model)
         {
-            analysis.UpdateSimulationAnalysis(model, db);
+            repo.UpdateSimulationAnalysis(model, db);
             return Ok();
         }
     }

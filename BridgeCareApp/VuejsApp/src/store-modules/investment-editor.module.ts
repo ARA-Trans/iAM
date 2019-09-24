@@ -2,6 +2,7 @@ import {emptyInvestmentLibrary, InvestmentLibrary, InvestmentLibraryBudgetYear} 
 import InvestmentEditorService from '@/services/investment-editor.service';
 import {clone, any, propEq, append, findIndex, equals} from 'ramda';
 import {AxiosResponse} from 'axios';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const investmentLibrary: any = {
@@ -84,36 +85,44 @@ const actions = {
     async getInvestmentLibraries({commit}: any) {
         await InvestmentEditorService.getInvestmentLibraries()
             .then((response: AxiosResponse<any[]>) => {
-                const investmentLibraries: InvestmentLibrary[] = response.data
-                    .map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
-                commit('investmentLibrariesMutator', investmentLibraries);
+                if (hasValue(response, 'data')) {
+                    const investmentLibraries: InvestmentLibrary[] = response.data
+                        .map((data: any) => {
+                            return convertFromMongoToVueModel(data);
+                        });
+                    commit('investmentLibrariesMutator', investmentLibraries);
+                }
             });
     },
     async createInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then((response: AxiosResponse<any>) => {
-                const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
-                commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
-                dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
+                if (hasValue(response, 'data')) {
+                    const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
+                    commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+                    dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
+                }
             });
     },
     async updateInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.updateInvestmentLibrary(payload.updatedInvestmentLibrary)
             .then((response: AxiosResponse<any>) => {
-                const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
-                commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
-                commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
-                dispatch('setSuccessMessage', {message: 'Successfully updated investment library'});
+                if (hasValue(response, 'data')) {
+                    const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
+                    commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
+                    commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully updated investment library'});
+                }
             });
     },
     async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        if (payload.selectedScenarioId > 0) {
+        if (payload.selectedScenarioId !== '0') {
             await InvestmentEditorService.getScenarioInvestmentLibrary(payload.selectedScenarioId)
-                .then((response: AxiosResponse<any>) => {
-                    commit('scenarioInvestmentLibraryMutator', response.data);
-                    commit('updatedSelectedInvestmentLibraryMutator', response.data);
+                .then((response: AxiosResponse<InvestmentLibrary>) => {
+                    if (hasValue(response, 'data')) {
+                        commit('scenarioInvestmentLibraryMutator', response.data);
+                        commit('updatedSelectedInvestmentLibraryMutator', response.data);
+                    }
                 });
         } else {
             commit('scenarioInvestmentLibraryMutator', emptyInvestmentLibrary);
@@ -122,25 +131,29 @@ const actions = {
     },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
-            .then((response: AxiosResponse<any>) => {
-                commit('scenarioInvestmentLibraryMutator', response.data);
-                dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
+            .then((response: AxiosResponse<InvestmentLibrary>) => {
+                if (hasValue(response, 'data')) {
+                    commit('scenarioInvestmentLibraryMutator', response.data);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario investment library'});
+                }
             });
     },
     async socket_investmentLibrary({dispatch, state, commit}: any, payload: any) {
-        if (payload.operationType == 'update' || payload.operationType == 'replace') {
-            const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
-            if (state.selectedInvestmentLibrary.id === updatedInvestmentLibrary.id &&
-                !equals(state.selectedInvestmentLibrary, updatedInvestmentLibrary)) {
-                commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
-                dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
+            if (payload.operationType == 'update' || payload.operationType == 'replace') {
+                const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
+                if (state.selectedInvestmentLibrary.id === updatedInvestmentLibrary.id &&
+                    !equals(state.selectedInvestmentLibrary, updatedInvestmentLibrary)) {
+                    commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
+                    dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+                }
             }
-        }
 
-        if (payload.operationType == 'insert') {
-            const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+            if (payload.operationType == 'insert') {
+                const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+            }
         }
     }
 };

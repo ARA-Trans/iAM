@@ -9,16 +9,18 @@ namespace BridgeCare.Services
 {
     public class Target
     {
-        private readonly ITarget targets;
+        private readonly ITarget repo;
+        private readonly BridgeCareContext db;
 
-        public Target(ITarget target)
+        public Target(ITarget repo, BridgeCareContext db)
         {
-            targets = target ?? throw new ArgumentNullException(nameof(target));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        internal void Fill(ExcelWorksheet targetReport, SimulationModel data, int[] totalYears)
+        internal void Fill(ExcelWorksheet targetReport, SimulationModel model, int[] totalYears)
         {
-            var targetResults = targets.GetTarget(data, totalYears);
+            var targetResults = repo.GetTarget(model, totalYears, db);
 
             if (targetResults.Targets.Rows.Count > 0)
             {

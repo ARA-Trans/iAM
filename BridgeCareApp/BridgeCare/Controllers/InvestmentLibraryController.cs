@@ -13,23 +13,23 @@ namespace BridgeCare.Controllers
     /// </summary>
     public class InvestmentLibraryController : ApiController
     {
+        private readonly IInvestmentLibrary repo;
         private readonly BridgeCareContext db;
-        private readonly IInvestmentLibrary investmentLibrary;
 
-        public InvestmentLibraryController(IInvestmentLibrary investmentLibraryRepository, BridgeCareContext context)
+        public InvestmentLibraryController(IInvestmentLibrary repo, BridgeCareContext db)
         {
-            investmentLibrary = investmentLibraryRepository ?? throw new ArgumentNullException(nameof(investmentLibraryRepository));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
         ///<summary> Get: api/GetScenarioInvestmentLibrary
         ///argument: NetworkModel
         ///</summary>
-        [ModelValidation("Given selected scenario Id is not valid")]
-        [Route("api/GetScenarioInvestmentLibrary/{selectedScenarioId}")]
         [HttpGet]
-        public InvestmentLibraryModel Get(int selectedScenarioId)
-             => investmentLibrary.GetScenarioInvestmentLibrary(selectedScenarioId, db);
+        [Route("api/GetScenarioInvestmentLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetScenarioInvestmentLibrary(int id)
+             => Ok(repo.GetScenarioInvestmentLibrary(id, db));
 
         ///<summary> Post: api/SaveScenarioInvestmentLibrary
         ///argument: InvestmentStrategyModel
@@ -37,13 +37,10 @@ namespace BridgeCare.Controllers
         ///         400 for bad input argument
         ///         500 internal server error (uncaught exception)
         ///</summary>
-        [ModelValidation("Given investment strategy data is not valid")]
-        [Route("api/SaveScenarioInvestmentLibrary")]
         [HttpPost]
-        public IHttpActionResult Post([FromBody]InvestmentLibraryModel data)
-        {
-            var investmentLibraryModel = investmentLibrary.SaveScenarioInvestmentLibrary(data, db);
-            return Ok(investmentLibraryModel);
-        }
+        [Route("api/SaveScenarioInvestmentLibrary")]
+        [ModelValidation("Given investment data is not valid")]
+        public IHttpActionResult SaveScenarioInvestmentLibrary([FromBody]InvestmentLibraryModel model)
+            => Ok(repo.SaveScenarioInvestmentLibrary(model, db));
     }
 }

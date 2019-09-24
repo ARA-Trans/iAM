@@ -9,36 +9,37 @@ namespace BridgeCare.Controllers
 {
     public class PerformanceLibraryController : ApiController
     {
+        private readonly IPerformanceLibrary repo;
         private readonly BridgeCareContext db;
-        private readonly IPerformanceLibrary performanceLibrary;
 
-        public PerformanceLibraryController(IPerformanceLibrary performanceInterface, BridgeCareContext context)
+        public PerformanceLibraryController(IPerformanceLibrary repo, BridgeCareContext db)
         {
-            performanceLibrary = performanceInterface ?? throw new ArgumentNullException(nameof(performanceInterface));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
         /// <summary>
-        /// Get: api/GetScenarioPerformanceLibrary
+        /// API endpoint for fetching a simulation's performance library data
         /// </summary>
-        /// <param name="selectedScenarioId"></param>
-        /// <returns>PerformanceLibraryModel</returns>
-        [ModelValidation("Given simulation data is not valid")]
-        [Route("api/GetScenarioPerformanceLibrary/{selectedScenarioId}")]
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        public PerformanceLibraryModel Get(int selectedScenarioId) => performanceLibrary.GetScenarioPerformanceLibrary(selectedScenarioId, db);
+        [Route("api/GetScenarioPerformanceLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetSimulationPerformanceLibrary(int id) =>
+            Ok(repo.GetSimulationPerformanceLibrary(id, db));
 
         /// <summary>
-        /// Post: api/SaveScenarioPerformanceLibrary
+        /// API endpoint for upserting/deleting a simulation's performance library data
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns>Updated data model</returns>
-        [ModelValidation("Given performance scenario data is not valid")]
-        [Route("api/SaveScenarioPerformanceLibrary")]
+        /// <param name="model">PerformanceLibraryModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        public IHttpActionResult Post([FromBody]PerformanceLibraryModel data)
+        [Route("api/SaveScenarioPerformanceLibrary")]
+        [ModelValidation("The performance data is invalid.")]
+        public IHttpActionResult SaveSimulationPerformanceLibrary([FromBody]PerformanceLibraryModel model)
         {
-            var performanceLibraryModel = performanceLibrary.SaveScenarioPerformanceLibrary(data, db);
+            var performanceLibraryModel = repo.SaveSimulationPerformanceLibrary(model, db);
             return Ok(performanceLibraryModel);
         }
     }

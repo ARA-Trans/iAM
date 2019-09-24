@@ -85,7 +85,7 @@ namespace BridgeCare.DataAccessLayer
 
                 db.SaveChanges();
 
-                new PriorityDAL().SavePriorityFundInvestmentData(data.Id, budgetNamesByOrder.Split(',').ToList(), db);
+                PriorityDAL.SavePriorityFundInvestmentData(data.Id, budgetNamesByOrder.Split(',').ToList(), db);
 
                 return data;
             }

@@ -18,9 +18,9 @@ namespace BridgeCare.EntityClasses.CriteriaDrivenBudgets
         public string CRITERIA { get; set; }
 
         public CriteriaDrivenBudgetsEntity() { }
-        public CriteriaDrivenBudgetsEntity(CriteriaDrivenBudgetsModel criteriaModel)
+        public CriteriaDrivenBudgetsEntity(int simulationId, CriteriaDrivenBudgetsModel criteriaModel)
         {
-            SIMULATIONID = criteriaModel.ScenarioId;
+            SIMULATIONID = simulationId;
             BUDGET_NAME = criteriaModel.BudgetName;
             CRITERIA = criteriaModel.Criteria;
             CRITERIA = criteriaModel.Criteria;

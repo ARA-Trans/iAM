@@ -1,45 +1,39 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Runtime.Serialization;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
     [DataContract]
-    public class FeasibilityModel
+    public class FeasibilityModel : CrudModel
     {
+        public string Id { get; set; }
+        public string Criteria { get; set; }
+        public int YearsBeforeAny { get; set; }
+        public int YearsBeforeSame { get; set; }
+
         public FeasibilityModel()
         {
-            FeasibilityId = null;
+            Id = null;
             Criteria = "";
         }
-        [DataMember(Name = "id")]
-        public string FeasibilityId { get; set; }
 
-        [DataMember(Name = "criteria")]
-        public string Criteria { get; set; }
-
-        [DataMember(Name = "yearsBeforeAny")]
-        public int BeforeAny { get; set; }
-
-        [DataMember(Name = "yearsBeforeSame")]
-        public int BeforeSame { get; set; }
+        public FeasibilityModel(FeasibilityEntity feasibilityEntity, TreatmentsEntity treatmentsEntity)
+        {
+            Id = feasibilityEntity.FEASIBILITYID.ToString();
+            Criteria = feasibilityEntity.CRITERIA;
+            YearsBeforeAny = treatmentsEntity.BEFOREANY;
+            YearsBeforeSame = treatmentsEntity.BEFORESAME;
+        }
 
         public void Aggregate(FeasibilityModel model)
         {
-            if (FeasibilityId == null)
-            {
-              FeasibilityId = model.FeasibilityId;
-            }
+            if (Id == null)
+                Id = model.Id;
 
             if (Criteria.Length <= 0)
-            {
                 Criteria = model.Criteria;
-            }
             else
-            {
                 Criteria += " AND " + model.Criteria;
-            }
         }
     }
 }

@@ -33,9 +33,9 @@ namespace BridgeCare.EntityClasses
             CRITERIA = deficientModel.Criteria;
         }
 
-        public static void DeleteEntry(DeficientsEntity deficient, BridgeCareContext db)
+        public static void DeleteEntry(DeficientsEntity deficientsEntity, BridgeCareContext db)
         {
-            db.Entry(deficient).State = EntityState.Deleted;
+            db.Entry(deficientsEntity).State = EntityState.Deleted;
         }
     }
 }

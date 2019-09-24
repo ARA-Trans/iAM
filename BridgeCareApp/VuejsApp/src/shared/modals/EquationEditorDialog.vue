@@ -130,6 +130,7 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {EquationValidation} from '@/shared/models/iAM/equation-validation';
+    import {http2XX} from '@/shared/utils/http-utils';
 
     @Component
     export default class EquationEditorDialog extends Vue {
@@ -293,7 +294,7 @@
             EquationEditorService.checkEquationValidity(equationValidation)
                 .then((response: AxiosResponse<string>) => {
                     // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
-                    if (response.data === 'OK') {
+                    if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                         this.showValidMessage = true;
                         this.cannotSubmit = false;
                         this.showInvalidMessage = false;

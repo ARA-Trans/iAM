@@ -12,26 +12,22 @@ namespace BridgeCare.DataAccessLayer
 {
     public class Validation : IValidation
     {
-        public void ValidateEquation(ValidateEquationModel data, BridgeCareContext db)
+        public void ValidateEquation(ValidateEquationModel model, BridgeCareContext db)
         {
             CalculateEvaluate calcEval = new CalculateEvaluate();
 
-            if (data.IsPiecewise)
-            {
-                checkPiecewise(data.Equation);
-            }
+            if (model.IsPiecewise)
+                checkPiecewise(model.Equation);
             else
             {
-                string equation = data.Equation.Trim();
-                equation = checkAttributes(equation, data.IsFunction, db);
-                if (data.IsFunction)
-                {
+                string equation = model.Equation.Trim();
+                equation = checkAttributes(equation, model.IsFunction, db);
+
+                if (model.IsFunction)
                     calcEval.BuildFunctionClass(equation, "double", null);
-                }
                 else
-                {
                     calcEval.BuildTemporaryClass(equation, true);
-                }
+
                 calcEval.CompileAssembly();
             }
         }

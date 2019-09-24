@@ -1,5 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using BridgeCare.Models;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 
 namespace BridgeCare.EntityClasses
 {
@@ -18,5 +21,20 @@ namespace BridgeCare.EntityClasses
 
         [ForeignKey("TREATMENTID")]
         public virtual TreatmentsEntity TREATMENT { get; set; }
+
+        public CostsEntity() { }
+
+        public CostsEntity(int treatmentId, CostModel costModel)
+        {
+            TREATMENTID = treatmentId;
+            COST_ = costModel.Equation;
+            CRITERIA = costModel.Criteria;
+            ISFUNCTION = costModel.IsFunction ?? false;
+        }
+
+        public static void DeleteEntry(CostsEntity costsEntity, BridgeCareContext db)
+        {
+            db.Entry(costsEntity).State = EntityState.Deleted;
+        }
     }
 }

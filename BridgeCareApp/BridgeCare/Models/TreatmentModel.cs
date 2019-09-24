@@ -2,70 +2,58 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
+using BridgeCare.EntityClasses;
+using BridgeCare.Services;
 
 
 namespace BridgeCare.Models
 {
-    [DataContract]
     public class TreatmentModel : CrudModel
     {
-        [DataMember(Name = "id")]
-        public string TreatmentId { get; set; }
-
-        [DataMember(Name = "name")]
+        public string Id { get; set; }
         public string Name { get; set; }
-
-        [DataMember(Name = "feasibility")]
-        public FeasibilityModel Feasilbility { get; set; }
-
-        [DataMember(Name = "costs")]
+        public FeasibilityModel Feasibility { get; set; }
         public List<CostModel> Costs { get; set; }
-
-        [DataMember(Name = "consequences")]
         public List<ConsequenceModel> Consequences { get; set; }
-
-        [DataMember(Name = "budgets")]
         public List<string> Budgets { get; set; }
 
-        // TODO check what is this
-        /*[DataMember(Name = "description")]
-        public string Description { get; set; }*/
-        
+        public TreatmentModel() { }
 
-        [IgnoreDataMember]
-        public int BeforeAny { get; set; }
-        [IgnoreDataMember]
-        public int BeforeSame { get; set; }
-        [IgnoreDataMember]
-        public string Budget { get; set; }
-
-        [IgnoreDataMember]
-        public string OMS_IS_EXCLUSIVE { get; set; }
-        [IgnoreDataMember]
-        public string OMS_IS_REPEAT { get; set; }
-        [IgnoreDataMember]
-        public string OMS_REPEAT_START { get; set; }
-        [IgnoreDataMember]
-        public string OMS_REPEAT_INTERVAL { get; set; }
-
-        [IgnoreDataMember]
-        public List<FeasibilityModel> Feasibilities { get; set; }    
-
-        /// <summary>
-        /// The conversion from DB comma delimited format to json array format
-        /// </summary>
-        public void SetBudgets()
+        public TreatmentModel(TreatmentsEntity treatmentsEntity)
         {
-            Budgets = Budget != null ? Budget.Split(',').ToList<string>() : new List<string>();
+            Id = treatmentsEntity.TREATMENTID.ToString();
+            Name = treatmentsEntity.TREATMENT;
+            Costs = treatmentsEntity.COSTS.Any()
+                ? treatmentsEntity.COSTS.Select(c => new CostModel(c)).ToList()
+                : new List<CostModel>();
+            Consequences = treatmentsEntity.CONSEQUENCES.Any()
+                ? treatmentsEntity.CONSEQUENCES.Select(c => new ConsequenceModel(c)).ToList()
+                : new List<ConsequenceModel>();
+            Budgets = treatmentsEntity.BUDGET != null
+                ? treatmentsEntity.BUDGET.Split(',').ToList()
+                : new List<string>();
+
+            if (!treatmentsEntity.FEASIBILITIES.Any())
+                Feasibility = null;
+            else
+            {
+                Feasibility = new FeasibilityModel();
+                treatmentsEntity.FEASIBILITIES.ToList().ForEach(feasibilityEntity => {
+                    var feasibilityModel = new FeasibilityModel(feasibilityEntity, treatmentsEntity);
+                    Feasibility.Aggregate(feasibilityModel);
+                });
+            }
         }
 
-        /// <summary>
-        /// The concatination of all the budgets to one comma delimited string
-        /// </summary>
-        public string GetBudgets()
+        public void UpdateTreatment(TreatmentsEntity treatmentsEntity)
         {
-            return string.Join(",", Budgets);
+            treatmentsEntity.TREATMENT = Name;
+            treatmentsEntity.BUDGET = string.Join(",", Budgets);
+            if (Feasibility != null)
+            {
+                treatmentsEntity.BEFOREANY = Feasibility.YearsBeforeAny;
+                treatmentsEntity.BEFORESAME = Feasibility.YearsBeforeSame;
+            }
         }
-
     }
 }

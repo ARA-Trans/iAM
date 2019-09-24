@@ -19,17 +19,17 @@ namespace BridgeCare.EntityClasses
 
         public PriorityFundEntity() { }
 
-        public PriorityFundEntity(PriorityFundModel priorityFund)
+        public PriorityFundEntity(PriorityFundModel priorityFundModel)
         {
-            BUDGET = priorityFund.Budget;
-            FUNDING = priorityFund.Funding;
+            BUDGET = priorityFundModel.Budget;
+            FUNDING = priorityFundModel.Funding;
         }
 
-        public PriorityFundEntity(int priorityId, PriorityFundModel priorityFund)
+        public PriorityFundEntity(int priorityId, PriorityFundModel priorityFundModel)
         {
             PRIORITYID = priorityId;
-            BUDGET = priorityFund.Budget;
-            FUNDING = priorityFund.Funding;
+            BUDGET = priorityFundModel.Budget;
+            FUNDING = priorityFundModel.Funding;
         }
 
         public static void DeleteEntry(PriorityFundEntity priorityFundEntity, BridgeCareContext db)

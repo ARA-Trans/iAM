@@ -164,7 +164,7 @@
         treatmentLibraries: TreatmentLibrary[] = [];
         selectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
         scenarioTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
-        selectedScenarioId: number = 0;
+        selectedScenarioId: string = '0';
         hasSelectedTreatmentLibrary: boolean = false;
         treatmentLibrariesSelectListItems: SelectItem[] = [];
         treatmentLibrarySelectItemValue: string = '';
@@ -183,9 +183,9 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/Scenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
+                    vm.selectedScenarioId = to.query.selectedScenarioId;
 
-                    if (vm.selectedScenarioId === 0) {
+                    if (vm.selectedScenarioId === '0') {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -199,20 +199,16 @@
                 setTimeout(() => {
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
-                            if (vm.selectedScenarioId > 0) {
-                                setTimeout(() => {
-                                    vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                        .then(() => {
-                                            if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
-                                                vm.getScenarioInvestmentLibraryAction({
-                                                    selectedScenarioId: vm.selectedScenarioId
-                                                });
-                                            }
-                                        });
-                                });
-                            } else {
-                                vm.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
-                            }
+                            setTimeout(() => {
+                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                    .then(() => {
+                                        if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
+                                            vm.getScenarioInvestmentLibraryAction({
+                                                selectedScenarioId: vm.selectedScenarioId
+                                            });
+                                        }
+                                    });
+                            });
                         });
                 }, 0);
             });
@@ -223,9 +219,9 @@
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/TreatmentEditor/Library/') {
-                this.selectedScenarioId = 0;
+                this.selectedScenarioId = '0';
                 this.onClearSelectedTreatmentLibrary();
-                this.getScenarioInvestmentLibraryAction({selectedScenarioId: 0});
+                this.getScenarioInvestmentLibraryAction({selectedScenarioId: '0'});
                 if (this.treatmentTabs.length === 4) {
                     this.treatmentTabs.splice(3, 1);
                 }
@@ -283,7 +279,7 @@
          */
         @Watch('selectedTreatmentLibrary')
         onSelectedTreatmentLibraryChanged() {
-            if (this.selectedTreatmentLibrary.id !== 0) {
+            if (this.selectedTreatmentLibrary.id !== '0') {
                 this.hasSelectedTreatmentLibrary = true;
 
                 if (!hasValue(this.selectedTreatmentLibrary.treatments) ||
@@ -512,7 +508,7 @@
         onDiscardChanges() {
             this.onClearSelectedTreatmentLibrary();
 
-            if (this.scenarioTreatmentLibrary.id > 0) {
+            if (this.scenarioTreatmentLibrary.id !== '0') {
                 setTimeout(() => {
                     this.updateSelectedTreatmentLibraryAction({
                         updatedSelectedTreatmentLibrary: this.scenarioTreatmentLibrary

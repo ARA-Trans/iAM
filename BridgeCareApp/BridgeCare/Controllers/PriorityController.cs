@@ -9,31 +9,37 @@ namespace BridgeCare.Controllers
 {
     public class PriorityController : ApiController
     {
+        private readonly IPriority repo;
         private readonly BridgeCareContext db;
-        private readonly IPriority priorityRepo;
 
         public PriorityController() { }
 
-        public PriorityController(IPriority priorityRepository, BridgeCareContext context)
+        public PriorityController(IPriority repo, BridgeCareContext db)
         {
-            priorityRepo = priorityRepository ?? throw new ArgumentNullException(nameof(priorityRepository));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
+        /// <summary>
+        /// API endpoint for fetching a simulation's priority library data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        [Route("api/GetScenarioPriorityLibrary/{selectedScenarioId}")]
-        [ModelValidation("Given Scenario Id is not valid")]
-        public PriorityLibraryModel GetScenarioPriorityLibrary(int selectedScenarioId)
-        {
-            return priorityRepo.GetScenarioPriorityLibrary(selectedScenarioId, db);
-        }
+        [Route("api/GetScenarioPriorityLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetSimulationPriorityLibrary(int id) =>
+            Ok(repo.GetSimulationPriorityLibrary(id, db));
 
+        /// <summary>
+        /// API endpoint for upserting/deleting a simulation's priority library data
+        /// </summary>
+        /// <param name="model">PriorityLibraryModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioPriorityLibrary")]
-        [ModelValidation("Given priorities are not valid")]
-        public PriorityLibraryModel SaveScenarioPriorityLibrary([FromBody]PriorityLibraryModel data)
-        {
-            return priorityRepo.SaveScenarioPriorityLibrary(data, db);
-        }
+        [ModelValidation("The priority data is invalid.")]
+        public IHttpActionResult SaveSimulationPriorityLibrary([FromBody]PriorityLibraryModel model) =>
+            Ok(repo.SaveSimulationPriorityLibrary(model, db));
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using BridgeCare.Interfaces;
@@ -9,31 +8,37 @@ namespace BridgeCare.Controllers
 {
     public class DeficientController: ApiController
     {
+        private readonly IDeficient repo;
         private readonly BridgeCareContext db;
-        private readonly IDeficient deficientRepo;
 
         public DeficientController() { }
 
-        public DeficientController(IDeficient deficientRepository, BridgeCareContext context)
+        public DeficientController(IDeficient repo, BridgeCareContext db)
         {
-            deficientRepo = deficientRepository ?? throw new ArgumentNullException(nameof(deficientRepository));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
+        /// <summary>
+        /// API endpoint for fetching a simulation's deficient library data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        [Route("api/GetScenarioDeficientLibrary/{selectedScenarioId}")]
-        [ModelValidation("Given Scenario Id is not valid")]
-        public DeficientLibraryModel GetScenarioDeficientLibrary(int selectedScenarioId)
-        {
-            return deficientRepo.GetScenarioDeficientLibrary(selectedScenarioId, db);
-        }
+        [Route("api/GetScenarioDeficientLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetSimulationDeficientLibrary(int id)
+            => Ok(repo.GetSimulationDeficientLibrary(id, db));
 
+        /// <summary>
+        /// API endpoint for upserting/deleting a simulation's deficient library data
+        /// </summary>
+        /// <param name="model">DeficientLibraryModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioDeficientLibrary")]
-        [ModelValidation("Given deficients are not valid")]
-        public DeficientLibraryModel SaveScenarioDeficientLibrary([FromBody] DeficientLibraryModel data)
-        {
-            return deficientRepo.SaveScenarioDeficientLibrary(data, db);
-        }
+        [ModelValidation("The deficient data is invalid.")]
+        public IHttpActionResult SaveSimulationDeficientLibrary([FromBody] DeficientLibraryModel model)
+            => Ok(repo.SaveSimulationDeficientLibrary(model, db));
     }
 }
