@@ -245,13 +245,6 @@ namespace Simulation
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
-            //if (isAPICall.Equals(true))
-            //{
-            //    updateStatus = Builders<SimulationModel>.Update
-            //        .Set(s => s.status, "Begin compile simulation");
-            //    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-            //}
-
             // Clear the compound treatments from the new structure.
             Simulation.CompoundTreatments.Clear();
 

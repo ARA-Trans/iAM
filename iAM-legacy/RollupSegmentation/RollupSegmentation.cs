@@ -115,7 +115,7 @@ namespace RollupSegmentation
             {
                 MongoClient client = new MongoClient(mongoConnection);
                 MongoDatabase = client.GetDatabase("BridgeCare");
-                Rollup = MongoDatabase.GetCollection<RollupModel>("rollup");
+                Rollup = MongoDatabase.GetCollection<RollupModel>("networks");
 
                 var updateStatus = Builders<RollupModel>.Update
                     .Set(s => s.rollupStatus, "Running rollup");

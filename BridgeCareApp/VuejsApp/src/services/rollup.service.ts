@@ -19,6 +19,38 @@ export default class RollupService {
         });
     }
 
+    static getLegacyNetworks(networks: Rollup[]): AxiosPromise {
+        return new Promise<AxiosResponse<Rollup[]>>((resolve) => {
+            axiosInstance.get('api/Networks')
+                .then((responseLegacy: AxiosResponse<Rollup[]>) => {
+                    if (hasValue(responseLegacy)) {
+                        var resultant: Rollup[] = [];
+                        responseLegacy.data.forEach(network => {
+                            if (!any(propEq('networkId', network.networkId), networks)) {
+                                network.rollupStatus = 'N/A';
+                                resultant.push(network);
+                            }
+                        });
+
+                        if (resultant.length != 0) {
+                            nodejsAxiosInstance.post('api/AddLegacyNetworks', resultant)
+                                .then((res: AxiosResponse<Rollup[]>) => {
+                                    if (hasValue(res)) {
+                                        return resolve(res);
+                                    }
+                                })
+                                .catch((error: any) => {
+                                    return resolve(error.response);
+                                });
+                        }
+                    }
+                })
+                .catch((error: any) => {
+                    return resolve(error.response);
+                });
+        });
+    }
+
     static rollupNetwork(selectedNetwork: Rollup): AxiosPromise {
         return axiosInstance.post('/api/RunRollup', selectedNetwork);
     }

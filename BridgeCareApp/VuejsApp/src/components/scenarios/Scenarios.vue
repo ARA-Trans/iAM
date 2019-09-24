@@ -2,32 +2,44 @@
     <v-layout column>
         <v-flex xs12>
             <v-card>
-                <v-flex xs6 offset-xs6>
-                    <v-data-table :headers="rollupGridHeader"
-                                  :items="adminRollup"
-                                  :items-per-page="5"
-                                  hide-actions
-                                  class="elevation-1">
-                        <template slot="items" slot-scope="props">
-                            <td>{{ props.item.networkName }}</td>
-                            <td>{{ props.item.createdDate }}</td>
-                            <td>{{ props.item.lastModifiedDate }}</td>
-                            <td>{{ props.item.rollupStatus }}</td>
-                            <td>
-                                <v-layout row wrap>
-                                    <v-flex>
-                                        <v-btn icon class="ara-blue" @click="onShowRunRollupAlert(props.item)">
-                                            <v-icon>fas fa-play</v-icon>
-                                        </v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </td>
-                        </template>
-                    </v-data-table>
+                <v-flex xs10>
+                    <v-layout>
+                        <div>
+                            <v-data-table :headers="rollupGridHeader"
+                                          :items="adminRollup"
+                                          :items-per-page="5"
+                                          hide-actions
+                                          class="elevation-1">
+                                <template slot="items" slot-scope="props">
+                                    <td>{{ props.item.networkName }}</td>
+                                    <td>{{ props.item.createdDate }}</td>
+                                    <td>{{ props.item.lastModifiedDate }}</td>
+                                    <td>{{ props.item.rollupStatus }}</td>
+                                    <td>
+                                        <v-layout row wrap>
+                                            <v-flex>
+                                                <v-btn icon class="green--text darken-2" @click="onShowRunRollupAlert(props.item)">
+                                                    <v-icon>fas fa-play</v-icon>
+                                                </v-btn>
+                                            </v-flex>
+                                        </v-layout>
+                                    </td>
+                                </template>
+                            </v-data-table>
+                        </div>
+                        <div class="pad-button">
+                            <v-btn round color="green darken-2 white--text" @click="onLoadNetworks()">Load networks</v-btn>
+                        </div>
+                    </v-layout>
                 </v-flex>
-                <v-spacer></v-spacer>
+                <v-divider></v-divider>
                 <v-card-title>
-                    <v-flex xs4>My Scenarios</v-flex>
+                    <v-flex xs4>
+                        <v-chip color="ara-blue-bg" text-color="white">
+                            New Scenarios
+                            <v-icon right>star</v-icon>
+                        </v-chip>
+                    </v-flex>
                     <v-spacer></v-spacer>
                     <v-flex xs6>
                         <v-text-field v-model="searchMine" append-icon="fas fa-search" lablel="Search" single-line hide-details>
@@ -188,6 +200,7 @@
         @Action('getSummaryReportMissingAttributes') getSummaryReportMissingAttributesAction: any;
         @Action('getMongoRollups') getMongoRollupsAction: any;
         @Action('rollupNetwork') rollupNetworkAction: any;
+        @Action('getLegacyNetworks') getLegacyNetworksAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
@@ -266,6 +279,10 @@
 
         onUpdateScenarioList() {
             this.getLegacyScenariosAction({ scenarios: this.scenarios });
+        }
+
+        onLoadNetworks() {
+            this.getLegacyNetworksAction({networks: this.adminRollup });
         }
 
         getStatus(isCompleted: boolean) {
@@ -442,5 +459,7 @@
 </script>
 
 <style>
-
+    .pad-button{
+        padding-top:33px;
+    }
 </style>

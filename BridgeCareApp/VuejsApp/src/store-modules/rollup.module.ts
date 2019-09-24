@@ -24,6 +24,9 @@ const mutations = {
     rollupsMutator(state: any, rollup: Rollup[]) {
         state.rollups = clone(rollup);
     },
+    createdNetworkMutator(state: any, createdNetwork: Rollup) {
+        state.rollups = prepend(createdNetwork, state.rollups);
+    },
     updatedRollupMutator(state: any, updatedRollup: Rollup) {
         if (any(propEq('id', updatedRollup.id), state.rollups)) {
             const rollups: Rollup[] = clone(state.rollups);
@@ -53,10 +56,30 @@ const actions = {
                 }
             });
     },
+    async getLegacyNetworks({ commit }: any, payload: any) {
+        return await RollupService.getLegacyNetworks(payload.networks)
+            .then((response: AxiosResponse<Rollup[]>) => {
+                if (hasValue(response)) {
+                    const networks: Rollup[] = response.data
+                        .map((data: any) => {
+                            return convertFromMongoToVueModel(data);
+                        });
+                    commit('rollupsMutator', networks);
+                }
+            });
+    },
     async socket_rollupStatus({ dispatch, state, commit }: any, payload: any) {
         if (payload.operationType == 'update' || payload.operationType == 'replace') {
             const updatedRollup: Rollup = convertFromMongoToVueModel(payload.fullDocument);
             commit('updatedRollupMutator', updatedRollup);
+        }
+
+        if (payload.operationType == 'insert') {
+            const createdNetwork: Rollup = convertFromMongoToVueModel(payload.fullDocument);
+            if (!any(propEq('id', createdNetwork.id), state.rollups)) {
+                commit('createdNetworkMutator', createdNetwork);
+                dispatch('setInfoMessage', { message: 'New network has been inserted from another source' });
+            }
         }
     }
 };

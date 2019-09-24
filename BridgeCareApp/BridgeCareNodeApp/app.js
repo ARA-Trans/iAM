@@ -37,8 +37,8 @@ async function run() {
   const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
   const remainingLifeLimitLibraryRouter = require('./routes/remainingLifeLimitLibraryRouters')(RemainingLifeLimitLibrary);
 
-  const Rollup = require('./models/rollupModel');
-  const rollupRouter = require('./routes/rollupRouters')(Rollup);
+  const Network = require('./models/NetworkModel');
+  const networkRouter = require('./routes/NetworkRouters')(Network);
 
   const options = { fullDocument: 'updateLookup' };
 
@@ -66,7 +66,7 @@ async function run() {
     io.emit('remainingLifeLimitLibrary', data);
   });
 
-  Rollup.watch([], options).on('change', data => {
+  Network.watch([], options).on('change', data => {
     io.emit('rollupStatus', data);
   });
 
@@ -77,7 +77,7 @@ async function run() {
       treatmentLibraryRouter,
       priorityLibraryRouter,
       remainingLifeLimitLibraryRouter,
-      rollupRouter
+      networkRouter
   ]);
 }
 
