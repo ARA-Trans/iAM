@@ -214,6 +214,8 @@ namespace BridgeCare.DataAccessLayer
                             var splitPredicate = predicate.Split(new[] { @operator }, StringSplitOptions.None);
                             // create the parameter name
                             var parameterName = $"@value{++parameterCount}";
+                            // create the parameter value
+                            var value = splitPredicate[1].Replace(")", "").Replace("'", "");
                             // create a parameterized predicate string
                             var parameterizedPredicate = $"{splitPredicate[0]} {@operator} {parameterName}";
                             // add a number of closed parentheses equal to closedParenthesesCount to end of parameterizedPredicate
@@ -224,8 +226,6 @@ namespace BridgeCare.DataAccessLayer
                                     parameterizedPredicate += ")";
                                 }
                             }
-                            // create the parameter value
-                            var value = splitPredicate[1].Replace(")", "");
                             // add the parameterizedPredicate to the criteriaParameterizedPredicates list
                             parameterizedCriteriaPredicates.Add(parameterizedPredicate);
                             // create a new sql parameter with parameterName and value
