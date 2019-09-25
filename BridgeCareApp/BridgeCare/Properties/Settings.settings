@@ -12,9 +12,9 @@
     <Setting Name="MongoDBProdConnectionString" Type="(Connection string)" Scope="Application">
       <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;ConnectionString&gt;mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=rs1&lt;/ConnectionString&gt;
+  &lt;ConnectionString&gt;mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=r1&lt;/ConnectionString&gt;
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
-      <Value Profile="(Default)">mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=rs1</Value>
+      <Value Profile="(Default)">mongodb://admin:BridgecareARA123@localhost:27017/BridgeCare?replicaSet=r1</Value>
     </Setting>
   </Settings>
 </SettingsFile>
