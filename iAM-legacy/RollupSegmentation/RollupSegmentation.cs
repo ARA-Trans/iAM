@@ -1383,12 +1383,6 @@ namespace RollupSegmentation
 
                 return;
             }
-
-            //if(apiCall == true && !bRollupError)
-            //{
-            //    var simulation = new Simulation.Simulation(m_strSimulation, strNetwork, Convert.ToInt32(m_strSimulationID), Convert.ToInt32(m_strNetworkID), Rollup);
-            //    simulation.CompileSimulation(true);
-            //}
 		}
 
 
