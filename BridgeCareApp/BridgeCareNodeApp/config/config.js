@@ -1,6 +1,6 @@
 module.exports = {
   development: {
-    db: 'mongodb://localhost:27017/BridgeCare?replicaSet=rs0',
+    db: 'mongodb://localhost:27017/BridgeCare?replicaSet=r1',
     port: process.env.PORT || 5000
   },
   production: {
