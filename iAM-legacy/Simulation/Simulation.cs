@@ -1141,7 +1141,8 @@ namespace Simulation
 
             for (var i = 0; i < 10; i++)
             {
-                var drop = "DROP TABLE IF EXISTS " + strTable + "_" + i;
+                //var drop = "DROP TABLE IF EXISTS " + strTable + "_" + i;
+                var drop = $"IF OBJECT_ID ( '{strTable}_{i}' , 'U' )  IS NOT NULL DROP TABLE {strTable}_{i}";
                 try
                 {
                     DBMgr.ExecuteNonQuery(drop);
@@ -1165,7 +1166,8 @@ namespace Simulation
             SimulationMessaging.BenefitCostTable = strTable;
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1179,7 +1181,8 @@ namespace Simulation
 
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1193,7 +1196,8 @@ namespace Simulation
 
             try
             {
-
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1212,7 +1216,8 @@ namespace Simulation
             strTable = cgOMS.Prefix + "CUMULATIVECOST_" + strNetworkID + "_" + strSimulationID;
             SimulationMessaging.CumulativeCostTable = strTable;
 
-            String strDrop = "DROP TABLE IF EXISTS" + strTable;
+            //String strDrop = "DROP TABLE IF EXISTS" + strTable;
+            var strDrop = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
             try
             {
                 DBMgr.ExecuteNonQuery(strDrop);
@@ -3820,12 +3825,6 @@ namespace Simulation
                 {
                     var percentage = 100 * Convert.ToDouble(index) / Convert.ToDouble(m_listSections.Count);
                     SimulationMessaging.AddMessage(new SimulationMessage("Determining benefit/cost " + percentage.ToString("0.#") + "% complete.", true));
-                    if (APICall.Equals(true))
-                    {
-                        var updateStatus = Builders<SimulationModel>.Update
-                        .Set(s => s.status, "Determining benefit / cost " + percentage.ToString("0.#") + "% complete");
-                        Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-                    }
                 }
 
                 index++;
