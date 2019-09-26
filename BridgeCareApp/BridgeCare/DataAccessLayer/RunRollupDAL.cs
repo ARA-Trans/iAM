@@ -4,28 +4,20 @@ using BridgeCare.Models;
 using BridgeCare.Properties;
 using DatabaseManager;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class RunSimulationDAL : IRunSimulation
+    public class RunRollupDAL : IRunRollup
     {
-        public void SetLastRunDate(int simulationId, BridgeCareContext db)
+        public void SetLastRunDate(int networkId, BridgeCareContext db)
         {
-            try
-            {
-                var result = db.Simulations.SingleOrDefault(b => b.SIMULATIONID == simulationId);
-                result.DATE_LAST_RUN = DateTime.Now;
-                db.SaveChanges();
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Update Simulation Run Date");
-            }
+            throw new NotImplementedException();
         }
 
         public Task<string> Start(SimulationModel data)
@@ -40,12 +32,12 @@ namespace BridgeCare.DataAccessLayer
 #else
                 mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var simulation = new Simulation.Simulation(data.SimulationName, data.NetworkName, data.SimulationId, data.NetworkId, mongoConnection);
+                var start = new RollupSegmentation.RollupSegmentation(data.NetworkName, data.NetworkId.ToString(), true, mongoConnection);
+                start.strNetwork = data.NetworkName;
 
-                Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
-
-                simulationThread.Start(true);
-                return Task.FromResult("Simulation running...");
+                Thread rollUpandSimulation = new Thread(new ThreadStart(start.DoRollup));
+                rollUpandSimulation.Start();
+                return Task.FromResult("Rolling up...");
             }
             catch (Exception ex)
             {

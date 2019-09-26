@@ -1,30 +1,32 @@
 ﻿using BridgeCare.Interfaces;
-using BridgeCare.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using BridgeCare.Models;
 
 namespace BridgeCare.Controllers
 {
-    public class RunSimulationController : ApiController
+    public class RunRollupController : ApiController
     {
         private readonly BridgeCareContext db;
-        private readonly IRunSimulation simulation;
+        private readonly IRunRollup rollup;
 
-        public RunSimulationController(IRunSimulation simulations, BridgeCareContext context)
+        public RunRollupController(IRunRollup rollupNetwork, BridgeCareContext context)
         {
-            simulation = simulations ?? throw new ArgumentNullException(nameof(simulations));
+            rollup = rollupNetwork ?? throw new ArgumentNullException(nameof(rollupNetwork));
             db = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // POST: api/RunSimulation
+        // POST: api/RunRollup
         public async Task<IHttpActionResult> Post([FromBody]SimulationModel data)
         {
-            var result = await Task.Factory.StartNew(() => simulation.Start(data));
+            var result = await Task.Factory.StartNew(() => rollup.Start(data));
             if (result.IsCompleted)
             {
-                simulation.SetLastRunDate(data.SimulationId, db);
                 return Ok();
             }
             return NotFound();
