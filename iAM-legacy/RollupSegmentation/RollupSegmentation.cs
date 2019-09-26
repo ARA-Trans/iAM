@@ -111,6 +111,7 @@ namespace RollupSegmentation
 
         public void DoRollup()
 		{
+            string error = "";
             if (apiCall == true)
             {
                 MongoClient client = new MongoClient(mongoConnection);
@@ -301,7 +302,11 @@ namespace RollupSegmentation
 				catch( Exception exc )
 				{
 					RollupMessaging.AddMessge( "Error: Could not rollup attribute " + str + ". " + exc.Message );
-					bRollupError = true;
+                    var updateStatus = Builders<RollupModel>.Update
+                    .Set(s => s.rollupStatus, "Error: Could not rollup attribute " + str + ". " + exc.Message);
+                    Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                    error = "Error: Could not rollup attribute " + str + ". " + exc.Message;
+                    bRollupError = true;
                 }
 
 				attribute.m_listYears = new List<String>();
@@ -872,7 +877,11 @@ namespace RollupSegmentation
 					catch( Exception exc )
 					{
 						RollupMessaging.AddMessge( "Warning: Could not open attribute table " + attribute + ". " + exc.Message );
-						bRollupError = true;
+                        var updateStatus = Builders<RollupModel>.Update
+                    .Set(s => s.rollupStatus, "Warning: Could not open attribute table " + attribute + ". " + exc.Message);
+                        Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                        error = "Warning: Could not open attribute table " + attribute + ". " + exc.Message;
+                        bRollupError = true;
 					}
 					listDP = new List<DataPoint>();
 
@@ -1182,7 +1191,11 @@ namespace RollupSegmentation
 					catch( Exception exc )
 					{
 						RollupMessaging.AddMessge( "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message );
-						bRollupError = true;
+                        var updateStatus = Builders<RollupModel>.Update
+                    .Set(s => s.rollupStatus, "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message);
+                        Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                        error = "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message;
+                        bRollupError = true;
 					}
 					
 					///// DEBUG
@@ -1378,7 +1391,7 @@ namespace RollupSegmentation
             if (bRollupError && apiCall == true)
             {
                 var updateStatus = Builders<RollupModel>.Update
-                    .Set(s => s.rollupStatus, "Rollup aborted");
+                    .Set(s => s.rollupStatus, error);
                 Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
 
                 return;
