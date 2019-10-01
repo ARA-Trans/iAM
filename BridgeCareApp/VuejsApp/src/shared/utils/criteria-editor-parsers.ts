@@ -200,10 +200,10 @@ function parseQueryBuilderClause(clause: string, criteria: Criteria) {
             // continue to next iteration
             continue;
         } else if (splitVal === 'AND' || splitVal === 'OR') {
-            if (!hasValue(criteria.logicalOperator)) {
+            //if (!hasValue(criteria.logicalOperator)) {
                 // set logical operator for current criteria
                 criteria.logicalOperator = splitVal;
-            }
+            //}
         } else {
             // create a new criteria rule by parsing the current substring
             const criteriaRule: CriteriaRule = parseCriteriaRule(splitVal);
