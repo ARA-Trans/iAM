@@ -176,6 +176,9 @@
     <TypeScriptCompile Include="src\services\priority.service.ts" />
     <TypeScriptCompile Include="src\services\remaining-life-limit.service.ts" />
     <TypeScriptCompile Include="src\services\reports.service.ts" />
+    <TypeScriptCompile Include="src\services\rollup.service.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\services\scenario.service.ts" />
     <TypeScriptCompile Include="src\services\target.service.ts" />
     <TypeScriptCompile Include="src\services\treatment-editor.service.ts" />
@@ -193,6 +196,9 @@
     <TypeScriptCompile Include="src\shared\models\iAM\performance.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\priority.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\remaining-life-limit.ts" />
+    <TypeScriptCompile Include="src\shared\models\iAM\rollup.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\shared\models\iAM\route.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\scenario.ts" />
     <TypeScriptCompile Include="src\shared\models\iAM\simulation.ts" />
@@ -240,6 +246,9 @@
     <TypeScriptCompile Include="src\store-modules\investment-editor.module.ts" />
     <TypeScriptCompile Include="src\store-modules\network.module.ts" />
     <TypeScriptCompile Include="src\store-modules\performance-editor.module.ts" />
+    <TypeScriptCompile Include="src\store-modules\rollup.module.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\store-modules\scenario.module.ts" />
     <TypeScriptCompile Include="src\store-modules\target.module.ts" />
     <TypeScriptCompile Include="src\store-modules\toastr.module.ts" />

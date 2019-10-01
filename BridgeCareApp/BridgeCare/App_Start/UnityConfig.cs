@@ -76,6 +76,7 @@ namespace BridgeCare
             container.RegisterType<IPriority, PriorityDAL>();
             container.RegisterType<IDeficient, DeficientDAL>();
             container.RegisterType<IRemainingLifeLimit, RemainingLifeLimitDAL>();
+            container.RegisterType<IRunRollup, RunRollupDAL>();
 
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();

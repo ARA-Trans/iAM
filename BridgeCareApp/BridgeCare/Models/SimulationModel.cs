@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {

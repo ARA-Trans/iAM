@@ -69,6 +69,8 @@ namespace Simulation
         private bool _isUpdateOMS = false;
 
         private IMongoCollection<SimulationModel> Simulations;
+        string mongoConnection = "";
+        public IMongoDatabase MongoDatabase;
 
         public bool IsUpdateOMS
         {
@@ -188,13 +190,13 @@ namespace Simulation
             cgOMS.Prefix = "cgDE_";
         }
 
-        public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, IMongoCollection<SimulationModel> simulations)
+        public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, string connection)
         {
             m_strNetwork = strNetwork;
             m_strSimulation = strSimulation;
             m_strNetworkID = networkID.ToString();
             m_strSimulationID = simulationID.ToString();
-            Simulations = simulations;
+            mongoConnection = connection;
             _isUpdateOMS = false;
         }
 
@@ -205,6 +207,7 @@ namespace Simulation
             public string networkName { get; set; }
             public int networkId { get; set; }
             public string status { get; set; }
+            public string rollupStatus { get; set; }
 
             public DateTime? Created { get; set; }
 
@@ -230,8 +233,13 @@ namespace Simulation
             SimulationMessaging.AddMessage(new SimulationMessage("Begin compile simulation: " + DateTime.Now.ToString("HH:mm:ss")));
 
             UpdateDefinition<SimulationModel> updateStatus;
+
             if (isAPICall.Equals(true))
             {
+                MongoClient client = new MongoClient(mongoConnection);
+                MongoDatabase = client.GetDatabase("BridgeCare");
+                Simulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
+
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Begin compile simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
@@ -1133,7 +1141,8 @@ namespace Simulation
 
             for (var i = 0; i < 10; i++)
             {
-                var drop = "DROP TABLE IF EXISTS " + strTable + "_" + i;
+                //var drop = "DROP TABLE IF EXISTS " + strTable + "_" + i;
+                var drop = $"IF OBJECT_ID ( '{strTable}_{i}' , 'U' )  IS NOT NULL DROP TABLE {strTable}_{i}";
                 try
                 {
                     DBMgr.ExecuteNonQuery(drop);
@@ -1157,7 +1166,8 @@ namespace Simulation
             SimulationMessaging.BenefitCostTable = strTable;
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1171,7 +1181,8 @@ namespace Simulation
 
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1185,7 +1196,8 @@ namespace Simulation
 
             try
             {
-
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1204,7 +1216,8 @@ namespace Simulation
             strTable = cgOMS.Prefix + "CUMULATIVECOST_" + strNetworkID + "_" + strSimulationID;
             SimulationMessaging.CumulativeCostTable = strTable;
 
-            String strDrop = "DROP TABLE IF EXISTS" + strTable;
+            //String strDrop = "DROP TABLE IF EXISTS" + strTable;
+            var strDrop = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
             try
             {
                 DBMgr.ExecuteNonQuery(strDrop);
@@ -2524,14 +2537,14 @@ namespace Simulation
                 if (!IsUpdateOMS) //To save time on UpdateSimulation for OMS no need to load feasibility or cost (we already have them).
                 {
                     //SimulationMessaging.AddMessage("Loading Feasibility");
-                    if (!treatments.LoadFeasibility()) return false;
+                    if (!treatments.LoadFeasibility(APICall, Simulations, m_strSimulationID)) return false;
                     //SimulationMessaging.AddMessage("Loading Costs");
                 }
-                if (!treatments.LoadCost()) return false;
+                if (!treatments.LoadCost(APICall, Simulations, m_strSimulationID)) return false;
                 //SimulationMessaging.AddMessage("Loading Consequences");
-                if (!treatments.LoadConsequences()) return false;
+                if (!treatments.LoadConsequences(APICall, Simulations, m_strSimulationID)) return false;
 
-                if (!treatments.LoadSupersedes()) return false;
+                if (!treatments.LoadSupersedes(APICall, Simulations, m_strSimulationID)) return false;
 
                 //if (!treatments.LoadExclusion()) return false;
                 foreach (String str in treatments.Attributes)
@@ -2546,7 +2559,7 @@ namespace Simulation
 
             foreach (var treatment in m_listTreatments)
             {
-                treatment.LoadScheduled(m_listTreatments);
+                treatment.LoadScheduled(m_listTreatments, APICall, Simulations, m_strSimulationID);
             }
             return true;
         }
@@ -2582,6 +2595,12 @@ namespace Simulation
             catch (Exception exception)
             {
                 SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error:  Unable to open COMMITTED_CONSEQUENCES table for Analysis.  SQL message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error:  Unable to open COMMITTED_CONSEQUENCES table for Analysis.  SQL message - " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
             return true;
@@ -3812,12 +3831,6 @@ namespace Simulation
                 {
                     var percentage = 100 * Convert.ToDouble(index) / Convert.ToDouble(m_listSections.Count);
                     SimulationMessaging.AddMessage(new SimulationMessage("Determining benefit/cost " + percentage.ToString("0.#") + "% complete.", true));
-                    if (APICall.Equals(true))
-                    {
-                        var updateStatus = Builders<SimulationModel>.Update
-                        .Set(s => s.status, "Determining benefit / cost " + percentage.ToString("0.#") + "% complete");
-                        Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-                    }
                 }
 
                 index++;
