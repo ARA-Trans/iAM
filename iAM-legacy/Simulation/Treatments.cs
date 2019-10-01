@@ -6,6 +6,8 @@ using System.Collections;
 using RoadCareGlobalOperations;
 using System.IO;
 using Simulation.Interface;
+using MongoDB.Driver;
+using static Simulation.Simulation;
 
 namespace Simulation
 {
@@ -204,7 +206,7 @@ namespace Simulation
         /// <summary>
         /// Loads all feasibility criteria for this treatment in for this treatment ID.
         /// </summary>
-        public bool LoadFeasibility()
+        public bool LoadFeasibility(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             String strSelect = "SELECT CRITERIA,BINARY_CRITERIA,FEASIBILITYID FROM " + cgOMS.Prefix + "FEASIBILITY WHERE TREATMENTID='" + this.TreatmentID + "'";
             _table = cgOMS.Prefix + "FEASIBILITY";
@@ -218,6 +220,12 @@ namespace Simulation
             catch(Exception exception)
             {
                 SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error: Opening Treatment FEASIBILITY table.  SQL Message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error: Opening Treatment FEASIBILITY table.");
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
 
@@ -252,6 +260,12 @@ namespace Simulation
                 foreach (String str in criteria.Errors)
                 {
                     SimulationMessaging.AddMessage(new SimulationMessage("Error: Treatment feasibility criteria for Treatment " + _treatment + ":" + str));
+                    if (APICall.Equals(true))
+                    {
+                        var updateStatus = Builders<SimulationModel>.Update
+                        .Set(s => s.status, "Error: Treatment feasibility criteria for Treatment " + _treatment + ":" + str);
+                        Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                    }
                 }
 
                 this.CriteriaList.Add(criteria);
@@ -260,6 +274,12 @@ namespace Simulation
                     if (!SimulationMessaging.IsAttribute(str))
                     {
                         SimulationMessaging.AddMessage(new SimulationMessage("Error: " + str + " which is used by the Feasibility criteria is not present in the database."));
+                        if (APICall.Equals(true))
+                        {
+                            var updateStatus = Builders<SimulationModel>.Update
+                            .Set(s => s.status, "Error: " + str + " which is used by the Feasibility criteria is not present in the database");
+                            Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                        }
                     }
                     if (!_attributes.Contains(str))
                     {
@@ -274,7 +294,7 @@ namespace Simulation
         /// <summary>
         /// Load all cost information associated with this treatment.
         /// </summary>
-        public bool LoadCost()
+        public bool LoadCost(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             Costs cost;
             String select = "SELECT COST_,UNIT,CRITERIA,BINARY_CRITERIA,ISFUNCTION, COSTID FROM " + cgOMS.Prefix + "COSTS WHERE TREATMENTID='" + this.TreatmentID + "'";
@@ -292,6 +312,12 @@ namespace Simulation
             catch (Exception exception)
             {
                 SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error: Opening COSTS table.  SQL message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error: Opening COSTS table.  SQL message - " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
 
@@ -326,6 +352,12 @@ namespace Simulation
                         if (!SimulationMessaging.IsAttribute(str))
                         {
                             SimulationMessaging.AddMessage(new SimulationMessage("Error: " + str + " which is used by the Cost criteria is not present in the database."));
+                            if (APICall.Equals(true))
+                            {
+                                var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, "Error: " + str + " which is used by the Cost criteria is not present in the database");
+                                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                            }
                         }
                         if (!_attributes.Contains(str))
                         {
@@ -355,6 +387,12 @@ namespace Simulation
                 if (strCost.Trim() == "")
                 {
                     SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error: Cost equation is blank for treatment - " + _treatment));
+                    if (APICall.Equals(true))
+                    {
+                        var updateStatus = Builders<SimulationModel>.Update
+                        .Set(s => s.status, "Fatal Error: Cost equation is blank for treatment - " + _treatment);
+                        Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                    }
                     return false;
                 }
  
@@ -380,6 +418,12 @@ namespace Simulation
                         if (!SimulationMessaging.IsAttribute(str))
                         {
                             SimulationMessaging.AddMessage(new SimulationMessage("Error: " + str + " which is used by the Cost equation is not present in the database."));
+                            if (APICall.Equals(true))
+                            {
+                                var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, "Error: " + str + " which is used by the Cost equation is not present in the database");
+                                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                            }
                         }
                         if (!_attributes.Contains(str))
                         {
@@ -395,6 +439,12 @@ namespace Simulation
                         foreach (String str in cost.Calculate.m_listError)
                         {
                             SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error: Cost equation:" + str));
+                            if (APICall.Equals(true))
+                            {
+                                var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, "Fatal Error: Cost equation:" + str);
+                                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                            }
                             return false;
                         }
                     }
@@ -406,7 +456,7 @@ namespace Simulation
         /// <summary>
         /// Load all consequence information associated with treat. 
         /// </summary>
-        public bool LoadConsequences()
+        public bool LoadConsequences(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             Consequences consequence;
             String select = "SELECT ATTRIBUTE_,CHANGE_,CRITERIA,EQUATION,ISFUNCTION, CONSEQUENCEID FROM " + cgOMS.Prefix + "CONSEQUENCES WHERE TREATMENTID='" + _treatmentID + "'";
@@ -424,6 +474,12 @@ namespace Simulation
             catch (Exception exception)
             {
                 SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error: Opening CONSEQUENCES table. SQL Message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error: Opening CONSEQUENCES table. SQL Message - " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
 
@@ -441,6 +497,12 @@ namespace Simulation
                 consequence.Treatment = this.Treatment;
 
                 SimulationMessaging.AddMessage(new SimulationMessage("Compiling treatment consequence " + consequenceCount));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Compiling treatment consequence " + consequenceCount);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 consequenceCount++;
 
 
@@ -470,6 +532,12 @@ namespace Simulation
                         if (!SimulationMessaging.IsAttribute(str))
                         {
                             SimulationMessaging.AddMessage(new SimulationMessage("Error: " + str + " which is used by the Consequence criteria is not present in the database."));
+                            if (APICall.Equals(true))
+                            {
+                                var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, "Error: " + str + " which is used by the Consequence criteria is not present in the database");
+                                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                            }
                         }
                         if (!_attributes.Contains(str))
                         {
@@ -515,6 +583,12 @@ namespace Simulation
                         if (!SimulationMessaging.IsAttribute(attribute))
                         {
                             SimulationMessaging.AddMessage(new SimulationMessage("Error: " + attribute + " which is used by the Consequence criteria is not present in the database."));
+                            if (APICall.Equals(true))
+                            {
+                                var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, "Error: " + attribute + " which is used by the Consequence criteria is not present in the database");
+                                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                            }
                         }
                         if (!_attributes.Contains(attribute))
                         {
@@ -538,7 +612,7 @@ namespace Simulation
             return true;
         }
 
-        public bool LoadSupersedes()
+        public bool LoadSupersedes(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
 
 
@@ -566,6 +640,12 @@ namespace Simulation
                         if (!SimulationMessaging.IsAttribute(str))
                         {
                             SimulationMessaging.AddMessage(new SimulationMessage("Error: " + str + " which is used by the Supersede criteria is not present in the database."));
+                            if (APICall.Equals(true))
+                            {
+                                var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, "Error: " + str + " which is used by the Supersede criteria is not present in the database");
+                                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                            }
                         }
                         if (!_attributes.Contains(str))
                         {
@@ -579,12 +659,18 @@ namespace Simulation
             {
                 SimulationMessaging.AddMessage(
                     new SimulationMessage("Fatal Error: Opening SUPERSEDE table. SQL Message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error: Opening SUPERSEDE table. SQL Message - " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
             return true;
         }
 
-        public bool LoadScheduled(List<Treatments> availableTreatments)
+        public bool LoadScheduled(List<Treatments> availableTreatments, object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             var select = "SELECT SCHEDULEDID, SCHEDULEDTREATMENTID, SCHEDULEDYEAR FROM SCHEDULED WHERE TREATMENTID='" + this.TreatmentID + "'";
 
@@ -612,6 +698,12 @@ namespace Simulation
             {
                 SimulationMessaging.AddMessage(
                     new SimulationMessage("Fatal Error: Opening SCHEDULED table. SQL Message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error: Opening SCHEDULED table. SQL Message - " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
             return true;

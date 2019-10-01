@@ -2537,14 +2537,14 @@ namespace Simulation
                 if (!IsUpdateOMS) //To save time on UpdateSimulation for OMS no need to load feasibility or cost (we already have them).
                 {
                     //SimulationMessaging.AddMessage("Loading Feasibility");
-                    if (!treatments.LoadFeasibility()) return false;
+                    if (!treatments.LoadFeasibility(APICall, Simulations, m_strSimulationID)) return false;
                     //SimulationMessaging.AddMessage("Loading Costs");
                 }
-                if (!treatments.LoadCost()) return false;
+                if (!treatments.LoadCost(APICall, Simulations, m_strSimulationID)) return false;
                 //SimulationMessaging.AddMessage("Loading Consequences");
-                if (!treatments.LoadConsequences()) return false;
+                if (!treatments.LoadConsequences(APICall, Simulations, m_strSimulationID)) return false;
 
-                if (!treatments.LoadSupersedes()) return false;
+                if (!treatments.LoadSupersedes(APICall, Simulations, m_strSimulationID)) return false;
 
                 //if (!treatments.LoadExclusion()) return false;
                 foreach (String str in treatments.Attributes)
@@ -2559,7 +2559,7 @@ namespace Simulation
 
             foreach (var treatment in m_listTreatments)
             {
-                treatment.LoadScheduled(m_listTreatments);
+                treatment.LoadScheduled(m_listTreatments, APICall, Simulations, m_strSimulationID);
             }
             return true;
         }
@@ -2595,6 +2595,12 @@ namespace Simulation
             catch (Exception exception)
             {
                 SimulationMessaging.AddMessage(new SimulationMessage("Fatal Error:  Unable to open COMMITTED_CONSEQUENCES table for Analysis.  SQL message - " + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Fatal Error:  Unable to open COMMITTED_CONSEQUENCES table for Analysis.  SQL message - " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
             }
             return true;
