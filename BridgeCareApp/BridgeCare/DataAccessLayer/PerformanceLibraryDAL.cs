@@ -10,7 +10,7 @@ namespace BridgeCare.DataAccessLayer
     public class PerformanceLibraryDAL : IPerformanceLibrary
     {
         /// <summary>
-        /// Fetches a simulation record with performances
+        /// Fetches a simulation's performance library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="id">Simulation identifier</param>
@@ -27,7 +27,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Executes an upsert/delete operation on the PERFORMANCES table
+        /// Executes an upsert/delete operation on a simulation's performance library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">PerformanceLibraryModel</param>

@@ -15,7 +15,7 @@ namespace BridgeCare.DataAccessLayer
     public class RemainingLifeLimitDAL : IRemainingLifeLimit
     {
         /// <summary>
-        /// Fetches a simulation with remaining life limits
+        /// Fetches a simulation's remaining life limit library data
         /// </summary>
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
@@ -31,7 +31,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Executes an upsert/delete operation on the remaining life limits table
+        /// Executes an upsert/delete operation on a simulation's remaining life limit library data
         /// </summary>
         /// <param name="model">RemainingLifeLimitLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>

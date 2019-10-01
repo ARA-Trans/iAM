@@ -14,7 +14,7 @@ namespace BridgeCare.DataAccessLayer
     public class DeficientDAL : IDeficient
     {
         /// <summary>
-        /// Fetches a simulation record with deficients
+        /// Fetches a simulation's deficient library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="id">Simulation identifier</param>
@@ -31,7 +31,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Executes an upsert/delete operation on the deficients table
+        /// Executes an upsert/delete operation on a simulation's deficient library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">DeficientLibraryModel</param>

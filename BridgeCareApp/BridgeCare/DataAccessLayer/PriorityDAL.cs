@@ -12,7 +12,7 @@ namespace BridgeCare.DataAccessLayer
     public class PriorityDAL : IPriority
     {
         /// <summary>
-        /// Fetches a simulation record with priorities & priority funds
+        /// Fetches a simulation's priority library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="id">Simulation identifier</param>
@@ -31,7 +31,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Executes an upsert/delete operation on the priority & priority funds tables
+        /// Executes an upsert/delete operation on a simulation's priority library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">PriorityLibraryModel</param>

@@ -35,6 +35,7 @@ namespace BridgeCare.Controllers
             {
                 FileName = "DetailedReport.xlsx"
             };
+
             return Ok(response);
         }
     }

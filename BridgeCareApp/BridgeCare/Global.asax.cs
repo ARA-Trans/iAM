@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
-using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
-using BridgeCare.ApplicationLog;
-using BridgeCare.Models;
+using BridgeCare.ExceptionHandling;
 
 namespace BridgeCare
 {

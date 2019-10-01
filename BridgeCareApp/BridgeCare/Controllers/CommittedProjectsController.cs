@@ -34,6 +34,7 @@ namespace BridgeCare.Controllers
                 throw new ConstraintException("The data provided is not a valid MIME type.");
 
             repo.SaveCommittedProjectsFiles(HttpContext.Current.Request, db);
+
             return Ok();
         }
 

@@ -43,7 +43,7 @@ namespace BridgeCare.Controllers
         [ModelValidation("The criteria driven budgets data is invalid.")]
         public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetsModel> models)
         {
-           var result = repo.SaveCriteriaDrivenBudgets(id, models, db);
+            var result = repo.SaveCriteriaDrivenBudgets(id, models, db);
             if(result.IsCompleted)
                 return Ok();
 

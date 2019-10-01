@@ -101,7 +101,6 @@ namespace BridgeCare.DataAccessLayer
                 // check for data returned
                 if (dataReader.HasRows)
                 {
-                    var dataContent = "";
                     // read the data
                     while (dataReader.Read())
                     {

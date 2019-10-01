@@ -21,7 +21,7 @@ export default class RollupService {
 
     static getLegacyNetworks(networks: Rollup[]): AxiosPromise {
         return new Promise<AxiosResponse<Rollup[]>>((resolve) => {
-            axiosInstance.get('api/Networks')
+            axiosInstance.get('api/GetNetworks')
                 .then((responseLegacy: AxiosResponse<Rollup[]>) => {
                     if (hasValue(responseLegacy)) {
                         var resultant: Rollup[] = [];

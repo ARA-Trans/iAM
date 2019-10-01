@@ -22,25 +22,26 @@ namespace BridgeCare.Controllers
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        ///<summary> Get: api/GetScenarioInvestmentLibrary
-        ///argument: NetworkModel
-        ///</summary>
+        /// <summary>
+        /// API endpoint for fetching a simulation's investment library data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetScenarioInvestmentLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
-        public IHttpActionResult GetScenarioInvestmentLibrary(int id)
-             => Ok(repo.GetScenarioInvestmentLibrary(id, db));
+        public IHttpActionResult GetSimulationInvestmentLibrary(int id)
+             => Ok(repo.GetSimulationInvestmentLibrary(id, db));
 
-        ///<summary> Post: api/SaveScenarioInvestmentLibrary
-        ///argument: InvestmentStrategyModel
-        ///return : 200 sucess with updated model output
-        ///         400 for bad input argument
-        ///         500 internal server error (uncaught exception)
-        ///</summary>
+        /// <summary>
+        /// API endpoint for upserting/deleting a simulation's investment library data
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioInvestmentLibrary")]
         [ModelValidation("Given investment data is not valid")]
-        public IHttpActionResult SaveScenarioInvestmentLibrary([FromBody]InvestmentLibraryModel model)
-            => Ok(repo.SaveScenarioInvestmentLibrary(model, db));
+        public IHttpActionResult SaveSimulationInvestmentLibrary([FromBody]InvestmentLibraryModel model)
+            => Ok(repo.SaveSimulationInvestmentLibrary(model, db));
     }
 }

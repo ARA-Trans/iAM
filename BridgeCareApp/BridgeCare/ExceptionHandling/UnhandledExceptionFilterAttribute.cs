@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web.Http.Filters;
 
-namespace BridgeCare.ApplicationLog
+namespace BridgeCare.ExceptionHandling
 {
     /// <summary>
     /// Represents the an attribute that provides a filter for unhandled exceptions.

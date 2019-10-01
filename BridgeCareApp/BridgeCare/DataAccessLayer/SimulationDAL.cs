@@ -77,41 +77,6 @@ namespace BridgeCare.DataAccessLayer
         {
             var simulation = new SimulationEntity(model);
             db.Simulations.Add(simulation);
-            // db.SaveChanges();
-
-            /*simulation.INVESTMENTS = new InvestmentsEntity()
-            {
-                SIMULATIONID = simulation.SIMULATIONID,
-                FIRSTYEAR = DateTime.Now.Year,
-                NUMBERYEARS = 1,
-                INFLATIONRATE = 0,
-                DISCOUNTRATE = 0,
-                BUDGETORDER = "Rehabilitation,Maintenance,Construction"
-            };*/
-
-            // db.SaveChanges();
-
-            /*simulation.CriteriaDrivenBudgets= new List<CriteriaDrivenBudgetsEntity>
-            {
-                new CriteriaDrivenBudgetsEntity
-                {
-                    BUDGET_NAME = "Maintenance",
-                    CRITERIA = "",
-                    SIMULATIONID = simulation.SIMULATIONID
-                },
-                new CriteriaDrivenBudgetsEntity
-                {
-                    BUDGET_NAME = "Rehabilitation",
-                    CRITERIA = "",
-                    SIMULATIONID = simulation.SIMULATIONID
-                },
-                new CriteriaDrivenBudgetsEntity
-                {
-                    BUDGET_NAME = "Construction",
-                    CRITERIA = "",
-                    SIMULATIONID = simulation.SIMULATIONID
-                }
-            };*/
 
             db.SaveChanges();
 
@@ -137,22 +102,18 @@ namespace BridgeCare.DataAccessLayer
 #else
                 var mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var rollupSegmentation = new RollupSegmentation.RollupSegmentation(model.SimulationName, model.NetworkName,
-                    model.SimulationId.ToString(), model.NetworkId.ToString(), true, mongoConnection)
-                {
-                    strNetwork = model.NetworkName
-                };
+                var simulation = new Simulation.Simulation(model.SimulationName, model.NetworkName, model.SimulationId, model.NetworkId, mongoConnection);
 
-                Thread rollupAndSimulation = new Thread(rollupSegmentation.DoRollup);
+                Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
 
-                rollupAndSimulation.Start();
+                simulationThread.Start(true);
 
                 return Task.FromResult("Simulation running...");
             }
             catch (Exception ex)
             {
                 DBMgr.CloseConnection();
-                return Task.FromResult($"Simulation failed::{ex.Message}");
+                return Task.FromResult($"Simulation run failed::{ex.Message}");
             }
         }
 

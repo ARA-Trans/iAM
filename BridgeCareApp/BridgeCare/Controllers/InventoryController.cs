@@ -9,14 +9,14 @@ namespace BridgeCare.Controllers
 {
     public class InventoryController : ApiController
     {
-        private readonly IInventory repo;
         private readonly IInventoryItemDetailModelGenerator modelGenerator;
+        private readonly IInventory repo;
         private readonly BridgeCareContext db;
 
-        public InventoryController(IInventory repo, IInventoryItemDetailModelGenerator modelGenerator, BridgeCareContext db)
+        public InventoryController(IInventoryItemDetailModelGenerator modelGenerator, IInventory repo, BridgeCareContext db)
         {
-            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.modelGenerator = modelGenerator ?? throw new ArgumentNullException(nameof(modelGenerator));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
@@ -38,8 +38,10 @@ namespace BridgeCare.Controllers
         [ModelValidation("The BMS id is not valid")]
         public IHttpActionResult GetInventoryItemDetailByBmsId(string bmsId)
         {
-            var inventoryItemDetailModel = modelGenerator.MakeInventoryItemDetailModel(repo.GetInventoryByBMSId(bmsId, db));
+            var inventoryItemDetailModel = modelGenerator
+                .MakeInventoryItemDetailModel(repo.GetInventoryByBMSId(bmsId, db));
             inventoryItemDetailModel.BMSId = bmsId;
+
             return Ok(inventoryItemDetailModel);
         }
 
@@ -53,8 +55,10 @@ namespace BridgeCare.Controllers
         [ModelValidation("The BR key is not valid.")]
         public IHttpActionResult GetInventoryItemDetailByBrKey(int brKey)
         {
-            var inventoryItemDetailModel = modelGenerator.MakeInventoryItemDetailModel(repo.GetInventoryByBRKey(brKey, db));
+            var inventoryItemDetailModel = modelGenerator
+                .MakeInventoryItemDetailModel(repo.GetInventoryByBRKey(brKey, db));
             inventoryItemDetailModel.BRKey = brKey;
+
             return Ok(inventoryItemDetailModel);
         }
     }
