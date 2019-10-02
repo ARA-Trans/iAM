@@ -48,8 +48,6 @@ namespace BridgeCare.DataAccessLayer
                 .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
                 .Single(s => s.SIMULATIONID == id);
 
-            simulation.COMMENTS = model.Description;
-
             if (simulation.PRIORITIES.Any())
             {
                 simulation.PRIORITIES.ToList().ForEach(priorityEntity =>

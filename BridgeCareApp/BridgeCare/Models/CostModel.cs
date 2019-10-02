@@ -11,19 +11,19 @@ namespace BridgeCare.Models
 
         public CostModel() { }
 
-        public CostModel(CostsEntity costsEntity)
+        public CostModel(CostsEntity entity)
         {
-            Id = costsEntity.COSTID.ToString();
-            Equation = costsEntity.COST_;
-            Criteria = costsEntity.CRITERIA;
-            IsFunction = costsEntity.ISFUNCTION ?? false;
+            Id = entity.COSTID.ToString();
+            Equation = entity.COST_;
+            Criteria = entity.CRITERIA;
+            IsFunction = entity.ISFUNCTION ?? false;
         }
 
-        public void UpdateCost(CostsEntity costsEntity)
+        public void UpdateCost(CostsEntity entity)
         {
-            costsEntity.COST_ = Equation;
-            costsEntity.CRITERIA = Criteria;
-            costsEntity.ISFUNCTION = IsFunction ?? false;
+            entity.COST_ = Equation;
+            entity.CRITERIA = Criteria;
+            entity.ISFUNCTION = IsFunction ?? false;
         }
     }
 }

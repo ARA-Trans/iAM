@@ -2,7 +2,6 @@
 using BridgeCare.Models;
 using System;
 using System.Data;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;

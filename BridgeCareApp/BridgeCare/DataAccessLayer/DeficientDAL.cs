@@ -46,8 +46,6 @@ namespace BridgeCare.DataAccessLayer
 
             var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
 
-            simulation.COMMENTS = model.Description;
-
             if (simulation.DEFICIENTS.Any())
                 simulation.DEFICIENTS.ToList().ForEach(deficientEntity =>
                 {

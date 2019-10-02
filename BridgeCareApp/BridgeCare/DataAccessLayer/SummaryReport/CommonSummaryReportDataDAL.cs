@@ -1,36 +1,33 @@
-﻿using BridgeCare.ApplicationLog;
+﻿using System;
+using System.Linq;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using System;
-using System.Data.SqlClient;
-using System.Linq;
 
-namespace BridgeCare.DataAccessLayer
+namespace BridgeCare.DataAccessLayer.SummaryReport
 {
     public class CommonSummaryReportDataDAL : ICommonSummaryReportData
     {
-        private readonly BridgeCareContext dbContext;
+        private readonly BridgeCareContext db;
 
-        public CommonSummaryReportDataDAL(BridgeCareContext bridgeCareContext)
+        public CommonSummaryReportDataDAL(BridgeCareContext db)
         {
-            dbContext = bridgeCareContext ?? throw new ArgumentNullException(nameof(bridgeCareContext));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        public SimulationYearsModel GetSimulationYearsData(int simulationId)
+        /// <summary>
+        /// Fetches a simulation's yearly investments data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>SimulationYearsModel</returns>
+        public SimulationYearsModel GetSimulationYearsData(int id)
         {
-            try
+            return new SimulationYearsModel
             {
-                return new SimulationYearsModel
-                {
-                    SimulationID = simulationId,
-                    Years = dbContext.YearlyInvestments.Where(y => y.SIMULATIONID == simulationId).Select(y => y.YEAR_).Distinct().ToList()
-                };
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Years");
-            }
-            return new SimulationYearsModel();
+                SimulationID = id,
+                Years = db.YearlyInvestments
+                    .Where(y => y.SIMULATIONID == id)
+                    .Select(y => y.YEAR_).Distinct().ToList()
+            };
         }
     }
 }

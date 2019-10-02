@@ -19,40 +19,40 @@ namespace BridgeCare.Models
 
         public TreatmentModel() { }
 
-        public TreatmentModel(TreatmentsEntity treatmentsEntity)
+        public TreatmentModel(TreatmentsEntity entity)
         {
-            Id = treatmentsEntity.TREATMENTID.ToString();
-            Name = treatmentsEntity.TREATMENT;
-            Costs = treatmentsEntity.COSTS.Any()
-                ? treatmentsEntity.COSTS.Select(c => new CostModel(c)).ToList()
+            Id = entity.TREATMENTID.ToString();
+            Name = entity.TREATMENT;
+            Costs = entity.COSTS.Any()
+                ? entity.COSTS.Select(c => new CostModel(c)).ToList()
                 : new List<CostModel>();
-            Consequences = treatmentsEntity.CONSEQUENCES.Any()
-                ? treatmentsEntity.CONSEQUENCES.Select(c => new ConsequenceModel(c)).ToList()
+            Consequences = entity.CONSEQUENCES.Any()
+                ? entity.CONSEQUENCES.Select(c => new ConsequenceModel(c)).ToList()
                 : new List<ConsequenceModel>();
-            Budgets = treatmentsEntity.BUDGET != null
-                ? treatmentsEntity.BUDGET.Split(',').ToList()
+            Budgets = entity.BUDGET != null
+                ? entity.BUDGET.Split(',').ToList()
                 : new List<string>();
 
-            if (!treatmentsEntity.FEASIBILITIES.Any())
+            if (!entity.FEASIBILITIES.Any())
                 Feasibility = null;
             else
             {
                 Feasibility = new FeasibilityModel();
-                treatmentsEntity.FEASIBILITIES.ToList().ForEach(feasibilityEntity => {
-                    var feasibilityModel = new FeasibilityModel(feasibilityEntity, treatmentsEntity);
+                entity.FEASIBILITIES.ToList().ForEach(feasibilityEntity => {
+                    var feasibilityModel = new FeasibilityModel(feasibilityEntity, entity);
                     Feasibility.Aggregate(feasibilityModel);
                 });
             }
         }
 
-        public void UpdateTreatment(TreatmentsEntity treatmentsEntity)
+        public void UpdateTreatment(TreatmentsEntity entity)
         {
-            treatmentsEntity.TREATMENT = Name;
-            treatmentsEntity.BUDGET = string.Join(",", Budgets);
+            entity.TREATMENT = Name;
+            entity.BUDGET = string.Join(",", Budgets);
             if (Feasibility != null)
             {
-                treatmentsEntity.BEFOREANY = Feasibility.YearsBeforeAny;
-                treatmentsEntity.BEFORESAME = Feasibility.YearsBeforeSame;
+                entity.BEFOREANY = Feasibility.YearsBeforeAny;
+                entity.BEFORESAME = Feasibility.YearsBeforeSame;
             }
         }
     }

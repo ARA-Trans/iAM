@@ -1,13 +1,10 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using System;
-using System.Data.SqlClient;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using BridgeCare.ApplicationLog;
 
 namespace BridgeCare.Controllers
 {

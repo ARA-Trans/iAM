@@ -16,13 +16,13 @@ namespace BridgeCare.Models
             Equations = new List<PerformanceLibraryEquationModel>();
         }
 
-        public PerformanceLibraryModel(SimulationEntity simulationEntity)
+        public PerformanceLibraryModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID.ToString();
-            Name = simulationEntity.SIMULATION;
-            Description = simulationEntity.COMMENTS;
-            Equations = simulationEntity.PERFORMANCES.Any()
-                ? simulationEntity.PERFORMANCES.Select(p => new PerformanceLibraryEquationModel(p)).ToList()
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            Equations = entity.PERFORMANCES.Any()
+                ? entity.PERFORMANCES.Select(p => new PerformanceLibraryEquationModel(p)).ToList()
                 : new List<PerformanceLibraryEquationModel>();
         }
     }

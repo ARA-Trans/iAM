@@ -17,31 +17,31 @@ namespace BridgeCare.Models
 
         public SimulationAnalysisModel() { }
 
-        public SimulationAnalysisModel(SimulationEntity simulationEntity)
+        public SimulationAnalysisModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID;
-            StartYear = simulationEntity.COMMITTED_START;
-            AnalysisPeriod = simulationEntity.COMMITTED_PERIOD;
-            OptimizationType = simulationEntity.ANALYSIS;
-            BudgetType = simulationEntity.BUDGET_CONSTRAINT;
-            BenefitLimit = simulationEntity.BENEFIT_LIMIT;
-            Description = simulationEntity.COMMENTS;
-            Criteria = simulationEntity.JURISDICTION;
-            BenefitAttribute = simulationEntity.BENEFIT_VARIABLE;
-            WeightingAttribute = simulationEntity.WEIGHTING;
+            Id = entity.SIMULATIONID;
+            StartYear = entity.COMMITTED_START;
+            AnalysisPeriod = entity.COMMITTED_PERIOD;
+            OptimizationType = entity.ANALYSIS;
+            BudgetType = entity.BUDGET_CONSTRAINT;
+            BenefitLimit = entity.BENEFIT_LIMIT;
+            Description = entity.COMMENTS;
+            Criteria = entity.JURISDICTION;
+            BenefitAttribute = entity.BENEFIT_VARIABLE;
+            WeightingAttribute = entity.WEIGHTING;
         }
 
-        public void UpdateSimulationAnalysis(SimulationEntity simulationEntity)
+        public void UpdateSimulationAnalysis(SimulationEntity entity)
         {
-            simulationEntity.JURISDICTION = Criteria;
-            simulationEntity.ANALYSIS = OptimizationType;
-            simulationEntity.BENEFIT_LIMIT = BenefitLimit;
-            simulationEntity.BUDGET_CONSTRAINT = BudgetType;
-            simulationEntity.COMMENTS = Description;
-            simulationEntity.COMMITTED_PERIOD = AnalysisPeriod;
-            simulationEntity.COMMITTED_START = StartYear;
-            simulationEntity.BENEFIT_VARIABLE = BenefitAttribute;
-            simulationEntity.WEIGHTING = WeightingAttribute;
+            entity.JURISDICTION = Criteria;
+            entity.ANALYSIS = OptimizationType;
+            entity.BENEFIT_LIMIT = BenefitLimit;
+            entity.BUDGET_CONSTRAINT = BudgetType;
+            entity.COMMENTS = Description;
+            entity.COMMITTED_PERIOD = AnalysisPeriod;
+            entity.COMMITTED_START = StartYear;
+            entity.BENEFIT_VARIABLE = BenefitAttribute;
+            entity.WEIGHTING = WeightingAttribute;
         }
   }
 }

@@ -42,8 +42,6 @@ namespace BridgeCare.DataAccessLayer
 
             var simulation = db.Simulations.Include(s => s.PERFORMANCES).Single(s => s.SIMULATIONID == id);
 
-            simulation.COMMENTS = model.Description;
-
             if (simulation.PERFORMANCES.Any())
                 simulation.PERFORMANCES.ToList().ForEach(performanceEntity =>
                 {

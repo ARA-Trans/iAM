@@ -18,13 +18,13 @@ namespace BridgeCare.Models
             Deficients = new List<DeficientModel>();
         }
 
-        public DeficientLibraryModel(SimulationEntity simulationEntity)
+        public DeficientLibraryModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID.ToString();
-            Name = simulationEntity.SIMULATION;
-            Description = simulationEntity.COMMENTS;
-            Deficients = simulationEntity.DEFICIENTS.Any()
-                ? simulationEntity.DEFICIENTS.Select(d => new DeficientModel(d)).ToList()
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            Deficients = entity.DEFICIENTS.Any()
+                ? entity.DEFICIENTS.Select(d => new DeficientModel(d)).ToList()
                 : new List<DeficientModel>();
         }
     }

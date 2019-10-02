@@ -16,27 +16,27 @@ namespace BridgeCare.Models
 
         public PerformanceLibraryEquationModel() { }
 
-        public PerformanceLibraryEquationModel(PerformanceEntity performanceEntity)
+        public PerformanceLibraryEquationModel(PerformanceEntity entity)
         {
-            Id = performanceEntity.PERFORMANCEID.ToString();
-            Attribute = performanceEntity.ATTRIBUTE_;
-            EquationName = performanceEntity.EQUATIONNAME;
-            Criteria = performanceEntity.CRITERIA;
-            Equation = performanceEntity.EQUATION;
-            Shift = performanceEntity.SHIFT ?? false;
-            Piecewise = performanceEntity.PIECEWISE ?? false;
-            IsFunction = performanceEntity.ISFUNCTION ?? false;
+            Id = entity.PERFORMANCEID.ToString();
+            Attribute = entity.ATTRIBUTE_;
+            EquationName = entity.EQUATIONNAME;
+            Criteria = entity.CRITERIA;
+            Equation = entity.EQUATION;
+            Shift = entity.SHIFT ?? false;
+            Piecewise = entity.PIECEWISE ?? false;
+            IsFunction = entity.ISFUNCTION ?? false;
         }
 
-        public void UpdatePerformance(PerformanceEntity performanceEntity)
+        public void UpdatePerformance(PerformanceEntity entity)
         {
-            performanceEntity.ATTRIBUTE_ = Attribute;
-            performanceEntity.EQUATIONNAME = EquationName;
-            performanceEntity.CRITERIA = Criteria;
-            performanceEntity.EQUATION = Equation;
-            performanceEntity.SHIFT = Shift ?? false;
-            performanceEntity.PIECEWISE = Piecewise ?? false;
-            performanceEntity.ISFUNCTION = IsFunction ?? false;
+            entity.ATTRIBUTE_ = Attribute;
+            entity.EQUATIONNAME = EquationName;
+            entity.CRITERIA = Criteria;
+            entity.EQUATION = Equation;
+            entity.SHIFT = Shift ?? false;
+            entity.PIECEWISE = Piecewise ?? false;
+            entity.ISFUNCTION = IsFunction ?? false;
         }
     }
 }

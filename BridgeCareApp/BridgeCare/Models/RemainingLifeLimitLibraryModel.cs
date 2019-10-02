@@ -18,13 +18,13 @@ namespace BridgeCare.Models
             RemainingLifeLimits = new List<RemainingLifeLimitModel>();
         }
 
-        public RemainingLifeLimitLibraryModel(SimulationEntity simulationEntity)
+        public RemainingLifeLimitLibraryModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID.ToString();
-            Name = simulationEntity.SIMULATION;
-            Description = simulationEntity.COMMENTS;
-            RemainingLifeLimits = simulationEntity.REMAINING_LIFE_LIMITS.Any()
-                ? simulationEntity.REMAINING_LIFE_LIMITS.Select(rll => new RemainingLifeLimitModel(rll)).ToList()
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            RemainingLifeLimits = entity.REMAINING_LIFE_LIMITS.Any()
+                ? entity.REMAINING_LIFE_LIMITS.Select(rll => new RemainingLifeLimitModel(rll)).ToList()
                 : new List<RemainingLifeLimitModel>();
         }
     }

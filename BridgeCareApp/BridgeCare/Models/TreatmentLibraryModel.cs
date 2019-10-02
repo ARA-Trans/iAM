@@ -14,13 +14,13 @@ namespace BridgeCare.Models
 
         public TreatmentLibraryModel() { }
 
-        public TreatmentLibraryModel(SimulationEntity simulationEntity)
+        public TreatmentLibraryModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID.ToString();
-            Name = simulationEntity.SIMULATION;
-            Description = simulationEntity.COMMENTS;
-            Treatments = simulationEntity.TREATMENTS.Any()
-                ? simulationEntity.TREATMENTS.Select(t => new TreatmentModel(t)).ToList()
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            Treatments = entity.TREATMENTS.Any()
+                ? entity.TREATMENTS.Select(t => new TreatmentModel(t)).ToList()
                 : new List<TreatmentModel>();
         }
     }

@@ -14,13 +14,13 @@ namespace BridgeCare.Models
 
         public TargetParameters() { }
 
-        public TargetParameters(TargetsEntity targetsEntity)
+        public TargetParameters(TargetsEntity entity)
         {
-            Id = targetsEntity.ID_;
-            Attribute = targetsEntity.ATTRIBUTE_;
-            TargetMean = targetsEntity.TARGETMEAN ?? 0;
-            Name = targetsEntity.TARGETNAME;
-            Criteria = targetsEntity.CRITERIA;
+            Id = entity.ID_;
+            Attribute = entity.ATTRIBUTE_;
+            TargetMean = entity.TARGETMEAN ?? 0;
+            Name = entity.TARGETNAME;
+            Criteria = entity.CRITERIA;
             Row = 0;
         }
     }

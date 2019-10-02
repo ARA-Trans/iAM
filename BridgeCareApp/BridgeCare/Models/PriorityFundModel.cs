@@ -10,17 +10,17 @@ namespace BridgeCare.Models
 
         public PriorityFundModel() { }
 
-        public PriorityFundModel(PriorityFundEntity priorityFund)
+        public PriorityFundModel(PriorityFundEntity entity)
         {
-            Id = priorityFund.PRIORITYFUNDID.ToString();
-            Budget = priorityFund.BUDGET ?? "";
-            Funding = priorityFund.FUNDING ?? 0;
+            Id = entity.PRIORITYFUNDID.ToString();
+            Budget = entity.BUDGET ?? "";
+            Funding = entity.FUNDING ?? 0;
         }
 
-        public void UpdatePriorityFund(PriorityFundEntity priorityFund)
+        public void UpdatePriorityFund(PriorityFundEntity entity)
         {
-            priorityFund.BUDGET = Budget;
-            priorityFund.FUNDING = Funding;
+            entity.BUDGET = Budget;
+            entity.FUNDING = Funding;
         }
     }
 }

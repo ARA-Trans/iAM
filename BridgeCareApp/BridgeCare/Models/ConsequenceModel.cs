@@ -13,23 +13,23 @@ namespace BridgeCare.Models
 
         public ConsequenceModel() { }
 
-        public ConsequenceModel(ConsequencesEntity consequencesEntity)
+        public ConsequenceModel(ConsequencesEntity entity)
         {
-            Id = consequencesEntity.CONSEQUENCEID.ToString();
-            Attribute = consequencesEntity.ATTRIBUTE_;
-            Change = consequencesEntity.CHANGE_;
-            Criteria = consequencesEntity.CRITERIA;
-            Equation = consequencesEntity.EQUATION;
-            IsFunction = consequencesEntity.ISFUNCTION ?? false;
+            Id = entity.CONSEQUENCEID.ToString();
+            Attribute = entity.ATTRIBUTE_;
+            Change = entity.CHANGE_;
+            Criteria = entity.CRITERIA;
+            Equation = entity.EQUATION;
+            IsFunction = entity.ISFUNCTION ?? false;
         }
 
-        public void UpdateConsequence(ConsequencesEntity consequencesEntity)
+        public void UpdateConsequence(ConsequencesEntity entity)
         {
-            consequencesEntity.ATTRIBUTE_ = Attribute;
-            consequencesEntity.CHANGE_ = Change;
-            consequencesEntity.CRITERIA = Criteria;
-            consequencesEntity.EQUATION = Equation;
-            consequencesEntity.ISFUNCTION = IsFunction ?? false;
+            entity.ATTRIBUTE_ = Attribute;
+            entity.CHANGE_ = Change;
+            entity.CRITERIA = Criteria;
+            entity.EQUATION = Equation;
+            entity.ISFUNCTION = IsFunction ?? false;
         }
     }
 }

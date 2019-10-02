@@ -10,7 +10,7 @@ namespace BridgeCare.DataAccessLayer
     public class TreatmentLibraryDAL : ITreatmentLibrary
     {
         /// <summary>
-        /// Fetches a simulation with treatments, feasibilities, costs, and consequences
+        /// Fetches a simulation's treatment library data
         /// </summary>
         /// <param name="id"></param>
         /// <param name="db"></param>
@@ -30,7 +30,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Executes an upsert/delete operation on the treatments, feasibilities, costs, and consequences tables
+        /// Executes an upsert/delete operation on a simulation's treatment library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">TreatmentLibraryModel</param>
@@ -48,8 +48,6 @@ namespace BridgeCare.DataAccessLayer
                 .Include(s => s.TREATMENTS.Select(t => t.COSTS))
                 .Include(s => s.TREATMENTS.Select(t => t.CONSEQUENCES))
                 .Single(s => s.SIMULATIONID == id);
-
-            simulation.COMMENTS = model.Description;
 
             if (simulation.TREATMENTS.Any())
             {

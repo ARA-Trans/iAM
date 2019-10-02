@@ -13,23 +13,23 @@ namespace BridgeCare.Models
 
         public DeficientModel() { }
 
-        public DeficientModel(DeficientsEntity deficient)
+        public DeficientModel(DeficientsEntity entity)
         {
-            Id = deficient.ID_.ToString();
-            Attribute = deficient.ATTRIBUTE_;
-            Name = deficient.DEFICIENTNAME;
-            Deficient = deficient.DEFICIENT ?? 0;
-            PercentDeficient = deficient.PERCENTDEFICIENT ?? 0;
-            Criteria = deficient.CRITERIA;
+            Id = entity.ID_.ToString();
+            Attribute = entity.ATTRIBUTE_;
+            Name = entity.DEFICIENTNAME;
+            Deficient = entity.DEFICIENT ?? 0;
+            PercentDeficient = entity.PERCENTDEFICIENT ?? 0;
+            Criteria = entity.CRITERIA;
         }
 
-        public void UpdateDeficient(DeficientsEntity deficient)
+        public void UpdateDeficient(DeficientsEntity entity)
         {
-            deficient.ATTRIBUTE_ = Attribute;
-            deficient.DEFICIENTNAME = Name;
-            deficient.DEFICIENT = Deficient ?? 0;
-            deficient.PERCENTDEFICIENT = PercentDeficient ?? 0;
-            deficient.CRITERIA = Criteria;
+            entity.ATTRIBUTE_ = Attribute;
+            entity.DEFICIENTNAME = Name;
+            entity.DEFICIENT = Deficient ?? 0;
+            entity.PERCENTDEFICIENT = PercentDeficient ?? 0;
+            entity.CRITERIA = Criteria;
         }
     }
 }

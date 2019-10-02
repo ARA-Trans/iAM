@@ -9,10 +9,10 @@ namespace BridgeCare.Models
 
         public AttributeModel() { }
 
-        public AttributeModel(AttributesEntity attributesEntity)
+        public AttributeModel(AttributesEntity entity)
         {
-            Name = attributesEntity.ATTRIBUTE_;
-            Type = attributesEntity.Type_;
+            Name = entity.ATTRIBUTE_;
+            Type = entity.Type_;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Fetches a specific target from 'Target_{NETWORKID}_{SIMULATIONID}'
+        /// Fetches a specific target from a dynamic table 'Target_{NETWORKID}_{SIMULATIONID}'
         /// and transforms the data into a TargetReportModel
         /// </summary>
         /// <param name="model">SimulationModel</param>
@@ -44,7 +44,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Transforms 'Target_{NETWORKID}_{SIMULATIONID}' table data into a TargetReportModel
+        /// Transforms dynamic table 'Target_{NETWORKID}_{SIMULATIONID}' data into a TargetReportModel
         /// </summary>
         /// <param name="model">SimulationModel</param>
         /// <param name="yearsIdValues">Hashtable</param>
@@ -79,7 +79,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Fetches a simulation record with targets
+        /// Fetches a simulation's target library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="id">Simulation identifier</param>
@@ -96,7 +96,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Executes an upsert/delete operation on the targets table
+        /// Executes an upsert/delete operation on a simulation's target library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">TargetLibraryModel</param>

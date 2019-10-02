@@ -45,8 +45,6 @@ namespace BridgeCare.DataAccessLayer
                 throw new RowNotInTableException($"No scenario was found with id {id}");
 
             var simulation = db.Simulations.Include(s => s.REMAINING_LIFE_LIMITS).Single(s => s.SIMULATIONID == id);
- 
-            simulation.COMMENTS = model.Description;
 
             if (simulation.REMAINING_LIFE_LIMITS.Any())
             {

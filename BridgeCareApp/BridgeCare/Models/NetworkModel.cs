@@ -10,10 +10,10 @@ namespace BridgeCare.Models
 
         public NetworkModel() { }
 
-        public NetworkModel(NetworkEntity networkEntity)
+        public NetworkModel(NetworkEntity entity)
         {
-            NetworkId = networkEntity.NETWORKID;
-            NetworkName = networkEntity.NETWORK_NAME;
+            NetworkId = entity.NETWORKID;
+            NetworkName = entity.NETWORK_NAME;
         }
     }
 }

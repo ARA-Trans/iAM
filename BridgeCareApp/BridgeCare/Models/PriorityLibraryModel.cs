@@ -18,13 +18,13 @@ namespace BridgeCare.Models
             Priorities = new List<PriorityModel>();
         }
 
-        public PriorityLibraryModel(SimulationEntity simulationEntity)
+        public PriorityLibraryModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID.ToString();
-            Name = simulationEntity.SIMULATION;
-            Description = simulationEntity.COMMENTS;
-            Priorities = simulationEntity.PRIORITIES.Any()
-                ? simulationEntity.PRIORITIES.Select(p => new PriorityModel(p)).ToList()
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            Priorities = entity.PRIORITIES.Any()
+                ? entity.PRIORITIES.Select(p => new PriorityModel(p)).ToList()
                 : new List<PriorityModel>();
         }
     }

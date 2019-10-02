@@ -17,14 +17,14 @@ namespace BridgeCare.Models
 
         public SimulationModel() { }
 
-        public SimulationModel(SimulationEntity simulationEntity)
+        public SimulationModel(SimulationEntity entity)
         {
-            SimulationId = simulationEntity.SIMULATIONID;
-            SimulationName = simulationEntity.SIMULATION;
-            NetworkId = simulationEntity.NETWORKID ?? 0;
-            Created = simulationEntity.DATE_CREATED;
-            LastRun = simulationEntity.DATE_LAST_RUN ?? DateTime.Now;
-            NetworkName = simulationEntity.NETWORK.NETWORK_NAME;
+            SimulationId = entity.SIMULATIONID;
+            SimulationName = entity.SIMULATION;
+            NetworkId = entity.NETWORKID ?? 0;
+            Created = entity.DATE_CREATED;
+            LastRun = entity.DATE_LAST_RUN ?? DateTime.Now;
+            NetworkName = entity.NETWORK.NETWORK_NAME;
         }
     }
 }

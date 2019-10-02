@@ -6,7 +6,8 @@ using BridgeCare.Models;
 using BridgeCare.Services;
 using BridgeCare.Services.SummaryReport;
 using System;
-
+using BridgeCare.DataAccessLayer.Inventory;
+using BridgeCare.DataAccessLayer.SummaryReport;
 using Unity;
 
 namespace BridgeCare

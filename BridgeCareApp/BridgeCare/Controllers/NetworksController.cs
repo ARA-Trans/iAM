@@ -1,10 +1,6 @@
-﻿using BridgeCare.EntityClasses;
-using BridgeCare.Interfaces;
-using BridgeCare.Models;
+﻿using BridgeCare.Interfaces;
 using System;
-using System.Linq;
 using System.Web.Http;
-using System.Web.Http.Description;
 
 namespace BridgeCare.Controllers
 {

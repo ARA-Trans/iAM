@@ -1,15 +1,11 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.Interfaces;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Properties;
 using DatabaseManager;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -20,30 +16,36 @@ namespace BridgeCare.DataAccessLayer
             throw new NotImplementedException();
         }
 
-        public Task<string> Start(SimulationModel data)
+        /// <summary>
+        /// Creates/starts a rollup segmentation
+        /// </summary>
+        /// <param name="model">SimulationModel</param>
+        /// <returns>string task</returns>
+        public Task<string> RunRollup(SimulationModel model)
         {
             try
             {
                 var connectionString = ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString;
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
+
                 var mongoConnection = "";
 #if DEBUG
                 mongoConnection = Settings.Default.MongoDBDevConnectionString;
 #else
                 mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var start = new RollupSegmentation.RollupSegmentation(data.NetworkName, data.NetworkId.ToString(), true, mongoConnection);
-                start.strNetwork = data.NetworkName;
+                var rollupSegmentation = new RollupSegmentation.RollupSegmentation(model.NetworkName,
+                    model.NetworkId.ToString(), true, mongoConnection) {strNetwork = model.NetworkName};
 
-                Thread rollUpandSimulation = new Thread(new ThreadStart(start.DoRollup));
-                rollUpandSimulation.Start();
+                var rollupAndSimulation = new Thread(rollupSegmentation.DoRollup);
+                rollupAndSimulation.Start();
+
                 return Task.FromResult("Rolling up...");
             }
             catch (Exception ex)
             {
                 DBMgr.CloseConnection();
-                HandleException.GeneralError(ex);
-                return Task.FromResult("Simulation failed");
+                return Task.FromResult($"Rollup failed::{ex.Message}");
             }
         }
     }

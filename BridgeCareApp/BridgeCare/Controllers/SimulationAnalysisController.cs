@@ -7,7 +7,7 @@ namespace BridgeCare.Controllers
 {
     public class SimulationAnalysisController : ApiController
     {
-        private ISimulationAnalysis repo;
+        private readonly ISimulationAnalysis repo;
         private readonly BridgeCareContext db;
 
         public SimulationAnalysisController(ISimulationAnalysis simulationAnalysis, BridgeCareContext context)
