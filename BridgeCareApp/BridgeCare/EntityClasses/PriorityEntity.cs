@@ -24,31 +24,27 @@ namespace BridgeCare.EntityClasses
 
         public PriorityEntity() { }
 
-        public PriorityEntity(int simulationId, PriorityModel priorityModel)
+        public PriorityEntity(int simulationId, PriorityModel model)
         {
             SIMULATIONID = simulationId;
-            PRIORITYLEVEL = priorityModel.PriorityLevel;
-            CRITERIA = priorityModel.Criteria;
-            YEARS = priorityModel.Year;
+            PRIORITYLEVEL = model.PriorityLevel;
+            CRITERIA = model.Criteria;
+            YEARS = model.Year;
 
-            if (priorityModel.PriorityFunds.Any())
-            {
-                priorityModel.PriorityFunds.ForEach(priorityFund =>
+            if (model.PriorityFunds.Any())
+                model.PriorityFunds.ForEach(priorityFund =>
                 {
                     PRIORITYFUNDS.Add(new PriorityFundEntity(priorityFund));
                 });
-            }
         }
 
-        public static void DeleteEntry(PriorityEntity priorityEntity, BridgeCareContext db)
+        public static void DeleteEntry(PriorityEntity entity, BridgeCareContext db)
         {
-            if (priorityEntity.PRIORITYFUNDS.Any())
-            {
-                priorityEntity.PRIORITYFUNDS.ToList()
-                    .ForEach(priorityFundEntity => db.Entry(priorityFundEntity).State = EntityState.Deleted);
-            }
+            if (entity.PRIORITYFUNDS.Any())
+                entity.PRIORITYFUNDS.ToList()
+                    .ForEach(pfEntity => PriorityFundEntity.DeleteEntry(pfEntity, db));
 
-            db.Entry(priorityEntity).State = EntityState.Deleted;
+            db.Entry(entity).State = EntityState.Deleted;
         }
     }
 }
