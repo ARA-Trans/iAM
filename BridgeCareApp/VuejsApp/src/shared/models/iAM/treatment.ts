@@ -8,7 +8,7 @@ export interface Feasibility {
 export interface Cost {
     id: string;
     equation: string;
-    isFunction: boolean;
+    isFunction?: boolean;
     criteria: string;
 }
 
@@ -17,7 +17,7 @@ export interface Consequence {
     attribute: string;
     change: string;
     equation: string;
-    isFunction: boolean;
+    isFunction?: boolean;
     criteria: string;
 }
 

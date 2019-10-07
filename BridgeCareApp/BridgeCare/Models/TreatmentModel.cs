@@ -17,25 +17,29 @@ namespace BridgeCare.Models
         public List<ConsequenceModel> Consequences { get; set; }
         public List<string> Budgets { get; set; }
 
-        public TreatmentModel() { }
+        public TreatmentModel()
+        {
+            Costs = new List<CostModel>();
+            Consequences = new List<ConsequenceModel>();
+            Budgets = new List<string>();
+        }
 
         public TreatmentModel(TreatmentsEntity entity)
         {
             Id = entity.TREATMENTID.ToString();
             Name = entity.TREATMENT;
-            Costs = entity.COSTS.Any()
-                ? entity.COSTS.Select(c => new CostModel(c)).ToList()
+            Costs = entity.COSTS != null && entity.COSTS.Any()
+                ? entity.COSTS.ToList().Select(c => new CostModel(c)).ToList()
                 : new List<CostModel>();
-            Consequences = entity.CONSEQUENCES.Any()
-                ? entity.CONSEQUENCES.Select(c => new ConsequenceModel(c)).ToList()
+            Consequences = entity.CONSEQUENCES != null && entity.CONSEQUENCES.Any()
+                ? entity.CONSEQUENCES.ToList().Select(c => new ConsequenceModel(c)).ToList()
                 : new List<ConsequenceModel>();
             Budgets = entity.BUDGET != null
                 ? entity.BUDGET.Split(',').ToList()
                 : new List<string>();
+            Feasibility = null;
 
-            if (!entity.FEASIBILITIES.Any())
-                Feasibility = null;
-            else
+            if (entity.FEASIBILITIES != null && entity.FEASIBILITIES.Any())
             {
                 Feasibility = new FeasibilityModel();
                 entity.FEASIBILITIES.ToList().ForEach(feasibilityEntity => {

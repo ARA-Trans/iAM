@@ -27,6 +27,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             if (db.CriteriaDrivenBudgets.Any(cdb => cdb.SIMULATIONID == id))
                 return db.CriteriaDrivenBudgets.AsNoTracking()
                     .Where(cbd => cbd.SIMULATIONID == id)
+                    .ToList()
                     .Select(cbd => new CriteriaDrivenBudgetsModel(cbd))
                     .ToList();
 

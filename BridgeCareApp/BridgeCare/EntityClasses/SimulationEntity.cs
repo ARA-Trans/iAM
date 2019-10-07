@@ -100,6 +100,13 @@ namespace BridgeCare.EntityClasses
                     OMS_IS_REPEAT = null,
                     OMS_REPEAT_START = null,
                     OMS_REPEAT_INTERVAL = null,
+                    FEASIBILITIES = new List<FeasibilityEntity>
+                    {
+                        new FeasibilityEntity
+                        {
+                            CRITERIA = ""
+                        }
+                    },
                     CONSEQUENCES = new List<ConsequencesEntity>
                     {
                         new ConsequencesEntity

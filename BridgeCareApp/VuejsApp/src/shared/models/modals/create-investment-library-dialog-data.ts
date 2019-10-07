@@ -4,7 +4,6 @@ import { CriteriaDrivenBudgets } from '../iAM/criteria-driven-budgets';
 export interface CreateInvestmentLibraryDialogData {
     showDialog: boolean;
     inflationRate: number;
-    discountRate: number;
     description: string;
     budgetOrder: string[];
     budgetYears: InvestmentLibraryBudgetYear[];
@@ -14,7 +13,6 @@ export interface CreateInvestmentLibraryDialogData {
 export const emptyCreateInvestmentLibraryDialogData: CreateInvestmentLibraryDialogData = {
     showDialog: false,
     inflationRate: 0,
-    discountRate: 0,
     description: '',
     budgetOrder: [],
     budgetYears: [],

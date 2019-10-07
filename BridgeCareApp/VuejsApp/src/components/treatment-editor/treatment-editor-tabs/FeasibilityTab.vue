@@ -59,6 +59,7 @@
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {findIndex, isNil, clone} from 'ramda';
     import {TabData} from '@/shared/models/child-components/tab-data';
+    import {hasValue} from '@/shared/utils/has-value-util';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -89,25 +90,15 @@
          * Sets the component's grid data
          */
         setFeasibility() {
-            if (this.feasibilityTabSelectedTreatment.id !== '0' &&
-                !isNil(this.feasibilityTabSelectedTreatment.feasibility) &&
-                this.feasibilityTabSelectedTreatment.feasibility.id !== '0') {
-                    this.feasibility = this.feasibilityTabSelectedTreatment.feasibility;
+            const feasibility: Feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility) as Feasibility;
+            if (hasValue(feasibility) && feasibility.id !== '0') {
+                    this.feasibility = feasibility;
             } else {
-                this.feasibility = clone(emptyFeasibility);
+                this.feasibility = {
+                    ...clone(emptyFeasibility),
+                    id: ObjectID.generate()
+                };
             }
-        }
-
-        /**
-         * Creates a new Feasibility object to add to the selected treatment
-         */
-        onCreateFeasibility() {
-            const newFeasibility: Feasibility = {
-                ...clone(emptyFeasibility),
-                id: ObjectID.generate()
-            };
-
-            this.submitChanges(newFeasibility);
         }
 
         /**

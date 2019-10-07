@@ -151,6 +151,7 @@ const actions = {
             .then((response: AxiosResponse<TreatmentLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioTreatmentLibraryMutator', response.data);
+                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});
                 }
             });

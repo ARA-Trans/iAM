@@ -22,7 +22,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>RemainingLifeLimitLibraryModel</returns>
         public RemainingLifeLimitLibraryModel GetSimulationRemainingLifeLimitLibrary(int id, BridgeCareContext db)
         {
-            if (db.Simulations.Any(s => s.SIMULATIONID == id))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario was found with id {id}");
                 
             var simulation = db.Simulations.Include(s => s.REMAINING_LIFE_LIMITS).Single(s => s.SIMULATIONID == id);

@@ -612,7 +612,6 @@
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
                 inflationRate: this.selectedInvestmentLibrary.inflationRate,
-                discountRate: this.selectedInvestmentLibrary.discountRate,
                 description: this.selectedInvestmentLibrary.description,
                 budgetOrder: this.selectedInvestmentLibrary.budgetOrder,
                 budgetYears: this.selectedInvestmentLibrary.budgetYears,

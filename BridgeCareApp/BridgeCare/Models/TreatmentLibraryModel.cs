@@ -12,7 +12,10 @@ namespace BridgeCare.Models
         public string Description { get; set; }
         public List<TreatmentModel> Treatments { get; set; }
 
-        public TreatmentLibraryModel() { }
+        public TreatmentLibraryModel()
+        {
+            Treatments = new List<TreatmentModel>();
+        }
 
         public TreatmentLibraryModel(SimulationEntity entity)
         {

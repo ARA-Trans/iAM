@@ -3,14 +3,14 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onNewLibrary">
+                    <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onNewLibrary">
                         New Library
                     </v-btn>
-                    <v-select v-if="!hasSelectedTreatmentLibrary || selectedScenarioId > 0"
+                    <v-select v-if="!hasSelectedTreatmentLibrary || selectedScenarioId !== '0'"
                               :items="treatmentLibrariesSelectListItems" label="Select a Treatment Library"
                               outline v-model="treatmentLibrarySelectItemValue" class="treatment-library-select">
                     </v-select>
-                    <v-text-field v-if="hasSelectedTreatmentLibrary && selectedScenarioId === 0"
+                    <v-text-field v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'"
                                   label="Treatment Name" v-model="selectedTreatmentLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedTreatmentLibrary">
@@ -34,7 +34,7 @@
                         </v-select>
                     </v-flex>
                     <v-flex xs9>
-                        <div v-show="selectedTreatment.id !== 0">
+                        <div v-show="selectedTreatment.id !== '0'">
                             <v-tabs v-model="activeTab">
                                 <v-tab v-for="(treatmentTab, index) in treatmentTabs" :key="index" ripple
                                        @click="setAsActiveTab(index)">
@@ -88,18 +88,18 @@
         </v-flex>
         <v-flex xs12>
             <v-layout v-show="hasSelectedTreatmentLibrary" justify-end row>
-                <v-btn v-show="selectedScenarioId > 0" class="ara-blue-bg white--text" @click="onApplyToScenario"
+                <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Apply
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onUpdateLibrary"
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Update Library
                 </v-btn>
                 <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
+                <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Discard Changes
                 </v-btn>
@@ -200,14 +200,16 @@
                     vm.getTreatmentLibrariesAction()
                         .then(() => {
                             setTimeout(() => {
-                                vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
-                                    .then(() => {
-                                        if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
-                                            vm.getScenarioInvestmentLibraryAction({
-                                                selectedScenarioId: vm.selectedScenarioId
-                                            });
-                                        }
-                                    });
+                                if (vm.selectedScenarioId !== '0') {
+                                    vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                                        .then(() => {
+                                            if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
+                                                vm.getScenarioInvestmentLibraryAction({
+                                                    selectedScenarioId: vm.selectedScenarioId
+                                                });
+                                            }
+                                        });
+                                }
                             });
                         });
                 }, 0);
@@ -221,7 +223,6 @@
             if (to.path === '/TreatmentEditor/Library/') {
                 this.selectedScenarioId = '0';
                 this.onClearSelectedTreatmentLibrary();
-                this.getScenarioInvestmentLibraryAction({selectedScenarioId: '0'});
                 if (this.treatmentTabs.length === 4) {
                     this.treatmentTabs.splice(3, 1);
                 }
@@ -477,27 +478,12 @@
          * Dispatches an action to update the scenario's treatment library data with the currently selected treatment library
          */
         onApplyToScenario() {
-            const appliedTreatmentLibrary: TreatmentLibrary = clone(this.selectedTreatmentLibrary);
-            appliedTreatmentLibrary.id = this.selectedScenarioId;
-            appliedTreatmentLibrary.name = this.scenarioTreatmentLibrary.name;
-
-            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: appliedTreatmentLibrary})
-                .then(() => {
-                    setTimeout(() => {
-                        const selectedTreatment = this.treatmentSelectItemValue;
-                        const activeTab = this.activeTab;
-                        this.onClearSelectedTreatmentLibrary();
-                        setTimeout(() => {
-                            this.updateSelectedTreatmentLibraryAction({
-                                updatedSelectedTreatmentLibrary: this.scenarioTreatmentLibrary
-                            });
-                            setTimeout(() => {
-                                this.treatmentSelectItemValue = selectedTreatment;
-                                this.activeTab = activeTab;
-                            });
-                        });
-                    });
-                });
+            this.saveScenarioTreatmentLibraryAction({saveScenarioTreatmentLibraryData: {
+                    ...clone(this.selectedTreatmentLibrary),
+                    id: this.selectedScenarioId,
+                    name: this.scenarioTreatmentLibrary.name
+                }
+            });
         }
 
         /**

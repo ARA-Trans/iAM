@@ -74,7 +74,7 @@
         @Action('getScenarioDeficientLibrary') getScenarioDeficientLibraryAction: any;
         @Action('saveScenarioDeficientLibrary') saveScenarioDeficientLibraryAction: any;
 
-        selectedScenarioId: number = 0;
+        selectedScenarioId: string = '0';
         deficients: Deficient[] = [];
         deficientDataTableHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: '14%'},
@@ -94,6 +94,7 @@
             next((vm: any) => {
                 if (to.path === '/DeficientEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
+
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -119,7 +120,7 @@
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/DeficientEditor/Library/') {
-                this.selectedScenarioId = 0;
+                this.selectedScenarioId = '0';
                 // this.onClearSelectedTargetLibrary();
                 next();
             }

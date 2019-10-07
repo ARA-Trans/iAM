@@ -36,7 +36,7 @@ namespace BridgeCare.Controllers
         /// <param name="models">CriteriaDrivenBudgetsModel list</param>
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        [Route("api/SaveCriteriaDrivenBudgets")]
+        [Route("api/SaveCriteriaDrivenBudgets/{id}")]
         [ModelValidation("The criteria driven budgets data is invalid.")]
         public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetsModel> models)
         {

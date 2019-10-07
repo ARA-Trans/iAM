@@ -69,8 +69,7 @@ namespace BridgeCare.DataAccessLayer
                             {
                                 var feasibilityModel = treatmentModel.Feasibility;
 
-                                if (feasibilityModel == null ||
-                                    feasibilityModel.Id != feasibilityEntity.FEASIBILITYID.ToString())
+                                if (feasibilityModel.Id != feasibilityEntity.FEASIBILITYID.ToString())
                                     FeasibilityEntity.DeleteEntry(feasibilityEntity, db);
                                 else
                                 {
