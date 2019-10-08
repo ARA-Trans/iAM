@@ -176,6 +176,14 @@ function parseQueryBuilderClause(clause: string, criteria: Criteria) {
                 spacedString = 0;
             }
             startingIndex = index + 1;
+        } else if (clause.substring(index - 2, index) == 'OR' || clause.substring(index - 3, index) == 'AND') {
+            if (spacedString == 0) {
+                splitVals.push(clause.substring(startingIndex, index));
+            } else {
+                splitVals.push(clause.substring(indexForSpacedString, index));
+                spacedString = 0;
+            }
+            startingIndex = index + 1;
         } else {
             if (spacedString == 0) {
                 indexForSpacedString = startingIndex;
