@@ -106,15 +106,19 @@ namespace BridgeCare.DataAccessLayer
 
             int? networkId = sim.NETWORKID;
 
-            var select = String.Format
-                ("DROP TABLE IF EXISTS SIMULATION_{0}_{1},REPORT_{0}_{1},BENEFITCOST_{0}_{1},TARGET_{0}_{1}",
-                networkId, id);
+            var dropTable = $"IF OBJECT_ID ( 'SIMULATION_{networkId}_{id}' , 'U' )  IS NOT NULL DROP TABLE SIMULATION_{networkId}_{id} " +
+                $"IF OBJECT_ID ( 'REPORT_{networkId}_{id}' , 'U' )  IS NOT NULL DROP TABLE REPORT_{networkId}_{id} " +
+                $"IF OBJECT_ID ( 'TARGET_{networkId}_{id}' , 'U' )  IS NOT NULL DROP TABLE TARGET_{networkId}_{id} ";
+
+            //var select = String.Format
+            //    ("DROP TABLE IF EXISTS SIMULATION_{0}_{1},REPORT_{0}_{1},BENEFITCOST_{0}_{1},TARGET_{0}_{1}",
+            //    networkId, id);
 
             var connection = new SqlConnection(db.Database.Connection.ConnectionString);
             try
             {
                 connection.Open();
-                SqlCommand cmd = new SqlCommand(select, connection);
+                SqlCommand cmd = new SqlCommand(dropTable, connection);
                 cmd.CommandType = CommandType.Text;
                 cmd.ExecuteNonQuery();
 
