@@ -153,12 +153,14 @@ namespace BridgeCare.DataAccessLayer
             // create the sql select statement
             var strNetworkID = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
             string strFrom = "FROM SECTION_" + strNetworkID + " INNER JOIN SEGMENT_" + strNetworkID + "_NS0 ON SECTION_" + strNetworkID + ".SECTIONID=SEGMENT_" + strNetworkID + "_NS0.SECTIONID";
+            // Get Attributes
+            List<AttributesEntity> attributes = GetAllowedAttributes(true, db);
             //oracle chokes on non-space whitespace
             Regex whiteSpaceMechanic = new Regex(@"\s+");
             // modify the critiera string replacing all special characters and white space
             var modifiedCriteria = whiteSpaceMechanic.Replace(criteria.Replace("[", "").Replace("]", "").Replace("@", ""), " ");
             // parameterize the criteria pedicate and add it to the select
-            var parameterizedCriteriaData = parameterizeCriteria(modifiedCriteria);
+            var parameterizedCriteriaData = parameterizeCriteria(modifiedCriteria, attributes);
             string strSelect = $"SELECT COUNT(*) {strFrom} WHERE {parameterizedCriteriaData.ParameterizedPredicatesString}";
             // create a sql connection
             var connection = new SqlConnection(db.Database.Connection.ConnectionString);
@@ -191,15 +193,67 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        public ParameterizedCriteriaData parameterizeCriteria(string criteria)
+        public ParameterizedCriteriaData parameterizeCriteria(string criteria, List<AttributesEntity> attributes)
         {
             var parameterizedCriteriaPredicates = new List<string>();
             var sqlParameters = new List<SqlParameter>();
             var operators = new List<string>(){"<=", ">=", "<>", "=", "<", ">"};
             var operatorsRegex = new Regex(@"<=|>=|<>|=|<|>");
             var parameterCount = 0;
+            var startingIndex = 0;
+            List<string> predicates = new List<string>();
+            var spacedString = 0;
+            var indexForSpacedString = 0;
 
-            var predicates = criteria.Split(' ');
+            while (startingIndex < criteria.Length)
+            {
+                var index = criteria.IndexOf(" ", startingIndex);
+
+                if (index == -1)
+                {
+                    if (spacedString == 0)
+                    {
+                        var length = criteria.Length - startingIndex;
+                        predicates.Add(criteria.Substring(startingIndex, length));
+                    }
+                    else
+                    {
+                        var lengthForCustomString = criteria.Length - indexForSpacedString;
+                        predicates.Add(criteria.Substring(indexForSpacedString, lengthForCustomString));
+                        spacedString = 0;
+                    }
+                    break;
+                }
+
+                if (criteria[index + 1] == '(' || criteria[index + 1] == '[' 
+                    || criteria.Substring(index + 1, 3) == "AND" 
+                    || criteria.Substring(index + 1, 2) == "OR")
+                {
+                    if (spacedString == 0)
+                    {
+                        var length = index - startingIndex;
+                        predicates.Add(criteria.Substring(startingIndex, length));
+                    }
+                    else
+                    {
+                        var lengthForCustomString = index - indexForSpacedString;
+                        predicates.Add(criteria.Substring(indexForSpacedString, lengthForCustomString));
+                        spacedString = 0;
+                    }
+                    startingIndex = index + 1;
+                }
+                else
+                {
+                    if (spacedString == 0)
+                    {
+                        indexForSpacedString = startingIndex;
+                        spacedString++;
+                    }
+                    startingIndex = index + 1;
+                    continue;
+                }
+            }
+            //var predicates = criteria.Split(' ');
             foreach (var predicate in predicates)
             {
                 if (operatorsRegex.IsMatch(predicate))
@@ -216,8 +270,18 @@ namespace BridgeCare.DataAccessLayer
                             var parameterName = $"@value{++parameterCount}";
                             // create the parameter value
                             var value = splitPredicate[1].Replace(")", "").Replace("'", "");
-                            // create a parameterized predicate string
-                            var parameterizedPredicate = $"{splitPredicate[0]} {@operator} {parameterName}";
+
+                            var parameterizedPredicate = "";
+                            if (!attributes.Exists(_ => _.ATTRIBUTE_ == value))
+                            {
+                                // create a parameterized predicate string
+                                parameterizedPredicate = $"{splitPredicate[0]} {@operator} {parameterName}";
+                            }
+                            else
+                            {
+                                // create a parameterized predicate string
+                                parameterizedPredicate = $"{splitPredicate[0]} {@operator} {value}";
+                            }
                             // add a number of closed parentheses equal to closedParenthesesCount to end of parameterizedPredicate
                             if (closedParenthesesCount > 0)
                             {

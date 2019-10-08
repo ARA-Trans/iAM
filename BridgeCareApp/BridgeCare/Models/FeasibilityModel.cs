@@ -34,11 +34,11 @@ namespace BridgeCare.Models
 
             if (Criteria.Length <= 0)
             {
-                Criteria = model.Criteria;
+                Criteria = "(" + model.Criteria + ")";
             }
             else
             {
-                Criteria += " AND " + model.Criteria;
+                Criteria += " OR " + "(" + model.Criteria + ")";
             }
         }
     }
