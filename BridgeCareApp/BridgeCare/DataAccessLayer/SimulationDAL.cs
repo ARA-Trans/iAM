@@ -127,7 +127,7 @@ namespace BridgeCare.DataAccessLayer
             catch (SqlException ex)
             {
                 connection.Close();
-                HandleException.SqlError(ex, "Error " + select);
+                HandleException.SqlError(ex, "Error " + dropTable);
             }
             catch (OutOfMemoryException ex)
             {

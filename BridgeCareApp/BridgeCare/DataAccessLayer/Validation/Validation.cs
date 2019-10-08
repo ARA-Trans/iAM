@@ -240,22 +240,7 @@ namespace BridgeCare.DataAccessLayer
                     }
                     startingIndex = index + 1;
                 }
-                else if (criteria.Substring(index + 1, 3) == "AND")
-                {
-                    if (spacedString == 0)
-                    {
-                        var length = index - startingIndex;
-                        predicates.Add(criteria.Substring(startingIndex, length));
-                    }
-                    else
-                    {
-                        var lengthForCustomString = index - indexForSpacedString;
-                        predicates.Add(criteria.Substring(indexForSpacedString, lengthForCustomString));
-                        spacedString = 0;
-                    }
-                    startingIndex = index + 1;
-                }
-                else if (criteria.Substring(index + 1, 2) == "OR")
+                else if (criteria.Substring(index + 1, 3) == "AND" || criteria.Substring(index + 1, 2) == "OR")
                 {
                     if (spacedString == 0)
                     {
