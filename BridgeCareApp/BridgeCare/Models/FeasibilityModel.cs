@@ -26,9 +26,9 @@ namespace BridgeCare.Models
                 Id = model.Id;
 
             if (Criteria == null || Criteria.Length <= 0)
-                Criteria = model.Criteria;
+                Criteria = "(" + model.Criteria + ")";
             else
-                Criteria += " AND " + model.Criteria;
+                Criteria += " OR " + "(" + model.Criteria + ")";
         }
     }
 }
