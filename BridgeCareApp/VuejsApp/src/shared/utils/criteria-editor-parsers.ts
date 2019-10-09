@@ -97,7 +97,48 @@ export const parseCriteriaString = (clause: string) => {
  * @param criteria The criteria object to parse the data into
  */
 function parseLegacyAppClause(clause: string, criteria: Criteria) {
-    const splitVals = clause.split(' ');
+    var splitVals: any = [];
+    let startingIndex = 0;
+    let indexForSpacedString = 0;
+    let spacedString = 0;
+    while (startingIndex < clause.length) {
+        let index = clause.indexOf(' ', startingIndex);
+        if (index == -1) {
+            if (spacedString == 0) {
+                splitVals.push(clause.substring(startingIndex, clause.length));
+            } else {
+                splitVals.push(clause.substring(indexForSpacedString, clause.length));
+                spacedString = 0;
+            }
+            break;
+        }
+        if (clause[index + 1] == '(' || clause[index + 1] == '[' || clause.substring(index + 1, index + 4) == 'AND'
+            || clause.substring(index + 1, index + 3) == 'OR') {
+            if (spacedString == 0) {
+                splitVals.push(clause.substring(startingIndex, index));
+            } else {
+                splitVals.push(clause.substring(indexForSpacedString, index));
+                spacedString = 0;
+            }
+            startingIndex = index + 1;
+        } else if (clause.substring(index - 2, index) == 'OR' || clause.substring(index - 3, index) == 'AND') {
+            if (spacedString == 0) {
+                splitVals.push(clause.substring(startingIndex, index));
+            } else {
+                splitVals.push(clause.substring(indexForSpacedString, index));
+                spacedString = 0;
+            }
+            startingIndex = index + 1;
+        } else {
+            if (spacedString == 0) {
+                indexForSpacedString = startingIndex;
+                spacedString++;
+            }
+            startingIndex = index + 1;
+            continue;
+        }
+    }
+    //const splitVals = clause.split(' ');
     while (splitVals.indexOf('') !== -1) {
         splitVals.splice(splitVals.indexOf(''), 1);
     }
