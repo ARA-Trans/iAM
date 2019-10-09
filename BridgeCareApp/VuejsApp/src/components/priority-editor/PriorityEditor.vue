@@ -399,11 +399,11 @@
                     };
 
                     this.budgetOrder.forEach((budgetName: any) => {
-                        let amount = 100;
+                        let amount = '';
                         if (any(propEq('budget', budgetName), priority.priorityFunds)) {
                             const priorityFund: PriorityFund = priority.priorityFunds
                                 .find((pf: PriorityFund) => pf.budget === budgetName) as PriorityFund;
-                            amount = priorityFund.funding;
+                            amount = priorityFund.funding.toString();
                         }
                         row[budgetName] = amount.toString();
                     });
