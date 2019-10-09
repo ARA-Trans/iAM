@@ -2,6 +2,7 @@ import {emptyPriorityLibrary, Priority, PriorityFund, PriorityLibrary} from '@/s
 import {clone, any, propEq, append, findIndex, equals} from 'ramda';
 import PriorityService from '@/services/priority.service';
 import {AxiosResponse} from 'axios';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const priorityLibrary: any = {
@@ -94,35 +95,43 @@ const actions = {
     async getPriorityLibraries({commit}: any) {
         await PriorityService.getPriorityLibraries()
             .then((response: AxiosResponse<any[]>) => {
-                const priorityLibraries: PriorityLibrary[] = response.data.map((data: any) => {
-                    return convertFromMongoToVueModel(data);
-                });
-                commit('priorityLibrariesMutator', priorityLibraries);
+                if (hasValue(response, 'data')) {
+                    const priorityLibraries: PriorityLibrary[] = response.data.map((data: any) => {
+                        return convertFromMongoToVueModel(data);
+                    });
+                    commit('priorityLibrariesMutator', priorityLibraries);
+                }
             });
     },
     async createPriorityLibrary({dispatch, commit}: any, payload: any) {
         await PriorityService.createPriorityLibrary(payload.createdPriorityLibrary)
             .then((response: AxiosResponse<any>) => {
-                const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(response.data);
-                commit('createdPriorityLibraryMutator', createdPriorityLibrary);
-                dispatch('setSuccessMessage', {message: 'Successfully created priority library'});
+                if (hasValue(response, 'data')) {
+                    const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(response.data);
+                    commit('createdPriorityLibraryMutator', createdPriorityLibrary);
+                    dispatch('setSuccessMessage', {message: 'Successfully created priority library'});
+                }
             });
     },
     async updatePriorityLibrary({dispatch, commit}: any, payload: any) {
         await PriorityService.updatePriorityLibrary(payload.updatedPriorityLibrary)
             .then((response: AxiosResponse<any>) => {
-                const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(response.data);
-                commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
-                commit('selectedPriorityLibraryMutator', updatedPriorityLibrary.id);
-                dispatch('setSuccessMessage', {message: 'Successfully updated priority library'});
+                if (hasValue(response, 'data')) {
+                    const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(response.data);
+                    commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
+                    commit('selectedPriorityLibraryMutator', updatedPriorityLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully updated priority library'});
+                }
             });
     },
     async getScenarioPriorityLibrary({commit}: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await PriorityService.getScenarioPriorityLibrary(payload.selectedScenarioId)
-                .then((response: AxiosResponse<any>) => {
-                    commit('scenarioPriorityLibraryMutator', response.data);
-                    commit('updatedSelectedPriorityLibraryMutator', response.data);
+                .then((response: AxiosResponse<PriorityLibrary>) => {
+                    if (hasValue(response, 'data')) {
+                        commit('scenarioPriorityLibraryMutator', response.data);
+                        commit('updatedSelectedPriorityLibraryMutator', response.data);
+                    }
                 });
         } else {
             commit('scenarioPriorityLibraryMutator', emptyPriorityLibrary);
@@ -131,25 +140,29 @@ const actions = {
     },
     async saveScenarioPriorityLibrary({dispatch, commit}: any, payload: any) {
         await PriorityService.saveScenarioPriorityLibrary(payload.saveScenarioPriorityLibraryData)
-            .then((response: AxiosResponse<any>) => {
-                commit('scenarioPriorityLibraryMutator', response.data);
-                dispatch('setSuccessMessage', {message: 'Successfully saved scenario priority library'});
+            .then((response: AxiosResponse<PriorityLibrary>) => {
+                if (hasValue(response, 'data')) {
+                    commit('scenarioPriorityLibraryMutator', response.data);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario priority library'});
+                }
             });
     },
     async socket_priorityLibrary({dispatch, state, commit}: any, payload: any) {
-        if (payload.operationType === 'update' || payload.operationType === 'replace') {
-            const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
-            if (state.selectedPriorityLibrary.id === updatedPriorityLibrary.id &&
-            !equals(state.selectedPriorityLibrary, updatedPriorityLibrary)) {
-                commit('selectedPriorityLibrary', updatedPriorityLibrary.id);
-                dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
+            if (payload.operationType === 'update' || payload.operationType === 'replace') {
+                const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
+                if (state.selectedPriorityLibrary.id === updatedPriorityLibrary.id &&
+                    !equals(state.selectedPriorityLibrary, updatedPriorityLibrary)) {
+                    commit('selectedPriorityLibrary', updatedPriorityLibrary.id);
+                    dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+                }
             }
-        }
 
-        if (payload.operationType === 'insert') {
-            const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('createdPriorityLibraryMutator', createdPriorityLibrary);
+            if (payload.operationType === 'insert') {
+                const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                commit('createdPriorityLibraryMutator', createdPriorityLibrary);
+            }
         }
     }
 };

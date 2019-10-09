@@ -2,6 +2,7 @@ import {clone} from 'ramda';
 import AttributeService from '@/services/attribute.service';
 import {AxiosResponse} from 'axios';
 import {Attribute} from '@/shared/models/iAM/attribute';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     attributes: [] as Attribute[],
@@ -25,11 +26,13 @@ const actions = {
     async getAttributes({dispatch, commit}: any) {
         await AttributeService.getAttributes()
             .then((response: AxiosResponse<Attribute[]>) => {
-                commit('attributesMutator', response.data);
-                commit('stringAttributesMutator', response.data
-                    .filter((attribute: Attribute) => attribute.type === 'STRING'));
-                commit('numericAttributesMutator', response.data
-                    .filter((attribute: Attribute) => attribute.type === 'NUMBER'));
+                if (hasValue(response, 'data')) {
+                    commit('attributesMutator', response.data);
+                    commit('stringAttributesMutator', response.data
+                        .filter((attribute: Attribute) => attribute.type === 'STRING'));
+                    commit('numericAttributesMutator', response.data
+                        .filter((attribute: Attribute) => attribute.type === 'NUMBER'));
+                }
             });
     }
 };

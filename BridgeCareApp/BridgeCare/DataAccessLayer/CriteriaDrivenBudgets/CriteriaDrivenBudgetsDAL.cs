@@ -1,80 +1,74 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
+﻿using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 using BridgeCare.Interfaces.CriteriaDrivenBudgets;
 using BridgeCare.Models.CriteriaDrivenBudgets;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
 {
     public class CriteriaDrivenBudgetsDAL : ICriteriaDrivenBudgets
     {
-        public List<CriteriaDrivenBudgetsModel> GetCriteriaDrivenBudgets(int simulationId, BridgeCareContext db)
+        /// <summary>
+        /// Fetches a simulation's criteria driven budgets
+        /// Throws RowNotInTableException if simulation is not found
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>CriteriaDrivenBudgetsModel list</returns>
+        public List<CriteriaDrivenBudgetsModel> GetCriteriaDrivenBudgets(int id, BridgeCareContext db)
         {
-            try
-            {
-                if (db.CriteriaDrivenBudgets.Any(criteriaBudgets => criteriaBudgets.SIMULATIONID == simulationId))
-                {
-                    var CriteriaForBudgets = new List<CriteriaDrivenBudgetsModel>();
-                    CriteriaForBudgets = db.CriteriaDrivenBudgets.AsNoTracking().Where(_ => _.SIMULATIONID == simulationId)
-                                                              .Select(p => new CriteriaDrivenBudgetsModel
-                                                              {
-                                                                  BudgetCriteriaId = p.BUDGET_CRITERIA_ID,
-                                                                  ScenarioId = p.SIMULATIONID,
-                                                                  BudgetName = p.BUDGET_NAME,
-                                                                  Criteria = p.CRITERIA
-                                                              }).ToList();
-                    return CriteriaForBudgets;
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "CriteriaDrivenBudgets");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with {id}");
+
+            if (db.CriteriaDrivenBudgets.Any(cdb => cdb.SIMULATIONID == id))
+                return db.CriteriaDrivenBudgets.AsNoTracking()
+                    .Where(cbd => cbd.SIMULATIONID == id)
+                    .ToList()
+                    .Select(cbd => new CriteriaDrivenBudgetsModel(cbd))
+                    .ToList();
+
             return new List<CriteriaDrivenBudgetsModel>();
         }
 
-        public Task<string> SaveCriteriaDrivenBudgets(int selectedScenarioId, List<CriteriaDrivenBudgetsModel> data, BridgeCareContext db)
+        /// <summary>
+        /// Executes an insert/delete operation on the criteria driven budgets table
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="models">CriteriaDrivenBudgetsModel list</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>string Task</returns>
+        public Task<string> SaveCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db)
         {
             try
             {
-                var existingBudgets = db.CriteriaDrivenBudgets.Where(budgets => budgets.SIMULATIONID == selectedScenarioId).ToList();
+                if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                    throw new RowNotInTableException($"No scenario found with {id}");
 
-                db.CriteriaDrivenBudgets.RemoveRange(existingBudgets);
-                data.ForEach((item) =>
-                {
-                    item.ScenarioId = selectedScenarioId;
-                });
-                db.CriteriaDrivenBudgets.AddRange(data.Select(criteriaModel => new CriteriaDrivenBudgetsEntity(criteriaModel)).ToList());
+                if (db.CriteriaDrivenBudgets.Any(cdb => cdb.SIMULATIONID == id))
+                    db.CriteriaDrivenBudgets
+                        .RemoveRange(db.CriteriaDrivenBudgets
+                            .Where(budgets => budgets.SIMULATIONID == id)
+                            .ToList()
+                        );
+
+                db.CriteriaDrivenBudgets
+                    .AddRange(models
+                        .Select(criteriaModel => new CriteriaDrivenBudgetsEntity(id, criteriaModel))
+                        .ToList()
+                    );
 
                 db.SaveChanges();
+
                 return Task.FromResult("Saved criteria driven budgets");
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "CriteriaDrivenBudgets");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
             }
             catch (Exception ex)
             {
-                HandleException.GeneralError(ex);
+                return Task.FromResult($"Failed to save criteria driven budgets::{ex.Message}");
             }
-            return Task.FromResult("Failed to save criteria driven budgets"); ;
         }
     }
 }

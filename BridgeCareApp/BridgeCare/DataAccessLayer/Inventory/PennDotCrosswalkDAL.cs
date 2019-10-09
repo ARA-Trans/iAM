@@ -1,8 +1,7 @@
-﻿using BridgeCare.Models;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BridgeCare.Models;
 
-namespace BridgeCare.DataAccessLayer
+namespace BridgeCare.DataAccessLayer.Inventory
 {
     static class PennDotCrosswalkDAL
     {

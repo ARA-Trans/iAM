@@ -1,327 +1,158 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses;
+﻿using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class TreatmentLibraryDAL : ITreatmentLibrary
     {
-        public TreatmentLibraryDAL()
+        /// <summary>
+        /// Fetches a simulation's treatment library data
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public TreatmentLibraryModel GetSimulationTreatmentLibrary(int id, BridgeCareContext db)
         {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+
+            var simulation = db.Simulations.Include(s => s.TREATMENTS)
+                .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
+                .Include(s => s.TREATMENTS.Select(t => t.COSTS))
+                .Include(s => s.TREATMENTS.Select(t => t.CONSEQUENCES))
+                .Single(s => s.SIMULATIONID == id);
+
+            return new TreatmentLibraryModel(simulation);
         }
 
-        public TreatmentLibraryModel GetScenarioTreatmentLibrary(int selectedScenarioId, BridgeCareContext db)
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's treatment library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="model">TreatmentLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>TreatmentLibraryModel</returns>
+        public TreatmentLibraryModel SaveSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
         {
-            /// Query will fetch all data with data.Simulationid and fill each TreatmentScenarioModel
-            /// object from four tables based on a common TreatmentId
-            try
+            var id = int.Parse(model.Id);
+
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+
+            var simulation = db.Simulations.Include(s => s.TREATMENTS)
+                .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
+                .Include(s => s.TREATMENTS.Select(t => t.COSTS))
+                .Include(s => s.TREATMENTS.Select(t => t.CONSEQUENCES))
+                .Single(s => s.SIMULATIONID == id);
+
+            if (simulation.TREATMENTS.Any())
             {
-                var treatmentLibraryModel = db.Simulations
-                    .Include(s => s.TREATMENTS)
-                    .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
-                    .Include(s => s.TREATMENTS.Select(t => t.COSTS))
-                    .Include(s => s.TREATMENTS.Select(t => t.CONSEQUENCES))
-                    .Where(t => t.SIMULATIONID == selectedScenarioId)
-                    .Select(s => new TreatmentLibraryModel()
-                    {
-                        SimulationId = s.SIMULATIONID,
-                        Description = s.COMMENTS,
-                        Name = s.SIMULATION,
-                        Treatments = s.TREATMENTS.Select(p => new TreatmentModel
-                        {
-                            TreatmentId = p.TREATMENTID.ToString(),
-                            Name = p.TREATMENT,
-                            Budget = p.BUDGET,
-                            OMS_IS_EXCLUSIVE = p.OMS_IS_EXCLUSIVE,
-                            OMS_IS_REPEAT = p.OMS_IS_REPEAT,
-                            OMS_REPEAT_START = p.OMS_REPEAT_START,
-                            OMS_REPEAT_INTERVAL = p.OMS_REPEAT_INTERVAL,
-                            BeforeAny = p.BEFOREANY,
-                            BeforeSame = p.BEFORESAME,
-                            Costs = p.COSTS.Select(q => new CostModel
-                            {
-                                Cost = q.COST_,
-                                CostId = q.COSTID.ToString(),
-                                Criteria = q.CRITERIA,
-                                IsFunction = q.ISFUNCTION,
-                                Unit = q.UNIT
-                            }).ToList(),
-                            Feasibilities = p.FEASIBILITIES.Select(m => new FeasibilityModel
-                            {
-                                Criteria = m.CRITERIA,
-                                FeasibilityId = m.FEASIBILITYID.ToString(),
-
-                            }).ToList(),
-                            Consequences = p.CONSEQUENCES.Select(n => new ConsequenceModel
-                            {
-                                ConsequenceId = n.CONSEQUENCEID.ToString(),
-                                Criteria = n.CRITERIA,
-                                Attribute_ = n.ATTRIBUTE_,
-                                Change = n.CHANGE_,
-                                IsFunction = n.ISFUNCTION,
-                                Equation = n.EQUATION,
-                            }).ToList()
-                        }).ToList()
-                    }).SingleOrDefault();
-
-                if (treatmentLibraryModel != null)
+                simulation.TREATMENTS.ToList().ForEach(treatmentEntity =>
                 {
-                    treatmentLibraryModel.Treatments.ToList().ForEach(treatment =>
-                    {
-                        treatment.SetBudgets();
+                    var treatmentModel = model.Treatments
+                        .SingleOrDefault(t => t.Id == treatmentEntity.TREATMENTID.ToString());
 
-                        if (!treatment.Feasibilities.Any())
-                        {
-                            treatment.Feasilbility = null;
-                        }
-                        else
-                        {
-                            treatment.Feasilbility = new FeasibilityModel();
-
-                            treatment.Feasibilities.ForEach(feasibility =>
-                            {
-                                treatment.Feasilbility.Aggregate(feasibility);
-                                treatment.Feasilbility.BeforeAny = treatment.BeforeAny;
-                                treatment.Feasilbility.BeforeSame = treatment.BeforeSame;
-                            });
-                        }
-                    });
-                }
-
-                return treatmentLibraryModel;
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Get Treatment Library Failed");
-            }
-            return new TreatmentLibraryModel();
-        }
-
-        public TreatmentLibraryModel SaveScenarioTreatmentLibrary(TreatmentLibraryModel requestedModel, BridgeCareContext db)
-        {
-            try
-            {
-                var existingSimulation = db.Simulations.FirstOrDefault(p => p.SIMULATIONID == requestedModel.SimulationId);
-
-                var existingTreatments = db.Treatments
-                    .Include(t => t.FEASIBILITIES).Include(t => t.COSTS).Include(t => t.CONSEQUENCES)
-                    .Where(p => p.SIMULATIONID == requestedModel.SimulationId).ToList();
-
-                // the treatment tables get deleted index by index and when they do all the records in
-                // sub tables also get deleted, the records in the sub tables are tied to one treatment.
-                // if a cost or consequence record is deleted all the records for the particular treatment
-                // shift up and occupy the lower Id's
-                foreach (var existingTreatment in existingTreatments.ToList())
-                {
-                    if (requestedModel.Treatments.Any(t => t.TreatmentId == existingTreatment.TREATMENTID.ToString()))
-                    {
-                        var treatmentModel =
-                          requestedModel.Treatments.SingleOrDefault(t => t.TreatmentId == existingTreatment.TREATMENTID.ToString());
-                        if (treatmentModel == null) continue;
-
-                        treatmentModel.matched = true;
-                        existingTreatment.SIMULATIONID = requestedModel.SimulationId;
-                        existingTreatment.TREATMENT = treatmentModel.Name;
-                        existingTreatment.DESCRIPTION = treatmentModel.Name;
-                        existingTreatment.BUDGET = treatmentModel.Budgets.Any() ? treatmentModel.GetBudgets() : null;
-
-                        // on the database side feasibilties is an array, on the UI side it can be and is
-                        // treated as a single record consisting of a criteria. So the DB -> UI side gets
-                        // the array and concatenates it. the UI insert or update wipes out all but one
-                        // element of the array
-                        if (treatmentModel.Feasilbility != null)
-                        {
-                            if (existingTreatment.FEASIBILITIES.Any())
-                            {
-                                var feasibility = existingTreatment.FEASIBILITIES.FirstOrDefault();
-                                if (feasibility != null) feasibility.CRITERIA = treatmentModel.Feasilbility.Criteria;
-                                existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
-                                existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
-                            }
-                            else
-                            {
-                                var feasibility = new FeasibilityEntity
-                                {
-                                    TREATMENTID = existingTreatment.TREATMENTID,
-                                    CRITERIA = treatmentModel.Feasilbility.Criteria
-                                };
-                                existingTreatment.BEFOREANY = treatmentModel.Feasilbility.BeforeAny;
-                                existingTreatment.BEFORESAME = treatmentModel.Feasilbility.BeforeSame;
-                                existingTreatment.FEASIBILITIES.Add(feasibility);
-                            }
-                        }
-
-                        UpsertConsequences(treatmentModel, existingTreatment, db);
-
-                        UpsertCost(treatmentModel, existingTreatment, db);
-                    }
+                    if (treatmentModel == null)
+                        TreatmentsEntity.DeleteEntry(treatmentEntity, db);
                     else
                     {
-                        TreatmentsEntity.delete(existingTreatment, db);
+                        treatmentModel.matched = true;
+                        treatmentModel.UpdateTreatment(treatmentEntity);
+
+                        if (treatmentEntity.FEASIBILITIES.Any())
+                        {
+                            treatmentEntity.FEASIBILITIES.ToList().ForEach(feasibilityEntity =>
+                            {
+                                var feasibilityModel = treatmentModel.Feasibility;
+
+                                if (feasibilityModel.Id != feasibilityEntity.FEASIBILITYID.ToString())
+                                    FeasibilityEntity.DeleteEntry(feasibilityEntity, db);
+                                else
+                                {
+                                    feasibilityModel.matched = true;
+                                    feasibilityEntity.CRITERIA = feasibilityModel.Criteria;
+                                }
+                            });
+                        }
+
+                        if (!treatmentModel.Feasibility.matched)
+                            db.Feasibilities
+                                .Add(new FeasibilityEntity(treatmentEntity.TREATMENTID, treatmentModel.Feasibility));
+
+                        if (treatmentEntity.COSTS.Any())
+                        {
+                            treatmentEntity.COSTS.ToList().ForEach(costEntity =>
+                            {
+                                var costModel = treatmentModel.Costs
+                                    .SingleOrDefault(c => c.Id == costEntity.COSTID.ToString());
+
+                                if (costModel == null)
+                                    CostsEntity.DeleteEntry(costEntity, db);
+                                else
+                                {
+                                    costModel.matched = true;
+                                    costModel.UpdateCost(costEntity);
+                                }
+                            });
+                        }
+
+                        if (treatmentModel.Costs.Any(m => !m.matched))
+                        {
+                            db.Costs
+                                .AddRange(treatmentModel.Costs
+                                    .Where(costModel => !costModel.matched)
+                                    .Select(costModel => new CostsEntity(treatmentEntity.TREATMENTID, costModel))
+                                    .ToList()
+                                );
+                        }
+
+                        if (treatmentEntity.CONSEQUENCES.Any())
+                        {
+                            treatmentEntity.CONSEQUENCES.ToList().ForEach(consequenceEntity =>
+                            {
+                                var consequenceModel = treatmentModel.Consequences
+                                    .SingleOrDefault(c => c.Id == consequenceEntity.CONSEQUENCEID.ToString());
+
+                                if (consequenceModel == null)
+                                    ConsequencesEntity.DeleteEntry(consequenceEntity, db);
+                                else
+                                {
+                                    consequenceModel.matched = true;
+                                    consequenceModel.UpdateConsequence(consequenceEntity);
+                                }
+                            });
+                        }
+
+                        if (treatmentModel.Consequences.Any(m => !m.matched))
+                        {
+                            db.Consequences
+                                .AddRange(treatmentModel.Consequences
+                                    .Where(consequenceModel => !consequenceModel.matched)
+                                    .Select(consequenceModel => new ConsequencesEntity(treatmentEntity.TREATMENTID, consequenceModel))
+                                    .ToList()
+                                );
+                        }
                     }
-                }
-
-                db.SaveChanges();
-
-                if (requestedModel.Treatments.Any(t => !t.matched))
-                {
-                    var newTreatmentsData = requestedModel.Treatments.Where(t => !t.matched).ToList();
-                    foreach (var treatment in newTreatmentsData)
-                    {
-                        db.Treatments.Add(
-                            CreateTreatment(treatment, existingSimulation.SIMULATIONID)
-                        );
-                    }
-
-                    db.SaveChanges();
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Update/Insert Treatment Library Failed");
+                });
             }
 
-            return GetScenarioTreatmentLibrary(requestedModel.SimulationId, db);
-        }
-
-        public void UpsertCost(TreatmentModel treatmentScenarioModel,
-            TreatmentsEntity existingTreatment, BridgeCareContext db)
-        {
-            int dataIndex = 0;
-
-            foreach (CostsEntity cost in existingTreatment.COSTS.ToList())
+            if (model.Treatments.Any(m => !m.matched))
             {
-                if (treatmentScenarioModel.Costs.Count() > dataIndex)
-                {
-                    cost.COST_ = treatmentScenarioModel.Costs[dataIndex].Cost;
-                    cost.CRITERIA = treatmentScenarioModel.Costs[dataIndex].Criteria;
-                    cost.ISFUNCTION = treatmentScenarioModel.Costs[dataIndex].IsFunction;
-                }
-                else
-                {
-                    db.Entry(cost).State = EntityState.Deleted;
-                }
-                dataIndex++;
-            }
-            //these must be inserts as the number of updated records exceeds the number of existing records
-            while (treatmentScenarioModel.Costs.Count() > dataIndex)
-            {
-                var costEntity = new CostsEntity()
-                {
-                    COST_ = treatmentScenarioModel.Costs[dataIndex].Cost,
-                    CRITERIA = treatmentScenarioModel.Costs[dataIndex].Criteria,
-                    ISFUNCTION = treatmentScenarioModel.Costs[dataIndex].IsFunction,
-                    TREATMENTID = existingTreatment.TREATMENTID
-                };
-                existingTreatment.COSTS.Add(costEntity);
-                dataIndex++;
-            }
-        }
-
-        public void UpsertConsequences(TreatmentModel treatmentScenarioModel,
-            TreatmentsEntity existingTreatment, BridgeCareContext db)
-        {
-            int dataIndex = 0;
-
-            foreach (ConsequencesEntity consequence in existingTreatment.CONSEQUENCES.ToList())
-            {
-                if (treatmentScenarioModel.Consequences.Count() > dataIndex)
-                {
-                    consequence.EQUATION = treatmentScenarioModel.Consequences[dataIndex].Equation;
-                    consequence.CRITERIA = treatmentScenarioModel.Consequences[dataIndex].Criteria;
-                    consequence.ATTRIBUTE_ = treatmentScenarioModel.Consequences[dataIndex].Attribute_;
-                    consequence.CHANGE_ = treatmentScenarioModel.Consequences[dataIndex].Change;
-                    consequence.ISFUNCTION = treatmentScenarioModel.Consequences[dataIndex].IsFunction;
-                }
-                else
-                {
-                    db.Entry(consequence).State = EntityState.Deleted;
-                }
-                dataIndex++;
-            }
-            //these must be inserts as the updated records exceed existing records
-            while (treatmentScenarioModel.Consequences.Count() > dataIndex)
-            {
-                var consequenceEntity = new ConsequencesEntity()
-                {
-                    TREATMENTID = existingTreatment.TREATMENTID,
-                    EQUATION = treatmentScenarioModel.Consequences[dataIndex].Equation,
-                    CRITERIA = treatmentScenarioModel.Consequences[dataIndex].Criteria,
-                    ATTRIBUTE_ = treatmentScenarioModel.Consequences[dataIndex].Attribute_,
-                    CHANGE_ = treatmentScenarioModel.Consequences[dataIndex].Change,
-                    ISFUNCTION = treatmentScenarioModel.Consequences[dataIndex].IsFunction,
-                };
-                existingTreatment.CONSEQUENCES.Add(consequenceEntity);
-                dataIndex++;
-            }
-        }
-
-        public TreatmentsEntity CreateTreatment(TreatmentModel data, int simulationId)
-        {
-            var newTreatment = new TreatmentsEntity
-            {
-                SIMULATIONID = simulationId,
-                TREATMENT = data.Name,
-                BEFOREANY = 0,
-                BEFORESAME = 0,
-                DESCRIPTION = data.Name
-            };
-
-            if (data.Feasilbility != null)
-            {
-                if (data.Feasilbility.BeforeAny > 0) newTreatment.BEFOREANY = data.Feasilbility.BeforeAny;
-                if (data.Feasilbility.BeforeSame > 0) newTreatment.BEFORESAME = data.Feasilbility.BeforeSame;
-                newTreatment.FEASIBILITIES = new List<FeasibilityEntity>()
-                {
-                    new FeasibilityEntity()
-                    {
-                        CRITERIA = data.Feasilbility.Criteria ?? ""
-                    }
-                };
+                db.Treatments
+                    .AddRange(model.Treatments
+                        .Where(treatmentModel => !treatmentModel.matched)
+                        .Select(treatmentModel => new TreatmentsEntity(id, treatmentModel))
+                        .ToList()
+                    );
             }
 
-            if (data.Costs.Any())
-            {
-                newTreatment.COSTS = new List<CostsEntity>();
-                foreach (var cost in data.Costs)
-                {
-                    newTreatment.COSTS.Add(new CostsEntity()
-                    {
-                        COST_ = cost.Cost,
-                        CRITERIA = cost.Criteria,
-                        ISFUNCTION = cost.IsFunction
-                    });
-                }
-            }
+            db.SaveChanges();
 
-            if (data.Consequences.Any())
-            {
-                newTreatment.CONSEQUENCES = new List<ConsequencesEntity>();
-                foreach (var consequence in data.Consequences)
-                {
-                    newTreatment.CONSEQUENCES.Add(new ConsequencesEntity()
-                    {
-                        EQUATION = consequence.Equation,
-                        CRITERIA = consequence.Criteria,
-                        ATTRIBUTE_ = consequence.Attribute_,
-                        CHANGE_ = consequence.Change,
-                        ISFUNCTION = consequence.IsFunction
-                    });
-                }
-            }
-
-            if (data.Budgets.Any())
-            {
-                newTreatment.BUDGET = data.GetBudgets();
-            }
-
-            return newTreatment;
+            return new TreatmentLibraryModel(simulation);
         }
     }
 }

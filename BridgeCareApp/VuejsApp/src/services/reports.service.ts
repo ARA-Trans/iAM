@@ -8,7 +8,7 @@ export default class ReportsService {
      * @param selectedScenarioData Scenario data to use in generating the report
      */
     static getDetailedReport(selectedScenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/DetailedReport', selectedScenarioData, {responseType: 'blob'});
+        return axiosInstance.post('/api/GetDetailedReport', selectedScenarioData, {responseType: 'blob'});
     }
 
     /**
@@ -16,7 +16,7 @@ export default class ReportsService {
      * @param selectedScenarioData Scenario data to use in generating the report
      */
     static getSummaryReport(selectedScenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/SummaryReport', selectedScenarioData, {responseType: 'blob'});
+        return axiosInstance.post('/api/GetSummaryReport', selectedScenarioData, {responseType: 'blob'});
     }
 
     static getSummaryReportMissingAttributes(selectedScenarioId: number, selectedNetworkId: number) {

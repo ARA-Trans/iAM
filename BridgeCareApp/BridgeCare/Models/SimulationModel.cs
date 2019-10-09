@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
@@ -11,9 +12,19 @@ namespace BridgeCare.Models
         public string NetworkName { get; set; }
         [Required]
         public int NetworkId { get; set; }
-
         public DateTime? Created { get; set; }
-
         public DateTime? LastRun { get; set; }
+
+        public SimulationModel() { }
+
+        public SimulationModel(SimulationEntity entity)
+        {
+            SimulationId = entity.SIMULATIONID;
+            SimulationName = entity.SIMULATION;
+            NetworkId = entity.NETWORKID ?? 0;
+            Created = entity.DATE_CREATED;
+            LastRun = entity.DATE_LAST_RUN ?? DateTime.Now;
+            NetworkName = entity.NETWORK.NETWORK_NAME;
+        }
     }
 }

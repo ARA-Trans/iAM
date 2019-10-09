@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
 {
@@ -23,5 +25,24 @@ namespace BridgeCare.EntityClasses
         public virtual AttributesEntity ATTRIBUTE { get; set; }
         [ForeignKey("SIMULATIONID")]
         public virtual SimulationEntity SIMULATION { get; set; }
+
+        public PerformanceEntity() { }
+
+        public PerformanceEntity(int simulationId, PerformanceLibraryEquationModel performanceModel)
+        {
+            SIMULATIONID = simulationId;
+            ATTRIBUTE_ = performanceModel.Attribute;
+            EQUATIONNAME = performanceModel.EquationName;
+            CRITERIA = performanceModel.Criteria;
+            EQUATION = performanceModel.Equation;
+            SHIFT = performanceModel.Shift ?? false;
+            PIECEWISE = performanceModel.Piecewise ?? false;
+            ISFUNCTION = performanceModel.IsFunction ?? false;
+        }
+
+        public static void DeleteEntry(PerformanceEntity performanceEntity, BridgeCareContext db)
+        {
+            db.Entry(performanceEntity).State = EntityState.Deleted;
+        }
     }
 }

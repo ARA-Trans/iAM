@@ -4,9 +4,9 @@ using BridgeCare.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using BridgeCare.EntityClasses;
 
@@ -14,179 +14,131 @@ namespace BridgeCare.DataAccessLayer
 {
     public class TargetsDAL : ITarget
     {
-        private readonly BridgeCareContext db;
-        private readonly TargetsMetDAL targets;
+        private readonly TargetsMetDAL targetsMetDAL;
         private readonly TargetResultsDAL targetCells;
 
-        public TargetsDAL(BridgeCareContext context, TargetsMetDAL targets, TargetResultsDAL result)
+        public TargetsDAL(TargetsMetDAL targetsMetDAL, TargetResultsDAL targetCells)
         {
-            db = context ?? throw new ArgumentNullException(nameof(context));
-            this.targets = targets ?? throw new ArgumentNullException(nameof(targets));
-            targetCells = result ?? throw new ArgumentNullException(nameof(result));
+            this.targetsMetDAL = targetsMetDAL ?? throw new ArgumentNullException(nameof(targetsMetDAL));
+            this.targetCells = targetCells ?? throw new ArgumentNullException(nameof(targetCells));
         }
 
-        public TargetReportModel GetTarget(SimulationModel data, int[] totalYears)
+        /// <summary>
+        /// Fetches a specific target from a dynamic table 'Target_{NETWORKID}_{SIMULATIONID}'
+        /// and transforms the data into a TargetReportModel
+        /// </summary>
+        /// <param name="model">SimulationModel</param>
+        /// <param name="totalYears">int[]</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>TargetReportModel</returns>
+        public TargetReportModel GetTarget(SimulationModel model, int[] totalYears, BridgeCareContext db)
         {
-            TargetReportModel targetReport = null;
+            var select = $"SELECT TargetID, Years, TargetMet, IsDeficient FROM Target_{model.NetworkId}_{model.SimulationId}";
 
-            var select =
-                "SELECT TargetID, Years, TargetMet, IsDeficient " +
-                    " FROM Target_" + data.NetworkId
-                    + "_" + data.SimulationId;
+            var deficientReportResults = db.Database.SqlQuery<DeficientReportModel>(select)
+                .AsQueryable().Where(_ => _.IsDeficient == false);
 
-            try
-            {
-                var rawDeficientList = db.Database.SqlQuery<DeficientReportModel>(select).AsQueryable();
+            var targetAndYear = targetsMetDAL.GetData(deficientReportResults);
 
-                var results = rawDeficientList.Where(_ => _.IsDeficient == false);
-
-                var targetAndYear = targets.GetData(results);
-                targetReport = GetTargetInformation(data, targetAndYear, totalYears);
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Target");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
-            return targetReport;
+            return GetTargetInformation(model, targetAndYear, totalYears, db);
         }
 
-        private TargetReportModel GetTargetInformation(SimulationModel data, Hashtable yearsIdValues, int[] totalYears)
+        /// <summary>
+        /// Transforms dynamic table 'Target_{NETWORKID}_{SIMULATIONID}' data into a TargetReportModel
+        /// </summary>
+        /// <param name="model">SimulationModel</param>
+        /// <param name="yearsIdValues">Hashtable</param>
+        /// <param name="totalYears">int[]</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns></returns>
+        private TargetReportModel GetTargetInformation(SimulationModel model, Hashtable yearsIdValues, int[] totalYears, BridgeCareContext db)
         {
-            var targetData = db.Targets.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId);
+            var targetData = db.Targets.AsNoTracking().Where(t => t.SIMULATIONID == model.SimulationId);
 
             var listRows = new List<string>();
             var idTargets = new Hashtable();
 
-            foreach (var item in targetData)
+            foreach (var targetEntity in targetData)
             {
-                var target = new TargetParameters
-                {
-                    Id = item.ID_,
-                    Attribute = item.ATTRIBUTE_,
-                    TargetMean = item.TARGETMEAN ?? 0,
-                    Name = item.TARGETNAME,
-                    Criteria = item.CRITERIA
-                };
-                var rowKey = target.Attribute + "|" + target.Name + "|" + target.Criteria;
+                var targetParameters = new TargetParameters(targetEntity);
 
-                if (!listRows.Contains(rowKey))
-                {
-                    listRows.Add(rowKey);
-                    target.Row = listRows.Count - 1;
-                }
+                var rowKey = $"{targetParameters.Attribute}|{targetParameters.Name}|{targetParameters.Criteria}";
+
+                if (listRows.Contains(rowKey))
+                    targetParameters.Row = listRows.IndexOf(rowKey);
                 else
                 {
-                    target.Row = listRows.IndexOf(rowKey);
+                    listRows.Add(rowKey);
+                    targetParameters.Row = listRows.Count - 1;
                 }
-                idTargets.Add(target.Id, target);
+
+                idTargets.Add(targetParameters.Id, targetParameters);
             }
 
-            var dataForTarget = targetCells.GetData(yearsIdValues, totalYears, idTargets);
-            return dataForTarget;
+            return targetCells.GetData(yearsIdValues, totalYears, idTargets);
         }
 
-        public TargetLibraryModel GetScenarioTargetLibrary(int simulationId, BridgeCareContext db)
+        /// <summary>
+        /// Fetches a simulation's target library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>TargetLibraryModel</returns>
+        public TargetLibraryModel GetSimulationTargetLibrary(int id, BridgeCareContext db)
         {
-            try
-            {
-                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
-                {
-                    // query an existing simulation and include targets
-                    var simulation = db.Simulations.Include(s => s.TARGETS)
-                        .Single(s => s.SIMULATIONID == simulationId);
-                    // return the simulation's data and any targets data as a TargetLibraryModel
-                    return new TargetLibraryModel(simulation);
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "TARGETS");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
 
-            return new TargetLibraryModel();
+            var simulation = db.Simulations.Include(s => s.TARGETS).Single(s => s.SIMULATIONID == id);
+            
+            return new TargetLibraryModel(simulation);
         }
 
-        public TargetLibraryModel SaveScenarioTargetLibrary(TargetLibraryModel data, BridgeCareContext db)
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's target library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="model">TargetLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>TargetLibraryModel</returns>
+        public TargetLibraryModel SaveSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db)
         {
-            try
-            {
-                var simulationId = int.Parse(data.Id);
+            var id = int.Parse(model.Id);
 
-                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+
+            var simulation = db.Simulations.Include(s => s.TARGETS).Single(s => s.SIMULATIONID == id);
+
+            if (simulation.TARGETS.Any())
+            {
+                simulation.TARGETS.ToList().ForEach(targetEntity =>
                 {
-                    // query for an existing simulation
-                    var simulation = db.Simulations.Include(s => s.TARGETS)
-                        .Single(s => s.SIMULATIONID == simulationId);
-                    // update the simulation comments
-                    // simulation.COMMENTS = data.Description;
-                    if (simulation.TARGETS.Any())
+                    var targetModel = model.Targets.SingleOrDefault(m => m.Id == targetEntity.ID_.ToString());
+
+                    if (targetModel == null)
+                        TargetsEntity.DeleteEntry(targetEntity, db);
+                    else
                     {
-                        simulation.TARGETS.ToList().ForEach(target =>
-                        {
-                            // check for a TargetModel that has a matching id with a target id
-                            var model = data.Targets.SingleOrDefault(m => m.Id == target.ID_.ToString());
-                            if (model != null)
-                            {
-                                // update the target record ith the matched model data
-                                model.matched = true;
-                                // update existing target
-                                model.UpdateTarget(target);
-                            }
-                            else
-                            {
-                                TargetsEntity.DeleteEntry(target, db);
-                            }
-                        });
+                        targetModel.matched = true;
+                        targetModel.UpdateTarget(targetEntity);
                     }
-                    // check for models that didn't have a target record match
-                    // check for any targets that weren't matched
-                    if (data.Targets.Any(model => !model.matched))
-                    {
-                        // get new targets from the unmatched models' data
-                        db.Targets
-                            .AddRange(data.Targets
-                                .Where(model => !model.matched)
-                                .Select(model => new TargetsEntity(simulationId, model))
-                                .ToList()
-                            );
-                    }
-                    // save all changes
-                    db.SaveChanges();
-                    // return the updated/inserted records as TargetLibraryModel
-                    return new TargetLibraryModel(simulation);
-                }
-                
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "TARGETS");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
+                });
             }
 
-            return new TargetLibraryModel();
+            if (model.Targets.Any(m => !m.matched))
+                db.Targets
+                    .AddRange(model.Targets
+                        .Where(targetModel => !targetModel.matched)
+                        .Select(targetModel => new TargetsEntity(id, targetModel))
+                        .ToList()
+                    );
+
+            db.SaveChanges();
+
+            return new TargetLibraryModel(simulation);
+
         }
     }
 }

@@ -14,23 +14,23 @@ namespace BridgeCare.Models
 
         public TargetModel() { }
 
-        public TargetModel(TargetsEntity target)
+        public TargetModel(TargetsEntity entity)
         {
-            Id = target.ID_.ToString();
-            Attribute = target.ATTRIBUTE_;
-            Name = target.TARGETNAME;
-            Year = target.YEARS ?? DateTime.Now.Year;
-            TargetMean = target.TARGETMEAN ?? 0;
-            Criteria = target.CRITERIA;
+            Id = entity.ID_.ToString();
+            Attribute = entity.ATTRIBUTE_;
+            Name = entity.TARGETNAME;
+            Year = entity.YEARS ?? DateTime.Now.Year;
+            TargetMean = entity.TARGETMEAN ?? 0;
+            Criteria = entity.CRITERIA;
         }
 
-        public void UpdateTarget(TargetsEntity target)
+        public void UpdateTarget(TargetsEntity entity)
         {
-            target.ATTRIBUTE_ = Attribute;
-            target.TARGETNAME = Name;
-            target.YEARS = Year;
-            target.TARGETMEAN = TargetMean;
-            target.CRITERIA = Criteria;
+            entity.ATTRIBUTE_ = Attribute;
+            entity.TARGETNAME = Name;
+            entity.YEARS = Year;
+            entity.TARGETMEAN = TargetMean;
+            entity.CRITERIA = Criteria;
         }
     }
 }

@@ -5,8 +5,8 @@ namespace BridgeCare.Interfaces
 {
     public interface ITarget
     {
-        TargetReportModel GetTarget(SimulationModel data, int[] totalYears);
-        TargetLibraryModel GetScenarioTargetLibrary(int simulationId, BridgeCareContext db);
-        TargetLibraryModel SaveScenarioTargetLibrary(TargetLibraryModel data, BridgeCareContext db);
+        TargetReportModel GetTarget(SimulationModel model, int[] totalYears, BridgeCareContext db);
+        TargetLibraryModel GetSimulationTargetLibrary(int id, BridgeCareContext db);
+        TargetLibraryModel SaveSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db);
     }
 }

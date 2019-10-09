@@ -1,67 +1,54 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
     public class InvestmentLibraryModel
     {
+        [Required]
+        public string Id { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public double? InflationRate { get; set; }
+        public string Description { get; set; }
+        public List<string> BudgetOrder { get; set; }
+        public List<InvestmentLibraryBudgetYearModel> BudgetYears { get; set; }
+
         public InvestmentLibraryModel()
         {
             BudgetYears = new List<InvestmentLibraryBudgetYearModel>();
         }
 
-        [Required]
-        public int Id { get; set; }
-        public int NetworkId { get; set; }
-        [Required]
-        public string Name { get; set; }
-
-        ///<remarks>Ignore, as it is agreed that years from the YearlyBudget
-        ///will be the master record for FirstYear and NumberYears when
-        ///updated by the web API</remarks>
-        [IgnoreDataMember]
-        public int FirstYear { get; set; }
-
-        [IgnoreDataMember]
-        public int NumberYears { get; set; }
-
-        [Required]
-        public double? InflationRate { get; set; }
-        [Required]
-        public double? DiscountRate { get; set; }
-        public string Description { get; set; }
-        public List<string> BudgetOrder { get; set; }
-
-        ///<remarks>this is a variable which is uses to receive the
-        ///comma delimited list of budget types, it is ignored so to
-        ///not be transmitted on the web side as part of the API.</remarks>
-        [IgnoreDataMember]
-        public string BudgetNamesByOrder;
-
-        [IgnoreDataMember]
-        public List<string> DeletedBudgetNames { get; set; }
-
-        public List<InvestmentLibraryBudgetYearModel> BudgetYears { get; set; }
-
-        [IgnoreDataMember]
-        public List<InvestmentLibraryBudgetYearModel> DeletedYearlyBudgets { get; set; }
-
-        /// <summary>
-        /// The one and only means to convert from BudgetOrder to BudgetNamesByOrder
-        /// </summary>
-        public void SetBudgets()
+        public InvestmentLibraryModel(SimulationEntity entity)
         {
-            BudgetOrder = BudgetNamesByOrder.Split(',').ToList();
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            InflationRate = entity.INVESTMENTS?.INFLATIONRATE ?? 0;
+            Description = entity.COMMENTS;
+            BudgetOrder = entity.INVESTMENTS?.BUDGETORDER?.Split(',').ToList();
+            BudgetYears = entity.YEARLYINVESTMENTS
+                .Select(yi => new InvestmentLibraryBudgetYearModel(yi)).ToList();
         }
 
-        /// <summary>
-        /// The one and only means to convert from BudgetNamesByOrder to BudgetOrder
-        /// </summary>
-        public string GetBudgetOrder()
+        public void UpdateInvestment(InvestmentsEntity entity)
         {
-            return string.Join(",", BudgetOrder);
+            entity.INFLATIONRATE = InflationRate;
+            entity.BUDGETORDER = BudgetOrder != null
+                ? string.Join(",", BudgetOrder)
+                : "Rehabilitation,Maintenance,Construction";
+
+            var years = BudgetYears.Any()
+                ? BudgetYears.OrderBy(by => by.Year)
+                    .Select(by => by.Year).Distinct().ToList()
+                : new List<int>();
+
+            entity.FIRSTYEAR = years.Any() ? years[0] : DateTime.Now.Year;
+            entity.NUMBERYEARS = years.Any() ? years.Count() : 1;
         }
     }
 }

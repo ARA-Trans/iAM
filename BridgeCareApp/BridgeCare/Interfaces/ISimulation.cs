@@ -1,20 +1,17 @@
 ﻿using BridgeCare.Models;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace BridgeCare.Interfaces
 {
     public interface ISimulation
     {
-        IQueryable<SimulationModel> GetAllSimulations();
-
-        IEnumerable<SimulationModel> GetSelectedSimulation(int id);
-
-        void UpdateName(SimulationModel model);
-
-        int Delete(int id);
-
-        SimulationModel CreateRunnableSimulation(CreateSimulationDataModel createSimulationData, BridgeCareContext db);
+        List<SimulationModel> GetSimulations(BridgeCareContext db);
+        SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db);
+        void UpdateSimulation(SimulationModel model, BridgeCareContext db);
+        void DeleteSimulation(int id, BridgeCareContext db);
+        Task<string> RunSimulation(SimulationModel model);
+        void SetSimulationLastRunDate(int id, BridgeCareContext db);
 
     }
 }

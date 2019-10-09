@@ -1,21 +1,13 @@
+using BridgeCare.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+
 namespace BridgeCare.EntityClasses
 {
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-
     [Table("YEARLYINVESTMENT")]
     public class YearlyInvestmentEntity
     {
-        public YearlyInvestmentEntity() { }
-
-        public YearlyInvestmentEntity(int simulationId, int year, string budgetName, double? amount)
-        {
-            AMOUNT = amount;
-            BUDGETNAME = budgetName;
-            YEAR_ = year;
-            SIMULATIONID = simulationId;
-        }
-
         [Key]
         public int YEARID { get; set; }
         public int SIMULATIONID { get; set; }
@@ -27,5 +19,20 @@ namespace BridgeCare.EntityClasses
 
         [ForeignKey("SIMULATIONID")]
         public virtual SimulationEntity SIMULATION { get; set; }
+
+        public YearlyInvestmentEntity() { }
+
+        public YearlyInvestmentEntity(int simulationId, InvestmentLibraryBudgetYearModel model)
+        {
+            SIMULATIONID = simulationId;
+            YEAR_ = model.Year;
+            BUDGETNAME = model.BudgetName;
+            AMOUNT = model.BudgetAmount;
+        }
+
+        public static void DeleteEntry(YearlyInvestmentEntity entity, BridgeCareContext db)
+        {
+            db.Entry(entity).State = EntityState.Deleted;
+        }
     }
 }

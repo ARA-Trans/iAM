@@ -19,28 +19,16 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db"></param>
         public void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
-            try
+            foreach (var committedProjectModel in committedProjectModels)
             {
-                foreach (var committedProjectModel in committedProjectModels)
-                {
-                    var existingCommitted = db.CommittedProjects.FirstOrDefault(c => c.SECTIONID == committedProjectModel.SectionId && c.SIMULATIONID == committedProjectModel.SimulationId);
-                    if (existingCommitted != null)
-                    {
-                        continue;
-                    }
+                var committedProjectEntity = db.CommittedProjects
+                    .FirstOrDefault(c => c.SECTIONID == committedProjectModel.SectionId && c.SIMULATIONID == committedProjectModel.SimulationId);
 
+                if (committedProjectEntity == null)
                     db.CommittedProjects.Add(new CommittedEntity(committedProjectModel));
-                }
-                db.SaveChanges();
             }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "COMMITTED_");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
+
+            db.SaveChanges();
         }
 
         /// <summary>

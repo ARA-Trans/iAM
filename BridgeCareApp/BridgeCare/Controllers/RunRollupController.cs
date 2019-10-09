@@ -1,9 +1,5 @@
 ﻿using BridgeCare.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using BridgeCare.Models;
@@ -12,24 +8,30 @@ namespace BridgeCare.Controllers
 {
     public class RunRollupController : ApiController
     {
+        private readonly IRunRollup repo;
         private readonly BridgeCareContext db;
-        private readonly IRunRollup rollup;
 
-        public RunRollupController(IRunRollup rollupNetwork, BridgeCareContext context)
+        public RunRollupController(IRunRollup repo, BridgeCareContext db)
         {
-            rollup = rollupNetwork ?? throw new ArgumentNullException(nameof(rollupNetwork));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        // POST: api/RunRollup
-        public async Task<IHttpActionResult> Post([FromBody]SimulationModel data)
+        /// <summary>
+        /// API endpoint for running a rollup
+        /// </summary>
+        /// <param name="model">SimulationModel</param>
+        /// <returns>IHttpActionResult task</returns>
+        [HttpPost]
+        [Route("api/RunRollup")]
+        public async Task<IHttpActionResult> Post([FromBody]SimulationModel model)
         {
-            var result = await Task.Factory.StartNew(() => rollup.Start(data));
-            if (result.IsCompleted)
-            {
-                return Ok();
-            }
-            return NotFound();
+            var result = await Task.Factory.StartNew(() => repo.RunRollup(model));
+
+            if (!result.IsCompleted)
+                return InternalServerError(new Exception(result.Result));
+
+            return Ok();
         }
     }
 }

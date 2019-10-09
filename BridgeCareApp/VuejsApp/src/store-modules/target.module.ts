@@ -2,6 +2,7 @@ import {emptyTargetLibrary, TargetLibrary} from '@/shared/models/iAM/target';
 import {clone} from 'ramda';
 import TargetService from '@/services/target.service';
 import {AxiosResponse} from 'axios';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     scenarioTargetLibrary: clone(emptyTargetLibrary) as TargetLibrary
@@ -18,18 +19,20 @@ const actions = {
     async getScenarioTargetLibrary({commit}: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await TargetService.getScenarioTargetLibrary(payload.selectedScenarioId)
-                .then((response: AxiosResponse<any>) =>
-                    commit('scenarioTargetLibraryMutator', response.data)
-                );
-        } else {
-            commit('scenarioTargetLibraryMutator', emptyTargetLibrary);
+                .then((response: AxiosResponse<TargetLibrary>) => {
+                    if (hasValue(response, 'data')) {
+                        commit('scenarioTargetLibraryMutator', response.data);
+                    }
+                });
         }
     },
     async saveScenarioTargetLibrary({dispatch, commit}: any, payload: any) {
         await TargetService.saveScenarioTargetLibrary(payload.saveScenarioTargetLibraryData)
-            .then((response: AxiosResponse<any>) => {
-                commit('targetsMutator', response.data);
-                dispatch('setSuccessMessage', {message: 'Successfully saved scenario target library'});
+            .then((response: AxiosResponse<TargetLibrary>) => {
+                if (hasValue(response, 'data')) {
+                    commit('targetsMutator', response.data);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario target library'});
+                }
             });
     }
 };

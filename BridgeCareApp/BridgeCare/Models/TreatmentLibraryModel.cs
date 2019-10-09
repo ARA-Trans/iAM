@@ -1,23 +1,30 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
-    // Top level model not as interface to db but for producing json
-    [DataContract]
     public class TreatmentLibraryModel
     {
-        //simulationID or libraryID
-        [DataMember(Name = "id")]
-        public int SimulationId { get; set; }
-
-        [DataMember(Name = "name")]
+        public string Id { get; set; }
         public string Name { get; set; }
-
-        [DataMember(Name = "description")]
         public string Description { get; set; }
-
-        [DataMember(Name = "treatments")]
         public List<TreatmentModel> Treatments { get; set; }
+
+        public TreatmentLibraryModel()
+        {
+            Treatments = new List<TreatmentModel>();
+        }
+
+        public TreatmentLibraryModel(SimulationEntity entity)
+        {
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            Treatments = entity.TREATMENTS.Any()
+                ? entity.TREATMENTS.Select(t => new TreatmentModel(t)).ToList()
+                : new List<TreatmentModel>();
+        }
     }
 }

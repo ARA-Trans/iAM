@@ -18,13 +18,13 @@ namespace BridgeCare.Models
             Targets = new List<TargetModel>();
         }
 
-        public TargetLibraryModel(SimulationEntity simulationEntity)
+        public TargetLibraryModel(SimulationEntity entity)
         {
-            Id = simulationEntity.SIMULATIONID.ToString();
-            Name = simulationEntity.SIMULATION;
-            Description = simulationEntity.COMMENTS;
-            Targets = simulationEntity.TARGETS.Any()
-                ? simulationEntity.TARGETS.Select(t => new TargetModel(t)).ToList()
+            Id = entity.SIMULATIONID.ToString();
+            Name = entity.SIMULATION;
+            Description = entity.COMMENTS;
+            Targets = entity.TARGETS.Any()
+                ? entity.TARGETS.Select(t => new TargetModel(t)).ToList()
                 : new List<TargetModel>();
         }
     }

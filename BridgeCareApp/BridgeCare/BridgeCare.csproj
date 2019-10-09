@@ -207,6 +207,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLog\HandleException.cs" />
+    <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />
     <Compile Include="ApplicationLog\Logger.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\ModelValidationAttribute.cs" />
@@ -218,7 +219,6 @@
     <Compile Include="Controllers\CommittedProjectsController.cs" />
     <Compile Include="Controllers\CriteriaDrivenBudgetsController.cs" />
     <Compile Include="Controllers\DeficientController.cs" />
-    <Compile Include="Controllers\HistoricalAttributesByYearController.cs" />
     <Compile Include="Controllers\AttributeController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\InvestmentLibraryController.cs" />
@@ -229,16 +229,11 @@
     <Compile Include="Controllers\TargetController.cs" />
     <Compile Include="Controllers\TreatmentLibraryController.cs" />
     <Compile Include="Controllers\PerformanceLibraryController.cs" />
-    <Compile Include="Controllers\SectionLocatorController.cs" />
-    <Compile Include="Controllers\ProjectedAttributesByYearController.cs" />
-    <Compile Include="Controllers\SectionController.cs" />
     <Compile Include="Controllers\DetailedReportController.cs" />
     <Compile Include="Controllers\NetworksController.cs" />
-    <Compile Include="Controllers\RunSimulationController.cs" />
-    <Compile Include="Controllers\SimulationsController.cs" />
+    <Compile Include="Controllers\SimulationController.cs" />
     <Compile Include="Controllers\ValidationController.cs" />
     <Compile Include="Controllers\WindowsAuthorizationController.cs" />
-    <Compile Include="DataAccessLayer\AttributesByYearDAL.cs" />
     <Compile Include="DataAccessLayer\AttributesDAL.cs" />
     <Compile Include="Controllers\SummaryReportController.cs" />
     <Compile Include="DataAccessLayer\BridgeWorkSummaryDataDAL.cs" />
@@ -260,7 +255,6 @@
     <Compile Include="DataAccessLayer\DeficientReportDAL.cs" />
     <Compile Include="DataAccessLayer\DetailedReportDAL.cs" />
     <Compile Include="DataAccessLayer\SectionLocatorDAL.cs" />
-    <Compile Include="DataAccessLayer\RunSimulationDAL.cs" />
     <Compile Include="DataAccessLayer\SectionsDAL.cs" />
     <Compile Include="DataAccessLayer\SummaryReport\CommonSummaryReportDataDAL.cs" />
     <Compile Include="DataAccessLayer\TargetResultsDAL.cs" />
@@ -297,7 +291,7 @@
     </Compile>
     <Compile Include="Interfaces\CriteriaDrivenBudgets\ICriteriaDrivenBudgets.cs" />
     <Compile Include="Interfaces\IAttributesByYear.cs" />
-    <Compile Include="Interfaces\IAttributeNames.cs" />
+    <Compile Include="Interfaces\IAttributeRepo.cs" />
     <Compile Include="Interfaces\IBudgetReport.cs" />
     <Compile Include="Interfaces\ICommitted.cs" />
     <Compile Include="Interfaces\ICommittedProjects.cs" />
@@ -413,7 +407,7 @@
     <Compile Include="Services\DetailedReport\ReportCreator.cs" />
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
-    <Compile Include="Services\Network.cs" />
+    <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />

@@ -14,9 +14,6 @@
                             <v-text-field label="Inflation Rate (%)" outline :mask="'##########'"
                                           v-model="createdInvestmentLibrary.inflationRate">
                             </v-text-field>
-                            <v-text-field label="Discount Rate (%)" outline :mask="'##########'"
-                                          v-model="createdInvestmentLibrary.discountRate">
-                            </v-text-field>
                         </v-layout>
                     </v-flex>
                     <v-textarea rows="3" no-resize outline label="Description"
@@ -60,7 +57,6 @@
             this.createdInvestmentLibrary = {
                 ...this.createdInvestmentLibrary,
                 inflationRate: hasValue(this.dialogData.inflationRate) ? this.dialogData.inflationRate : 0,
-                discountRate: hasValue(this.dialogData.discountRate) ? this.dialogData.discountRate : 0,
                 description: hasValue(this.dialogData.description) ? this.dialogData.description : '',
                 budgetOrder: hasValue(this.dialogData.budgetOrder) ? this.dialogData.budgetOrder : [],
                 budgetYears: hasValue(this.dialogData.budgetYears) ? this.dialogData.budgetYears : [],

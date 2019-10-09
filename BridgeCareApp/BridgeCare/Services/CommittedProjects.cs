@@ -1,8 +1,11 @@
 ﻿using BridgeCare.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
 using System.Web;
+using System.Web.Http;
 using OfficeOpenXml;
 using BridgeCare.Models;
 using BridgeCare.ApplicationLog;
@@ -12,15 +15,15 @@ namespace BridgeCare.Services
 {
     public class CommittedProjects : ICommittedProjects
     {
-        readonly ICommitted committed;
-        private readonly ISections sections;
+        readonly ICommitted committedRepo;
+        private readonly ISections sectionsRepo;
 
-        public CommittedProjects(ICommitted committed, ISections sections)
+        public CommittedProjects(ICommitted committedRepo, ISections sectionsRepo)
         {
-            this.committed = committed;
-            this.sections = sections;
+            this.committedRepo = committedRepo;
+            this.sectionsRepo = sectionsRepo;
         }
-        
+
         /// <summary>
         /// Save committed projects from the template files
         /// </summary>
@@ -28,16 +31,20 @@ namespace BridgeCare.Services
         /// <param name="db"></param>
         public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db)
         {
-            var selectedScenarioId = httpRequest.Form.Get("selectedScenarioId");
-            var networkId = httpRequest.Form.Get("networkId");
-            var noTreatment = httpRequest.Form.Get("applyNoTreatment") == "1" ? true : false;
+            if (httpRequest.Files.Count < 1)
+                throw new ConstraintException("Files Not Found");
+
             var files = httpRequest.Files;
+            var simulationId = int.Parse(httpRequest.Form.Get("selectedScenarioId"));
+            var networkId = int.Parse(httpRequest.Form.Get("networkId"));
+            var applyNoTreatment = httpRequest.Form.Get("applyNoTreatment") == "1";
+
             var committedProjectModels = new List<CommittedProjectModel>();
 
             for (int i = 0; i < files.Count; i++)
             {
-                GetCommittedProjectModels(files[i], selectedScenarioId, networkId, noTreatment, committedProjectModels, db);
-                committed.SaveCommittedProjects(committedProjectModels, db);
+                GetCommittedProjectModels(files[i], simulationId, networkId, applyNoTreatment, committedProjectModels, db);
+                committedRepo.SaveCommittedProjects(committedProjectModels, db);
             }
         }
 
@@ -53,7 +60,7 @@ namespace BridgeCare.Services
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("CommittedProjects.xlsx")))
             {
                 // This method may stay here or if too long then move to helper class   Fill(worksheet, , db);
-                var committedProjects = committed.GetCommittedProjects(simulationId, db);
+                var committedProjects = committedRepo.GetCommittedProjects(simulationId, db);
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Committed Projects");
                 if (committedProjects.Count != 0)
                 {
@@ -67,7 +74,7 @@ namespace BridgeCare.Services
         private void AddDataCells(ExcelWorksheet worksheet, List<CommittedEntity> committedProjects, int networkId, BridgeCareContext db)
         {
             var committedProjectsSectionIds = committedProjects.Select(cproj => cproj.SECTIONID).ToList();
-            var sectionModels = sections.GetSections(networkId, db);
+            var sectionModels = sectionsRepo.GetSections(networkId, db);
             // get all committed projects that have a matching section, if any, and add them to the excel file
             var row = 2;
             sectionModels?.Where(sec => committedProjectsSectionIds.Contains(sec.SectionId)).OrderBy(sec => sec.ReferenceKey).ToList().ForEach(model =>
@@ -137,12 +144,12 @@ namespace BridgeCare.Services
             }
         }
 
-        private void GetCommittedProjectModels(HttpPostedFile postedFile, string selectedScenarioId, string networkId, bool applyNoTreatment, List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
+        private void GetCommittedProjectModels(HttpPostedFile postedFile, int simulationId, int networkId, bool applyNoTreatment,
+        List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
             try
             {
-                var simulationId = Convert.ToInt32(selectedScenarioId);
-                var package = new ExcelPackage(postedFile.InputStream);
+                var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
                 var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
                 var start = worksheet.Dimension.Start;
@@ -151,13 +158,13 @@ namespace BridgeCare.Services
                 {
                     var column = start.Column + 2;
                     var brKey = Convert.ToInt32(GetCellValue(worksheet, row, 1));
-                    var sectionId = sections.GetSectionId(Convert.ToInt32(networkId), brKey, db);
+                    var sectionId = sectionsRepo.GetSectionId(networkId, brKey, db);
 
                     // BMSID till COST -> entry in COMMITTED_                    
                     var committedProjectModel = new CommittedProjectModel
                     {
                         SectionId = sectionId,
-                        SimulationId = Convert.ToInt32(selectedScenarioId),
+                        SimulationId = simulationId,
                         TreatmentName = GetCellValue(worksheet, row, column),
                         Years = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
                         YearAny = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),

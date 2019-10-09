@@ -1,35 +1,25 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.Interfaces;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using System;
-using System.Data.SqlClient;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
 {
-    public class AttributesDAL : IAttributeNames
+    public class AttributesDAL : IAttributeRepo
     {
-        public AttributesDAL()
+        /// <summary>
+        /// Fetches all attributes data
+        /// Throws a RowNotInTableException if no attributes are found
+        /// </summary>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>AttributeModel list</returns>
+        public List<AttributeModel> GetAttributes(BridgeCareContext db)
         {
-        }
+            if (!db.Attributes.Any())
+                throw new RowNotInTableException("No attribute data could be found.");
 
-        public IQueryable<AttributeModel> GetAttributes(BridgeCareContext db)
-        {
-            var select = ("SELECT ATTRIBUTE_ as Name, TYPE_ as Type FROM Attributes_");
-            var rawQueryForData = Enumerable.Empty<AttributeModel>();
-            try
-            {
-                rawQueryForData = db.Database.SqlQuery<AttributeModel>(select);
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "ATTRIBUTE_ from ATTRIBUTES_ SQL Select Error_");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            return rawQueryForData.AsQueryable();
+            return db.Attributes.ToList().Select(a => new AttributeModel(a)).ToList();
         }
     }
 }

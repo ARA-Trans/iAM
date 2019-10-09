@@ -32,9 +32,9 @@ namespace BridgeCare.EntityClasses
             CRITERIA = remainingLifeLimitModel.Criteria;
         }
 
-        public static void DeleteEntry(RemainingLifeLimitsEntity remainingLifeLimit, BridgeCareContext db)
+        public static void DeleteEntry(RemainingLifeLimitsEntity remainingLifeLimitEntity, BridgeCareContext db)
         {
-            db.Entry(remainingLifeLimit).State = EntityState.Deleted;
+            db.Entry(remainingLifeLimitEntity).State = EntityState.Deleted;
         }
     }
 }

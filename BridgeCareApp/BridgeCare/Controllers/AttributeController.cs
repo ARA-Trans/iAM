@@ -1,25 +1,26 @@
 ﻿using BridgeCare.Interfaces;
-using BridgeCare.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Http;
 
 namespace BridgeCare.Controllers
 {
     public class AttributeController : ApiController
     {
+        private readonly IAttributeRepo repo;
         private readonly BridgeCareContext db;
-        private readonly IAttributeNames attributes;
 
-        public AttributeController(IAttributeNames attributeNames, BridgeCareContext context)
+        public AttributeController(IAttributeRepo repo, BridgeCareContext db)
         {
-            attributes = attributeNames ?? throw new ArgumentNullException(nameof(attributeNames));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        [Route("api/GetAttributes")]
+        /// <summary>
+        /// API endpoint for fetching all attributes
+        /// </summary>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        public List<AttributeModel> GetAttributes() => attributes.GetAttributes(db).ToList();
+        [Route("api/GetAttributes")]
+        public IHttpActionResult GetAttributes() => Ok(repo.GetAttributes(db));
     }
 }

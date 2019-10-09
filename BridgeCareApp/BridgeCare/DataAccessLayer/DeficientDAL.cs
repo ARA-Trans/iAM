@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
@@ -13,109 +14,63 @@ namespace BridgeCare.DataAccessLayer
     public class DeficientDAL : IDeficient
     {
         /// <summary>
-        /// Queries for deficients having the specified scenario id foreign key; returns an empty list if no deficients are found
+        /// Fetches a simulation's deficient library data
+        /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
-        /// <param name="scenarioId"></param>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        public DeficientLibraryModel GetScenarioDeficientLibrary(int simulationId, BridgeCareContext db)
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>DeficientLibraryModel</returns>
+        public DeficientLibraryModel GetSimulationDeficientLibrary(int id, BridgeCareContext db)
         {
-            try
-            {
-                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
-                {
-                    // query for an existing simulation and include deficients
-                    var simulation = db.Simulations.Include(s => s.DEFICIENTS)
-                        .Single(s => s.SIMULATIONID == simulationId);
-                    // return the simulation's data and any deficients data as a DeficientLibraryModel
-                    return new DeficientLibraryModel(simulation);
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "DEFICIENTS");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
 
-            return new DeficientLibraryModel();
+            var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
+
+            return new DeficientLibraryModel(simulation);
         }
 
         /// <summary>
-        /// Performs an upsert/delete operation on the DEFICIENTS table using the provided list of DeficientModel data
+        /// Executes an upsert/delete operation on a simulation's deficient library data
+        /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
-        /// <param name="scenarioId"></param>
-        /// <param name="data"></param>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        public DeficientLibraryModel SaveScenarioDeficientLibrary(DeficientLibraryModel data, BridgeCareContext db)
+        /// <param name="model">DeficientLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>DeficientLibraryModel</returns>
+        public DeficientLibraryModel SaveSimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db)
         {
-            try
-            {
-                var simulationId = int.Parse(data.Id);
+            var id = int.Parse(model.Id);
 
-                if (db.Simulations.Any(s => s.SIMULATIONID == simulationId))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+
+            var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
+
+            if (simulation.DEFICIENTS.Any())
+                simulation.DEFICIENTS.ToList().ForEach(deficientEntity =>
                 {
-                    // query for an existing simulation
-                    var simulation = db.Simulations.Include(s => s.DEFICIENTS)
-                        .Single(s => s.SIMULATIONID == simulationId);
-                    // update the simulation comments
-                    // simulation.COMMENTS = data.Description;
-                    if (simulation.DEFICIENTS.Any())
-                    {
-                        simulation.DEFICIENTS.ToList().ForEach(deficient =>
-                        {
-                            // check for a DeficientModel that has a matching id with a deficient id
-                            var model = data.Deficients.SingleOrDefault(m => m.Id == deficient.ID_.ToString());
-                            if (model != null)
-                            {
-                                // update the deficient record with the matched model data
-                                model.matched = true;
-                                model.UpdateDeficient(deficient);
-                            }
-                            else
-                            {
-                                DeficientsEntity.DeleteEntry(deficient, db);
-                            }
-                        });
-                    }
-                    // check for models that didn't have a deficient record match
-                    if (data.Deficients.Any(model => !model.matched))
-                    {
-                        // create new deficients from unmatched models' data
-                        db.Deficients
-                            .AddRange(data.Deficients
-                                .Where(model => !model.matched)
-                                .Select(model => new DeficientsEntity(simulationId, model))
-                                .ToList()
-                            );
-                    }
-                    // save all changes
-                    db.SaveChanges();
-                    // return the updated/inserted records as a DeficientLibraryModel
-                    return new DeficientLibraryModel(simulation);
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "DEFICIENTS");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
+                    var deficientModel = model.Deficients.SingleOrDefault(m => m.Id == deficientEntity.ID_.ToString());
 
-            return new DeficientLibraryModel();
+                    if (deficientModel == null)
+                        DeficientsEntity.DeleteEntry(deficientEntity, db);
+                    else
+                    {
+                        deficientModel.matched = true;
+                        deficientModel.UpdateDeficient(deficientEntity);
+                    }
+                });
+
+            if (model.Deficients.Any(m => !m.matched))
+                db.Deficients
+                    .AddRange(model.Deficients
+                        .Where(deficientModel => !deficientModel.matched)
+                        .Select(deficientModel => new DeficientsEntity(id, deficientModel))
+                        .ToList()
+                    );
+
+            db.SaveChanges();
+
+            return new DeficientLibraryModel(simulation);
         }
     }
 }

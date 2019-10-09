@@ -1,47 +1,44 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses;
-using BridgeCare.Interfaces;
-using BridgeCare.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using BridgeCare.ApplicationLog;
+using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
+using BridgeCare.Models;
 
-namespace BridgeCare.DataAccessLayer
+namespace BridgeCare.DataAccessLayer.SummaryReport
 {
     public class BridgeDataDAL : IBridgeData
     {
         /// <summary>
-        /// Get and create BridgeDataModels from Constant tables for summary report. 
+        /// Fetches bridge data using a list of br keys
         /// </summary>
-        /// <param name="BRKeys"></param>
-        /// <param name="dbContext"></param>
-        /// <returns>List of BridgeDataModel</returns>        
-        public List<BridgeDataModel> GetBridgeData(List<int> BRKeys, BridgeCareContext dbContext)
+        /// <param name="brKeys">br keys list</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>BridgeDataModel list</returns>        
+        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, BridgeCareContext db)
         {
             var bridgeDataModels = new List<BridgeDataModel>();
-            try
+
+            var penndotBridgeData = db.PennDotBridgeData.Where(p => brKeys.Contains(p.BRKEY)).ToList();
+
+            var pennDotReportAData = db.PennDotReportAData.Where(p => brKeys.Contains(p.BRKEY)).ToList();
+
+            var sdRisk = db.SdRisks.Where(s => brKeys.Contains(s.BRKEY)).ToList();
+
+            brKeys = brKeys.OrderBy(b => b).ToList();
+
+            foreach (var BRKey in brKeys)
             {
-                var penndotBridgeData = dbContext.PennDotBridgeData.Where(p => BRKeys.Contains(p.BRKEY)).ToList();
-                var pennDotReportAData = dbContext.PennDotReportAData.Where(p => BRKeys.Contains(p.BRKEY)).ToList();
-                var sdRisk = dbContext.SdRisks.Where(s => BRKeys.Contains(s.BRKEY)).ToList();                
-                BRKeys = BRKeys.OrderBy(b => b).ToList();
-                foreach (var BRKey in BRKeys)
-                {
-                    var penndotBridgeDataRow = penndotBridgeData.Where(b => b.BRKEY == BRKey).FirstOrDefault();
-                    var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
-                    var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
-                    bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow, sdRiskRow));
-                }
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "BridgeData");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
+                var penndotBridgeDataRow = penndotBridgeData.Where(b => b.BRKEY == BRKey).FirstOrDefault();
+
+                var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
+
+                var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
+
+                bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow, sdRiskRow));
             }
 
             return bridgeDataModels;

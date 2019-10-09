@@ -15,19 +15,19 @@ namespace BridgeCare.Models
 
         public RemainingLifeLimitModel() { }
 
-        public RemainingLifeLimitModel(RemainingLifeLimitsEntity remainingLifeLimitsEntity)
+        public RemainingLifeLimitModel(RemainingLifeLimitsEntity entity)
         {
-            Id = remainingLifeLimitsEntity.REMAINING_LIFE_ID.ToString();
-            Attribute = remainingLifeLimitsEntity.ATTRIBUTE_;
-            Limit = remainingLifeLimitsEntity.REMAINING_LIFE_LIMIT;
-            Criteria = remainingLifeLimitsEntity.CRITERIA;
+            Id = entity.REMAINING_LIFE_ID.ToString();
+            Attribute = entity.ATTRIBUTE_;
+            Limit = entity.REMAINING_LIFE_LIMIT;
+            Criteria = entity.CRITERIA;
         }
 
-        public void Update(RemainingLifeLimitsEntity remainingLifeLimitsEntity)
+        public void Update(RemainingLifeLimitsEntity entity)
         {
-            remainingLifeLimitsEntity.ATTRIBUTE_ = Attribute;
-            remainingLifeLimitsEntity.REMAINING_LIFE_LIMIT = Limit;
-            remainingLifeLimitsEntity.CRITERIA = Criteria;
+            entity.ATTRIBUTE_ = Attribute;
+            entity.REMAINING_LIFE_LIMIT = Limit;
+            entity.CRITERIA = Criteria;
         }
     }
 }

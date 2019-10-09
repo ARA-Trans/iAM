@@ -83,7 +83,7 @@
         @Action('getScenarioTargetLibrary') getScenarioTargetLibraryAction: any;
         @Action('saveScenarioTargetLibrary') saveScenarioTargetLibraryAction: any;
 
-        selectedScenarioId: number = 0;
+        selectedScenarioId: string = '0';
         targets: Target[] = [];
         targetDataTableHeaders: DataTableHeader[] = [
             {text: 'Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: '15%'},
@@ -103,6 +103,7 @@
             next((vm: any) => {
                 if (to.path === '/TargetEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
+
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -128,7 +129,7 @@
          */
         beforeRouteUpdate(to: any, from: any, next: any) {
             if (to.path === '/TargetEditor/Library/') {
-                this.selectedScenarioId = 0;
+                this.selectedScenarioId = '0';
                 // this.onClearSelectedTargetLibrary();
                 next();
             }

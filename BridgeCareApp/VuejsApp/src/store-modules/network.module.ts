@@ -2,6 +2,7 @@ import {Network} from '@/shared/models/iAM/network';
 import NetworkService from '../services/network.service';
 import {clone} from 'ramda';
 import {AxiosResponse} from 'axios';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     networks: [] as Network[]
@@ -17,7 +18,9 @@ const actions = {
     async getNetworks({commit}: any) {
         await NetworkService.getNetworks()
             .then((response: AxiosResponse<Network[]>) => {
-                commit('networksMutator', response.data);
+                if (hasValue(response, 'data')) {
+                    commit('networksMutator', response.data);
+                }
             });
     }
 };

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using BridgeCare.Interfaces;
@@ -9,31 +8,37 @@ namespace BridgeCare.Controllers
 {
     public class TargetController: ApiController
     {
+        private readonly ITarget repo;
         private readonly BridgeCareContext db;
-        private readonly ITarget targetRepo;
 
         public TargetController() { }
 
-        public TargetController(ITarget targetRepository, BridgeCareContext context)
+        public TargetController(ITarget repo, BridgeCareContext db)
         {
-            targetRepo = targetRepository ?? throw new ArgumentNullException(nameof(targetRepository));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
+        /// <summary>
+        /// API endpoint for fetching a simulation's target library data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        [Route("api/GetScenarioTargetLibrary/{selectedScenarioId}")]
-        [ModelValidation("Given Scenario Id is not valid")]
-        public TargetLibraryModel GetScenarioTargetLibrary(int selectedScenarioId)
-        {
-            return targetRepo.GetScenarioTargetLibrary(selectedScenarioId, db);
-        }
+        [Route("api/GetScenarioTargetLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetSimulationTargetLibrary(int id) =>
+            Ok(repo.GetSimulationTargetLibrary(id, db));
 
+        /// <summary>
+        /// API endpoint for upserting/deleting a simulation's target library data
+        /// </summary>
+        /// <param name="model">TargetLibraryModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioTargetLibrary")]
-        [ModelValidation("Given targets are not valid")]
-        public TargetLibraryModel SaveScenarioTargetLibrary([FromBody]TargetLibraryModel data)
-        {
-            return targetRepo.SaveScenarioTargetLibrary(data, db);
-        }
+        [ModelValidation("The target data is invalid.")]
+        public IHttpActionResult SaveSimulationTargetLibrary([FromBody]TargetLibraryModel model) => 
+            Ok(repo.SaveSimulationTargetLibrary(model, db));
     }
 }

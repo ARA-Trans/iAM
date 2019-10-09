@@ -2,6 +2,7 @@ import {emptyPerformanceLibrary, PerformanceLibrary, PerformanceLibraryEquation}
 import {clone, append, any, propEq, findIndex, equals} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {AxiosResponse} from 'axios';
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const convertFromMongoToVueModel = (data: any) => {
     const performanceLibrary: any = {
@@ -84,57 +85,69 @@ const actions = {
     async getPerformanceLibraries({commit}: any) {
         await PerformanceEditorService.getPerformanceLibraries()
             .then((response: AxiosResponse<any[]>) => {
-                const performanceLibraries: PerformanceLibrary[] = response.data.map((data: any) => {
-                    return convertFromMongoToVueModel(data);
-                });
-                commit('performanceLibrariesMutator', performanceLibraries);
+                if (hasValue(response, 'data')) {
+                    const performanceLibraries: PerformanceLibrary[] = response.data.map((data: any) => {
+                        return convertFromMongoToVueModel(data);
+                    });
+                    commit('performanceLibrariesMutator', performanceLibraries);
+                }
             });
     },
     async createPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.createPerformanceLibrary(payload.createdPerformanceLibrary)
             .then((response: AxiosResponse<any>) => {
-                const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
-                commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
-                dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
+                if (hasValue(response, 'data')) {
+                    const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
+                    commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
+                    dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
+                }
             });
     },
     async updatePerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.updatePerformanceLibrary(payload.updatedPerformanceLibrary)
             .then((response: AxiosResponse<any>) => {
-                const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
-                commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
-                commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
-                dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
+                if (hasValue(response, 'data')) {
+                    const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
+                    commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
+                    commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
+                }
             });
     },
     async getScenarioPerformanceLibrary({commit}: any, payload: any) {
         await PerformanceEditorService.getScenarioPerformanceLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
-                commit('scenarioPerformanceLibraryMutator', response.data);
-                commit('updatedSelectedPerformanceLibraryMutator', response.data);
+                if (hasValue(response, 'data')) {
+                    commit('scenarioPerformanceLibraryMutator', response.data);
+                    commit('updatedSelectedPerformanceLibraryMutator', response.data);
+                }
             });
     },
     async saveScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
         await PerformanceEditorService.saveScenarioPerformanceLibrary(payload.saveScenarioPerformanceLibraryData)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
-                commit('scenarioPerformanceLibraryMutator', response.data);
-                dispatch('setSuccessMessage', {message: 'Successfully saved scenario performance library'});
+                if (hasValue(response, 'data')) {
+                    commit('scenarioPerformanceLibraryMutator', response.data);
+                    dispatch('setSuccessMessage', {message: 'Successfully saved scenario performance library'});
+                }
             });
     },
     async socket_performanceLibrary({dispatch, state, commit}: any, payload: any) {
-        if (payload.operationType == 'update' || payload.operationType == 'replace') {
-            const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
-            if (state.selectedPerformanceLibrary.id === updatedPerformanceLibrary.id &&
-                !equals(state.selectedPerformanceLibrary, updatedPerformanceLibrary)) {
-                commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
-                dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
+            if (payload.operationType == 'update' || payload.operationType == 'replace') {
+                const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
+                if (state.selectedPerformanceLibrary.id === updatedPerformanceLibrary.id &&
+                    !equals(state.selectedPerformanceLibrary, updatedPerformanceLibrary)) {
+                    commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
+                    dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+                }
             }
-        }
 
-        if (payload.operationType == 'insert') {
-            const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
-            commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
+            if (payload.operationType == 'insert') {
+                const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
+            }
         }
     }
 };

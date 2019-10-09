@@ -5,6 +5,7 @@ import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-dat
 import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 import { any, propEq } from 'ramda';
+import {http2XX} from '@/shared/utils/http-utils';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
@@ -61,7 +62,7 @@ export default class ScenarioService {
      */
     static createScenario(createScenarioData: ScenarioCreationData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/CreateRunnableScenario', createScenarioData)
+            axiosInstance.post('/api/CreateScenario', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
@@ -118,24 +119,19 @@ export default class ScenarioService {
     }
 
     static deleteScenario(scenarioId: number, scenarioMongoId: string): AxiosPromise {
-        return new Promise<AxiosResponse<number>>((resolve) => {
+        return new Promise<AxiosResponse>((resolve) => {
             axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`)
-                .then((response: AxiosResponse<number>) => {
-                    if (hasValue(response)) {
-                        if (response.status == 200) {
-                            nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${scenarioMongoId}`)
-                                .then((res: AxiosResponse<number>) => {
-                                    if (hasValue(res)) {
-                                        return resolve(res);
-                                    }
-                                })
-                                .catch((error: any) => {
-                                    return resolve(error.response);
-                                });
-                        }
-                        if (response.status == 404) {
-                            return resolve(response);
-                        }
+                .then((serverResponse: AxiosResponse) => {
+                    if (hasValue(serverResponse, 'status') && http2XX.test(serverResponse.status.toString())) {
+                        nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${scenarioMongoId}`)
+                            .then((mongoResponse: AxiosResponse) => {
+                                return resolve(mongoResponse);
+                            })
+                            .catch((error: any) => {
+                                return resolve(error.response);
+                            });
+                    } else {
+                        return resolve(serverResponse);
                     }
                 })
                 .catch((error: any) => {

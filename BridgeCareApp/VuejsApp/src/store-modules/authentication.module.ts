@@ -1,9 +1,7 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {UserInformation} from '@/shared/models/iAM/user-information';
-import { hasValue } from '../shared/utils/has-value-util';
-
-const usersData = ['bridgecareAdministrator', 'testRole'] as Array<string>;
+import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
     loginFailed: true,
@@ -21,19 +19,14 @@ const mutations = {
     },
     userIdMutator(state: any, userId: string) {
         state.userId = userId;
-    },
-    userRoleMutator(state: any, role: string) {
-        if (!state.userRoles.includes(role)) {
-            state.userRoles.push(role);
-        }
     }
 };
 
 const actions = {
-    async authenticateUser({dispatch, commit }: any) {
+    async authenticateUser({commit}: any) {
         return await AuthenticationService.authenticateUser()
             .then((response: AxiosResponse<UserInformation>) => {
-                if (hasValue(response)) {
+                if (hasValue(response, 'data')) {
                     commit('loginMutator', false);
                     commit('userNameMutator', response.data.name);
                     commit('userIdMutator', response.data.id);

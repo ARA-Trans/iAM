@@ -1,28 +1,35 @@
-﻿using System;
-using System.Runtime.Serialization;
-
+﻿using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
-    [DataContract]
-    public class ConsequenceModel
+    public class ConsequenceModel : CrudModel
     {
-        [DataMember(Name = "id")]
-        public string ConsequenceId { get; set; }
-
-        [DataMember(Name = "attribute")]
-        public string Attribute_ { get; set; }
-
-        [DataMember(Name = "change")]
+        public string Id { get; set; }
+        public string Attribute { get; set; }
         public string Change { get; set; }
-
-        [DataMember(Name = "criteria")]
         public string Criteria { get; set; }
-
-        [DataMember(Name = "equation")]
         public string Equation { get; set; }
+        public bool? IsFunction { get; set; }
 
-        [DataMember(Name = "isFunction")]
-        public Nullable<bool> IsFunction { get; set; }
+        public ConsequenceModel() { }
+
+        public ConsequenceModel(ConsequencesEntity entity)
+        {
+            Id = entity.CONSEQUENCEID.ToString();
+            Attribute = entity.ATTRIBUTE_;
+            Change = entity.CHANGE_;
+            Criteria = entity.CRITERIA;
+            Equation = entity.EQUATION;
+            IsFunction = entity.ISFUNCTION ?? false;
+        }
+
+        public void UpdateConsequence(ConsequencesEntity entity)
+        {
+            entity.ATTRIBUTE_ = Attribute;
+            entity.CHANGE_ = Change;
+            entity.CRITERIA = Criteria;
+            entity.EQUATION = Equation;
+            entity.ISFUNCTION = IsFunction ?? false;
+        }
     }
 }

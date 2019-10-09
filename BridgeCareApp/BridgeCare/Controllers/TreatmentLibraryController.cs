@@ -8,22 +8,34 @@ namespace BridgeCare.Controllers
 {
     public class TreatmentLibraryController : ApiController
     {
+        private readonly ITreatmentLibrary repo;
         private readonly BridgeCareContext db;
-        private readonly ITreatmentLibrary treatmentLibrary;
 
-        public TreatmentLibraryController(ITreatmentLibrary treatmentInterface, BridgeCareContext context)
+        public TreatmentLibraryController(ITreatmentLibrary repo, BridgeCareContext db)
         {
-            treatmentLibrary = treatmentInterface ?? throw new ArgumentNullException(nameof(treatmentInterface));
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        [Route("api/GetScenarioTreatmentLibrary/{selectedScenarioId}")]
-        [ModelValidation("Given call is not valid")]
+        /// <summary>
+        /// API endpoint for fetching a simulation's treatment library data
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpGet]
-        public TreatmentLibraryModel Get(int selectedScenarioId) => treatmentLibrary.GetScenarioTreatmentLibrary(selectedScenarioId, db);
+        [Route("api/GetScenarioTreatmentLibrary/{id}")]
+        [ModelValidation("The scenario id is invalid.")]
+        public IHttpActionResult GetSimulationTreatmentLibrary(int id) =>
+            Ok(repo.GetSimulationTreatmentLibrary(id, db));
 
-        [Route("api/SaveScenarioTreatmentLibrary")]
+        /// <summary>
+        /// API endpoint for upserting/deleting a simulation's treatment library data
+        /// </summary>
+        /// <param name="model">TreatmentLibraryModel</param>
+        /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        public TreatmentLibraryModel Post([FromBody]TreatmentLibraryModel data) => treatmentLibrary.SaveScenarioTreatmentLibrary(data, db);
+        [Route("api/SaveScenarioTreatmentLibrary")]
+        public IHttpActionResult SaveSimulationTreatmentLibrary([FromBody]TreatmentLibraryModel model) =>
+            Ok(repo.SaveSimulationTreatmentLibrary(model, db));
     }
 }

@@ -3,6 +3,7 @@ using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
@@ -11,122 +12,79 @@ namespace BridgeCare.DataAccessLayer
 {
     public class InvestmentLibraryDAL : IInvestmentLibrary
     {
-        private readonly BridgeCareContext db;
-
-        public InvestmentLibraryDAL(BridgeCareContext context)
+        /// <summary>
+        /// Fetches a simulation's investment library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>InvestmentLibraryModel</returns>
+        public InvestmentLibraryModel GetSimulationInvestmentLibrary(int id, BridgeCareContext db)
         {
-            db = context ?? throw new ArgumentNullException(nameof(context));
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                    throw new RowNotInTableException($"No scenario found with id {id}");
+
+            var simulation = db.Simulations
+                .Include(s => s.INVESTMENTS)
+                .Include(s => s.YEARLYINVESTMENTS)
+                .Single(s => s.SIMULATIONID == id);
+
+            return new InvestmentLibraryModel(simulation);
         }
 
-        public InvestmentLibraryModel GetScenarioInvestmentLibrary(int selectedScenarioId, BridgeCareContext db)
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's investment library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="model">InvestmentLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>InvestmentLibraryModel</returns>
+        public InvestmentLibraryModel SaveSimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db)
         {
-            try
+            var id = int.Parse(model.Id);
+
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+
+            var simulation = db.Simulations
+                .Include(s => s.INVESTMENTS)
+                .Include(s => s.YEARLYINVESTMENTS)
+                .Single(s => s.SIMULATIONID == id);
+
+            if (simulation.INVESTMENTS != null)
+                model.UpdateInvestment(simulation.INVESTMENTS);
+
+            if (simulation.YEARLYINVESTMENTS.Any())
             {
-                var investmentLibraryModel = db.Simulations
-                    .Include(d => d.INVESTMENTS)
-                    .Include(d => d.YEARLYINVESTMENTS)
-                    .Where(d => d.SIMULATIONID == selectedScenarioId)
-                    .Select(p => new InvestmentLibraryModel()
+                simulation.YEARLYINVESTMENTS.ToList().ForEach(yearlyInvestment =>
+                {
+                    var yearlyInvestmentModel =
+                        model.BudgetYears.SingleOrDefault(m => m.Id == yearlyInvestment.YEARID.ToString());
+
+                    if (yearlyInvestmentModel == null)
+                        YearlyInvestmentEntity.DeleteEntry(yearlyInvestment, db);
+                    else
                     {
-                        Name = p.SIMULATION,
-                        Description = p.COMMENTS,
-                        Id = p.SIMULATIONID,
-                        NetworkId = p.NETWORKID ?? 0,
-                        FirstYear = p.INVESTMENTS.FIRSTYEAR ?? 0,
-                        NumberYears = p.INVESTMENTS.NUMBERYEARS ?? 0,
-                        InflationRate = p.INVESTMENTS.INFLATIONRATE ?? 0,
-                        DiscountRate = p.INVESTMENTS.DISCOUNTRATE ?? 0,
-                        BudgetNamesByOrder = p.INVESTMENTS.BUDGETORDER,
-                        BudgetYears = p.YEARLYINVESTMENTS.Select(m => new InvestmentLibraryBudgetYearModel
-                        {
-                            Id = m.YEARID.ToString(),
-                            Year = m.YEAR_,
-                            BudgetAmount = m.AMOUNT,
-                            BudgetName = m.BUDGETNAME
-                        }).ToList()
-                    }).FirstOrDefault();
-
-                investmentLibraryModel?.SetBudgets();
-
-                return investmentLibraryModel;
+                        yearlyInvestmentModel.matched = true;
+                        yearlyInvestmentModel.UpdateYearlyInvestment(yearlyInvestment);
+                    }
+                });
+                
             }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Scenario Investment Library");
-            }
-            return new InvestmentLibraryModel();
-        }
 
+            if (simulation.INVESTMENTS == null)
+                db.Investments.Add(new InvestmentsEntity(model));
 
-        public InvestmentLibraryModel SaveScenarioInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db)
-        {
-            // Ensures budget order is transferred from array storage as it comes in from json to the
-            // databse format, comma delimited
-            string budgetNamesByOrder = data.GetBudgetOrder();
+            if (model.BudgetYears.Any(m => !m.matched))
+                db.YearlyInvestments.AddRange(model.BudgetYears
+                    .Where(yearlyInvestmentModel => !yearlyInvestmentModel.matched)
+                    .Select(yearlyInvestmentModel => new YearlyInvestmentEntity(id, yearlyInvestmentModel))
+                    .ToList()
+                );
 
-            // Derive FirstYear and NumberYears from the YearlyBudget list.
-            data.FirstYear = data.BudgetYears.Any() ? data.BudgetYears.Min(r => r.Year) : DateTime.Now.Year;
-            data.NumberYears = data.BudgetYears.Any() ? data.BudgetYears.Max(r => r.Year) - data.FirstYear : 1;
+            db.SaveChanges();
 
-            try
-            {
-                var simulation = db.Simulations
-                    .Include(d => d.INVESTMENTS)
-                    .Include(d => d.YEARLYINVESTMENTS)
-                    .Single(_ => _.SIMULATIONID == data.Id);
-
-                simulation.INVESTMENTS.FIRSTYEAR = data.FirstYear;
-                simulation.INVESTMENTS.NUMBERYEARS = data.NumberYears;
-                simulation.INVESTMENTS.INFLATIONRATE = data.InflationRate;
-                simulation.INVESTMENTS.DISCOUNTRATE = data.DiscountRate;
-                simulation.INVESTMENTS.BUDGETORDER = budgetNamesByOrder;
-
-                UpsertYearlyData(data, simulation, db);
-
-                db.SaveChanges();
-
-                new PriorityDAL().SavePriorityFundInvestmentData(data.Id, budgetNamesByOrder.Split(',').ToList(), db);
-
-                return data;
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Scenario Investment Library");
-            }
-            // Returning empty model in case of any exception.
-            return new InvestmentLibraryModel();
-        }
-
-
-        public void UpsertYearlyData(InvestmentLibraryModel investment, SimulationEntity simulation, BridgeCareContext db)
-        {
-            int dataIndex = 0;
-
-            foreach (YearlyInvestmentEntity yearlyInvestment in simulation.YEARLYINVESTMENTS.ToList())
-            {
-                if (investment.BudgetYears.Count() > dataIndex)
-                {
-                    yearlyInvestment.YEAR_ = investment.BudgetYears[dataIndex].Year;
-                    yearlyInvestment.BUDGETNAME = investment.BudgetYears[dataIndex].BudgetName;
-                    yearlyInvestment.AMOUNT = investment.BudgetYears[dataIndex].BudgetAmount;
-                }
-                else
-                {
-                    db.Entry(yearlyInvestment).State = EntityState.Deleted;
-                }
-                dataIndex++;
-            }
-            //these must be inserts as the updated records exceed existing records
-            while (investment.BudgetYears.Count() > dataIndex)
-            {
-                var yearly = new YearlyInvestmentEntity(investment.Id,
-                    investment.BudgetYears[dataIndex].Year,
-                    investment.BudgetYears[dataIndex].BudgetName,
-                    investment.BudgetYears[dataIndex].BudgetAmount);
-
-                simulation.YEARLYINVESTMENTS.Add(yearly);
-                dataIndex++;
-            }
+            return new InvestmentLibraryModel(simulation);
         }
     }
 }

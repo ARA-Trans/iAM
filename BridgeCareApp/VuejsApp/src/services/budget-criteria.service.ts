@@ -12,11 +12,11 @@ export default class BudgetCriteriaService {
     }
 
     /**
- * Saves BudgetCriteria data
- * @param selectedScenarioId Scenario id
- * @param budgetCriteria List of BudgetCriteria objects
- */
+     * Saves BudgetCriteria data
+     * @param selectedScenarioId Scenario id
+     * @param budgetCriteria List of BudgetCriteria objects
+     */
     static saveBudgetCriteria(selectedScenarioId: number, budgetCriteria: CriteriaDrivenBudgets[]): AxiosPromise {
-        return axiosInstance.post(`/api/SaveCriteriaDrivenBudgets?selectedScenarioId=${selectedScenarioId}`, budgetCriteria);
+        return axiosInstance.post(`/api/SaveCriteriaDrivenBudgets/${selectedScenarioId}`, budgetCriteria);
     }
 }

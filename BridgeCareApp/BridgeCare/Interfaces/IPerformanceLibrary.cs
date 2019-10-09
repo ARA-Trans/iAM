@@ -4,8 +4,8 @@ namespace BridgeCare.Interfaces
 {
     public interface IPerformanceLibrary
     {
-        PerformanceLibraryModel GetScenarioPerformanceLibrary(int selectedScenarioId, BridgeCareContext db);
+        PerformanceLibraryModel GetSimulationPerformanceLibrary(int id, BridgeCareContext db);
 
-        PerformanceLibraryModel SaveScenarioPerformanceLibrary(PerformanceLibraryModel data, BridgeCareContext db);
+        PerformanceLibraryModel SaveSimulationPerformanceLibrary(PerformanceLibraryModel model, BridgeCareContext db);
     }
 }

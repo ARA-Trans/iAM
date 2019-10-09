@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
+using BridgeCare.Models;
 
 namespace BridgeCare.EntityClasses
 {
@@ -29,7 +30,7 @@ namespace BridgeCare.EntityClasses
         [ForeignKey("SIMULATIONID")]
         public virtual SimulationEntity SIMULATION { get; set; }
 
-        public static void delete(TreatmentsEntity treatment, BridgeCareContext db)
+        public static void DeleteEntry(TreatmentsEntity treatment, BridgeCareContext db)
         {
             foreach (CostsEntity cost in treatment.COSTS.ToList())
             {
@@ -45,6 +46,20 @@ namespace BridgeCare.EntityClasses
             }
 
             db.Entry(treatment).State = EntityState.Deleted;
+        }
+
+        public TreatmentsEntity() { }
+
+        public TreatmentsEntity(int simulationId, TreatmentModel treatmentModel)
+        {
+            SIMULATIONID = simulationId;
+            TREATMENT = treatmentModel.Name;
+            BUDGET = string.Join(",", treatmentModel.Budgets);
+            if (treatmentModel.Feasibility != null)
+            {
+                BEFOREANY = treatmentModel.Feasibility.YearsBeforeAny;
+                BEFORESAME = treatmentModel.Feasibility.YearsBeforeSame;
+            }
         }
     }
 }

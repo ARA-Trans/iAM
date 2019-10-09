@@ -1,29 +1,29 @@
-﻿using System;
-using System.Web;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
+﻿using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
 {
-    [DataContract]
-    public class CostModel
+    public class CostModel : CrudModel
     {
-        [DataMember(Name = "Id")]
-        public string CostId { get; set; }
-
-        [DataMember(Name = "criteria")]
+        public string Id { get; set; }
+        public string Equation { get; set; }
         public string Criteria { get; set; }
+        public bool? IsFunction { get; set; }
 
-        [DataMember(Name = "isFunction")]
-        public Nullable<bool> IsFunction { get; set; }
+        public CostModel() { }
 
-        [DataMember(Name = "equation")]
-        public string Cost { get; set; }
+        public CostModel(CostsEntity entity)
+        {
+            Id = entity.COSTID.ToString();
+            Equation = entity.COST_;
+            Criteria = entity.CRITERIA;
+            IsFunction = entity.ISFUNCTION ?? false;
+        }
 
-        [IgnoreDataMember]
-        public string Unit { get; set; }
-
+        public void UpdateCost(CostsEntity entity)
+        {
+            entity.COST_ = Equation;
+            entity.CRITERIA = Criteria;
+            entity.ISFUNCTION = IsFunction ?? false;
+        }
     }
 }
