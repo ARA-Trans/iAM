@@ -34,9 +34,16 @@ namespace BridgeCare.Models
             Consequences = entity.CONSEQUENCES != null && entity.CONSEQUENCES.Any()
                 ? entity.CONSEQUENCES.ToList().Select(c => new ConsequenceModel(c)).ToList()
                 : new List<ConsequenceModel>();
-            Budgets = entity.BUDGET != null
+            var rawBudgets = entity.BUDGET != null
                 ? entity.BUDGET.Split(',').ToList()
                 : new List<string>();
+            Budgets = new List<string>();
+            if (rawBudgets.Count > 0)
+            {
+                rawBudgets.ForEach(item => {
+                    Budgets.Add(item.Trim());
+                });
+            }
             Feasibility = null;
 
             if (entity.FEASIBILITIES != null && entity.FEASIBILITIES.Any())
