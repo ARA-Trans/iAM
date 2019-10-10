@@ -79,7 +79,7 @@ namespace BridgeCare.DataAccessLayer
                             });
                         }
 
-                        if (!treatmentModel.Feasibility.matched)
+                        if (treatmentModel.Feasibility != null && !treatmentModel.Feasibility.matched)
                             db.Feasibilities
                                 .Add(new FeasibilityEntity(treatmentEntity.TREATMENTID, treatmentModel.Feasibility));
 
