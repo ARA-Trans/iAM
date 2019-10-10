@@ -206,7 +206,8 @@ namespace CalculateEvaluate
 
                             }
                         }
-                        expression = expression.Replace(strValueWithQuotes, strValue);
+                        //expression = expression.Replace(strValueWithQuotes, strValue);
+                        expression = expression.Remove(nOpen, i - nOpen + 1).Insert(nOpen, strValue);
                         nOpen = -1;
                         i = 0;
                     }
