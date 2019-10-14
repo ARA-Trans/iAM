@@ -45,7 +45,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/ExportCommittedProjects")]
         [ModelValidation("The scenario data is invalid.")]
-        public IHttpActionResult ExportCommittedProjects([FromBody]SimulationModel model)
+        public HttpResponseMessage ExportCommittedProjects([FromBody]SimulationModel model)
         {
             var response = Request.CreateResponse();
             response.Content = new ByteArrayContent(repo.ExportCommittedProjects(model.SimulationId, model.NetworkId, db));
@@ -55,7 +55,8 @@ namespace BridgeCare.Controllers
                 FileName = "CommittedProjects.xlsx"
             };
 
-            return Ok(response);
+            return response;
+            //return Ok(response);
         }
     }
 }

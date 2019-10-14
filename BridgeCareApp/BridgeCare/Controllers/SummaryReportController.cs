@@ -40,7 +40,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/GetSummaryReport")]
         [ModelValidation("The scenario data is invalid.")]
-        public IHttpActionResult GetSummaryReport([FromBody] SimulationModel model)
+        public HttpResponseMessage GetSummaryReport([FromBody] SimulationModel model)
         {
             var response = Request.CreateResponse(HttpStatusCode.OK);
             response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(model));
@@ -50,7 +50,8 @@ namespace BridgeCare.Controllers
                 FileName = "SummaryReport.xlsx"
             };
 
-            return Ok(response);
+            return response;
+            //return Ok(response);
         }
     }
 }
