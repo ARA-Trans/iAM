@@ -25,7 +25,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/GetDetailedReport")]
         [ModelValidation("The scenario and/or network id are invalid.")]
-        public IHttpActionResult GetDetailedReport([FromBody] SimulationModel model)
+        public HttpResponseMessage GetDetailedReport([FromBody] SimulationModel model)
         {
             var response = Request.CreateResponse();
             response.Content = new ByteArrayContent(reportCreator.CreateExcelReport(model));
@@ -35,7 +35,8 @@ namespace BridgeCare.Controllers
                 FileName = "DetailedReport.xlsx"
             };
 
-            return Ok(response);
+            return response;
+            //return Ok(response);
         }
     }
 }
