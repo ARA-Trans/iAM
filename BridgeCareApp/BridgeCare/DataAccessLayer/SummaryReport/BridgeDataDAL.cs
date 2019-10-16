@@ -116,9 +116,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 }
             }
 
-            var missingAttributes = requiredColumns.Except(foundColumns).ToList();
-
-            return missingAttributes;
+            return requiredColumns.Except(foundColumns).ToList();
         }
 
         /// <summary>
