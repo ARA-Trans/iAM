@@ -95,34 +95,28 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 requiredColumns.AddRange(dynamicColumns.Replace(" ", "").Split(','));
             }
 
-            var selectAvailableColumns =
-                $"select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='SIMULATION_{networkId}_{simulationId}'";
+            var foundColumns = new List<string>();
 
-            var informationSchemaDataTable = new DataTable();
-            var connection = new SqlConnection(db.Database.Connection.ConnectionString);
-            using (var cmd = new SqlCommand(selectAvailableColumns, connection))
+            var selectAvailableColumns =
+                $"select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='SIMULATION_{networkId}_{simulationId}_0'" +
+                $" AND COLUMN_NAME IN ('{string.Join("','", requiredColumns)}');";
+
+            using (var connection = new SqlConnection(db.Database.Connection.ConnectionString))
             {
-                cmd.CommandTimeout = 180;
-                var dataAdapter = new SqlDataAdapter(cmd);
-                dataAdapter.Fill(informationSchemaDataTable);
-                dataAdapter.Dispose();
+                connection.Open();
+                using (var command = new SqlCommand(selectAvailableColumns, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            foundColumns.Add($"{reader[0]}");
+                        }
+                    }
+                }
             }
 
-            var foundColumns = informationSchemaDataTable.Columns
-                .Cast<DataColumn>()
-                .Select(dt => dt.ColumnName)
-                .ToList();
-
-            var missingAttributes = new List<string>();
-            requiredColumns.ForEach(requiredCol =>
-            {
-                if (!foundColumns.Contains(requiredCol))
-                {
-                    missingAttributes.Add(requiredCol);
-                }
-            });
-
-            return missingAttributes;
+            return requiredColumns.Except(foundColumns).ToList();
         }
 
         /// <summary>
@@ -138,30 +132,21 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             var simulationDataTable = new DataTable();
             var dynamicColumns = GetDynamicColumns(simulationYears);
 
-            var selectSimulationStatement = "SELECT SECTIONID, " + Properties.Resources.DeckSeeded + "0, " + Properties.Resources.SupSeeded + "0, " + Properties.Resources.SubSeeded + "0, " + Properties.Resources.CulvSeeded + "0, " + Properties.Resources.DeckDurationN + "0, " + Properties.Resources.SupDurationN + "0, " + Properties.Resources.SubDurationN + "0, " + Properties.Resources.CulvDurationN + "0" + dynamicColumns + " FROM SIMULATION_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + "  WITH (NOLOCK)";
-            try
+            var selectSimulationStatement = $"SELECT SECTIONID, {Properties.Resources.DeckSeeded}0, {Properties.Resources.SupSeeded}0, {Properties.Resources.SubSeeded}0, {Properties.Resources.CulvSeeded}0, " +
+                                            $"{Properties.Resources.DeckDurationN}0, {Properties.Resources.SupDurationN}0, {Properties.Resources.SubDurationN}0, {Properties.Resources.CulvDurationN}0, " +
+                                            dynamicColumns + $" FROM SIMULATION_{simulationModel.NetworkId}_{simulationModel.SimulationId}_0 WITH (NOLOCK);";
+
+            using (var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString))
             {
-                var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString);
-                using (var cmd = new SqlCommand(selectSimulationStatement, connection))
+                connection.Open();
+                using (var command = new SqlCommand(selectSimulationStatement, connection))
                 {
-                    cmd.CommandTimeout = 180;
-                    var dataAdapter = new SqlDataAdapter(cmd);
-                    dataAdapter.Fill(simulationDataTable);
-                    dataAdapter.Dispose();
+                    command.CommandTimeout = 180;
+                    using (var dataAdapter = new SqlDataAdapter(command))
+                    {
+                        dataAdapter.Fill(simulationDataTable);
+                    }
                 }
-            }
-            catch (SqlException ex)
-            {
-                var table = "Simulation_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId;
-                if (ex.Number == 207)
-                {
-                    throw new InvalidOperationException($"{table} table does not have all the required simulation variables in the database to run summary report.");
-                }
-                HandleException.SqlError(ex, table);
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
             }
 
             return simulationDataTable;
@@ -178,19 +163,10 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         {            
             IQueryable<ReportProjectCost> rawQueryForReportData = null;
             var years = string.Join(",", simulationYears);
-            var selectReportStatement = "SELECT SECTIONID, TREATMENT, COST_, YEARS " + " FROM REPORT_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId + " WITH(NOLOCK) WHERE BUDGET = 'actual_spent' AND YEARS IN (" + years + ")";
-            try
-            {
-                rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Report_" + simulationModel.NetworkId + "_" + simulationModel.SimulationId);
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
+            var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
+                                        $"WITH (NOLOCK) WHERE BUDGET = 'actual_spent' AND YEARS IN (" + years + ")";
+
+            rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();
 
             return rawQueryForReportData;
         }
@@ -201,7 +177,11 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             var dynamicColumns = "";
             foreach (var year in simulationYears)
             {
-                dynamicColumns = Properties.Resources.DeckSeeded + year + ", " + Properties.Resources.SupSeeded + year + ", " + Properties.Resources.SubSeeded + year + ", " + Properties.Resources.CulvSeeded + year + ", " + Properties.Resources.DeckDurationN + year + ", " + Properties.Resources.SupDurationN + year + ", " + Properties.Resources.SubDurationN + year + ", " + Properties.Resources.CulvDurationN + year;
+                if (dynamicColumns != "")
+                    dynamicColumns += ", ";
+
+                dynamicColumns += $"{Properties.Resources.DeckSeeded}{year}, {Properties.Resources.SupSeeded}{year}, {Properties.Resources.SubSeeded}{year}, {Properties.Resources.CulvSeeded}{year}, " +
+                                 $"{Properties.Resources.DeckDurationN}{year}, {Properties.Resources.SupDurationN}{year}, {Properties.Resources.SubDurationN}{year}, {Properties.Resources.CulvDurationN}{year}";
             }
 
             return dynamicColumns;
