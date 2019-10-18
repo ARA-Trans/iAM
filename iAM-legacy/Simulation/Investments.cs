@@ -212,9 +212,10 @@ namespace Simulation
         /// <param name="hashAttributeValue"></param>
         /// <param name="priority"></param>
         /// <returns></returns>
-        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority)
+        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, out string budgetHash)
         {
             string[] possibleBudgets;
+            budgetHash = "";
             try
             {
                 possibleBudgets = strBudget.Split('|');
@@ -350,23 +351,28 @@ namespace Simulation
                     SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving year amount original. " + e.Message));
                     throw e;
                 }
-
+                
                 fAfterSpending = fAvailable - fAmount;
                 if (fOriginal <= 0) continue;
                 fPercent = (1 - fAfterSpending / fOriginal) * 100;
-
+                
                 try
                 {
                     if (priority.IsAllSections)
                     {
                         float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
+                        var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal;
+                        budgetHash = fAmount + "/" + fAvailable.ToString("f0") + "/" + original.ToString("f0");
                         if (fPercent < fPercentLimit) return budgetCheck;
+                        
                     }
                     else
                     {
                         if (priority.Criteria.IsCriteriaMet(hashAttributeValue))
                         {
                             float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
+                            var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal;
+                            budgetHash = fAmount + "/" + fAvailable.ToString("f0") + "(" + original.ToString("f2") + ")";
                             if (fPercent < fPercentLimit) return budgetCheck;
                         }
                     }

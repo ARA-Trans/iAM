@@ -1323,7 +1323,7 @@
             {
                 String sSection = "SECTION_" + strNetworkID;
                 String sSegment = "SEGMENT_" + strNetworkID + "_NS0";
-                String sSimulation = "SIMULATION_" + strNetworkID + "_" + strSimulationID;
+                String sSimulation = "SIMULATION_" + strNetworkID + "_" + strSimulationID + "_0";
                 String sReport = "REPORT_" + strNetworkID + "_" + strSimulationID;
 
                 if (bShowAll)
