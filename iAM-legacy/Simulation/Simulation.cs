@@ -69,6 +69,8 @@ namespace Simulation
         private bool _isUpdateOMS = false;
 
         private IMongoCollection<SimulationModel> Simulations;
+        string mongoConnection = "";
+        public IMongoDatabase MongoDatabase;
 
         public bool IsUpdateOMS
         {
@@ -1141,7 +1143,8 @@ namespace Simulation
 
             for (var i = 0; i < 10; i++)
             {
-                var drop = "DROP TABLE IF EXISTS " + strTable + "_" + i;
+                //var drop = "DROP TABLE IF EXISTS " + strTable + "_" + i;
+                var drop = $"IF OBJECT_ID ( '{strTable}_{i}' , 'U' )  IS NOT NULL DROP TABLE {strTable}_{i}";
                 try
                 {
                     DBMgr.ExecuteNonQuery(drop);
@@ -1165,7 +1168,8 @@ namespace Simulation
             SimulationMessaging.BenefitCostTable = strTable;
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1179,7 +1183,8 @@ namespace Simulation
 
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1193,7 +1198,8 @@ namespace Simulation
 
             try
             {
-                DBMgr.ExecuteNonQuery("DROP TABLE IF EXISTS " + strTable);
+                var dropTable = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
+                DBMgr.ExecuteNonQuery(dropTable);
             }
             catch (Exception exception)
             {
@@ -1212,7 +1218,8 @@ namespace Simulation
             strTable = cgOMS.Prefix + "CUMULATIVECOST_" + strNetworkID + "_" + strSimulationID;
             SimulationMessaging.CumulativeCostTable = strTable;
 
-            String strDrop = "DROP TABLE IF EXISTS " + strTable;
+            //String strDrop = "DROP TABLE IF EXISTS" + strTable;
+            var strDrop = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
             try
             {
                 DBMgr.ExecuteNonQuery(strDrop);
@@ -1227,7 +1234,7 @@ namespace Simulation
             strTable = cgOMS.Prefix + "REASONS_" + strNetworkID + "_" + strSimulationID;
             SimulationMessaging.ReasonsTable = strTable;
 
-            strDrop = "DROP TABLE IF EXISTS " + strTable;
+            strDrop = $"IF OBJECT_ID ( '{strTable}' , 'U' )  IS NOT NULL DROP TABLE {strTable}";
             try
             {
                 DBMgr.ExecuteNonQuery(strDrop);
