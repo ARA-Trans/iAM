@@ -35,7 +35,7 @@ namespace BridgeCare.DataAccessLayer.Inventory
             Add("SUP", "1A04", "SUP");
             Add("SUB", "1A02", "SUB");
             Add("CULV", "1A03", "CULV");
-            //Add("BR_COND", "4A14", "BR COND"); //taken out here because no column
+            Add("BR_COND", "4A14", "BR COND"); //taken out here because no column
             Add("STRUCT_DEF", "4A12", "Struct Def");
             Add("FUNC_OBSOL", "4A12", "Func Obsol");
             Add("SUFF_RATE", "4A13", "SUFF RATE");
@@ -69,8 +69,8 @@ namespace BridgeCare.DataAccessLayer.Inventory
             Add("POST_STATUS2", "VP02", "POST_STATUS");
             Add("SPEC_RESTRICT_POST", "VP03", "SPEC RESTRICT POST");
             Add("WATERADEQ", "1A06", "WATERADEQ");
-            Add("STRRATTING", "4A09", "STRRATING");//spelled wrong here 'STRRATTING' to align with DB
-            Add("DECKGEEOM", "4A10", "DECKGEOM");//spelled wrong here 'DECKGEEOM' to align with DB
+            Add("STRRATING", "4A09", "STRRATING");//spelled wrong here 'STRRATTING' to align with DB
+            Add("DECKGEOM", "4A10", "DECKGEOM");//spelled wrong here 'DECKGEEOM' to align with DB
             Add("UNDERCLR", "4A11", "UNDERCLR");
             Add("APPRALIGN", "4A02", "APPRALIGN");
             Add("ADTTOTAL", "5C10", "ADTTOTAL");
@@ -86,53 +86,59 @@ namespace BridgeCare.DataAccessLayer.Inventory
             Add("PROPWORK", "3B01 ", "PROPWORK");
             Add("IRLOAD", "4B07", "IRLOAD");
 
+            Add("MPO_Name", "5A23", "MPO");
+            Add("MaxSpan", "5B17", "Maxium Span Length");
+
             Add("DECK", "", "DECK");            
             Add("SUP", "", "SUP");            
             Add("SUB", "", "SUB");            
             Add("CULV", "", "CULV");
             
             // New columns
-            Add("TYPE_OF_SERVICE_ON", "5A17", "Type of Service On"); 
-            Add("TYPE_OF_SERVICE_UNDER", "5A18", "Type of Service Under");
+            Add("SERVTYPON", "5A17", "Type of Service On"); 
+            Add("SERVTYPUND", "5A18", "Type of Service Under");
 
-            Add("MAINT_RESP", "5A20", "Maint Resp");            
-            Add("REPORT_GROUP", "5A24", "Reporting Group");
+            Add("CUSTODIAN", "5A20", "Maint Resp");            
+            //Add("REPORT_GROUP", "5A24", "Reporting Group");
             Add("HISTSIGN", "5E04", "Hist Significance");
-            Add("SHP_KEY_NUMBER", "5E05", "SHP Key Number");
+            Add("CRGIS_SHPOKEY_NUM", "5E05", "SHP Key Number");
 
-            Add("DECK_STRUCTURE_TYPE", "5B01", "Deck Structure Type");
-            Add("DECK_SHEET_TYPE_PENNDOT", "6A38", "Deck Sheet Type (PennDOT)");
-            Add("DECK_SURFACE_TYPE", "5B02", "Deck Surface Type");
-            Add("DECK_MEMBRANE_TYPE", "5B03", "Deck Membrane Type");
-            Add("DECK_PROTECTION", "5B04", "Deck Protection");
+            Add("DKSTRUCTYP", "5B01", "Deck Structure Type");
+            Add("DEPT_DKSTRUCTYP", "6A38", "Deck Sheet Type (PennDOT)");
+            Add("DKSURFTYPE", "5B02", "Deck Surface Type");
+            Add("DKMEMBTYPE", "5B03", "Deck Membrane Type");
+            Add("DKPROTECT", "5B04", "Deck Protection");
             Add("SKEW", "5B09", "Skew"); 
 
-            Add("MAIN_SPAN_MATERIAL", "5B12", "Main Span Material");
-            Add("MAIN_SPAN_DESIGN", "5B13", "Main Span Design");
-            Add("APPROACH_SPAN_MATERIAL", "5B15", "Approach Span Material");
-            Add("APPROACH_SPAN_DESIGN", "5B16", "Approach Span Design");
-            Add("MAXIMUM_SPAN_LENGTH", "5B17", "Maximum Span Length"); 
-            Add("TOTAL_LENGTH", "5B20", "Total Length"); 
-            Add("FC_GROUP_NUMBER_MAIN", "6A44", "FC Group Number (Main)");
-            Add("FC_GROUP_NUMBER_APPROACH", "6A44", "FC Group Number (Approach)");
+            Add("MATERIALMAIN", "5B12", "Main Span Material");
+            Add("DESIGNMAIN", "5B13", "Main Span Design");
+            Add("MATERIALAPPR", "5B15", "Approach Span Material");
+            Add("DESIGNAPPR", "5B16", "Approach Span Design");
+            //Add("MAXIMUM_SPAN_LENGTH", "5B17", "Maximum Span Length"); 
+            Add("TOT_LENGTH", "5B20", "Total Length"); 
+            Add("MAIN_FC_GROUP_NUM", "6A44", "FC Group Number (Main)");
+            Add("APPR_FC_GROUP_NUM", "6A44", "FC Group Number (Approach)");
 
-            Add("OVER_STREET_CLEARANCE", "4A15", "Over Street Clearance"); 
-            Add("UNDER_CLEARANCE", "4A17", "Under Clearance"); 
+            Add("VCLROVER", "4A15", "Over Street Clearance"); 
+            Add("VCLROVER", "4A17", "Under Clearance"); 
                         
-            Add("DECK_D", "", "DECK");            
-            Add("SUP_D", "", "SUP");
-            Add("SUB_D", "", "SUB");
-            Add("CULV_D", "", "CULV");
+            Add("DECK_DUR", "", "DECK");            
+            Add("SUP_DUR", "", "SUP");
+            Add("SUB_DUR", "", "SUB");
+            Add("CULV_DUR", "", "CULV");
 
-            Add("PRIOR_DECK_C", "", "DECK");
-            Add("PRIOR_DECK_D", "", "DECK");
-            Add("PRIOR_SUP_C", "", "SUP");
-            Add("PRIOR_SUP_D", "", "SUP");
-            Add("PRIOR_SUB_C", "", "SUB");
-            Add("PRIOR_SUB_D", "", "SUB");
-            Add("PRIOR_CULV_C", "", "CULV");
-            Add("PRIOR_CULV_D", "", "CULV");
-            
+            Add("PREV_DECK", "", "DECK");
+            Add("PREV_DECK_DUR", "", "DECK");
+            Add("PREV_SUP", "", "SUP");
+            Add("PREV_SUP_DUR", "", "SUP");
+            Add("PREV_SUB", "", "SUB");
+            Add("PREV_SUB_DUR", "", "SUB");
+            Add("PREV_CULV", "", "CULV");
+            Add("PREV_CULV_DUR", "", "CULV");
+
+            Add("Old_Risk_Score", "", "Old Risk Score");
+            Add("Risk_Score", "", "New Risk Score");
+
             Add("HS20_OR", "4B05", "HS20 (OR)");
             Add("HS20_IR", "4B07", "HS20 (IR)");
             Add("HS20_RATIO", "", "Ratio OR / Max Legal Load");
