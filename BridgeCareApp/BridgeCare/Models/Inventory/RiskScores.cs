@@ -2,7 +2,9 @@
 {
     public class RiskScores
     {
-        public int New { get; set; }
-        public int Old { get; set; }
+        public double New { get; set; }
+        public string NewName { get; set; }
+        public double Old { get; set; }
+        public string OldName { get; set; }
     }
 }

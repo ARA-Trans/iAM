@@ -31,7 +31,7 @@ namespace BridgeCare.Services
                 AddPosting(inventoryItemDetailModel, inventoryItems);
                 AddRoadwayInfo(inventoryItemDetailModel, inventoryItems);
                 AddCurrentConditionDuration(inventoryItemDetailModel, inventoryItems);
-                AddRiskScores(inventoryItemDetailModel);
+                AddRiskScores(inventoryItemDetailModel, inventoryItems);
                 AddOperatingInventoryRating(inventoryItemDetailModel, inventoryItems);                  
             }
             catch (Exception ex)
@@ -77,10 +77,16 @@ namespace BridgeCare.Services
             ratingRows.Add(new OperatingRatingInventoryRatingRow { OperatingRating = labelValues[0], InventoryRating = labelValues[1], RatioLegalLoad = labelValues[2] });
         }
 
-        private void AddRiskScores(InventoryItemDetailModel inventoryItemDetailModel)
+        private void AddRiskScores(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
             //TODO Risk scores: currently const 0 assigned as per UI
-            inventoryItemDetailModel.RiskScores = new RiskScores { Old = 0, New = 0 };
+            var inventoryItem = inventoryItems.FirstOrDefault(i => i.ColumnName == "Old_Risk_Score");
+            var newRiskInventoryItem = inventoryItems.FirstOrDefault(i => i.ColumnName == "Risk_Score");
+            inventoryItemDetailModel.RiskScores = new RiskScores { Old = Convert.ToDouble(inventoryItem.DisplayValue),
+                New = Convert.ToDouble(newRiskInventoryItem.DisplayValue),
+                OldName = inventoryItem.ViewName,
+                NewName = newRiskInventoryItem.ViewName,
+            };
         }
 
         private void AddCurrentConditionDuration(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
