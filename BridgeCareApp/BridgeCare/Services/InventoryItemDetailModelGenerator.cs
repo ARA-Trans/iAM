@@ -86,10 +86,10 @@ namespace BridgeCare.Services
         private void AddCurrentConditionDuration(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
             var currentConditionColumns = new List<string> { "DECK", "SUP", "SUB", "CULV" };
-            var currentDurationColumns = new List<string> { "DECK_D", "SUP_D", "SUB_D", "CULV_D" };            
+            var currentDurationColumns = new List<string> { "DECK_DUR", "SUP_DUR", "SUB_DUR", "CULV_DUR" };            
             inventoryItemDetailModel.CurrentConditionDuration = CreateConditionDurationRows(inventoryItems, currentConditionColumns, currentDurationColumns);
-            var priorConditionColumns = new List<string> { "PRIOR_DECK_C", "PRIOR_SUP_C", "PRIOR_SUB_C", "PRIOR_CULV_C" };
-            var priorDurationColumns = new List<string> { "PRIOR_DECK_D", "PRIOR_SUP_D", "PRIOR_SUB_D", "PRIOR_CULV_D" };
+            var priorConditionColumns = new List<string> { "PREV_DECK", "PREV_SUP", "PREV_SUB", "PREV_CULV" };
+            var priorDurationColumns = new List<string> { "PREV_DECK_DUR", "PREV_SUP_DUR", "PREV_SUB_DUR", "PREV_CULV_DUR" };
             inventoryItemDetailModel.PreviousConditionDuration = CreateConditionDurationRows(inventoryItems, priorConditionColumns, priorDurationColumns);
         }
 
@@ -110,7 +110,7 @@ namespace BridgeCare.Services
 
         private void AddRoadwayInfo(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var roadwayInfoColumns = new List<string> { "ADTTOTAL", "FUNC_CLASS", "OVER_STREET_CLEARANCE", "UNDER_CLEARANCE", "NHS_IND" };
+            var roadwayInfoColumns = new List<string> { "ADTTOTAL", "FUNC_CLASS", "VCLROVER", "VCLROVER", "NHS_IND" };
             inventoryItemDetailModel.RoadwayInfo = CreateLabelValues(inventoryItems, roadwayInfoColumns);
         }
 
@@ -135,25 +135,25 @@ namespace BridgeCare.Services
 
         private void AddSpanInformation(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var spanInformationColumns = new List<string> { "NUMBER_SPANS", "MAIN_SPAN_MATERIAL", "MAIN_SPAN_DESIGN", "APPROACH_SPAN_MATERIAL", "APPROACH_SPAN_DESIGN", "MAXIMUM_SPAN_LENGTH", "LENGTH", "DECK_AREA", "TOTAL_LENGTH", "FC_GROUP_NUMBER_MAIN", "FC_GROUP_NUMBER_APPROACH" };
+            var spanInformationColumns = new List<string> { "NUMBER_SPANS", "MATERIALMAIN", "DESIGNMAIN", "MATERIALAPPR", "DESIGNAPPR", "LENGTH", "DECK_AREA", "TOT_LENGTH", "MAIN_FC_GROUP_NUM", "APPR_FC_GROUP_NUM" };
             inventoryItemDetailModel.SpanInformation = CreateLabelValues(inventoryItems, spanInformationColumns);
         }
 
         private void AddDeckInformation(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var deckInformationColumns = new List<string> { "DECK_STRUCTURE_TYPE", "DECK_SHEET_TYPE_PENNDOT", "DECK_SURFACE_TYPE", "DECK_MEMBRANE_TYPE", "DECK_PROTECTION", "DECK_WIDTH", "SKEW" };
+            var deckInformationColumns = new List<string> { "DKSTRUCTYP", "DEPT_DKSTRUCTYP", "DKSURFTYPE", "DKMEMBTYPE", "DKPROTECT", "DECK_WIDTH", "SKEW" };
             inventoryItemDetailModel.DeckInformation = CreateLabelValues(inventoryItems, deckInformationColumns);
         }
 
         private void AddManagement(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var managementColumns = new List<string> { "MAINT_RESP", "OWNER_CODE", "MPO", "REPORT_GROUP", "SUBM_AGENCY", "NBISLEN", "HISTSIGN", "SHP_KEY_NUMBER", "BUS_PLAN_NETWORK" };
+            var managementColumns = new List<string> { "CUSTODIAN", "OWNER_CODE", "MPO", "SUBM_AGENCY", "NBISLEN", "HISTSIGN", "CRGIS_SHPOKEY_NUM", "BUS_PLAN_NETWORK" };
             inventoryItemDetailModel.Management = CreateLabelValues(inventoryItems, managementColumns);
         }
 
         private void AddAgeService(InventoryItemDetailModel inventoryItemDetailModel, List<InventoryItemModel> inventoryItems)
         {
-            var ageAndServiceColumns = new List<string> { "YEAR_BUILT", "YEAR_RECON", "TYPE_OF_SERVICE_ON", "TYPE_OF_SERVICE_UNDER" }; 
+            var ageAndServiceColumns = new List<string> { "YEAR_BUILT", "YEAR_RECON", "SERVTYPON", "SERVTYPUND" }; 
             inventoryItemDetailModel.AgeAndService = CreateLabelValues(inventoryItems, ageAndServiceColumns);
         }
 
