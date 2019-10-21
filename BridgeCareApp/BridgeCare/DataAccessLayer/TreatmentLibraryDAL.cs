@@ -54,7 +54,7 @@ namespace BridgeCare.DataAccessLayer
                 simulation.TREATMENTS.ToList().ForEach(treatmentEntity =>
                 {
                     var treatmentModel = model.Treatments
-                        .SingleOrDefault(t => t.Id == treatmentEntity.TREATMENTID.ToString());
+                        .SingleOrDefault(t => t.Name == treatmentEntity.TREATMENT);
 
                     if (treatmentModel == null)
                         TreatmentsEntity.DeleteEntry(treatmentEntity, db);
