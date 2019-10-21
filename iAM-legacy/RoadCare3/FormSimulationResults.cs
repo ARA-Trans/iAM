@@ -16,6 +16,7 @@ using Simulation;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
+using DataAccessLayer;
 
 namespace RoadCare3
 {
@@ -50,7 +51,8 @@ namespace RoadCare3
         //private bool bCommit = false;        
 
         Hashtable _hashIDRow = new Hashtable();
-        
+        List<string> _simulationYearAttribute = new List<string>();
+        Dictionary<string, string> m_dictionaryColumns;
         
         public DataGridView GridViewCommitResult
         {
@@ -65,6 +67,22 @@ namespace RoadCare3
             m_strSimulationID = strSimulationID;
             m_strNetworkID = strNetworkID;
             m_bCommitted = bCommitted;
+
+            m_dictionaryColumns = new Dictionary<string, string>();
+            for(var i = 0; i < 10; i++)
+            {
+                var simulationTable = "SIMULATION_" + m_strNetworkID + "_" + m_strSimulationID + "_" + i;
+                if (DBMgr.CheckIfTableExists(simulationTable))
+                {
+                    var columns = DBMgr.GetTableColumns(simulationTable);
+                    foreach(var column in columns)
+                    {
+                        if (column.ToUpper() == "SECTIONID") continue;
+                        m_dictionaryColumns.Add(column, simulationTable);
+                    }
+                }
+            }
+
 
 
             String strReportTable = "REPORT_" + m_strNetworkID.ToString() + "_" + m_strSimulationID.ToString();
@@ -362,9 +380,6 @@ namespace RoadCare3
 
         private void UpdateView()
         {
-
-
-
             if (m_bCommitted)
             {
                 UpdateCommitted();
@@ -449,7 +464,7 @@ namespace RoadCare3
 
             String strFrom = DBOp.BuildFromStatement(m_strNetworkID, m_strSimulationID, true);
 
-			strSelect = "SELECT DISTINCT SECTION_" + m_strNetworkID + ".FACILITY, SECTION_" + m_strNetworkID + ".SECTION," + strSimulationTable + ".SECTIONID" + strFrom;
+			strSelect = "SELECT DISTINCT SECTION_" + m_strNetworkID + ".FACILITY, SECTION_" + m_strNetworkID + ".SECTION,SECTION_" + m_strNetworkID + ".SECTIONID" + strFrom;
 			
 
 			// Add Where Clause
@@ -794,7 +809,7 @@ namespace RoadCare3
                         bool isYear = Int32.TryParse(strYear, out result);
                         if(isYear)
                         {
-                            FormManager.GetSimulationAttributeWindow().UpdateResultSummary(strID, strYear, strFacility, strSection);
+                            FormManager.GetSimulationAttributeWindow().UpdateResultSummary(strID, strYear, strFacility, strSection, m_dictionaryColumns);
                         }
                     }
                 }
@@ -2398,5 +2413,8 @@ namespace RoadCare3
                 }
             }
         }
+
+
+    
     }
 }

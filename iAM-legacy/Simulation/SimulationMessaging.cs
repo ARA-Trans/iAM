@@ -50,6 +50,8 @@ namespace Simulation
         [ThreadStatic]
         static private String m_sTargetTable;
         [ThreadStatic]
+        static private String m_sReasonsTable;
+        [ThreadStatic]
         static private String m_strLanesVariable;
         [ThreadStatic]
         static private CRS m_CRS;
@@ -337,6 +339,12 @@ namespace Simulation
         /// Stores costs that make up CumulativeCost
         /// </summary>
         public static string CumulativeCostTable { get; set; }
+
+        public static string ReasonsTable
+        {
+            get { return m_sReasonsTable; }
+            set { m_sReasonsTable = value; }
+        }
 
         static public List<SimulationMessage> GetProgressList()
         {

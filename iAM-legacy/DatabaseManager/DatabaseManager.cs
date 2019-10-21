@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Windows.Forms;
 
+
 namespace DatabaseManager
 {
     /// <summary>
@@ -1785,6 +1786,33 @@ namespace DatabaseManager
             }
             return toReturn;
         }
+
+
+
+        public static bool CheckIfTableExists(string tableName)
+        {
+            bool exists = false;
+            using (SqlConnection connection = new SqlConnection(DBMgr.GetNativeConnection().ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("select case when exists((select * from information_schema.tables where table_name = @tableName)) then 1 else 0 end", connection);
+                    cmd.Parameters.Add(new SqlParameter("tableName", tableName));
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    if (dr.Read())
+                    {
+                        exists = Convert.ToBoolean(dr[0]);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+            return exists;
+        }
+
     }
 
     public class TableParameters
