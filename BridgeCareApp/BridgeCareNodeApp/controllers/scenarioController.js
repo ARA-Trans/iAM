@@ -45,7 +45,7 @@ function scenarioController(Scenario) {
      */
     function put(req, res) {
         var newScenario = req.body;
-        newScenario.lastModifiedDate = Date.now;
+        newScenario.lastModifiedDate = Date.now();
         Scenario.findOneAndUpdate({_id: req.params.scenarioId}, newScenario, {new: true}, (err, doc) => {
             if (err) {
                 return res.status(400).json(err);
