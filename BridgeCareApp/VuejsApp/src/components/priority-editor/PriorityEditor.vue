@@ -164,6 +164,7 @@
     } from '@/shared/models/modals/create-priority-library-dialog-data';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
+import prepend from 'ramda/es/prepend';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -451,7 +452,7 @@
 
                 this.updateSelectedPriorityLibraryAction({updatedSelectedPriorityLibrary: {
                     ...this.selectedPriorityLibrary,
-                    priorities: append(newPriority, this.selectedPriorityLibrary.priorities)
+                    priorities: prepend(newPriority, this.selectedPriorityLibrary.priorities)
                 }});
             }
         }
