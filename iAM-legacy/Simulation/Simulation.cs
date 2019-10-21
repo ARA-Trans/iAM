@@ -190,13 +190,13 @@ namespace Simulation
             cgOMS.Prefix = "cgDE_";
         }
 
-        public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, IMongoCollection<SimulationModel> simulations)
+        public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, string simulations)
         {
             m_strNetwork = strNetwork;
             m_strSimulation = strSimulation;
             m_strNetworkID = networkID.ToString();
             m_strSimulationID = simulationID.ToString();
-            Simulations = simulations;
+            mongoConnection = simulations;
             _isUpdateOMS = false;
         }
 
@@ -234,6 +234,10 @@ namespace Simulation
             UpdateDefinition<SimulationModel> updateStatus;
             if (isAPICall.Equals(true))
             {
+                MongoClient client = new MongoClient(mongoConnection);
+                MongoDatabase = client.GetDatabase("BridgeCare");
+                Simulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
+
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Begin compile simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
