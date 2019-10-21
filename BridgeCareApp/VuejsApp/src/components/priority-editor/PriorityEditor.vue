@@ -164,6 +164,7 @@
     } from '@/shared/models/modals/create-priority-library-dialog-data';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
+import prepend from 'ramda/es/prepend';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -193,7 +194,7 @@
         scenarioPriorityLibrary: PriorityLibrary = clone(emptyPriorityLibrary);
         budgetOrder: string[] = [];
         priorityDataTableHeaders: DataTableHeader[] = [
-            {text: 'Priority', value: 'priorityLevel', align: 'left', sortable: true, class: '', width: ''},
+            {text: 'Priority', value: 'priorityLevel', align: 'left', sortable: false, class: '', width: ''},
             {text: 'Year', value: 'year', align: 'left', sortable: true, class: '', width: ''},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''}
         ];
@@ -451,7 +452,7 @@
 
                 this.updateSelectedPriorityLibraryAction({updatedSelectedPriorityLibrary: {
                     ...this.selectedPriorityLibrary,
-                    priorities: append(newPriority, this.selectedPriorityLibrary.priorities)
+                    priorities: prepend(newPriority, this.selectedPriorityLibrary.priorities)
                 }});
             }
         }

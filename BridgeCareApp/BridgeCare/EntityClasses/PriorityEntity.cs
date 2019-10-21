@@ -21,7 +21,7 @@ namespace BridgeCare.EntityClasses
 
         [ForeignKey("SIMULATIONID")]
         public virtual SimulationEntity SIMULATION { get; set; }
-        public ICollection<PriorityFundEntity> PRIORITYFUNDS { get; set; }
+        public ICollection<PriorityFundEntity> PRIORITYFUNDS { get; set; } = new List<PriorityFundEntity>();
 
         public PriorityEntity() { }
 
