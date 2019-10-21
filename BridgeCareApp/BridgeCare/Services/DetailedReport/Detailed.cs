@@ -44,42 +44,36 @@ namespace BridgeCare.Services
             int rowsToColumns = 0, columnNumber = 2, rowNumber = 2;
 
             var conditionalData = new DetailReportModel();
-            try
+
+            foreach (var newData in rawQueryForData)
             {
-                foreach (var newData in rawQueryForData)
+                if (rowsToColumns == 0)
                 {
-                    if (rowsToColumns == 0)
-                    {
-                        columnNumber = 2;
-                        worksheet.Cells[rowNumber, columnNumber - 1].Value = newData.Facility;
-                        worksheet.Cells[rowNumber, columnNumber].Value = newData.Section;
-                    }
+                    columnNumber = 2;
+                    worksheet.Cells[rowNumber, columnNumber - 1].Value = newData.Facility;
+                    worksheet.Cells[rowNumber, columnNumber].Value = newData.Section;
+                }
 
-                    conditionalData.Treatment = newData.Treatment;
-                    conditionalData.IsCommitted = newData.IsCommitted;
-                    conditionalData.NumberTreatment = newData.NumberTreatment;
-                    conditionalData.RowNumber = rowNumber;
-                    conditionalData.ColumnNumber = columnNumber;
+                conditionalData.Treatment = newData.Treatment;
+                conditionalData.IsCommitted = newData.IsCommitted;
+                conditionalData.NumberTreatment = newData.NumberTreatment;
+                conditionalData.RowNumber = rowNumber;
+                conditionalData.ColumnNumber = columnNumber;
 
-                    ExcelValues[conditionalData.IsCommitted].Invoke(conditionalData, worksheet);
+                ExcelValues[conditionalData.IsCommitted].Invoke(conditionalData, worksheet);
 
-                    columnNumber++;
-                    if (rowsToColumns + 1 >= totalYearsCount)
-                    {
-                        rowsToColumns = 0;
-                        rowNumber++;
-                    }
-                    else
-                    {
-                        rowsToColumns++;
-                    }
+                columnNumber++;
+                if (rowsToColumns + 1 >= totalYearsCount)
+                {
+                    rowsToColumns = 0;
+                    rowNumber++;
+                }
+                else
+                {
+                    rowsToColumns++;
                 }
             }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
-            }
-            
+
             worksheet.Cells.AutoFitColumns();
         }
     }

@@ -57,27 +57,13 @@ namespace BridgeCare.DataAccessLayer
 
         public IQueryable<DetailedReportDAL> GetRawQuery(SimulationModel data, BridgeCareContext dbContext)
         {
-            IQueryable<DetailedReportDAL> rawQueryForData = null;
-            var select =
-                    "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
-                        " FROM Report_" + data.NetworkId
-                        + "_" + data.SimulationId + " Rpt WITH (NOLOCK) INNER JOIN Section_" + data.NetworkId + " Sec WITH (NOLOCK) " +
-                        " ON Rpt.SectionID = Sec.SectionID " +
+            var query = "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
+                        $"FROM Report_{data.NetworkId}_{data.SimulationId} Rpt WITH (NOLOCK) " +
+                        $"INNER JOIN Section_{data.NetworkId} Sec WITH (NOLOCK) " +
+                        "ON Rpt.SectionID = Sec.SectionID " +
                         "Order By Facility, Section, Years";
 
-            try
-            {
-                rawQueryForData = dbContext.Database.SqlQuery<DetailedReportDAL>(select).AsQueryable();
-            }
-            catch (SqlException ex)
-            {
-                HandleException.SqlError(ex, "Report_");
-            }
-            catch (OutOfMemoryException ex)
-            {
-                HandleException.OutOfMemoryError(ex);
-            }
-            return rawQueryForData;
+            return dbContext.Database.SqlQuery<DetailedReportDAL>(query).AsQueryable();
         }
     }
 }

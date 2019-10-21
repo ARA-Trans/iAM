@@ -147,74 +147,67 @@ namespace BridgeCare.Services
         private void GetCommittedProjectModels(HttpPostedFile postedFile, int simulationId, int networkId, bool applyNoTreatment,
         List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
-            try
+            var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
+            ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
+            var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
+            var start = worksheet.Dimension.Start;
+            var end = worksheet.Dimension.End;
+            for (int row = start.Row + 1; row <= end.Row; row++)
             {
-                var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
-                var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
-                var start = worksheet.Dimension.Start;
-                var end = worksheet.Dimension.End;
-                for (int row = start.Row + 1; row <= end.Row; row++)
+                var column = start.Column + 2;
+                var brKey = Convert.ToInt32(GetCellValue(worksheet, row, 1));
+                var sectionId = sectionsRepo.GetSectionId(networkId, brKey, db);
+
+                // BMSID till COST -> entry in COMMITTED_                    
+                var committedProjectModel = new CommittedProjectModel
                 {
-                    var column = start.Column + 2;
-                    var brKey = Convert.ToInt32(GetCellValue(worksheet, row, 1));
-                    var sectionId = sectionsRepo.GetSectionId(networkId, brKey, db);
+                    SectionId = sectionId,
+                    SimulationId = simulationId,
+                    TreatmentName = GetCellValue(worksheet, row, column),
+                    Years = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
+                    YearAny = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
+                    YearSame = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
+                    Budget = GetCellValue(worksheet, row, ++column),
+                    Cost = Convert.ToInt32(GetCellValue(worksheet, row, ++column))
+                };
 
-                    // BMSID till COST -> entry in COMMITTED_                    
-                    var committedProjectModel = new CommittedProjectModel
+                var commitConsequences = new List<CommitConsequenceModel>();
+                // Ignore AREA column, from current column till end.Column -> attributes i.e. entry in COMMIT_CONSEQUENCES
+                for (var col = column + 2; col <= end.Column; col++)
+                {
+                    commitConsequences.Add(new CommitConsequenceModel
                     {
-                        SectionId = sectionId,
-                        SimulationId = simulationId,
-                        TreatmentName = GetCellValue(worksheet, row, column),
-                        Years = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
-                        YearAny = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
-                        YearSame = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
-                        Budget = GetCellValue(worksheet, row, ++column),
-                        Cost = Convert.ToInt32(GetCellValue(worksheet, row, ++column))
-                    };
+                        Attribute_ = GetHeader(headers, col),
+                        Change_ = GetCellValue(worksheet, row, col)
+                    });
+                }
+                committedProjectModel.CommitConsequences = commitConsequences;
+                committedProjectModels.Add(committedProjectModel);
 
-                    var commitConsequences = new List<CommitConsequenceModel>();
-                    // Ignore AREA column, from current column till end.Column -> attributes i.e. entry in COMMIT_CONSEQUENCES
-                    for (var col = column + 2; col <= end.Column; col++)
+                var simulation = db.Simulations.SingleOrDefault(s => s.SIMULATIONID == simulationId);
+                if (applyNoTreatment && simulation != null)
+                {
+                    if (simulation.COMMITTED_START < committedProjectModel.Years)
                     {
-                        commitConsequences.Add(new CommitConsequenceModel
+                        var year = committedProjectModel.Years - 1;
+                        while (year >= simulation.COMMITTED_START)
                         {
-                            Attribute_ = GetHeader(headers, col),
-                            Change_ = GetCellValue(worksheet, row, col)
-                        });
-                    }
-                    committedProjectModel.CommitConsequences = commitConsequences;
-                    committedProjectModels.Add(committedProjectModel);
-
-                    var simulation = db.Simulations.SingleOrDefault(s => s.SIMULATIONID == simulationId);
-                    if (applyNoTreatment && simulation != null)
-                    {
-                        if (simulation.COMMITTED_START < committedProjectModel.Years)
-                        {
-                            var year = committedProjectModel.Years - 1;
-                            while (year >= simulation.COMMITTED_START)
+                            committedProjectModels.Add(new CommittedProjectModel()
                             {
-                                committedProjectModels.Add(new CommittedProjectModel()
-                                {
-                                    SectionId = committedProjectModel.SectionId,
-                                    SimulationId = committedProjectModel.SimulationId,
-                                    TreatmentName = "No Treatment",
-                                    Years = year,
-                                    YearAny = committedProjectModel.YearAny,
-                                    YearSame = committedProjectModel.YearSame,
-                                    Budget = committedProjectModel.Budget,
-                                    Cost = 0,
-                                    CommitConsequences = committedProjectModel.CommitConsequences
-                                });
-                                year--;
-                            }
+                                SectionId = committedProjectModel.SectionId,
+                                SimulationId = committedProjectModel.SimulationId,
+                                TreatmentName = "No Treatment",
+                                Years = year,
+                                YearAny = committedProjectModel.YearAny,
+                                YearSame = committedProjectModel.YearSame,
+                                Budget = committedProjectModel.Budget,
+                                Cost = 0,
+                                CommitConsequences = committedProjectModel.CommitConsequences
+                            });
+                            year--;
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                HandleException.GeneralError(ex);
             }
         }
 

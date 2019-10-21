@@ -19,6 +19,19 @@ namespace BridgeCare.EntityClasses
 
         public PriorityFundEntity() { }
 
+        public PriorityFundEntity(string budget)
+        {
+            BUDGET = budget;
+            FUNDING = 100;
+        }
+
+        public PriorityFundEntity(int priorityId, string budget)
+        {
+            PRIORITYID = priorityId;
+            BUDGET = budget;
+            FUNDING = 100;
+        }
+
         public PriorityFundEntity(PriorityFundModel priorityFundModel)
         {
             BUDGET = priorityFundModel.Budget;

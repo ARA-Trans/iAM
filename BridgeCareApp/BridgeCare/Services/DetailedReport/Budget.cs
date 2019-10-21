@@ -45,9 +45,9 @@ namespace BridgeCare.Services
             totalViewRow[0] = "Total";
             totalViewRow[1] = "View";
 
-            foreach (string budget in budgetReportTable.Keys)
+            foreach (var budget in budgetReportTable.Keys)
             {
-                Hashtable yearAndView = new Hashtable();
+                var yearAndView = new Hashtable();
                 // Creating row for view
                 DataRow viewRow = viewTable.NewRow();
                 yearAndView = (Hashtable)budgetReportTable[budget];
@@ -56,7 +56,7 @@ namespace BridgeCare.Services
                 for (int j = 0; j < totalYearsCount; j++)
                 {
                     viewRow[j + 2] = 0;
-                    if (yearAndView.Contains(totalYears[j]))
+                    if (yearAndView.ContainsKey(totalYears[j]))
                     {
                         var viewData = (double)yearAndView[totalYears[j]];
                         viewRow[j + 2] = viewData;
