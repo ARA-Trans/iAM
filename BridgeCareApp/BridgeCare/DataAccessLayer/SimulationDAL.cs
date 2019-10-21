@@ -27,7 +27,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>SimulationModel list</returns>
         public List<SimulationModel> GetSimulations(BridgeCareContext db)
         {
-            return db.Simulations.Select(s => new SimulationModel(s)).ToList();
+            return db.Simulations.Include(s => s.NETWORK).ToList().Select(s => new SimulationModel(s)).ToList();
         }
 
         /// <summary>
