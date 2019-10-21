@@ -193,7 +193,7 @@
         scenarioPriorityLibrary: PriorityLibrary = clone(emptyPriorityLibrary);
         budgetOrder: string[] = [];
         priorityDataTableHeaders: DataTableHeader[] = [
-            {text: 'Priority', value: 'priorityLevel', align: 'left', sortable: true, class: '', width: ''},
+            {text: 'Priority', value: 'priorityLevel', align: 'left', sortable: false, class: '', width: ''},
             {text: 'Year', value: 'year', align: 'left', sortable: true, class: '', width: ''},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''}
         ];
