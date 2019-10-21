@@ -22,8 +22,6 @@ namespace BridgeCare.Models
 
         public void Aggregate(FeasibilityModel model)
         {
-            YearsBeforeAny = model.YearsBeforeAny;
-            YearsBeforeSame = model.YearsBeforeSame;
             if (Id == null)
                 Id = model.Id;
 
