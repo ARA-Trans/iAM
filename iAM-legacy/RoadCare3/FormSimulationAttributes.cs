@@ -874,7 +874,7 @@ namespace RoadCare3
 
 
 
-        public void UpdateResultSummary(String strID, String strYear,String strFacility, String strSection)
+        public void UpdateResultSummary(String strID, String strYear,String strFacility, String strSection, Dictionary<string, string> attributeColumns)
         {
             dgvSummary.Rows.Clear();
             dgvAttribute.Rows.Clear();
@@ -923,7 +923,7 @@ namespace RoadCare3
             }
             
             String strReportTable = "REPORT_" + NetworkID.ToString() + "_" + SimulationID.ToString();
-            String strSimulationTable = "SIMULATION_" + NetworkID.ToString() + "_" + SimulationID.ToString();
+            String strSimulationTable = "SIMULATION_" + NetworkID.ToString() + "_" + SimulationID.ToString() + "_0";
 
             strSelect = "SELECT TREATMENT,BUDGET,COST_,YEARSANY,YEARSSAME,REMAINING_LIFE,BENEFIT,BC_RATIO,CONSEQUENCEID,PRIORITY,RLHASH,CHANGEHASH,COMMITORDER,ISCOMMITTED FROM " + strReportTable;
             strSelect += " WHERE SECTIONID ='" + strID + "' AND YEARS='" + strYear + "'";
@@ -1008,19 +1008,32 @@ namespace RoadCare3
                     string[] attributechange = pairsRL[i].Split(new string[] { "\t" }, StringSplitOptions.None);
                     hashAttributeRL.Add(attributechange[0], attributechange[1]);
                 }
-            }            
-            
-            
-            
-            strSelect = "SELECT ";
-            foreach (String str in m_listAttributeSimulation)
-            {
-                if(strSelect.Length != 7) strSelect += ",";
-                String strAttributeYear = str + "_" + strYear;
-                strSelect += strAttributeYear;
             }
 
-            String strWhere = " FROM " + strSimulationTable + " WHERE SECTIONID ='" + strID + "'";
+            var listTables = new List<string>();
+            
+            strSelect = "SELECT ";
+            foreach (String key in attributeColumns.Keys)
+            {
+                
+                if (key.Contains("_" + strYear))
+                {
+                    strSelect += attributeColumns[key] + "." + key + ",";
+                    if(!listTables.Contains(attributeColumns[key]))
+                    {
+                        listTables.Add(attributeColumns[key]);
+                    }
+                }
+            }
+            strSelect = strSelect.Substring(0, strSelect.Length - 1);
+            String strWhere = " FROM " + strSimulationTable + " WHERE " + strSimulationTable + ".SECTIONID = '" + strID + "'";
+
+            for(var i = 1; i < listTables.Count; i++)
+            {
+                strWhere = " INNER JOIN " + listTables[i] + " ON " + strSimulationTable + ".SECTIONID = " + listTables[i] + ".SECTIONID";
+            }
+
+
             strSelect += strWhere;
 
 
