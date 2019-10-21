@@ -111,20 +111,7 @@ namespace BridgeCare.DataAccessLayer
         public static void SavePriorityFundInvestmentData(int simulationId, List<string> budgets, BridgeCareContext db)
         {
             if (!db.Priorities.Any(p => p.SIMULATIONID == simulationId))
-            {
-                db.Priorities.Add(new PriorityEntity()
-                {
-                    SIMULATIONID = simulationId,
-                    PRIORITYLEVEL = 1,
-                    CRITERIA = "",
-                    PRIORITYFUNDS = budgets
-                        .Select(budget => new PriorityFundEntity()
-                        {
-                            BUDGET = budget, FUNDING = 100
-                        }).ToList(),
-                    YEARS = DateTime.Now.Year
-                });
-            }
+                db.Priorities.Add(new PriorityEntity(simulationId, budgets));
             else
             {
                 var priorities = db.Priorities.Include(p => p.PRIORITYFUNDS)
@@ -132,21 +119,31 @@ namespace BridgeCare.DataAccessLayer
 
                 priorities.ForEach(priorityEntity =>
                 {
+                    var budgetsForNewFunds = new List<string>();
+
                     if (priorityEntity.PRIORITYFUNDS.Any())
-                        priorityEntity.PRIORITYFUNDS.ToList().ForEach(priorityFundEntity =>
+                        budgets.ForEach(budget =>
                         {
-                            if (!budgets.Contains(priorityFundEntity.BUDGET))
-                                PriorityFundEntity.DeleteEntry(priorityFundEntity, db);
-                            else
-                                budgets.Remove(priorityFundEntity.BUDGET);
+                            if (priorityEntity.PRIORITYFUNDS.All(entity => entity.BUDGET != budget))
+                            {
+                                budgetsForNewFunds.Add(budget);
+                            }
                         });
 
-                    db.PriorityFunds.AddRange(budgets
-                        .Select(budget => new PriorityFundEntity()
-                        {
-                            PRIORITYID = priorityEntity.PRIORITYID, BUDGET = budget, FUNDING = 100
-                        })
-                    );
+                    if (budgetsForNewFunds.Any())
+                    {
+                        priorityEntity.PRIORITYFUNDS
+                            .Where(priorityFund => !budgetsForNewFunds.Contains(priorityFund.BUDGET))
+                            .ToList()
+                            .ForEach(priorityFundEntity =>
+                            {
+                                PriorityFundEntity.DeleteEntry(priorityFundEntity, db);
+                            });
+
+                        db.PriorityFunds.AddRange(budgetsForNewFunds
+                            .Select(budget => new PriorityFundEntity(priorityEntity.PRIORITYID, budget))
+                        );
+                    }
                 });
             }
 

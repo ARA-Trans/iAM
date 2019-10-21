@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,6 +24,15 @@ namespace BridgeCare.EntityClasses
         public ICollection<PriorityFundEntity> PRIORITYFUNDS { get; set; }
 
         public PriorityEntity() { }
+
+        public PriorityEntity(int simulationId, List<string> budgets)
+        {
+            SIMULATIONID = simulationId;
+            PRIORITYLEVEL = 1;
+            CRITERIA = "";
+            PRIORITYFUNDS = budgets.Select(budget => new PriorityFundEntity(budget)).ToList();
+            YEARS = DateTime.Now.Year;
+        }
 
         public PriorityEntity(int simulationId, PriorityModel model)
         {

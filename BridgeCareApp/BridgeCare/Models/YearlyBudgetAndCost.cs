@@ -7,5 +7,13 @@ namespace BridgeCare.Models
     {
         public Hashtable BudgetForYear;
         public List<CostDetails> CostDetails;
+
+        public YearlyBudgetAndCost() { }
+
+        public YearlyBudgetAndCost(Hashtable budgetForYear, List<CostDetails> costDetails)
+        {
+            BudgetForYear = budgetForYear;
+            CostDetails = costDetails;
+        }
     }
 }

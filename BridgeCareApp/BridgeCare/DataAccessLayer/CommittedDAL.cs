@@ -22,7 +22,10 @@ namespace BridgeCare.DataAccessLayer
             foreach (var committedProjectModel in committedProjectModels)
             {
                 var committedProjectEntity = db.CommittedProjects
-                    .FirstOrDefault(c => c.SECTIONID == committedProjectModel.SectionId && c.SIMULATIONID == committedProjectModel.SimulationId);
+                    .FirstOrDefault(c =>
+                        c.SECTIONID == committedProjectModel.SectionId &&
+                        c.SIMULATIONID == committedProjectModel.SimulationId
+                    );
 
                 if (committedProjectEntity == null)
                     db.CommittedProjects.Add(new CommittedEntity(committedProjectModel));
