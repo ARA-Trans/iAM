@@ -3,6 +3,7 @@ using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -49,6 +50,7 @@ namespace BridgeCare.DataAccessLayer
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
                 .Include(s => s.YEARLYINVESTMENTS)
+                .Include(s => s.PRIORITIES).Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
                 .Single(s => s.SIMULATIONID == id);
 
             if (simulation.INVESTMENTS != null)
@@ -71,6 +73,31 @@ namespace BridgeCare.DataAccessLayer
                 });
                 
             }
+
+            simulation.PRIORITIES.ToList().ForEach(priorityEntity =>
+            {
+                var budgetsForNewFunds = new List<string>();
+
+                if (priorityEntity.PRIORITYFUNDS.Any())
+                    model.BudgetOrder.ForEach(budget =>
+                    {
+                      budgetsForNewFunds.Add(budget);
+                    });
+
+                if (budgetsForNewFunds.Any())
+                {
+                    priorityEntity.PRIORITYFUNDS
+                        .ToList()
+                        .ForEach(priorityFundEntity =>
+                        {
+                            PriorityFundEntity.DeleteEntry(priorityFundEntity, db);
+                        });
+
+                    db.PriorityFunds.AddRange(budgetsForNewFunds
+                        .Select(budget => new PriorityFundEntity(priorityEntity.PRIORITYID, budget))
+                    );
+                }
+            });
 
             if (simulation.INVESTMENTS == null)
                 db.Investments.Add(new InvestmentsEntity(model));
