@@ -115,12 +115,15 @@ const actions = {
                 dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
             });
     },
-    async deleteScenario({ dispatch, commit }: any, payload: any) {
+    async deleteScenario({ dispatch, state, commit }: any, payload: any) {
         return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
-            .then((response: AxiosResponse) => {
+            .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                    commit('removeScenarioMutator', {id: payload.simulationId, mongoId: payload.scenarioId});
-                    dispatch('setSuccessMessage', {message: 'Successfully deleted scenario'});
+                    if (any(propEq('simulationId', payload.simulationId), state.scenarios) ||
+                        any(propEq('id', payload.scenarioId), state.scenarios)) {
+                        commit('removeScenarioMutator', {id: payload.simulationId, mongoId: payload.scenarioId});
+                        dispatch('setSuccessMessage', {message: 'Successfully deleted scenario'});
+                    }
                 }
             });
     },
@@ -168,10 +171,14 @@ const actions = {
                     break;
                 case 'delete':
                     if (hasValue(payload, 'documentKey')) {
-                        const deletedScenario: Scenario = convertFromMongoToVueModel(payload.documentKey);
-                        if (any(propEq('id', deletedScenario.id), state.scenarios)) {
-                            commit('removeScenarioMutator', deletedScenario.id);
-                            dispatch('setInfoMessage', {message: 'A scenario has been deleted from another source'});
+                        const scenarioId: string = payload.documentKey._id as string;
+                        if (any(propEq('id', scenarioId), state.scenarios)) {
+                            const deletedScenario: Scenario = state.scenarios
+                                .find((scenario: Scenario) => scenario.id === scenarioId) as Scenario;
+                            commit('removeScenarioMutator', {id: deletedScenario.simulationId, mongoId: scenarioId});
+                            dispatch('setInfoMessage',
+                                {message: `Scenario '${deletedScenario.simulationName}' was deleted from another source`}
+                            );
                         }
                     }
                     break;

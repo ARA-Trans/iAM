@@ -1,7 +1,7 @@
 const express = require('express');
 const scenarioController = require('../controllers/scenarioController');
 
-function routes(Scenario){
+function scenarioRoutes(Scenario){
     const scenarioRouter = express.Router();
     const controller = scenarioController(Scenario);
       scenarioRouter.route("/GetMongoScenarios")
@@ -20,4 +20,4 @@ function routes(Scenario){
         return scenarioRouter;
 }
 
-module.exports = routes;
+module.exports = scenarioRoutes;
