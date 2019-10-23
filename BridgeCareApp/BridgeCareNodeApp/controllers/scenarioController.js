@@ -64,23 +64,17 @@ function scenarioController(Scenario) {
     }
 
     function deleteScenario(req, res) {
-        Scenario.findOneAndDelete({_id: req.params.scenarioId})
-            .then(scenario => {
-                if(!scenario) {
-                    return res.status(404).send({
-                        message: `Scenario not found with id ${req.params.scenarioId}`
-                    });
-                }
-                res.status(200);
-            })
-            .catch(err => {
-                if(err.name === 'NotFound'){
-                    return res.status(404).send({
-                        message: `Scenario not found with Id ${req.params.scenarioId}`
-                    });
-                }
-                return res.status(500)
-            });
+        Scenario.deleteOne({_id: req.params.scenarioId}, (err, result) => {
+            if (err) {
+                return res.status(500).json(err);
+            }
+
+            if (result.deletedCount === 1) {
+                return res.status(200).json(result);
+            } else {
+                return res.status(404).json({message: 'Scenario not found'});
+            }
+        });
     }
 
     return { post, get, deleteScenario, put, postMultipleScenarios};
