@@ -9,7 +9,7 @@
                         <td>
                             <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.equation">
                                 <template slot="append-outer">
-                                    <v-btn class="ara-orange" icon @click="onEditCostEquation(props.item)">
+                                    <v-btn class="edit-icon" icon @click="onEditCostEquation(props.item)">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </template>
@@ -18,7 +18,7 @@
                         <td>
                             <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.criteria">
                                 <template slot="append-outer">
-                                    <v-btn class="ara-orange" icon @click="onEditCostCriteria(props.item)">
+                                    <v-btn class="edit-icon" icon @click="onEditCostCriteria(props.item)">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </template>

@@ -9,7 +9,7 @@
                             v-model="feasibility.criteria">
                     <template slot="append-outer">
                         <v-layout row align-center fill-height>
-                            <v-btn class="ara-orange" icon @click="onEditFeasibilityCriteria">
+                            <v-btn class="edit-icon" icon @click="onEditFeasibilityCriteria">
                                 <v-icon>fas fa-edit</v-icon>
                             </v-btn>
                             <v-btn class="ara-orange" icon @click="onDeleteFeasibility">

@@ -57,7 +57,7 @@
                                                 </v-card-text>
                                             </v-card>
                                         </v-menu>
-                                        <v-btn icon class="ara-orange" @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
+                                        <v-btn icon class="edit-icon" @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
                                             <v-icon>fas fa-edit</v-icon>
                                         </v-btn>
                                     </v-layout>
@@ -79,7 +79,7 @@
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-menu>
-                                                <v-icon class="ara-orange"
+                                                <v-icon class="edit-icon"
                                                         @click="onEditCriteria(props.item.priorityId, props.item.criteria)">
                                                     fas fa-edit
                                                 </v-icon>

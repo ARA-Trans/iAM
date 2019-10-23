@@ -83,7 +83,7 @@
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <v-btn icon class="ara-orange" @click="onShowEquationEditorDialog(props.item.id)">
+                                    <v-btn icon class="edit-icon" @click="onShowEquationEditorDialog(props.item.id)">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </td>
@@ -101,7 +101,7 @@
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <v-btn icon class="ara-orange" @click="onShowCriteriaEditorDialog(props.item.id)">
+                                    <v-btn icon class="edit-icon" @click="onShowCriteriaEditorDialog(props.item.id)">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </td>
