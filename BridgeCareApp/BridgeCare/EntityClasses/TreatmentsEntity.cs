@@ -32,13 +32,13 @@ namespace BridgeCare.EntityClasses
 
         public static void DeleteEntry(TreatmentsEntity treatment, BridgeCareContext db)
         {
-            foreach (CostsEntity cost in treatment.COSTS.ToList())
+            foreach (CostsEntity costs in treatment.COSTS.ToList())
             {
-                db.Entry(cost).State = EntityState.Deleted;
+                db.Entry(costs).State = EntityState.Deleted;
             }
-            foreach (ConsequencesEntity consequence in treatment.CONSEQUENCES.ToList())
+            foreach (ConsequencesEntity consequences in treatment.CONSEQUENCES.ToList())
             {
-                db.Entry(consequence).State = EntityState.Deleted;
+                db.Entry(consequences).State = EntityState.Deleted;
             }
             foreach (FeasibilityEntity feasibility in treatment.FEASIBILITIES.ToList())
             {
