@@ -1,4 +1,5 @@
-﻿using BridgeCare.EntityClasses;
+﻿using System.Collections.Generic;
+using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System.Data;
@@ -142,7 +143,22 @@ namespace BridgeCare.DataAccessLayer
             {
                 model.Treatments
                     .Where(treatmentModel => !treatmentModel.matched)
-                    .Select(treatmentModel => new TreatmentsEntity(id, treatmentModel))
+                    .Select(treatmentModel =>
+                    {
+                        var treatment = new TreatmentsEntity(id, treatmentModel)
+                        {
+                            FEASIBILITIES = new List<FeasibilityEntity>()
+                            {
+                                new FeasibilityEntity(treatmentModel.Feasibility)
+                            }
+                        };
+                        if (treatmentModel.Costs.Count > 0)
+                            treatment.COSTS = treatmentModel.Costs.Select(c => new CostsEntity(c)).ToList();
+                        if (treatmentModel.Consequences.Count > 0)
+                            treatment.CONSEQUENCES =
+                                treatmentModel.Consequences.Select(c => new ConsequencesEntity(c)).ToList();
+                        return treatment;
+                    })
                     .ToList().ForEach(treatmentEntity => simulation.TREATMENTS.Add(treatmentEntity));
             }
 

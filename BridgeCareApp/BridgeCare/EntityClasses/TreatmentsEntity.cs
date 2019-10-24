@@ -54,12 +54,11 @@ namespace BridgeCare.EntityClasses
         {
             SIMULATIONID = simulationId;
             TREATMENT = treatmentModel.Name;
-            BUDGET = string.Join(",", treatmentModel.Budgets);
-            if (treatmentModel.Feasibility != null)
-            {
-                BEFOREANY = treatmentModel.Feasibility.YearsBeforeAny;
-                BEFORESAME = treatmentModel.Feasibility.YearsBeforeSame;
-            }
+            BUDGET = treatmentModel.Budgets.Count > 0
+                ? string.Join(",", treatmentModel.Budgets)
+                : null;
+            BEFOREANY = treatmentModel.Feasibility.YearsBeforeAny;
+            BEFORESAME = treatmentModel.Feasibility.YearsBeforeSame;
         }
     }
 }

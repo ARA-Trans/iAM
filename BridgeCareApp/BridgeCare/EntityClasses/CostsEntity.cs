@@ -32,6 +32,13 @@ namespace BridgeCare.EntityClasses
             ISFUNCTION = costModel.IsFunction ?? false;
         }
 
+        public CostsEntity(CostModel costModel)
+        {
+            COST_ = costModel.Equation;
+            CRITERIA = costModel.Criteria;
+            ISFUNCTION = costModel.IsFunction ?? false;
+        }
+
         public static void DeleteEntry(CostsEntity costsEntity, BridgeCareContext db)
         {
             db.Entry(costsEntity).State = EntityState.Deleted;
