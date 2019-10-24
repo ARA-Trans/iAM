@@ -24,13 +24,20 @@
                 <v-btn class="ara-blue-bg white--text" @click="onAddPriority">
                     Add
                 </v-btn>
+                <v-btn class="ara-orange-bg white--text" @click="onDeletePriorities" :disabled="selectedDataTableRows.length === 0">
+                    Delete
+                </v-btn>
             </v-flex>
         </v-flex>
         <v-flex xs12 v-show="hasSelectedPriorityLibrary">
             <div class="priorities-data-table">
                 <v-data-table :headers="priorityDataTableHeaders" :items="prioritiesDataTableRows"
+                              v-model="selectedDataTableRows" select-all item-key="priorityId"
                               class="elevation-1 v-table__overflow">
                     <template slot="items" slot-scope="props">
+                        <td>
+                            <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                        </td>
                         <td v-for="header in priorityDataTableHeaders">
                             <div v-if="header.value === 'priorityLevel' || header.value === 'year'">
                                 <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent
@@ -150,11 +157,10 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {clone, isNil, append, any, propEq} from 'ramda';
+    import {clone, isNil, contains, any, propEq} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {EditBudgetsDialogData, emptyEditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog';
-    import {InvestmentLibrary} from '@/shared/models/iAM/investment';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {setItemPropertyValueInList} from '@/shared/utils/setter-utils';
     import {SelectItem} from '@/shared/models/vue/select-item';
@@ -207,6 +213,8 @@ import prepend from 'ramda/es/prepend';
         rule: any = {
             fundingPercent: (value: number) => (value >= 0 && value <= 100) || 'Value range is 0 to 100'
         };
+        selectedDataTableRows: PrioritiesDataTableRow[] = [];
+        selectedPriorities: string[] = [];
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -317,6 +325,11 @@ import prepend from 'ramda/es/prepend';
             this.setTableColumnsWidth();
             this.setTableHeaders();
             this.setTableData();
+        }
+
+        @Watch('selectedDataTableRows')
+        onSelectedDataTableRowsChanged() {
+            this.selectedPriorities = getPropertyValues('priorityId', this.selectedDataTableRows) as string[];
         }
 
         onClearSelectedPriorityLibrary() {
@@ -600,6 +613,20 @@ import prepend from 'ramda/es/prepend';
          */
         onUpdateLibrary() {
             this.updatePriorityLibraryAction({updatedPriorityLibrary: this.selectedPriorityLibrary});
+        }
+
+        /**
+         * Dispatches an action to update the selected priority library with the selected priorities removed (filtered)
+         * from the priorities list
+         */
+        onDeletePriorities() {
+            this.updateSelectedPriorityLibraryAction({
+                updatedSelectedPriorityLibrary: {
+                    ...(clone(this.selectedPriorityLibrary)),
+                    priorities: this.selectedPriorityLibrary.priorities
+                        .filter((priority: Priority) => !contains(priority.id, this.selectedPriorities))
+                }
+            });
         }
 
         /**
