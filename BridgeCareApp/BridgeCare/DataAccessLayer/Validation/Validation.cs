@@ -146,6 +146,10 @@ namespace BridgeCare.DataAccessLayer
 
         public string NumberOfHits(string criteria, BridgeCareContext db)
         {
+            if (criteria == "" || criteria == null)
+            {
+                return "There is no criteria created";
+            }
             // create the sql select statement
             var strNetworkID = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
             string strFrom = "FROM SECTION_" + strNetworkID + " INNER JOIN SEGMENT_" + strNetworkID + "_NS0 ON SECTION_" + strNetworkID + ".SECTIONID=SEGMENT_" + strNetworkID + "_NS0.SECTIONID";
