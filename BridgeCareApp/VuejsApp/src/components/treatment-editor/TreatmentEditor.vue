@@ -131,14 +131,15 @@
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
-    import {isNil, append, any, propEq, clone} from 'ramda';
+    import {isNil, append, any, propEq, clone, isEmpty} from 'ramda';
     import FeasibilityTab from '@/components/treatment-editor/treatment-editor-tabs/FeasibilityTab.vue';
     import CostsTab from '@/components/treatment-editor/treatment-editor-tabs/CostsTab.vue';
     import {TabData, emptyTabData} from '@/shared/models/child-components/tab-data';
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
     import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
-    import {sortByProperty} from '@/shared/utils/sorter-utils';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -294,11 +295,26 @@
                             value: treatment.id.toString()
                         }))
                     : [];
+
+                if (this.selectedTreatmentLibrary.id !== this.scenarioTreatmentLibrary.id) {
+                    this.setTreatmentBudgets();
+                }
             } else {
                 this.hasSelectedTreatmentLibrary = false;
                 this.treatmentSelectItemValue = '';
                 this.treatmentsSelectListItems = [];
             }
+        }
+
+        setTreatmentBudgets() {
+            let budgets: string[] = [];
+            if (!isEmpty(this.scenarioInvestmentLibrary.budgetOrder)) {
+                budgets = clone(this.scenarioInvestmentLibrary.budgetOrder);
+            } else if (!isEmpty(this.scenarioInvestmentLibrary.budgetYears)) {
+                budgets = sorter(getPropertyValues('budgetName', this.scenarioInvestmentLibrary.budgetYears)) as string[];
+            }
+
+            this.selectedTreatmentLibrary.treatments.forEach((treatment: Treatment) => treatment.budgets = clone(budgets));
         }
 
         /**
@@ -483,7 +499,11 @@
                     id: this.selectedScenarioId,
                     name: this.scenarioTreatmentLibrary.name
                 }
-            });
+            }).then(() => setTimeout(() => {
+                if (hasValue(this.treatmentLibrarySelectItemValue) && this.treatmentLibrarySelectItemValue !== '0') {
+                    this.onDiscardChanges();
+                }
+            }));
         }
 
         /**

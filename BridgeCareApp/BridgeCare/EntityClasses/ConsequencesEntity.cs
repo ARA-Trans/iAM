@@ -35,6 +35,15 @@ namespace BridgeCare.EntityClasses
             ISFUNCTION = consequenceModel.IsFunction ?? false;
         }
 
+        public ConsequencesEntity(ConsequenceModel consequenceModel)
+        {
+            ATTRIBUTE_ = consequenceModel.Attribute;
+            CHANGE_ = consequenceModel.Change;
+            CRITERIA = consequenceModel.Criteria;
+            EQUATION = consequenceModel.Equation;
+            ISFUNCTION = consequenceModel.IsFunction ?? false;
+        }
+
         public static void DeleteEntry(ConsequencesEntity consequencesEntity, BridgeCareContext db)
         {
             db.Entry(consequencesEntity).State = EntityState.Deleted;
