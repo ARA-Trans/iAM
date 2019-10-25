@@ -115,6 +115,10 @@ namespace BridgeCare.DataAccessLayer
 
         public void BuildClass(string expression, bool bCalculate, string dllName)
         {
+            if (expression == "" || expression == null)
+            {
+                return;
+            }
             _originalInput = expression.Replace("[$", "[").Replace("[@", "["); ;
             _dllName = dllName;
             m_bCalculate = bCalculate;

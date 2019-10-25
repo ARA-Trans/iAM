@@ -1,4 +1,5 @@
-﻿using BridgeCare.EntityClasses;
+﻿using System.Collections.Generic;
+using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System.Data;
@@ -54,7 +55,7 @@ namespace BridgeCare.DataAccessLayer
                 simulation.TREATMENTS.ToList().ForEach(treatmentEntity =>
                 {
                     var treatmentModel = model.Treatments
-                        .SingleOrDefault(t => t.Name == treatmentEntity.TREATMENT);
+                        .SingleOrDefault(t => t.Id == treatmentEntity.TREATMENTID.ToString());
 
                     if (treatmentModel == null)
                         TreatmentsEntity.DeleteEntry(treatmentEntity, db);
@@ -65,22 +66,24 @@ namespace BridgeCare.DataAccessLayer
 
                         if (treatmentEntity.FEASIBILITIES.Any())
                         {
-                            treatmentEntity.FEASIBILITIES.ToList().ForEach(feasibilityEntity =>
-                            {
-                                var feasibilityModel = treatmentModel.Feasibility;
+                            var feasibilityModel = treatmentModel.Feasibility;
 
-                                if (feasibilityModel.Id != feasibilityEntity.FEASIBILITYID.ToString())
-                                    FeasibilityEntity.DeleteEntry(feasibilityEntity, db);
-                                else
-                                {
-                                    feasibilityModel.matched = true;
-                                    feasibilityEntity.CRITERIA = feasibilityModel.Criteria;
-                                }
-                            });
+                            var feasibilitiesToDelete = treatmentEntity.FEASIBILITIES
+                                .Where(f => f.FEASIBILITYID.ToString() != feasibilityModel.Id).ToList();
+                            feasibilitiesToDelete.ForEach(feasibilityToDelete => FeasibilityEntity.DeleteEntry(feasibilityToDelete, db));
+
+                            if (treatmentEntity.FEASIBILITIES.Any(
+                                f => f.FEASIBILITYID.ToString() == feasibilityModel.Id))
+                            {
+                                feasibilityModel.matched = true;
+                                var feasibilityEntity = treatmentEntity.FEASIBILITIES
+                                    .Single(f => f.FEASIBILITYID.ToString() == feasibilityModel.Id);
+                                feasibilityEntity.CRITERIA = feasibilityModel.Criteria;
+                            }
                         }
 
-                        if (treatmentModel.Feasibility != null && !treatmentModel.Feasibility.matched)
-                            db.Feasibilities
+                        if (!treatmentModel.Feasibility.matched)
+                            treatmentEntity.FEASIBILITIES
                                 .Add(new FeasibilityEntity(treatmentEntity.TREATMENTID, treatmentModel.Feasibility));
 
                         if (treatmentEntity.COSTS.Any())
@@ -102,12 +105,10 @@ namespace BridgeCare.DataAccessLayer
 
                         if (treatmentModel.Costs.Any(m => !m.matched))
                         {
-                            db.Costs
-                                .AddRange(treatmentModel.Costs
-                                    .Where(costModel => !costModel.matched)
-                                    .Select(costModel => new CostsEntity(treatmentEntity.TREATMENTID, costModel))
-                                    .ToList()
-                                );
+                            treatmentModel.Costs
+                                .Where(costModel => !costModel.matched)
+                                .Select(costModel => new CostsEntity(treatmentEntity.TREATMENTID, costModel))
+                                .ToList().ForEach(costsEntity => treatmentEntity.COSTS.Add(costsEntity));
                         }
 
                         if (treatmentEntity.CONSEQUENCES.Any())
@@ -129,12 +130,10 @@ namespace BridgeCare.DataAccessLayer
 
                         if (treatmentModel.Consequences.Any(m => !m.matched))
                         {
-                            db.Consequences
-                                .AddRange(treatmentModel.Consequences
-                                    .Where(consequenceModel => !consequenceModel.matched)
-                                    .Select(consequenceModel => new ConsequencesEntity(treatmentEntity.TREATMENTID, consequenceModel))
-                                    .ToList()
-                                );
+                            treatmentModel.Consequences
+                                .Where(consequenceModel => !consequenceModel.matched)
+                                .Select(consequenceModel => new ConsequencesEntity(treatmentEntity.TREATMENTID, consequenceModel))
+                                .ToList().ForEach(consequencesEntity => treatmentEntity.CONSEQUENCES.Add(consequencesEntity));
                         }
                     }
                 });
@@ -142,12 +141,25 @@ namespace BridgeCare.DataAccessLayer
 
             if (model.Treatments.Any(m => !m.matched))
             {
-                db.Treatments
-                    .AddRange(model.Treatments
-                        .Where(treatmentModel => !treatmentModel.matched)
-                        .Select(treatmentModel => new TreatmentsEntity(id, treatmentModel))
-                        .ToList()
-                    );
+                model.Treatments
+                    .Where(treatmentModel => !treatmentModel.matched)
+                    .Select(treatmentModel =>
+                    {
+                        var treatment = new TreatmentsEntity(id, treatmentModel)
+                        {
+                            FEASIBILITIES = new List<FeasibilityEntity>()
+                            {
+                                new FeasibilityEntity(treatmentModel.Feasibility)
+                            }
+                        };
+                        if (treatmentModel.Costs.Count > 0)
+                            treatment.COSTS = treatmentModel.Costs.Select(c => new CostsEntity(c)).ToList();
+                        if (treatmentModel.Consequences.Count > 0)
+                            treatment.CONSEQUENCES =
+                                treatmentModel.Consequences.Select(c => new ConsequencesEntity(c)).ToList();
+                        return treatment;
+                    })
+                    .ToList().ForEach(treatmentEntity => simulation.TREATMENTS.Add(treatmentEntity));
             }
 
             db.SaveChanges();

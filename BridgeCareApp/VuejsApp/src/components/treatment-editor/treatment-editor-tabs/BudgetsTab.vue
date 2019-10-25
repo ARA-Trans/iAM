@@ -51,6 +51,7 @@
     import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
+    import {itemsEqual} from '@/shared/utils/equals-utils';
 
     @Component
     export default class BudgetsTab extends Vue {
@@ -76,7 +77,8 @@
         @Watch('budgetsTabScenarioInvestmentLibrary')
         onScenarioInvestmentLibraryChanged() {
             if (!isEmpty(this.budgetsTabScenarioInvestmentLibrary.budgetOrder)) {
-                this.budgets = this.budgetsTabScenarioInvestmentLibrary.budgetOrder.map((name: string) => ({budget: name}));
+                this.budgets = this.budgetsTabScenarioInvestmentLibrary.budgetOrder
+                    .map((name: string) => ({budget: name}));
             } else if (!isEmpty(this.budgetsTabScenarioInvestmentLibrary.budgetYears)) {
                 this.budgets = (sorter(
                     getPropertyValues('budgetName', this.budgetsTabScenarioInvestmentLibrary.budgetYears)
@@ -88,11 +90,10 @@
 
         @Watch('selectedBudgets')
         onSelectedBudgetsChanged() {
-            const sortedTreatmentBudgets: BudgetGridRow[] = sortByProperty(
-                'budget', this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}))
-            );
-            const sortedSelectedBudgets: BudgetGridRow[] = sortByProperty('budget', this.selectedBudgets);
-            if (!equals(sortedSelectedBudgets, sortedTreatmentBudgets)) {
+            const selectedTreatmentBudgets: BudgetGridRow[] = this.budgetsTabSelectedTreatment
+                .budgets.map((name: string) => ({budget: name}));
+
+            if (!itemsEqual(this.selectedBudgets, selectedTreatmentBudgets, 'budget', true)) {
                 this.submitChanges();
             }
         }

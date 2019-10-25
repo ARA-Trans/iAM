@@ -31,6 +31,11 @@ namespace BridgeCare.EntityClasses
             CRITERIA = "";
         }
 
+        public FeasibilityEntity(FeasibilityModel feasibilityModel)
+        {
+            CRITERIA = feasibilityModel.Criteria;
+        }
+
         public static void DeleteEntry(FeasibilityEntity feasibilityEntity, BridgeCareContext db)
         {
             db.Entry(feasibilityEntity).State = EntityState.Deleted;

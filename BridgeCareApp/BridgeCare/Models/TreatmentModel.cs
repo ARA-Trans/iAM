@@ -44,14 +44,19 @@ namespace BridgeCare.Models
                     Budgets.Add(item.Trim());
                 });
             }
-            Feasibility = null;
+            Feasibility = new FeasibilityModel();
 
             if (entity.FEASIBILITIES != null && entity.FEASIBILITIES.Any())
             {
-                Feasibility = new FeasibilityModel();
-                entity.FEASIBILITIES.ToList().ForEach(feasibilityEntity => {
+                var feasibilities = entity.FEASIBILITIES.ToList();
+
+                feasibilities.ForEach(feasibilityEntity => {
                     var feasibilityModel = new FeasibilityModel(feasibilityEntity, entity);
-                    Feasibility.Aggregate(feasibilityModel);
+
+                    if (feasibilities.Count > 1)
+                        Feasibility.Aggregate(feasibilityModel);
+                    else
+                        Feasibility = feasibilityModel;
                 });
             }
         }
@@ -59,12 +64,9 @@ namespace BridgeCare.Models
         public void UpdateTreatment(TreatmentsEntity entity)
         {
             entity.TREATMENT = Name;
-            entity.BUDGET = string.Join(",", Budgets);
-            if (Feasibility != null)
-            {
-                entity.BEFOREANY = Feasibility.YearsBeforeAny;
-                entity.BEFORESAME = Feasibility.YearsBeforeSame;
-            }
+            entity.BUDGET = Budgets.Count > 0 ? string.Join(",", Budgets) : null;
+            entity.BEFOREANY = Feasibility.YearsBeforeAny;
+            entity.BEFORESAME = Feasibility.YearsBeforeSame;
         }
     }
 }
