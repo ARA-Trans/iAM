@@ -85,6 +85,7 @@
         @State(state => state.scenario.missingSummaryReportAttributes) missingSummaryReportAttributes: string[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('clearSummaryReportMissingAttributes') clearSummaryReportMissingAttributesAction: any;
 
         selectedScenarioData: Scenario = clone(emptyScenario);
         reports: string[] = ['Detailed Report', 'Summary Report'];
@@ -139,6 +140,7 @@
                     }
                 }
             } else {
+               this.clearSummaryReportMissingAttributesAction()
                 this.dialogData.showModal = false;
             }
         }
