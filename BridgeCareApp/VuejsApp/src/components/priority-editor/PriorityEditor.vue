@@ -157,7 +157,7 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {clone, isNil, contains, any, propEq} from 'ramda';
+    import {clone, isNil, contains, any, propEq, isEmpty} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {EditBudgetsDialogData, emptyEditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog';
@@ -168,9 +168,10 @@
         CreatePriorityLibraryDialogData,
         emptyCreatePriorityLibraryDialogData
     } from '@/shared/models/modals/create-priority-library-dialog-data';
-    import {sortByProperty} from '@/shared/utils/sorter-utils';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
     import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
 import prepend from 'ramda/es/prepend';
+    import {InvestmentLibrary} from '@/shared/models/iAM/investment';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -181,6 +182,7 @@ import prepend from 'ramda/es/prepend';
         @State(state => state.priority.priorityLibraries) statePriorityLibraries: PriorityLibrary[];
         @State(state => state.priority.selectedPriorityLibrary) stateSelectedPriorityLibrary: PriorityLibrary;
         @State(state => state.priority.scenarioPriorityLibrary) stateScenarioPriorityLibrary: PriorityLibrary;
+        @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
 
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getPriorityLibraries') getPriorityLibrariesAction: any;
@@ -190,6 +192,7 @@ import prepend from 'ramda/es/prepend';
         @Action('createPriorityLibrary') createPriorityLibraryAction: any;
         @Action('updatePriorityLibrary') updatePriorityLibraryAction: any;
         @Action('saveScenarioPriorityLibrary') saveScenarioPriorityLibraryAction: any;
+        @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
         selectedScenarioId: string = '0';
         hasSelectedPriorityLibrary: boolean = false;
@@ -236,6 +239,12 @@ import prepend from 'ramda/es/prepend';
                             if (vm.selectedScenarioId !== '0') {
                                 vm.getScenarioPriorityLibraryAction({
                                     selectedScenarioId: parseInt(vm.selectedScenarioId)
+                                }).then(() => {
+                                    if (vm.stateScenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
+                                        vm.getScenarioInvestmentLibraryAction({
+                                            selectedScenarioId: vm.selectedScenarioId
+                                        });
+                                    }
                                 });
                             }
                         });
@@ -259,6 +268,20 @@ import prepend from 'ramda/es/prepend';
             this.budgetOrder.length <= 5) {
                 this.selectedPriorityLibrary.priorities.forEach(priority => this.showEyeIcon(priority.id));
             }
+        }
+
+        @Watch('stateScenarioInvestmentLibrary')
+        onStateScenarioInvestmentLibraryChanged() {
+            if (!isEmpty(this.stateScenarioInvestmentLibrary.budgetOrder)) {
+                this.budgetOrder = clone(this.stateScenarioInvestmentLibrary.budgetOrder);
+            } else if (!isEmpty(this.stateScenarioInvestmentLibrary.budgetYears)) {
+                this.budgetOrder = sorter(
+                    getPropertyValues('budgetName', this.stateScenarioInvestmentLibrary.budgetYears)
+                ) as string[];
+            }
+            this.setTableColumnsWidth();
+            this.setTableHeaders();
+            this.setTableData();
         }
 
         /**
@@ -304,7 +327,7 @@ import prepend from 'ramda/es/prepend';
          */
         @Watch('selectedPriorityLibrary')
         onSelectedPriorityLibraryChanged() {
-            if (hasValue(this.selectedPriorityLibrary) && this.selectedPriorityLibrary.id !== '0') {
+            /*if (hasValue(this.selectedPriorityLibrary) && this.selectedPriorityLibrary.id !== '0') {
                 this.hasSelectedPriorityLibrary = true;
 
                 const priorityFunds: PriorityFund[] = [];
@@ -314,18 +337,22 @@ import prepend from 'ramda/es/prepend';
             } else {
                 this.hasSelectedPriorityLibrary = false;
                 this.budgetOrder = [];
-            }
+            }*/
+            this.hasSelectedPriorityLibrary = hasValue(this.selectedPriorityLibrary) && this.selectedPriorityLibrary.id !== '0';
+            this.setTableColumnsWidth();
+            this.setTableHeaders();
+            this.setTableData();
         }
 
         /**
          * Sets data table properties by calling functions to set the table columns widths, table headers, and table data
          */
-        @Watch('budgetOrder')
+        /*@Watch('budgetOrder')
         onPriorityBudgetsChanged() {
             this.setTableColumnsWidth();
             this.setTableHeaders();
             this.setTableData();
-        }
+        }*/
 
         @Watch('selectedDataTableRows')
         onSelectedDataTableRowsChanged() {

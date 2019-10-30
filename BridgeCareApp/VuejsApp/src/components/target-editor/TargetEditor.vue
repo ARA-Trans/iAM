@@ -2,11 +2,15 @@
     <v-layout column>
         <v-flex xs12>
             <v-btn class="ara-blue-bg white--text" @click="onAddTarget">Add</v-btn>
+            <v-btn class="ara-orange-bg white--text" @click="onDeleteTargets"
+                   :disabled="selectedTargetRows.length === 0">
+                Delete
+            </v-btn>
         </v-flex>
         <v-flex xs12>
             <div class="targets-data-table">
-                <v-data-table :headers="targetDataTableHeaders" :items="targets"
-                              class="elevation-1 fixed-header v-table__overflow">
+                <v-data-table :headers="targetDataTableHeaders" :items="targets" v-model="selectedTargetRows" select-all
+                              item-key="id" class="elevation-1 fixed-header v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td v-for="header in targetDataTableHeaders">
                             <div v-if="header.value !== 'criteria' && header.value !== 'year'">
@@ -73,6 +77,7 @@
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import CreateTargetDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetDialog.vue';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
 
     @Component({
         components: {CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
@@ -82,6 +87,7 @@
 
         @Action('getScenarioTargetLibrary') getScenarioTargetLibraryAction: any;
         @Action('saveScenarioTargetLibrary') saveScenarioTargetLibraryAction: any;
+        @Action('updateSelectedTargetLibraryAction') updateSelectedTargetLibraryAction: any;
 
         selectedScenarioId: string = '0';
         targets: Target[] = [];
@@ -95,6 +101,8 @@
         selectedTargetIndex: number = -1;
         showCreateTargetDialog: boolean = false;
         targetCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        selectedTargetRows: Target[] = [];
+        selectedTargets: string[] = [];
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -142,6 +150,11 @@
         @Watch('stateScenarioTargetLibrary')
         onStateTargetsChanged() {
             this.targets = clone(this.stateScenarioTargetLibrary.targets);
+        }
+
+        @Watch('selectedTargetRows')
+        onSelectedTargetRowsChanged() {
+            this.selectedTargets  = getPropertyValues('id', this.selectedTargetRows) as string[];
         }
 
         /**
@@ -207,6 +220,12 @@
                 ...this.stateScenarioTargetLibrary,
                 targets: clone(this.targets)
             }});
+        }
+
+        onDeleteTargets() {
+            this.updateSelectedTargetLibraryAction(updatedSelectedTargetLibrary: {
+
+            });
         }
 
         /**
