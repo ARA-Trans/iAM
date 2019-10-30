@@ -140,7 +140,7 @@
                     }
                 }
             } else {
-               this.clearSummaryReportMissingAttributesAction()
+               this.clearSummaryReportMissingAttributesAction();
                 this.dialogData.showModal = false;
             }
         }
