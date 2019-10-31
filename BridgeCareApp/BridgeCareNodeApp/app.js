@@ -40,6 +40,9 @@ async function run() {
   const Network = require('./models/NetworkModel');
   const networkRouter = require('./routes/NetworkRouters')(Network);
 
+  const CashFlowLibrary = require('./models/cashFlowLibraryModel');
+  const cashFlowLibraryRouter = require('./routes/cashFlowLibraryRouters')(CashFlowLibrary);
+
   const options = { fullDocument: 'updateLookup' };
 
   InvestmentLibrary.watch([], options).on('change', data => {
@@ -70,6 +73,10 @@ async function run() {
     io.emit('rollupStatus', data);
   });
 
+  CashFlowLibrary.watch([], options).on('change', data => {
+      io.emit('cashFlowLibrary', data);
+  });
+
   app.use("/api", [
       investmentLibraryRouter,
       scenarioRouter,
@@ -77,7 +84,8 @@ async function run() {
       treatmentLibraryRouter,
       priorityLibraryRouter,
       remainingLifeLimitLibraryRouter,
-      networkRouter
+      networkRouter,
+      cashFlowLibraryRouter
   ]);
 }
 

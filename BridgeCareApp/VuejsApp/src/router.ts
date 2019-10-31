@@ -5,6 +5,7 @@ import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
+import CashFlowEditor from '@/components/cash-flow-editor/CashFlowEditor.vue';
 
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
@@ -74,6 +75,11 @@ const router = new VueRouter({
                     path: '/RemainingLifeLimitEditor/Scenario/',
                     component: RemainingLifeLimitEditor,
                     props: true
+                },
+                {
+                    path: '/CashFlowEditor/Scenario',
+                    component: CashFlowEditor,
+                    props: true
                 }
             ]
         },
@@ -117,6 +123,12 @@ const router = new VueRouter({
             path: '/RemainingLifeLimitEditor/Library/',
             name: 'RemainingLifeLimitEditor',
             component: RemainingLifeLimitEditor,
+            props: true
+        },
+        {
+            path: '/CashFlowEditor/Library/',
+            name: 'CashFlowEditor',
+            component: CashFlowEditor,
             props: true
         },
         {
