@@ -32,7 +32,7 @@ namespace BridgeCare.DataAccessLayer
             DeficientResult result = null;
 
             var select =
-                "SELECT TargetID, Years, TargetMet, IsDeficient " +
+                "SELECT TargetID, Years, coalesce(TARGETMET, 0) as TargetMet, IsDeficient " +
                     " FROM Target_" + data.NetworkId
                     + "_" + data.SimulationId;
 
