@@ -98,7 +98,7 @@ namespace BridgeCare.Services
                 // Add Total of count of Work done more than once column cells if "Yes"
                 totalColumn = column;                
 
-                // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"   
+                // Add Poor On/Off Rate column: Formula (prev yr MinC < 5 and  curr yr Minc >= 5 then "Off"), (prev yr MinC >= 5 and curr ye MinC < 5 then "On")   
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     double.TryParse(yearsData[index - 1].MinC, out double prevYrMinc);
