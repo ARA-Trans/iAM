@@ -27,25 +27,25 @@ namespace BridgeCare.Services
         /// <param name="currentCell"></param>
         /// <param name="simulationYears"></param>
         /// <param name="simulationDataModels"></param>
-        public void FillCostBudgetWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels)
+        public void FillCostBudgetWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels, List<string> treatments)
         {
-            var culvertTotalRow = FillCostOfCulvertWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);
-            var bridgeTotalRow = FillCostOfBridgeWorkSection(worksheet, currentCell, simulationYears, simulationDataModels);            
+            var culvertTotalRow = FillCostOfCulvertWorkSection(worksheet, currentCell, simulationYears, simulationDataModels, treatments);
+            var bridgeTotalRow = FillCostOfBridgeWorkSection(worksheet, currentCell, simulationYears, simulationDataModels, treatments);            
             var budgetTotalRow = FillTotalBudgetSection(worksheet, currentCell, simulationYears, yearlyBudgetModels);
             FillRemainingBudgetSection(worksheet, simulationYears, currentCell, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
-        private int FillCostOfCulvertWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
+        private int FillCostOfCulvertWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<string> treatments)
         {
             bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Culvert Work");
-            var culvertTotalRow = AddCostsOfCulvertWork(worksheet, simulationDataModels, simulationYears, currentCell);
+            var culvertTotalRow = AddCostsOfCulvertWork(worksheet, simulationDataModels, simulationYears, currentCell, treatments);
             return culvertTotalRow;
         }
 
-        private int FillCostOfBridgeWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)
+        private int FillCostOfBridgeWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<string> treatments)
         {
             bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Bridge Work");
-            var bridgeTotalRow = AddCostsOfBridgeWork(worksheet, simulationDataModels, simulationYears, currentCell);
+            var bridgeTotalRow = AddCostsOfBridgeWork(worksheet, simulationDataModels, simulationYears, currentCell, treatments);
             return bridgeTotalRow;
         }
 
@@ -62,32 +62,37 @@ namespace BridgeCare.Services
             AddDetailsForRemainingBudget(worksheet, simulationYears, currentCell, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
-        private int AddCostsOfCulvertWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell)
+        private int AddCostsOfCulvertWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell, List<string> treatments)
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
             int culvertTotalRow = 0;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Preservation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Rehabilitation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Replacement;
+            foreach (var item in treatments)
+            {
+                if (item.ToLower().Contains("culvert"))
+                {
+                    worksheet.Cells[row++, column].Value = item;
+                }
+            }
             worksheet.Cells[row++, column].Value = Properties.Resources.CulvertTotal;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
             {
+                double culvertTotalCost = 0;
                 row = startRow;
                 column = ++column;
 
-                var preservationCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.CulvertPreservation);
-                worksheet.Cells[row, column].Value = preservationCost;
-
-                var rehabilitationCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.CulvertRehabilitation);
-                worksheet.Cells[++row, column].Value = rehabilitationCost;
-
-                var replacementCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.CulvertReplacement);
-                worksheet.Cells[++row, column].Value = replacementCost;
-
-                worksheet.Cells[++row, column].Value = preservationCost + rehabilitationCost + replacementCost;
+                foreach (var item in treatments)
+                {
+                    if (item.ToLower().Contains("culvert"))
+                    {
+                        var culvertCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, item);
+                        worksheet.Cells[row++, column].Value = culvertCost;
+                        culvertTotalCost += culvertCost;
+                    }
+                }
+                worksheet.Cells[row, column].Value = culvertTotalCost;
                 culvertTotalRow = row;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
@@ -141,19 +146,18 @@ namespace BridgeCare.Services
             excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn, row + 2, column], Color.DimGray);
         }
 
-        private int AddCostsOfBridgeWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell)
+        private int AddCostsOfBridgeWork(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<int> simulationYears, CurrentCell currentCell, List<string> treatments)
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
             int bridgeTotalRow = 0;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Latex;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Epoxy;
-            worksheet.Cells[row++, column].Value = Properties.Resources.LargeBridgePreservation;
-            worksheet.Cells[row++, column].Value = Properties.Resources.DeckReplacement;
-            worksheet.Cells[row++, column].Value = Properties.Resources.SubRehab;
-            worksheet.Cells[row++, column].Value = Properties.Resources.SuperReplacement;
-            worksheet.Cells[row++, column].Value = Properties.Resources.LargeBridgeRehab;
-            worksheet.Cells[row++, column].Value = Properties.Resources.Replacement;
+            foreach (var item in treatments)
+            {
+                if (!item.ToLower().Contains("culvert") && !item.ToLower().Contains("no treatment"))
+                {
+                    worksheet.Cells[row++, column].Value = item;
+                }
+            }
             worksheet.Cells[row++, column].Value = Properties.Resources.BridgeTotal;
             column++;
             var fromColumn = column + 1;
@@ -161,32 +165,19 @@ namespace BridgeCare.Services
             {
                 row = startRow;
                 column = ++column;
+                double nonCulvertTotalCost = 0;
 
-                var latexCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.Latex);
-                worksheet.Cells[row, column].Value = latexCost;
+                foreach (var item in treatments)
+                {
+                    if (!item.ToLower().Contains("culvert") && !item.ToLower().Contains("no treatment"))
+                    {
+                        var nonCulvertCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, item);
+                        worksheet.Cells[row++, column].Value = nonCulvertCost;
+                        nonCulvertTotalCost += nonCulvertCost;
+                    }
+                }
 
-                var epoxyCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.Epoxy);
-                worksheet.Cells[++row, column].Value = epoxyCost;
-
-                var largeBridgePreservationCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.LargeBridgePreservation);
-                worksheet.Cells[++row, column].Value = largeBridgePreservationCost;
-
-                var deckReplacementCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.DeckReplacement);
-                worksheet.Cells[++row, column].Value = deckReplacementCost;
-
-                var subRehabCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.SubRehab);
-                worksheet.Cells[++row, column].Value = subRehabCost;
-
-                var superReplacementCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.SuperstructureReplacement);
-                worksheet.Cells[++row, column].Value = superReplacementCost;
-
-                var largeBridgeRehabCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.LargeBridgeRehab);
-                worksheet.Cells[++row, column].Value = largeBridgeRehabCost;
-
-                var replacementCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, Properties.Resources.BridgeReplacement);
-                worksheet.Cells[++row, column].Value = replacementCost;
-
-                worksheet.Cells[++row, column].Value = latexCost + epoxyCost + largeBridgePreservationCost + deckReplacementCost + subRehabCost + superReplacementCost + largeBridgeRehabCost + replacementCost;
+                worksheet.Cells[row, column].Value = nonCulvertTotalCost;
                 bridgeTotalRow = row;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);

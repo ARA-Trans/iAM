@@ -34,6 +34,7 @@ namespace BridgeCare.Services
             var BRKeys = new List<int>();
 
             var sections = bridgeData.GetSectionData(simulationModel, dbContext);
+            var treatments = bridgeData.GetTreatments(simulationModel.SimulationId, dbContext);
             var simulationDataTable = bridgeData.GetSimulationData(simulationModel, dbContext, simulationYears);
             var projectCostModels = bridgeData.GetReportData(simulationModel, dbContext, simulationYears);
             var sectionIdsFromSimulationTable = from dt in simulationDataTable.AsEnumerable()
@@ -60,7 +61,7 @@ namespace BridgeCare.Services
             // ExcelHelper.ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
 
-            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels };            
+            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments };            
             return workSummaryModel;
         }
 
@@ -100,9 +101,9 @@ namespace BridgeCare.Services
                 // Add Poor On/Off Rate column: Formula (prev yr SD == "Y")?(curr yr SD=="N")?"Off":"On":"--"   
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
-                    var prevYrSD = yearsData[index - 1].SD;
-                    var thisYrSD = yearsData[index].SD;
-                    worksheet.Cells[row, ++column].Value = prevYrSD == "Y" ? (thisYrSD == "N" ? "Off" : "On") : "--";
+                    double.TryParse(yearsData[index - 1].MinC, out double prevYrMinc);
+                    double.TryParse(yearsData[index].MinC, out double thisYrMinc);
+                    worksheet.Cells[row, ++column].Value = prevYrMinc < 5 ? (thisYrMinc >= 5 ? "Off" : "--") : (thisYrMinc < 5 ? "On" : "--");
                     yearsData[index].PoorOnOffRate = worksheet.Cells[row, column].Value.ToString();
                 }
 

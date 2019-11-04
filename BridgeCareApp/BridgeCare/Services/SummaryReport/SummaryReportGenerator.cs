@@ -55,7 +55,7 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationId);
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationId, workSummaryModel.Treatments);
 
                 // NHS Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition Bridge Cnt");

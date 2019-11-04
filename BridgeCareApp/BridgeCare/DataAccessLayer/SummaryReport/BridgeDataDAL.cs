@@ -163,12 +163,22 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         {            
             IQueryable<ReportProjectCost> rawQueryForReportData = null;
             var years = string.Join(",", simulationYears);
+            var listOfBudgets = dbContext.CriteriaDrivenBudgets.Where(y => y.SIMULATIONID == simulationModel.SimulationId)
+                .Select(cri => "'" + cri.BUDGET_NAME + "'").ToList();
+
+            var budgets = string.Join(",", listOfBudgets);
             var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
-                                        $"WITH (NOLOCK) WHERE BUDGET = 'actual_spent' AND YEARS IN (" + years + ")";
+                                        $"WITH (NOLOCK) WHERE BUDGET IN (" + budgets + ") AND YEARS IN (" + years + ")";
 
             rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();
 
             return rawQueryForReportData;
+        }
+
+        public List<string> GetTreatments(int simulationId, BridgeCareContext db)
+        {
+            var treatments = db.Treatments.Where(t => t.SIMULATIONID == simulationId).Select(t => t.TREATMENT).ToList();
+            return treatments;
         }
 
         #region private methods
