@@ -19,7 +19,7 @@ namespace BridgeCare.Models
         {
             Id = entity.PRIORITYID.ToString();
             PriorityLevel = entity.PRIORITYLEVEL ?? 1;
-            Year = entity.YEARS ?? DateTime.Now.Year;
+            Year = entity.YEARS ?? 0;
             Criteria = entity.CRITERIA;
             PriorityFunds = entity.PRIORITYFUNDS.Any()
                 ? entity.PRIORITYFUNDS.Select(pf => new PriorityFundModel(pf)).ToList()
@@ -29,7 +29,14 @@ namespace BridgeCare.Models
         public void UpdatePriority(PriorityEntity entity)
         {
             entity.PRIORITYLEVEL = PriorityLevel;
-            entity.YEARS = Year;
+            if(Year == 0)
+            {
+                entity.YEARS = null;
+            }
+            else
+            {
+                entity.YEARS = Year;
+            }
             entity.CRITERIA = Criteria;
         }
     }

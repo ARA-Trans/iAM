@@ -150,6 +150,9 @@ const actions = {
                 }
             });
     },
+    async clearSummaryReportMissingAttributes({commit}: any) {
+        commit('missingSummaryReportAttributesMutator', '');
+    },
     async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
         if (hasValue(payload, 'operationType')) {
             switch (payload.operationType) {
