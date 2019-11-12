@@ -113,7 +113,6 @@ const actions = {
             .then((response: AxiosResponse<PriorityLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioPriorityLibraryMutator', response.data);
-                    commit('selectedPriorityLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario priority library'});
                 }
             });
@@ -134,7 +133,7 @@ const actions = {
                     }
                     break;
                 case 'insert':
-                    if (!any(propEq('id', priorityLibrary.id), state.targetLibraries)) {
+                    if (!any(propEq('id', priorityLibrary.id), state.priorityLibraries)) {
                         commit('createdPriorityLibraryMutator', priorityLibrary);
                         dispatch('setInfoMessage',
                             {message: ` Priority library '${priorityLibrary.name}' has been created from another source`}

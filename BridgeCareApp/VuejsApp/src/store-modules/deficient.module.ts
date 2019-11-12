@@ -98,11 +98,10 @@ const actions = {
             });
     },
     async saveScenarioDeficientLibrary({dispatch, commit}: any, payload: any) {
-        await DeficientService.saveScenarioDeficientLibrary(payload.scenarioDeficientLibraryData)
+        await DeficientService.saveScenarioDeficientLibrary(payload.saveScenarioDeficientLibraryData)
             .then((response: AxiosResponse<Deficient[]>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioDeficientLibraryMutator', response.data);
-                    commit('selectedDeficientLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario deficient library'});
                 }
             });

@@ -41,7 +41,7 @@ export const emptyPriorityLibrary: PriorityLibrary = {
 };
 
 export interface PrioritiesDataTableRow {
-    priorityId: string;
+    id: string;
     priorityLevel: string;
     year: string;
     criteria: string;

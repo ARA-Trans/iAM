@@ -1,92 +1,52 @@
 function priorityLibraryController(PriorityLibrary) {
     /**
-     * POST NodeJS API endpoint for priority libraries; creates & returns a priority library
-     * @param req Http request
-     * @param res Http response
-     */
-    function post(req, res) {
-        const priorityLibrary = new PriorityLibrary(req.body);
-
-        if (!req.body.name) {
-            return res.status(400).send('name is required');
-        }
-
-        priorityLibrary.save(function(err, library) {
-            if (err) {
-                return res.status(400).json(err);
-            }
-
-            return res.status(200).json(library);
-        });
-    }
-
-    /**
      * GET NodeJS API endpoint for priority libraries; returns priority libraries if found
-     * @param req Http request
-     * @param res Http response
+     * @param request Http request
+     * @param response Http response
      */
-    function get(req, res) {
-        PriorityLibrary.find((err, priorities) => {
-            if (err) {
-                return res.send(err);
-            }
+    function get(request, response) {
+        PriorityLibrary.find((error, priorityLibraries) => {
+            if (error)
+                return response.status(500).send(error);
 
-            return res.json(priorities);
+            return response.status(200).json(priorityLibraries);
         });
     }
-
+    
     /**
-     * GET NodeJS API endpoint for priority libraries; gets & returns a priority library by id
-     * @param req Http request
-     * @param res Http response
+     * POST NodeJS API endpoint for priority libraries; creates & returns a priority library
+     * @param request Http request
+     * @param response Http response
      */
-    function getById(req, res) {
-        PriorityLibrary.findById(req.params.priorityLibraryId, (err, library) => {
-            if (err) {
-                return res.send(err);
-            }
+    function post(request, response) {
+        const priorityLibrary = new PriorityLibrary(request.body);
 
-            return res.json(library);
+        if (!request.body.name)
+            return response.status(400).send('Library name is required');
+
+        priorityLibrary.save(function(error, library) {
+            if (error)
+                return response.status(500).json(error);
+
+            return response.status(200).json(library);
         });
     }
 
     /**
      * PUT NodeJS API endpoint for priority libraries; updates & returns a priority library
-     * @param req Http request
-     * @param res Http response
+     * @param request Http request
+     * @param response Http response
      */
-    function put(req, res) {
-        PriorityLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
-            if (err) {
-                return res.status(400).json(err);
-            }
+    function put(request, response) {
+        PriorityLibrary.findOneAndUpdate({_id: request.body._id}, request.body, {new: true}, (error, priorityLibrary) => {
+            if (error)
+                return response.status(500).json(error);
 
-            return res.status(200).json(doc);
+            return response.status(200).json(priorityLibrary);
         });
     }
 
-    /**
-     * DELETE NodeJS API endpoint for priority libraries; returns 204 status code on success
-     * @param req Http request
-     * @param res Http response
-     */
-    function deleteLibrary(req, res) {
-        PriorityLibrary.findById(req.params.priorityLibraryId, (err, library) => {
-            if (err) {
-                return res.json(err);
-            }
-
-            library.remove((err) => {
-                if (err) {
-                    return res.status(400).json(err);
-                }
-
-                return res.status(204);
-            });
-        });
-    }
-
-    return { post, get, getById, put, deleteLibrary };
+    return {get, post, put};
 }
 
 module.exports = priorityLibraryController;

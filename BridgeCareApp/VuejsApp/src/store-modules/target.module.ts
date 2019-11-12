@@ -41,10 +41,10 @@ const mutations = {
     },
     updatedTargetLibraryMutator(state: any, updatedTargetLibrary: TargetLibrary) {
         if (any(propEq('id', updatedTargetLibrary.id), state.targetLibraries)) {
-            state.deficientLibraries = update(
-                findIndex(propEq('id', updatedTargetLibrary.id), state.deficientLibraries),
+            state.targetLibraries = update(
+                findIndex(propEq('id', updatedTargetLibrary.id), state.targetLibraries),
                 updatedTargetLibrary,
-                state.deficientLibraries
+                state.targetLibraries
             );
         }
     },
@@ -61,9 +61,8 @@ const actions = {
         await TargetService.getTargetLibraries()
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
-                    const targetLibraries: TargetLibrary[] = response.data.map((data: any) =>
-                        convertFromMongoToVueModel(data)
-                    );
+                    const targetLibraries: TargetLibrary[] = response.data
+                        .map((data: any) => convertFromMongoToVueModel(data));
                     commit('targetLibrariesMutator', targetLibraries);
                 }
             });
@@ -74,7 +73,6 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const createdTargetLibrary: TargetLibrary = convertFromMongoToVueModel(response.data);
                     commit('createdTargetLibraryMutator', createdTargetLibrary);
-                    commit('selectedTargetLibraryMutator', createdTargetLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created target library'});
                 }
             });
@@ -106,7 +104,6 @@ const actions = {
             .then((response: AxiosResponse<TargetLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioTargetLibraryMutator', response.data);
-                    commit('selectedTargetLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario target library'});
                 }
             });
