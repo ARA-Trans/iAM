@@ -56,7 +56,7 @@
                         Download
                     </v-btn>
                     <v-btn class="ara-orange-bg white--text" :disabled="isBusy" @click="onDownload(false)">
-                        Cancel
+                        Close
                     </v-btn>
                 </v-layout>
             </v-card-actions>
