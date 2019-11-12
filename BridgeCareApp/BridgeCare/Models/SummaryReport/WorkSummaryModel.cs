@@ -7,5 +7,7 @@ namespace BridgeCare.Models
         public List<SimulationDataModel> SimulationDataModels { get; set; }
 
         public List<BridgeDataModel> BridgeDataModels { get; set; }
+
+        public List<string> Treatments { get; set; }
     }
 }
