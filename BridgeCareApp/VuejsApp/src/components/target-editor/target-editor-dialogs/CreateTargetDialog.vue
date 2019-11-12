@@ -23,7 +23,7 @@
             <v-card-actions>
                 <v-layout justify-space-between row>
                     <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
-                        Submit
+                        Save
                     </v-btn>
                     <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
                         Cancel

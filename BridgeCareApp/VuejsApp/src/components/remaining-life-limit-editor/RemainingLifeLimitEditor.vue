@@ -63,7 +63,7 @@
             <v-layout v-show="hasSelectedRemainingLifeLimitLibrary" justify-end row>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedRemainingLifeLimitLibrary">
-                    Apply
+                    Save
                 </v-btn>
                 <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedRemainingLifeLimitLibrary">
