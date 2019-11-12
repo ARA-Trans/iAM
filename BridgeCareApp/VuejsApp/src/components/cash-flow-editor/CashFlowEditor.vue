@@ -86,6 +86,7 @@
                                                    @save="onEditSelectedLibraryListData(props.item, 'durations')">
                                         <CashFlowEditorMaxTreatmentCostOutput :maxTreatmentCost="props.item.maxTreatmentCost"
                                                                               :durationId="props.item.id"/>
+                                        <input class="output" type="text" :value="formatAsCurrency(props.item.maxTreatmentCost)" readonly />
                                         <template slot="input">
                                             <v-text-field v-model="props.item.maxTreatmentCost" label="Edit" single-line></v-text-field>
                                         </template>
@@ -158,11 +159,11 @@
         emptyCreateCashFlowLibraryDialogData
     } from '@/shared/models/modals/create-cash-flow-library-dialog-data';
     import CreateCashFlowLibraryDialog from '@/components/cash-flow-editor/cash-flow-editor-dialogs/CreateCashFlowLibraryDialog.vue';
-    import CashFlowEditorMaxTreatmentCostOutput from '@/components/cash-flow-editor/CashFlowEditorMaxTreatmentCostOutput.vue';
+    import {formatAsCurrency} from "@/shared/utils/currency-formatter";
     const ObjectID = require('bson-objectid');
 
     @Component({
-        components: {CashFlowEditorMaxTreatmentCostOutput, CreateCashFlowLibraryDialog, CriteriaEditorDialog}
+        components: {CreateCashFlowLibraryDialog, CriteriaEditorDialog}
     })
     export default class CashFlowEditor extends Vue {
         @State(state => state.cashFlow.cashFlowLibraries) stateCashFlowLibraries: CashFlowLibrary[];
@@ -399,6 +400,14 @@
             } else {
                 this.getScenarioCashFlowLibraryAction({selectedScenarioId: this.selectedScenarioId});
             }
+        }
+
+        /**
+         * Formats a value as currency by calling the formatAsCurrency utility function
+         * @param value Value to format
+         */
+        formatAsCurrency(value: any) {
+            return formatAsCurrency(value);
         }
     }
 </script>
