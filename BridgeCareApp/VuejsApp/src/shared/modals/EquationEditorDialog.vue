@@ -103,7 +103,7 @@
                     <v-flex xs2>
                         <v-layout justify-end row>
                             <v-btn class="ara-blue-bg white--text" @click="onCheckEquation">Check</v-btn>
-                            <v-btn class="ara-blue-bg white--text" @click="onSubmit" :disabled="cannotSubmit">Submit</v-btn>
+                            <v-btn class="ara-blue-bg white--text" @click="onSubmit" :disabled="cannotSubmit">Save</v-btn>
                         </v-layout>
                     </v-flex>
                     <v-spacer></v-spacer>

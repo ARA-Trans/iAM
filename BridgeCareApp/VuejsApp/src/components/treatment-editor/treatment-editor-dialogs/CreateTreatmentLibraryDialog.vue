@@ -20,7 +20,7 @@
                         <v-btn color="info" @click="onSubmit(true)"
                                :disabled="createdTreatmentLibrary.name === '' ||
                                           createdTreatmentLibrary.description === ''">
-                            Submit
+                            Save
                         </v-btn>
                         <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
