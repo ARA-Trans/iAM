@@ -90,7 +90,7 @@
             <v-layout v-show="hasSelectedTreatmentLibrary" justify-end row>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedTreatmentLibrary">
-                    Apply
+                    Save
                 </v-btn>
                 <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedTreatmentLibrary">

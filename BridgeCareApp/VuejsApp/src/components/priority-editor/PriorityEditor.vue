@@ -125,7 +125,7 @@
         <v-flex xs12>
             <v-layout v-show="hasSelectedPriorityLibrary" justify-end row>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyPriorityLibraryToScenario">
-                    Apply
+                    Save
                 </v-btn>
                 <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdatePriorityLibrary">
                     Update Library
@@ -179,7 +179,7 @@
     import {sorter} from '@/shared/utils/sorter-utils';
     import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
-    import {Attribute} from "@/shared/models/iAM/attribute";
+    import {Attribute} from '@/shared/models/iAM/attribute';
     const ObjectID = require('bson-objectid');
 
     @Component({

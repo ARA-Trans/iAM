@@ -198,8 +198,9 @@
                 setTimeout(() => {
                     vm.getTargetLibrariesAction()
                         .then(() => {
-                            if (vm.selectedScenarioId !== '0')
+                            if (vm.selectedScenarioId !== '0') {
                                 vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+                            }
                         });
                 });
             });
@@ -256,8 +257,9 @@
         onSelectedTargetLibraryChanged() {
             this.hasSelectedTargetLibrary = this.selectedTargetLibrary.id !== '0';
             this.targets = clone(this.selectedTargetLibrary.targets);
-            if (this.numericAttributes.length === 0)
+            if (this.numericAttributes.length === 0) {
                 this.numericAttributes = getPropertyValues('name', this.getNumericAttributesGetter);
+            }
         }
 
         /**

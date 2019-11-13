@@ -71,7 +71,7 @@
                                         <v-edit-dialog :return-value.sync="props.item[header.value]"
                                                        large lazy persistent
                                                        @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
-                                            {{props.item[header.value]}}
+                                            {{formatAsCurrency(props.item[header.value])}}
                                             <template slot="input">
                                                 <v-text-field v-model="props.item[header.value]"
                                                               label="Edit" single-line>
@@ -103,7 +103,7 @@
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-end row>
                 <v-btn v-show="selectedScenarioId > 0" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="!hasSelectedInvestmentLibrary">
-                    Apply
+                    Save
                 </v-btn>
                 <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="!hasSelectedInvestmentLibrary">
@@ -159,7 +159,8 @@
     import { getLatestPropertyValue, getPropertyValues } from '@/shared/utils/getter-utils';
     import { sortByProperty, sorter } from '@/shared/utils/sorter-utils';
     import { EditedBudget } from '@/shared/models/modals/edit-budgets-dialog';
-    import { CriteriaDrivenBudgets } from '../../shared/models/iAM/criteria-driven-budgets';
+    import { CriteriaDrivenBudgets } from '@/shared/models/iAM/criteria-driven-budgets';
+    import {formatAsCurrency} from '@/shared/utils/currency-formatter';
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -715,6 +716,14 @@
                     this.getScenarioInvestmentLibraryAction({ selectedScenarioId: this.selectedScenarioId });
                 });
             }
+        }
+
+        /**
+         * Formats a value as currency by calling the formatAsCurrency utility function
+         * @param value Value to format
+         */
+        formatAsCurrency(value: any) {
+            return formatAsCurrency(value);
         }
     }
 </script>

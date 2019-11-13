@@ -58,7 +58,7 @@
 
         <v-flex xs12>
             <v-layout justify-end row>
-                <v-btn class="ara-blue-bg white--text" @click="onApplyAnalysisToScenario">Apply</v-btn>
+                <v-btn class="ara-blue-bg white--text" @click="onApplyAnalysisToScenario">Save</v-btn>
                 <v-btn class="ara-orange-bg white--text" @click="onCancelAnalysisEdit">Cancel</v-btn>
             </v-layout>
         </v-flex>

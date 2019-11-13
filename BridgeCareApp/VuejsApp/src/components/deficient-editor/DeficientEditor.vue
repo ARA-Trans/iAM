@@ -136,7 +136,7 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import CreateDeficientLibraryDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
-    import {Attribute} from "@/shared/models/iAM/attribute";
+    import {Attribute} from '@/shared/models/iAM/attribute';
 
     @Component({
         components: {CreateDeficientLibraryDialog, CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog}
@@ -256,8 +256,9 @@
         onSelectedDeficientLibraryChanged() {
             this.hasSelectedDeficientLibrary = this.selectedDeficientLibrary.id !== '0';
             this.deficients = clone(this.selectedDeficientLibrary.deficients);
-            if (this.numericAttributes.length === 0)
+            if (this.numericAttributes.length === 0) {
                 this.numericAttributes = getPropertyValues('name', this.getNumericAttributesGetter);
+            }
         }
 
         /**
