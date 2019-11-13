@@ -100,54 +100,5 @@ namespace BridgeCare.DataAccessLayer
 
             return new PriorityLibraryModel(simulation);
         }
-
-        /// <summary>
-        /// Executes an insert/delete operation on the priority & priority funds tables
-        /// Throws a RowNotInTableException if no simulation is found
-        /// </summary>
-        /// <param name="simulationId">Simulation identifier</param>
-        /// <param name="budgets">Simulation investment budgets</param>
-        /// <param name="db">BridgeCareContext</param>
-        public static void SavePriorityFundInvestmentData(int simulationId, List<string> budgets, BridgeCareContext db)
-        {
-            if (!db.Priorities.Any(p => p.SIMULATIONID == simulationId))
-                db.Priorities.Add(new PriorityEntity(simulationId, budgets));
-            else
-            {
-                var priorities = db.Priorities.Include(p => p.PRIORITYFUNDS)
-                    .Where(p => p.SIMULATIONID == simulationId).ToList();
-
-                priorities.ForEach(priorityEntity =>
-                {
-                    var budgetsForNewFunds = new List<string>();
-
-                    if (priorityEntity.PRIORITYFUNDS.Any())
-                        budgets.ForEach(budget =>
-                        {
-                            if (priorityEntity.PRIORITYFUNDS.All(entity => entity.BUDGET != budget))
-                            {
-                                budgetsForNewFunds.Add(budget);
-                            }
-                        });
-
-                    if (budgetsForNewFunds.Any())
-                    {
-                        priorityEntity.PRIORITYFUNDS
-                            .Where(priorityFund => !budgetsForNewFunds.Contains(priorityFund.BUDGET))
-                            .ToList()
-                            .ForEach(priorityFundEntity =>
-                            {
-                                PriorityFundEntity.DeleteEntry(priorityFundEntity, db);
-                            });
-
-                        db.PriorityFunds.AddRange(budgetsForNewFunds
-                            .Select(budget => new PriorityFundEntity(priorityEntity.PRIORITYID, budget))
-                        );
-                    }
-                });
-            }
-
-            db.SaveChanges();
-        }
     }
 }

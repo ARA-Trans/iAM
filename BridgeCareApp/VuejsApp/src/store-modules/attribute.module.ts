@@ -23,7 +23,7 @@ const mutations = {
 };
 
 const actions = {
-    async getAttributes({dispatch, commit}: any) {
+    async getAttributes({commit}: any) {
         await AttributeService.getAttributes()
             .then((response: AxiosResponse<Attribute[]>) => {
                 if (hasValue(response, 'data')) {
@@ -37,7 +37,11 @@ const actions = {
     }
 };
 
-const getters = {};
+const getters = {
+    getNumericAttributes: (state: any) => {
+        return state.numericAttributes;
+    }
+};
 
 export default {
     state,

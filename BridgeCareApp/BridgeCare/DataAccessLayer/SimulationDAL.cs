@@ -80,9 +80,6 @@ namespace BridgeCare.DataAccessLayer
 
             db.SaveChanges();
 
-            var defaultBudgets = new List<string> { "Rehabilitation", "Maintenance", "Construction" };
-            PriorityDAL.SavePriorityFundInvestmentData(simulation.SIMULATIONID, defaultBudgets, db);
-
             simulation = db.Simulations.Include(s => s.NETWORK)
                 .Single(s => s.SIMULATIONID == simulation.SIMULATIONID);
 
