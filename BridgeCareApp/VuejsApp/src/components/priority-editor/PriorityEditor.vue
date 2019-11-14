@@ -48,7 +48,7 @@
                                 </v-edit-dialog>
                             </div>
                             <div v-else-if="header.value === 'criteria'">
-                                <v-layout align-center row>
+                                <v-layout align-center row style="flex-wrap:nowrap">
                                     <v-menu bottom min-width="500px" min-height="500px">
                                         <template slot="activator">
                                             <v-btn v-if="budgets.length > 5" icon class="ara-blue">
