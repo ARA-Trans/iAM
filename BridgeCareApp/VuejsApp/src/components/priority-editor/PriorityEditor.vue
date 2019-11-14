@@ -31,7 +31,7 @@
             <div class="priorities-data-table">
                 <v-data-table :headers="priorityDataTableHeaders" :items="prioritiesDataTableRows"
                               v-model="selectedPriorityRows" select-all item-key="id"
-                              class="elevation-1 fixed-header v-table__overflow">
+                              class="elevation-1 v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td>
                             <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
