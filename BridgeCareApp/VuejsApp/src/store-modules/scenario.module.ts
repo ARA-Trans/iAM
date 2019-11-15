@@ -78,7 +78,7 @@ const actions = {
             });
     },
     async getLegacyScenarios({ commit }: any, payload: any) {
-        return await ScenarioService.getLegacyScenarios(payload.scenarios)
+        return await ScenarioService.getLegacyScenarios()
             .then((response: AxiosResponse<Scenario[]>) => {
                 if (hasValue(response, 'data')) {
                     const scenarios: Scenario[] = response.data

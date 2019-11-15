@@ -278,7 +278,7 @@
         }
 
         onUpdateScenarioList() {
-            this.getLegacyScenariosAction({ scenarios: this.scenarios });
+            this.getLegacyScenariosAction();
         }
 
         onLoadNetworks() {
