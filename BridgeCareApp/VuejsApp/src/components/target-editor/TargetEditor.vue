@@ -57,7 +57,7 @@
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value === 'criteria'">
-                                <v-layout align-center row>
+                                <v-layout align-center row style="flex-wrap:nowrap">
                                     <v-menu bottom min-width="500px" min-height="500px">
                                         <template slot="activator">
                                             <input class="output target-criteria-output" type="text" :value="props.item.criteria" readonly />
