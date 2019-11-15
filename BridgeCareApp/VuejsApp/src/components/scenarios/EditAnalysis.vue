@@ -99,8 +99,8 @@
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
         optimizationTypes: string[] = ['Incremental Benefit/Cost', 'Maximum Benefit', 'Remaining Life/Cost',
-            'Conditional RSL/Cost', 'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost',
-            'Multi-year Maximum Benefit', 'Multi-year Remaining Life/Cost', 'Multi-year Maximum Life'];
+            'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost', 'Multi-year Maximum Benefit', 
+            'Multi-year Remaining Life/Cost', 'Multi-year Maximum Life'];
         budgetTypes: string[] =  ['No Spending', 'As Budget Permits', 'Until Targets Met', 'Until Deficient Met',
             'Targets/Deficient Met', 'Unlimited'];
         benefitAttributes: string[] = [];
