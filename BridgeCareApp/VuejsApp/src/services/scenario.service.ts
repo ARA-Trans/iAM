@@ -71,7 +71,7 @@ export default class ScenarioService {
                             if (hasValue(responseMongo)) {
                                 var scenariosToAdd = this.getMissingScenarios(responseLegacy.data, responseMongo.data);
                                 var scenariosToRemove = this.getMissingScenarios(responseMongo.data, responseLegacy.data);
-                                if (scenariosToAdd.length != 0) {
+                                if (scenariosToAdd.length > 0) {
                                     nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd)
                                         .then((res: AxiosResponse<Scenario[]>) => {
                                             if (hasValue(res)){
@@ -80,11 +80,13 @@ export default class ScenarioService {
                                         })
                                         .catch((error: any) => resolve(error.response));
                                 }
-                                this.removeMongoScenarios(scenariosToRemove).then((res: AxiosResponse) => {
-                                    if (hasValue(res)) {
-                                        return resolve(res);
-                                    }
-                                }).catch((error: any) => resolve(error.response));
+                                if (scenariosToRemove.length > 0) {
+                                    this.removeMongoScenarios(scenariosToRemove).then((res: AxiosResponse) => {
+                                        if (hasValue(res)) {
+                                            return resolve(res);
+                                        }
+                                    }).catch((error: any) => resolve(error.response));
+                                }
                                 return resolve(responseLegacy);
                             }
                         })
