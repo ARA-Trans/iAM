@@ -5,7 +5,6 @@ import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
-import OidcCallback from '@/components/OidcCallback.vue';
 import { vuexOidcCreateRouterMiddleware } from 'vuex-oidc';
 
 import store from '@/store/root-store';
@@ -18,6 +17,8 @@ const TreatmentEditor = () => import(/* webpackChunkName: "treatmentEditor" */ '
 const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@/components/priority-editor/PriorityEditor.vue');
 const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
 const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
+const OidcCallback = () => import (/* webpackChunkName: "oidcCallback" */ '@/components/OidcCallback.vue');
+const AuthenticationFailure = () => import (/* webpackChunkName: "oidcCallback" */ '@/components/AuthenticationFailure.vue');
 
 Vue.use(VueRouter);
 
@@ -127,6 +128,14 @@ const router = new VueRouter({
             path: '/Authentication/',
             name: 'oidcCallback',
             component: OidcCallback
+        },
+        {
+            path: '/AuthenticationFailure/',
+            name: 'AuthenticationFailure',
+            component: AuthenticationFailure,
+            meta: {
+                isPublic: true
+            }
         },
         {
             path: '/UnderConstruction/',

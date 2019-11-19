@@ -14,25 +14,32 @@
     </v-container>
 </template>
 
-<script>
-import {mapActions} from 'vuex';
+<script lang="ts">
+    import Vue from 'vue';
+    import {Component, Watch} from 'vue-property-decorator';
+    import {mapActions} from 'vuex';
+    import {State, Action} from 'vuex-class';
 
-export default {
-    name: 'OidcCallback',
-    methods: {
-        ...mapActions([
-            'oidcSignInCallback'
-        ])
-    },
-    mounted() {
-        this.oidcSignInCallback()
-            .then((redirectPath) => {
-                this.$router.push(redirectPath);
-            })
-            .catch((err) => {
-                console.error(err);
-                //this.$router.push('/AuthenticationFailure/');
-            });
+    @Component
+    export default class OidcCallback extends Vue {
+        @State(state => state.toastr.successMessage) successMessage: string;
+        @State(state => state.toastr.errorMessage) errorMessage: string;
+
+        @Action('oidcSignInCallback') oidcSignInCallback : any;
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
+
+        mounted() {
+            this.oidcSignInCallback()
+                .then((redirectPath: string) => {
+                    this.setSuccessMessageAction({message: 'Authentication Successful.'});
+                    this.$router.push('/Inventory/');
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                    this.setErrorMessageAction({message: 'Authentication Failed.'});
+                    this.$router.push('/AuthenticationFailure/');
+                });
+        }
     }
-};
 </script>

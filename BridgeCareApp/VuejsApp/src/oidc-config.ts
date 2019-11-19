@@ -4,4 +4,4 @@ module.exports = {
     redirectUri: process.env.VUE_APP_URL + '/Authentication/',
     responseType: 'id_token token',
     scope: 'openid profile'
-}
+};
