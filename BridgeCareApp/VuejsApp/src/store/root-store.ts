@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { vuexOidcCreateStoreModule } from 'vuex-oidc';
 
 import busy from '@/store-modules/busy.module';
 import authentication from '@/store-modules/authentication.module';
@@ -37,6 +38,7 @@ export default new Vuex.Store({
         target,
         remainingLifeLimitEditor,
         criteriaDrivenBudgets,
-        rollup
+        rollup,
+        oidc: vuexOidcCreateStoreModule(require('@/oidc-config'))
     }
 });

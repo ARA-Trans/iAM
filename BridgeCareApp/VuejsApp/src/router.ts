@@ -5,6 +5,10 @@ import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
+import OidcCallback from '@/components/OidcCallback.vue';
+import { vuexOidcCreateRouterMiddleware } from 'vuex-oidc';
+
+import store from '@/store/root-store';
 
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
@@ -120,15 +124,25 @@ const router = new VueRouter({
             props: true
         },
         {
+            path: '/Authentication/',
+            name: 'oidcCallback',
+            component: OidcCallback
+        },
+        {
             path: '/UnderConstruction/',
             name: 'UnderConstruction',
             component: UnderConstruction
         },
         {
             path: '*',
-            redirect: '/Inventory/'
+            redirect: '/Authentication/'
         }
     ]
 });
+
+// No authentication required on dev builds
+if (JSON.parse(process.env.VUE_APP_IS_PRODUCTION)) {
+    router.beforeEach(vuexOidcCreateRouterMiddleware(store));
+}
 
 export default router;
