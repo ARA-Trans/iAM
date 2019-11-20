@@ -18,7 +18,7 @@ const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@
 const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
 const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
 const OidcCallback = () => import (/* webpackChunkName: "oidcCallback" */ '@/components/OidcCallback.vue');
-const AuthenticationFailure = () => import (/* webpackChunkName: "oidcCallback" */ '@/components/AuthenticationFailure.vue');
+const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/AuthenticationFailure.vue');
 
 Vue.use(VueRouter);
 

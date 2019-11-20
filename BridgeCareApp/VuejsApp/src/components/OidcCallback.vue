@@ -17,14 +17,10 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
-    import {mapActions} from 'vuex';
     import {State, Action} from 'vuex-class';
 
     @Component
     export default class OidcCallback extends Vue {
-        @State(state => state.toastr.successMessage) successMessage: string;
-        @State(state => state.toastr.errorMessage) errorMessage: string;
-
         @Action('oidcSignInCallback') oidcSignInCallback : any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
