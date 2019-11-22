@@ -1,7 +1,6 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {UserInformation} from '@/shared/models/iAM/user-information';
-import {AuthenticationError} from '@/shared/models/iAM/authentication-error';
 import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
