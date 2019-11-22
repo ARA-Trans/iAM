@@ -20,22 +20,14 @@
     import {State, Action} from 'vuex-class';
 
     @Component
-    export default class OidcCallback extends Vue {
-        @Action('oidcSignInCallback') oidcSignInCallback : any;
+    export default class Authentication extends Vue {
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('getUserTokens') getUserTokensAction: any;
 
         mounted() {
-            this.oidcSignInCallback()
-                .then((redirectPath: string) => {
-                    this.setSuccessMessageAction({message: 'Authentication Successful.'});
-                    this.$router.push('/Inventory/');
-                })
-                .catch((err: any) => {
-                    console.error(err);
-                    this.setErrorMessageAction({message: 'Authentication Failed.'});
-                    this.$router.push('/AuthenticationFailure/');
-                });
+            var code: string = this.$route.query.code as string;
+            this.getUserTokensAction(code);
         }
     }
 </script>

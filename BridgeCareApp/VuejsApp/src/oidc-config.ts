@@ -1,7 +1,7 @@
-module.exports = {
-    authority: 'placeholder for ESEC url',
-    clientId: 'placeholder for client id from ESEC',
-    redirectUri: process.env.VUE_APP_URL + '/Authentication/',
-    responseType: 'id_token token',
-    scope: 'openid profile'
+const oidcConfig: any = {
+    authorizationEndpoint: 'https://oidcservicessyst.penndot.gov/affwebservices/CASSO/oidc/BAMS/authorize',
+    clientId: 'a56bb9d5-190d-4873-afea-0767d82dd91c',
+    redirectUri: 'https://iam-deploy.com/Authentication/'
 };
+
+export default oidcConfig;

@@ -1,12 +1,19 @@
-﻿using System.Security.Authentication;
+﻿using System;
+using System.Configuration;
+using System.Security.Authentication;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using BridgeCare.Models;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace BridgeCare.Controllers
 {
-    [Authorize]
     [RoutePrefix("auth")]
     public class WindowsAuthorizationController : ApiController
     {
@@ -17,6 +24,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("AuthenticateUser")]
+        [Authorize]
         [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
         public IHttpActionResult GetUser()
         {
@@ -29,6 +37,47 @@ namespace BridgeCare.Controllers
                 throw new AuthenticationException("System cannot determine user identity.");
 
             return Ok(new UserInformationModel(windowsIdentity));
+        }
+
+        /// <summary>
+        /// API endpoint for fetching ID and Access tokens from ESEC using the OpenID Connect protocol
+        /// </summary>
+        /// <param name="code">The authentication or error code</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("UserTokens/{code}")]
+        public IHttpActionResult GetUserTokens(string code)
+        {
+            var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
+            // These two lines should be removed as soon as the ESEC site's certificates start working
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+            HttpClient client = new HttpClient(handler);
+            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var clientId = esecConfig["ESECClientID"];
+            var clientSecret = esecConfig["ESECClientSecret"];
+            var authorization = System.Text.Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}");
+            var encodedAuthorization = System.Convert.ToBase64String(authorization);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedAuthorization);
+
+            var formData = new List<KeyValuePair<string, string>>();
+            formData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
+            formData.Add(new KeyValuePair<string, string>("code", code));
+            formData.Add(new KeyValuePair<string, string>("redirect_uri", esecConfig["ESECRedirect"]));
+            HttpContent content = new FormUrlEncodedContent(formData);
+
+            Task<HttpResponseMessage> responseTask = client.PostAsync("token", content);
+            responseTask.Wait();
+
+            String response = responseTask.Result.Content.ReadAsStringAsync().Result;
+
+            System.Diagnostics.Debug.WriteLine(code);
+            System.Diagnostics.Debug.WriteLine(response);
+            return Ok(response);
         }
     }
 }

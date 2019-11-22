@@ -5,7 +5,6 @@ import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
-import { vuexOidcCreateRouterMiddleware } from 'vuex-oidc';
 
 import store from '@/store/root-store';
 
@@ -17,7 +16,8 @@ const TreatmentEditor = () => import(/* webpackChunkName: "treatmentEditor" */ '
 const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@/components/priority-editor/PriorityEditor.vue');
 const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
 const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
-const OidcCallback = () => import (/* webpackChunkName: "oidcCallback" */ '@/components/OidcCallback.vue');
+const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@/components/Authentication.vue');
+const AuthenticationStart = () => import (/* webpackChunkName: "authenticationStart" */ '@/components/AuthenticationStart.vue');
 const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/AuthenticationFailure.vue');
 
 Vue.use(VueRouter);
@@ -126,8 +126,13 @@ const router = new VueRouter({
         },
         {
             path: '/Authentication/',
-            name: 'oidcCallback',
-            component: OidcCallback
+            name: 'Authentication',
+            component: Authentication
+        },
+        {
+            path: '/AuthenticationStart/',
+            name: 'AuthenticationStart',
+            component: AuthenticationStart
         },
         {
             path: '/AuthenticationFailure/',
@@ -144,14 +149,10 @@ const router = new VueRouter({
         },
         {
             path: '*',
-            redirect: '/Authentication/'
+            redirect: '/Inventory/'
         }
     ]
 });
 
-// No authentication required on dev builds
-if (JSON.parse(process.env.VUE_APP_IS_PRODUCTION)) {
-    router.beforeEach(vuexOidcCreateRouterMiddleware(store));
-}
 
 export default router;

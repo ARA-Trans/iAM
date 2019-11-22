@@ -1,5 +1,5 @@
-﻿import {AxiosPromise} from 'axios';
-import {axiosInstance} from '@/shared/utils/axios-instance';
+﻿import {AxiosPromise, AxiosResponse} from 'axios';
+import {axiosInstance, esecAxiosInstance} from '@/shared/utils/axios-instance';
 
 
 export default class AuthenticationService {
@@ -8,5 +8,19 @@ export default class AuthenticationService {
      */
     static authenticateUser(): AxiosPromise {
         return axiosInstance.get('/auth/AuthenticateUser', {withCredentials: true});
+    }
+
+    static getUserTokens(code: string): AxiosPromise {
+        return new Promise<AxiosResponse> ((resolve) => {
+            axiosInstance.get(`/auth/UserTokens/${code}`)
+            .then()
+            .catch((err: any) => {
+                return resolve(err);
+            });
+        });
+    }
+
+    static getUserInfo(accessToken: string): AxiosPromise {
+        return esecAxiosInstance.get(`/userinfo`, {headers: {Authorization: `Bearer ${accessToken}`}});
     }
 }

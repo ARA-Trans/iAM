@@ -1,6 +1,7 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {UserInformation} from '@/shared/models/iAM/user-information';
+import {AuthenticationError} from '@/shared/models/iAM/authentication-error';
 import {hasValue} from '@/shared/utils/has-value-util';
 
 const state = {
@@ -31,6 +32,13 @@ const actions = {
                     commit('userNameMutator', response.data.name);
                     commit('userIdMutator', response.data.id);
                 }
+            });
+    },
+
+    async getUserTokens({commit}: any, code: string) {
+        return await AuthenticationService.getUserTokens(code)
+            .then((response: AxiosResponse<any>) => {
+                // Don't know what the response will look like yet
             });
     }
 };
