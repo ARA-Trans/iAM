@@ -58,16 +58,12 @@ namespace BridgeCare.Controllers
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var clientId = esecConfig["ESECClientID"];
-            var clientSecret = esecConfig["ESECClientSecret"];
-            var authorization = System.Text.Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}");
-            var encodedAuthorization = System.Convert.ToBase64String(authorization);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedAuthorization);
-
             var formData = new List<KeyValuePair<string, string>>();
             formData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
-            formData.Add(new KeyValuePair<string, string>("code", code));
+            formData.Add(new KeyValuePair<string, string>("code", WebUtility.UrlDecode(code)));
             formData.Add(new KeyValuePair<string, string>("redirect_uri", esecConfig["ESECRedirect"]));
+            formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
+            formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
             HttpContent content = new FormUrlEncodedContent(formData);
 
             Task<HttpResponseMessage> responseTask = client.PostAsync("token", content);
@@ -75,8 +71,6 @@ namespace BridgeCare.Controllers
 
             String response = responseTask.Result.Content.ReadAsStringAsync().Result;
 
-            System.Diagnostics.Debug.WriteLine(code);
-            System.Diagnostics.Debug.WriteLine(response);
             return Ok(response);
         }
     }

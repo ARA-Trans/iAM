@@ -149,7 +149,7 @@ const router = new VueRouter({
         },
         {
             path: '*',
-            redirect: '/Inventory/'
+            redirect: '/AuthenticationStart/'
         }
     ]
 });

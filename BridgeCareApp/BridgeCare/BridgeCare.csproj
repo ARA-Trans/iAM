@@ -332,7 +332,6 @@
     <Compile Include="Models\AttributeModel.cs" />
     <Compile Include="Models\AttributeYearlyValueModel.cs" />
     <Compile Include="Interfaces\SummaryReport\IBridgeData.cs" />
-    <Compile Include="Models\AuthenticationErrorModel.cs" />
     <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\CellAddress.cs" />
     <Compile Include="Models\CommitConsequenceModel.cs" />

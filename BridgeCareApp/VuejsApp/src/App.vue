@@ -201,13 +201,14 @@
          * Component has been mounted: Dispatches an action to authenticate the current user, then if user is authenticated
          * another another action is dispatched to get the networks
          */
-        mounted() {
-            this.authenticateUserAction().then(() => {
-                this.$forceUpdate();
-                this.getNetworksAction();
-                this.getAttributesAction();
-            });
-        }
+        // mounted() {
+            
+        //     this.authenticateUserAction().then(() => {
+        //         this.$forceUpdate();
+        //         this.getNetworksAction();
+        //         this.getAttributesAction();
+        //     });
+        // }
 
         /**
          * Navigates a user to a page using the specified routeName

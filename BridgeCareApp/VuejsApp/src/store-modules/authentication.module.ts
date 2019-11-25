@@ -7,6 +7,8 @@ const state = {
     loginFailed: true,
     userName: '',
     userId: '',
+    userAccessToken: '',
+    userIdToken: '',
     userRoles: [] as Array<string>
 };
 
@@ -19,6 +21,12 @@ const mutations = {
     },
     userIdMutator(state: any, userId: string) {
         state.userId = userId;
+    },
+    userIdTokenMutator(state: any, userIdToken: string) {
+        state.userIdToken = userIdToken;
+    },
+    userAccessTokenMutator(state: any, userAccessToken: string) {
+        state.userAccessToken = userAccessToken;
     }
 };
 
@@ -36,8 +44,11 @@ const actions = {
 
     async getUserTokens({commit}: any, code: string) {
         return await AuthenticationService.getUserTokens(code)
-            .then((response: AxiosResponse<any>) => {
-                // Don't know what the response will look like yet
+            .then((response: AxiosResponse<string>) => {
+                const jsonResponse: any = JSON.parse(response.data);
+                commit('loginMutator', false);
+                commit('userIdTokenMutator', jsonResponse.id_token);
+                commit('userAccessTokenMutator', jsonResponse.access_token);
             });
     }
 };

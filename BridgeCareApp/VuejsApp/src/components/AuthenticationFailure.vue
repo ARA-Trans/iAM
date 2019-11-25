@@ -24,7 +24,7 @@
     @Component
     export default class AuthenticationFailure extends Vue {
         onAttemptAuthentication() {
-            this.$router.push('/Authentication/');
+            this.$router.push('/AuthenticationStart/');
         }
     }
 </script>

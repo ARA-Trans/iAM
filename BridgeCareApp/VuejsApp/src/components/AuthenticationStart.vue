@@ -28,8 +28,14 @@
 
     @Component
     export default class AuthenticationStart extends Vue {
+        @State(state => state.authentication.loginFailed) loginFailed: boolean;
+
         onRedirect() {
-            window.location.href = `${oidcConfig.authorizationEndpoint}?response_type=code&scope=openid&scope=BAMS&client_id=${oidcConfig.clientId}&redirect_uri=${oidcConfig.redirectUri}`;
+            if (this.loginFailed) {
+                window.location.href = `${oidcConfig.authorizationEndpoint}?response_type=code&scope=openid&scope=BAMS&client_id=${oidcConfig.clientId}&redirect_uri=${oidcConfig.redirectUri}`;
+            } else {
+                this.$router.push('/Inventory/');
+            }
         }
 
         mounted() {
