@@ -56,6 +56,11 @@
                     <span class="font-weight-light">Hello, </span>
                     <span>{{userName}}</span>
                 </v-toolbar-title>
+                <v-toolbar-title v-if="loginFailed" class="white--text" @click="onNavigate('/AuthenticationStart/')">
+                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/AuthenticationStart/')">
+                        Log In
+                    </v-btn>
+                </v-toolbar-title>
             </v-toolbar>
             <v-container fluid grid-list-xl>
                 <router-view></router-view>
@@ -196,19 +201,6 @@
                 (error: any) => errorHandler(error)
             );
         }
-
-        /**
-         * Component has been mounted: Dispatches an action to authenticate the current user, then if user is authenticated
-         * another another action is dispatched to get the networks
-         */
-        // mounted() {
-            
-        //     this.authenticateUserAction().then(() => {
-        //         this.$forceUpdate();
-        //         this.getNetworksAction();
-        //         this.getAttributesAction();
-        //     });
-        // }
 
         /**
          * Navigates a user to a page using the specified routeName

@@ -137,10 +137,7 @@ const router = new VueRouter({
         {
             path: '/AuthenticationFailure/',
             name: 'AuthenticationFailure',
-            component: AuthenticationFailure,
-            meta: {
-                isPublic: true
-            }
+            component: AuthenticationFailure
         },
         {
             path: '/UnderConstruction/',

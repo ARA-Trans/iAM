@@ -26,21 +26,33 @@
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getUserTokens') getUserTokensAction: any;
+        @Action('getNetworks') getNetworksAction: any;
+        @Action('getAttributes') getAttributesAction: any;
 
         @Watch('loginFailed')
         onLoginChange() {
             if (this.loginFailed) {
-                this.setErrorMessageAction({message: 'Authentication failed.'});
-                this.$router.push('/AuthenticationFailure/');
+                this.onAuthenticationFailure();
             } else {
                 this.setSuccessMessageAction({message: 'Authentication successful.'});
                 this.$router.push('/Inventory/');
+                this.$forceUpdate();
+                this.getNetworksAction();
+                this.getAttributesAction();
             }
         }
 
         mounted() {
             var code: string = this.$route.query.code as string;
             this.getUserTokensAction(code);
+            if (this.loginFailed) {
+                this.onAuthenticationFailure();
+            }
+        }
+
+        onAuthenticationFailure() {
+            this.setErrorMessageAction({message: 'Authentication failed.'});
+            this.$router.push('/AuthenticationFailure/');
         }
     }
 </script>
