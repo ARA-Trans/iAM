@@ -1,6 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {Deficient, DeficientLibrary} from '@/shared/models/iAM/deficient';
+import {getAuthHeader} from '@/shared/utils/authentication-header';
 
 const modifyDataForMongoDB = (deficientLibrary: DeficientLibrary): any => {
     const deficientLibraryData: any = {
@@ -48,7 +49,7 @@ export default class DeficientService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioDeficientLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioDeficientLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioDeficientLibrary/${selectedScenarioId}`, {headers: getAuthHeader()});
     }
 
     /**
@@ -56,6 +57,6 @@ export default class DeficientService {
      * @param scenarioDeficientLibraryData Scenario deficient library data
      */
     static saveScenarioDeficientLibrary(scenarioDeficientLibraryData: DeficientLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioDeficientLibrary', scenarioDeficientLibraryData);
+        return axiosInstance.post('/api/SaveScenarioDeficientLibrary', scenarioDeficientLibraryData, {headers: getAuthHeader()});
     }
 }

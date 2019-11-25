@@ -1,5 +1,5 @@
 ﻿import {AxiosPromise, AxiosResponse} from 'axios';
-import {axiosInstance, esecAxiosInstance} from '@/shared/utils/axios-instance';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 import { hasValue } from '@/shared/utils/has-value-util';
 
 
@@ -18,7 +18,17 @@ export default class AuthenticationService {
         });
     }
 
-    static getUserInfo(accessToken: string): AxiosPromise {
-        return esecAxiosInstance.get(`/userinfo`, {headers: {Authorization: `Bearer ${accessToken}`}});
+    static getUserInfo(token: string): AxiosPromise {
+        return new Promise<AxiosResponse> ((resolve) => {
+            axiosInstance.get(`/auth/UserInfo/${token}`)
+            .then((response: AxiosResponse<string>) => {
+                if (hasValue(response, 'data')) {
+                    return resolve(response);
+                }
+            })
+            .catch((err: any) => {
+                return resolve(err);
+            });
+        });
     }
 }

@@ -2,6 +2,7 @@ import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {UserInformation} from '@/shared/models/iAM/user-information';
 import {hasValue} from '@/shared/utils/has-value-util';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
 const state = {
     loginFailed: true,
@@ -38,11 +39,14 @@ const actions = {
                 commit('loginMutator', false);
                 commit('userIdTokenMutator', jsonResponse.id_token);
                 commit('userAccessTokenMutator', jsonResponse.access_token);
+            });
+    },
 
-                // For test deployment only; remove before true deployment
-                console.log(response.data);
-                console.log(jsonResponse.id_token);
-                console.log(jsonResponse.access_token);
+    async getUserInfo({commit}: any) {
+        return await AuthenticationService.getUserInfo(state.userAccessToken)
+            .then((response: AxiosResponse<string>) => {
+                const jsonResponse: any = JSON.parse(response.data);
+                commit('userNameMutator', jsonResponse.sub.split(',')[0].substring(3));
             });
     }
 };

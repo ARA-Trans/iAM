@@ -15,28 +15,40 @@ using System.Collections.Specialized;
 namespace BridgeCare.Controllers
 {
     [RoutePrefix("auth")]
-    public class WindowsAuthorizationController : ApiController
+    public class AuthenticationController : ApiController
     {
         /// <summary>
-        /// API endpoint for authenticating users using windows identity
-        /// Throws an AuthenticationException if a user is not authenticated or cannot be verified
+        /// API endpoint for fetching user info from ESEC using the OpenID Connect protocol
         /// </summary>
-        /// <returns>IHttpActionResult</returns>
+        /// <param name="token">The user's access token</param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("AuthenticateUser")]
-        [Authorize]
-        [EnableCors(origins: "*", headers: "*", methods: "*", SupportsCredentials = true)]
-        public IHttpActionResult GetUser()
+        [Route("UserInfo/{token}")]
+        public IHttpActionResult GetUserInfo(string token)
         {
-            if (!User.Identity.IsAuthenticated)
-                throw new AuthenticationException("User failed authentication.");
+            return Ok(GetUserInfoString(token));
+        }
 
-            var windowsIdentity = HttpContext.Current.Request.LogonUserIdentity;
+        public static string GetUserInfoString(string token)
+        {
+            var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
+            // These two lines should be removed as soon as the ESEC site's certificates start working
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            if (windowsIdentity == null)
-                throw new AuthenticationException("System cannot determine user identity.");
+            HttpClient client = new HttpClient(handler);
+            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            return Ok(new UserInformationModel(windowsIdentity));
+            var formData = new List<KeyValuePair<string, string>>();
+            formData.Add(new KeyValuePair<string, string>("access_token", WebUtility.UrlDecode(token)));
+            HttpContent content = new FormUrlEncodedContent(formData);
+
+            Task<HttpResponseMessage> responseTask = client.PostAsync("userinfo", content);
+            responseTask.Wait();
+
+            return responseTask.Result.Content.ReadAsStringAsync().Result;
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetNetworks")]
+        [Filters.RestrictAccess]
         public IHttpActionResult GetNetworks() => Ok(repo.GetAllNetworks(db));
     }
 }

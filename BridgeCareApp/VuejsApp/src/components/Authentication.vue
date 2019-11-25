@@ -26,6 +26,7 @@
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getUserTokens') getUserTokensAction: any;
+        @Action('getUserInfo') getUserInfoAction: any;
         @Action('getNetworks') getNetworksAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
@@ -47,6 +48,8 @@
             this.getUserTokensAction(code).then(() => {
                 if (this.loginFailed) {
                     this.onAuthenticationFailure();
+                } else {
+                    this.getUserInfoAction();
                 }
             });
         }

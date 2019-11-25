@@ -25,6 +25,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/ValidateEquation")]
         [ModelValidation("The equation data is invalid.")]
+        [Filters.RestrictAccess]
         public IHttpActionResult ValidateEquation(ValidateEquationModel model)
         {
             repo.ValidateEquation(model, db);
@@ -39,6 +40,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/ValidateCriteria")]
         [ModelValidation("The criteria data is invalid.")]
+        [Filters.RestrictAccess]
         public IHttpActionResult ValidateCriteria([FromBody]ValidateCriteriaModel model) =>
             Ok(repo.ValidateCriteria(model.Criteria, db));
     }

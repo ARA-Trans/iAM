@@ -1,6 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {Consequence, Cost, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
+import {getAuthHeader} from '@/shared/utils/authentication-header';
 
 const modifyDataForMongoDB = (treatmentLibrary: TreatmentLibrary): any => {
     const treatmentLibraryData: any = {
@@ -69,7 +70,7 @@ export default class TreatmentEditorService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioTreatmentLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioTreatmentLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioTreatmentLibrary/${selectedScenarioId}`, {headers: getAuthHeader()});
     }
 
     /**
@@ -77,6 +78,6 @@ export default class TreatmentEditorService {
      * @param saveScenarioTreatmentLibraryData The scenario treatment library save data
      */
     static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioTreatmentLibrary', saveScenarioTreatmentLibraryData);
+        return axiosInstance.post('/api/SaveScenarioTreatmentLibrary', saveScenarioTreatmentLibraryData, {headers: getAuthHeader()});
     }
 }

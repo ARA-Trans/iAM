@@ -1,6 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {Target, TargetLibrary} from '@/shared/models/iAM/target';
+import {getAuthHeader} from '@/shared/utils/authentication-header';
 
 const modifyDataForMongoDB = (targetLibrary: TargetLibrary): any => {
     const targetLibraryData: any = {
@@ -48,7 +49,7 @@ export default class TargetService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioTargetLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioTargetLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioTargetLibrary/${selectedScenarioId}`, {headers: getAuthHeader()});
     }
 
     /**
@@ -56,6 +57,6 @@ export default class TargetService {
      * @param scenarioTargetLibraryData Scenario target library upsert data
      */
     static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData);
+        return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData, {headers: getAuthHeader()});
     }
 }

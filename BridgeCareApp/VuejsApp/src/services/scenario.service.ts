@@ -6,6 +6,7 @@ import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 import { any, propEq } from 'ramda';
 import {http2XX} from '@/shared/utils/http-utils';
+import {getAuthHeader} from '@/shared/utils/authentication-header';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
@@ -63,7 +64,7 @@ export default class ScenarioService {
      */
     static getLegacyScenarios(): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-            axiosInstance.get('api/GetScenarios')
+            axiosInstance.get('api/GetScenarios', {headers: getAuthHeader()})
                 .then((responseLegacy: AxiosResponse<Scenario[]>)=>{
                     if (hasValue(responseLegacy)){
                     this.getMongoScenarios()
@@ -104,7 +105,7 @@ export default class ScenarioService {
      */
     static createScenario(createScenarioData: ScenarioCreationData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/CreateScenario', createScenarioData)
+            axiosInstance.post('/api/CreateScenario', createScenarioData, {headers: getAuthHeader()})
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {

@@ -27,6 +27,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetCriteriaDrivenBudgets/{id}")]
         [ModelValidation("The scenario id is invalid.")]
+        [Filters.RestrictAccess]
         public IHttpActionResult GetCriteriaDrivenBudgets(int id) => Ok(repo.GetCriteriaDrivenBudgets(id, db));
 
         /// <summary>
@@ -38,6 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveCriteriaDrivenBudgets/{id}")]
         [ModelValidation("The criteria driven budgets data is invalid.")]
+        [Filters.RestrictAccess]
         public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetsModel> models)
         {
             var result = repo.SaveCriteriaDrivenBudgets(id, models, db);
