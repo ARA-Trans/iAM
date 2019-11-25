@@ -4,13 +4,6 @@ import { hasValue } from '@/shared/utils/has-value-util';
 
 
 export default class AuthenticationService {
-    /**
-     * Authenticates a user
-     */
-    static authenticateUser(): AxiosPromise {
-        return axiosInstance.get('/auth/AuthenticateUser', {withCredentials: true});
-    }
-
     static getUserTokens(code: string): AxiosPromise {
         return new Promise<AxiosResponse> ((resolve) => {
             axiosInstance.get(`/auth/UserTokens/${code}`)

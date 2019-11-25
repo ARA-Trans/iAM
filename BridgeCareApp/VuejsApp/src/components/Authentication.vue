@@ -44,10 +44,11 @@
 
         mounted() {
             var code: string = this.$route.query.code as string;
-            this.getUserTokensAction(code);
-            if (this.loginFailed) {
-                this.onAuthenticationFailure();
-            }
+            this.getUserTokensAction(code).then(() => {
+                if (this.loginFailed) {
+                    this.onAuthenticationFailure();
+                }
+            });
         }
 
         onAuthenticationFailure() {

@@ -31,17 +31,6 @@ const mutations = {
 };
 
 const actions = {
-    async authenticateUser({commit}: any) {
-        return await AuthenticationService.authenticateUser()
-            .then((response: AxiosResponse<UserInformation>) => {
-                if (hasValue(response, 'data')) {
-                    commit('loginMutator', false);
-                    commit('userNameMutator', response.data.name);
-                    commit('userIdMutator', response.data.id);
-                }
-            });
-    },
-
     async getUserTokens({commit}: any, code: string) {
         return await AuthenticationService.getUserTokens(code)
             .then((response: AxiosResponse<string>) => {
@@ -49,6 +38,11 @@ const actions = {
                 commit('loginMutator', false);
                 commit('userIdTokenMutator', jsonResponse.id_token);
                 commit('userAccessTokenMutator', jsonResponse.access_token);
+
+                // For test deployment only; remove before true deployment
+                console.log(response.data);
+                console.log(jsonResponse.id_token);
+                console.log(jsonResponse.access_token);
             });
     }
 };
