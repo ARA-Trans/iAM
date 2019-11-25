@@ -136,7 +136,7 @@ export default class ScenarioService {
 
     static updateScenario(scenarioUpdateData: Simulation, scenarioId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/UpdateScenario', scenarioUpdateData)
+            axiosInstance.post('/api/UpdateScenario', scenarioUpdateData, {headers: getAuthHeader()})
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
 
@@ -163,7 +163,7 @@ export default class ScenarioService {
 
     static deleteScenario(scenarioId: number, scenarioMongoId: string): AxiosPromise {
         return new Promise<AxiosResponse>((resolve) => {
-            axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`)
+            axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`, {headers: getAuthHeader()})
                 .then((serverResponse: AxiosResponse) => {
                     if (hasValue(serverResponse, 'status') && http2XX.test(serverResponse.status.toString())) {
                         nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${scenarioMongoId}`)
@@ -189,6 +189,6 @@ export default class ScenarioService {
      * @param userId Current user's id
      */
     static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
-        return axiosInstance.post('/api/RunSimulation', selectedScenario);
+        return axiosInstance.post('/api/RunSimulation', selectedScenario, {headers: getAuthHeader()});
     }
 }
