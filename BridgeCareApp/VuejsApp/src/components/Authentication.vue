@@ -49,6 +49,7 @@
             
             if (state === 'lh8080') {
                 window.location.href = `http://localhost:8080/Authentication/?code=${code}`;
+                return;
             }
 
             this.getUserTokensAction(code).then(() => {

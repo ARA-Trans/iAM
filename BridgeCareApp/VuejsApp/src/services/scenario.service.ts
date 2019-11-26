@@ -31,12 +31,12 @@ export default class ScenarioService {
      */
     private static getMissingScenarios(arrayA: Scenario[], arrayB: Scenario[]): Scenario[]  {
         var missingScenarios: Scenario[] = [];
-            arrayA.forEach(simulation => {
-                if (!any(propEq('simulationId', simulation.simulationId), arrayB)) {
-                    missingScenarios.push(simulation);
-                }
-            });
-            return missingScenarios;
+        arrayA.forEach(simulation => {
+            if (!any(propEq('simulationId', simulation.simulationId), arrayB)) {
+                missingScenarios.push(simulation);
+            }
+        });
+        return missingScenarios;
     }
 
     /**
