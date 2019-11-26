@@ -44,7 +44,13 @@
         }
 
         mounted() {
-            var code: string = this.$route.query.code as string;
+            const code: string = this.$route.query.code as string;
+            const state: string = this.$route.query.state as string;
+            
+            if (state === 'lh8080') {
+                window.location.href = `http://localhost:8080/Authentication/?code=${code}`;
+            }
+
             this.getUserTokensAction(code).then(() => {
                 if (this.loginFailed) {
                     this.onAuthenticationFailure();

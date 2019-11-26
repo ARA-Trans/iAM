@@ -32,7 +32,14 @@
 
         onRedirect() {
             if (this.loginFailed) {
-                window.location.href = `${oidcConfig.authorizationEndpoint}?response_type=code&scope=openid&scope=BAMS&client_id=${oidcConfig.clientId}&redirect_uri=${oidcConfig.redirectUri}`;
+                var href: string = `${oidcConfig.authorizationEndpoint}?response_type=code&scope=openid&scope=BAMS`;
+                href += `&client_id=${oidcConfig.clientId}`;
+                href += `&redirect_uri=${oidcConfig.redirectUri}`;
+                if (process.env.VUE_APP_IS_PRODUCTION !== 'true') {
+                    href += '&state=lh8080';
+                }
+                console.log(href);
+                window.location.href = href;
             } else {
                 this.$router.push('/Inventory/');
             }
