@@ -31,4 +31,16 @@ export default class AuthenticationService {
             });
         });
     }
+
+    static revokeToken(token: string): AxiosPromise {
+        return new Promise<AxiosResponse> ((resolve) => {
+            axiosInstance.post(`/auth/RevokeToken/${token}`)
+            .then((response: AxiosResponse<any>) => {
+                return resolve(response);
+            })
+            .catch((err: any) => {
+                return resolve(err);
+            });
+        });
+    }
 }

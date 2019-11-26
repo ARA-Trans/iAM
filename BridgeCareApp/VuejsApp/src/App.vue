@@ -56,9 +56,14 @@
                     <span class="font-weight-light">Hello, </span>
                     <span>{{userName}}</span>
                 </v-toolbar-title>
-                <v-toolbar-title v-if="loginFailed" class="white--text" @click="onNavigate('/AuthenticationStart/')">
+                <v-toolbar-title v-if="loginFailed" class="white--text">
                     <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/AuthenticationStart/')">
                         Log In
+                    </v-btn>
+                </v-toolbar-title>
+                <v-toolbar-title v-if="!loginFailed" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="logOutAction()">
+                        Log Out
                     </v-btn>
                 </v-toolbar-title>
             </v-toolbar>
@@ -102,6 +107,7 @@
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
 
         @Action('authenticateUser') authenticateUserAction: any;
+        @Action('logOut') logOutAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getNetworks') getNetworksAction: any;
         @Action('getAttributes') getAttributesAction: any;

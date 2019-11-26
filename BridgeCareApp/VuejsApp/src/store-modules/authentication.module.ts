@@ -48,6 +48,16 @@ const actions = {
                 const jsonResponse: any = JSON.parse(response.data);
                 commit('userNameMutator', jsonResponse.sub.split(',')[0].substring(3));
             });
+    },
+
+    async logOut({commit}: any) {
+        return await AuthenticationService.revokeToken(state.userAccessToken)
+            .then((response: any) => {
+                commit('loginMutator', true);
+                commit('userIdTokenMutator', '');
+                commit('userAccessTokenMutator', '');
+                commit('userNameMutator', '');
+            });
     }
 };
 

@@ -81,7 +81,35 @@ namespace BridgeCare.Controllers
             Task<HttpResponseMessage> responseTask = client.PostAsync("token", content);
             responseTask.Wait();
 
-            String response = responseTask.Result.Content.ReadAsStringAsync().Result;
+            string response = responseTask.Result.Content.ReadAsStringAsync().Result;
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("RevokeToken/{token}")]
+        public IHttpActionResult RevokeToken(string token)
+        {
+            var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
+            // These two lines should be removed as soon as the ESEC site's certificates start working
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+            HttpClient client = new HttpClient(handler);
+            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var formData = new List<KeyValuePair<string, string>>();
+            formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
+            formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
+            HttpContent content = new FormUrlEncodedContent(formData);
+
+            string query = $"?token={WebUtility.UrlDecode(token)}";
+
+            Task<HttpResponseMessage> responseTask = client.PostAsync("revoke" + query, content);
+            responseTask.Wait();
+            string response = responseTask.Result.Content.ReadAsStringAsync().Result;
 
             return Ok(response);
         }
