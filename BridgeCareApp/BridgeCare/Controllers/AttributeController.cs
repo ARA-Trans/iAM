@@ -21,6 +21,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetAttributes")]
+        [Filters.RestrictAccess]
         public IHttpActionResult GetAttributes() => Ok(repo.GetAttributes(db));
     }
 }

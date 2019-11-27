@@ -2,11 +2,15 @@ import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
 import {UserInformation} from '@/shared/models/iAM/user-information';
 import {hasValue} from '@/shared/utils/has-value-util';
+import {axiosInstance} from '@/shared/utils/axios-instance';
 
 const state = {
     loginFailed: true,
     userName: '',
     userId: '',
+    userAccessToken: '',
+    userRefreshToken: '',
+    userIdToken: '',
     userRoles: [] as Array<string>
 };
 
@@ -19,19 +23,58 @@ const mutations = {
     },
     userIdMutator(state: any, userId: string) {
         state.userId = userId;
+    },
+    userIdTokenMutator(state: any, userIdToken: string) {
+        state.userIdToken = userIdToken;
+    },
+    userAccessTokenMutator(state: any, userAccessToken: string) {
+        state.userAccessToken = userAccessToken;
+    },
+    userRefreshTokenMutator(state: any, userRefreshToken: string) {
+        state.userRefreshToken = userRefreshToken;
     }
 };
 
 const actions = {
-    async authenticateUser({commit}: any) {
-        return await AuthenticationService.authenticateUser()
-            .then((response: AxiosResponse<UserInformation>) => {
-                if (hasValue(response, 'data')) {
-                    commit('loginMutator', false);
-                    commit('userNameMutator', response.data.name);
-                    commit('userIdMutator', response.data.id);
-                }
+    async getUserTokens({commit}: any, code: string) {
+        return await AuthenticationService.getUserTokens(code)
+        .then((response: AxiosResponse<string>) => {
+            const jsonResponse: any = JSON.parse(response.data);
+            commit('loginMutator', false);
+            commit('userIdTokenMutator', jsonResponse.id_token);
+            commit('userAccessTokenMutator', jsonResponse.access_token);
+            commit('userRefreshTokenMutator', jsonResponse.refresh_token);
+        });
+    },
+
+    async refreshAccessToken({commit}: any) {
+        return await AuthenticationService.refreshAccessToken(state.userRefreshToken)
+        .then((response: AxiosResponse<string>) => {
+            const jsonResponse: any = JSON.parse(response.data);
+            commit('userAccessTokenMutator', jsonResponse.access_token);
+            commit('userRefreshTokenMutator', jsonResponse.refresh_token);
+        });
+    },
+
+    async getUserInfo({commit}: any) {
+        return await AuthenticationService.getUserInfo(state.userAccessToken)
+        .then((response: AxiosResponse<string>) => {
+            const jsonResponse: any = JSON.parse(response.data);
+            commit('userNameMutator', jsonResponse.sub.split(',')[0].substring(3));
+        });
+    },
+
+    async logOut({commit}: any) {
+        return await AuthenticationService.revokeToken(state.userAccessToken)
+        .then((response: any) => {
+            AuthenticationService.revokeToken(state.userRefreshToken).then(()=>{
+                commit('loginMutator', true);
+                commit('userIdTokenMutator', '');
+                commit('userAccessTokenMutator', '');
+                commit('userRefreshTokenMutator', '');
+                commit('userNameMutator', '');
             });
+        });
     }
 };
 

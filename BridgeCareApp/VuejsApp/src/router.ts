@@ -14,6 +14,9 @@ const TreatmentEditor = () => import(/* webpackChunkName: "treatmentEditor" */ '
 const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@/components/priority-editor/PriorityEditor.vue');
 const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
 const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
+const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@/components/Authentication.vue');
+const AuthenticationStart = () => import (/* webpackChunkName: "authenticationStart" */ '@/components/AuthenticationStart.vue');
+const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/AuthenticationFailure.vue');
 
 Vue.use(VueRouter);
 
@@ -120,15 +123,31 @@ const router = new VueRouter({
             props: true
         },
         {
+            path: '/Authentication/',
+            name: 'Authentication',
+            component: Authentication
+        },
+        {
+            path: '/AuthenticationStart/',
+            name: 'AuthenticationStart',
+            component: AuthenticationStart
+        },
+        {
+            path: '/AuthenticationFailure/',
+            name: 'AuthenticationFailure',
+            component: AuthenticationFailure
+        },
+        {
             path: '/UnderConstruction/',
             name: 'UnderConstruction',
             component: UnderConstruction
         },
         {
             path: '*',
-            redirect: '/Inventory/'
+            redirect: '/AuthenticationStart/'
         }
     ]
 });
+
 
 export default router;

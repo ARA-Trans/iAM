@@ -56,6 +56,16 @@
                     <span class="font-weight-light">Hello, </span>
                     <span>{{userName}}</span>
                 </v-toolbar-title>
+                <v-toolbar-title v-if="loginFailed" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/AuthenticationStart/')">
+                        Log In
+                    </v-btn>
+                </v-toolbar-title>
+                <v-toolbar-title v-if="!loginFailed" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="logOutAction()">
+                        Log Out
+                    </v-btn>
+                </v-toolbar-title>
             </v-toolbar>
             <v-container fluid grid-list-xl>
                 <router-view></router-view>
@@ -96,7 +106,8 @@
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
 
-        @Action('authenticateUser') authenticateUserAction: any;
+        @Action('refreshAccessToken') refreshAccessTokenAction: any;
+        @Action('logOut') logOutAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getNetworks') getNetworksAction: any;
         @Action('getAttributes') getAttributesAction: any;
@@ -195,18 +206,14 @@
                 (response: any) => successHandler(response),
                 (error: any) => errorHandler(error)
             );
-        }
 
-        /**
-         * Component has been mounted: Dispatches an action to authenticate the current user, then if user is authenticated
-         * another another action is dispatched to get the networks
-         */
-        mounted() {
-            this.authenticateUserAction().then(() => {
-                this.$forceUpdate();
-                this.getNetworksAction();
-                this.getAttributesAction();
-            });
+            // Every two minutes, the access token will be refreshed if a user is logged in.
+            // Since tokens last 5 minutes, one failed refresh attempt will not disrupt authentication.
+            window.setInterval(() => {
+                if (!this.loginFailed) {
+                    this.refreshAccessTokenAction();
+                }
+            }, 120000);
         }
 
         /**

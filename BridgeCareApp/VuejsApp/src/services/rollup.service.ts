@@ -3,6 +3,7 @@ import { axiosInstance, nodejsAxiosInstance } from '@/shared/utils/axios-instanc
 import { hasValue } from '@/shared/utils/has-value-util';
 import { any, propEq } from 'ramda';
 import { Rollup } from '../shared/models/iAM/rollup';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class RollupService {
     static getMongoRollups(): AxiosPromise {
@@ -21,7 +22,7 @@ export default class RollupService {
 
     static getLegacyNetworks(networks: Rollup[]): AxiosPromise {
         return new Promise<AxiosResponse<Rollup[]>>((resolve) => {
-            axiosInstance.get('api/GetNetworks')
+            axiosInstance.get('api/GetNetworks', {headers: getAuthorizationHeader()})
                 .then((responseLegacy: AxiosResponse<Rollup[]>) => {
                     if (hasValue(responseLegacy)) {
                         var resultant: Rollup[] = [];
@@ -52,6 +53,6 @@ export default class RollupService {
     }
 
     static rollupNetwork(selectedNetwork: Rollup): AxiosPromise {
-        return axiosInstance.post('/api/RunRollup', selectedNetwork);
+        return axiosInstance.post('/api/RunRollup', selectedNetwork, {headers: getAuthorizationHeader()});
     }
 }

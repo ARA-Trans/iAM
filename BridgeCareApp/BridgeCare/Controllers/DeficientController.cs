@@ -27,6 +27,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioDeficientLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
+        [Filters.RestrictAccess]
         public IHttpActionResult GetSimulationDeficientLibrary(int id)
             => Ok(repo.GetSimulationDeficientLibrary(id, db));
 
@@ -38,6 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioDeficientLibrary")]
         [ModelValidation("The deficient data is invalid.")]
+        [Filters.RestrictAccess]
         public IHttpActionResult SaveSimulationDeficientLibrary([FromBody] DeficientLibraryModel model)
             => Ok(repo.SaveSimulationDeficientLibrary(model, db));
     }

@@ -1,6 +1,7 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise} from 'axios';
 import {RemainingLifeLimit, RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 const modifyDataForMongoDB = (remainingLifeLimitLibrary: RemainingLifeLimitLibrary): any => {
     const remainingLifeLimitLibraryData: any = {
@@ -46,7 +47,7 @@ export default class RemainingLifeLimitService {
      * @param selectedScenarioId Scenario id to use in finding a scenario's remaining life limit library data
      */
     static getScenarioRemainingLifeLimitLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioRemainingLifeLimitLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioRemainingLifeLimitLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -54,6 +55,6 @@ export default class RemainingLifeLimitService {
      * @param saveRemainingLifeLimitLibraryData The scenario remaining life limit library upsert data
      */
     static saveScenarioRemainingLifeLimitLibrary(saveRemainingLifeLimitLibraryData: RemainingLifeLimitLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioRemainingLifeLimitLibrary', saveRemainingLifeLimitLibraryData);
+        return axiosInstance.post('/api/SaveScenarioRemainingLifeLimitLibrary', saveRemainingLifeLimitLibraryData, {headers: getAuthorizationHeader()});
     }
 }

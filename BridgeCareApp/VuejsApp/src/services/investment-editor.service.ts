@@ -1,6 +1,7 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise} from 'axios';
 import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 const modifyDataForMongoDB = (investmentLibrary: InvestmentLibrary): any => {
     const investmentLibraryData: any = {
@@ -50,7 +51,7 @@ export default class InvestmentEditorService {
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
     static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -58,6 +59,6 @@ export default class InvestmentEditorService {
      * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
     static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
+        return axiosInstance.post('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData, {headers: getAuthorizationHeader()});
     }
 }

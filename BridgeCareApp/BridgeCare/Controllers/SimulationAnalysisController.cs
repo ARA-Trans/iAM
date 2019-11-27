@@ -23,6 +23,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetScenarioAnalysisData/{id}")]
+        [Filters.RestrictAccess]
         public IHttpActionResult GetSimulationAnalysis(int id) =>
             Ok(repo.GetSimulationAnalysis(id, db));
 
@@ -33,6 +34,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioAnalysisData")]
+        [Filters.RestrictAccess]
         public IHttpActionResult UpdateSimulationAnalysis([FromBody]SimulationAnalysisModel model)
         {
             repo.UpdateSimulationAnalysis(model, db);
