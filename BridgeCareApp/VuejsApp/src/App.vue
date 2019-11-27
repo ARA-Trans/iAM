@@ -106,7 +106,7 @@
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
 
-        @Action('authenticateUser') authenticateUserAction: any;
+        @Action('refreshAccessToken') refreshAccessTokenAction: any;
         @Action('logOut') logOutAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getNetworks') getNetworksAction: any;
@@ -206,6 +206,14 @@
                 (response: any) => successHandler(response),
                 (error: any) => errorHandler(error)
             );
+
+            // Every two minutes, the access token will be refreshed if a user is logged in.
+            // Since tokens last 5 minutes, one failed refresh attempt will not disrupt authentication.
+            window.setInterval(() => {
+                if (!this.loginFailed) {
+                    this.refreshAccessTokenAction();
+                }
+            }, 120000);
         }
 
         /**

@@ -6,7 +6,21 @@ import { hasValue } from '@/shared/utils/has-value-util';
 export default class AuthenticationService {
     static getUserTokens(code: string): AxiosPromise {
         return new Promise<AxiosResponse> ((resolve) => {
-            axiosInstance.get(`/auth/UserTokens/${code}`)
+            axiosInstance.get(`/authentication/UserTokens/${code}`)
+            .then((response: AxiosResponse<string>) => {
+                if (hasValue(response, 'data')) {
+                    return resolve(response);
+                }
+            })
+            .catch((err: any) => {
+                return resolve(err);
+            });
+        });
+    }
+
+    static refreshAccessToken(refreshToken: string): AxiosPromise {
+        return new Promise<AxiosResponse> ((resolve) => {
+            axiosInstance.get(`/authentication/RefreshToken/${refreshToken}`)
             .then((response: AxiosResponse<string>) => {
                 if (hasValue(response, 'data')) {
                     return resolve(response);
@@ -20,7 +34,7 @@ export default class AuthenticationService {
 
     static getUserInfo(token: string): AxiosPromise {
         return new Promise<AxiosResponse> ((resolve) => {
-            axiosInstance.get(`/auth/UserInfo/${token}`)
+            axiosInstance.get(`/authentication/UserInfo/${token}`)
             .then((response: AxiosResponse<string>) => {
                 if (hasValue(response, 'data')) {
                     return resolve(response);
@@ -34,7 +48,7 @@ export default class AuthenticationService {
 
     static revokeToken(token: string): AxiosPromise {
         return new Promise<AxiosResponse> ((resolve) => {
-            axiosInstance.post(`/auth/RevokeToken/${token}`)
+            axiosInstance.post(`/authentication/RevokeToken/${token}`)
             .then((response: AxiosResponse<any>) => {
                 return resolve(response);
             })

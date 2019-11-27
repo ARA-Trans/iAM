@@ -36,10 +36,12 @@
                 href += `&client_id=${oidcConfig.clientId}`;
                 href += `&redirect_uri=${oidcConfig.redirectUri}`;
 
+                // The 'state' query parameter that is sent to ESEC will be sent back to
+                // the /Authentication page of the iam-deploy app.
                 if (process.env.VUE_APP_IS_PRODUCTION !== 'true') {
-                    href += '&state=lh8080';
+                    href += '&state=localhost8080';
                 }
-                
+
                 window.location.href = href;
             } else {
                 this.$router.push('/Inventory/');

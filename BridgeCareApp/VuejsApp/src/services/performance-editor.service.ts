@@ -1,7 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {PerformanceLibrary, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {getAuthHeader} from '@/shared/utils/authentication-header';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 const modifyDataForMongoDB = (performanceLibrary: PerformanceLibrary): any => {
     const performanceLibraryData: any = {
@@ -46,7 +46,7 @@ export default class PerformanceEditorService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioPerformanceLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`, {headers: getAuthHeader()});
+        return axiosInstance.get(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -54,6 +54,6 @@ export default class PerformanceEditorService {
      * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
     static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData, {headers: getAuthHeader()});
+        return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData, {headers: getAuthorizationHeader()});
     }
 }

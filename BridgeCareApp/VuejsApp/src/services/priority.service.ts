@@ -1,7 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {Priority, PriorityFund, PriorityLibrary} from '@/shared/models/iAM/priority';
-import {getAuthHeader} from '@/shared/utils/authentication-header';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 const modifyDataForMongoDB = (priorityLibrary: PriorityLibrary): any => {
     const priorityLibraryData: any = {
@@ -57,7 +57,7 @@ export default class PriorityService {
      * @param selectedScenarioId Scenario id to use in finding a scenario's priority library data
      */
     static getScenarioPriorityLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioPriorityLibrary/${selectedScenarioId}`, {headers: getAuthHeader()});
+        return axiosInstance.get(`/api/GetScenarioPriorityLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -65,6 +65,6 @@ export default class PriorityService {
      * @param saveScenarioPriorityLibraryData The scenario priority library upsert data
      */
     static saveScenarioPriorityLibrary(saveScenarioPriorityLibraryData: PriorityLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioPriorityLibrary', saveScenarioPriorityLibraryData, {headers: getAuthHeader()});
+        return axiosInstance.post('/api/SaveScenarioPriorityLibrary', saveScenarioPriorityLibraryData, {headers: getAuthorizationHeader()});
     }
 }

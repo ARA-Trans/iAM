@@ -1,7 +1,7 @@
 import { AxiosPromise } from 'axios';
 import { axiosInstance } from '@/shared/utils/axios-instance';
 import { CriteriaDrivenBudgets } from '../shared/models/iAM/criteria-driven-budgets';
-import {getAuthHeader} from '@/shared/utils/authentication-header';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class BudgetCriteriaService {
     /**
@@ -9,7 +9,7 @@ export default class BudgetCriteriaService {
      * @param selectedScenarioId Scenario object id
      */
     static getBudgetCriteria(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetCriteriaDrivenBudgets/${selectedScenarioId}`, {headers: getAuthHeader()});
+        return axiosInstance.get(`/api/GetCriteriaDrivenBudgets/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -18,6 +18,6 @@ export default class BudgetCriteriaService {
      * @param budgetCriteria List of BudgetCriteria objects
      */
     static saveBudgetCriteria(selectedScenarioId: number, budgetCriteria: CriteriaDrivenBudgets[]): AxiosPromise {
-        return axiosInstance.post(`/api/SaveCriteriaDrivenBudgets/${selectedScenarioId}`, budgetCriteria, {headers: getAuthHeader()});
+        return axiosInstance.post(`/api/SaveCriteriaDrivenBudgets/${selectedScenarioId}`, budgetCriteria, {headers: getAuthorizationHeader()});
     }
 }

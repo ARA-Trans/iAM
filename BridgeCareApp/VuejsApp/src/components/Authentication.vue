@@ -47,11 +47,14 @@
             const code: string = this.$route.query.code as string;
             const state: string = this.$route.query.state as string;
             
-            if (state === 'lh8080') {
+            // The ESEC login will always redirect the browser to the iam-deploy site.
+            // If the state is set, we know the authentication was started by a local client,
+            // and so we should send the browser back to that client.
+            if (state === 'localhost8080') {
                 window.location.href = `http://localhost:8080/Authentication/?code=${code}`;
                 return;
             }
-
+            
             this.getUserTokensAction(code).then(() => {
                 if (this.loginFailed) {
                     this.onAuthenticationFailure();

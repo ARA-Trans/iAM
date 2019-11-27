@@ -6,8 +6,6 @@ import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
 
-import store from '@/store/root-store';
-
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
 const InvestmentEditor = () => import(/* webpackChunkName: "investmentEditor" */ '@/components/investment-editor/InvestmentEditor.vue');
