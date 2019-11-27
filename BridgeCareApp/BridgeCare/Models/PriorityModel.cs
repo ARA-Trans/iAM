@@ -9,7 +9,7 @@ namespace BridgeCare.Models
     {
         public string Id { get; set; }
         public int PriorityLevel { get; set; }
-        public int Year { get; set; }
+        public int? Year { get; set; }
         public string Criteria { get; set; }
         public List<PriorityFundModel> PriorityFunds { get; set; }
 
@@ -19,7 +19,7 @@ namespace BridgeCare.Models
         {
             Id = entity.PRIORITYID.ToString();
             PriorityLevel = entity.PRIORITYLEVEL ?? 1;
-            Year = entity.YEARS ?? 0;
+            Year = entity.YEARS;
             Criteria = entity.CRITERIA;
             PriorityFunds = entity.PRIORITYFUNDS.Any()
                 ? entity.PRIORITYFUNDS.Select(pf => new PriorityFundModel(pf)).ToList()
@@ -29,14 +29,7 @@ namespace BridgeCare.Models
         public void UpdatePriority(PriorityEntity entity)
         {
             entity.PRIORITYLEVEL = PriorityLevel;
-            if(Year == 0)
-            {
-                entity.YEARS = null;
-            }
-            else
-            {
-                entity.YEARS = Year;
-            }
+            entity.YEARS = Year;
             entity.CRITERIA = Criteria;
         }
     }

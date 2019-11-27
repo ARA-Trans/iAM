@@ -7,7 +7,7 @@ export interface PriorityFund {
 export interface Priority {
     id: string;
     priorityLevel: number;
-    year: number;
+    year?: number;
     criteria: string;
     priorityFunds: PriorityFund[];
 }
@@ -28,7 +28,6 @@ export const emptyPriorityFund: PriorityFund = {
 export const emptyPriority: Priority = {
     id: '0',
     priorityLevel: 1,
-    year: 0,
     criteria: '',
     priorityFunds: []
 };
