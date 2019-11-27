@@ -86,11 +86,7 @@ namespace BridgeCare.Controllers
 
             string response = responseTask.Result.Content.ReadAsStringAsync().Result;
 
-            var responseJSON = DictionaryFromJSON(response);
-            if (responseJSON.ContainsKey("error"))
-            {
-                throw new AuthenticationException(responseJSON["error_description"]);
-            }
+            ValidateResponse(response);
 
             return Ok(response);
         }
@@ -126,11 +122,7 @@ namespace BridgeCare.Controllers
 
             string response = responseTask.Result.Content.ReadAsStringAsync().Result;
 
-            var responseJSON = DictionaryFromJSON(response);
-            if (responseJSON.ContainsKey("error"))
-            {
-                throw new AuthenticationException(responseJSON["error_description"]);
-            }
+            ValidateResponse(response);
 
             return Ok(response);
         }
