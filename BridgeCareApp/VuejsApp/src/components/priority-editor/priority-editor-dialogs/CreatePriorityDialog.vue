@@ -46,6 +46,7 @@
         mounted() {
             const endYear = moment().subtract(50, 'years');
             let currentYear = moment().add(50, 'years');
+            this.years.push('');
             while (currentYear >= endYear) {
                 this.years.push(currentYear.year().toString());
                 currentYear = currentYear.clone().subtract(1, 'years');
@@ -54,6 +55,10 @@
 
         @Watch('selectedYear')
         onSelectedYearChanged() {
+            if (this.selectedYear === '') {
+                this.newPriority.year = undefined;
+                return;
+            }
             this.newPriority.year = parseInt(this.selectedYear);
         }
 
@@ -62,7 +67,7 @@
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newPriority.priorityLevel) || !hasValue(this.newPriority.year);
+            return !hasValue(this.newPriority.priorityLevel);
         }
 
         /**
@@ -76,7 +81,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newPriority = clone({...emptyPriority, id: ObjectID.generate(), year: moment().year()});
+            this.newPriority = clone({...emptyPriority, id: ObjectID.generate(), year: this.newPriority.year});
         }
     }
 </script>

@@ -391,7 +391,7 @@
                     const row: PrioritiesDataTableRow = {
                         id: priority.id,
                         priorityLevel: priority.priorityLevel.toString(),
-                        year: priority.year.toString(),
+                        year: priority.year === null || priority.year === undefined ? '' : priority.year.toString(),
                         criteria: priority.criteria
                     };
 
