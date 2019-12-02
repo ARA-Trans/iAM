@@ -27,7 +27,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioPriorityLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-PlanningPartner")]
         public IHttpActionResult GetSimulationPriorityLibrary(int id) =>
             Ok(repo.GetSimulationPriorityLibrary(id, db));
 
@@ -39,7 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioPriorityLibrary")]
         [ModelValidation("The priority data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("admin")]
         public IHttpActionResult SaveSimulationPriorityLibrary([FromBody]PriorityLibraryModel model) =>
             Ok(repo.SaveSimulationPriorityLibrary(model, db));
     }

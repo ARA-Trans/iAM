@@ -14,6 +14,13 @@ namespace BridgeCare.Controllers.Filters
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class RestrictAccessAttribute : AuthorizeAttribute
     {
+        private string[] PermittedRoles { get; set; }
+
+        public RestrictAccessAttribute (params string[] roles) : base()
+        {
+            this.PermittedRoles = roles;
+        }
+
         protected override bool IsAuthorized(HttpActionContext httpContext)
         {
             if (!httpContext.Request.Headers.Contains("Authorization"))
@@ -30,7 +37,19 @@ namespace BridgeCare.Controllers.Filters
             if (!userInfo.ContainsKey("roles")) {
                 return false;
             }
-            return true;
+            if (PermittedRoles.Length == 0)
+            {
+                return true;
+            }
+            string role = ParseRoleResponse(userInfo["roles"]);
+            return PermittedRoles.Contains(role);
+        }
+
+        private static string ParseRoleResponse(string roleResponse)
+        {
+            string firstSegment = roleResponse.Split(',')[0];
+            string role = firstSegment.Substring(3);
+            return role;
         }
     }
 }
