@@ -67,7 +67,7 @@
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newPriority.priorityLevel) || !hasValue(this.newPriority.year);
+            return !hasValue(this.newPriority.priorityLevel);
         }
 
         /**
