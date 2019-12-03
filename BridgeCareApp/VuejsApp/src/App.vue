@@ -1,7 +1,7 @@
 <template>
     <v-app class="paper-white-bg">
         <v-content>
-            <v-navigation-drawer app v-if="!loginFailed" class="paper-white-bg" v-model="drawer">
+            <v-navigation-drawer app v-if="authenticated" class="paper-white-bg" v-model="drawer">
                 <v-list dense class="pt-0">
                     <v-list-tile @click="onNavigate('/Inventory/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-archive</v-icon></v-list-tile-action>
@@ -46,23 +46,23 @@
                 </v-list>
             </v-navigation-drawer>
             <v-toolbar app class="ara-blue-pantone-289-bg">
-                <v-toolbar-side-icon v-if="!loginFailed" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+                <v-toolbar-side-icon v-if="authenticated" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
                     <span class="font-weight-light">Scenario: </span>
                     <span>{{selectedScenarioName}}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-toolbar-title v-if="!loginFailed" class="white--text">
+                <v-toolbar-title v-if="authenticated" class="white--text">
                     <span class="font-weight-light">Hello, </span>
-                    <span>{{userName}}</span>
+                    <span>{{username}}</span>
                 </v-toolbar-title>
-                <v-toolbar-title v-if="loginFailed" class="white--text">
+                <v-toolbar-title v-if="!authenticated" class="white--text">
                     <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/AuthenticationStart/')">
                         Log In
                     </v-btn>
                 </v-toolbar-title>
-                <v-toolbar-title v-if="!loginFailed" class="white--text">
-                    <v-btn round class="ara-blue-bg white--text" @click="logOutAction()">
+                <v-toolbar-title v-if="authenticated" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="onLogout()">
                         Log Out
                     </v-btn>
                 </v-toolbar-title>
@@ -98,8 +98,8 @@
         components: {Spinner}
     })
     export default class AppComponent extends Vue {
-        @State(state => state.authentication.loginFailed) loginFailed: boolean;
-        @State(state => state.authentication.userName) userName: string;
+        @State(state => state.authentication.authenticated) authenticated: boolean;
+        @State(state => state.authentication.username) username: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
@@ -210,10 +210,23 @@
             // Every two minutes, the access token will be refreshed if a user is logged in.
             // Since tokens last 5 minutes, one failed refresh attempt will not disrupt authentication.
             window.setInterval(() => {
-                if (!this.loginFailed) {
+                if (this.authenticated) {
                     this.refreshAccessTokenAction();
+                } else {
+                    this.onLogout();
                 }
             }, 120000);
+        }
+
+        /**
+         * Dispatches an action that will revoke all user tokens and redirect users to the landing page
+         */
+        onLogout() {
+            this.logOutAction().then(() => {
+                if (window.location.href.indexOf('iAM') === -1) {
+                    this.$router.push('/iAM/');
+                }
+            });
         }
 
         /**
