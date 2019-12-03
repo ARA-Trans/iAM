@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Configuration;
 using System.Security.Authentication;
-using System.Web;
 using System.Web.Http;
-using System.Web.Http.Cors;
 using System.Web.Script.Serialization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using BridgeCare.Models;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
@@ -32,6 +29,11 @@ namespace BridgeCare.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Fetches user info as a JSON-formatted string from ESEC
+        /// </summary>
+        /// <param name="token">Access token</param>
+        /// <returns>JSON-formatted user info</returns>
         public static string GetUserInfoString(string token)
         {
             var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
@@ -54,6 +56,11 @@ namespace BridgeCare.Controllers
             return responseTask.Result.Content.ReadAsStringAsync().Result;
         }
 
+        /// <summary>
+        /// Fetches user info as a dictionary
+        /// </summary>
+        /// <param name="token">Access token</param>
+        /// <returns>User info dictionary</returns>
         public static Dictionary<string,string> GetUserInfoDictionary(string token)
         {
             return DictionaryFromJSON(GetUserInfoString(token));
