@@ -54,6 +54,11 @@ namespace BridgeCare.Controllers
             return responseTask.Result.Content.ReadAsStringAsync().Result;
         }
 
+        public static Dictionary<string,string> GetUserInfoDictionary(string token)
+        {
+            return DictionaryFromJSON(GetUserInfoString(token));
+        }
+
         /// <summary>
         /// API endpoint for fetching ID and Access tokens from ESEC using the OpenID Connect protocol
         /// </summary>

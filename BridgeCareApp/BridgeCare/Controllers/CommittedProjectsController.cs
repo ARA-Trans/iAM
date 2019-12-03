@@ -27,7 +27,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveCommittedProjectsFiles")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveCommittedProjectsFiles()
         {
             if (!Request.Content.IsMimeMultipartContent())
@@ -46,7 +46,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/ExportCommittedProjects")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public HttpResponseMessage ExportCommittedProjects([FromBody]SimulationModel model)
         {
             var response = Request.CreateResponse();

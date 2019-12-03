@@ -39,7 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioDeficientLibrary")]
         [ModelValidation("The deficient data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveSimulationDeficientLibrary([FromBody] DeficientLibraryModel model)
             => Ok(repo.SaveSimulationDeficientLibrary(model, db));
     }

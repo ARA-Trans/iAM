@@ -36,7 +36,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioTreatmentLibrary")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveSimulationTreatmentLibrary([FromBody]TreatmentLibraryModel model) =>
             Ok(repo.SaveSimulationTreatmentLibrary(model, db));
     }
