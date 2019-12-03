@@ -3,7 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http.Controllers;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.Net.Http;
+using System.Net;
+using System.Web.Script.Serialization;
 
 namespace BridgeCare.Controllers.Filters
 {
@@ -14,6 +24,7 @@ namespace BridgeCare.Controllers.Filters
     public class RestrictAccessAttribute : AuthorizeAttribute
     {
         private string[] PermittedRoles { get; set; }
+        private static RsaSecurityKey ESECPublicKey { get; set; }
 
         /// <summary>
         /// Only users with the provided roles will be able to access the endpoint.
@@ -27,21 +38,79 @@ namespace BridgeCare.Controllers.Filters
 
         protected override bool IsAuthorized(HttpActionContext httpContext)
         {
-            if (!TryGetAuthorization(httpContext.Request.Headers, out string accessToken))
+            if (!TryGetAuthorization(httpContext.Request.Headers, out string idToken))
             {
                 return false;
             }
-            Dictionary<string, string> userInfo = AuthenticationController.GetUserInfoDictionary(accessToken);
-            if (!userInfo.ContainsKey("roles")) 
-            {
-                return false;
-            }
+
+            JwtSecurityToken decodedToken = DecodeToken(idToken);
+
+            Claim roleClaim = decodedToken.Claims.First(claim => claim.Type == "roles");
+
+            string role = ParseRoleResponse(roleClaim.Value);
+            
             if (PermittedRoles.Length == 0)
             {
                 return true;
             }
-            string role = ParseRoleResponse(userInfo["roles"]);
+
             return PermittedRoles.Contains(role);
+        }
+
+        /// <summary>
+        /// Creates a JwtSecurityToken object from a JWT string.
+        /// </summary>
+        /// <param name="idToken">JWT string</param>
+        private JwtSecurityToken DecodeToken(string idToken)
+        {
+            if (ESECPublicKey == null)
+            {
+                GetPublicKey();
+            }
+            var validationParameters = new TokenValidationParameters
+            {
+                RequireExpirationTime = true,
+                RequireSignedTokens = true,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateLifetime = true,
+                IssuerSigningKey = ESECPublicKey
+            };
+
+            var handler = new JwtSecurityTokenHandler();
+            handler.ValidateToken(idToken, validationParameters, out SecurityToken validatedToken);
+            return validatedToken as JwtSecurityToken;
+        }
+
+        /// <summary>
+        /// Fetches the public key information from the ESEC jwks endpoint, and generates an RsaSecurityKey from it
+        /// </summary>
+        private static void GetPublicKey()
+        {
+            var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
+            // These two lines should be removed as soon as the ESEC site's certificates start working
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+            HttpClient client = new HttpClient(handler);
+            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            Task<HttpResponseMessage> responseTask = client.GetAsync("jwks?AuthorizationProvider=OIDC Auth Provider");
+            responseTask.Wait();
+
+            string resultJSON = responseTask.Result.Content.ReadAsStringAsync().Result;
+
+            var resultDictionary = (new JavaScriptSerializer()).Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(resultJSON);
+            
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.ImportParameters(new RSAParameters()
+            {
+                Modulus = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["n"]),
+                Exponent = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["e"])
+            });
+            ESECPublicKey = new RsaSecurityKey(rsa);
         }
 
         /// <summary>
