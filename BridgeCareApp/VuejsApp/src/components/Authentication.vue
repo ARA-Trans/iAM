@@ -18,10 +18,13 @@
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
+    import AuthenticationService from '@/services/authentication.service';
+    import {AxiosResponse} from 'axios';
+    import {http2XX} from '@/shared/utils/http-utils';
 
     @Component
     export default class Authentication extends Vue {
-        @State(state => state.authentication.loginFailed) loginFailed: boolean;
+        @State(state => state.authentication.authenticated) authenticated: boolean;
 
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -30,9 +33,9 @@
         @Action('getNetworks') getNetworksAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
-        @Watch('loginFailed')
+        @Watch('authenticated')
         onLoginChange() {
-            if (this.loginFailed) {
+            if (!this.authenticated) {
                 this.onAuthenticationFailure();
             } else {
                 this.setSuccessMessageAction({message: 'Authentication successful.'});
@@ -54,9 +57,9 @@
                 window.location.href = `http://localhost:8080/Authentication/?code=${code}`;
                 return;
             }
-            
+
             this.getUserTokensAction(code).then(() => {
-                if (this.loginFailed) {
+                if (!this.authenticated) {
                     this.onAuthenticationFailure();
                 } else {
                     this.getUserInfoAction();

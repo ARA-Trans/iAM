@@ -28,10 +28,10 @@
 
     @Component
     export default class AuthenticationStart extends Vue {
-        @State(state => state.authentication.loginFailed) loginFailed: boolean;
+        @State(state => state.authentication.authenticated) authenticated: boolean;
 
         onRedirect() {
-            if (this.loginFailed) {
+            if (!this.authenticated) {
                 var href: string = `${oidcConfig.authorizationEndpoint}?response_type=code&scope=openid&scope=BAMS`;
                 href += `&client_id=${oidcConfig.clientId}`;
                 href += `&redirect_uri=${oidcConfig.redirectUri}`;
