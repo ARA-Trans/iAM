@@ -28,12 +28,12 @@ const actions = {
             });
     },
 
-    async refreshAccessToken({commit, dispatch}: any) {
+    async refreshTokens({commit, dispatch}: any) {
         if (!localStorage.getItem('UserTokens')) {
             dispatch('logOut');
         } else {
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-            await AuthenticationService.refreshAccessToken(userTokens.refresh_token)
+            await AuthenticationService.refreshTokens(userTokens.refresh_token)
                 .then((response: AxiosResponse<string>) => {
                     if (http2XX.test(response.status.toString())) {
                         localStorage.setItem('UserTokens', JSON.stringify({
