@@ -17,18 +17,19 @@ function authorizationFilter(permittedRoles) {
         if (!Array.isArray(permittedRoles) || permittedRoles.length === 0) {
             return done(null, jwtPayload);
         }
-        console.log('verifying...');
-        console.log(jwtPayload.roles);
         role = jwtPayload.roles.split(',')[0].split('=')[1];
         if (permittedRoles.some(permittedRole => permittedRole === role)){
             return done(null, jwtPayload);
         }
         return done(null, false);
-    };
+    }
 
     const strategy = new jwtStrategy(jwtStrategyOptions, verify);
-    passport.use(strategy);
-    return passport.authenticate('jwt', { session: false });
+
+    const strategyName = permittedRoles === undefined ? 'all' : permittedRoles.join(',');
+    
+    passport.use(strategyName, strategy);
+    return passport.authenticate(strategyName, { session: false });
 }
 
 module.exports = authorizationFilter;

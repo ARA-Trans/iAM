@@ -215,7 +215,7 @@
                 } else {
                     this.onLogout();
                 }
-            }, 120000);
+            }, 29 * 60 * 1000); // 29 minutes between token refreshes
         }
 
         /**
