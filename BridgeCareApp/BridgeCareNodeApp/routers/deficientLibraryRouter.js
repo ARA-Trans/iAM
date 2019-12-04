@@ -7,8 +7,8 @@ function deficientLibraryRouter(DeficientLibrary) {
     const controller = deficientLibraryController(DeficientLibrary);
 
     router.route('/GetDeficientLibraries').get(authorizationFilter(), controller.get);
-    router.route('/CreateDeficientLibrary').post(authorizationFilter(), controller.post);
-    router.route('/UpdateDeficientLibrary').put(authorizationFilter(), controller.put);
+    router.route('/CreateDeficientLibrary').post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+    router.route('/UpdateDeficientLibrary').put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
 
     return router;
 }

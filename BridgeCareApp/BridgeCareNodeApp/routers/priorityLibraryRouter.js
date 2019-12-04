@@ -7,8 +7,8 @@ function priorityLibraryRouter(PriorityLibrary) {
     const controller = priorityLibraryController(PriorityLibrary);
 
     router.route('/GetPriorityLibraries').get(authorizationFilter(), controller.get);
-    router.route('/CreatePriorityLibrary').post(authorizationFilter(), controller.post);
-    router.route('/UpdatePriorityLibrary').put(authorizationFilter(), controller.put);
+    router.route('/CreatePriorityLibrary').post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+    router.route('/UpdatePriorityLibrary').put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
 
     return router;
 }
