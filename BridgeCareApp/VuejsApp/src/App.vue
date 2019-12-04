@@ -207,15 +207,15 @@
                 (error: any) => errorHandler(error)
             );
 
-            // Every two minutes, the access token will be refreshed if a user is logged in.
-            // Since tokens last 5 minutes, one failed refresh attempt will not disrupt authentication.
+            // Every 29 minutes, the access token will be refreshed if a user is logged in.
+            // Tokens last 30 minutes
             window.setInterval(() => {
                 if (this.authenticated) {
                     this.refreshAccessTokenAction();
                 } else {
                     this.onLogout();
                 }
-            }, 29 * 60 * 1000); // 29 minutes between token refreshes
+            }, 29 * 60 * 1000);
         }
 
         /**
