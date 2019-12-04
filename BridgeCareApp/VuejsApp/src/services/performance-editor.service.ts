@@ -22,7 +22,7 @@ export default class PerformanceEditorService {
      * Gets all performance Libraries a user can read/edit
      */
     static getPerformanceLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetPerformanceLibraries');
+        return nodejsAxiosInstance.get('/api/GetPerformanceLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -30,7 +30,7 @@ export default class PerformanceEditorService {
      * @param createPerformanceLibraryData The performance library create data
      */
     static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', modifyDataForMongoDB(createPerformanceLibraryData));
+        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', modifyDataForMongoDB(createPerformanceLibraryData), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -38,7 +38,7 @@ export default class PerformanceEditorService {
      * @param updatePerformanceLibraryData The performance library update data
      */
     static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', modifyDataForMongoDB(updatePerformanceLibraryData));
+        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', modifyDataForMongoDB(updatePerformanceLibraryData), {headers: getAuthorizationHeader()});
     }
 
     /**

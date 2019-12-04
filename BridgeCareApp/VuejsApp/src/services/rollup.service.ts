@@ -8,7 +8,7 @@ import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 export default class RollupService {
     static getMongoRollups(): AxiosPromise {
         return new Promise<AxiosResponse<Rollup[]>>((resolve) => {
-            nodejsAxiosInstance.get('api/GetMongoRollups')
+            nodejsAxiosInstance.get('api/GetMongoRollups', {headers: getAuthorizationHeader()})
                 .then((response: AxiosResponse<Rollup[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);
@@ -34,7 +34,7 @@ export default class RollupService {
                         });
 
                         if (resultant.length != 0) {
-                            nodejsAxiosInstance.post('api/AddLegacyNetworks', resultant)
+                            nodejsAxiosInstance.post('api/AddLegacyNetworks', resultant, {headers: getAuthorizationHeader()})
                                 .then((res: AxiosResponse<Rollup[]>) => {
                                     if (hasValue(res)) {
                                         return resolve(res);

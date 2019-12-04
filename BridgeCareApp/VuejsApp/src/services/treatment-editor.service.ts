@@ -46,7 +46,7 @@ export default class TreatmentEditorService {
      * Gets all treatment libraries
      */
     static getTreatmentLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetTreatmentLibraries');
+        return nodejsAxiosInstance.get('/api/GetTreatmentLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -54,7 +54,7 @@ export default class TreatmentEditorService {
      * @param createTreatmentLibraryData The treatment library create data
      */
     static createTreatmentLibrary(createTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateTreatmentLibrary', modifyDataForMongoDB(createTreatmentLibraryData));
+        return nodejsAxiosInstance.post('/api/CreateTreatmentLibrary', modifyDataForMongoDB(createTreatmentLibraryData), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -62,7 +62,7 @@ export default class TreatmentEditorService {
      * @param updateTreatmentLibraryData The treatment library update data
      */
     static updateTreatmentLibrary(updateTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateTreatmentLibrary', modifyDataForMongoDB(updateTreatmentLibraryData));
+        return nodejsAxiosInstance.put('/api/UpdateTreatmentLibrary', modifyDataForMongoDB(updateTreatmentLibraryData), {headers: getAuthorizationHeader()});
     }
 
     /**
