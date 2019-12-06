@@ -41,19 +41,21 @@ namespace BridgeCare.Controllers
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            HttpClient client = new HttpClient(handler);
-            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var formData = new List<KeyValuePair<string, string>>();
-            formData.Add(new KeyValuePair<string, string>("access_token", WebUtility.UrlDecode(token)));
-            HttpContent content = new FormUrlEncodedContent(formData);
+                var formData = new List<KeyValuePair<string, string>>();
+                formData.Add(new KeyValuePair<string, string>("access_token", WebUtility.UrlDecode(token)));
+                HttpContent content = new FormUrlEncodedContent(formData);
 
-            Task<HttpResponseMessage> responseTask = client.PostAsync("userinfo", content);
-            responseTask.Wait();
+                Task<HttpResponseMessage> responseTask = client.PostAsync("userinfo", content);
+                responseTask.Wait();
 
-            return responseTask.Result.Content.ReadAsStringAsync().Result;
+                return responseTask.Result.Content.ReadAsStringAsync().Result;
+            }
         }
 
         /// <summary>
@@ -80,27 +82,29 @@ namespace BridgeCare.Controllers
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            HttpClient client = new HttpClient(handler);
-            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var formData = new List<KeyValuePair<string, string>>();
-            formData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
-            formData.Add(new KeyValuePair<string, string>("code", WebUtility.UrlDecode(code)));
-            formData.Add(new KeyValuePair<string, string>("redirect_uri", esecConfig["ESECRedirect"]));
-            formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
-            formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
-            HttpContent content = new FormUrlEncodedContent(formData);
+                var formData = new List<KeyValuePair<string, string>>();
+                formData.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
+                formData.Add(new KeyValuePair<string, string>("code", WebUtility.UrlDecode(code)));
+                formData.Add(new KeyValuePair<string, string>("redirect_uri", esecConfig["ESECRedirect"]));
+                formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
+                formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
+                HttpContent content = new FormUrlEncodedContent(formData);
 
-            Task<HttpResponseMessage> responseTask = client.PostAsync("token", content);
-            responseTask.Wait();
+                Task<HttpResponseMessage> responseTask = client.PostAsync("token", content);
+                responseTask.Wait();
 
-            string response = responseTask.Result.Content.ReadAsStringAsync().Result;
+                string response = responseTask.Result.Content.ReadAsStringAsync().Result;
 
-            ValidateResponse(response);
+                ValidateResponse(response);
 
-            return Ok(response);
+                return Ok(response);
+            }
         }
 
         /// <summary>
@@ -117,26 +121,28 @@ namespace BridgeCare.Controllers
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            HttpClient client = new HttpClient(handler);
-            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var formData = new List<KeyValuePair<string, string>>();
-            formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
-            formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
-            HttpContent content = new FormUrlEncodedContent(formData);
+                var formData = new List<KeyValuePair<string, string>>();
+                formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
+                formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
+                HttpContent content = new FormUrlEncodedContent(formData);
 
-            string query = $"?grant_type=refresh_token&refresh_token={WebUtility.UrlDecode(refreshToken)}";
+                string query = $"?grant_type=refresh_token&refresh_token={WebUtility.UrlDecode(refreshToken)}";
 
-            Task<HttpResponseMessage> responseTask = client.PostAsync("token" + query, content);
-            responseTask.Wait();
+                Task<HttpResponseMessage> responseTask = client.PostAsync("token" + query, content);
+                responseTask.Wait();
 
-            string response = responseTask.Result.Content.ReadAsStringAsync().Result;
+                string response = responseTask.Result.Content.ReadAsStringAsync().Result;
 
-            ValidateResponse(response);
+                ValidateResponse(response);
 
-            return Ok(response);
+                return Ok(response);
+            }
         }
 
         /// <summary>
@@ -153,29 +159,31 @@ namespace BridgeCare.Controllers
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            HttpClient client = new HttpClient(handler);
-            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var formData = new List<KeyValuePair<string, string>>();
-            formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
-            formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
-            HttpContent content = new FormUrlEncodedContent(formData);
-
-            string query = $"?token={WebUtility.UrlDecode(token)}";
-
-            Task<HttpResponseMessage> responseTask = client.PostAsync("revoke" + query, content);
-            responseTask.Wait();
-            if (responseTask.Result.StatusCode == HttpStatusCode.OK)
+            using (HttpClient client = new HttpClient(handler))
             {
-                return Ok();
+                client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var formData = new List<KeyValuePair<string, string>>();
+                formData.Add(new KeyValuePair<string, string>("client_id", esecConfig["ESECClientId"]));
+                formData.Add(new KeyValuePair<string, string>("client_secret", esecConfig["ESECClientSecret"]));
+                HttpContent content = new FormUrlEncodedContent(formData);
+
+                string query = $"?token={WebUtility.UrlDecode(token)}";
+
+                Task<HttpResponseMessage> responseTask = client.PostAsync("revoke" + query, content);
+                responseTask.Wait();
+                if (responseTask.Result.StatusCode == HttpStatusCode.OK)
+                {
+                    return Ok();
+                }
+
+                string response = responseTask.Result.Content.ReadAsStringAsync().Result;
+                ValidateResponse(response);
+
+                return Ok(response);
             }
-
-            string response = responseTask.Result.Content.ReadAsStringAsync().Result;
-            ValidateResponse(response);
-
-            return Ok(response);
         }
 
         /// <summary>

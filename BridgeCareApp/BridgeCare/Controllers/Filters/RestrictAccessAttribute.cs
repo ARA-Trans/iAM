@@ -92,25 +92,28 @@ namespace BridgeCare.Controllers.Filters
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
-            HttpClient client = new HttpClient(handler);
-            client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            Task<HttpResponseMessage> responseTask = client.GetAsync("jwks?AuthorizationProvider=OIDC Auth Provider");
-            responseTask.Wait();
-
-            string resultJSON = responseTask.Result.Content.ReadAsStringAsync().Result;
-
-            var resultDictionary = (new JavaScriptSerializer()).Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(resultJSON);
-            
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            rsa.ImportParameters(new RSAParameters()
+            using (HttpClient client = new HttpClient(handler))
             {
-                Modulus = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["n"]),
-                Exponent = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["e"])
-            });
-            ESECPublicKey = new RsaSecurityKey(rsa);
+                client.BaseAddress = new Uri(esecConfig["ESECBaseAddress"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                Task<HttpResponseMessage> responseTask = client.GetAsync("jwks?AuthorizationProvider=OIDC Auth Provider");
+                responseTask.Wait();
+
+                string resultJSON = responseTask.Result.Content.ReadAsStringAsync().Result;
+
+                // This dictionary and list structure matches the structure of the JSON response from the ESEC JWKS endpoint
+                var resultDictionary = (new JavaScriptSerializer()).Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(resultJSON);
+
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                rsa.ImportParameters(new RSAParameters()
+                {
+                    Modulus = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["n"]),
+                    Exponent = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["e"])
+                });
+                ESECPublicKey = new RsaSecurityKey(rsa);
+            }
         }
 
         /// <summary>
