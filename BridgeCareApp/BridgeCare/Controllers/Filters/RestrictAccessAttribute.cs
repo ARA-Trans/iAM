@@ -23,17 +23,25 @@ namespace BridgeCare.Controllers.Filters
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class RestrictAccessAttribute : AuthorizeAttribute
     {
-        private string[] PermittedRoles { get; set; }
-        private static RsaSecurityKey ESECPublicKey { get; set; }
+        private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
+        private readonly Func<string, bool> ValidateRole;
 
         /// <summary>
         /// Only users with the provided roles will be able to access the endpoint.
         /// If no roles are listed, all authenticated users will be able to access it.
         /// </summary>
         /// <param name="roles">Permitted roles</param>
-        public RestrictAccessAttribute (params string[] roles) : base()
+        public RestrictAccessAttribute(params string[] roles) : base()
         {
-            this.PermittedRoles = roles;
+            ValidateRole = (role) =>
+            {
+                return roles.Contains(role);
+            };
+        }
+
+        public RestrictAccessAttribute() : base()
+        {
+            ValidateRole = (role) => true;
         }
 
         protected override bool IsAuthorized(HttpActionContext httpContext)
@@ -48,13 +56,8 @@ namespace BridgeCare.Controllers.Filters
             Claim roleClaim = decodedToken.Claims.First(claim => claim.Type == "roles");
 
             string role = ParseRoleResponse(roleClaim.Value);
-            
-            if (PermittedRoles.Length == 0)
-            {
-                return true;
-            }
 
-            return PermittedRoles.Contains(role);
+            return ValidateRole(role);
         }
 
         /// <summary>
@@ -63,10 +66,6 @@ namespace BridgeCare.Controllers.Filters
         /// <param name="idToken">JWT string</param>
         private JwtSecurityToken DecodeToken(string idToken)
         {
-            if (ESECPublicKey == null)
-            {
-                GetPublicKey();
-            }
             var validationParameters = new TokenValidationParameters
             {
                 RequireExpirationTime = true,
@@ -85,7 +84,7 @@ namespace BridgeCare.Controllers.Filters
         /// <summary>
         /// Fetches the public key information from the ESEC jwks endpoint, and generates an RsaSecurityKey from it
         /// </summary>
-        private static void GetPublicKey()
+        private static RsaSecurityKey GetPublicKey()
         {
             var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
             // These two lines should be removed as soon as the ESEC site's certificates start working
@@ -112,12 +111,12 @@ namespace BridgeCare.Controllers.Filters
                     Modulus = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["n"]),
                     Exponent = Base64UrlEncoder.DecodeBytes(resultDictionary["keys"][0]["e"])
                 });
-                ESECPublicKey = new RsaSecurityKey(rsa);
+                return new RsaSecurityKey(rsa);
             }
         }
 
         /// <summary>
-        /// Given the LDAP-formatted "roles" string from ESEC, extracts the role
+        /// Given the LDAP-formatted "roles" string from ESEC, extracts the role from the Common Name (CN) field.
         /// </summary>
         /// <param name="roleResponse">LDAP-formatted response</param>
         /// <returns>Role</returns>
