@@ -7,6 +7,6 @@ import {UserTokens} from '@/shared/models/iAM/authentication';
 export const getAuthorizationHeader = () => {
     if (localStorage.getItem('UserTokens')) {
         const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-        return {'Authorization': `Bearer ${userTokens.access_token}`};
+        return { 'Authorization': `Bearer ${userTokens.id_token}` };
     }
 };

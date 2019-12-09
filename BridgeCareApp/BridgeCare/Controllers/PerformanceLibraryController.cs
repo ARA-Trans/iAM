@@ -37,7 +37,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioPerformanceLibrary")]
         [ModelValidation("The performance data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveSimulationPerformanceLibrary([FromBody]PerformanceLibraryModel model)
         {
             var performanceLibraryModel = repo.SaveSimulationPerformanceLibrary(model, db);

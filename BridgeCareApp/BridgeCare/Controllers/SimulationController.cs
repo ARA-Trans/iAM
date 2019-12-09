@@ -48,7 +48,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/UpdateScenario")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult UpdateSimulation([FromBody]SimulationModel model)
         {
             repo.UpdateSimulation(model, db);
@@ -63,7 +63,7 @@ namespace BridgeCare.Controllers
         [HttpDelete]
         [Route("api/DeleteScenario/{id}")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult DeleteSimulation(int id)
         {
             repo.DeleteSimulation(id, db);

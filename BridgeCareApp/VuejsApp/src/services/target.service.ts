@@ -25,7 +25,7 @@ export default class TargetService {
      * Gets target libraries data
      */
     static getTargetLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetTargetLibraries');
+        return nodejsAxiosInstance.get('/api/GetTargetLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -33,7 +33,7 @@ export default class TargetService {
      * @param createdTargetLibrary The target library create data
      */
     static createTargetLibrary(createdTargetLibrary: TargetLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateTargetLibrary', modifyDataForMongoDB(createdTargetLibrary));
+        return nodejsAxiosInstance.post('/api/CreateTargetLibrary', modifyDataForMongoDB(createdTargetLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -41,7 +41,7 @@ export default class TargetService {
      * @param updatedTargetLibrary The target library update data
      */
     static updateTargetLibrary(updatedTargetLibrary: TargetLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateTargetLibrary', modifyDataForMongoDB(updatedTargetLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateTargetLibrary', modifyDataForMongoDB(updatedTargetLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**

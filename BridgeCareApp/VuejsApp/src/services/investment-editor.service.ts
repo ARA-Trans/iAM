@@ -27,7 +27,7 @@ export default class InvestmentEditorService {
      * Gets all investment libraries
      */
     static getInvestmentLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetInvestmentLibraries');
+        return nodejsAxiosInstance.get('/api/GetInvestmentLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -35,7 +35,7 @@ export default class InvestmentEditorService {
      * @param createdInvestmentLibrary The investment library create data
      */
     static createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', modifyDataForMongoDB(createdInvestmentLibrary));
+        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', modifyDataForMongoDB(createdInvestmentLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -43,7 +43,7 @@ export default class InvestmentEditorService {
      * @param updatedInvestmentLibrary The investment library update data
      */
     static updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', modifyDataForMongoDB(updatedInvestmentLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', modifyDataForMongoDB(updatedInvestmentLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**

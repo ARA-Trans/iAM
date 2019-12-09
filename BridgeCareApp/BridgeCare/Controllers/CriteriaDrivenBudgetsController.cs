@@ -39,7 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveCriteriaDrivenBudgets/{id}")]
         [ModelValidation("The criteria driven budgets data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetsModel> models)
         {
             var result = repo.SaveCriteriaDrivenBudgets(id, models, db);

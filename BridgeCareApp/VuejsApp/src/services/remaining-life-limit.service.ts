@@ -23,7 +23,7 @@ export default class RemainingLifeLimitService {
      * Gets all remaining life limit libraries
      */
     static getRemainingLifeLimitLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetRemainingLifeLimitLibraries');
+        return nodejsAxiosInstance.get('/api/GetRemainingLifeLimitLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -31,7 +31,7 @@ export default class RemainingLifeLimitService {
      * @param createdRemainingLifeLimitLibrary The remaining life limit library create data
      */
     static createRemainingLifeLimitLibrary(createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateRemainingLifeLimitLibrary', modifyDataForMongoDB(createdRemainingLifeLimitLibrary));
+        return nodejsAxiosInstance.post('/api/CreateRemainingLifeLimitLibrary', modifyDataForMongoDB(createdRemainingLifeLimitLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -39,7 +39,7 @@ export default class RemainingLifeLimitService {
      * @param updatedRemainingLifeLimitLibrary The remaining life limit library update data
      */
     static updateRemainingLifeLimitLibrary(updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateRemainingLifeLimitLibrary', modifyDataForMongoDB(updatedRemainingLifeLimitLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateRemainingLifeLimitLibrary', modifyDataForMongoDB(updatedRemainingLifeLimitLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**

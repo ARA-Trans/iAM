@@ -3,6 +3,8 @@ const debug = require('debug')('app');
 const app = express();
 require('./config/express')(app);
 
+const passport = require("passport");
+
 const env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const config = require('./config/config')[env];

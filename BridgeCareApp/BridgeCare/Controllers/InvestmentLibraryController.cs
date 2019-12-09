@@ -41,7 +41,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioInvestmentLibrary")]
         [ModelValidation("Given investment data is not valid")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveSimulationInvestmentLibrary([FromBody]InvestmentLibraryModel model)
             => Ok(repo.SaveSimulationInvestmentLibrary(model, db));
     }

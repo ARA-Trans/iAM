@@ -18,7 +18,7 @@ export default class AuthenticationService {
         });
     }
 
-    static refreshAccessToken(refreshToken: string): AxiosPromise {
+    static refreshTokens(refreshToken: string): AxiosPromise {
         return new Promise<AxiosResponse> ((resolve) => {
             axiosInstance.get(`/authentication/RefreshToken/${refreshToken}`)
             .then((response: AxiosResponse<string>) => {

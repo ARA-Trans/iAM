@@ -25,7 +25,7 @@ export default class DeficientService {
      * Gets deficient libraries
      */
     static getDeficientLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetDeficientLibraries');
+        return nodejsAxiosInstance.get('/api/GetDeficientLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -33,7 +33,7 @@ export default class DeficientService {
      * @param createdDeficientLibrary The deficient library create data
      */
     static createDeficientLibrary(createdDeficientLibrary: DeficientLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateDeficientLibrary', modifyDataForMongoDB(createdDeficientLibrary));
+        return nodejsAxiosInstance.post('/api/CreateDeficientLibrary', modifyDataForMongoDB(createdDeficientLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -41,7 +41,7 @@ export default class DeficientService {
      * @param updatedDeficientLibrary The deficient library update data
      */
     static updateDeficientLibrary(updatedDeficientLibrary: DeficientLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateDeficientLibrary', modifyDataForMongoDB(updatedDeficientLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateDeficientLibrary', modifyDataForMongoDB(updatedDeficientLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**

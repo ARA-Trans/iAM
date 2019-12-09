@@ -33,7 +33,7 @@ export default class PriorityService {
      * Gets priority libraries data
      */
     static getPriorityLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetPriorityLibraries');
+        return nodejsAxiosInstance.get('/api/GetPriorityLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -41,7 +41,7 @@ export default class PriorityService {
      * @param createdPriorityLibrary The priority library create data
      */
     static createPriorityLibrary(createdPriorityLibrary: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePriorityLibrary', modifyDataForMongoDB(createdPriorityLibrary));
+        return nodejsAxiosInstance.post('/api/CreatePriorityLibrary', modifyDataForMongoDB(createdPriorityLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -49,7 +49,7 @@ export default class PriorityService {
      * @param updatedPriorityLibrary The priority library update data
      */
     static updatePriorityLibrary(updatedPriorityLibrary: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePriorityLibrary', modifyDataForMongoDB(updatedPriorityLibrary));
+        return nodejsAxiosInstance.put('/api/UpdatePriorityLibrary', modifyDataForMongoDB(updatedPriorityLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**

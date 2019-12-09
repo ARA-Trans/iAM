@@ -39,7 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioPriorityLibrary")]
         [ModelValidation("The priority data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveSimulationPriorityLibrary([FromBody]PriorityLibraryModel model) =>
             Ok(repo.SaveSimulationPriorityLibrary(model, db));
     }

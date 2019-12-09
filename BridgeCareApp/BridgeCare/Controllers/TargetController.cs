@@ -39,7 +39,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioTargetLibrary")]
         [ModelValidation("The target data is invalid.")]
-        [Filters.RestrictAccess]
+        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
         public IHttpActionResult SaveSimulationTargetLibrary([FromBody]TargetLibraryModel model) => 
             Ok(repo.SaveSimulationTargetLibrary(model, db));
     }
