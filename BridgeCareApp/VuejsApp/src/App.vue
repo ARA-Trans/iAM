@@ -107,6 +107,7 @@
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
 
         @Action('refreshTokens') refreshTokensAction: any;
+        @Action('checkBrowserTokens') checkBrowserTokensAction: any;
         @Action('logOut') logOutAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getNetworks') getNetworksAction: any;
@@ -206,6 +207,11 @@
                 (response: any) => successHandler(response),
                 (error: any) => errorHandler(error)
             );
+
+            // Upon opening the page, and every 30 seconds, check if authentication data
+            // has been changed by another tab or window
+            this.checkBrowserTokensAction();
+            window.setInterval(this.checkBrowserTokensAction, 30000);
 
             // Every 29 minutes, all tokens will be refreshed if a user is logged in.
             // Tokens last 30 minutes
