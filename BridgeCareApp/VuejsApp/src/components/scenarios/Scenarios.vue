@@ -188,7 +188,7 @@
         @State(state => state.authentication.userId) userId: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
-        @State(state => state.authentication.loginFailed) loginFailed: boolean;
+        @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.rollup.rollups) rollups: Rollup[];
         
         @Action('getMongoScenarios') getMongoScenariosAction: any;
@@ -259,9 +259,9 @@
 
         }
 
-        @Watch('loginFailed')
-        onLoginFailed() {
-            if (this.loginFailed == false) {
+        @Watch('authenticated')
+        onAuthenticated() {
+            if (this.authenticated) {
                 this.getMongoScenariosAction({ userId: this.userId });
                 this.getMongoRollupsAction({ });
             }
@@ -271,7 +271,7 @@
          * Component has been mounted
          */
         mounted() {
-            if (this.loginFailed == false) {
+            if (this.authenticated) {
                 this.getMongoScenariosAction({ userId: this.userId });
                 this.getMongoRollupsAction({ });
             }
