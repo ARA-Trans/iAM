@@ -206,25 +206,38 @@
                 (response: any) => successHandler(response),
                 (error: any) => errorHandler(error)
             );
+        }
 
-            // Every 29 minutes, all tokens will be refreshed if a user is logged in.
-            // Tokens last 30 minutes
-            window.setInterval(() => {
-                if (this.authenticated) {
-                    this.refreshTokensAction();
-                } else {
-                    this.onLogout();
-                }
-            }, 29 * 60 * 1000);
+
+        @Watch('authenticated')
+        onAuthenticationChange() {
+            if (this.authenticated) {
+                this.onLogin();
+            } else {
+                this.onLogout();
+            }
         }
 
         /**
-         * Dispatches an action that will revoke all user tokens and redirect users to the landing page
+         * Sets up a recurring attempt at refreshing user tokens, and fetches network and attribute data
+         */
+        onLogin() {
+            // Tokens expire after 30 minutes. They are refreshed after 29 minutes.
+            this.refreshIntervalID = window.setInterval(this.refreshTokensAction, 29 * 60 * 1000);
+            this.$forceUpdate();
+            this.getNetworksAction();
+            this.getAttributesAction();
+        }
+
+        /**
+         * Dispatches an action that will revoke all user tokens, prevents token refresh attempts,
+         * and redirects users to the landing page
          */
         onLogout() {
             this.logOutAction().then(() => {
+                window.clearInterval(this.refreshIntervalID);
                 if (window.location.href.indexOf('iAM') === -1) {
-                    this.$router.push('/iAM/');
+                    this.onNavigate('/iAM/');
                 }
             });
         }

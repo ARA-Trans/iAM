@@ -33,19 +33,6 @@
         @Action('getNetworks') getNetworksAction: any;
         @Action('getAttributes') getAttributesAction: any;
 
-        @Watch('authenticated')
-        onLoginChange() {
-            if (!this.authenticated) {
-                this.onAuthenticationFailure();
-            } else {
-                this.setSuccessMessageAction({message: 'Authentication successful.'});
-                this.$router.push('/Inventory/');
-                this.$forceUpdate();
-                this.getNetworksAction();
-                this.getAttributesAction();
-            }
-        }
-
         mounted() {
             const code: string = this.$route.query.code as string;
             const state: string = this.$route.query.state as string;
@@ -63,8 +50,14 @@
                     this.onAuthenticationFailure();
                 } else {
                     this.getUserInfoAction();
+                    this.onAuthenticationSuccess();
                 }
             });
+        }
+        
+        onAuthenticationSuccess() {
+            this.setSuccessMessageAction({message: 'Authentication successful.'});
+            this.$router.push('/Inventory/');
         }
 
         onAuthenticationFailure() {
