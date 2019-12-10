@@ -18,10 +18,10 @@ namespace BridgeCare.Security
         private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
 
         /// <summary>
-        /// 
+        /// Given an id_token from ESEC, validates it and extracts the User's Information
         /// </summary>
         /// <param name="idToken">JWT id_token from Authorization Header</param>
-        /// <returns>A dictionary </returns>
+        /// <returns></returns>
         public static Models.UserInformationModel GetUserInformation(string idToken)
         {
             JwtSecurityToken decodedToken = DecodeToken(idToken);

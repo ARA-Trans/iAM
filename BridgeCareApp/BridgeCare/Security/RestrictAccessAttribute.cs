@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Web.Http;
@@ -13,7 +12,6 @@ namespace BridgeCare.Security
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class RestrictAccessAttribute : AuthorizeAttribute
     {
-        //private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
         private readonly Func<string, bool> ValidateRole;
 
         /// <summary>
