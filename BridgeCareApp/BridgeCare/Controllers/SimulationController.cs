@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -24,7 +25,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetScenarios")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetSimulations() =>
             Ok(repo.GetSimulations(db));
 
@@ -36,7 +37,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/CreateScenario")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult CreateSimulation([FromBody]CreateSimulationDataModel model) =>
             Ok(repo.CreateSimulation(model, db));
 
@@ -48,7 +49,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/UpdateScenario")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult UpdateSimulation([FromBody]SimulationModel model)
         {
             repo.UpdateSimulation(model, db);
@@ -63,7 +64,7 @@ namespace BridgeCare.Controllers
         [HttpDelete]
         [Route("api/DeleteScenario/{id}")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult DeleteSimulation(int id)
         {
             repo.DeleteSimulation(id, db);
@@ -77,7 +78,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/RunSimulation")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public async Task<IHttpActionResult> RunSimulation([FromBody]SimulationModel model)
         {
             var result = await Task.Factory.StartNew(() => repo.RunSimulation(model));

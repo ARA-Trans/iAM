@@ -1,70 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
-using System.Net;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Microsoft.IdentityModel.Tokens;
 
-namespace BridgeCare.Controllers.Filters
+namespace BridgeCare.Security
 {
-    /// <summary>
-    /// Restricts access to an API endpoint, only allowing requests with a valid access token to be processed.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class RestrictAccessAttribute : AuthorizeAttribute
+    public static class JWTParse
     {
         private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
-        private readonly Func<string, bool> ValidateRole;
 
         /// <summary>
-        /// Only users with the provided roles will be able to access the endpoint.
-        /// If no roles are listed, all authenticated users will be able to access it.
+        /// Given an id_token from ESEC, validates it and extracts the User's Information
         /// </summary>
-        /// <param name="roles">Permitted roles</param>
-        public RestrictAccessAttribute(params string[] roles) : base()
+        /// <param name="idToken">JWT id_token from Authorization Header</param>
+        /// <returns></returns>
+        public static Models.UserInformationModel GetUserInformation(string idToken)
         {
-            ValidateRole = (role) =>
-            {
-                return roles.Contains(role);
-            };
-        }
-
-        public RestrictAccessAttribute() : base()
-        {
-            ValidateRole = (role) => true;
-        }
-
-        protected override bool IsAuthorized(HttpActionContext httpContext)
-        {
-            if (!TryGetAuthorization(httpContext.Request.Headers, out string idToken))
-            {
-                return false;
-            }
-
             JwtSecurityToken decodedToken = DecodeToken(idToken);
+            string role = ParseLDAP(decodedToken.GetClaimValue("roles"));
+            string name = ParseLDAP(decodedToken.GetClaimValue("sub"));
+            return new Models.UserInformationModel(name, role);
+        }
 
-            Claim roleClaim = decodedToken.Claims.First(claim => claim.Type == "roles");
-
-            string role = ParseRoleResponse(roleClaim.Value);
-
-            return ValidateRole(role);
+        /// <summary>
+        /// Retrieves the value of the claim of the given type from the JWT payload claims.
+        /// </summary>
+        /// <returns></returns>
+        private static string GetClaimValue(this JwtSecurityToken jwt, string type)
+        {
+            return jwt.Claims.First(claim => claim.Type == type).Value;
         }
 
         /// <summary>
         /// Creates a JwtSecurityToken object from a JWT string.
         /// </summary>
         /// <param name="idToken">JWT string</param>
-        private JwtSecurityToken DecodeToken(string idToken)
+        private static JwtSecurityToken DecodeToken(string idToken)
         {
             var validationParameters = new TokenValidationParameters
             {
@@ -116,36 +95,15 @@ namespace BridgeCare.Controllers.Filters
         }
 
         /// <summary>
-        /// Given the LDAP-formatted "roles" string from ESEC, extracts the role from the Common Name (CN) field.
+        /// Given an LDAP-formatted string from ESEC, extracts the Common Name (CN) field.
         /// </summary>
         /// <param name="roleResponse">LDAP-formatted response</param>
         /// <returns>Role</returns>
-        private static string ParseRoleResponse(string roleResponse)
+        private static string ParseLDAP(string ldap)
         {
-            string firstSegment = roleResponse.Split(',')[0];
+            string firstSegment = ldap.Split(',')[0];
             string role = firstSegment.Substring(3);
             return role;
-        }
-
-        /// <summary>
-        /// Attempts to get an authorization parameter from an HTTP request's headers
-        /// </summary>
-        /// <param name="headers">Request headers</param>
-        /// <returns>Returns true if successful</returns>
-        private static bool TryGetAuthorization(HttpRequestHeaders headers, out string authorization)
-        {
-            if (!headers.Contains("Authorization"))
-            {
-                authorization = "";
-                return false;
-            }
-            if (headers.Authorization.Parameter == null)
-            {
-                authorization = "";
-                return false;
-            }
-            authorization = headers.Authorization.Parameter.ToString();
-            return true;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -25,7 +26,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioTreatmentLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetSimulationTreatmentLibrary(int id) =>
             Ok(repo.GetSimulationTreatmentLibrary(id, db));
 
@@ -36,7 +37,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioTreatmentLibrary")]
-        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationTreatmentLibrary([FromBody]TreatmentLibraryModel model) =>
             Ok(repo.SaveSimulationTreatmentLibrary(model, db));
     }

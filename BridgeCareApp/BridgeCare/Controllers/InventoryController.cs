@@ -1,4 +1,5 @@
 ﻿using BridgeCare.Interfaces;
+using BridgeCare.Security;
 using System;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -24,7 +25,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetInventory")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetInventory() => Ok(repo.GetInventorySelectionModels(db));
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetInventoryItemDetailByBmsId")]
         [ModelValidation("The BMS id is not valid")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetInventoryItemDetailByBmsId(string bmsId)
         {
             var inventoryItemDetailModel = modelGenerator
@@ -53,7 +54,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetInventoryItemDetailByBrKey")]
         [ModelValidation("The BR key is not valid.")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetInventoryItemDetailByBrKey(int brKey)
         {
             var inventoryItemDetailModel = modelGenerator
