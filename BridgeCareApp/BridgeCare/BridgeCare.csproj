@@ -229,7 +229,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLog\HandleException.cs" />
-    <Compile Include="Controllers\Filters\RestrictAccessAttribute.cs" />
+    <Compile Include="Controllers\Security\Filters\RestrictAccessAttribute.cs" />
+    <Compile Include="Controllers\Security\JWTParse.cs" />
     <Compile Include="DataAccessLayer\RunSimulationDAL.cs" />
     <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />
     <Compile Include="ApplicationLog\Logger.cs" />
