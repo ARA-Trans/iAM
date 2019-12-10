@@ -11,20 +11,23 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BridgeCare.Controllers
+namespace BridgeCare.Security
 {
     public static class JWTParse
     {
         private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
 
-        public static Dictionary<string, string> GetUserInfo(string idToken)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idToken">JWT id_token from Authorization Header</param>
+        /// <returns>A dictionary </returns>
+        public static Models.UserInformationModel GetUserInformation(string idToken)
         {
             JwtSecurityToken decodedToken = DecodeToken(idToken);
-            return new Dictionary<string, string>
-            {
-                ["role"] = ParseLDAP(decodedToken.GetClaimValue("roles")),
-                ["username"] = ParseLDAP(decodedToken.GetClaimValue("sub"))
-            };
+            string role = ParseLDAP(decodedToken.GetClaimValue("roles"));
+            string name = ParseLDAP(decodedToken.GetClaimValue("sub"));
+            return new Models.UserInformationModel(name, role);
         }
 
         /// <summary>

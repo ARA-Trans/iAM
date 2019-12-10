@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Web;
-
-namespace BridgeCare.Models
+﻿namespace BridgeCare.Models
 {
-  public class UserInformationModel
-  {
-    public string Name { get; set; }
-    public string Id { get; set; }
-
-    public UserInformationModel() { }
-
-    public UserInformationModel(WindowsIdentity identity)
+    public class UserInformationModel
     {
-        Name = identity.Name;
-        Id = identity.User.ToString();
+        public string Name { get; }
+        public string Role { get; }
+
+        public UserInformationModel(string name, string role)
+        {
+            Name = name;
+            Role = role;
+        }
     }
-  }
 }

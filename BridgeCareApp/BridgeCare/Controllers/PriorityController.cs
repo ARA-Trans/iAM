@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -27,7 +28,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioPriorityLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetSimulationPriorityLibrary(int id) =>
             Ok(repo.GetSimulationPriorityLibrary(id, db));
 
@@ -39,7 +40,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioPriorityLibrary")]
         [ModelValidation("The priority data is invalid.")]
-        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationPriorityLibrary([FromBody]PriorityLibraryModel model) =>
             Ok(repo.SaveSimulationPriorityLibrary(model, db));
     }

@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 
-namespace BridgeCare.Controllers.Filters
+namespace BridgeCare.Security
 {
     /// <summary>
     /// Restricts access to an API endpoint, only allowing requests with a valid access token to be processed.
@@ -41,9 +41,9 @@ namespace BridgeCare.Controllers.Filters
                 return false;
             }
 
-            Dictionary<string, string> userInfo = JWTParse.GetUserInfo(idToken);
+            Models.UserInformationModel userInformation = JWTParse.GetUserInformation(idToken);
 
-            return ValidateRole(userInfo["role"]);
+            return ValidateRole(userInformation.Role);
         }
 
         /// <summary>

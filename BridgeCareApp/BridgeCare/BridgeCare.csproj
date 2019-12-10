@@ -229,8 +229,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLog\HandleException.cs" />
-    <Compile Include="Controllers\Security\Filters\RestrictAccessAttribute.cs" />
-    <Compile Include="Controllers\Security\JWTParse.cs" />
+    <Compile Include="Security\RestrictAccessAttribute.cs" />
+    <Compile Include="Security\JWTParse.cs" />
     <Compile Include="DataAccessLayer\RunSimulationDAL.cs" />
     <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />
     <Compile Include="ApplicationLog\Logger.cs" />
@@ -423,6 +423,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Security\Role.cs" />
     <Compile Include="Services\CheckEquations.cs" />
     <Compile Include="Services\CommittedProjects.cs" />
     <Compile Include="Services\DetailedReport\Budget.cs" />

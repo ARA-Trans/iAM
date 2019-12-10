@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System;
 using System.Web.Http;
 
@@ -23,7 +24,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetScenarioAnalysisData/{id}")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetSimulationAnalysis(int id) =>
             Ok(repo.GetSimulationAnalysis(id, db));
 
@@ -34,7 +35,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioAnalysisData")]
-        [Filters.RestrictAccess("PD-BAMS-Administrator", "PD-BAMS-DBEngineer")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult UpdateSimulationAnalysis([FromBody]SimulationAnalysisModel model)
         {
             repo.UpdateSimulationAnalysis(model, db);

@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -29,7 +30,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetSummaryReportMissingAttributes")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public IHttpActionResult GetSummaryReportMissingAttributes(int simulationId, int networkId) =>
             Ok(repo.GetSummaryReportMissingAttributes(simulationId, networkId, db));
 
@@ -41,7 +42,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/GetSummaryReport")]
         [ModelValidation("The scenario data is invalid.")]
-        [Filters.RestrictAccess]
+        [RestrictAccess]
         public HttpResponseMessage GetSummaryReport([FromBody] SimulationModel model)
         {
             var response = Request.CreateResponse(HttpStatusCode.OK);
