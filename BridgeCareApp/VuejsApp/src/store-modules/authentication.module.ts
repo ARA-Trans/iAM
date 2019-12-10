@@ -23,9 +23,28 @@ const actions = {
             .then((response: AxiosResponse<string>) => {
                 if (http2XX.test(response.status.toString())) {
                     localStorage.setItem('UserTokens', response.data);
+                    const expiration: Date = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes, in milliseconds
+                    localStorage.setItem('TokenExpiration', expiration.getTime().toString());
                     commit('authenticatedMutator', true);
                 }
             });
+    },
+
+    async checkBrowserTokens({commit, dispatch}: any, code: string) {
+        const storedTokenExpiration: number = Number(localStorage.getItem('TokenExpiration') as string);
+        if (isNaN(storedTokenExpiration)) {
+            return;
+        }
+        if (storedTokenExpiration > Date.now()) {
+            if (state.authenticated) {
+                return;
+            }
+            commit('authenticatedMutator', true);
+            dispatch('refreshTokens');
+            dispatch('getUserInfo');
+        } else if (state.authenticated) {
+            dispatch('logOut');
+        }
     },
 
     async refreshTokens({commit, dispatch}: any) {
@@ -40,6 +59,8 @@ const actions = {
                             ...userTokens,
                             ...JSON.parse(response.data)
                         }));
+                        const expiration: Date = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes, in milliseconds
+                        localStorage.setItem('TokenExpiration', expiration.getTime().toString());
                     }
                 });
         }
@@ -72,6 +93,7 @@ const actions = {
             localStorage.removeItem('UserInfo');
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
             localStorage.removeItem('UserTokens');
+            localStorage.removeItem('TokenExpiration');
             AuthenticationService.revokeToken(userTokens.access_token);
             AuthenticationService.revokeToken(userTokens.refresh_token);
             commit('usernameMutator', '');
