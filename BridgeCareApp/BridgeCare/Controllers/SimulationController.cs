@@ -26,8 +26,17 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarios")]
         [RestrictAccess]
-        public IHttpActionResult GetSimulations() =>
-            Ok(repo.GetSimulations(db));
+        public IHttpActionResult GetSimulations()
+        {
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            if (userInformation.Role == Role.ADMINISTRATOR || userInformation.Role == Role.CWOPA)
+            {
+                return Ok(repo.GetSimulations(db));
+            } else
+            {
+                return Ok(repo.GetSimulations(db, userInformation));
+            }
+        }
 
         /// <summary>
         /// API endpoint for creating a simulation

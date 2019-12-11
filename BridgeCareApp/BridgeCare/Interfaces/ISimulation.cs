@@ -7,6 +7,7 @@ namespace BridgeCare.Interfaces
     public interface ISimulation
     {
         List<SimulationModel> GetSimulations(BridgeCareContext db);
+        List<SimulationModel> GetSimulations(BridgeCareContext db, UserInformationModel userInformation);
         SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db);
         void UpdateSimulation(SimulationModel model, BridgeCareContext db);
         void DeleteSimulation(int id, BridgeCareContext db);

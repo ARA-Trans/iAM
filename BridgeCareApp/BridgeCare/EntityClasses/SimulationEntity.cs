@@ -33,6 +33,7 @@ namespace BridgeCare.EntityClasses
         public string COMMENTS { get; set; }
         [StringLength(50)]
         public string SIMULATION { get; set; }
+        public string USERNAME { get; set; }
 
         public virtual NetworkEntity NETWORK { get; set; }
         public virtual InvestmentsEntity INVESTMENTS { get; set; }
@@ -58,6 +59,7 @@ namespace BridgeCare.EntityClasses
         {
             NETWORKID = model.NetworkId;
             SIMULATION = model.Name;
+            USERNAME = model.Owner;
             DATE_CREATED = DateTime.Now;
             ANALYSIS = "Incremental Benefit/Cost";
             BUDGET_CONSTRAINT = "As Budget Permits";

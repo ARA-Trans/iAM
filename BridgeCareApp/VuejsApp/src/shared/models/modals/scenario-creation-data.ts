@@ -1,6 +1,7 @@
 ﻿export interface ScenarioCreationData {
     networkId: number;
     name: string;
+    owner?: string;
 }
 
 export const emptyCreateScenarioData: ScenarioCreationData = {

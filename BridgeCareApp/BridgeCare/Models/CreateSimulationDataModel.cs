@@ -12,5 +12,6 @@ namespace BridgeCare.Models
     public int NetworkId { get; set; }
     [Required]
     public string Name { get; set; }
+    public string Owner { get; set; }
   }
 }

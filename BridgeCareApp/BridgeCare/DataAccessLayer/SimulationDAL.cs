@@ -31,6 +31,19 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Fetches all simulations without owners, and simulations owned by the user
+        /// </summary>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="userInformation">UserInformationModel</param>
+        /// <returns>SimulationModel list</returns>
+        public List<SimulationModel> GetSimulations(BridgeCareContext db, UserInformationModel userInformation)
+        {
+            return db.Simulations.Include(s => s.NETWORK).ToList()
+                .Where(s => s.USERNAME == userInformation.Name || s.USERNAME == null)
+                .Select(s => new SimulationModel(s)).ToList();
+        }
+
+        /// <summary>
         /// Updates a simulation; Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">SimulationModel</param>

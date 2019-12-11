@@ -9,6 +9,7 @@
             <v-card-text>
                 <v-layout column>
                     <v-text-field label="Name" v-model="createScenarioData.name" outline></v-text-field>
+                    <v-checkbox label="Make Public" v-model="public"/> 
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -25,17 +26,31 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Prop} from 'vue-property-decorator';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
     import {
         ScenarioCreationData, emptyCreateScenarioData
     } from '@/shared/models/modals/scenario-creation-data';
     import {clone} from 'ramda';
+    import { UserInfo } from '../../../shared/models/iAM/authentication';
+    import { parseLDAP } from '../../../shared/utils/parse-ldap';
 
     @Component
     export default class CreateScenarioDialog extends Vue {
         @Prop() showDialog: boolean;
 
         createScenarioData: ScenarioCreationData = clone(emptyCreateScenarioData);
+        public: boolean = false;
+
+        mounted() {
+            const userInformation: UserInfo = JSON.parse(localStorage.getItem('UserInfo') as string) as UserInfo;
+            this.createScenarioData.owner = parseLDAP(userInformation.sub);
+        }
+
+        @Watch('public')
+        onSetPublic() {
+            const userInformation: UserInfo = JSON.parse(localStorage.getItem('UserInfo') as string) as UserInfo;
+            this.createScenarioData.owner = this.public ? undefined : parseLDAP(userInformation.sub);
+        }
 
         /**
          * 'Submit' button has been clicked
@@ -48,6 +63,9 @@
             }
 
             this.createScenarioData = clone(emptyCreateScenarioData);
+            const userInformation: UserInfo = JSON.parse(localStorage.getItem('UserInfo') as string) as UserInfo;
+            this.createScenarioData.owner = parseLDAP(userInformation.sub);
+            this.public = true;
         }
     }
 </script>

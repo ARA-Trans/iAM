@@ -10,6 +10,7 @@ namespace BridgeCare.Models
         public int SimulationId { get; set; }
         public string SimulationName { get; set; }
         public string NetworkName { get; set; }
+        public string Owner { get; set; }
         [Required]
         public int NetworkId { get; set; }
         public DateTime? Created { get; set; }
@@ -21,6 +22,7 @@ namespace BridgeCare.Models
         {
             SimulationId = entity.SIMULATIONID;
             SimulationName = entity.SIMULATION;
+            Owner = entity.USERNAME;
             NetworkId = entity.NETWORKID ?? 0;
             Created = entity.DATE_CREATED;
             LastRun = entity.DATE_LAST_RUN ?? DateTime.Now;
