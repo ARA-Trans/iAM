@@ -35,7 +35,7 @@ namespace RoadCare3
 
             ActiveControl = btnLogin;
 
-            label7.Text = $"Version {Assembly.GetExecutingAssembly().GetName().Version} for 8.21.2019";
+            label7.Text = $"Version {Assembly.GetExecutingAssembly().GetName().Version} for 12.6.2019";
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -380,11 +380,11 @@ namespace RoadCare3
             #if DEBUG
                         tbRoadCarePassword.Text = "install";
                         tbRoadCareUserName.Text = "install";
-                        tbMSSQLDatabaseName.Text = "PAMS";
-                        tbMSSQLServerName.Text = "13.92.210.73";
-                        tbMSSQLUserName.Text = "penndot";
-                        tbMSSQLPassword.Text = "roadcarepams";
-                        chkUseIntegratedSecurity.Checked = false;
+                        tbMSSQLDatabaseName.Text = "BridgeCare_2018";
+                        tbMSSQLServerName.Text = "PDKB6W6003\\SQLEXPRESS";
+                        tbMSSQLUserName.Text = "";
+                        tbMSSQLPassword.Text = "";
+                        chkUseIntegratedSecurity.Checked = true;
                         tcLogin.SelectedIndex= 0;
             #endif
         }

@@ -30,6 +30,10 @@ namespace Simulation
         int _resultType;
         //If this is set. The committed project is a ScheduledTreatment and not a true committed project.
         public string ScheduledTreatmentId { get; set; }
+        public string SplitTreatmentId { get; set; }
+        public int YearSplitTreatmentComplete { get; set; }
+
+
 
 
         public int ResultType

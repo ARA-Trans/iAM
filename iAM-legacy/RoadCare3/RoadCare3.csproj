@@ -51,7 +51,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -275,6 +275,9 @@
     <Reference Include="ImageComboBox, Version=1.0.2008.18717, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ImageComboBox.dll</HintPath>
+    </Reference>
+    <Reference Include="Jace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Jace.0.9.3\lib\netstandard1.6\Jace.dll</HintPath>
     </Reference>
     <Reference Include="LogicNP.CryptoLicensing, Version=5.1.0.0, Culture=neutral, PublicKeyToken=4a3c0a4c668b48b4">
       <SpecificVersion>False</SpecificVersion>
@@ -1258,10 +1261,6 @@
     <ProjectReference Include="..\DynamicSegmentation\DynamicSegmentation.csproj">
       <Project>{7A46601B-1900-4BD3-90C4-5199BE26FDFF}</Project>
       <Name>DynamicSegmentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jace\Jace.csproj">
-      <Project>{91cc2c02-72ea-43af-95b0-f45edf91538e}</Project>
-      <Name>Jace</Name>
     </ProjectReference>
     <ProjectReference Include="..\KMLManager\KMLManager.csproj">
       <Project>{32626ABF-9CE5-405C-8372-4D2BF8BE4BB2}</Project>

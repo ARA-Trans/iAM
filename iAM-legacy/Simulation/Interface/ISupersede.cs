@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Simulation.Interface
 {
-    interface ISupersede
+    public interface ISupersede
     {
         int SupersedeId { get; }
         int SupersedeTreatmentId { get; }

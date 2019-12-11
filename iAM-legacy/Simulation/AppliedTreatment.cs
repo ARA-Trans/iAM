@@ -24,6 +24,10 @@ namespace Simulation
         String m_strChangeHash;
         AppliedTreatment _multipleTreatment;//Stores a follow up treatment.
         bool _isExclusive;
+        //For split treatment (before split).
+        public float TreatmentOnlyCost { get; set; }
+        public Dictionary<string, float> ScheduledCost {get;set;}
+
 
         public bool IsExclusive
         {
