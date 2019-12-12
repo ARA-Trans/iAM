@@ -8,9 +8,9 @@ function investmentLibraryRouter(InvestmentLibrary){
 
     router.route("/GetInvestmentLibraries").get(authorizationFilter(), controller.get);
     router.route("/CreateInvestmentLibrary").post(authorizationFilter(), controller.post);
-    router.route("/UpdateInvestmentLibrary").put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+    router.route("/UpdateInvestmentLibrary").put(authorizationFilter(), controller.put);
     router.route("/GetInvestmentLibrary/:investmentLibraryId").get(authorizationFilter(), controller.getById);
-    router.route("/DeleteInvestmentLibrary/:investmentLibraryId").delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
+    router.route("/DeleteInvestmentLibrary/:libraryId").delete(authorizationFilter(), controller.deleteLibrary);
 
     return router;
 }

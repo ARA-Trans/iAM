@@ -16,7 +16,7 @@ module.exports = {
     },
 
     /**
-     * Creates an update endpoint for a library.
+     * Creates a PUT NodeJS API endpoint for libraries; Returns the modified library.
      */
     getUpdateFunction: (model) => {
         return (request, response) => {

@@ -47,6 +47,14 @@ export default class InvestmentEditorService {
     }
 
     /**
+     * Deletes an investment library
+     * @param investmentLibrary The investment library to delete
+     */
+    static deleteInvestmentLibrary(investmentLibrary: InvestmentLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteInvestmentLibrary/${investmentLibrary.id}`, {headers: getAuthorizationHeader()});
+    }
+
+    /**
      * Gets a scenario's investment library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */

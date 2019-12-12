@@ -1,8 +1,9 @@
 import {emptyInvestmentLibrary, InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex, equals} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals, reject} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const investmentLibrary: any = {
@@ -72,6 +73,14 @@ const mutations = {
     scenarioInvestmentLibraryMutator(state: any, scenarioInvestmentLibrary: InvestmentLibrary) {
         // update state.investmentLibraries with a clone of the incoming list of investment libraries
         state.scenarioInvestmentLibrary = clone(scenarioInvestmentLibrary);
+    },
+    deletedInvestmentLibraryMutator(state: any, deletedInvestmentLibrary: InvestmentLibrary) {
+        if (any(propEq('id', deletedInvestmentLibrary.id), state.investmentLibraries)) {
+            state.investmentLibraries = reject(
+                (library: InvestmentLibrary) => deletedInvestmentLibrary.id === library.id,
+                state.investmentLibraries
+            );
+        }
     }
 };
 
@@ -112,6 +121,15 @@ const actions = {
                     commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
                     commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated investment library'});
+                }
+            });
+    },
+    async deleteInvestmentLibrary({dispatch, commit}: any, payload: any) {
+        await InvestmentEditorService.deleteInvestmentLibrary(payload.investmentLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedInvestmentLibraryMutator', payload.investmentLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted investment library'});
                 }
             });
     },
