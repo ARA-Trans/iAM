@@ -6,7 +6,7 @@ using namespace System;
 using namespace System::Collections::Generic;
 
 
-namespace PCI {
+namespace LegacyPCI {
 
 	public ref class Distress
 	{

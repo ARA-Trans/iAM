@@ -1,12 +1,12 @@
 ﻿using AppliedResearchAssociates.PciDistress;
 using System;
 
-namespace _PCI // Rename to "PCI" when ready to drop into legacy consumer code
+namespace PCI
 {
     /// <summary>
     ///     This class (and its namespace) provide a way to transparently drop the new <see
     ///     cref="IPciDistress"/> abstraction into existing callsites that have/had been directly
-    ///     accessing the legacy C++/CLI <see cref="PCI.Distress"/> type.
+    ///     accessing the legacy C++/CLI <see cref="LegacyPCI.Distress"/> type.
     /// </summary>
     public static class Distress
     {

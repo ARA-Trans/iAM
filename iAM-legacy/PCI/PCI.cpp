@@ -31,7 +31,7 @@ ASSOCIATES, INC.
 #include "math.h"
 #include "PCI.h"
 
-namespace PCI
+namespace LegacyPCI
 {
 //
 // Description:  A reduced version of the original ComputeVCIValues from DSS which computes only the

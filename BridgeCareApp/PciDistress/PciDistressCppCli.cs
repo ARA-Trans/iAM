@@ -1,4 +1,4 @@
-﻿using _ = PCI.Distress;
+﻿using _ = LegacyPCI.Distress;
 
 namespace AppliedResearchAssociates.PciDistress
 {
