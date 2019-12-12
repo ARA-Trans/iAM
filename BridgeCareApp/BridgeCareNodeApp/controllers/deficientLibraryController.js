@@ -33,11 +33,6 @@ function deficientLibraryController(DeficientLibrary) {
         });
     }
 
-    /**
-     * PUT NodeJS API endpoint for deficient libraries; updates & returns a deficient library
-     * @param request Http request
-     * @param response Http response
-     */
     const {getUpdateFunction, getDeletionFunction} = require('./libraryAPIFunctions');
 
     put = getUpdateFunction(DeficientLibrary);

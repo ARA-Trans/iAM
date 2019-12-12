@@ -1,8 +1,9 @@
 import {emptyTargetLibrary, TargetLibrary} from '@/shared/models/iAM/target';
-import {clone, any, propEq, append, findIndex, equals, update} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
 import TargetService from '@/services/target.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const targetLibrary: any = {
@@ -48,6 +49,14 @@ const mutations = {
             );
         }
     },
+    deletedTargetLibraryMutator(state: any, deletedTargetLibrary: TargetLibrary) {
+        if (any(propEq('id', deletedTargetLibrary.id), state.targetLibraries)) {
+            state.targetLibraries = reject(
+                (library: TargetLibrary) => deletedTargetLibrary.id === library.id,
+                state.targetLibraries
+            );
+        }
+    },
     scenarioTargetLibraryMutator(state: any, scenarioTargetLibrary: TargetLibrary) {
         state.scenarioTargetLibrary = clone(scenarioTargetLibrary);
     }
@@ -85,6 +94,15 @@ const actions = {
                     commit('updatedTargetLibraryMutator', updatedTargetLibrary);
                     commit('selectedTargetLibraryMutator', updatedTargetLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated target library'});
+                }
+            });
+    },
+    async deleteTargetLibrary({dispatch, commit}: any, payload: any) {
+        await TargetService.deleteTargetLibrary(payload.targetLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedTargetLibraryMutator', payload.targetLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted target library'});
                 }
             });
     },
