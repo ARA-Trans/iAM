@@ -33,6 +33,7 @@ export interface Scenario {
     lastModifiedDate?: Date;
     status?: string;
     shared?: boolean;
+    owner?: string;
     id: number | string;
 }
 

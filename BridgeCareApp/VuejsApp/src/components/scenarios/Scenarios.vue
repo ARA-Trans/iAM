@@ -65,6 +65,7 @@
                                 </template>
                             </v-edit-dialog>
                         </td>
+                        <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
@@ -116,7 +117,19 @@
                 </v-card-title>
                 <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                     <template slot="items" slot-scope="props">
-                        <td>{{props.item.simulationName}}</td>
+                        <td>
+                            <v-edit-dialog :return-value.sync="props.item.simulationName"
+                                           large lazy persistent
+                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)">
+                                {{props.item.simulationName}}
+                                <template slot="input">
+                                    <v-text-field v-model="props.item.simulationName"
+                                                  label="Edit"
+                                                  single-line></v-text-field>
+                                </template>
+                            </v-edit-dialog>
+                        </td>
+                        <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{getStatus(props.item.status)}}</td>
@@ -136,6 +149,12 @@
                                     <v-btn flat icon class="edit-icon"
                                            @click="onEditSharedScenario(props.item.scenarioId, props.item.simulationName)">
                                         <v-icon>fas fa-edit</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon class="ara-orange"
+                                           @click="onDeleteScenario(props.item.simulationId, props.item.id)">
+                                        <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
                             </v-layout>
@@ -180,6 +199,8 @@
     import { Simulation } from '../../shared/models/iAM/simulation';
     import { Rollup, emptyRollup } from '../../shared/models/iAM/rollup';
 
+import { getUserName } from '../../shared/utils/get-user-info';
+
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog}
     })
@@ -209,6 +230,7 @@
         showCreateScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'simulationName'},
+            {text: 'Owner', sortable: false, value: 'owner'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
             {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
             {text: 'Status', sortable: false, value: 'status' },
@@ -237,10 +259,11 @@
         @Watch('scenarios')
         onScenariosChanged() {
             if (hasValue(this.scenarios)) {
+                const username: string = getUserName(); 
                 // filter scenarios that are the user's
-                this.userScenarios = this.scenarios.filter((simulation: Scenario) => !simulation.shared);
+                this.userScenarios = this.scenarios.filter((simulation: Scenario) => simulation.owner === username);
                 // filter scenarios that are shared with the user
-                this.sharedScenarios = this.scenarios.filter((simulation: Scenario) => simulation.shared);
+                this.sharedScenarios = this.scenarios.filter((simulation: Scenario) => simulation.owner !== username);
             }
             else {
                 this.userScenarios = [];

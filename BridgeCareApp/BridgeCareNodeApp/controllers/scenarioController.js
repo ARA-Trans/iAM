@@ -55,7 +55,7 @@ function scenarioController(Scenario) {
     }
 
     function get(req, res) {
-        Scenario.find((err, scenariostatus) => {
+        Scenario.find({ owner: [req.user.username, undefined] }, (err, scenariostatus) => {
             if (err) {
                 return res.send(err);
             }

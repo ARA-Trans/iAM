@@ -30,6 +30,7 @@
     import {clone} from 'ramda';
     import {CreateDeficientLibraryDialogData} from '@/shared/models/modals/create-deficient-library-dialog-data';
     import {Deficient, DeficientLibrary, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
+    import { getUserName } from '../../../shared/utils/get-user-info';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -58,6 +59,7 @@
         onSubmit(submit: boolean) {
             if (submit) {
                 this.setIdsForNewDeficientLibrarySubData();
+                this.newDeficientLibrary.owner = getUserName();
                 this.$emit('submit', this.newDeficientLibrary);
             } else {
                 this.$emit('submit', null);
