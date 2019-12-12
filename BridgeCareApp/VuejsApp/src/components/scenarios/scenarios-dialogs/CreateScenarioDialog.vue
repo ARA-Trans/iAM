@@ -10,6 +10,7 @@
                 <v-layout column>
                     <v-text-field label="Name" v-model="createScenarioData.name" outline></v-text-field>
                     <v-checkbox label="Make Public" v-model="public"/> 
+                    <div v-if="public">Warning: You will not be this scenario's owner. Your access to it may be restricted.</div>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -31,8 +32,7 @@
         ScenarioCreationData, emptyCreateScenarioData
     } from '@/shared/models/modals/scenario-creation-data';
     import {clone} from 'ramda';
-    import { UserInfo } from '../../../shared/models/iAM/authentication';
-    import { parseLDAP } from '../../../shared/utils/parse-ldap';
+    import { getUserName } from '../../../shared/utils/get-user-info';
 
     @Component
     export default class CreateScenarioDialog extends Vue {
@@ -42,14 +42,12 @@
         public: boolean = false;
 
         mounted() {
-            const userInformation: UserInfo = JSON.parse(localStorage.getItem('UserInfo') as string) as UserInfo;
-            this.createScenarioData.owner = parseLDAP(userInformation.sub);
+            this.createScenarioData.owner = getUserName();
         }
 
         @Watch('public')
         onSetPublic() {
-            const userInformation: UserInfo = JSON.parse(localStorage.getItem('UserInfo') as string) as UserInfo;
-            this.createScenarioData.owner = this.public ? undefined : parseLDAP(userInformation.sub);
+            this.createScenarioData.owner = this.public ? undefined : getUserName();
         }
 
         /**
@@ -63,9 +61,8 @@
             }
 
             this.createScenarioData = clone(emptyCreateScenarioData);
-            const userInformation: UserInfo = JSON.parse(localStorage.getItem('UserInfo') as string) as UserInfo;
-            this.createScenarioData.owner = parseLDAP(userInformation.sub);
-            this.public = true;
+            this.createScenarioData.owner = getUserName();
+            this.public = false;
         }
     }
 </script>

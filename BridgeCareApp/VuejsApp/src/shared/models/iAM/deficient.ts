@@ -10,6 +10,7 @@ export interface Deficient {
 export interface DeficientLibrary {
     id: string;
     name: string;
+    owner?: string;
     description: string;
     deficients: Deficient[];
 }

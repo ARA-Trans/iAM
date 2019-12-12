@@ -1,8 +1,8 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
-import {UserInfo, UserTokens} from '@/shared/models/iAM/authentication';
+import {UserTokens} from '@/shared/models/iAM/authentication';
 import {http2XX} from '@/shared/utils/http-utils';
-import {parseLDAP} from '@/shared/utils/parse-ldap';
+import { getUserName } from '@/shared/utils/get-user-info';
 
 const state = {
     authenticated: false,
@@ -76,8 +76,7 @@ const actions = {
                 .then((response: AxiosResponse<string>) => {
                     if (http2XX.test(response.status.toString())) {
                         localStorage.setItem('UserInfo', response.data);
-                        const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
-                        const username: string = parseLDAP(userInfo.sub);
+                        const username: string = getUserName();
                         commit('usernameMutator', username);
                     } else {
                         dispatch('logOut');

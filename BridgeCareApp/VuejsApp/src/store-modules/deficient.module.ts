@@ -1,8 +1,9 @@
 import {Deficient, DeficientLibrary, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
-import {clone, append, any, propEq, update, findIndex, equals} from 'ramda';
+import {clone, append, any, propEq, update, findIndex, equals, reject} from 'ramda';
 import DeficientService from '@/services/deficient.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const deficientLibrary: any = {
@@ -48,6 +49,14 @@ const mutations = {
             );
         }
     },
+    deletedDeficientLibraryMutator(state: any, deletedDeficientLibrary: DeficientLibrary) {
+        if (any(propEq('id', deletedDeficientLibrary.id), state.deficientLibraries)) {
+            state.deficientLibraries = reject(
+                (library: DeficientLibrary) => deletedDeficientLibrary.id === library.id,
+                state.deficientLibraries
+            );
+        }
+    },
     scenarioDeficientLibraryMutator(state: any, scenarioDeficientLibrary: DeficientLibrary) {
         state.scenarioDeficientLibrary = clone(scenarioDeficientLibrary);
     }
@@ -85,6 +94,15 @@ const actions = {
                     commit('updatedDeficientLibraryMutator', updatedDeficientLibrary);
                     commit('selectedDeficientLibraryMutator', updatedDeficientLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated deficient library'});
+                }
+            });
+    },
+    async deleteDeficientLibrary({dispatch, commit}: any, payload: any) {
+        await DeficientService.deleteDeficientLibrary(payload.deficientLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedDeficientLibraryMutator', payload.deficientLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted deficient library'});
                 }
             });
     },

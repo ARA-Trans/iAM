@@ -58,10 +58,18 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/UpdateScenario")]
         [ModelValidation("The scenario data is invalid.")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public IHttpActionResult UpdateSimulation([FromBody]SimulationModel model)
         {
-            repo.UpdateSimulation(model, db);
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            if (userInformation.Role == Role.ADMINISTRATOR)
+            {
+                repo.UpdateSimulation(model, db);
+            }
+            else
+            {
+                repo.UpdateSimulation(model, db, userInformation);
+            }
             return Ok();
         }
 
@@ -73,10 +81,17 @@ namespace BridgeCare.Controllers
         [HttpDelete]
         [Route("api/DeleteScenario/{id}")]
         [ModelValidation("The scenario data is invalid.")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public IHttpActionResult DeleteSimulation(int id)
         {
-            repo.DeleteSimulation(id, db);
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            if (userInformation.Role == Role.ADMINISTRATOR)
+            {
+                repo.DeleteSimulation(id, db);
+            } else
+            {
+                repo.DeleteSimulation(id, db, userInformation);
+            }
             return Ok();
         }
 
