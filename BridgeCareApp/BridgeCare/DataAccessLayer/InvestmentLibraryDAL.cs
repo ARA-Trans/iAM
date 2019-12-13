@@ -34,6 +34,23 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Fetches a simulation's investment library data if it is available to the given user
+        /// Throws a RowNotInTableException if no simulation is found for that user
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>InvestmentLibraryModel</returns>
+        public InvestmentLibraryModel GetOwnedSimulationInvestmentLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return GetSimulationInvestmentLibrary(id, db);
+        }
+
+        /// <summary>
         /// Executes an upsert/delete operation on a simulation's investment library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
@@ -112,6 +129,24 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new InvestmentLibraryModel(simulation);
+        }
+
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's investment library data if it is owned by the provided user
+        /// Throws a RowNotInTableException if no simulation is found for that user
+        /// </summary>
+        /// <param name="model">InvestmentLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>InvestmentLibraryModel</returns>
+        public InvestmentLibraryModel SaveOwnedSimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+
+            return SaveSimulationInvestmentLibrary(model, db);
         }
     }
 }

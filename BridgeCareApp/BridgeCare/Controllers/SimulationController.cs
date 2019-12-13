@@ -27,7 +27,7 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Maps roles to methods for fetching simulations
         /// </summary>
-        private readonly IReadOnlyDictionary<string, SimulationGetMethod> SimulationGetter = new Dictionary<string, SimulationGetMethod>
+        private readonly IReadOnlyDictionary<string, SimulationGetMethod> SimulationGetMethods = new Dictionary<string, SimulationGetMethod>
         {
             [Role.ADMINISTRATOR] = (repo, db, userInformation) => repo.GetSimulations(db),
             [Role.DISTRICT_ENGINEER] = (repo, db, userInformation) => repo.GetOwnedSimulations(db, userInformation.Name),
@@ -38,7 +38,7 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Maps roles to methods for updating simulations
         /// </summary>
-        private readonly IReadOnlyDictionary<string, SimulationUpdateMethod> SimulationUpdater = new Dictionary<string, SimulationUpdateMethod>
+        private readonly IReadOnlyDictionary<string, SimulationUpdateMethod> SimulationUpdateMethods = new Dictionary<string, SimulationUpdateMethod>
         {
             [Role.ADMINISTRATOR] = (repo, model, db, userInformation) => repo.UpdateSimulation(model, db),
             [Role.DISTRICT_ENGINEER] = (repo, model, db, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation),
@@ -49,7 +49,7 @@ namespace BridgeCare.Controllers
         /// <summary>
         /// Maps roles to methods for deleting simulations
         /// </summary>
-        private readonly IReadOnlyDictionary<string, SimulationDeletionMethod> SimulationDeleter = new Dictionary<string, SimulationDeletionMethod>
+        private readonly IReadOnlyDictionary<string, SimulationDeletionMethod> SimulationDeleteMethods = new Dictionary<string, SimulationDeletionMethod>
         {
             [Role.ADMINISTRATOR] = (repo, id, db, userInformation) => repo.DeleteSimulation(id, db),
             [Role.DISTRICT_ENGINEER] = (repo, id, db, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation),
@@ -67,7 +67,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult GetSimulations()
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            return Ok(SimulationGetter[userInformation.Role](repo, db, userInformation));
+            return Ok(SimulationGetMethods[userInformation.Role](repo, db, userInformation));
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult UpdateSimulation([FromBody]SimulationModel model)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            SimulationUpdater[userInformation.Role](repo, model, db, userInformation);
+            SimulationUpdateMethods[userInformation.Role](repo, model, db, userInformation);
             return Ok();
         }
 
@@ -110,7 +110,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult DeleteSimulation(int id)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            SimulationDeleter[userInformation.Role](repo, id, db, userInformation);
+            SimulationDeleteMethods[userInformation.Role](repo, id, db, userInformation);
             return Ok();
         }
 
