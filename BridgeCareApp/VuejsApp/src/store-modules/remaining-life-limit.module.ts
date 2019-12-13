@@ -3,10 +3,11 @@ import {
     RemainingLifeLimit,
     RemainingLifeLimitLibrary
 } from '@/shared/models/iAM/remaining-life-limit';
-import {clone, any, propEq, findIndex, append, equals} from 'ramda';
+import {clone, any, propEq, findIndex, append, equals, reject} from 'ramda';
 import RemainingLifeLimitService from '@/services/remaining-life-limit.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const remainingLifeLimitLibrary: any = {
@@ -88,6 +89,14 @@ const mutations = {
             state.remainingLifeLimitLibraries = remainingLifeLimitLibraries;
         }
     },
+    deletedRemainingLifeLimitLibraryMutator(state: any, deletedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary) {
+        if (any(propEq('id', deletedRemainingLifeLimitLibrary.id), state.remainingLifeLimitLibraries)) {
+            state.remainingLifeLimitLibraries = reject(
+                (library: RemainingLifeLimitLibrary) => deletedRemainingLifeLimitLibrary.id === library.id,
+                state.remainingLifeLimitLibraries
+            );
+        }
+    },
     /**
      * Sets state.scenarioRemainingLifeLimitLibrary with a copy of scenarioRemainingLifeLimitLibrary
      * @param state App state
@@ -135,6 +144,15 @@ const actions = {
                     commit('updatedRemainingLifeLimitLibraryMutator', updatedRemainingLifeLimitLibrary);
                     commit('selectedRemainingLifeLimitLibraryMutator', updatedRemainingLifeLimitLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated remaining life limit library'});
+                }
+            });
+    },
+    async deleteRemainingLifeLimitLibrary({dispatch, commit}: any, payload: any) {
+        await RemainingLifeLimitService.deleteRemainingLifeLimitLibrary(payload.remainingLifeLimitLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedRemainingLifeLimitLibraryMutator', payload.remainingLifeLimitLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted remaining life limit library'});
                 }
             });
     },

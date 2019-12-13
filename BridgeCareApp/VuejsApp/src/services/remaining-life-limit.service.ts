@@ -43,6 +43,14 @@ export default class RemainingLifeLimitService {
     }
 
     /**
+     * Deletes a remaining life limit library
+     * @param remainingLifeLimitLibrary The remaining life limit library to delete
+     */
+    static deleteRemainingLifeLimitLibrary(remainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteRemainingLifeLimitLibrary/${remainingLifeLimitLibrary.id}`, {headers: getAuthorizationHeader()});
+    }
+
+    /**
      * Gets a scenario's remaining life limit library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's remaining life limit library data
      */
