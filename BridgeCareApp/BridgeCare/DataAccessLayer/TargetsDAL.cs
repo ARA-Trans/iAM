@@ -91,8 +91,24 @@ namespace BridgeCare.DataAccessLayer
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
 
             var simulation = db.Simulations.Include(s => s.TARGETS).Single(s => s.SIMULATIONID == id);
-            
+
             return new TargetLibraryModel(simulation);
+        }
+
+        /// <summary>
+        /// Fetches a simulation's target library data if it is owned by the user
+        /// Throws a RowNotInTableException if no simulation is found for the user
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>TargetLibraryModel</returns>
+        public TargetLibraryModel GetOwnedSimulationTargetLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+
+            return GetSimulationTargetLibrary(id, db);
         }
 
         /// <summary>
@@ -139,6 +155,24 @@ namespace BridgeCare.DataAccessLayer
 
             return new TargetLibraryModel(simulation);
 
+        }
+
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's target library data if the user owns it
+        /// Throws a RowNotInTableException if no simulation is found for the user
+        /// </summary>
+        /// <param name="model">TargetLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>TargetLibraryModel</returns>
+        public TargetLibraryModel SaveOwnedSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+
+            return SaveSimulationTargetLibrary(model, db);
         }
     }
 }
