@@ -2,19 +2,16 @@ const express = require('express');
 const remainingLifeLimitLibraryController = require('../controllers/remainingLifeLimitLibraryController');
 
 function remainingLifeLimitLibraryRoutes(RemainingLifeLimitLibrary) {
-    const remainingLifeLimitLibraryRouter = express.Router();
+    const router = express.Router();
     const controller = remainingLifeLimitLibraryController(RemainingLifeLimitLibrary);
 
-    remainingLifeLimitLibraryRouter.route('/GetRemainingLifeLimitLibraries')
-        .get(controller.get);
+    router.route('/GetRemainingLifeLimitLibraries').get(controller.get);
 
-    remainingLifeLimitLibraryRouter.route('/CreateRemainingLifeLimitLibrary')
-        .post(controller.post);
+    router.route('/CreateRemainingLifeLimitLibrary').post(controller.post);
 
-    remainingLifeLimitLibraryRouter.route('/UpdateRemainingLifeLimitLibrary')
-        .put(controller.put);
+    router.route('/UpdateRemainingLifeLimitLibrary').put(controller.put);
 
-    return remainingLifeLimitLibraryRouter;
+    return router;
 }
 
 module.exports = remainingLifeLimitLibraryRoutes;

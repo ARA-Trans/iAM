@@ -197,7 +197,7 @@
     import CreateCashFlowLibraryDialog from '@/components/cash-flow-editor/cash-flow-editor-dialogs/CreateCashFlowLibraryDialog.vue';
     import {formatAsCurrency} from '@/shared/utils/currency-formatter';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {getLatestPropertyValue, getPropertyValuesNonUniq} from "@/shared/utils/getter-utils";
+    import {getLatestPropertyValue, getPropertyValuesNonUniq} from '@/shared/utils/getter-utils';
     const ObjectID = require('bson-objectid');
 
     @Component({

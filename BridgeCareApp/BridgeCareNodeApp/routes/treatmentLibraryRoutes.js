@@ -2,27 +2,23 @@ const express = require('express');
 const treatmentLibraryController = require('../controllers/treatmentLibraryController');
 
 function treatmentLibraryRoutes(TreatmentLibrary, connectionTest) {
-    const treatmentLibraryRouter = express.Router();
+    const router = express.Router();
     const controller = treatmentLibraryController(TreatmentLibrary);
 
-    treatmentLibraryRouter.route('/GetTreatmentLibraries')
-        .get(controller.get);
+    router.route('/GetTreatmentLibraries').get(controller.get);
 
-    treatmentLibraryRouter.route('/CreateTreatmentLibrary')
-        .post(controller.post);
+    router.route('/CreateTreatmentLibrary').post(controller.post);
 
-    treatmentLibraryRouter.route('/UpdateTreatmentLibrary')
-        .put(controller.put);
+    router.route('/UpdateTreatmentLibrary').put(controller.put);
 
-    treatmentLibraryRouter.route('/DeleteTreatmentLibrary/:treatmentLibraryId')
-        .delete(controller.deleteLibrary);
+    router.route('/DeleteTreatmentLibrary/:treatmentLibraryId').delete(controller.deleteLibrary);
 
-    treatmentLibraryRouter.route('/')
+    router.route('/')
         .get((req, res) => {
             return res.send(connectionTest);
         });
 
-    return treatmentLibraryRouter;
+    return router;
 }
 
 module.exports = treatmentLibraryRoutes;

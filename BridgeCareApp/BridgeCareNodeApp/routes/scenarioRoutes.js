@@ -2,22 +2,20 @@ const express = require('express');
 const scenarioController = require('../controllers/scenarioController');
 
 function scenarioRoutes(Scenario){
-    const scenarioRouter = express.Router();
+    const router = express.Router();
     const controller = scenarioController(Scenario);
-      scenarioRouter.route("/GetMongoScenarios")
+
+    router.route("/GetMongoScenarios")
         .post(controller.post)
         .get(controller.get);
 
-        scenarioRouter.route("/DeleteMongoScenario/:scenarioId")
-        .delete(controller.deleteScenario);
+    router.route("/DeleteMongoScenario/:scenarioId").delete(controller.deleteScenario);
 
-        scenarioRouter.route("/UpdateMongoScenario/:scenarioId")
-        .put(controller.put);
+    router.route("/UpdateMongoScenario/:scenarioId").put(controller.put);
 
-        scenarioRouter.route("/AddMultipleScenarios")
-        .post(controller.postMultipleScenarios);
+    router.route("/AddMultipleScenarios").post(controller.postMultipleScenarios);
 
-        return scenarioRouter;
+    return router;
 }
 
 module.exports = scenarioRoutes;

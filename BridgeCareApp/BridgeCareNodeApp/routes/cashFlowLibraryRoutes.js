@@ -2,16 +2,16 @@ const express = require('express');
 const cashFlowLibraryController = require('../controllers/cashFlowLibraryController');
 
 function cashFlowLibraryRoutes(CashFlowLibrary) {
-    const cashFlowLibraryRouter = express.Router();
+    const router = express.Router();
     const controller = cashFlowLibraryController(CashFlowLibrary);
 
-    cashFlowLibraryRouter.route('/GetCashFlowLibraries').get(controller.get);
+    router.route('/GetCashFlowLibraries').get(controller.get);
 
-    cashFlowLibraryRouter.route('/CreateCashFlowLibrary').post(controller.post);
+    router.route('/CreateCashFlowLibrary').post(controller.post);
 
-    cashFlowLibraryRouter.route('/UpdateCashFlowLibrary').put(controller.put);
+    router.route('/UpdateCashFlowLibrary').put(controller.put);
 
-    return cashFlowLibraryRouter;
+    return router;
 }
 
 module.exports = cashFlowLibraryRoutes;
