@@ -37,7 +37,7 @@
     <Content Include="models\investmentLibraryModel.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="routes\investmentLibraryRouters.js" />
+    <Content Include="routes\investmentLibraryRoutes.js" />
     <Content Include="tests\libraryControllerTests.js" />
   </ItemGroup>
   <ItemGroup>

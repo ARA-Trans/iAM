@@ -35,10 +35,10 @@
     import {Prop, Watch} from 'vue-property-decorator';
     import {CreateCashFlowLibraryDialogData} from '@/shared/models/modals/create-cash-flow-library-dialog-data';
     import {
-        CashFlowDuration,
         CashFlowLibrary,
-        CashFlowParameter, emptyCashFlowDuration,
-        emptyCashFlowLibrary, emptyCashFlowParameter, parameterDummyData
+        emptyCashFlowLibrary,
+        SplitTreatment,
+        SplitTreatmentLimit
     } from '@/shared/models/iAM/cash-flow';
     import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
@@ -57,8 +57,7 @@
         onDialogDataChanged() {
             this.createdCashFlowLibrary = clone({
                 ...this.createdCashFlowLibrary,
-                parameters: this.dialogData.parameters,
-                durations: this.dialogData.durations
+                splitTreatments: this.dialogData.splitTreatments
             });
         }
 
@@ -68,11 +67,9 @@
          * @param submit Boolean
          */
         onSubmit(submit: boolean) {
-            if (!hasValue(this.createdCashFlowLibrary.durations)) {
-                this.createdCashFlowLibrary.durations.push(clone({...emptyCashFlowDuration}));
+            if (hasValue(this.createdCashFlowLibrary.splitTreatments)) {
+                this.setIdsForNewLibrarySubData();
             }
-
-            this.setIdsForNewLibrarySubData();
 
             if (submit) {
                 this.$emit('submit', this.createdCashFlowLibrary);
@@ -87,16 +84,17 @@
          * Generates bson ids for library's parameters & durations data
          */
         setIdsForNewLibrarySubData() {
-            this.createdCashFlowLibrary.parameters = this.createdCashFlowLibrary.parameters
-                .map((parameter: CashFlowParameter) => {
-                    parameter.id = ObjectID.generate();
-                    return parameter;
-                });
-
-            this.createdCashFlowLibrary.durations = this.createdCashFlowLibrary.durations
-                .map((duration: CashFlowDuration) => {
-                    duration.id = ObjectID.generate();
-                    return duration;
+            this.createdCashFlowLibrary.splitTreatments = this.createdCashFlowLibrary.splitTreatments
+                .map((splitTreatment: SplitTreatment) => {
+                    return clone({
+                        ...splitTreatment,
+                        id: ObjectID.generate(),
+                        splitTreatmentLimits: splitTreatment.splitTreatmentLimits
+                            .map((splitTreatmentLimit: SplitTreatmentLimit) => {
+                                splitTreatmentLimit.id = ObjectID.generate();
+                                return splitTreatmentLimit;
+                            })
+                    });
                 });
         }
     }

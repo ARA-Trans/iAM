@@ -7,16 +7,7 @@ import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
 import AnalysisEditorService from '@/services/analysis-editor.service';
 import ReportsService from '@/services/reports.service';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const scenarios: any = {
-        ...data,
-        id: data._id
-    };
-    delete scenarios._id;
-    delete scenarios.__v;
-    return scenarios as Scenario;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -70,9 +61,7 @@ const actions = {
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
                     const scenarios: Scenario[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('scenariosMutator', scenarios);
                 }
             });
@@ -82,9 +71,7 @@ const actions = {
             .then((response: AxiosResponse<Scenario[]>) => {
                 if (hasValue(response, 'data')) {
                     const scenarios: Scenario[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('scenariosMutator', scenarios);
                 }
             });
@@ -101,7 +88,7 @@ const actions = {
         return await ScenarioService.createScenario(payload.createScenarioData, payload.userId)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdScenario: Scenario = convertFromMongoToVueModel(response.data);
+                    const createdScenario: Scenario = convertFromMongoToVue(response.data);
                     commit('createdScenarioMutator', createdScenario);
                     dispatch('setSuccessMessage', {message: 'Successfully created scenario'});
                 }
@@ -110,7 +97,7 @@ const actions = {
     async updateScenario({ dispatch, commit }: any, payload: any) {
         return await ScenarioService.updateScenario(payload.updateScenarioData, payload.scenarioId)
             .then((response: AxiosResponse<Scenario>) => {
-                const updatedScenario: Scenario = convertFromMongoToVueModel(response.data);
+                const updatedScenario: Scenario = convertFromMongoToVue(response.data);
                 commit('updatedScenarioMutator', updatedScenario);
                 dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
             });
@@ -159,13 +146,13 @@ const actions = {
                 case 'update':
                 case 'replace':
                     if (hasValue(payload, 'fullDocument')) {
-                        const updatedScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
+                        const updatedScenario: Scenario = convertFromMongoToVue(payload.fullDocument);
                         commit('updatedScenarioMutator', updatedScenario);
                     }
                     break;
                 case 'insert':
                     if (hasValue(payload, 'fullDocument')) {
-                        const createdScenario: Scenario = convertFromMongoToVueModel(payload.fullDocument);
+                        const createdScenario: Scenario = convertFromMongoToVue(payload.fullDocument);
                         if (!any(propEq('id', createdScenario.id), state.scenarios)) {
                             commit('createdScenarioMutator', createdScenario);
                             dispatch('setInfoMessage', {message: 'New scenario has been inserted from another source'});

@@ -1,44 +1,7 @@
 import {AxiosPromise} from 'axios';
-import {Consequence, Cost, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-
-const modifyDataForMongoDB = (treatmentLibrary: TreatmentLibrary): any => {
-    const treatmentLibraryData: any = {
-        ...treatmentLibrary,
-        _id: treatmentLibrary.id,
-        treatments: treatmentLibrary.treatments.map((treatment: Treatment) => {
-            const treatmentData: any = {
-                ...treatment,
-                _id: treatment.id,
-                feasibility: {
-                    ...treatment.feasibility,
-                    _id: treatment.feasibility.id
-                },
-                costs: treatment.costs.map((cost: Cost) => {
-                    const costData: any = {
-                        ...cost,
-                        _id: cost.id
-                    };
-                    delete costData.id;
-                    return costData;
-                }),
-                consequences: treatment.consequences.map((consequence: Consequence) => {
-                    const consequenceData: any = {
-                        ...consequence,
-                        _id: consequence.id
-                    };
-                    delete consequenceData.id;
-                    return consequenceData;
-                })
-            };
-            delete treatmentData.id;
-            delete treatmentData.feasibility.id;
-            return treatmentData as Treatment;
-        })
-    };
-    delete treatmentLibraryData.id;
-    return treatmentLibraryData;
-};
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class TreatmentEditorService {
     /**
@@ -53,7 +16,7 @@ export default class TreatmentEditorService {
      * @param createTreatmentLibraryData The treatment library create data
      */
     static createTreatmentLibrary(createTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateTreatmentLibrary', modifyDataForMongoDB(createTreatmentLibraryData));
+        return nodejsAxiosInstance.post('/api/CreateTreatmentLibrary', convertFromVueToMongo(createTreatmentLibraryData));
     }
 
     /**
@@ -61,7 +24,7 @@ export default class TreatmentEditorService {
      * @param updateTreatmentLibraryData The treatment library update data
      */
     static updateTreatmentLibrary(updateTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateTreatmentLibrary', modifyDataForMongoDB(updateTreatmentLibraryData));
+        return nodejsAxiosInstance.put('/api/UpdateTreatmentLibrary', convertFromVueToMongo(updateTreatmentLibraryData));
     }
 
     /**

@@ -24,81 +24,115 @@
         <v-flex xs12 v-show="hasSelectedCashFlowLibrary">
             <div class="cash-flow-library-tables">
                 <v-layout justify-center row>
-                    <v-flex xs5>
-                        <v-btn icon class="plus-icon" @click="onAddParameter"><v-icon>fas fa-plus</v-icon></v-btn>
-                        <v-data-table :headers="parametersTableHeaders" :items="parametersTableData"
-                                      class="elevation-1 v-table__overflow">
-                            <template slot="items" slot-scope="props">
-                                <td>
-                                    <v-edit-dialog :return-value.sync="props.item.parameter" large lazy persistent
-                                                   @save="onEditSelectedLibraryListData(props.item, 'parameters')">
-                                        <input class="output" type="text" :value="props.item.parameter" readonly />
-                                        <template slot="input">
-                                            <v-select :items="parametersSelectListItems" label="Select a Parameter"
-                                                      v-model="props.item.parameter">
-                                            </v-select>
-                                        </template>
-                                    </v-edit-dialog>
-                                </td>
-                                <td>
-                                    <v-menu bottom min-width="500px" min-height="500px">
-                                        <template slot="activator">
-                                            <input class="output" type="text" :value="props.item.criteria" readonly />
-                                        </template>
-                                        <v-card>
-                                            <v-card-text>
-                                                <v-textarea rows="5" no-resize readonly full-width outline
-                                                            :value="props.item.criteria">
-                                                </v-textarea>
-                                            </v-card-text>
-                                        </v-card>
-                                    </v-menu>
+                    <v-flex xs8>
+                        <v-card>
+                            <v-card-title>
+                                <v-btn icon class="plus-icon" @click="onAddSplitTreatment"><v-icon>fas fa-plus</v-icon></v-btn>
+                                Split Treatments
+                            </v-card-title>
+                            <v-card-text class="cash-flow-library-card">
+                                <v-data-table :headers="splitTreatmentTableHeaders" :items="splitTreatmentTableData" item-key="id"
+                                              class="elevation-1 v-table__overflow">
+                                    <template slot="items" slot-scope="props">
+                                        <td>
+                                            <v-radio-group class="cash-flow-radio-group" v-model="splitTreatmentRadioValue" :mandatory="false">
+                                                <v-radio :value="props.item.id"></v-radio>
+                                            </v-radio-group>
+                                        </td>
+                                        <td>
+                                            <v-edit-dialog :return-value.sync="props.item.description" large lazy persistent
+                                                           @save="onEditSelectedLibraryListData(props.item, 'description')">
+                                                <input class="output" type="text" :value="props.item.description" readonly />
+                                                <template slot="input">
+                                                    <v-textarea rows="5" no-resize outline label="Description"
+                                                                v-model="props.item.description">
+                                                    </v-textarea>
+                                                </template>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td>
+                                            <v-menu bottom min-width="500px" min-height="500px">
+                                                <template slot="activator">
+                                                    <input class="output" type="text" :value="props.item.criteria" readonly />
+                                                </template>
+                                                <v-card>
+                                                    <v-card-text>
+                                                        <v-textarea rows="5" no-resize readonly full-width outline
+                                                                    :value="props.item.criteria">
+                                                        </v-textarea>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-menu>
 
-                                    <v-btn icon class="edit-icon" @click="onEditCriteria(props.item)">
-                                        <v-icon>fas fa-edit</v-icon>
-                                    </v-btn>
-                                </td>
-                                <td>
-                                    <v-btn icon class="ara-orange" @click="onDeleteParameter(props.item)">
-                                        <v-icon>fas fa-trash</v-icon>
-                                    </v-btn>
-                                </td>
-                            </template>
-                        </v-data-table>
+                                            <v-btn icon class="edit-icon" @click="onEditCriteria(props.item)">
+                                                <v-icon>fas fa-edit</v-icon>
+                                            </v-btn>
+                                        </td>
+                                        <td>
+                                            <v-btn icon class="ara-orange" @click="onDeleteSplitTreatment(props.item)">
+                                                <v-icon>fas fa-trash</v-icon>
+                                            </v-btn>
+                                        </td>
+                                    </template>
+                                </v-data-table>
+                            </v-card-text>
+                        </v-card>
                     </v-flex>
-
-                    <v-flex xs5>
-                        <v-btn icon class="plus-icon" @click="onAddDuration"><v-icon>fas fa-plus</v-icon></v-btn>
-                        <v-data-table :headers="durationsTableHeaders" :items="durationsTableData"
-                                      class="elevation-1 v-table__overflow">
-                            <template slot="items" slot-scope="props">
-                                <td>
-                                    <v-edit-dialog :return-value.sync="props.item.duration" large lazy persistent full-width
-                                                   @save="onEditSelectedLibraryListData(props.item, 'durations')">
-                                        <input class="output" type="text" :value="props.item.duration" readonly />
-                                        <template slot="input">
-                                            <v-text-field v-model="props.item.duration" label="Edit" single-line></v-text-field>
-                                        </template>
-                                    </v-edit-dialog>
-                                </td>
-                                <td>
-                                    <v-edit-dialog :return-value.sync="props.item.maxTreatmentCost" large lazy persistent
-                                                   @save="onEditSelectedLibraryListData(props.item, 'durations')">
-                                        <CashFlowEditorMaxTreatmentCostOutput :maxTreatmentCost="props.item.maxTreatmentCost"
-                                                                              :durationId="props.item.id"/>
-                                        <input class="output" type="text" :value="formatAsCurrency(props.item.maxTreatmentCost)" readonly />
-                                        <template slot="input">
-                                            <v-text-field v-model="props.item.maxTreatmentCost" label="Edit" single-line></v-text-field>
-                                        </template>
-                                    </v-edit-dialog>
-                                </td>
-                                <td>
-                                    <v-btn icon class="ara-orange" @click="onDeleteDuration(props.item)">
-                                        <v-icon>fas fa-trash</v-icon>
-                                    </v-btn>
-                                </td>
-                            </template>
-                        </v-data-table>
+                    <v-flex xs4 v-if="selectedSplitTreatment.id !== '0'">
+                        <v-card>
+                            <v-card-title>
+                                <v-btn icon class="plus-icon" @click="onAddSplitTreatmentLimit"><v-icon>fas fa-plus</v-icon></v-btn>
+                                Split Treatment Limits
+                            </v-card-title>
+                            <v-card-text class="cash-flow-library-card">
+                                <v-data-table :headers="splitTreatmentLimitTableHeaders" :items="splitTreatmentLimitTableData"
+                                              class="elevation-1 v-table__overflow">
+                                    <template slot="items" slot-scope="props">
+                                        <td>
+                                            <v-edit-dialog :return-value.sync="props.item.rank" large lazy persistent full-width
+                                                           @save="onEditSelectedLibraryListData(props.item, 'rank')">
+                                                <input class="output" type="text" readonly :value="props.item.rank"
+                                                       :class="{'invalid-input':splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(props.item) !== true}" />
+                                                <template slot="input">
+                                                    <v-text-field v-model="props.item.rank" label="Edit" single-line
+                                                                  :rules="[splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(props.item)]">
+                                                    </v-text-field>
+                                                </template>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td>
+                                            <v-edit-dialog :return-value.sync="props.item.amount" large lazy persistent full-width
+                                                           @save="onEditSelectedLibraryListData(props.item, 'amount')">
+                                                <input class="output" type="text" readonly :value="props.item.amount"
+                                                       :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}" />
+                                                <template slot="input">
+                                                    <v-text-field v-model="props.item.amount" label="Edit" single-line
+                                                                  :rules="[splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)]">
+                                                    </v-text-field>
+                                                </template>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td>
+                                            <v-edit-dialog :return-value.sync="props.item.percentage" large lazy persistent full-width
+                                                           @save="onEditSelectedLibraryListData(props.item, 'percentage')">
+                                                <input class="output" type="text" readonly :value="props.item.percentage"
+                                                       :class="{'invalid-input':sumOfPercentsEqualsOneHundred(props.item.percentage) !== true}" />
+                                                <template slot="input">
+                                                    <v-text-field v-model="props.item.percentage" label="Edit" single-line
+                                                                  :rules="[sumOfPercentsEqualsOneHundred]">
+                                                    </v-text-field>
+                                                </template>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td>
+                                            <v-btn icon class="ara-orange" @click="onDeleteSplitTreatmentLimit(props.item)">
+                                                <v-icon>fas fa-trash</v-icon>
+                                            </v-btn>
+                                        </td>
+                                    </template>
+                                </v-data-table>
+                            </v-card-text>
+                        </v-card>
                     </v-flex>
                 </v-layout>
             </div>
@@ -113,13 +147,15 @@
         </v-flex>
         <v-flex xs12>
             <v-layout v-show="hasSelectedCashFlowLibrary" justify-end row>
-                <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario">
+                <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario"
+                       :disabled="disableSubmitButtons()">
                     Apply
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary">
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary"
+                       :disabled="disableSubmitButtons()">
                     Update Library
                 </v-btn>
-                <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary">
+                <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="disableSubmitButtons()">
                     Create as New Library
                 </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardChanges">
@@ -140,13 +176,13 @@
     import {Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import {SelectItem} from '@/shared/models/vue/select-item';
-    import {clone, any, propEq, find, update, findIndex, isNil, prepend} from 'ramda';
+    import {clone, any, propEq, find, update, findIndex, isNil, prepend, append} from 'ramda';
     import {
-        CashFlowDuration,
+        SplitTreatmentLimit,
         CashFlowLibrary,
-        CashFlowParameter, emptyCashFlowDuration,
         emptyCashFlowLibrary,
-        emptyCashFlowParameter, Parameter, parameterDummyData
+        emptySplitTreatment,
+        SplitTreatment, emptySplitTreatmentLimit
     } from '@/shared/models/iAM/cash-flow';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
@@ -159,7 +195,9 @@
         emptyCreateCashFlowLibraryDialogData
     } from '@/shared/models/modals/create-cash-flow-library-dialog-data';
     import CreateCashFlowLibraryDialog from '@/components/cash-flow-editor/cash-flow-editor-dialogs/CreateCashFlowLibraryDialog.vue';
-    import {formatAsCurrency} from "@/shared/utils/currency-formatter";
+    import {formatAsCurrency} from '@/shared/utils/currency-formatter';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {getLatestPropertyValue, getPropertyValuesNonUniq} from "@/shared/utils/getter-utils";
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -183,23 +221,23 @@
         cashFlowLibrariesSelectListItems: SelectItem[] = [];
         cashFlowLibrarySelectItemValue: any = null;
         selectedCashFlowLibrary: CashFlowLibrary = clone(emptyCashFlowLibrary);
-        parametersTableHeaders: DataTableHeader[] = [
-            {text: 'Parameter', value: '', align: 'left', sortable: true, class: '', width: '20%'},
-            {text: 'Criteria', value: '', align: 'left', sortable: false, class: '', width: '75%'},
+        splitTreatmentTableHeaders: DataTableHeader[] = [
+            {text: '', value: '', align: 'left', sortable: false, class: '', width: '5%'},
+            {text: 'Description', value: 'description', align: 'left', sortable: false, class: '', width: '25%'},
+            {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '65%'},
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '5%'}
         ];
-        parametersTableData: CashFlowParameter[] = [];
-        parametersSelectListItems: SelectItem[] = parameterDummyData.map((data: Parameter) => ({
-            text: data.name,
-            value: data.name
-        }));
-        durationsTableHeaders: DataTableHeader[] = [
-            {text: 'Duration (Years)', value: 'duration', align: 'left', sortable: true, class: '', width: '20%'},
-            {text: 'Maximum Treatment Cost', value: 'maxTreatmentCost', align: 'left', sortable: true, class: '', width: '75%'},
-            {text: '', value: '', align: 'left', sortable: false, class: '', width: '5%'}
+        splitTreatmentTableData: SplitTreatment[] = [];
+        splitTreatmentRadioValue: string = '';
+        selectedSplitTreatment: SplitTreatment = clone(emptySplitTreatment);
+        selectedSplitTreatmentForCriteriaEdit: SplitTreatment = clone(emptySplitTreatment);
+        splitTreatmentLimitTableHeaders: DataTableHeader[] = [
+            {text: 'Split Year', value: 'rank', align: 'left', sortable: false, class: '', width: '31.6%'},
+            {text: 'Amount', value: 'amount', align: 'left', sortable: false, class: '', width: '31.6%'},
+            {text: 'Percentages', value: 'percentage', align: 'left', sortable: false, class: '', width: '31.6%'},
+            {text: '', value: '', align: 'left', sortable: false, class: '', width: '4.2%'}
         ];
-        durationsTableData: CashFlowDuration[] = [];
-        selectedCashFlowParameter: CashFlowParameter = clone(emptyCashFlowParameter);
+        splitTreatmentLimitTableData: SplitTreatmentLimit[] = [];
         createCashFlowLibraryDialogData: CreateCashFlowLibraryDialogData = clone(emptyCreateCashFlowLibraryDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
@@ -255,12 +293,43 @@
             this.selectedCashFlowLibrary = clone(this.stateSelectedCashFlowLibrary);
             if (this.selectedCashFlowLibrary.id !== '0') {
                 this.hasSelectedCashFlowLibrary = true;
-                this.parametersTableData = clone(this.selectedCashFlowLibrary.parameters);
-                this.durationsTableData = clone(this.selectedCashFlowLibrary.durations);
+                this.splitTreatmentTableData = clone(this.selectedCashFlowLibrary.splitTreatments);
             } else {
                 this.hasSelectedCashFlowLibrary = false;
-                this.parametersTableData = [];
-                this.durationsTableData = [];
+                this.splitTreatmentTableData = [];
+            }
+        }
+
+        @Watch('splitTreatmentTableData')
+        onSplitTreatmentTableDataChanged() {
+            this.onSelectSplitTreatment();
+        }
+
+        @Watch('splitTreatmentRadioValue')
+        onSplitTreatmentRadioValueChanged() {
+            this.onSelectSplitTreatment();
+        }
+
+        @Watch('selectedSplitTreatment')
+        onSelectedSplitTreatmentIdChanged() {
+            if (this.selectedSplitTreatment.id === '0') {
+                this.splitTreatmentLimitTableData = [];
+            } else {
+                if (hasValue(this.selectedSplitTreatment)) {
+                    this.splitTreatmentLimitTableData = clone(this.selectedSplitTreatment.splitTreatmentLimits);
+                }
+            }
+        }
+
+        onSelectSplitTreatment() {
+            const splitTreatment: SplitTreatment = find(
+                propEq('id', this.splitTreatmentRadioValue), this.selectedCashFlowLibrary.splitTreatments
+            ) as SplitTreatment;
+
+            if (hasValue(splitTreatment)) {
+                this.selectedSplitTreatment = clone(splitTreatment);
+            } else {
+                this.selectedSplitTreatment = clone(emptySplitTreatment);
             }
         }
 
@@ -278,8 +347,7 @@
         onCreateAsNewLibrary() {
             this.createCashFlowLibraryDialogData = {
                 showDialog: true,
-                parameters: this.selectedCashFlowLibrary.parameters,
-                durations: this.selectedCashFlowLibrary.durations
+                splitTreatments: this.selectedCashFlowLibrary.splitTreatments
             };
         }
 
@@ -291,54 +359,112 @@
             }
         }
 
-        onAddParameter() {
-            const newParameter: CashFlowParameter = clone({
-                ...emptyCashFlowParameter,
+        onAddSplitTreatment() {
+            const newSplitTreatment: SplitTreatment = clone({
+                ...emptySplitTreatment,
                 id: ObjectID.generate()
             });
             this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
                     ...this.selectedCashFlowLibrary,
-                    parameters: prepend(newParameter, this.selectedCashFlowLibrary.parameters)
+                    splitTreatments: prepend(newSplitTreatment, this.selectedCashFlowLibrary.splitTreatments)
                 })
             });
         }
 
-        onDeleteParameter(cashFlowParameter: CashFlowParameter) {
+        onDeleteSplitTreatment(deletedSplitTreatment: SplitTreatment) {
             this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
                     ...this.selectedCashFlowLibrary,
-                    parameters: this.selectedCashFlowLibrary.parameters
-                        .filter((parameter: CashFlowParameter) => parameter.id !== cashFlowParameter.id)
+                    splitTreatments: this.selectedCashFlowLibrary.splitTreatments
+                        .filter((splitTreatment: SplitTreatment) => splitTreatment.id !== deletedSplitTreatment.id)
                 })
             });
         }
 
-        onAddDuration() {
-            const newDuration: CashFlowDuration = clone({
-                ...emptyCashFlowDuration,
+        onAddSplitTreatmentLimit() {
+            const newSplitTreatmentLimit: SplitTreatmentLimit = this.modifyNewSplitTreatmentLimitDefaultValues();
+
+            this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
+                    ...this.selectedCashFlowLibrary,
+                    splitTreatments: update(
+                        findIndex(propEq('id', this.selectedSplitTreatment.id), this.selectedCashFlowLibrary.splitTreatments),
+                        clone({
+                            ...this.selectedSplitTreatment,
+                            splitTreatmentLimits: append(newSplitTreatmentLimit, this.selectedSplitTreatment.splitTreatmentLimits)
+                        }),
+                        this.selectedCashFlowLibrary.splitTreatments
+                    )
+                })
+            });
+        }
+
+        modifyNewSplitTreatmentLimitDefaultValues() {
+            const newSplitTreatmentLimit: SplitTreatmentLimit = clone({
+                ...emptySplitTreatmentLimit,
                 id: ObjectID.generate()
             });
+
+            if (this.selectedSplitTreatment.splitTreatmentLimits.length === 0) {
+                return newSplitTreatmentLimit;
+            } else {
+                const newRank: number = getLatestPropertyValue('rank', this.selectedSplitTreatment.splitTreatmentLimits) + 1;
+                const newAmount: number = getLatestPropertyValue('amount', this.selectedSplitTreatment.splitTreatmentLimits);
+                const newPercentages = this.getNewSplitTreatmentLimitPercentages(newRank);
+
+                return clone({
+                    ...newSplitTreatmentLimit,
+                    rank: newRank,
+                    amount: newSplitTreatmentLimit.amount < newAmount ? newAmount : newSplitTreatmentLimit.amount,
+                    percentage: newPercentages
+                });
+            }
+        }
+
+        getNewSplitTreatmentLimitPercentages(rank: number) {
+            const  percentages: number[] = [];
+            let percentage = 100 / rank;
+
+            if (100 % rank !== 0) {
+                percentage = Math.floor(percentage);
+
+                for (let i = 0; i < rank; i++) {
+                    if (i === rank - 1) {
+                        const sumCurrentPercentages: number = percentages.reduce((x, y) => x + y);
+                        percentages.push(100 - sumCurrentPercentages);
+                    } else {
+                        percentages.push(percentage);
+                    }
+                }
+            } else {
+                for (let i = 0; i < rank; i++) {
+                    percentages.push(percentage);
+                }
+            }
+
+            return percentages.join('/');
+        }
+
+        onDeleteSplitTreatmentLimit(deletedSplitTreatmentLimit: SplitTreatmentLimit) {
             this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
                     ...this.selectedCashFlowLibrary,
-                    durations: prepend(newDuration, this.selectedCashFlowLibrary.durations)
+                    splitTreatments: update(
+                        findIndex(propEq('id', this.selectedSplitTreatment), this.selectedCashFlowLibrary.splitTreatments),
+                        clone({
+                            ...this.selectedSplitTreatment,
+                            splitTreatmentLimits: this.selectedSplitTreatment.splitTreatmentLimits
+                                .filter((splitTreatmentLimit: SplitTreatmentLimit) => splitTreatmentLimit.id !== deletedSplitTreatmentLimit.id)
+                        }),
+                        this.selectedCashFlowLibrary.splitTreatments
+                    )
                 })
             });
         }
 
-        onDeleteDuration(cashFlowDuration: CashFlowDuration) {
-            this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
-                    ...this.selectedCashFlowLibrary,
-                    durations: this.selectedCashFlowLibrary.durations
-                        .filter((duration: CashFlowDuration) => duration.id !== cashFlowDuration.id)
-                })
-            });
-        }
-
-        onEditCriteria(cashFlowParameter: CashFlowParameter) {
-            this.selectedCashFlowParameter = clone(cashFlowParameter);
+        onEditCriteria(splitTreatment: SplitTreatment) {
+            this.selectedSplitTreatmentForCriteriaEdit = clone(splitTreatment);
 
             this.criteriaEditorDialogData = {
                 showDialog: true,
-                criteria: this.selectedCashFlowParameter.criteria
+                criteria: this.selectedSplitTreatmentForCriteriaEdit.criteria
             };
         }
 
@@ -348,13 +474,15 @@
             if (!isNil(criteria)) {
                 this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
                         ...this.selectedCashFlowLibrary,
-                        parameters: update(
-                            findIndex(propEq('id', this.selectedCashFlowParameter.id), this.selectedCashFlowLibrary.parameters),
-                            clone({...this.selectedCashFlowParameter, criteria: criteria}),
-                            this.selectedCashFlowLibrary.parameters
+                        splitTreatments: update(
+                            findIndex(propEq('id', this.selectedSplitTreatmentForCriteriaEdit.id), this.selectedCashFlowLibrary.splitTreatments),
+                            clone({...this.selectedSplitTreatmentForCriteriaEdit, criteria: criteria}),
+                            this.selectedCashFlowLibrary.splitTreatments
                         )
                     })
                 });
+
+                this.selectedSplitTreatmentForCriteriaEdit = clone(emptySplitTreatment);
             }
         }
 
@@ -362,18 +490,27 @@
             const cashFlowLibrary: CashFlowLibrary = clone(this.selectedCashFlowLibrary);
 
             switch(property) {
-                case 'parameters':
-                    cashFlowLibrary.parameters = update(
-                        findIndex(propEq('id', data.id), cashFlowLibrary.parameters),
-                        data as CashFlowParameter,
-                        cashFlowLibrary.parameters
+                case 'description':
+                    cashFlowLibrary.splitTreatments = update(
+                        findIndex(propEq('id', data.id), cashFlowLibrary.splitTreatments),
+                        data as SplitTreatment,
+                        cashFlowLibrary.splitTreatments
                     );
                         break;
-                case 'durations':
-                    cashFlowLibrary.durations = update(
-                        findIndex(propEq('id', data.id), cashFlowLibrary.durations),
-                        data as CashFlowDuration,
-                        cashFlowLibrary.durations
+                case 'rank':
+                case 'amount':
+                case 'percentage':
+                    cashFlowLibrary.splitTreatments = update(
+                        findIndex(propEq('id', this.selectedSplitTreatment.id), cashFlowLibrary.splitTreatments),
+                        clone({
+                            ...this.selectedSplitTreatment,
+                            splitTreatmentLimits: update(
+                                findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
+                                data as SplitTreatmentLimit,
+                                this.selectedSplitTreatment.splitTreatmentLimits
+                            )
+                        }),
+                        cashFlowLibrary.splitTreatments
                     );
             }
 
@@ -395,11 +532,13 @@
         onDiscardChanges() {
             this.cashFlowLibrarySelectItemValue = null;
 
-            if (this.stateScenarioCashFlowLibrary.id !== '0') {
-                this.selectCashFlowLibraryAction({selectedCashFlowLibrary: this.stateScenarioCashFlowLibrary});
-            } else {
-                this.getScenarioCashFlowLibraryAction({selectedScenarioId: this.selectedScenarioId});
-            }
+            setTimeout(() => {
+                if (this.stateScenarioCashFlowLibrary.id !== '0') {
+                    this.selectCashFlowLibraryAction({selectedCashFlowLibrary: this.stateScenarioCashFlowLibrary});
+                } else {
+                    this.getScenarioCashFlowLibraryAction({selectedScenarioId: this.selectedScenarioId});
+                }
+            });
         }
 
         /**
@@ -408,6 +547,71 @@
          */
         formatAsCurrency(value: any) {
             return formatAsCurrency(value);
+        }
+
+        disableSubmitButtons() {
+            let disabled: boolean = false;
+
+            if (this.selectedSplitTreatment.id !== '0' && hasValue(this.selectedSplitTreatment.splitTreatmentLimits)) {
+                if (this.selectedSplitTreatment.splitTreatmentLimits.length > 1) {
+                    let index = 1;
+                    while (!disabled && index !== this.selectedSplitTreatment.splitTreatmentLimits.length) {
+                        disabled = this.splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(
+                            this.selectedSplitTreatment.splitTreatmentLimits[index]) !== true;
+
+                        if (!disabled) {
+                            disabled = this.splitTreatmentLimitAmountNotLessThanPreviousAmount(
+                                this.selectedSplitTreatment.splitTreatmentLimits[index]) !== true;
+                        }
+
+                        index++;
+                    }
+                }
+
+                if (!disabled) {
+                    const percentages: string[] = getPropertyValuesNonUniq(
+                        'percentage', this.selectedSplitTreatment.splitTreatmentLimits);
+
+                    if (percentages.length > 0) {
+                        let index = 0;
+                        while (!disabled && index !== percentages.length) {
+                            disabled = this.sumOfPercentsEqualsOneHundred(percentages[index]) !== true;
+                            index++;
+                        }
+                    }
+                }
+            }
+
+            return disabled;
+        }
+
+        splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(splitTreatmentLimit: SplitTreatmentLimit) {
+            const index: number = findIndex(propEq('id', splitTreatmentLimit.id), this.selectedSplitTreatment.splitTreatmentLimits);
+            if (index > 0) {
+                return this.selectedSplitTreatment.splitTreatmentLimits[index - 1].rank < splitTreatmentLimit.rank ||
+                    'This split treatment limit year must be > than previous year';
+            }
+
+            return true;
+        }
+
+        splitTreatmentLimitAmountNotLessThanPreviousAmount(splitTreatmentLimit: SplitTreatmentLimit) {
+            const index: number = findIndex(propEq('id', splitTreatmentLimit.id), this.selectedSplitTreatment.splitTreatmentLimits);
+            if (index > 0) {
+                return this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount <= splitTreatmentLimit.amount ||
+                    'This split treatment limit amount must be >= to previous amount';
+            }
+
+            return true;
+        }
+
+        sumOfPercentsEqualsOneHundred(value: string) {
+            if (value.indexOf('/')) {
+                const percents: string[] = value.split('/');
+                value = percents.reduce((x, y) => (parseInt(x) + parseInt(y)).toString());
+            }
+
+            return parseInt(value) === 100 || 'Percents must add up to 100';
         }
     }
 </script>
@@ -427,7 +631,21 @@
         width: 100%;
     }
 
+    .cash-flow-radio-group .v-input--radio-group__input {
+        padding-top: 25px;
+    }
+
     .output {
         border-bottom: 1px solid;
+    }
+
+    .cash-flow-library-card {
+        height: 330px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .invalid-input {
+        color: red;
     }
 </style>

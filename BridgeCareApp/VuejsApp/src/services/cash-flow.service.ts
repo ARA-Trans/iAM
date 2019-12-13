@@ -1,25 +1,7 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise} from 'axios';
-import {CashFlowDuration, CashFlowLibrary, CashFlowParameter} from '@/shared/models/iAM/cash-flow';
-
-const modifyDataForMongoDB = (cashFlowLibrary: CashFlowLibrary): any => {
-    const cashFlowLibraryData: any = {
-        ...cashFlowLibrary,
-        _id: cashFlowLibrary.id,
-        parameters: cashFlowLibrary.parameters.map((parameter: CashFlowParameter) => {
-            const cashFlowParameterData: any = {...parameter, _id: parameter.id};
-            delete cashFlowParameterData.id;
-            return cashFlowParameterData;
-        }),
-        durations: cashFlowLibrary.durations.map((duration: CashFlowDuration) => {
-            const cashFlowDurationData: any = {...duration, _id: duration.id};
-            delete cashFlowDurationData.id;
-            return cashFlowDurationData;
-        })
-    };
-    delete cashFlowLibraryData.id;
-    return cashFlowLibraryData;
-};
+import {CashFlowLibrary} from '@/shared/models/iAM/cash-flow';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class CashFlowService {
     /**
@@ -34,7 +16,7 @@ export default class CashFlowService {
      * @param createdCashFlowLibrary Cash flow library create data
      */
     static createCashFlowLibrary(createdCashFlowLibrary: CashFlowLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateCashFlowLibrary', modifyDataForMongoDB(createdCashFlowLibrary));
+        return nodejsAxiosInstance.post('/api/CreateCashFlowLibrary', convertFromVueToMongo(createdCashFlowLibrary));
     }
 
     /**
@@ -42,7 +24,7 @@ export default class CashFlowService {
      * @param updatedCashFlowLibrary Cash flow library update data
      */
     static updateCashFlowLibrary(updatedCashFlowLibrary: CashFlowLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateCashFlowLibrary', modifyDataForMongoDB(updatedCashFlowLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateCashFlowLibrary', convertFromVueToMongo(updatedCashFlowLibrary));
     }
 
     /**

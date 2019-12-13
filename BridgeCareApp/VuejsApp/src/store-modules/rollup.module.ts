@@ -1,20 +1,11 @@
-﻿import { AxiosResponse } from 'axios';
-import { clone, append, any, propEq, findIndex, remove } from 'ramda';
-import { hasValue } from '@/shared/utils/has-value-util';
-import { http2XX } from '@/shared/utils/http-utils';
+﻿import {AxiosResponse} from 'axios';
+import {clone, any, propEq, findIndex} from 'ramda';
+import {hasValue} from '@/shared/utils/has-value-util';
+import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
-import { Rollup } from '../shared/models/iAM/rollup';
+import {Rollup} from '../shared/models/iAM/rollup';
 import RollupService from '../services/rollup.service';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const rollups: any = {
-        ...data,
-        id: data._id
-    };
-    delete rollups._id;
-    delete rollups.__v;
-    return rollups as Rollup;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     rollups: [] as Rollup[],
@@ -42,9 +33,7 @@ const actions = {
         return await RollupService.getMongoRollups()
             .then((response: AxiosResponse<Rollup[]>) => {
                 const rollups: Rollup[] = response.data
-                    .map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
+                    .map((data: any) => convertFromMongoToVue(data));
                 commit('rollupsMutator', rollups);
             });
     },
@@ -61,21 +50,19 @@ const actions = {
             .then((response: AxiosResponse<Rollup[]>) => {
                 if (hasValue(response)) {
                     const networks: Rollup[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('rollupsMutator', networks);
                 }
             });
     },
     async socket_rollupStatus({ dispatch, state, commit }: any, payload: any) {
         if (payload.operationType == 'update' || payload.operationType == 'replace') {
-            const updatedRollup: Rollup = convertFromMongoToVueModel(payload.fullDocument);
+            const updatedRollup: Rollup = convertFromMongoToVue(payload.fullDocument);
             commit('updatedRollupMutator', updatedRollup);
         }
 
         if (payload.operationType == 'insert') {
-            const createdNetwork: Rollup = convertFromMongoToVueModel(payload.fullDocument);
+            const createdNetwork: Rollup = convertFromMongoToVue(payload.fullDocument);
             if (!any(propEq('id', createdNetwork.id), state.rollups)) {
                 commit('createdNetworkMutator', createdNetwork);
                 dispatch('setInfoMessage', { message: 'New network has been inserted from another source' });

@@ -1,54 +1,41 @@
-export interface CashFlowParameter {
+export interface SplitTreatmentLimit {
     id: string;
-    parameter: string;
-    criteria: string;
+    rank: number;
+    amount: number;
+    percentage: string;
 }
 
-export interface CashFlowDuration {
+export interface SplitTreatment {
     id: string;
-    duration: number;
-    maxTreatmentCost: string;
+    description: string;
+    criteria: string;
+    splitTreatmentLimits: SplitTreatmentLimit[];
 }
 
 export interface CashFlowLibrary {
     id: string;
     name: string;
     description: string;
-    parameters: CashFlowParameter[];
-    durations: CashFlowDuration[];
-}
-
-export interface Parameter {
-    id: string;
-    name: string;
+    splitTreatments: SplitTreatment[];
 }
 
 export const emptyCashFlowLibrary: CashFlowLibrary = {
     id: '0',
     name: '',
     description: '',
-    parameters: [],
-    durations: []
+    splitTreatments: []
 };
 
-export const emptyCashFlowParameter: CashFlowParameter = {
+export const emptySplitTreatment: SplitTreatment = {
     id: '0',
-    parameter: '',
-    criteria: ''
+    description: '',
+    criteria: '',
+    splitTreatmentLimits: []
 };
 
-export const emptyCashFlowDuration: CashFlowDuration = {
+export const emptySplitTreatmentLimit: SplitTreatmentLimit = {
     id: '0',
-    duration: 1,
-    maxTreatmentCost: ''
+    rank: 1,
+    amount: 1000000,
+    percentage: '100'
 };
-
-const ObjectID = require('bson-objectid');
-
-export const parameterDummyData: Parameter[] = [
-    {id: ObjectID.generate(), name: 'District 1'},
-    {id: ObjectID.generate(), name: 'District 2'},
-    {id: ObjectID.generate(), name: 'District 3'},
-    {id: ObjectID.generate(), name: 'District 4'},
-    {id: ObjectID.generate(), name: 'District 5'}
-];

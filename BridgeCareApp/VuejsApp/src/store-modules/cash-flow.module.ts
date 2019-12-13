@@ -3,34 +3,7 @@ import {clone, append, update, findIndex, propEq, equals, any} from 'ramda';
 import CashFlowService from '@/services/cash-flow.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const cashFlowLibrary: any = {
-        ...data,
-        id: data._id,
-        parameters: data.parameters.map((parameter: any) => {
-            const subData: any = {
-                ...parameter,
-                id: parameter._id
-            };
-            delete subData._id;
-            delete subData.__v;
-            return subData;
-        }),
-        durations: data.durations.map((duration: any) => {
-            const subData: any = {
-                ...duration,
-                id: duration._id
-            };
-            delete subData._id;
-            delete subData.__v;
-            return subData;
-        })
-    };
-    delete data._id;
-    delete data.__v;
-    return cashFlowLibrary as CashFlowLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     cashFlowLibraries: []  as CashFlowLibrary[],
@@ -68,7 +41,7 @@ const actions = {
         await CashFlowService.getCashFlowLibraries().then((response: AxiosResponse<any[]>) => {
             if (hasValue(response, 'data')) {
                 const cashFlowLibraries: CashFlowLibrary[] = response.data
-                    .map((data: any) => convertFromMongoToVueModel(data));
+                    .map((data: any) => convertFromMongoToVue(data));
                 commit('cashFlowLibrariesMutator', cashFlowLibraries);
             }
         });
@@ -77,7 +50,7 @@ const actions = {
         await CashFlowService.createCashFlowLibrary(payload.createdCashFlowLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdCashFlowLibrary: CashFlowLibrary = convertFromMongoToVueModel(response.data);
+                    const createdCashFlowLibrary: CashFlowLibrary = convertFromMongoToVue(response.data);
                     commit('createdCashFlowLibraryMutator', createdCashFlowLibrary);
                     commit('selectedCashFlowLibraryMutator', createdCashFlowLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created cash flow library'});
@@ -88,7 +61,7 @@ const actions = {
         await CashFlowService.updateCashFlowLibrary(payload.updatedCashFlowLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedCashFlowLibrary: CashFlowLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedCashFlowLibrary: CashFlowLibrary = convertFromMongoToVue(response.data);
                     commit('updatedCashFlowLibraryMutator', updatedCashFlowLibrary);
                     commit('selectedCashFlowLibraryMutator', updatedCashFlowLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated cash flow library'});
@@ -116,7 +89,7 @@ const actions = {
     },
     async socket_cashFlowLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const cashFlowLibrary: CashFlowLibrary = convertFromMongoToVueModel(payload.fullDocument);
+            const cashFlowLibrary: CashFlowLibrary = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
                 case 'update':
                 case 'replace':

@@ -1,20 +1,7 @@
 import {AxiosPromise} from 'axios';
-import {PerformanceLibrary, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
+import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-
-const modifyDataForMongoDB = (performanceLibrary: PerformanceLibrary): any => {
-    const performanceLibraryData: any = {
-        ...performanceLibrary,
-        _id: performanceLibrary.id,
-        equations: performanceLibrary.equations.map((equation: PerformanceLibraryEquation) => {
-            const equationData: any = {...equation, _id: equation.id};
-            delete equationData.id;
-            return equationData;
-        })
-    };
-    delete performanceLibraryData.id;
-    return performanceLibraryData;
-};
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class PerformanceEditorService {
     /**
@@ -29,7 +16,7 @@ export default class PerformanceEditorService {
      * @param createPerformanceLibraryData The performance library create data
      */
     static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', modifyDataForMongoDB(createPerformanceLibraryData));
+        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', convertFromVueToMongo(createPerformanceLibraryData));
     }
 
     /**
@@ -37,7 +24,7 @@ export default class PerformanceEditorService {
      * @param updatePerformanceLibraryData The performance library update data
      */
     static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', modifyDataForMongoDB(updatePerformanceLibraryData));
+        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', convertFromVueToMongo(updatePerformanceLibraryData));
     }
 
     /**

@@ -1,13 +1,11 @@
-import {CashFlowDuration, CashFlowParameter} from '@/shared/models/iAM/cash-flow';
+import {SplitTreatment} from '@/shared/models/iAM/cash-flow';
 
 export interface CreateCashFlowLibraryDialogData {
     showDialog: boolean;
-    parameters: CashFlowParameter[];
-    durations: CashFlowDuration[];
+    splitTreatments: SplitTreatment[];
 }
 
 export const emptyCreateCashFlowLibraryDialogData = {
     showDialog: false,
-    parameters: [],
-    durations: []
+    splitTreatments: []
 };
