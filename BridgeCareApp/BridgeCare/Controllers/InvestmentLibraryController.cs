@@ -8,8 +8,8 @@ using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
-    using InvestmentLibraryGetMethod = Func<IInvestmentLibrary, int, BridgeCareContext, UserInformationModel, InvestmentLibraryModel>;
-    using InvestmentLibrarySaveMethod = Func<IInvestmentLibrary, InvestmentLibraryModel, BridgeCareContext, UserInformationModel, InvestmentLibraryModel>;
+    using InvestmentLibraryGetMethod = Func<int, UserInformationModel, InvestmentLibraryModel>;
+    using InvestmentLibrarySaveMethod = Func<InvestmentLibraryModel, UserInformationModel, InvestmentLibraryModel>;
 
     /// <summary>
     /// Http interface to get a list of investment strategies which are text descriptions and a
@@ -19,28 +19,32 @@ namespace BridgeCare.Controllers
     {
         private readonly IInvestmentLibrary repo;
         private readonly BridgeCareContext db;
-
-        private readonly IReadOnlyDictionary<string, InvestmentLibraryGetMethod> InvestmentLibraryGetMethods = new Dictionary<string, InvestmentLibraryGetMethod>
-        {
-            [Role.ADMINISTRATOR] = (repo, id, db, userInformation) => repo.GetSimulationInvestmentLibrary(id, db),
-            [Role.DISTRICT_ENGINEER] = (repo, id, db, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name),
-            [Role.CWOPA] = (repo, id, db, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name),
-            [Role.PLANNING_PARTNER] = (repo, id, db, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name)
-        };
-
-        private readonly IReadOnlyDictionary<string, InvestmentLibrarySaveMethod> InvestmentLibrarySaveMethods = new Dictionary<string, InvestmentLibrarySaveMethod>
-        {
-
-            [Role.ADMINISTRATOR] = (repo, model, db, userInformation) => repo.SaveSimulationInvestmentLibrary(model, db),
-            [Role.DISTRICT_ENGINEER] = (repo, model, db, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name),
-            [Role.CWOPA] = (repo, model, db, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name),
-            [Role.PLANNING_PARTNER] = (repo, model, db, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name)
-        };
+        /// <summary>Maps user roles to methods for fetching an investment library</summary>
+        private readonly IReadOnlyDictionary<string, InvestmentLibraryGetMethod> InvestmentLibraryGetMethods;
+        /// <summary>Maps user roles to methods for saving an investment library</summary>
+        private readonly IReadOnlyDictionary<string, InvestmentLibrarySaveMethod> InvestmentLibrarySaveMethods;
 
         public InvestmentLibraryController(IInvestmentLibrary repo, BridgeCareContext db)
         {
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
+
+            InvestmentLibraryGetMethods = new Dictionary<string, InvestmentLibraryGetMethod>
+            {
+                [Role.ADMINISTRATOR] = (id, userInformation) => repo.GetSimulationInvestmentLibrary(id, db),
+                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name),
+                [Role.CWOPA] = (id, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name),
+                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name)
+            };
+
+            InvestmentLibrarySaveMethods = new Dictionary<string, InvestmentLibrarySaveMethod>
+            {
+
+                [Role.ADMINISTRATOR] = (model, userInformation) => repo.SaveSimulationInvestmentLibrary(model, db),
+                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name),
+                [Role.CWOPA] = (model, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name),
+                [Role.PLANNING_PARTNER] = (model, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name)
+            };
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult GetSimulationInvestmentLibrary(int id)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            return Ok(InvestmentLibraryGetMethods[userInformation.Role](repo, id, db, userInformation);
+            return Ok(InvestmentLibraryGetMethods[userInformation.Role](id, userInformation));
         }
 
         /// <summary>
@@ -66,11 +70,11 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioInvestmentLibrary")]
         [ModelValidation("Given investment data is not valid")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public IHttpActionResult SaveSimulationInvestmentLibrary([FromBody]InvestmentLibraryModel model)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            return Ok(InvestmentLibrarySaveMethods[userInformation.Role](repo, model, db, userInformation);
+            return Ok(InvestmentLibrarySaveMethods[userInformation.Role](model, userInformation));
         }
     }
 }
