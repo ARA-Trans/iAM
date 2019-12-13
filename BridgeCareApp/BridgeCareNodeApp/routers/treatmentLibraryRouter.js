@@ -9,7 +9,7 @@ function treatmentLibraryRouter(TreatmentLibrary, connectionTest) {
     router.route('/GetTreatmentLibraries').get(authorizationFilter(), controller.get);
     router.route('/CreateTreatmentLibrary').post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
     router.route('/UpdateTreatmentLibrary').put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
-    router.route('/DeleteTreatmentLibrary/:treatmentLibraryId').delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
+    router.route('/DeleteTreatmentLibrary/:libraryId').delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
     router.route('/').get((req, res) => {
         return res.send(connectionTest);
     });

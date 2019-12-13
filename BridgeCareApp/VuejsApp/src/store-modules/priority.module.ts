@@ -1,8 +1,9 @@
 import {emptyPriorityLibrary, Priority, PriorityFund, PriorityLibrary} from '@/shared/models/iAM/priority';
-import {clone, any, propEq, append, findIndex, equals, update} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
 import PriorityService from '@/services/priority.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const priorityLibrary: any = {
@@ -57,6 +58,14 @@ const mutations = {
             );
         }
     },
+    deletedPriorityLibraryMutator(state: any, deletedPriorityLibrary: PriorityLibrary) {
+        if (any(propEq('id', deletedPriorityLibrary.id), state.priorityLibraries)) {
+            state.priorityLibraries = reject(
+                (library: PriorityLibrary) => deletedPriorityLibrary.id === library.id,
+                state.priorityLibraries
+            );
+        }
+    },
     scenarioPriorityLibraryMutator(state: any, scenarioPriorityLibrary: PriorityLibrary) {
         state.scenarioPriorityLibrary = clone(scenarioPriorityLibrary);
     }
@@ -96,6 +105,15 @@ const actions = {
                     commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
                     commit('selectedPriorityLibraryMutator', updatedPriorityLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated priority library'});
+                }
+            });
+    },
+    async deletePriorityLibrary({dispatch, commit}: any, payload: any) {
+        await PriorityService.deletePriorityLibrary(payload.priorityLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedPriorityLibraryMutator', payload.priorityLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted priority library'});
                 }
             });
     },

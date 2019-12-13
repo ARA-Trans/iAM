@@ -66,6 +66,14 @@ export default class TreatmentEditorService {
     }
 
     /**
+     * Deletes a treatment library
+     * @param treatmentLibraryData The treatment library to delete
+     */
+    static deleteTreatmentLibrary(treatmentLibraryData: TreatmentLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteTreatmentLibrary/${treatmentLibraryData.id}`, {headers: getAuthorizationHeader()});
+    }
+
+    /**
      * Gets a scenario's treatment library data
      * @param selectedScenarioId Scenario object id
      */

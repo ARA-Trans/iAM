@@ -9,6 +9,7 @@ function priorityLibraryRouter(PriorityLibrary) {
     router.route('/GetPriorityLibraries').get(authorizationFilter(), controller.get);
     router.route('/CreatePriorityLibrary').post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
     router.route('/UpdatePriorityLibrary').put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+    router.route('/DeletePriorityLibrary/:libraryId').delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
 
     return router;
 }

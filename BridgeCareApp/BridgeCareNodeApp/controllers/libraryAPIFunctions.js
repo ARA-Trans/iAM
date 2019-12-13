@@ -7,10 +7,10 @@ module.exports = {
             ownerRestriction = request.user.role === 'PD-BAMS-ADMINISTRATOR' ? {} : {owner: [request.user.username]};
             model.findOneAndDelete({_id: request.params.libraryId, ...ownerRestriction}, (error, deleted) => {
                 if (error)
-                    return response.status(500).json(error);
+                    return response.status(400).json(error);
                 if (deleted)
                     return response.status(204).json(deleted);
-                return response.status(500).json({error: `User ${request.user.username} has no library with id ${request.params.libraryId}`});
+                return response.status(400).json({error: `User ${request.user.username} has no library with id ${request.params.libraryId}`});
             });
         }
     },
@@ -23,10 +23,10 @@ module.exports = {
             ownerRestriction = request.user.role === 'PD-BAMS-ADMINISTRATOR' ? {} : {owner: [request.user.username]};
             model.findOneAndUpdate({_id: request.body._id, ...ownerRestriction}, request.body, {new: true}, (error, updated) => {
                 if (error)
-                    return response.status(500).json(error);
+                    return response.status(400).json(error);
                 if (updated)
                     return response.status(200).json(updated);
-                return response.status(500).json({error: `User ${request.user.username} has no library with id ${request.params.libraryId}`})
+                return response.status(400).json({error: `User ${request.user.username} has no library with id ${request.params.libraryId}`})
             });
         }
     }

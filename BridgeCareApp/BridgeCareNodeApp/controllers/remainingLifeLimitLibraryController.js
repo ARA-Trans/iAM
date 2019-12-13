@@ -50,7 +50,23 @@ function remainingLifeLimitLibraryController(RemainingLifeLimitLibrary) {
         });
     }
 
-    return {get, post, put};
+    /**
+     * DELETE NodeJS API endpoint for remaining life limit libraries; returns deleted library
+     * @param req
+     * @param res
+     */
+    function deleteLibrary(req, res) {
+        RemainingLifeLimitLibrary.findOneAndDelete({_id: req.body._id}, (err, doc) => {
+            if (err) {
+                return res.status(400).json(err);
+            }
+            return res.status(204).json(doc);
+        });
+    }
+
+    
+
+    return {get, post, put, deleteLibrary};
 }
 
 module.exports = remainingLifeLimitLibraryController;

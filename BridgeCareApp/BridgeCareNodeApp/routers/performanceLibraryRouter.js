@@ -9,7 +9,7 @@ function performanceLibraryRouter(PerformanceLibrary, connectionTest) {
     router.route('/GetPerformanceLibraries').get(authorizationFilter(), controller.get);
     router.route('/CreatePerformanceLibrary').post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
     router.route('/UpdatePerformanceLibrary').put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
-    router.route('/DeletePerformanceLibrary/:performanceLibraryId').delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
+    router.route('/DeletePerformanceLibrary/:libraryId').delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
     router.route('/').get((req, res) => {
         return res.send(connectionTest);
     });

@@ -42,6 +42,14 @@ export default class PerformanceEditorService {
     }
 
     /**
+     * Deletes a performance library
+     * @param performanceLibraryData The performance library to delete
+     */
+    static deletePerformanceLibrary(performanceLibraryData: PerformanceLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeletePerformanceLibrary/${performanceLibraryData.id}`, {headers: getAuthorizationHeader()});
+    }
+
+    /**
      * Gets a scenario's performance library
      * @param selectedScenarioId Scenario object id
      */

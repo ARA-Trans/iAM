@@ -1,8 +1,9 @@
 import {emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
-import {any, propEq, findIndex, clone, append, equals} from 'ramda';
+import {any, propEq, findIndex, clone, append, equals, reject} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const convertFromMongoToVueModel = (data: any) => {
     const treatmentLibrary: any = {
@@ -93,6 +94,14 @@ const mutations = {
             state.treatmentLibraries = treatmentLibraries;
         }
     },
+    deletedTreatmentLibraryMutator(state: any, deletedTreatmentLibrary: TreatmentLibrary) {
+        if (any(propEq('id', deletedTreatmentLibrary.id), state.treatmentLibraries)) {
+            state.treatmentLibraries = reject(
+                (library: TreatmentLibrary) => deletedTreatmentLibrary.id === library.id,
+                state.treatmentLibraries
+            );
+        }
+    },
     scenarioTreatmentLibraryMutator(state: any, scenarioTreatmentLibrary: TreatmentLibrary) {
         state.scenarioTreatmentLibrary = clone(scenarioTreatmentLibrary);
     }
@@ -134,6 +143,15 @@ const actions = {
                     commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
                     commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated treatment library'});
+                }
+            });
+    },
+    async deleteTreatmentLibrary({dispatch, commit}: any, payload: any) {
+        await TreatmentEditorService.deleteTreatmentLibrary(payload.treatmentLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedTreatmentLibraryMutator', payload.treatmentLibrary);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted treatment library'});
                 }
             });
     },
