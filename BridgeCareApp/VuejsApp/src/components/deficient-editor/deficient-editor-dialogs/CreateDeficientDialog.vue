@@ -29,7 +29,7 @@
                 <v-card-actions>
                     <v-layout justify-space-between row>
                         <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
-                            Submit
+                            Save
                         </v-btn>
                         <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
                             Cancel
@@ -58,7 +58,7 @@
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        newDeficient: Deficient = clone(emptyDeficient);
+        newDeficient: Deficient = clone({...emptyDeficient, id: ObjectID.generate()});
         numericAttributes: string[] = [];
 
         /**
@@ -67,16 +67,6 @@
         mounted() {
             if (hasValue(this.stateNumericAttributes)) {
                 this.numericAttributes = getPropertyValues('name', this.stateNumericAttributes);
-            }
-        }
-
-        /**
-         * Sets newTarget.scenarioId property with dialogData.scenarioId property value
-         */
-        @Watch('dialogData')
-        onDialogDataChanged() {
-            if (this.dialogData.showDialog) {
-                this.newDeficient.id = ObjectID.generate();
             }
         }
 
@@ -91,11 +81,11 @@
         }
 
         /**
-         * Whether or not to disable the 'Submit' button
+         * Disables the submit button if the new deficient is missing required properties' data
          */
         disableSubmit() {
             return !hasValue(this.newDeficient.name) || !hasValue(this.newDeficient.attribute) ||
-                !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
+                   !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
         }
 
         /**
@@ -109,7 +99,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newDeficient = clone(emptyDeficient);
+            this.newDeficient = clone({...emptyDeficient, id: ObjectID.generate()});
         }
     }
 </script>

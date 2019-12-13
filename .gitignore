@@ -343,3 +343,6 @@ package-lock.json
 # Database connection specification
 connection.config
 /BridgeCareApp/VuejsApp/dist
+
+# ESEC metadata, including client secret
+/BridgeCareApp/BridgeCare/esec.config

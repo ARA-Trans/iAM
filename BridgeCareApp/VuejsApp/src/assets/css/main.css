@@ -105,3 +105,7 @@
 .edit-icon, .plus-icon {
     color: forestgreen !important;
 }
+
+.output {
+    border-bottom: 1px solid;
+}

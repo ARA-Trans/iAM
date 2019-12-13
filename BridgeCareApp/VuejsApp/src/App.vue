@@ -1,7 +1,7 @@
 <template>
     <v-app class="paper-white-bg">
         <v-content>
-            <v-navigation-drawer app v-if="!loginFailed" class="paper-white-bg" v-model="drawer">
+            <v-navigation-drawer app v-if="authenticated" class="paper-white-bg" v-model="drawer">
                 <v-list dense class="pt-0">
                     <v-list-tile @click="onNavigate('/Inventory/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-archive</v-icon></v-list-tile-action>
@@ -49,15 +49,25 @@
                 </v-list>
             </v-navigation-drawer>
             <v-toolbar app class="ara-blue-pantone-289-bg">
-                <v-toolbar-side-icon v-if="!loginFailed" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+                <v-toolbar-side-icon v-if="authenticated" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
                     <span class="font-weight-light">Scenario: </span>
                     <span>{{selectedScenarioName}}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-toolbar-title v-if="!loginFailed" class="white--text">
+                <v-toolbar-title v-if="authenticated" class="white--text">
                     <span class="font-weight-light">Hello, </span>
-                    <span>{{userName}}</span>
+                    <span>{{username}}</span>
+                </v-toolbar-title>
+                <v-toolbar-title v-if="!authenticated" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/AuthenticationStart/')">
+                        Log In
+                    </v-btn>
+                </v-toolbar-title>
+                <v-toolbar-title v-if="authenticated" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="onLogout()">
+                        Log Out
+                    </v-btn>
                 </v-toolbar-title>
             </v-toolbar>
             <v-container fluid grid-list-xl>
@@ -91,15 +101,17 @@
         components: {Spinner}
     })
     export default class AppComponent extends Vue {
-        @State(state => state.authentication.loginFailed) loginFailed: boolean;
-        @State(state => state.authentication.userName) userName: string;
+        @State(state => state.authentication.authenticated) authenticated: boolean;
+        @State(state => state.authentication.username) username: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
 
-        @Action('authenticateUser') authenticateUserAction: any;
+        @Action('refreshTokens') refreshTokensAction: any;
+        @Action('checkBrowserTokens') checkBrowserTokensAction: any;
+        @Action('logOut') logOutAction: any;
         @Action('setIsBusy') setIsBusyAction: any;
         @Action('getNetworks') getNetworksAction: any;
         @Action('getAttributes') getAttributesAction: any;
@@ -198,17 +210,43 @@
                 (response: any) => successHandler(response),
                 (error: any) => errorHandler(error)
             );
+
+            // Upon opening the page, and every 30 seconds, check if authentication data
+            // has been changed by another tab or window
+            this.checkBrowserTokensAction();
+            window.setInterval(this.checkBrowserTokensAction, 30000);
+        }
+
+        @Watch('authenticated')
+        onAuthenticationChange() {
+            if (this.authenticated) {
+                this.onLogin();
+            } else {
+                this.onLogout();
+            }
+        }
+        
+        /**
+         * Sets up a recurring attempt at refreshing user tokens, and fetches network and attribute data
+         */
+        onLogin() {
+            // Tokens expire after 30 minutes. They are refreshed after 29 minutes.
+            this.refreshIntervalID = window.setInterval(this.refreshTokensAction, 29 * 60 * 1000);
+            this.$forceUpdate();
+            this.getNetworksAction();
+            this.getAttributesAction();
         }
 
         /**
-         * Component has been mounted: Dispatches an action to authenticate the current user, then if user is authenticated
-         * another another action is dispatched to get the networks
+         * Dispatches an action that will revoke all user tokens, prevents token refresh attempts,
+         * and redirects users to the landing page
          */
-        mounted() {
-            this.authenticateUserAction().then(() => {
-                this.$forceUpdate();
-                this.getNetworksAction();
-                this.getAttributesAction();
+        onLogout() {
+            this.logOutAction().then(() => {
+                window.clearInterval(this.refreshIntervalID);
+                if (window.location.href.indexOf('iAM') === -1) {
+                    this.onNavigate('/iAM/');
+                }
             });
         }
 

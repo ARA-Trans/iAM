@@ -2,13 +2,15 @@ import {AxiosPromise} from 'axios';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
+
 
 export default class PerformanceEditorService {
     /**
      * Gets all performance Libraries a user can read/edit
      */
     static getPerformanceLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetPerformanceLibraries');
+        return nodejsAxiosInstance.get('/api/GetPerformanceLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -16,7 +18,7 @@ export default class PerformanceEditorService {
      * @param createPerformanceLibraryData The performance library create data
      */
     static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', convertFromVueToMongo(createPerformanceLibraryData));
+        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', convertFromVueToMongo(createPerformanceLibraryData), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -24,7 +26,7 @@ export default class PerformanceEditorService {
      * @param updatePerformanceLibraryData The performance library update data
      */
     static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', convertFromVueToMongo(updatePerformanceLibraryData));
+        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', convertFromVueToMongo(updatePerformanceLibraryData), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -32,7 +34,7 @@ export default class PerformanceEditorService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioPerformanceLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -40,6 +42,6 @@ export default class PerformanceEditorService {
      * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
     static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData);
+        return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData, {headers: getAuthorizationHeader()});
     }
 }

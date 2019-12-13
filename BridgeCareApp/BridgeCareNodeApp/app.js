@@ -3,88 +3,106 @@ const debug = require('debug')('app');
 const app = express();
 require('./config/express')(app);
 
+const passport = require("passport");
+
 const env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const config = require('./config/config')[env];
 require('./config/mongoose')(config);
 
 const server = app.listen(config.port, () => {
-  debug(`Running on port ${config.port}`);
+    debug(`Running on port ${config.port}`);
 });
 
 const io = require('./config/socketIO')(server, {
-  pingTimeout: 60000
+    pingTimeout: 60000
 });
 
 run().catch(error => debug(error));
 
 async function run() {
-  const InvestmentLibrary = require('./models/investmentLibraryModel');
-  const investmentLibraryRoutes = require('./routes/investmentLibraryRoutes')(InvestmentLibrary);
+    const CashFlowLibrary = require('./models/cashFlowLibraryModel');
+    const cashFlowLibraryRoutes = require('./routes/cashFlowLibraryRoutes')(CashFlowLibrary);
 
-  const Scenario = require('./models/scenarioModel');
-  const scenarioRoutes = require('./routes/scenarioRoutes')(Scenario);
+    const DeficientLibrary = require('./models/deficientLibraryModel');
+    const deficientLibraryRoutes = require('./routes/deficientLibraryRoutes')(DeficientLibrary);
 
-  const PerformanceLibrary = require('./models/performanceLibraryModel');
-  const performanceLibraryRoutes = require('./routes/performanceLibraryRoutes')(PerformanceLibrary);
+    const InvestmentLibrary = require('./models/investmentLibraryModel');
+    const investmentLibraryRoutes = require('./routes/investmentLibraryRoutes')(InvestmentLibrary);
 
-  const TreatmentLibrary = require('./models/treatmentLibraryModel');
-  const treatmentLibraryRoutes = require('./routes/treatmentLibraryRoutes')(TreatmentLibrary);
+    const Network = require('./models/NetworkModel');
+    const networkRoutes = require('./routes/networkRoutes')(Network);
 
-  const PriorityLibrary = require('./models/priorityLibraryModel');
-  const priorityLibraryRoutes = require('./routes/priorityLibraryRoutes')(PriorityLibrary);
+    const PerformanceLibrary = require('./models/performanceLibraryModel');
+    const performanceLibraryRoutes = require('./routes/performanceLibraryRoutes')(PerformanceLibrary);
 
-  const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
-  const remainingLifeLimitLibraryRoutes = require('./routes/remainingLifeLimitLibraryRoutes')(RemainingLifeLimitLibrary);
+    const PriorityLibrary = require('./models/priorityLibraryModel');
+    const priorityLibraryRoutes = require('./routes/priorityLibraryRoutes')(PriorityLibrary);
 
-  const Network = require('./models/NetworkModel');
-  const networkRoutes = require('./routes/networkRoutes')(Network);
+    const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
+    const remainingLifeLimitLibraryRoutes = require('./routes/remainingLifeLimitLibraryRoutes')(RemainingLifeLimitLibrary);
 
-  const CashFlowLibrary = require('./models/cashFlowLibraryModel');
-  const cashFlowLibraryRoutes = require('./routes/cashFlowLibraryRoutes')(CashFlowLibrary);
+    const Scenario = require('./models/scenarioModel');
+    const scenarioRoutes = require('./routes/scenarioRoutes')(Scenario);
 
-  const options = { fullDocument: 'updateLookup' };
+    const TargetLibrary = require('./models/targetLibraryModel');
+    const targetLibraryRoutes = require('./routes/targetLibraryRoutes')(TargetLibrary);
 
-  InvestmentLibrary.watch([], options).on('change', data => {
-    io.emit('investmentLibrary', data);
-  });
+    const TreatmentLibrary = require('./models/treatmentLibraryModel');
+    const treatmentLibraryRoutes = require('./routes/treatmentLibraryRoutes')(TreatmentLibrary);
 
-  PerformanceLibrary.watch([], options).on('change', data => {
-    io.emit('performanceLibrary', data);
-  });
+    const options = { fullDocument: 'updateLookup' };
 
-  TreatmentLibrary.watch([], options).on('change', data => {
-    io.emit('treatmentLibrary', data);
-  });
+    CashFlowLibrary.watch([], options).on('change', data => {
+        io.emit('cashFlowLibrary', data);
+    });
 
-  Scenario.watch([], options).on('change', data => {
-    io.emit('scenarioStatus', data);
-  });
+    DeficientLibrary.watch([], options).on('change', data => {
+        io.emit('deficientLibrary', data);
+    });
 
-  PriorityLibrary.watch([], options).on('change', data => {
-    io.emit('priorityLibrary', data);
-  });
+    InvestmentLibrary.watch([], options).on('change', data => {
+        io.emit('investmentLibrary', data);
+    });
 
-  RemainingLifeLimitLibrary.watch([], options).on('change', data => {
-    io.emit('remainingLifeLimitLibrary', data);
-  });
+    Network.watch([], options).on('change', data => {
+        io.emit('rollupStatus', data);
+    });
 
-  Network.watch([], options).on('change', data => {
-    io.emit('rollupStatus', data);
-  });
+    PerformanceLibrary.watch([], options).on('change', data => {
+        io.emit('performanceLibrary', data);
+    });
 
-  CashFlowLibrary.watch([], options).on('change', data => {
-      io.emit('cashFlowLibrary', data);
-  });
+    PriorityLibrary.watch([], options).on('change', data => {
+        io.emit('priorityLibrary', data);
+    });
+
+    RemainingLifeLimitLibrary.watch([], options).on('change', data => {
+        io.emit('remainingLifeLimitLibrary', data);
+    });
+
+    Scenario.watch([], options).on('change', data => {
+        io.emit('scenarioStatus', data);
+    });
+
+    TargetLibrary.watch([], options).on('change', data => {
+        io.emit('targetLibrary', data);
+    });
+
+    TreatmentLibrary.watch([], options).on('change', data => {
+        io.emit('treatmentLibrary', data);
+    });
 
   app.use("/api", [
+      cashFlowLibraryRoutes,
+      deficientLibraryRoutes,
       investmentLibraryRoutes,
-      scenarioRoutes,
+      networkRoutes,
       performanceLibraryRoutes,
-      treatmentLibraryRoutes,
       priorityLibraryRoutes,
       remainingLifeLimitLibraryRoutes,
-      networkRoutes,
-      cashFlowLibraryRoutes
+      scenarioRoutes,
+      targetLibraryRoutes,
+      treatmentLibraryRoutes
   ]);
 }

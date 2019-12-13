@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -25,6 +26,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioPerformanceLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
+        [RestrictAccess]
         public IHttpActionResult GetSimulationPerformanceLibrary(int id) =>
             Ok(repo.GetSimulationPerformanceLibrary(id, db));
 
@@ -36,6 +38,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioPerformanceLibrary")]
         [ModelValidation("The performance data is invalid.")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationPerformanceLibrary([FromBody]PerformanceLibraryModel model)
         {
             var performanceLibraryModel = repo.SaveSimulationPerformanceLibrary(model, db);

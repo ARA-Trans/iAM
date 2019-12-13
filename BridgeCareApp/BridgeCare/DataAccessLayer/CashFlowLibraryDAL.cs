@@ -102,7 +102,7 @@ namespace BridgeCare.DataAccessLayer
                     .ToList()
                 );
 
-            var dbResult = db.SaveChanges();
+            db.SaveChanges();
 
             return new CashFlowLibraryModel(simulation);
         }

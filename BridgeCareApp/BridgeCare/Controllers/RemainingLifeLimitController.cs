@@ -3,6 +3,7 @@ using System.Web.Http;
 using System.Web.Http.Filters;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 
 namespace BridgeCare.Controllers
 {
@@ -25,6 +26,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioRemainingLifeLimitLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
+        [RestrictAccess]
         public IHttpActionResult GetSimulationRemainingLifeLimitLibrary(int id) =>
             Ok(repo.GetSimulationRemainingLifeLimitLibrary(id, db));
 
@@ -35,6 +37,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioRemainingLifeLimitLibrary")]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationRemainingLifeLimitLibrary([FromBody]RemainingLifeLimitLibraryModel model) =>
             Ok(repo.SaveSimulationRemainingLifeLimitLibrary(model, db));
     }

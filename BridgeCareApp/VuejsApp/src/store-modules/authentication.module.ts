@@ -1,37 +1,104 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
-import {UserInformation} from '@/shared/models/iAM/user-information';
-import {hasValue} from '@/shared/utils/has-value-util';
+import {UserInfo, UserTokens} from '@/shared/models/iAM/authentication';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
-    loginFailed: true,
-    userName: '',
-    userId: '',
-    userRoles: [] as Array<string>
+    authenticated: false,
+    username: ''
 };
 
 const mutations = {
-    loginMutator(state: any, status: boolean) {
-        state.loginFailed = status;
+    authenticatedMutator(state: any, status: boolean) {
+        state.authenticated = status;
     },
-    userNameMutator(state: any, userName: string) {
-        state.userName = userName;
-    },
-    userIdMutator(state: any, userId: string) {
-        state.userId = userId;
+    usernameMutator(state: any, username: string) {
+        state.username = username;
     }
 };
 
 const actions = {
-    async authenticateUser({commit}: any) {
-        return await AuthenticationService.authenticateUser()
-            .then((response: AxiosResponse<UserInformation>) => {
-                if (hasValue(response, 'data')) {
-                    commit('loginMutator', false);
-                    commit('userNameMutator', response.data.name);
-                    commit('userIdMutator', response.data.id);
+    async getUserTokens({commit}: any, code: string) {
+        await AuthenticationService.getUserTokens(code)
+            .then((response: AxiosResponse<string>) => {
+                if (http2XX.test(response.status.toString())) {
+                    localStorage.setItem('UserTokens', response.data);
+                    const expiration: Date = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes, in milliseconds
+                    localStorage.setItem('TokenExpiration', expiration.getTime().toString());
+                    commit('authenticatedMutator', true);
                 }
             });
+    },
+
+    async checkBrowserTokens({commit, dispatch}: any, code: string) {
+        const storedTokenExpiration: number = Number(localStorage.getItem('TokenExpiration') as string);
+        if (isNaN(storedTokenExpiration)) {
+            return;
+        }
+        if (storedTokenExpiration > Date.now()) {
+            if (state.authenticated) {
+                return;
+            }
+            commit('authenticatedMutator', true);
+            dispatch('refreshTokens');
+            dispatch('getUserInfo');
+        } else if (state.authenticated) {
+            dispatch('logOut');
+        }
+    },
+
+    async refreshTokens({commit, dispatch}: any) {
+        if (!localStorage.getItem('UserTokens')) {
+            dispatch('logOut');
+        } else {
+            const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
+            await AuthenticationService.refreshTokens(userTokens.refresh_token)
+                .then((response: AxiosResponse<string>) => {
+                    if (http2XX.test(response.status.toString())) {
+                        localStorage.setItem('UserTokens', JSON.stringify({
+                            ...userTokens,
+                            ...JSON.parse(response.data)
+                        }));
+                        const expiration: Date = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes, in milliseconds
+                        localStorage.setItem('TokenExpiration', expiration.getTime().toString());
+                    }
+                });
+        }
+    },
+
+    async getUserInfo({commit, dispatch}: any) {
+        if (!localStorage.getItem('UserTokens')) {
+            dispatch('logOut');
+        } else {
+            const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
+            await AuthenticationService.getUserInfo(userTokens.access_token)
+                .then((response: AxiosResponse<string>) => {
+                    if (http2XX.test(response.status.toString())) {
+                        localStorage.setItem('UserInfo', response.data);
+                        const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
+                        const username: string = userInfo.sub.split(',')[0].split('=')[1];
+                        commit('usernameMutator', username);
+                    } else {
+                        dispatch('logOut');
+                    }
+                });
+        }
+    },
+
+    async logOut({commit}: any) {
+        if (!localStorage.getItem('UserTokens')) {
+            commit('usernameMutator', '');
+            commit('authenticatedMutator', false);
+        } else {
+            localStorage.removeItem('UserInfo');
+            const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
+            localStorage.removeItem('UserTokens');
+            localStorage.removeItem('TokenExpiration');
+            AuthenticationService.revokeToken(userTokens.access_token);
+            AuthenticationService.revokeToken(userTokens.refresh_token);
+            commit('usernameMutator', '');
+            commit('authenticatedMutator', false);
+        }
     }
 };
 

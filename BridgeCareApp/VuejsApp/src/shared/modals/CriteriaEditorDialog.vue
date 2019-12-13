@@ -37,7 +37,7 @@
                         <v-layout>
                             <v-btn class="ara-blue-bg white--text" @click="onCheckCriteria">Check</v-btn>
                             <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">
-                                Apply
+                                Save
                             </v-btn>
                         </v-layout>
                     </v-flex>

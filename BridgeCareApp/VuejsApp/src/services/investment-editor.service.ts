@@ -2,13 +2,14 @@ import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance'
 import {AxiosPromise} from 'axios';
 import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class InvestmentEditorService {
     /**
      * Gets all investment libraries
      */
     static getInvestmentLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetInvestmentLibraries');
+        return nodejsAxiosInstance.get('/api/GetInvestmentLibraries', {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -16,7 +17,7 @@ export default class InvestmentEditorService {
      * @param createdInvestmentLibrary The investment library create data
      */
     static createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', convertFromVueToMongo(createdInvestmentLibrary));
+        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', convertFromVueToMongo(createdInvestmentLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -24,7 +25,7 @@ export default class InvestmentEditorService {
      * @param updatedInvestmentLibrary The investment library update data
      */
     static updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', convertFromVueToMongo(updatedInvestmentLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', convertFromVueToMongo(updatedInvestmentLibrary), {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -32,7 +33,7 @@ export default class InvestmentEditorService {
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
     static getScenarioInvestmentLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`);
+        return axiosInstance.get(`/api/GetScenarioInvestmentLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
     }
 
     /**
@@ -40,6 +41,6 @@ export default class InvestmentEditorService {
      * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
     static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
+        return axiosInstance.post('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData, {headers: getAuthorizationHeader()});
     }
 }

@@ -23,7 +23,7 @@
             <v-card-actions>
                 <v-layout justify-space-between row>
                     <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
-                        Submit
+                        Save
                     </v-btn>
                     <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
                         Cancel
@@ -42,6 +42,7 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {clone} from 'ramda';
     import moment from 'moment';
     const ObjectID = require('bson-objectid');
     @Component
@@ -50,11 +51,14 @@
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        newTarget: Target = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
+        newTarget: Target = clone({...emptyTarget, id: ObjectID.generate(), year: moment().year()});
         numericAttributes: string[] = [];
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
 
+        /**
+         * Component mounted event handler
+         */
         mounted() {
             if (hasValue(this.stateNumericAttributes)) {
                 this.numericAttributes = getPropertyValues('name', this.stateNumericAttributes);
@@ -76,7 +80,7 @@
          */
         disableSubmit() {
             return !hasValue(this.newTarget.name) || !hasValue(this.newTarget.attribute) ||
-                !hasValue(this.newTarget.year) || !hasValue(this.newTarget.targetMean);
+                   !hasValue(this.newTarget.year) || !hasValue(this.newTarget.targetMean);
         }
 
         /**
@@ -90,7 +94,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newTarget = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
+            this.newTarget = clone({...emptyTarget, id: ObjectID.generate(), year: moment().year()});
         }
     }
 </script>
