@@ -36,10 +36,10 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         /// <param name="userInformation">UserInformationModel</param>
         /// <returns>SimulationModel list</returns>
-        public List<SimulationModel> GetSimulations(BridgeCareContext db, UserInformationModel userInformation)
+        public List<SimulationModel> GetOwnedSimulations(BridgeCareContext db, string username)
         {
             return db.Simulations.Include(s => s.NETWORK).ToList()
-                .Where(s => s.USERNAME == userInformation.Name || s.USERNAME == null)
+                .Where(s => s.USERNAME == username || s.USERNAME == null)
                 .Select(s => new SimulationModel(s)).ToList();
         }
 
@@ -63,14 +63,12 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="model">SimulationModel</param>
         /// <param name="db">BridgeCareContext</param>
-        public void UpdateSimulation(SimulationModel model, BridgeCareContext db, UserInformationModel userInformation)
+        public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, UserInformationModel userInformation)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == userInformation.Name))
                 throw new RowNotInTableException($"User {userInformation.Name} has no scenario with id {model.SimulationId}");
 
-            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
-            simulation.SIMULATION = model.SimulationName;
-            db.SaveChanges();
+            UpdateSimulation(model, db);
         }
 
         /// <summary>
@@ -107,29 +105,14 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
-        public void DeleteSimulation(int id, BridgeCareContext db, UserInformationModel userInformation)
+        public void DeleteOwnedSimulation(int id, BridgeCareContext db, UserInformationModel userInformation)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == userInformation.Name))
             {
                 throw new RowNotInTableException($"User {userInformation.Name} has no scenario with id {id}");
             }
 
-            var simulation = db.Simulations.Single(b => b.SIMULATIONID == id);
-            db.Entry(simulation).State = EntityState.Deleted;
-            db.SaveChanges();
-
-            using (var connection = new SqlConnection(db.Database.Connection.ConnectionString))
-            {
-                connection.Open();
-                var dropQuery = $"IF OBJECT_ID ( 'SIMULATION_{simulation.NETWORKID}_{id}_0' , 'U' )  IS NOT NULL DROP TABLE SIMULATION_{simulation.NETWORKID}_{id} " +
-                                $"IF OBJECT_ID ( 'REPORT_{simulation.NETWORKID}_{id}' , 'U' )  IS NOT NULL DROP TABLE REPORT_{simulation.NETWORKID}_{id} " +
-                                $"IF OBJECT_ID ( 'BENEFITCOST_{simulation.NETWORKID}_{id}' , 'U' )  IS NOT NULL DROP TABLE BENEFITCOST_{simulation.NETWORKID}_{id} " +
-                                $"IF OBJECT_ID ( 'TARGET_{simulation.NETWORKID}_{id}' , 'U' )  IS NOT NULL DROP TABLE TARGET_{simulation.NETWORKID}_{id} ";
-                using (var command = new SqlCommand(dropQuery, connection) { CommandType = CommandType.Text })
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
+            DeleteSimulation(id, db);
         }
 
         public SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db)

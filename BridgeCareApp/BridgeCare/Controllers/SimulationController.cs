@@ -2,12 +2,17 @@
 using BridgeCare.Models;
 using BridgeCare.Security;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
+    using SimulationGetMethod = Func<ISimulation, BridgeCareContext, UserInformationModel, List<SimulationModel>>;
+    using SimulationUpdateMethod = Action<ISimulation, SimulationModel, BridgeCareContext, UserInformationModel>;
+    using SimulationDeletionMethod = Action<ISimulation, int, BridgeCareContext, UserInformationModel>;
+
     public class SimulationController : ApiController
     {
         private readonly ISimulation repo;
@@ -20,6 +25,39 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
+        /// Maps roles to methods for fetching simulations
+        /// </summary>
+        private readonly IReadOnlyDictionary<string, SimulationGetMethod> SimulationGetter = new Dictionary<string, SimulationGetMethod>
+        {
+            [Role.ADMINISTRATOR] = (repo, db, userInformation) => repo.GetSimulations(db),
+            [Role.DISTRICT_ENGINEER] = (repo, db, userInformation) => repo.GetOwnedSimulations(db, userInformation.Name),
+            [Role.CWOPA] = (repo, db, userInformation) => repo.GetSimulations(db),
+            [Role.PLANNING_PARTNER] = (repo, db, userInformation) => repo.GetOwnedSimulations(db, userInformation.Name)
+        };
+
+        /// <summary>
+        /// Maps roles to methods for updating simulations
+        /// </summary>
+        private readonly IReadOnlyDictionary<string, SimulationUpdateMethod> SimulationUpdater = new Dictionary<string, SimulationUpdateMethod>
+        {
+            [Role.ADMINISTRATOR] = (repo, model, db, userInformation) => repo.UpdateSimulation(model, db),
+            [Role.DISTRICT_ENGINEER] = (repo, model, db, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation),
+            [Role.CWOPA] = (repo, model, db, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation),
+            [Role.PLANNING_PARTNER] = (repo, model, db, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation)
+        };
+
+        /// <summary>
+        /// Maps roles to methods for deleting simulations
+        /// </summary>
+        private readonly IReadOnlyDictionary<string, SimulationDeletionMethod> SimulationDeleter = new Dictionary<string, SimulationDeletionMethod>
+        {
+            [Role.ADMINISTRATOR] = (repo, id, db, userInformation) => repo.DeleteSimulation(id, db),
+            [Role.DISTRICT_ENGINEER] = (repo, id, db, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation),
+            [Role.CWOPA] = (repo, id, db, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation),
+            [Role.PLANNING_PARTNER] = (repo, id, db, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation)
+        };
+
+        /// <summary>
         /// API endpoint for fetching all simulations
         /// </summary>
         /// <returns>IHttpActionResult</returns>
@@ -29,13 +67,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult GetSimulations()
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            if (userInformation.Role == Role.ADMINISTRATOR || userInformation.Role == Role.CWOPA)
-            {
-                return Ok(repo.GetSimulations(db));
-            } else
-            {
-                return Ok(repo.GetSimulations(db, userInformation));
-            }
+            return Ok(SimulationGetter[userInformation.Role](repo, db, userInformation));
         }
 
         /// <summary>
@@ -62,14 +94,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult UpdateSimulation([FromBody]SimulationModel model)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            if (userInformation.Role == Role.ADMINISTRATOR)
-            {
-                repo.UpdateSimulation(model, db);
-            }
-            else
-            {
-                repo.UpdateSimulation(model, db, userInformation);
-            }
+            SimulationUpdater[userInformation.Role](repo, model, db, userInformation);
             return Ok();
         }
 
@@ -85,13 +110,7 @@ namespace BridgeCare.Controllers
         public IHttpActionResult DeleteSimulation(int id)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            if (userInformation.Role == Role.ADMINISTRATOR)
-            {
-                repo.DeleteSimulation(id, db);
-            } else
-            {
-                repo.DeleteSimulation(id, db, userInformation);
-            }
+            SimulationDeleter[userInformation.Role](repo, id, db, userInformation);
             return Ok();
         }
 
