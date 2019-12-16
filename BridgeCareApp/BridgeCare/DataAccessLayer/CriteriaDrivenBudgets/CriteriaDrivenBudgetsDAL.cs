@@ -35,6 +35,23 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         }
 
         /// <summary>
+        /// Fetches a simulation's criteria driven budgets if the scenario belongs to the user
+        /// Throws RowNotInTableException if no such simulation is found
+        /// </summary>
+        /// <param name="id">Simulation id</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>CriteriaDrivenBudgetsModel list</returns>
+        public List<CriteriaDrivenBudgetsModel> GetOwnCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return GetCriteriaDrivenBudgets(id, db);
+        }
+
+        /// <summary>
         /// Executes an insert/delete operation on the criteria driven budgets table
         /// </summary>
         /// <param name="id">Simulation identifier</param>
@@ -69,6 +86,15 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             {
                 return Task.FromResult($"Failed to save criteria driven budgets::{ex.Message}");
             }
+        }
+
+        public Task<string> SaveOwnCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return SaveCriteriaDrivenBudgets(id, models, db);
         }
     }
 }
