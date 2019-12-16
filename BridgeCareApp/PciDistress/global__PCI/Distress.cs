@@ -14,9 +14,7 @@ namespace PCI
 
         public static Func<string, bool> IsWASHCLKMethod => _.IsWASHCLKMethod;
 
-        public static Func<string, string, double, double> pciCorrectedDeductValue => _.pciCorrectedDeductValue;
-
-        public static Func<string, int, string, double, double> pvt_ComputeNonPCIDeduct => _.pvt_ComputeNonPCIDeduct;
+        public static Func<string, int, string, double, double> pvt_ComputeNonPCIDeduct => _.pvt_ComputeNonPCIDeduct; // only triggered by "WASHCLK" PCI methods...
 
         public static Func<int, string, double, double, double> pvt_ComputePCIDeduct => _.pvt_ComputePCIDeduct;
 

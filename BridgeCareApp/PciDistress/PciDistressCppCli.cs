@@ -24,13 +24,6 @@ namespace AppliedResearchAssociates.PciDistress
             return result;
         }
 
-        public double pciCorrectedDeductValue(string sMethod, string sDeduct, double dLargeDeductLimit)
-        {
-            var result = _.pciCorrectedDeductValue(sMethod, sDeduct, dLargeDeductLimit);
-            Log(nameof(pciCorrectedDeductValue), result, sMethod, sDeduct, dLargeDeductLimit);
-            return result;
-        }
-
         public double pvt_ComputeNonPCIDeduct(string sMethod, int nDistress, string sSeverity, double dExtent)
         {
             var result = _.pvt_ComputeNonPCIDeduct(sMethod, nDistress, sSeverity, dExtent);

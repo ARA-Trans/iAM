@@ -8,8 +8,6 @@
 
         public bool IsWASHCLKMethod(string s) => throw new System.NotImplementedException();
 
-        public double pciCorrectedDeductValue(string sMethod, string sDeduct, double dLargeDeductLimit) => throw new System.NotImplementedException();
-
         public double pvt_ComputeNonPCIDeduct(string sMethod, int nDistress, string sSeverity, double dExtent) => throw new System.NotImplementedException();
 
         public double pvt_ComputePCIDeduct(int nDistress, string sSeverity, double dAmount, double dSamsiz) => throw new System.NotImplementedException();

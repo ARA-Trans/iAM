@@ -5,7 +5,7 @@
         double ComputePCIValue(string sDeductValues, string sMethodology);
         double pvt_ComputePCIDeduct(int nDistress, string sSeverity, double dAmount, double dSamsiz);
         //pvt_nSevFromSev
-        double pciCorrectedDeductValue(string sMethod, string sDeduct, double dLargeDeductLimit);
+        //double pciCorrectedDeductValue(string sMethod, string sDeduct, double dLargeDeductLimit);
         //pciPrivateLargeDeductCorrection
         //SortNumericDescending
         //GetLengthNonNegativeArray
