@@ -27,6 +27,23 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Fetches a simulation's performance library data if it belongs to the user
+        /// Throws a RowNotInTableException if no such simulation is found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <param name="username"></param>
+        /// <returns>PerformanceLibraryModel</returns>
+        public PerformanceLibraryModel GetOwnedSimulationPerformanceLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return GetSimulationPerformanceLibrary(id, db);
+        }
+
+        /// <summary>
         /// Executes an upsert/delete operation on a simulation's performance library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
@@ -67,6 +84,16 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new PerformanceLibraryModel(simulation);
+        }
+
+        public PerformanceLibraryModel SaveOwnedSimulationPerformanceLibrary(PerformanceLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return SaveSimulationPerformanceLibrary(model, db);
         }
     }
 }
