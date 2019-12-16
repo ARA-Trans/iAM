@@ -1,4 +1,7 @@
-﻿namespace AppliedResearchAssociates.PciDistress
+﻿using static AppliedResearchAssociates.PciDistress.Constants;
+using static AppliedResearchAssociates.PciDistress.Math;
+
+namespace AppliedResearchAssociates.PciDistress
 {
     public sealed class PciDistress : IPciDistress
     {
