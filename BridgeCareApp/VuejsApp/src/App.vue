@@ -241,12 +241,16 @@
         onLogout() {
             this.logOutAction().then(() => {
                 window.clearInterval(this.refreshIntervalID);
-                /*
-                 * In order to log out properly, the browser must visit a penndot deployment, as iam-deploy.com cannot
-                 * modify tokens for penndot.gov. So, the current host is sent as part of the query to the penndot site
-                 * to allow the landing page to redirect the browser to the original host.
-                 */
-                window.location.href = 'http://bamssyst.penndot.gov/iam?host=' + encodeURI(window.location.host);
+                if (window.location.host.indexOf('penndot.gov') === -1) {
+                    /*
+                     * In order to log out properly, the browser must visit a penndot deployment, as iam-deploy.com cannot
+                     * modify tokens for penndot.gov. So, the current host is sent as part of the query to the penndot site
+                     * to allow the landing page to redirect the browser to the original host.
+                     */
+                    window.location.href = 'http://bamssyst.penndot.gov/iam?host=' + encodeURI(window.location.host);
+                } else {
+                    this.onNavigate('/iAM/');
+                }                
             });
         }
 
