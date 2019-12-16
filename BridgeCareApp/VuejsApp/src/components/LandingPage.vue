@@ -28,9 +28,9 @@
                 return;
             }
             /*
-             * In order to log out properly, the browser must visit a penndot deployment, as iam-deploy.com cannot
-             * modify tokens for penndot.gov. So, if the browser was sent here from another host, redirect back to
-             * that host without the 'host' query string.
+             * In order to log out properly, the browser must visit the landing page of a penndot deployment, as iam-deploy.com cannot
+             * modify browser cookies for penndot.gov. So, if the browser was sent here from another host, redirect back to the landing
+             * page of that host without the 'host' query string.
              */
             const host: string = this.$route.query.host as string;
             if (host !== window.location.host) {
