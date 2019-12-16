@@ -241,7 +241,14 @@
         onLogout() {
             this.logOutAction().then(() => {
                 window.clearInterval(this.refreshIntervalID);
-                if (window.location.href.indexOf('iAM') === -1) {
+                if (window.location.host.toLowerCase().indexOf('penndot.gov') === -1) {
+                    /*
+                     * In order to log out properly, the browser must visit the /iAM page of a penndot deployment, as iam-deploy.com cannot
+                     * modify browser cookies for penndot.gov. So, the current host is sent as part of the query to the penndot site
+                     * to allow the landing page to redirect the browser to the original host.
+                     */
+                    window.location.href = 'http://bamssyst.penndot.gov/iAM?host=' + encodeURI(window.location.host);
+                } else {
                     this.onNavigate('/iAM/');
                 }
             });
