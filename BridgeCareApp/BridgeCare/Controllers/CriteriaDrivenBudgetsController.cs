@@ -31,16 +31,16 @@ namespace BridgeCare.Controllers
             CriteriaDrivenBudgetsGetMethods = new Dictionary<string, CriteriaDrivenBudgetsGetMethod>
             {
                 [Role.ADMINISTRATOR] = (id, userInformation) => repo.GetCriteriaDrivenBudgets(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnCriteriaDrivenBudgets(id, db, userInformation.Name),
-                [Role.CWOPA] = (id, userInformation) => repo.GetOwnCriteriaDrivenBudgets(id, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnCriteriaDrivenBudgets(id, db, userInformation.Name)
+                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name),
+                [Role.CWOPA] = (id, userInformation) => repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name),
+                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name)
             };
             CriteriaDrivenBudgetsSaveMethods = new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>
             {
                 [Role.ADMINISTRATOR] = (id, models, userInformation) => repo.SaveCriteriaDrivenBudgets(id, models, db),
-                [Role.DISTRICT_ENGINEER] = (id, models, userInformation) => repo.SaveOwnCriteriaDrivenBudgets(id, models, db, userInformation.Name),
-                [Role.CWOPA] = (id, models, userInformation) => repo.SaveOwnCriteriaDrivenBudgets(id, models, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, models, userInformation) => repo.SaveOwnCriteriaDrivenBudgets(id, models, db, userInformation.Name)
+                [Role.DISTRICT_ENGINEER] = (id, models, userInformation) => repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name),
+                [Role.CWOPA] = (id, models, userInformation) => repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name),
+                [Role.PLANNING_PARTNER] = (id, models, userInformation) => repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name)
             };
         }
 

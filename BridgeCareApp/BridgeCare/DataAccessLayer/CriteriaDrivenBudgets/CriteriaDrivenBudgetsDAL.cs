@@ -42,7 +42,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         /// <param name="db">BridgeCareContext</param>
         /// <param name="username">Username</param>
         /// <returns>CriteriaDrivenBudgetsModel list</returns>
-        public List<CriteriaDrivenBudgetsModel> GetOwnCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
+        public List<CriteriaDrivenBudgetsModel> GetOwnedCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
             {
@@ -88,7 +88,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             }
         }
 
-        public Task<string> SaveOwnCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db, string username)
+        public Task<string> SaveOwnedCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
             {

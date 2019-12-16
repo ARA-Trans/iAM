@@ -10,18 +10,41 @@ using OfficeOpenXml;
 using BridgeCare.Models;
 using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
+using BridgeCare.Security;
 
 namespace BridgeCare.Services
 {
+    using CommittedProjectsGetMethod = Func<int, BridgeCareContext, UserInformationModel, List<CommittedEntity>>;
+    using CommittedProjectsSaveMethod = Action<List<CommittedProjectModel>, BridgeCareContext, UserInformationModel>;
+
     public class CommittedProjects : ICommittedProjects
     {
         readonly ICommitted committedRepo;
         private readonly ISections sectionsRepo;
+        /// <summary>Maps user roles to methods for fetching committed projects</summary>
+        private readonly IReadOnlyDictionary<string, CommittedProjectsGetMethod> CommittedProjectsGetMethods;
+        /// <summary>Maps user roles to methods for saving committed projects</summary>
+        private readonly IReadOnlyDictionary<string, CommittedProjectsSaveMethod> CommittedProjectsSaveMethods;
 
         public CommittedProjects(ICommitted committedRepo, ISections sectionsRepo)
         {
             this.committedRepo = committedRepo;
             this.sectionsRepo = sectionsRepo;
+
+            CommittedProjectsGetMethods = new Dictionary<string, CommittedProjectsGetMethod>
+            {
+                [Role.ADMINISTRATOR] = (id, db, userInformation) => committedRepo.GetCommittedProjects(id, db),
+                [Role.DISTRICT_ENGINEER] = (id, db, userInformation) => committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name),
+                [Role.CWOPA] = (id, db, userInformation) => committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name),
+                [Role.PLANNING_PARTNER] = (id, db, userInformation) => committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name)
+            };
+            CommittedProjectsSaveMethods = new Dictionary<string, CommittedProjectsSaveMethod>
+            {
+                [Role.ADMINISTRATOR] = (models, db, userInformation) => committedRepo.SaveCommittedProjects(models, db),
+                [Role.DISTRICT_ENGINEER] = (models, db, userInformation) => committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name),
+                [Role.CWOPA] = (models, db, userInformation) => committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name),
+                [Role.PLANNING_PARTNER] = (models, db, userInformation) => committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name)
+            };
         }
 
         /// <summary>
@@ -29,7 +52,7 @@ namespace BridgeCare.Services
         /// </summary>
         /// <param name="httpRequest"></param>
         /// <param name="db"></param>
-        public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db)
+        public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db, UserInformationModel userInformation)
         {
             if (httpRequest.Files.Count < 1)
                 throw new ConstraintException("Files Not Found");
@@ -44,7 +67,7 @@ namespace BridgeCare.Services
             for (int i = 0; i < files.Count; i++)
             {
                 GetCommittedProjectModels(files[i], simulationId, networkId, applyNoTreatment, committedProjectModels, db);
-                committedRepo.SaveCommittedProjects(committedProjectModels, db);
+                CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
             }
         }
 
@@ -55,12 +78,12 @@ namespace BridgeCare.Services
         /// <param name="networkId"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public byte[] ExportCommittedProjects(int simulationId, int networkId, BridgeCareContext db)
+        public byte[] ExportCommittedProjects(int simulationId, int networkId, BridgeCareContext db, UserInformationModel userInformation)
         {
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("CommittedProjects.xlsx")))
             {
                 // This method may stay here or if too long then move to helper class   Fill(worksheet, , db);
-                var committedProjects = committedRepo.GetCommittedProjects(simulationId, db);
+                var committedProjects = CommittedProjectsGetMethods[userInformation.Role](simulationId, db, userInformation);
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Committed Projects");
                 if (committedProjects.Count != 0)
                 {
