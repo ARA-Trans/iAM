@@ -476,12 +476,7 @@ namespace AppliedResearchAssociates.PciDistress.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        public void pciCorrectedDeductValue(double expected, string sMethod, string sDeduct, double dLargeDeductLimit)
-        {
-            var actual = PciDistress.pciCorrectedDeductValue(sMethod, sDeduct, dLargeDeductLimit);
-            Assert.AreEqual(expected, actual);
-        }
-
+        //[DataTestMethod]
         public void pvt_ComputeNonPCIDeduct(double expected, string sMethod, int nDistress, string sSeverity, double dExtent)
         {
             var actual = PciDistress.pvt_ComputeNonPCIDeduct(sMethod, nDistress, sSeverity, dExtent);
