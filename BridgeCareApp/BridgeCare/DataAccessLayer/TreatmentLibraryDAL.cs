@@ -31,6 +31,23 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Fetches a simulation's treatment library data if it belongs to the user
+        /// Throws a RowNotInTableException if no such simulation is found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <param name="username"></param>
+        /// <returns>TreatmentLibraryModel</returns>
+        public TreatmentLibraryModel GetOwnedSimulationTreatmentLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return GetSimulationTreatmentLibrary(id, db);
+        }
+
+        /// <summary>
         /// Executes an upsert/delete operation on a simulation's treatment library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
@@ -165,6 +182,16 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new TreatmentLibraryModel(simulation);
+        }
+
+        public TreatmentLibraryModel SaveOwnedSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return SaveSimulationTreatmentLibrary(model, db);
         }
     }
 }
