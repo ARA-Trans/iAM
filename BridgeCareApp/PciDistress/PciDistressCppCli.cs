@@ -66,7 +66,7 @@ namespace AppliedResearchAssociates.PciDistress
                         if (value is string s) return $"\"{s}\"";
                         if (value is bool b) return b.ToString().ToLowerInvariant();
                         if (value is int i) return i.ToString();
-                        throw new InvalidOperationException("Unsupported argument type: " + value.GetType());
+                        return $"/* unsupported argument type {value.GetType()} with value {value} */";
                     });
 
                     var arguments = string.Join(", ", values);
