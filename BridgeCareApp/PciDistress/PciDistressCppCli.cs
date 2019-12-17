@@ -92,6 +92,7 @@ namespace AppliedResearchAssociates.PciDistress
         {
         }
 
+        [System.Diagnostics.Conditional("DEBUG")]
         private void Log(string method, params object[] row)
         {
             if (!InvocationLog.TryGetValue(method, out var rows))
