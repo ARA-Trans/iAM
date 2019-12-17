@@ -28,19 +28,29 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            List<CriteriaDrivenBudgetsModel> GetAnyBudgets(int id, UserInformationModel userInformation) => 
+                repo.GetCriteriaDrivenBudgets(id, db);
+            List<CriteriaDrivenBudgetsModel> GetOwnedBudgets(int id, UserInformationModel userInformation) => 
+                repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name);
+
+            Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) => 
+                repo.SaveCriteriaDrivenBudgets(id, models, db);
+            Task<string> SaveOwnedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) => 
+                repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
+
             CriteriaDrivenBudgetsGetMethods = new Dictionary<string, CriteriaDrivenBudgetsGetMethod>
             {
-                [Role.ADMINISTRATOR] = (id, userInformation) => repo.GetCriteriaDrivenBudgets(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name),
-                [Role.CWOPA] = (id, userInformation) => repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = GetAnyBudgets,
+                [Role.DISTRICT_ENGINEER] = GetOwnedBudgets,
+                [Role.CWOPA] = GetOwnedBudgets,
+                [Role.PLANNING_PARTNER] = GetOwnedBudgets
             };
             CriteriaDrivenBudgetsSaveMethods = new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>
             {
-                [Role.ADMINISTRATOR] = (id, models, userInformation) => repo.SaveCriteriaDrivenBudgets(id, models, db),
-                [Role.DISTRICT_ENGINEER] = (id, models, userInformation) => repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name),
-                [Role.CWOPA] = (id, models, userInformation) => repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, models, userInformation) => repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = SaveAnyBudgets,
+                [Role.DISTRICT_ENGINEER] = SaveOwnedBudgets,
+                [Role.CWOPA] = SaveOwnedBudgets,
+                [Role.PLANNING_PARTNER] = SaveOwnedBudgets
             };
         }
 

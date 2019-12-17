@@ -28,28 +28,42 @@ namespace BridgeCare.Controllers
         {
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
-            
+
+            List<SimulationModel> GetAllSimulations(UserInformationModel userInformation) => 
+                repo.GetSimulations(db);
+            List<SimulationModel> GetOwnedSimulations(UserInformationModel userInformation) => 
+                repo.GetOwnedSimulations(db, userInformation.Name);
+
+            void UpdateAnySimulation(SimulationModel model, UserInformationModel userInformation) => 
+                repo.UpdateSimulation(model, db);
+            void UpdateOwnedSimulation(SimulationModel model, UserInformationModel userInformation) => 
+                repo.UpdateOwnedSimulation(model, db, userInformation);
+
+            void DeleteAnySimulation(int id, UserInformationModel userInformation) => 
+                repo.DeleteSimulation(id, db);
+            void DeleteOwnedSimulation(int id, UserInformationModel userInformation) => 
+                repo.DeleteOwnedSimulation(id, db, userInformation);
+
             SimulationGetMethods = new Dictionary<string, SimulationGetMethod>
             {
-                [Role.ADMINISTRATOR] = (userInformation) => repo.GetSimulations(db),
-                [Role.DISTRICT_ENGINEER] = (userInformation) => repo.GetOwnedSimulations(db, userInformation.Name),
-                [Role.CWOPA] = (userInformation) => repo.GetSimulations(db),
-                [Role.PLANNING_PARTNER] = (userInformation) => repo.GetOwnedSimulations(db, userInformation.Name)
+                [Role.ADMINISTRATOR] = GetAllSimulations,
+                [Role.DISTRICT_ENGINEER] = GetOwnedSimulations,
+                [Role.CWOPA] = GetAllSimulations,
+                [Role.PLANNING_PARTNER] = GetOwnedSimulations
             };
             SimulationUpdateMethods = new Dictionary<string, SimulationUpdateMethod>
             {
-                [Role.ADMINISTRATOR] = (model, userInformation) => repo.UpdateSimulation(model, db),
-                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation),
-                [Role.CWOPA] = (model, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation),
-                [Role.PLANNING_PARTNER] = (model, userInformation) => repo.UpdateOwnedSimulation(model, db, userInformation)
+                [Role.ADMINISTRATOR] = UpdateAnySimulation,
+                [Role.DISTRICT_ENGINEER] = UpdateOwnedSimulation,
+                [Role.CWOPA] = UpdateOwnedSimulation,
+                [Role.PLANNING_PARTNER] = UpdateOwnedSimulation
             };
-
             SimulationDeletionMethods = new Dictionary<string, SimulationDeletionMethod>
             {
-                [Role.ADMINISTRATOR] = (id, userInformation) => repo.DeleteSimulation(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation),
-                [Role.CWOPA] = (id, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation),
-                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.DeleteOwnedSimulation(id, db, userInformation)
+                [Role.ADMINISTRATOR] = DeleteAnySimulation,
+                [Role.DISTRICT_ENGINEER] = DeleteOwnedSimulation,
+                [Role.CWOPA] = DeleteOwnedSimulation,
+                [Role.PLANNING_PARTNER] = DeleteOwnedSimulation
             };
         }
         

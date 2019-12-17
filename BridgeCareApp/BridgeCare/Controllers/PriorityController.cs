@@ -27,17 +27,29 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            PriorityLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetSimulationPriorityLibrary(id, db);
+
+            PriorityLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetOwnedSimulationPriorityLibrary(id, db, userInformation.Name);
+
+            PriorityLibraryModel SaveAnyLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveSimulationPriorityLibrary(model, db);
+
+            PriorityLibraryModel SaveOwnedLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationPriorityLibrary(model, db, userInformation.Name);
+
             PriorityLibraryGetMethods = new Dictionary<string, PriorityLibraryGetMethod>
             {
-                [Role.ADMINISTRATOR] = (id, userInformation) => repo.GetSimulationPriorityLibrary(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnedSimulationPriorityLibrary(id, db, userInformation.Name),
-                [Role.CWOPA] = (id, userInformation) => repo.GetOwnedSimulationPriorityLibrary(id, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnedSimulationPriorityLibrary(id, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = GetAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.CWOPA] = GetOwnedLibrary,
+                [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
             PriorityLibrarySaveMethods = new Dictionary<string, PriorityLibrarySaveMethod>
             {
-                [Role.ADMINISTRATOR] = (model, userInformation) => repo.SaveSimulationPriorityLibrary(model, db),
-                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationPriorityLibrary(model, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = SaveAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary
             };
         }
 

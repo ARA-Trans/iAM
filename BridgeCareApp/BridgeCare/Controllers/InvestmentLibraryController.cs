@@ -29,21 +29,31 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            InvestmentLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetSimulationInvestmentLibrary(id, db);
+
+            InvestmentLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name);
+
+            InvestmentLibraryModel SaveAnyLibrary(InvestmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveSimulationInvestmentLibrary(model, db);
+
+            InvestmentLibraryModel SaveOwnedLibrary(InvestmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name);
+
             InvestmentLibraryGetMethods = new Dictionary<string, InvestmentLibraryGetMethod>
             {
-                [Role.ADMINISTRATOR] = (id, userInformation) => repo.GetSimulationInvestmentLibrary(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name),
-                [Role.CWOPA] = (id, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = GetAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.CWOPA] = GetOwnedLibrary,
+                [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-
             InvestmentLibrarySaveMethods = new Dictionary<string, InvestmentLibrarySaveMethod>
             {
-
-                [Role.ADMINISTRATOR] = (model, userInformation) => repo.SaveSimulationInvestmentLibrary(model, db),
-                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name),
-                [Role.CWOPA] = (model, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (model, userInformation) => repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = SaveAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary,
+                [Role.CWOPA] = SaveOwnedLibrary,
+                [Role.PLANNING_PARTNER] = SaveOwnedLibrary
             };
         }
 
