@@ -55,12 +55,21 @@ function scenarioController(Scenario) {
     }
 
     function get(req, res) {
-        Scenario.find({ owner: [req.user.username, undefined] }, (err, scenariostatus) => {
-            if (err) {
-                return res.send(err);
-            }
-            return res.json(scenariostatus);
-        });
+        if (req.user.role === 'PD-BAMS-ADMINISTRATOR' || req.user.role === 'PD-BAMS-CWOPA') {
+            Scenario.find((err, scenariostatus) => {
+                if (err) {
+                    return res.send(err);
+                }
+                return res.json(scenariostatus);
+            });
+        } else {
+            Scenario.find({ owner: [req.user.username, undefined] }, (err, scenariostatus) => {
+                if (err) {
+                    return res.send(err);
+                }
+                return res.json(scenariostatus);
+            });
+        }
     }
 
     function deleteScenario(req, res) {

@@ -25,17 +25,29 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            PerformanceLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetSimulationPerformanceLibrary(id, db);
+
+            PerformanceLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name);
+
+            PerformanceLibraryModel SaveAnyLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveSimulationPerformanceLibrary(model, db);
+
+            PerformanceLibraryModel SaveOwnedLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name);
+
             PerformanceLibraryGetMethods = new Dictionary<string, PerformanceLibraryGetMethod>
             {
-                [Role.ADMINISTRATOR] = (id, userInformation) => repo.GetSimulationPerformanceLibrary(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, userInformation) => repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name),
-                [Role.CWOPA] = (id, userInformation) => repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, userInformation) => repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = GetAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.CWOPA] = GetOwnedLibrary,
+                [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
             PerformanceLibrarySaveMethods = new Dictionary<string, PerformanceLibrarySaveMethod>
             {
-                [Role.ADMINISTRATOR] = (model, userInformation) => repo.SaveSimulationPerformanceLibrary(model, db),
-                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = SaveAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary
             };
         }
 
