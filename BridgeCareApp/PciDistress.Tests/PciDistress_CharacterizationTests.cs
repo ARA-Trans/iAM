@@ -898,6 +898,7 @@ namespace AppliedResearchAssociates.PciDistress.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        //private static IPciDistress PciDistress => AppliedResearchAssociates.PciDistress.PciDistress.Instance;
         private static IPciDistress PciDistress => PciDistressCppCli.Instance;
     }
 }

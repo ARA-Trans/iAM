@@ -303,10 +303,6 @@
     <Compile Include="RollupSegmentation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\BridgeCareApp\PciDistress\PciDistress.csproj">
-      <Project>{1a6e8f6e-1e99-40c8-8888-7005e7756cb3}</Project>
-      <Name>PciDistress</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CalculateEvaluate\CalculateEvaluate.csproj">
       <Project>{3ba8af00-58ae-4086-8e32-fe302711e899}</Project>
       <Name>CalculateEvaluate</Name>
