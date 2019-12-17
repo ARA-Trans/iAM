@@ -35,9 +35,7 @@ namespace BridgeCare.Controllers
             TreatmentLibrarySaveMethods = new Dictionary<string, TreatmentLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = (model, userInformation) => repo.SaveSimulationTreatmentLibrary(model, db),
-                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationTreatmentLibrary(model, db, userInformation.Name),
-                [Role.CWOPA] = (model, userInformation) => throw new NotImplementedException("CWOPA user cannot modify a scenario's treatment libraries."),
-                [Role.PLANNING_PARTNER] = (model, userInformation) => throw new NotImplementedException("Planning Partner cannot modify a scenario's treatment libraries.")
+                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationTreatmentLibrary(model, db, userInformation.Name)
             };
         }
 

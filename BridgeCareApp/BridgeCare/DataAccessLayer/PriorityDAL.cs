@@ -31,6 +31,23 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Fetches a simulation's priority library data if it belongs to the user
+        /// Throws a RowNotInTableException if no such simulation is found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <param name="username"></param>
+        /// <returns>PriorityLibraryModel</returns>
+        public PriorityLibraryModel GetOwnedSimulationPriorityLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return GetSimulationPriorityLibrary(id, db);
+        }
+
+        /// <summary>
         /// Executes an upsert/delete operation on a simulation's priority library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
@@ -99,6 +116,16 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new PriorityLibraryModel(simulation);
+        }
+
+        public PriorityLibraryModel SaveOwnedSimulationPriorityLibrary(PriorityLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            {
+                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            }
+            return SaveSimulationPriorityLibrary(model, db);
         }
     }
 }

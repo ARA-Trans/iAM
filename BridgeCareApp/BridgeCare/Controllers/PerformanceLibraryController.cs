@@ -35,9 +35,7 @@ namespace BridgeCare.Controllers
             PerformanceLibrarySaveMethods = new Dictionary<string, PerformanceLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = (model, userInformation) => repo.SaveSimulationPerformanceLibrary(model, db),
-                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name),
-                [Role.CWOPA] = (model, userInformation) => throw new NotImplementedException("CWOPA user cannot modify a scenario's performance libraries."),
-                [Role.PLANNING_PARTNER] = (model, userInformation) => throw new NotImplementedException("Planning Partner cannot modify a scenario's performance libraries.")
+                [Role.DISTRICT_ENGINEER] = (model, userInformation) => repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name)
             };
         }
 
