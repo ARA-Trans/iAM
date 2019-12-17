@@ -24,7 +24,15 @@
     @Component
     export default class LandingPage extends Vue {
         mounted() {
-            if (this.$route.query.host == undefined) {
+            /*
+             * The /iAM/ pages of the penndot deployments fail to set the cookie until they have been refreshed.
+             */
+            if (!window.location.hash) {
+                window.location.hash = 'refreshed';
+                window.location.reload(true);
+            }
+
+            if (this.$route.query.host === undefined) {
                 return;
             }
             /*
