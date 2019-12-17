@@ -9,9 +9,9 @@ namespace BridgeCare.Interfaces.CriteriaDrivenBudgets
 {
     public interface ICriteriaDrivenBudgets
     {
-        List<CriteriaDrivenBudgetsModel> GetCriteriaDrivenBudgets(int simulationId, BridgeCareContext db);
+        List<CriteriaDrivenBudgetsModel> GetAnyCriteriaDrivenBudgets(int simulationId, BridgeCareContext db);
         List<CriteriaDrivenBudgetsModel> GetOwnedCriteriaDrivenBudgets(int simulationId, BridgeCareContext db, string username);
-        Task<string> SaveCriteriaDrivenBudgets(int selectedScenarioId, List<CriteriaDrivenBudgetsModel> data, BridgeCareContext db);
+        Task<string> SaveAnyCriteriaDrivenBudgets(int selectedScenarioId, List<CriteriaDrivenBudgetsModel> data, BridgeCareContext db);
         Task<string> SaveOwnedCriteriaDrivenBudgets(int selectedScenarioId, List<CriteriaDrivenBudgetsModel> data, BridgeCareContext db, string username);
     }
 }

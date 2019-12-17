@@ -28,13 +28,13 @@ namespace BridgeCare.Controllers
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
             TargetLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
-                repo.GetSimulationTargetLibrary(id, db);
+                repo.GetAnySimulationTargetLibrary(id, db);
 
             TargetLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationTargetLibrary(id, db, userInformation.Name);
 
             TargetLibraryModel SaveAnyLibrary(TargetLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveSimulationTargetLibrary(model, db);
+                repo.SaveAnySimulationTargetLibrary(model, db);
 
             TargetLibraryModel SaveOwnedLibrary(TargetLibraryModel model, UserInformationModel userInformation) =>
                 repo.SaveOwnedSimulationTargetLibrary(model, db, userInformation.Name);
@@ -43,7 +43,7 @@ namespace BridgeCare.Controllers
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
-                [Role.CWOPA] = GetOwnedLibrary,
+                [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
             TargetLibrarySaveMethods = new Dictionary<string, TargetLibrarySaveMethod>

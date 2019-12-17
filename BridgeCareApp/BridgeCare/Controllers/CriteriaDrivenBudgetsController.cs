@@ -29,12 +29,12 @@ namespace BridgeCare.Controllers
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
             List<CriteriaDrivenBudgetsModel> GetAnyBudgets(int id, UserInformationModel userInformation) => 
-                repo.GetCriteriaDrivenBudgets(id, db);
+                repo.GetAnyCriteriaDrivenBudgets(id, db);
             List<CriteriaDrivenBudgetsModel> GetOwnedBudgets(int id, UserInformationModel userInformation) => 
                 repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name);
 
             Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) => 
-                repo.SaveCriteriaDrivenBudgets(id, models, db);
+                repo.SaveAnyCriteriaDrivenBudgets(id, models, db);
             Task<string> SaveOwnedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) => 
                 repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
 
@@ -42,7 +42,7 @@ namespace BridgeCare.Controllers
             {
                 [Role.ADMINISTRATOR] = GetAnyBudgets,
                 [Role.DISTRICT_ENGINEER] = GetOwnedBudgets,
-                [Role.CWOPA] = GetOwnedBudgets,
+                [Role.CWOPA] = GetAnyBudgets,
                 [Role.PLANNING_PARTNER] = GetOwnedBudgets
             };
             CriteriaDrivenBudgetsSaveMethods = new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>

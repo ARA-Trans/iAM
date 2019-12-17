@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using BridgeCare.Interfaces;
@@ -7,10 +8,17 @@ using BridgeCare.Security;
 
 namespace BridgeCare.Controllers
 {
+    using DeficientLibraryGetMethod = Func<int, UserInformationModel, DeficientLibraryModel>;
+    using DeficientLibrarySaveMethod = Func<DeficientLibraryModel, UserInformationModel, DeficientLibraryModel>;
+
     public class DeficientController: ApiController
     {
         private readonly IDeficient repo;
         private readonly BridgeCareContext db;
+        /// <summary>Maps user roles to methods for fetching a target library</summary>
+        private readonly IReadOnlyDictionary<string, DeficientLibraryGetMethod> DeficientLibraryGetMethods;
+        /// <summary>Maps user roles to methods for saving a target library</summary>
+        private readonly IReadOnlyDictionary<string, DeficientLibrarySaveMethod> DeficientLibrarySaveMethods;
 
         public DeficientController() { }
 
@@ -18,6 +26,33 @@ namespace BridgeCare.Controllers
         {
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
+
+            DeficientLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetAnySimulationDeficientLibrary(id, db);
+
+            DeficientLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetOwnedSimulationDeficientLibrary(id, db, userInformation.Name);
+
+            DeficientLibraryModel SaveAnyLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationDeficientLibrary(model, db);
+
+            DeficientLibraryModel SaveOwnedLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationDeficientLibrary(model, db, userInformation.Name);
+
+            DeficientLibraryGetMethods = new Dictionary<string, DeficientLibraryGetMethod>
+            {
+                [Role.ADMINISTRATOR] = GetAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.CWOPA] = GetAnyLibrary,
+                [Role.PLANNING_PARTNER] = GetOwnedLibrary
+            };
+            DeficientLibrarySaveMethods = new Dictionary<string, DeficientLibrarySaveMethod>
+            {
+                [Role.ADMINISTRATOR] = SaveAnyLibrary,
+                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary,
+                [Role.CWOPA] = SaveOwnedLibrary,
+                [Role.PLANNING_PARTNER] = SaveOwnedLibrary
+            };
         }
 
         /// <summary>
@@ -30,7 +65,10 @@ namespace BridgeCare.Controllers
         [ModelValidation("The scenario id is invalid.")]
         [RestrictAccess]
         public IHttpActionResult GetSimulationDeficientLibrary(int id)
-            => Ok(repo.GetSimulationDeficientLibrary(id, db));
+        {
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            return Ok(DeficientLibraryGetMethods[userInformation.Role](id, userInformation));
+        }
 
         /// <summary>
         /// API endpoint for upserting/deleting a simulation's deficient library data
@@ -42,6 +80,9 @@ namespace BridgeCare.Controllers
         [ModelValidation("The deficient data is invalid.")]
         [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationDeficientLibrary([FromBody] DeficientLibraryModel model)
-            => Ok(repo.SaveSimulationDeficientLibrary(model, db));
+        {
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            return Ok(DeficientLibrarySaveMethods[userInformation.Role](model, userInformation));
+        }
     }
 }

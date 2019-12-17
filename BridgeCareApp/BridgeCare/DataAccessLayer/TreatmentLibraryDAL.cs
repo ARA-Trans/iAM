@@ -16,11 +16,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="id"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public TreatmentLibraryModel GetSimulationTreatmentLibrary(int id, BridgeCareContext db)
+        private TreatmentLibraryModel GetSimulationTreatmentLibrary(int id, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario found with id {id}");
-
             var simulation = db.Simulations.Include(s => s.TREATMENTS)
                 .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
                 .Include(s => s.TREATMENTS.Select(t => t.COSTS))
@@ -41,9 +38,14 @@ namespace BridgeCare.DataAccessLayer
         public TreatmentLibraryModel GetOwnedSimulationTreatmentLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
-            {
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
-            }
+            return GetSimulationTreatmentLibrary(id, db);
+        }
+
+        public TreatmentLibraryModel GetAnySimulationTreatmentLibrary(int id, BridgeCareContext db)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
             return GetSimulationTreatmentLibrary(id, db);
         }
 
@@ -54,12 +56,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="model">TreatmentLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>TreatmentLibraryModel</returns>
-        public TreatmentLibraryModel SaveSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
+        private TreatmentLibraryModel SaveSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario found with id {id}");
 
             var simulation = db.Simulations.Include(s => s.TREATMENTS)
                 .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
@@ -191,6 +190,14 @@ namespace BridgeCare.DataAccessLayer
             {
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
             }
+            return SaveSimulationTreatmentLibrary(model, db);
+        }
+
+        public TreatmentLibraryModel SaveAnySimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
             return SaveSimulationTreatmentLibrary(model, db);
         }
     }

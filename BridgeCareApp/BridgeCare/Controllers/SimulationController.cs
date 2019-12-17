@@ -35,14 +35,14 @@ namespace BridgeCare.Controllers
                 repo.GetOwnedSimulations(db, userInformation.Name);
 
             void UpdateAnySimulation(SimulationModel model, UserInformationModel userInformation) => 
-                repo.UpdateSimulation(model, db);
+                repo.UpdateAnySimulation(model, db);
             void UpdateOwnedSimulation(SimulationModel model, UserInformationModel userInformation) => 
-                repo.UpdateOwnedSimulation(model, db, userInformation);
+                repo.UpdateOwnedSimulation(model, db, userInformation.Name);
 
             void DeleteAnySimulation(int id, UserInformationModel userInformation) => 
-                repo.DeleteSimulation(id, db);
+                repo.DeleteAnySimulation(id, db);
             void DeleteOwnedSimulation(int id, UserInformationModel userInformation) => 
-                repo.DeleteOwnedSimulation(id, db, userInformation);
+                repo.DeleteOwnedSimulation(id, db, userInformation.Name);
 
             SimulationGetMethods = new Dictionary<string, SimulationGetMethod>
             {

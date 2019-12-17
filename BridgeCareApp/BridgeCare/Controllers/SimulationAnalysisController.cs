@@ -26,7 +26,7 @@ namespace BridgeCare.Controllers
         [Route("api/GetScenarioAnalysisData/{id}")]
         [RestrictAccess]
         public IHttpActionResult GetSimulationAnalysis(int id) =>
-            Ok(repo.GetSimulationAnalysis(id, db));
+            Ok(repo.GetAnySimulationAnalysis(id, db));
 
         /// <summary>
         /// API endpoint for upserting a simulation's analysis data

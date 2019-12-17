@@ -37,7 +37,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveScenarioRemainingLifeLimitLibrary")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess(Role.ADMINISTRATOR)]
         public IHttpActionResult SaveSimulationRemainingLifeLimitLibrary([FromBody]RemainingLifeLimitLibraryModel model) =>
             Ok(repo.SaveSimulationRemainingLifeLimitLibrary(model, db));
     }

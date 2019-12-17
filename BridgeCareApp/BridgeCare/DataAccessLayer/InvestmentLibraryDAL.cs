@@ -20,11 +20,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>InvestmentLibraryModel</returns>
-        public InvestmentLibraryModel GetSimulationInvestmentLibrary(int id, BridgeCareContext db)
+        private InvestmentLibraryModel GetSimulationInvestmentLibrary(int id, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                    throw new RowNotInTableException($"No scenario found with id {id}");
-
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
                 .Include(s => s.YEARLYINVESTMENTS)
@@ -44,9 +41,21 @@ namespace BridgeCare.DataAccessLayer
         public InvestmentLibraryModel GetOwnedSimulationInvestmentLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
-            {
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
-            }
+            return GetSimulationInvestmentLibrary(id, db);
+        }
+
+        /// <summary>
+        /// Fetches a simulation's investment library data regardless of ownership
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>InvestmentLibraryModel</returns>
+        public InvestmentLibraryModel GetAnySimulationInvestmentLibrary(int id, BridgeCareContext db)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
             return GetSimulationInvestmentLibrary(id, db);
         }
 
@@ -57,12 +66,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="model">InvestmentLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>InvestmentLibraryModel</returns>
-        public InvestmentLibraryModel SaveSimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db)
+        private InvestmentLibraryModel SaveSimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario found with id {id}");
 
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
@@ -142,10 +148,24 @@ namespace BridgeCare.DataAccessLayer
         public InvestmentLibraryModel SaveOwnedSimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            return SaveSimulationInvestmentLibrary(model, db);
+        }
 
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's investment library data regardless of ownership
+        /// Throws a RowNotInTableException if no simulation is found for that user
+        /// </summary>
+        /// <param name="model">InvestmentLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>InvestmentLibraryModel</returns>
+        public InvestmentLibraryModel SaveAnySimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
             return SaveSimulationInvestmentLibrary(model, db);
         }
     }

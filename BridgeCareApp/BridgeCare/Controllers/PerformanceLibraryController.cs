@@ -26,13 +26,13 @@ namespace BridgeCare.Controllers
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
             PerformanceLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
-                repo.GetSimulationPerformanceLibrary(id, db);
+                repo.GetAnySimulationPerformanceLibrary(id, db);
 
             PerformanceLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name);
 
             PerformanceLibraryModel SaveAnyLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveSimulationPerformanceLibrary(model, db);
+                repo.SaveAnySimulationPerformanceLibrary(model, db);
 
             PerformanceLibraryModel SaveOwnedLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
                 repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name);
@@ -41,7 +41,7 @@ namespace BridgeCare.Controllers
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
-                [Role.CWOPA] = GetOwnedLibrary,
+                [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
             PerformanceLibrarySaveMethods = new Dictionary<string, PerformanceLibrarySaveMethod>

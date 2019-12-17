@@ -9,10 +9,10 @@ namespace BridgeCare.Interfaces
         List<SimulationModel> GetSimulations(BridgeCareContext db);
         List<SimulationModel> GetOwnedSimulations(BridgeCareContext db, string username);
         SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db);
-        void UpdateSimulation(SimulationModel model, BridgeCareContext db);
-        void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, UserInformationModel userInformation);
-        void DeleteSimulation(int id, BridgeCareContext db);
-        void DeleteOwnedSimulation(int id, BridgeCareContext db, UserInformationModel userInformation);
+        void UpdateAnySimulation(SimulationModel model, BridgeCareContext db);
+        void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username);
+        void DeleteAnySimulation(int id, BridgeCareContext db);
+        void DeleteOwnedSimulation(int id, BridgeCareContext db, string username);
         Task<string> RunSimulation(SimulationModel model);
         void SetSimulationLastRunDate(int id, BridgeCareContext db);
 

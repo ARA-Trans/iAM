@@ -4,7 +4,8 @@ namespace BridgeCare.Interfaces
 {
     public interface ISimulationAnalysis
     {
-        SimulationAnalysisModel GetSimulationAnalysis(int id, BridgeCareContext db);
+        SimulationAnalysisModel GetAnySimulationAnalysis(int id, BridgeCareContext db);
+        SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, BridgeCareContext db, string username);
         void UpdateSimulationAnalysis(SimulationAnalysisModel model, BridgeCareContext db);
     }
 }

@@ -18,11 +18,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>PriorityLibraryModel</returns>
-        public PriorityLibraryModel GetSimulationPriorityLibrary(int id, BridgeCareContext db)
+        private PriorityLibraryModel GetSimulationPriorityLibrary(int id, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario was found with id {id}");
-
             var simulation = db.Simulations.Include(s => s.PRIORITIES)
                 .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
                 .Single(s => s.SIMULATIONID == id);
@@ -41,9 +38,21 @@ namespace BridgeCare.DataAccessLayer
         public PriorityLibraryModel GetOwnedSimulationPriorityLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
-            {
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
-            }
+            return GetSimulationPriorityLibrary(id, db);
+        }
+
+        /// <summary>
+        /// Fetches a simulation's priority library data regardless of ownership
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <returns>PriorityLibraryModel</returns>
+        public PriorityLibraryModel GetAnySimulationPriorityLibrary(int id, BridgeCareContext db)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}");
             return GetSimulationPriorityLibrary(id, db);
         }
 
@@ -54,12 +63,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="model">PriorityLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>PriorityLibraryModel</returns>
-        public PriorityLibraryModel SaveSimulationPriorityLibrary(PriorityLibraryModel model, BridgeCareContext db)
+        private PriorityLibraryModel SaveSimulationPriorityLibrary(PriorityLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario was found with id {id}");
 
             var simulation = db.Simulations.Include(s => s.PRIORITIES)
                 .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
@@ -122,9 +128,15 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
-            {
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
-            }
+            return SaveSimulationPriorityLibrary(model, db);
+        }
+
+        public PriorityLibraryModel SaveAnySimulationPriorityLibrary(PriorityLibraryModel model, BridgeCareContext db)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}");
             return SaveSimulationPriorityLibrary(model, db);
         }
     }

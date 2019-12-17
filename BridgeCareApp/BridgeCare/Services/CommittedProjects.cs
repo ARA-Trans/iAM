@@ -31,19 +31,29 @@ namespace BridgeCare.Services
             this.committedRepo = committedRepo;
             this.sectionsRepo = sectionsRepo;
 
+            List<CommittedEntity> GetAnyProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.GetCommittedProjects(id, db);
+            List<CommittedEntity> GetOwnedProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name);
+
+            void SaveAnyProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.SaveCommittedProjects(models, db);
+            void SaveOwnedProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name);
+
             CommittedProjectsGetMethods = new Dictionary<string, CommittedProjectsGetMethod>
             {
-                [Role.ADMINISTRATOR] = (id, db, userInformation) => committedRepo.GetCommittedProjects(id, db),
-                [Role.DISTRICT_ENGINEER] = (id, db, userInformation) => committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name),
-                [Role.CWOPA] = (id, db, userInformation) => committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (id, db, userInformation) => committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = GetAnyProjects,
+                [Role.DISTRICT_ENGINEER] = GetOwnedProjects,
+                [Role.CWOPA] = GetOwnedProjects,
+                [Role.PLANNING_PARTNER] = GetOwnedProjects
             };
             CommittedProjectsSaveMethods = new Dictionary<string, CommittedProjectsSaveMethod>
             {
-                [Role.ADMINISTRATOR] = (models, db, userInformation) => committedRepo.SaveCommittedProjects(models, db),
-                [Role.DISTRICT_ENGINEER] = (models, db, userInformation) => committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name),
-                [Role.CWOPA] = (models, db, userInformation) => committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name),
-                [Role.PLANNING_PARTNER] = (models, db, userInformation) => committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name)
+                [Role.ADMINISTRATOR] = SaveAnyProjects,
+                [Role.DISTRICT_ENGINEER] = SaveOwnedProjects,
+                [Role.CWOPA] = SaveOwnedProjects,
+                [Role.PLANNING_PARTNER] = SaveOwnedProjects
             };
         }
 

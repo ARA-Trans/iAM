@@ -72,9 +72,7 @@ namespace BridgeCare.DataAccessLayer
         public List<CommittedEntity> GetOwnedCommittedProjects(int simulationId, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId && (s.USERNAME == username || s.USERNAME == null)))
-            {
                 throw new RowNotInTableException($"User {username} does not have access to a simulation with id {simulationId}.");
-            }
             return GetCommittedProjects(simulationId, db);
         }
     }

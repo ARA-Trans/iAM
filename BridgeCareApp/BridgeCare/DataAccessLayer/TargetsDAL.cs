@@ -80,18 +80,13 @@ namespace BridgeCare.DataAccessLayer
 
         /// <summary>
         /// Fetches a simulation's target library data
-        /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>TargetLibraryModel</returns>
-        public TargetLibraryModel GetSimulationTargetLibrary(int id, BridgeCareContext db)
+        private TargetLibraryModel GetSimulationTargetLibrary(int id, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario was found with id {id}.");
-
             var simulation = db.Simulations.Include(s => s.TARGETS).Single(s => s.SIMULATIONID == id);
-
             return new TargetLibraryModel(simulation);
         }
 
@@ -107,23 +102,32 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            return GetSimulationTargetLibrary(id, db);
+        }
 
+        /// <summary>
+        /// Fetches a simulation's target library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public TargetLibraryModel GetAnySimulationTargetLibrary(int id, BridgeCareContext db)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
             return GetSimulationTargetLibrary(id, db);
         }
 
         /// <summary>
         /// Executes an upsert/delete operation on a simulation's target library data
-        /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">TargetLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>TargetLibraryModel</returns>
-        public TargetLibraryModel SaveSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db)
+        private TargetLibraryModel SaveSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario was found with id {id}.");
 
             var simulation = db.Simulations.Include(s => s.TARGETS).Single(s => s.SIMULATIONID == id);
 
@@ -154,7 +158,6 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new TargetLibraryModel(simulation);
-
         }
 
         /// <summary>
@@ -168,10 +171,24 @@ namespace BridgeCare.DataAccessLayer
         public TargetLibraryModel SaveOwnedSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
                 throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+            return SaveSimulationTargetLibrary(model, db);
+        }
 
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's target library data
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="db"></param>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public TargetLibraryModel SaveAnySimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
             return SaveSimulationTargetLibrary(model, db);
         }
     }

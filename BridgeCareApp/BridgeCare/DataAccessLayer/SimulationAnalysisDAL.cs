@@ -24,6 +24,22 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Gets a simulation's analysis data if it is available to the user
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>SimulationAnalysisModel</returns>
+        public SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+                throw new RowNotInTableException($"User {username} cannot access a simulation with id {id}.");
+            return GetSimulationAnalysis(id, db);
+        }
+
+
+
+        /// <summary>
         /// Updates a simulation's analysis data
         /// </summary>
         /// <param name="model">SimulationAnalysisModel</param>
