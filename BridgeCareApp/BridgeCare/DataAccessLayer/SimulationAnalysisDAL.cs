@@ -15,12 +15,21 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>SimulationAnalysisModel</returns>
         public SimulationAnalysisModel GetSimulationAnalysis(int id, BridgeCareContext db)
         {
+            var simulation = db.Simulations.Single(s => s.SIMULATIONID == id);
+            return new SimulationAnalysisModel(simulation);
+        }
+
+        /// <summary>
+        /// Gets a simulation's analysis data, regardless of ownership
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>SimulationAnalysisModel</returns>
+        public SimulationAnalysisModel GetAnySimulationAnalysis(int id, BridgeCareContext db)
+        {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with id {id}");
-
-            var simulation = db.Simulations.Single(s => s.SIMULATIONID == id);
-
-            return new SimulationAnalysisModel(simulation);
+            return GetSimulationAnalysis(id, db);
         }
 
         /// <summary>
@@ -37,8 +46,6 @@ namespace BridgeCare.DataAccessLayer
             return GetSimulationAnalysis(id, db);
         }
 
-
-
         /// <summary>
         /// Updates a simulation's analysis data
         /// </summary>
@@ -52,6 +59,18 @@ namespace BridgeCare.DataAccessLayer
             var simulation = db.Simulations.Single(s => s.SIMULATIONID == model.Id);
 
             model.UpdateSimulationAnalysis(simulation);
+
+            db.SaveChanges();
+        }
+
+        public void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, BridgeCareContext db, string username, bool updateWeighting = true)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.Id && (s.USERNAME == username)))
+                throw new RowNotInTableException($"User {username} cannot update analysis of scenario with id {model.Id}.");
+
+            var simulation = db.Simulations.Single(s => s.SIMULATIONID == model.Id);
+
+            model.PartialUpdateSimulationAnalysis(simulation, updateWeighting);
 
             db.SaveChanges();
         }
