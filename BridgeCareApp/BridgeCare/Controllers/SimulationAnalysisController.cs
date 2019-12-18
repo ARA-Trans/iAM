@@ -29,8 +29,10 @@ namespace BridgeCare.Controllers
 
             void UpdateSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) => 
                 repo.UpdateSimulationAnalysis(model, db);
-            void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) => 
+            void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
                 repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name);
+            void PartialUpdateOwnedSimulationAnalysisWithoutWeights(SimulationAnalysisModel model, UserInformationModel userInformation) =>
+                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name, updateWeighting: false);
 
             SimulationAnalysisGetMethods = new Dictionary<string, SimulationAnalysisGetMethod>
             {
@@ -44,7 +46,7 @@ namespace BridgeCare.Controllers
             {
                 [Role.ADMINISTRATOR] = UpdateSimulationAnalysis,
                 [Role.DISTRICT_ENGINEER] = PartialUpdateOwnedSimulationAnalysis,
-                [Role.CWOPA] = PartialUpdateOwnedSimulationAnalysis,
+                [Role.CWOPA] = PartialUpdateOwnedSimulationAnalysisWithoutWeights,
                 [Role.PLANNING_PARTNER] = PartialUpdateOwnedSimulationAnalysis
             };
         }

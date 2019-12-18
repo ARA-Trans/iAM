@@ -28,24 +28,40 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
-            List<CriteriaDrivenBudgetsModel> GetAnyBudgets(int id, UserInformationModel userInformation) => 
+            CriteriaDrivenBudgetsGetMethods = CreateGetMethods();
+            CriteriaDrivenBudgetsSaveMethods = CreateSaveMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate getters for those roles
+        /// </summary>
+        private Dictionary<string, CriteriaDrivenBudgetsGetMethod> CreateGetMethods()
+        {
+            List<CriteriaDrivenBudgetsModel> GetAnyBudgets(int id, UserInformationModel userInformation) =>
                 repo.GetAnyCriteriaDrivenBudgets(id, db);
-            List<CriteriaDrivenBudgetsModel> GetOwnedBudgets(int id, UserInformationModel userInformation) => 
+            List<CriteriaDrivenBudgetsModel> GetOwnedBudgets(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name);
 
-            Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) => 
-                repo.SaveAnyCriteriaDrivenBudgets(id, models, db);
-            Task<string> SaveOwnedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) => 
-                repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
-
-            CriteriaDrivenBudgetsGetMethods = new Dictionary<string, CriteriaDrivenBudgetsGetMethod>
+            return new Dictionary<string, CriteriaDrivenBudgetsGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyBudgets,
                 [Role.DISTRICT_ENGINEER] = GetOwnedBudgets,
                 [Role.CWOPA] = GetAnyBudgets,
                 [Role.PLANNING_PARTNER] = GetOwnedBudgets
             };
-            CriteriaDrivenBudgetsSaveMethods = new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate save methods for those roles
+        /// </summary>
+        private Dictionary<string, CriteriaDrivenBudgetsSaveMethod> CreateSaveMethods()
+        {
+            Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
+                repo.SaveAnyCriteriaDrivenBudgets(id, models, db);
+            Task<string> SaveOwnedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
+                repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
+
+            return new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyBudgets,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedBudgets,
