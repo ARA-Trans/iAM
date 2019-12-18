@@ -4,6 +4,6 @@ namespace AppliedResearchAssociates.PciDistress.Benchmarks
 {
     internal class Program
     {
-        private static void Main() => _ = BenchmarkRunner.Run<CppCliVsCs>();
+        private static void Main() => _ = BenchmarkRunner.Run<CharacterizationTestInputs>();
     }
 }

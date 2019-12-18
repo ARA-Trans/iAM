@@ -4,20 +4,14 @@ using static AppliedResearchAssociates.PciDistress.Constants;
 
 namespace AppliedResearchAssociates.PciDistress
 {
-    public sealed class PciDistress : IPciDistress
+    public static class PciDistress
     {
-        public static PciDistress Instance { get; } = new PciDistress();
-
-        private PciDistress()
-        {
-        }
-
         #region Transliteration of public members (IPciDistress)
 
         /// <summary>
         ///     A reduced version of the original ComputeVCIValues from DSS which computes only the VCI.
         /// </summary>
-        public double ComputePCIValue(string sDeductValues, string sMethodology)
+        public static double ComputePCIValue(string sDeductValues, string sMethodology)
         {
             double dVCI = 0.0;
             // for PCI call function to get the residue in 100
@@ -41,7 +35,7 @@ namespace AppliedResearchAssociates.PciDistress
             return dVCI;
         }
 
-        public bool IsWASHCLKMethod(string s)
+        public static bool IsWASHCLKMethod(string s)
         {
             if (s == "pcc.wash" || s == "ac.wash" || s == "ac.clk" || s == "bit.clk")
                 return true;
@@ -52,7 +46,7 @@ namespace AppliedResearchAssociates.PciDistress
         /// <summary>
         ///     Returns the deduct value for a non PCI distress
         /// </summary>
-        public double pvt_ComputeNonPCIDeduct(string sMethod, int nDistress, string sSeverity, double dExtent)
+        public static double pvt_ComputeNonPCIDeduct(string sMethod, int nDistress, string sSeverity, double dExtent)
         {
             string sExtent = "";
             if (dExtent < 0.40) sExtent = "L";
@@ -61,7 +55,7 @@ namespace AppliedResearchAssociates.PciDistress
             return pvt_ComputeNonPCIDeduct(sMethod, nDistress, sSeverity, sExtent);
         }
 
-        public double pvt_ComputePCIDeduct(int nDistress, string sSeverity, double dAmount, double dSamsiz)
+        public static double pvt_ComputePCIDeduct(int nDistress, string sSeverity, double dAmount, double dSamsiz)
         {
             double dPCIDeduct = 0.0;
             double dPercentDensity = 0.0;
@@ -92,7 +86,7 @@ namespace AppliedResearchAssociates.PciDistress
         /// <summary>
         ///     Returns the deduct value for a non PCI distress
         /// </summary>
-        private double pvt_ComputeNonPCIDeduct(string sMethod, int nDistress, string sSeverity, string sExtent)
+        private static double pvt_ComputeNonPCIDeduct(string sMethod, int nDistress, string sSeverity, string sExtent)
         {
             double dVal = 0.0;
             //if (IsWNDMethod(sMethod))

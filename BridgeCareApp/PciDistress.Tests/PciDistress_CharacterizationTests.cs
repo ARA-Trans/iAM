@@ -464,7 +464,7 @@ namespace AppliedResearchAssociates.PciDistress.Tests
         [DataRow(99.519999980926514, "0.480000019073486", "ac.mpr")]
         public void ComputePCIValue(double expected, string sDeductValues, string sMethodology)
         {
-            var actual = Pci.ComputePCIValue(sDeductValues, sMethodology);
+            var actual = PciDistress.ComputePCIValue(sDeductValues, sMethodology);
             Assert.AreEqual(expected, actual);
         }
 
@@ -472,14 +472,14 @@ namespace AppliedResearchAssociates.PciDistress.Tests
         [DataRow(false, "ac.mpr")]
         public void IsWASHCLKMethod(bool expected, string s)
         {
-            var actual = Pci.IsWASHCLKMethod(s);
+            var actual = PciDistress.IsWASHCLKMethod(s);
             Assert.AreEqual(expected, actual);
         }
 
         //[DataTestMethod]
         public void pvt_ComputeNonPCIDeduct(double expected, string sMethod, int nDistress, string sSeverity, double dExtent)
         {
-            var actual = Pci.pvt_ComputeNonPCIDeduct(sMethod, nDistress, sSeverity, dExtent);
+            var actual = PciDistress.pvt_ComputeNonPCIDeduct(sMethod, nDistress, sSeverity, dExtent);
             Assert.AreEqual(expected, actual);
         }
 
@@ -894,10 +894,8 @@ namespace AppliedResearchAssociates.PciDistress.Tests
         [DataRow(9.828181266784668, 10, "L", 102, 2200)]
         public void pvt_ComputePCIDeduct(double expected, int nDistress, string sSeverity, double dAmount, double dSamsiz)
         {
-            var actual = Pci.pvt_ComputePCIDeduct(nDistress, sSeverity, dAmount, dSamsiz);
+            var actual = PciDistress.pvt_ComputePCIDeduct(nDistress, sSeverity, dAmount, dSamsiz);
             Assert.AreEqual(expected, actual);
         }
-
-        private static IPciDistress Pci => PciDistress.Instance;
     }
 }
