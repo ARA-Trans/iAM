@@ -20,7 +20,12 @@ Vue.use(Vuetify, {
     iconfont: 'fa'
 });
 
-Vue.use(VueSocketio, io(process.env.VUE_APP_NODE_URL), { store });
+Vue.use(VueSocketio, 
+    io(process.env.VUE_APP_NODE_URL, 
+        {
+            path: (process.env.VUE_APP_NODE_URL.indexOf('penndot.gov') === -1) ? '/socket.io' : '/node/socket.io'
+        }), 
+    { store });
 
 Vue.use(VueWorker);
 
