@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Security;
+using log4net;
 using System;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -12,8 +13,12 @@ namespace BridgeCare.Controllers
         private readonly IInventory repo;
         private readonly BridgeCareContext db;
 
+        private static ILog Log { get; set; }
+        ILog log = LogManager.GetLogger(typeof(InventoryController));
+
         public InventoryController(IInventoryItemDetailModelGenerator modelGenerator, IInventory repo, BridgeCareContext db)
         {
+            log.Debug("Debug message from Inventory controller");
             this.modelGenerator = modelGenerator ?? throw new ArgumentNullException(nameof(modelGenerator));
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
