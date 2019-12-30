@@ -27,26 +27,40 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            DeficientLibraryGetMethods = CreateGetMethods();
+            DeficientLibrarySaveMethods = CreateSaveMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting deficient libraries
+        /// </summary>
+        private Dictionary<string, DeficientLibraryGetMethod> CreateGetMethods()
+        {
             DeficientLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationDeficientLibrary(id, db);
-
             DeficientLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationDeficientLibrary(id, db, userInformation.Name);
 
-            DeficientLibraryModel SaveAnyLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveAnySimulationDeficientLibrary(model, db);
-
-            DeficientLibraryModel SaveOwnedLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationDeficientLibrary(model, db, userInformation.Name);
-
-            DeficientLibraryGetMethods = new Dictionary<string, DeficientLibraryGetMethod>
+            return new Dictionary<string, DeficientLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-            DeficientLibrarySaveMethods = new Dictionary<string, DeficientLibrarySaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for saving deficient libraries
+        /// </summary>
+        private Dictionary<string, DeficientLibrarySaveMethod> CreateSaveMethods()
+        {
+            DeficientLibraryModel SaveAnyLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationDeficientLibrary(model, db);
+            DeficientLibraryModel SaveOwnedLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationDeficientLibrary(model, db, userInformation.Name);
+
+            return new Dictionary<string, DeficientLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary,

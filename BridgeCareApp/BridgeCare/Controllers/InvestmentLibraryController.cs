@@ -29,26 +29,40 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            InvestmentLibraryGetMethods = CreateGetMethods();
+            InvestmentLibrarySaveMethods = CreateSaveMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting investment libraries
+        /// </summary>
+        private Dictionary<string, InvestmentLibraryGetMethod> CreateGetMethods()
+        {
             InvestmentLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationInvestmentLibrary(id, db);
-
             InvestmentLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationInvestmentLibrary(id, db, userInformation.Name);
 
-            InvestmentLibraryModel SaveAnyLibrary(InvestmentLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveAnySimulationInvestmentLibrary(model, db);
-
-            InvestmentLibraryModel SaveOwnedLibrary(InvestmentLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name);
-
-            InvestmentLibraryGetMethods = new Dictionary<string, InvestmentLibraryGetMethod>
+            return new Dictionary<string, InvestmentLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-            InvestmentLibrarySaveMethods = new Dictionary<string, InvestmentLibrarySaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for saving investment libraries
+        /// </summary>
+        private Dictionary<string, InvestmentLibrarySaveMethod> CreateSaveMethods()
+        {
+            InvestmentLibraryModel SaveAnyLibrary(InvestmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationInvestmentLibrary(model, db);
+            InvestmentLibraryModel SaveOwnedLibrary(InvestmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationInvestmentLibrary(model, db, userInformation.Name);
+
+            return new Dictionary<string, InvestmentLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary,

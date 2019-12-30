@@ -20,33 +20,45 @@ namespace BridgeCare.Controllers
         /// <summary>Maps user roles to methods for saving a target library</summary>
         private readonly IReadOnlyDictionary<string, TargetLibrarySaveMethod> TargetLibrarySaveMethods;
 
-        public TargetController() { }
-
         public TargetController(ITarget repo, BridgeCareContext db)
         {
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            TargetLibraryGetMethods = CreateGetMethods();
+            TargetLibrarySaveMethods = CreateSaveMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting target libraries
+        /// </summary>
+        private Dictionary<string, TargetLibraryGetMethod> CreateGetMethods()
+        {
             TargetLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationTargetLibrary(id, db);
-
             TargetLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationTargetLibrary(id, db, userInformation.Name);
 
-            TargetLibraryModel SaveAnyLibrary(TargetLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveAnySimulationTargetLibrary(model, db);
-
-            TargetLibraryModel SaveOwnedLibrary(TargetLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationTargetLibrary(model, db, userInformation.Name);
-
-            TargetLibraryGetMethods = new Dictionary<string, TargetLibraryGetMethod>
+            return new Dictionary<string, TargetLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-            TargetLibrarySaveMethods = new Dictionary<string, TargetLibrarySaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for saving target libraries
+        /// </summary>
+        private Dictionary<string, TargetLibrarySaveMethod> CreateSaveMethods()
+        {
+            TargetLibraryModel SaveAnyLibrary(TargetLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationTargetLibrary(model, db);
+            TargetLibraryModel SaveOwnedLibrary(TargetLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationTargetLibrary(model, db, userInformation.Name);
+
+            return new Dictionary<string, TargetLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary,

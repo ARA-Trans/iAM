@@ -22,27 +22,42 @@ namespace BridgeCare.Controllers
             repo = simulationAnalysis ?? throw new ArgumentNullException(nameof(simulationAnalysis));
             db = context ?? throw new ArgumentNullException(nameof(context));
 
-            SimulationAnalysisModel GetAnySimulationAnalysis(int id, UserInformationModel userInformation) => 
+            SimulationAnalysisGetMethods = CreateGetMethods();
+            SimulationAnalysisUpdateMethods = CreateUpdateMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting simulation analyses
+        /// </summary>
+        private Dictionary<string, SimulationAnalysisGetMethod> CreateGetMethods()
+        {
+            SimulationAnalysisModel GetAnySimulationAnalysis(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationAnalysis(id, db);
-            SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, UserInformationModel userInformation) => 
+            SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationAnalysis(id, db, userInformation.Name);
 
-            void UpdateSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) => 
-                repo.UpdateSimulationAnalysis(model, db);
-            void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
-                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name);
-            void PartialUpdateOwnedSimulationAnalysisWithoutWeights(SimulationAnalysisModel model, UserInformationModel userInformation) =>
-                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name, updateWeighting: false);
-
-            SimulationAnalysisGetMethods = new Dictionary<string, SimulationAnalysisGetMethod>
+            return new Dictionary<string, SimulationAnalysisGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnySimulationAnalysis,
                 [Role.DISTRICT_ENGINEER] = GetOwnedSimulationAnalysis,
                 [Role.CWOPA] = GetOwnedSimulationAnalysis,
                 [Role.PLANNING_PARTNER] = GetOwnedSimulationAnalysis
             };
+        }
 
-            SimulationAnalysisUpdateMethods = new Dictionary<string, SimulationAnalysisUpdateMethod>
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for updating simulation analyses
+        /// </summary>
+        private Dictionary<string, SimulationAnalysisUpdateMethod> CreateUpdateMethods()
+        {
+            void UpdateSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
+                repo.UpdateSimulationAnalysis(model, db);
+            void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
+                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name);
+            void PartialUpdateOwnedSimulationAnalysisWithoutWeights(SimulationAnalysisModel model, UserInformationModel userInformation) =>
+                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name, updateWeighting: false);
+
+            return new Dictionary<string, SimulationAnalysisUpdateMethod>
             {
                 [Role.ADMINISTRATOR] = UpdateSimulationAnalysis,
                 [Role.DISTRICT_ENGINEER] = PartialUpdateOwnedSimulationAnalysis,

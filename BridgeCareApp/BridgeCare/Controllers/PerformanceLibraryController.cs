@@ -25,26 +25,40 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            PerformanceLibraryGetMethods = CreateGetMethods();
+            PerformanceLibrarySaveMethods = CreateSaveMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting performance libraries
+        /// </summary>
+        private Dictionary<string, PerformanceLibraryGetMethod> CreateGetMethods()
+        {
             PerformanceLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationPerformanceLibrary(id, db);
-
             PerformanceLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name);
 
-            PerformanceLibraryModel SaveAnyLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveAnySimulationPerformanceLibrary(model, db);
-
-            PerformanceLibraryModel SaveOwnedLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name);
-
-            PerformanceLibraryGetMethods = new Dictionary<string, PerformanceLibraryGetMethod>
+            return new Dictionary<string, PerformanceLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-            PerformanceLibrarySaveMethods = new Dictionary<string, PerformanceLibrarySaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for saving performance libraries
+        /// </summary>
+        private Dictionary<string, PerformanceLibrarySaveMethod> CreateSaveMethods()
+        {
+            PerformanceLibraryModel SaveAnyLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationPerformanceLibrary(model, db);
+            PerformanceLibraryModel SaveOwnedLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name);
+
+            return new Dictionary<string, PerformanceLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary

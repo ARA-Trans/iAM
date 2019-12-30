@@ -25,26 +25,40 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
-            TreatmentLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) => 
-                repo.GetAnySimulationTreatmentLibrary(id, db);
+            TreatmentLibraryGetMethods = CreateGetMethods();
+            TreatmentLibrarySaveMethods = CreateSaveMethods();
+        }
 
-            TreatmentLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) => 
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting treatment libraries
+        /// </summary>
+        private Dictionary<string, TreatmentLibraryGetMethod> CreateGetMethods()
+        {
+            TreatmentLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetAnySimulationTreatmentLibrary(id, db);
+            TreatmentLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationTreatmentLibrary(id, db, userInformation.Name);
 
-            TreatmentLibraryModel SaveAnyLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) => 
-                repo.SaveAnySimulationTreatmentLibrary(model, db);
-
-            TreatmentLibraryModel SaveOwnedLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) => 
-                repo.SaveOwnedSimulationTreatmentLibrary(model, db, userInformation.Name);
-
-            TreatmentLibraryGetMethods = new Dictionary<string, TreatmentLibraryGetMethod>
+            return new Dictionary<string, TreatmentLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-            TreatmentLibrarySaveMethods = new Dictionary<string, TreatmentLibrarySaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for saving treatment libraries
+        /// </summary>
+        private Dictionary<string, TreatmentLibrarySaveMethod> CreateSaveMethods()
+        {
+            TreatmentLibraryModel SaveAnyLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationTreatmentLibrary(model, db);
+            TreatmentLibraryModel SaveOwnedLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationTreatmentLibrary(model, db, userInformation.Name);
+
+            return new Dictionary<string, TreatmentLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary

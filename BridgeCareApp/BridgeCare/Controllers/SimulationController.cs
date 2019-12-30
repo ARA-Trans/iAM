@@ -29,36 +29,63 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
-            List<SimulationModel> GetAllSimulations(UserInformationModel userInformation) => 
+            SimulationGetMethods = CreateGetMethods();
+            SimulationUpdateMethods = CreateUpdateMethods();
+            SimulationDeletionMethods = CreateDeletionMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting scenarios
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, SimulationGetMethod> CreateGetMethods()
+        {
+            List<SimulationModel> GetAllSimulations(UserInformationModel userInformation) =>
                 repo.GetSimulations(db);
-            List<SimulationModel> GetOwnedSimulations(UserInformationModel userInformation) => 
+            List<SimulationModel> GetOwnedSimulations(UserInformationModel userInformation) =>
                 repo.GetOwnedSimulations(db, userInformation.Name);
 
-            void UpdateAnySimulation(SimulationModel model, UserInformationModel userInformation) => 
-                repo.UpdateAnySimulation(model, db);
-            void UpdateOwnedSimulation(SimulationModel model, UserInformationModel userInformation) => 
-                repo.UpdateOwnedSimulation(model, db, userInformation.Name);
-
-            void DeleteAnySimulation(int id, UserInformationModel userInformation) => 
-                repo.DeleteAnySimulation(id, db);
-            void DeleteOwnedSimulation(int id, UserInformationModel userInformation) => 
-                repo.DeleteOwnedSimulation(id, db, userInformation.Name);
-
-            SimulationGetMethods = new Dictionary<string, SimulationGetMethod>
+            return new Dictionary<string, SimulationGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAllSimulations,
                 [Role.DISTRICT_ENGINEER] = GetOwnedSimulations,
                 [Role.CWOPA] = GetAllSimulations,
                 [Role.PLANNING_PARTNER] = GetOwnedSimulations
             };
-            SimulationUpdateMethods = new Dictionary<string, SimulationUpdateMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for updating scenarios
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, SimulationUpdateMethod> CreateUpdateMethods()
+        {
+            void UpdateAnySimulation(SimulationModel model, UserInformationModel userInformation) =>
+                repo.UpdateAnySimulation(model, db);
+            void UpdateOwnedSimulation(SimulationModel model, UserInformationModel userInformation) =>
+                repo.UpdateOwnedSimulation(model, db, userInformation.Name);
+
+            return new Dictionary<string, SimulationUpdateMethod>
             {
                 [Role.ADMINISTRATOR] = UpdateAnySimulation,
                 [Role.DISTRICT_ENGINEER] = UpdateOwnedSimulation,
                 [Role.CWOPA] = UpdateOwnedSimulation,
                 [Role.PLANNING_PARTNER] = UpdateOwnedSimulation
             };
-            SimulationDeletionMethods = new Dictionary<string, SimulationDeletionMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for deleting scenarios
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, SimulationDeletionMethod> CreateDeletionMethods()
+        {
+            void DeleteAnySimulation(int id, UserInformationModel userInformation) =>
+                repo.DeleteAnySimulation(id, db);
+            void DeleteOwnedSimulation(int id, UserInformationModel userInformation) =>
+                repo.DeleteOwnedSimulation(id, db, userInformation.Name);
+
+            return new Dictionary<string, SimulationDeletionMethod>
             {
                 [Role.ADMINISTRATOR] = DeleteAnySimulation,
                 [Role.DISTRICT_ENGINEER] = DeleteOwnedSimulation,
@@ -66,7 +93,7 @@ namespace BridgeCare.Controllers
                 [Role.PLANNING_PARTNER] = DeleteOwnedSimulation
             };
         }
-        
+
 
         /// <summary>
         /// API endpoint for fetching all simulations

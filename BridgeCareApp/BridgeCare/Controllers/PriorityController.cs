@@ -27,26 +27,40 @@ namespace BridgeCare.Controllers
             this.repo = repo ?? throw new ArgumentNullException(nameof(repo));
             this.db = db ?? throw new ArgumentNullException(nameof(db));
 
+            PriorityLibraryGetMethods = CreateGetMethods();
+            PriorityLibrarySaveMethods = CreateSaveMethods();
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for getting priority libraries
+        /// </summary>
+        private Dictionary<string, PriorityLibraryGetMethod> CreateGetMethods()
+        {
             PriorityLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationPriorityLibrary(id, db);
-
             PriorityLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetOwnedSimulationPriorityLibrary(id, db, userInformation.Name);
 
-            PriorityLibraryModel SaveAnyLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveAnySimulationPriorityLibrary(model, db);
-
-            PriorityLibraryModel SaveOwnedLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationPriorityLibrary(model, db, userInformation.Name);
-
-            PriorityLibraryGetMethods = new Dictionary<string, PriorityLibraryGetMethod>
+            return new Dictionary<string, PriorityLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
                 [Role.PLANNING_PARTNER] = GetOwnedLibrary
             };
-            PriorityLibrarySaveMethods = new Dictionary<string, PriorityLibrarySaveMethod>
+        }
+
+        /// <summary>
+        /// Creates a mapping from user roles to the appropriate methods for saving priority libraries
+        /// </summary>
+        private Dictionary<string, PriorityLibrarySaveMethod> CreateSaveMethods()
+        {
+            PriorityLibraryModel SaveAnyLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveAnySimulationPriorityLibrary(model, db);
+            PriorityLibraryModel SaveOwnedLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
+                repo.SaveOwnedSimulationPriorityLibrary(model, db, userInformation.Name);
+
+            return new Dictionary<string, PriorityLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary
