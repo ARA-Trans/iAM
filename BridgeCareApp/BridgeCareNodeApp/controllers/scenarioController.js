@@ -1,4 +1,5 @@
 const debug = require('debug')('app:scenarioController');
+const roles = require('../authorization/roleConfig');
 
 function scenarioController(Scenario) {
     function post(req, res) {
@@ -55,7 +56,7 @@ function scenarioController(Scenario) {
     }
 
     function get(req, res) {
-        if (req.user.role === 'PD-BAMS-ADMINISTRATOR' || req.user.role === 'PD-BAMS-CWOPA') {
+        if (req.user.role === roles.administrator || req.user.role === roles.cwopa) {
             Scenario.find((err, scenariostatus) => {
                 if (err) {
                     return res.send(err);

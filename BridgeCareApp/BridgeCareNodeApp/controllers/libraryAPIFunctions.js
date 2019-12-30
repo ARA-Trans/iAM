@@ -1,10 +1,12 @@
+const roles = require('../authorization/roleConfig');
+
 module.exports = {
     /**
      * Creates a deletion endpoint for a library. Returns a 204 status code on success.
      */
     getDeletionFunction: (model) => {
         return (request, response) => {
-            ownerRestriction = request.user.role === 'PD-BAMS-ADMINISTRATOR' ? {} : {owner: [request.user.username]};
+            ownerRestriction = request.user.role === roles.administrator ? {} : {owner: [request.user.username]};
             model.findOneAndDelete({_id: request.params.libraryId, ...ownerRestriction}, (error, deleted) => {
                 if (error)
                     return response.status(400).json(error);
@@ -20,7 +22,7 @@ module.exports = {
      */
     getUpdateFunction: (model) => {
         return (request, response) => {
-            ownerRestriction = request.user.role === 'PD-BAMS-ADMINISTRATOR' ? {} : {owner: [request.user.username]};
+            ownerRestriction = request.user.role === roles.administrator ? {} : {owner: [request.user.username]};
             model.findOneAndUpdate({_id: request.body._id, ...ownerRestriction}, request.body, {new: true}, (error, updated) => {
                 if (error)
                     return response.status(400).json(error);

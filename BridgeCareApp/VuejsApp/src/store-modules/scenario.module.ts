@@ -85,7 +85,7 @@ const actions = {
                         .map((data: any) => {
                             return convertFromMongoToVueModel(data);
                         });
-                    commit('scenariosMutator', scenarios);
+                    // Socket.io will update the list.
                 }
             });
     },
