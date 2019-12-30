@@ -92,7 +92,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/SaveScenarioDeficientLibrary")]
         [ModelValidation("The deficient data is invalid.")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public IHttpActionResult SaveSimulationDeficientLibrary([FromBody] DeficientLibraryModel model)
         {
             UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
