@@ -40,9 +40,8 @@ const actions = {
             if (state.authenticated) {
                 return;
             }
+            dispatch('refreshTokens').then(() => dispatch('getUserInfo'));
             commit('authenticatedMutator', true);
-            dispatch('refreshTokens');
-            dispatch('getUserInfo');
         } else if (state.authenticated) {
             dispatch('logOut');
         }

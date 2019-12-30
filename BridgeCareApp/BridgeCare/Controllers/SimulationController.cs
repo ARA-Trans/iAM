@@ -132,7 +132,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/RunSimulation")]
-        [RestrictAccess]
+        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public async Task<IHttpActionResult> RunSimulation([FromBody]SimulationModel model)
         {
             var result = await Task.Factory.StartNew(() => repo.RunSimulation(model));
