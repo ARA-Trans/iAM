@@ -281,7 +281,7 @@ namespace Simulation
             catch (Exception ex)
             {
                 updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Simulation failed");
+                    .Set(s => s.status, "Simulation failed: " + ex.Message);
 
                 SimulationMessaging.AddMessage(new SimulationMessage("ERROR: [" + ex.Message + "]"));
                 SimulationMessaging.AddMessage(new SimulationMessage("Aborting simulation."));
@@ -471,7 +471,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Dropping section from TARGET table");
+                    .Set(s => s.status, "Error: Dropping section from TARGET table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -488,7 +488,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Dropping section from BENEFITCOST table");
+                    .Set(s => s.status, "Error: Dropping section from BENEFITCOST table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -505,7 +505,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Dropping section from REPORT table");
+                    .Set(s => s.status, "Error: Dropping section from REPORT table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -602,7 +602,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error in compiling AREA function");
+                    .Set(s => s.status, "Error in compiling AREA function: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -712,7 +712,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error in initializing analysis");
+                    .Set(s => s.status, "Error in initializing analysis: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -1160,7 +1160,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Simulation table for NetworkID:" + m_strNetworkID + " SimulationID:" + m_strSimulationID + " failed");
+                    .Set(s => s.status, "Simulation table for NetworkID:" + m_strNetworkID + " SimulationID:" + m_strSimulationID + " failed. " + exception.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -1208,14 +1208,13 @@ namespace Simulation
             catch (Exception exception)
             {
                 SimulationMessaging.AddMessage(new SimulationMessage("Target table for NetworkID:" + m_strNetworkID + " SimulationID:" + m_strSimulationID + " failed.  Simulation cannot proceed until this table DROPPED. SQL message -" + exception.Message));
+                if (APICall.Equals(true))
+                {
+                    var updateStatus = Builders<SimulationModel>.Update
+                .Set(s => s.status, "Target table for NetworkID:" + m_strNetworkID + " SimulationID:" + m_strSimulationID + " failed. " + exception.Message);
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
                 return false;
-            }
-
-            if (APICall.Equals(true))
-            {
-                var updateStatus = Builders<SimulationModel>.Update
-            .Set(s => s.status, "Target table for NetworkID:" + m_strNetworkID + " SimulationID:" + m_strSimulationID + " failed");
-                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
             //Drop Existing TARGET table when re-running SIMULATION or just Deleting Simulation.
@@ -1417,7 +1416,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Creating simulation benefit report table");
+                    .Set(s => s.status, "Error: Creating simulation benefit report table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -1443,7 +1442,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Fatal Error: Creating simulation Target table " + strTable);
+                    .Set(s => s.status, "Fatal Error: Creating simulation Target table " + strTable + " - " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -1473,7 +1472,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Fatal Error: Creating simulation Reasons table " + strTable);
+                    .Set(s => s.status, "Fatal Error: Creating simulation Reasons table " + strTable + " - " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -1913,7 +1912,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error in compiling AREA function");
+                    .Set(s => s.status, "Error in compiling AREA function: " + exception.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -1932,7 +1931,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error in compiling AREA function");
+                    .Set(s => s.status, "Error in compiling AREA function: " + exception.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -1996,7 +1995,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error in retrieving JURISDICTION from SIMULATIONS");
+                    .Set(s => s.status, "Error in retrieving JURISDICTION from SIMULATIONS: " + exception.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -2269,7 +2268,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Retrieving Performance data");
+                    .Set(s => s.status, "Error: Retrieving Performance data: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -2329,7 +2328,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: An equation must be entered for every PERFORMANCE variable");
+                    .Set(s => s.status, "Error: An equation must be entered for every PERFORMANCE variable. " + row[0].ToString());
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -2373,7 +2372,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Compile error PERFORMANCE curve");
+                    .Set(s => s.status, "Error: Compile error PERFORMANCE curve" + deteriorate.Attribute + "|" + deteriorate.Group + " " + str);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -2386,7 +2385,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Unknown variable in PERFORMANCE CRITERIA");
+                    .Set(s => s.status, "Error: Unknown variable in PERFORMANCE CRITERIA" + row[2].ToString());
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -2407,7 +2406,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Unknown variable in PERFORMANCE CRITERIA");
+                    .Set(s => s.status, "Error: Unknown variable in PERFORMANCE CRITERIA" + row[3].ToString());
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     return false;
@@ -2555,7 +2554,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error:  Unable to open TREATMENTS table for Analysis");
+                    .Set(s => s.status, "Error: Unable to open TREATMENTS table for Analysis: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -2673,7 +2672,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Unable to open PRIORITY table for Analysis");
+                    .Set(s => s.status, "Unable to open PRIORITY table for Analysis: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -2783,7 +2782,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Accessing INVESTMENTS table");
+                    .Set(s => s.status, "Error: Accessing INVESTMENTS table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -2916,7 +2915,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Accessing TARGETS table");
+                    .Set(s => s.status, "Error: Accessing TARGETS table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -3106,7 +3105,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Accessing DEFICIENTS table");
+                    .Set(s => s.status, "Error: Accessing DEFICIENTS table: " + exception.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 return false;
@@ -3290,7 +3289,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Applying deterioration curves");
+                    .Set(s => s.status, "Error: Applying deterioration curves: " + e.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 throw e;
@@ -5623,7 +5622,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                        .Set(s => s.status, "Error: Sorting and getting best BenefitCost treatment");
+                        .Set(s => s.status, "Error: Sorting and getting best BenefitCost treatment: " + e.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     throw e;
@@ -5675,7 +5674,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                        .Set(s => s.status, "Error:Checking if treatment is allowed");
+                        .Set(s => s.status, "Error:Checking if treatment is allowed: " + e.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     throw e;
@@ -5765,7 +5764,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                        .Set(s => s.status, "Error: Removing Deficient and Targets from list of Targets");
+                        .Set(s => s.status, "Error: Removing Deficient and Targets from list of Targets: " + e.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     throw e;
@@ -5827,7 +5826,7 @@ namespace Simulation
                     if (APICall.Equals(true))
                     {
                         var updateStatus = Builders<SimulationModel>.Update
-                        .Set(s => s.status, "Error updating Targets and deficient");
+                        .Set(s => s.status, "Error updating Targets and deficient: " + e.Message);
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
                     throw e;
@@ -6020,7 +6019,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Applying No Treatment to Targets and Deficient");
+                    .Set(s => s.status, "Error: Applying No Treatment to Targets and Deficient: " + e.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 throw e;
@@ -6056,7 +6055,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Bulk loading results from year = " + nYear.ToString());
+                    .Set(s => s.status, "Error: Bulk loading results from year = " + nYear.ToString() + " - " + e.Message);
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
                 throw e;
@@ -7325,7 +7324,7 @@ namespace Simulation
                         if (APICall.Equals(true))
                         {
                             var updateStatus = Builders<SimulationModel>.Update
-                            .Set(s => s.status, "Error update section for YEAR=" + nYear.ToString());
+                            .Set(s => s.status, "Error update section for YEAR=" + nYear.ToString() + ". " + exception.Message);
                             Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                         }
                     }
@@ -7435,7 +7434,7 @@ namespace Simulation
                         if (APICall.Equals(true))
                         {
                             var updateStatus = Builders<SimulationModel>.Update
-                            .Set(s => s.status, "Error update section for YEAR=" + nYear.ToString());
+                            .Set(s => s.status, "Error update section for YEAR=" + nYear.ToString() + ". " + exception.Message);
                             Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                         }
                     }
@@ -8559,7 +8558,7 @@ namespace Simulation
                 if (APICall.Equals(true))
                 {
                     var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Error: Deleting year from TARGET table");
+                    .Set(s => s.status, "Error: Deleting year from TARGET table: " + exception.Message);
 
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
