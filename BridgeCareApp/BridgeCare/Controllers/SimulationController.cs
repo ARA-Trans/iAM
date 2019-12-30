@@ -11,6 +11,7 @@ namespace BridgeCare.Controllers
 {
     using SimulationGetMethod = Func<UserInformationModel, List<SimulationModel>>;
     using SimulationUpdateMethod = Action<SimulationModel, UserInformationModel>;
+    using SimulationRunMethod = Func<SimulationModel, UserInformationModel, Task<string>>;
     using SimulationDeletionMethod = Action<int, UserInformationModel>;
 
     public class SimulationController : ApiController
@@ -21,6 +22,8 @@ namespace BridgeCare.Controllers
         private readonly IReadOnlyDictionary<string, SimulationGetMethod> SimulationGetMethods;
         /// <summary>Maps user roles to methods for updating simulations</summary>
         private readonly IReadOnlyDictionary<string, SimulationUpdateMethod> SimulationUpdateMethods;
+        /// <summary>Maps user roles to methods for running simulations</summary>
+        private readonly IReadOnlyDictionary<string, SimulationRunMethod> SimulationRunMethods;
         /// <summary>Maps user roles to methods for deleting simulations</summary>
         private readonly IReadOnlyDictionary<string, SimulationDeletionMethod> SimulationDeletionMethods;
 
@@ -31,6 +34,7 @@ namespace BridgeCare.Controllers
 
             SimulationGetMethods = CreateGetMethods();
             SimulationUpdateMethods = CreateUpdateMethods();
+            SimulationRunMethods = CreateRunMethods();
             SimulationDeletionMethods = CreateDeletionMethods();
         }
 
@@ -71,6 +75,22 @@ namespace BridgeCare.Controllers
                 [Role.DISTRICT_ENGINEER] = UpdateOwnedSimulation,
                 [Role.CWOPA] = UpdateOwnedSimulation,
                 [Role.PLANNING_PARTNER] = UpdateOwnedSimulation
+            };
+        }
+
+        private Dictionary<string, SimulationRunMethod> CreateRunMethods()
+        {
+            Task<string> RunAnySimulation(SimulationModel model, UserInformationModel userInformation) =>
+                repo.RunSimulation(model);
+            Task<string> RunOwnedSimulation(SimulationModel model, UserInformationModel userInformation) =>
+                repo.RunOwnedSimulation(model, db, userInformation.Name);
+
+            return new Dictionary<string, SimulationRunMethod>
+            {
+                [Role.ADMINISTRATOR] = RunAnySimulation,
+                [Role.DISTRICT_ENGINEER] = RunOwnedSimulation,
+                [Role.CWOPA] = RunOwnedSimulation,
+                [Role.PLANNING_PARTNER] = RunOwnedSimulation
             };
         }
 
@@ -159,10 +179,11 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/RunSimulation")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public async Task<IHttpActionResult> RunSimulation([FromBody]SimulationModel model)
         {
-            var result = await Task.Factory.StartNew(() => repo.RunSimulation(model));
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            var result = await Task.Factory.StartNew(() => SimulationRunMethods[userInformation.Role](model, userInformation));
 
             if (result.IsCompleted)
                 repo.SetSimulationLastRunDate(model.SimulationId, db);

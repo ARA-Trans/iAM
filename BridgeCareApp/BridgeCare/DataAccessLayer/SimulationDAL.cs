@@ -174,6 +174,13 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
+        public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
+                throw new RowNotInTableException($"User {username} cannot delete a scenario with id {model.SimulationId}");
+            return RunSimulation(model);
+        }
+
         /// <summary>
         /// Updates the last run date of a simulation
         /// Throws a RowNotInTableException if no simulation is found
