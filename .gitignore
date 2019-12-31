@@ -346,3 +346,4 @@ connection.config
 
 # ESEC metadata, including client secret
 /BridgeCareApp/BridgeCare/esec.config
+/BridgeCareApp/BridgeCare/Logs/BridgeCareAPI.log

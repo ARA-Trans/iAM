@@ -16,6 +16,7 @@ namespace BridgeCare.DataAccessLayer
         private readonly BridgeCareContext db;
         private readonly TargetsMetDAL deficients;
         private readonly CellAddress address;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DeficientReportDAL));
 
         public DeficientReportDAL(BridgeCareContext context, TargetsMetDAL deficient, CellAddress cell)
         {
@@ -47,14 +48,17 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
+                log.Error(ex.Message);
                 HandleException.SqlError(ex, "Target");
             }
             catch (OutOfMemoryException ex)
             {
+                log.Error(ex.Message);
                 HandleException.OutOfMemoryError(ex);
             }
             catch (Exception ex)
             {
+                log.Error(ex.Message);
                 HandleException.GeneralError(ex);
             }
             return result;

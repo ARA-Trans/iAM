@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Web;
 using BridgeCare.Properties;
 using DatabaseManager;
+using log4net;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -38,7 +39,11 @@ namespace BridgeCare.DataAccessLayer
         public void UpdateSimulation(SimulationModel model, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
+            {
+                var log = LogManager.GetLogger(typeof(SimulationDAL));
+                log.Error($"No scenario found with id {model.SimulationId}");
                 throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
+            }
 
             var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
             simulation.SIMULATION = model.SimulationName;

@@ -36,7 +36,8 @@ namespace BridgeCare.Services
             }
             catch (Exception ex)
             {
-                HandleException.GeneralError(ex);
+                var log = log4net.LogManager.GetLogger(typeof(InventoryItemDetailModelGenerator));
+                log.Error(ex.Message);
             }
 
             return inventoryItemDetailModel;

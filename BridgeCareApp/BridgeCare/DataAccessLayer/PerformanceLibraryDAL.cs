@@ -9,6 +9,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class PerformanceLibraryDAL : IPerformanceLibrary
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PerformanceLibraryDAL));
         /// <summary>
         /// Fetches a simulation's performance library data
         /// Throws a RowNotInTableException if no simulation is found
@@ -19,7 +20,10 @@ namespace BridgeCare.DataAccessLayer
         public PerformanceLibraryModel GetSimulationPerformanceLibrary(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}");
                 throw new RowNotInTableException($"No scenario was found with id {id}");
+            }
 
             var simulation = db.Simulations.Include(s => s.PERFORMANCES).Single(s => s.SIMULATIONID == id);
 
@@ -38,7 +42,10 @@ namespace BridgeCare.DataAccessLayer
             var id = int.Parse(model.Id);
 
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}");
                 throw new RowNotInTableException($"No scenario was found with id {id}");
+            }
 
             var simulation = db.Simulations.Include(s => s.PERFORMANCES).Single(s => s.SIMULATIONID == id);
 
