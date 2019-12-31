@@ -13,6 +13,7 @@ namespace BridgeCare.DataAccessLayer
     {
         private readonly List<CostDetails> costs;
         private readonly BridgeCareContext db;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BudgetReportDAL));
 
         public BudgetReportDAL(List<CostDetails> costs, BridgeCareContext db)
         {
@@ -56,7 +57,10 @@ namespace BridgeCare.DataAccessLayer
                  .FirstOrDefault();
 
             if (string.IsNullOrEmpty(budgetOrder))
+            {
+                log.Error("Budget types not found in Investments table for the id : " + model.SimulationId);
                 throw new Exception("Budget types not found in Investments table for the id : " + model.SimulationId);
+            }
 
             return budgetOrder.Split(',');
         }

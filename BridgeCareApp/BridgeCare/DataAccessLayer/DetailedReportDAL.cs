@@ -50,6 +50,8 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
+                var log = log4net.LogManager.GetLogger(typeof(DetailedReportDAL));
+                log.Error(ex.Message);
                 HandleException.SqlError(ex, "Years");
             }
             return yearsForBudget;

@@ -10,6 +10,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class DeficientDAL : IDeficient
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DeficientDAL));
         /// <summary>
         /// Fetches a simulation's deficient library data
         /// Throws a RowNotInTableException if no simulation is found
@@ -35,7 +36,10 @@ namespace BridgeCare.DataAccessLayer
         public DeficientLibraryModel GetOwnedSimulationDeficientLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                log.Warn($"User {username} is not authorized to view scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's deficients.");
+            }
             return GetSimulationDeficientLibrary(id, db);
         }
 
@@ -49,7 +53,10 @@ namespace BridgeCare.DataAccessLayer
         public DeficientLibraryModel GetAnySimulationDeficientLibrary(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}.");
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
+            }
             return GetSimulationDeficientLibrary(id, db);
         }
 
@@ -63,7 +70,6 @@ namespace BridgeCare.DataAccessLayer
         private DeficientLibraryModel SaveSimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
             var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
 
             if (simulation.DEFICIENTS.Any())
@@ -105,7 +111,10 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            {
+                log.Warn($"User {username} is not authorized to modify scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's deficients.");
+            }
             return SaveSimulationDeficientLibrary(model, db);
         }
 
@@ -121,7 +130,10 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}.");
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
+            }
             return SaveSimulationDeficientLibrary(model, db);
         }
     }

@@ -10,6 +10,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class PerformanceLibraryDAL : IPerformanceLibrary
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PerformanceLibraryDAL));
         /// <summary>
         /// Fetches a simulation's performance library data
         /// Throws a RowNotInTableException if no simulation is found
@@ -34,7 +35,10 @@ namespace BridgeCare.DataAccessLayer
         public PerformanceLibraryModel GetOwnedSimulationPerformanceLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                log.Warn($"User {username} is not authorized to view scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's performance.");
+            }
             return GetSimulationPerformanceLibrary(id, db);
         }
 
@@ -48,7 +52,10 @@ namespace BridgeCare.DataAccessLayer
         public PerformanceLibraryModel GetAnySimulationPerformanceLibrary(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}");
                 throw new RowNotInTableException($"No scenario was found with id {id}");
+            }
             return GetSimulationPerformanceLibrary(id, db);
         }
 
@@ -62,7 +69,6 @@ namespace BridgeCare.DataAccessLayer
         private PerformanceLibraryModel SaveSimulationPerformanceLibrary(PerformanceLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
             var simulation = db.Simulations.Include(s => s.PERFORMANCES).Single(s => s.SIMULATIONID == id);
 
             if (simulation.PERFORMANCES.Any())
@@ -96,7 +102,10 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            {
+                log.Warn($"User {username} is not authorized to modify scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's performance.");
+            }
             return SaveSimulationPerformanceLibrary(model, db);
         }
 
@@ -104,7 +113,10 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}");
                 throw new RowNotInTableException($"No scenario was found with id {id}");
+            }
             return SaveSimulationPerformanceLibrary(model, db);
         }
     }

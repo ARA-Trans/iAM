@@ -9,6 +9,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class SectionLocatorDAL : ISectionLocator
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SectionLocatorDAL));
         public SectionLocatorDAL()
         {
         }
@@ -53,14 +54,17 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
+                log.Error(ex.Message);
                 HandleException.SqlError(ex, "SectionLocator_");
             }
             catch (OutOfMemoryException ex)
             {
+                log.Error(ex.Message);
                 HandleException.OutOfMemoryError(ex);
             }
             catch (Exception ex)
             {
+                log.Error(ex.Message);
                 HandleException.GeneralError(ex);
             }
             return new SectionLocationModel();

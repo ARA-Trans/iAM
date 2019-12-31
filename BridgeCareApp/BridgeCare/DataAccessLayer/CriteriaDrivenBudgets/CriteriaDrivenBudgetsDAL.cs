@@ -1,4 +1,5 @@
-﻿using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
+﻿using BridgeCare.ApplicationLog;
+using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 using BridgeCare.Interfaces.CriteriaDrivenBudgets;
 using BridgeCare.Models.CriteriaDrivenBudgets;
 using System;
@@ -12,6 +13,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
 {
     public class CriteriaDrivenBudgetsDAL : ICriteriaDrivenBudgets
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CriteriaDrivenBudgetsDAL));
         /// <summary>
         /// Fetches a simulation's criteria driven budgets
         /// </summary>
@@ -41,7 +43,10 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         public List<CriteriaDrivenBudgetsModel> GetOwnedCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                log.Warn($"User {username} is not authorized to view scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's criteria driven budgets.");
+            }
             return GetCriteriaDrivenBudgets(id, db);
         }
 
@@ -55,7 +60,10 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         public List<CriteriaDrivenBudgetsModel> GetAnyCriteriaDrivenBudgets(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Warn($"No scenario found with {id}");
                 throw new RowNotInTableException($"No scenario found with {id}");
+            }
             return GetCriteriaDrivenBudgets(id, db);
         }
 
@@ -89,6 +97,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             }
             catch (Exception ex)
             {
+                log.Error(ex.Message);
                 return Task.FromResult($"Failed to save criteria driven budgets::{ex.Message}");
             }
         }
@@ -96,14 +105,20 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         public Task<string> SaveOwnedCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            {
+                log.Warn($"User {username} is not authorized to modify scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's criteria driven budgets.");
+            }
             return SaveCriteriaDrivenBudgets(id, models, db);
         }
 
         public Task<string> SaveAnyCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Warn($"No scenario found with {id}");
                 throw new RowNotInTableException($"No scenario found with {id}");
+            }
             return SaveCriteriaDrivenBudgets(id, models, db);
         }
     }
