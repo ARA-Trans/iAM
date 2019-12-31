@@ -12,7 +12,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class Validation : IValidation
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BudgetReportDAL));
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Validation));
         public void ValidateEquation(ValidateEquationModel model, BridgeCareContext db)
         {
             CalculateEvaluate calcEval = new CalculateEvaluate();
