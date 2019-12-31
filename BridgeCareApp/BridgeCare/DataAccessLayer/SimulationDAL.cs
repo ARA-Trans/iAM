@@ -1,6 +1,4 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses;
-using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
+﻿using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
@@ -12,7 +10,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using BridgeCare.Properties;
 using DatabaseManager;
 
@@ -63,7 +60,8 @@ namespace BridgeCare.DataAccessLayer
         public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
-                throw new RowNotInTableException($"User {username} has no scenario with id {model.SimulationId}");
+                throw new UnauthorizedAccessException("You are not authorized to modify this scenario.");
+
             UpdateSimulation(model, db);
         }
 
@@ -114,7 +112,7 @@ namespace BridgeCare.DataAccessLayer
         public void DeleteOwnedSimulation(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
-                throw new RowNotInTableException($"User {username} cannot delete a scenario with id {id}");
+                throw new UnauthorizedAccessException("You are not authorized to delete this scenario.");
             DeleteSimulation(id, db);
         }
 
@@ -177,7 +175,7 @@ namespace BridgeCare.DataAccessLayer
         public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
-                throw new RowNotInTableException($"User {username} cannot delete a scenario with id {model.SimulationId}");
+                throw new UnauthorizedAccessException("You are not authorized to run this scenario.");
             return RunSimulation(model);
         }
 

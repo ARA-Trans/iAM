@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using System;
 using System.Data;
 using System.Linq;
 
@@ -42,7 +43,7 @@ namespace BridgeCare.DataAccessLayer
         public SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
-                throw new RowNotInTableException($"User {username} cannot access a simulation with id {id}.");
+                throw new UnauthorizedAccessException("You are not authorized to view this scenario's analysis.");
             return GetSimulationAnalysis(id, db);
         }
 
@@ -66,7 +67,7 @@ namespace BridgeCare.DataAccessLayer
         public void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, BridgeCareContext db, string username, bool updateWeighting = true)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.Id && (s.USERNAME == username)))
-                throw new RowNotInTableException($"User {username} cannot update analysis of scenario with id {model.Id}.");
+                throw new UnauthorizedAccessException("You are not authorized to modify this scenario's analysis.");
 
             var simulation = db.Simulations.Single(s => s.SIMULATIONID == model.Id);
 

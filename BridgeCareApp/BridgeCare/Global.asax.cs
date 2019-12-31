@@ -64,6 +64,11 @@ namespace BridgeCare
                             );
                         }
                     )
+                    .Register<UnauthorizedAccessException>((exception, request) =>
+                        {
+                            return request.CreateErrorResponse(HttpStatusCode.Unauthorized, exception.Message);
+                        }
+                    )
             );
         }
     }

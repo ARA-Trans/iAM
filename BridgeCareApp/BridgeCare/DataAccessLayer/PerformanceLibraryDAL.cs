@@ -1,6 +1,7 @@
 ﻿using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace BridgeCare.DataAccessLayer
         public PerformanceLibraryModel GetOwnedSimulationPerformanceLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
-                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+                throw new UnauthorizedAccessException("You are not authorized to view this scenario's performance.");
             return GetSimulationPerformanceLibrary(id, db);
         }
 
@@ -95,7 +96,7 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
-                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+                throw new UnauthorizedAccessException("You are not authorized to modify this scenario's performance.");
             return SaveSimulationPerformanceLibrary(model, db);
         }
 

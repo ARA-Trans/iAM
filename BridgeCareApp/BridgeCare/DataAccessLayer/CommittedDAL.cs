@@ -1,12 +1,10 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses;
+﻿using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
@@ -44,9 +42,7 @@ namespace BridgeCare.DataAccessLayer
         {
             foreach (var committedProjectModel in committedProjectModels) {
                 if (!db.Simulations.Any(s => s.SIMULATIONID == committedProjectModel.SimulationId && (s.USERNAME == username || s.USERNAME == null)))
-                {
-                    throw new RowNotInTableException($"User {username} does not have access to a simulation with id {committedProjectModel.SimulationId}.");
-                }
+                    throw new UnauthorizedAccessException("You are not authorized to modify this scenario's committed projects.");
             }
             SaveCommittedProjects(committedProjectModels, db);
         }
@@ -72,7 +68,7 @@ namespace BridgeCare.DataAccessLayer
         public List<CommittedEntity> GetOwnedCommittedProjects(int simulationId, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId && (s.USERNAME == username || s.USERNAME == null)))
-                throw new RowNotInTableException($"User {username} does not have access to a simulation with id {simulationId}.");
+                throw new UnauthorizedAccessException("You are not authorized to view this scenario's committed projects.");
             return GetCommittedProjects(simulationId, db);
         }
     }

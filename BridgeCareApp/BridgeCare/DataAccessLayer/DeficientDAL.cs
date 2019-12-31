@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
-using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
@@ -38,7 +35,7 @@ namespace BridgeCare.DataAccessLayer
         public DeficientLibraryModel GetOwnedSimulationDeficientLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
-                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+                throw new UnauthorizedAccessException("You are not authorized to view this scenario's deficients.");
             return GetSimulationDeficientLibrary(id, db);
         }
 
@@ -108,7 +105,7 @@ namespace BridgeCare.DataAccessLayer
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
-                throw new RowNotInTableException($"User {username} does not have access to a scenario with id {id}.");
+                throw new UnauthorizedAccessException("You are not authorized to modify this scenario's deficients.");
             return SaveSimulationDeficientLibrary(model, db);
         }
 
