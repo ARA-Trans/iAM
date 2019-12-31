@@ -12,6 +12,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class Validation : IValidation
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BudgetReportDAL));
         public void ValidateEquation(ValidateEquationModel model, BridgeCareContext db)
         {
             CalculateEvaluate calcEval = new CalculateEvaluate();
@@ -78,6 +79,7 @@ namespace BridgeCare.DataAccessLayer
                 int start = target.IndexOf('?');
                 int end = target.IndexOf(']');
 
+                log.Error("Unsupported Attribute " + target.Substring(start + 1, end - 1));
                 throw new InvalidOperationException("Unsupported Attribute " + target.Substring(start + 1, end - 1));
             }
             return target;
@@ -89,6 +91,7 @@ namespace BridgeCare.DataAccessLayer
             piecewise = piecewise.Trim();
             if (piecewise.IndexOf("((") >= 0 || piecewise.IndexOf("))") >= 0)
             {
+                log.Error("Syntax error, enclose pairs in single parentheses'( )'. ");
                 throw new System.InvalidOperationException("Syntax error, enclose pairs in single parentheses'( )'. ");
             }
             if (piecewise.IndexOf(") ") >= 0 ||
@@ -98,6 +101,7 @@ namespace BridgeCare.DataAccessLayer
                 piecewise.IndexOf(", ") >= 0 ||
                 piecewise.IndexOf(" ,") >= 0)
             {
+                log.Error("Syntax error, remove spaces within array");
                 throw new System.InvalidOperationException("Syntax error, remove spaces within array");
             }
             string[] pieces = piecewise.Split(new char[] { '(' });
@@ -120,11 +124,13 @@ namespace BridgeCare.DataAccessLayer
                 }
                 catch
                 {
+                    log.Error("Failure to convert AGE,VALUE pair to (int,double) :" + commaDelimitedPair);
                     throw new System.InvalidOperationException("Failure to convert AGE,VALUE pair to (int,double) :" + commaDelimitedPair);
                 }
 
                 if (age < 0)
                 {
+                    log.Error("Values for [AGE] must be 0 or greater.");
                     throw new System.InvalidOperationException("Values for [AGE] must be 0 or greater.");
                 }
 
@@ -134,11 +140,13 @@ namespace BridgeCare.DataAccessLayer
                 }
                 else
                 {
+                    log.Error("Only unique integer values for [AGE] are allowed.");
                     throw new System.InvalidOperationException("Only unique integer values for [AGE] are allowed.");
                 }
             }
             if (ageValues.Count < 1)
             {
+                log.Error("At least one Age,Value pair must be entered.");
                 throw new System.InvalidOperationException("At least one Age,Value pair must be entered.");
             }
             return;
@@ -148,6 +156,7 @@ namespace BridgeCare.DataAccessLayer
         {
             if (criteria == "" || criteria == null)
             {
+                log.Error("There is no criteria created");
                 return "There is no criteria created";
             }
             // create the sql select statement
@@ -185,10 +194,12 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException e)
             {
+                log.Error($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
                 throw new System.InvalidOperationException($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
             }
             catch (Exception e2)
             {
+                log.Error(e2.Message);
                 throw new System.InvalidOperationException(e2.Message);
             }
         }

@@ -22,7 +22,6 @@ namespace BridgeCare.DataAccessLayer
         Hashtable _mathMembersMap = new Hashtable();
 
         //DEBUGGING
-        //public StringBuilder _source = new StringBuilder();
         StringBuilder _source = new StringBuilder();
 
         public String m_strResult = "";
@@ -32,12 +31,13 @@ namespace BridgeCare.DataAccessLayer
         public object m_assemblyInstance = null;
         public MethodInfo m_methodInfo = null;
         public CompilerResults m_cr = null;
-        //public byte[] array;		//Unacceptable.
         private byte[] _array;
         public List<String> m_listParameters = new List<String>();
         private string _dllName;
         private string _originalInput;
         bool _isTemporaryClass = false;
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CalculateEvaluate));
 
         public string OriginalInput
         {
@@ -365,6 +365,8 @@ namespace BridgeCare.DataAccessLayer
                     errorMessage += separator + error.ErrorText;
                     separator = "  ";
                 }
+
+                log.Error("Error compiling code: " + errorMessage);
                 throw new InvalidOperationException("Error compiling code: " + errorMessage);
             }
             else
@@ -452,7 +454,8 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error:  An exception occurred while executing the script", ex);
+                log.Error("Error: An exception occurred while executing the script", ex);
+                Console.WriteLine("Error: An exception occurred while executing the script", ex);
             }
         }
 
@@ -667,7 +670,8 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error:  An exception occurred while executing the script", ex);
+                log.Error("Error: An exception occurred while executing the script", ex);
+                Console.WriteLine("Error: An exception occurred while executing the script", ex);
             }
         }
 
@@ -693,6 +697,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (Exception exception)
             {
+                log.Error(exception.Message);
                 throw new InvalidOperationException(exception.Message);
             }
         }

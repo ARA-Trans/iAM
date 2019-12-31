@@ -7,7 +7,7 @@ namespace BridgeCare.ApplicationLog
     {
         public static void SqlError(SqlException ex, string table)
         {
-            WriteSqlEntry(ex, " error ", table);
+            WriteSqlEntry(ex, table);
         }
 
         public static void OutOfMemoryError(OutOfMemoryException ex)
@@ -25,7 +25,7 @@ namespace BridgeCare.ApplicationLog
             throw new Exception($"{ex}");
         }
 
-        private static void WriteSqlEntry(SqlException ex, string type, string table)
+        private static void WriteSqlEntry(SqlException ex, string table)
         {
             if (ex.Number == -2 || ex.Number == 11)
             {

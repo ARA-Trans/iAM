@@ -12,6 +12,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 {
     public class BridgeDataDAL : IBridgeData
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BridgeDataDAL));
         /// <summary>
         /// Fetches bridge data using a list of br keys
         /// </summary>
@@ -62,10 +63,12 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Section_" + simulationModel.SimulationId);
+                log.Error(ex.Message);
+                HandleException.SqlError(ex, "Section_");
             }
             catch (OutOfMemoryException ex)
             {
+                log.Error(ex.Message);
                 HandleException.OutOfMemoryError(ex);
             }
 

@@ -1,5 +1,4 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses;
+﻿using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
