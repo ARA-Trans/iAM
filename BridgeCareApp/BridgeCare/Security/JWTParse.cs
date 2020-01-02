@@ -52,7 +52,7 @@ namespace BridgeCare.Security
         private static void RemoveExpiredTokens()
         {
             long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            revokedTokens = new ConcurrentDictionary<string, long>(revokedTokens.Where(entry => entry.Value < currentTime));
+            revokedTokens = new ConcurrentDictionary<string, long>(revokedTokens.Where(entry => entry.Value > currentTime));
         }
 
         /// <summary>
