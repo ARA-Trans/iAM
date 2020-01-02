@@ -1,19 +1,13 @@
-﻿using System;
+﻿using AppliedResearchAssociates.PciDistress;
+using DatabaseManager;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
-using System.Diagnostics;
-
-using RoadCare3.Properties;
-using DatabaseManager;
-using RoadCareDatabaseOperations;
-using PCI;
-using System.Collections;
-using System.IO;
 
 namespace RoadCare3
 {
@@ -618,7 +612,7 @@ namespace RoadCare3
 						pciDetailsTable.Dispose();
 						pciDetailDataAdapter.Dispose();
 
-						dPCI = Distress.ComputePCIValue(sbDeduct.ToString(), method.Trim());
+						dPCI = PciDistress.ComputePCIValue(sbDeduct.ToString(), method.Trim());
 						dr["PCI"] = FormatPCIAsString(dPCI);
 					}
 				}
@@ -1259,10 +1253,10 @@ namespace RoadCare3
 
 					// Get the distress information from the PCI object and
 					// display it in the detail grid.
-					if (!Distress.IsWASHCLKMethod(strMethod))
+					if (!PciDistress.IsWASHCLKMethod(strMethod))
                     {
 
-                        dPCIDeduct = Distress.pvt_ComputePCIDeduct(nDistress, sSeverity, dAmount, dSamsiz);
+                        dPCIDeduct = PciDistress.pvt_ComputePCIDeduct(nDistress, sSeverity, dAmount, dSamsiz);
                         pciDeductString = dPCIDeduct.ToString("f2");
                         strExtent = dExtent.ToString("f5");
                     }
@@ -1271,7 +1265,7 @@ namespace RoadCare3
 						// Clark County uses a different definition of the extent
 						// whe computing deducts.  Don't multiply times 100.
 						dExtent = dAmount / dSamsiz;
-                        dPCIDeduct = Distress.pvt_ComputeNonPCIDeduct(strMethod,nDistress, sSeverity, dExtent);
+                        dPCIDeduct = PciDistress.pvt_ComputeNonPCIDeduct(strMethod,nDistress, sSeverity, dExtent);
                         pciDeductString = dPCIDeduct.ToString("f2");
                         strExtent = dExtent.ToString("f5");
                     }
@@ -1347,11 +1341,11 @@ namespace RoadCare3
 					if (strMethod != "ac.clk" && strMethod != "bit.clk")
 					{
 
-						dPCIDeduct = Distress.pvt_ComputePCIDeduct(nDistress, sSeverity, dAmount, dSamsiz);
+						dPCIDeduct = PciDistress.pvt_ComputePCIDeduct(nDistress, sSeverity, dAmount, dSamsiz);
 					}
 					else
 					{
-						dPCIDeduct = Distress.pvt_ComputeNonPCIDeduct(strMethod, nDistress, sSeverity, dExtent);
+						dPCIDeduct = PciDistress.pvt_ComputeNonPCIDeduct(strMethod, nDistress, sSeverity, dExtent);
 					}
 
 				}
@@ -1410,7 +1404,7 @@ namespace RoadCare3
 				strMethod = currentRow.Cells["METHOD_"].Value.ToString();
                 if (!String.IsNullOrEmpty(strMethod))
                 {
-                    dPCI = Distress.ComputePCIValue(sbDeduct.ToString(), strMethod.Trim());
+                    dPCI = PciDistress.ComputePCIValue(sbDeduct.ToString(), strMethod.Trim());
                 }
 
 			}
