@@ -16,6 +16,7 @@ namespace BridgeCare.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(AuthenticationController));
         /// <summary>
         /// API endpoint for fetching user info from ESEC using the OpenID Connect protocol
         /// </summary>
@@ -222,6 +223,7 @@ namespace BridgeCare.Controllers
             var responseJSON = DictionaryFromJSON(response);
             if (responseJSON.ContainsKey("error"))
             {
+                log.Error($"ESEC endpoint returned error - {responseJSON["error"]}: {responseJSON["error_description"]}");
                 throw new AuthenticationException(responseJSON["error_description"]);
             }
         }
