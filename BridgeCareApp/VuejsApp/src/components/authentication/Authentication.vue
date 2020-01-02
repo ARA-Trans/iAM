@@ -25,6 +25,7 @@
     @Component
     export default class Authentication extends Vue {
         @State(state => state.authentication.authenticated) authenticated: boolean;
+        @State(state => state.authentication.hasRole) hasRole: boolean;
 
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -49,8 +50,13 @@
                 if (!this.authenticated) {
                     this.onAuthenticationFailure();
                 } else {
-                    this.getUserInfoAction();
-                    this.onAuthenticationSuccess();
+                    this.getUserInfoAction().then(() => {
+                        if (!this.hasRole) {
+                            this.onRoleFailure();
+                        } else {
+                            this.onAuthenticationSuccess();
+                        }
+                    });
                 }
             });
         }
@@ -63,6 +69,10 @@
         onAuthenticationFailure() {
             this.setErrorMessageAction({message: 'Authentication failed.'});
             this.$router.push('/AuthenticationFailure/');
+        }
+
+        onRoleFailure() {
+            this.$router.push('/NoRole/');
         }
     }
 </script>

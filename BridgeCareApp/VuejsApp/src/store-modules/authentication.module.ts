@@ -5,12 +5,20 @@ import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     authenticated: false,
+    hasRole: false,
+    checkedForRole: false,
     username: ''
 };
 
 const mutations = {
     authenticatedMutator(state: any, status: boolean) {
         state.authenticated = status;
+    },
+    hasRoleMutator(state: any, status: boolean) {
+        state.hasRole = status;
+    },
+    checkedForRoleMutator(state: any, status: boolean) {
+        state.checkedForRole = status;
     },
     usernameMutator(state: any, username: string) {
         state.username = username;
@@ -76,6 +84,8 @@ const actions = {
                         localStorage.setItem('UserInfo', response.data);
                         const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
                         const username: string = userInfo.sub.split(',')[0].split('=')[1];
+                        commit('hasRoleMutator', userInfo.roles !== undefined);
+                        commit('checkedForRoleMutator', true);
                         commit('usernameMutator', username);
                     } else {
                         dispatch('logOut');

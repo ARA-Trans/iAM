@@ -8,7 +8,7 @@
                             <h3>Beginning Authentication</h3>
                         </v-card-title>
                         <v-card-text>
-                            You should be redirected to the PennDOT login page shortly. If you are not, press the button below.
+                            You should be redirected to the PennDOT login page shortly. If you are not redirected within 5 seconds, press the button below.
                         </v-card-text>
                         <v-btn class="v-btn theme--light ara-blue-bg white--text" @click="onRedirect">
                             Go to login page
@@ -29,6 +29,8 @@
     @Component
     export default class AuthenticationStart extends Vue {
         @State(state => state.authentication.authenticated) authenticated: boolean;
+        @State(state => state.authentication.hasRole) hasRole: boolean;
+        @State(state => state.authentication.checkedForRole) checkedForRole: boolean;
 
         onRedirect() {
             if (!this.authenticated) {
@@ -43,8 +45,15 @@
                 }
 
                 window.location.href = href;
-            } else {
+            }
+        }
+
+        @Watch('checkedForRole')
+        onCheckedRole() {
+            if (this.hasRole) {
                 this.$router.push('/Inventory/');
+            } else {
+                this.$router.push('/NoRole/');
             }
         }
 

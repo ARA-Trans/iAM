@@ -1,7 +1,7 @@
 <template>
     <v-app class="paper-white-bg">
         <v-content>
-            <v-navigation-drawer app v-if="authenticated" class="paper-white-bg" v-model="drawer">
+            <v-navigation-drawer app v-if="authenticatedWithRole" class="paper-white-bg" v-model="drawer">
                 <v-list dense class="pt-0">
                     <v-list-tile @click="onNavigate('/Inventory/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-archive</v-icon></v-list-tile-action>
@@ -46,7 +46,7 @@
                 </v-list>
             </v-navigation-drawer>
             <v-toolbar app class="ara-blue-pantone-289-bg">
-                <v-toolbar-side-icon v-if="authenticated" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+                <v-toolbar-side-icon v-if="authenticatedWithRole" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
                     <span class="font-weight-light">Scenario: </span>
                     <span>{{selectedScenarioName}}</span>
@@ -99,6 +99,7 @@
     })
     export default class AppComponent extends Vue {
         @State(state => state.authentication.authenticated) authenticated: boolean;
+        @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
@@ -214,11 +215,15 @@
             window.setInterval(this.checkBrowserTokensAction, 30000);
         }
 
-        @Watch('authenticated')
+        get authenticatedWithRole() {
+            return this.authenticated && this.hasRole;
+        }
+
+        @Watch('authenticatedWithRole')
         onAuthenticationChange() {
-            if (this.authenticated) {
+            if (this.authenticated && this.hasRole) {
                 this.onLogin();
-            } else {
+            } else if (!this.authenticated) {
                 this.onLogout();
             }
         }
