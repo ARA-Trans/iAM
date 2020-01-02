@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -16,6 +17,43 @@ namespace BridgeCare.Security
     public static class JWTParse
     {
         private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
+        /// <summary>
+        /// Each key is a token that has been revoked. Its value is the unix timestamp of the time at which it expires.
+        /// </summary>
+        private static ConcurrentDictionary<string, long> revokedTokens = new ConcurrentDictionary<string, long>();
+
+        /// <summary>
+        /// Checks if the provided token has been revoked.
+        /// </summary>
+        /// <param name="idToken">JWT ID Token</param>
+        /// <returns>bool</returns>
+        private static bool TokenIsRevoked(string idToken)
+        {
+            return revokedTokens.ContainsKey(idToken);
+        }
+
+        /// <summary>
+        /// Prevents the parser from accepting the provided token in the future.
+        /// </summary>
+        /// <param name="idToken">The JWT ID Token</param>
+        public static void RevokeToken(string idToken)
+        {
+            RemoveExpiredTokens();
+            JwtSecurityToken decodedToken = DecodeToken(idToken);
+            string expirationString = decodedToken.GetClaimValue("exp");
+            long expiration = Int64.Parse(expirationString);
+            revokedTokens.TryAdd(idToken, expiration);
+        }
+
+        /// <summary>
+        /// Removes all expired tokens from the revokedTokens dictionary, as they no longer need to be tracked.
+        /// This keeps the dictionary from endlessly growing as the application runs
+        /// </summary>
+        private static void RemoveExpiredTokens()
+        {
+            long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            revokedTokens = new ConcurrentDictionary<string, long>(revokedTokens.Where(entry => entry.Value < currentTime));
+        }
 
         /// <summary>
         /// Given an id_token from ESEC, validates it and extracts the User's Information
@@ -24,6 +62,8 @@ namespace BridgeCare.Security
         /// <returns></returns>
         public static Models.UserInformationModel GetUserInformation(string idToken)
         {
+            if (TokenIsRevoked(idToken))
+                throw new UnauthorizedAccessException("Your ID Token has been revoked.");
             JwtSecurityToken decodedToken = DecodeToken(idToken);
             string role = ParseLDAP(decodedToken.GetClaimValue("roles"));
             string name = ParseLDAP(decodedToken.GetClaimValue("sub"));

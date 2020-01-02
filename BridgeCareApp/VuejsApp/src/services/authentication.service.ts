@@ -1,7 +1,7 @@
 ﻿import {AxiosPromise, AxiosResponse} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 import { hasValue } from '@/shared/utils/has-value-util';
-
+import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class AuthenticationService {
     static getUserTokens(code: string): AxiosPromise {
@@ -46,9 +46,9 @@ export default class AuthenticationService {
         });
     }
 
-    static revokeToken(token: string): AxiosPromise {
+    static revokeToken(token: string, tokenType: string): AxiosPromise {
         return new Promise<AxiosResponse> ((resolve) => {
-            axiosInstance.post(`/authentication/RevokeToken/${token}`)
+            axiosInstance.post(`/authentication/RevokeToken/${tokenType}/${token}`, null, {headers: getAuthorizationHeader()})
             .then((response: AxiosResponse<any>) => {
                 return resolve(response);
             })
