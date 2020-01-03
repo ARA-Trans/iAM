@@ -1,4 +1,5 @@
 const debug = require('debug')('app:scenarioController');
+var logger = require('../config/winston');
 
 function scenarioController(Scenario) {
     function post(req, res) {
@@ -17,7 +18,6 @@ function scenarioController(Scenario) {
     function postMultipleScenarios(req, res) {
         const multipleScenarios = [];
         multipleScenarios.push(...req.body);
-        const resultant = [];
 
         multipleScenarios.forEach(item => {
             const scenario = new Scenario(item);

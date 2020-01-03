@@ -3,8 +3,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
-module.exports = function (app) {
-    app.use(morgan('tiny'));
+module.exports = function (app, winston) {
+    app.use(morgan('tiny', {stream: winston.stream}));
     app.use(compression());
 
     app.use(cors());

@@ -1,7 +1,8 @@
 ﻿const express = require("express");
 const debug = require('debug')('app');
+var winston = require('./config/winston');
 const app = express();
-require('./config/express')(app);
+require('./config/express')(app, winston);
 
 const passport = require("passport");
 

@@ -347,3 +347,5 @@ connection.config
 # ESEC metadata, including client secret
 /BridgeCareApp/BridgeCare/esec.config
 /BridgeCareApp/BridgeCare/Logs/BridgeCareAPI.log
+/BridgeCareApp/BridgeCareNodeApp/logs/nodeErrorLogs.log
+/BridgeCareApp/BridgeCareNodeApp/logs/nodeCombinedLogs.log
