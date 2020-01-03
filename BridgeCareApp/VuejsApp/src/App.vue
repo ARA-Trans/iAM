@@ -115,6 +115,8 @@
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setInfoMessage') setInfoMessageAction: any;
+        @Action('pollEvents') pollEventsAction: any;
+        @Action('generatePollingSessionId') generatePollingSessionIdAction: any;
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
@@ -212,6 +214,10 @@
             // has been changed by another tab or window
             this.checkBrowserTokensAction();
             window.setInterval(this.checkBrowserTokensAction, 30000);
+
+            // Generate a polling session id, and begin polling once per 5 seconds
+            this.generatePollingSessionIdAction();
+            window.setInterval(this.pollEventsAction, 5000);
         }
 
         @Watch('authenticated')
