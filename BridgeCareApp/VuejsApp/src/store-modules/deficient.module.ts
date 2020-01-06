@@ -49,10 +49,10 @@ const mutations = {
             );
         }
     },
-    deletedDeficientLibraryMutator(state: any, deletedDeficientLibrary: DeficientLibrary) {
-        if (any(propEq('id', deletedDeficientLibrary.id), state.deficientLibraries)) {
+    deletedDeficientLibraryMutator(state: any, deletedDeficientLibraryId: string) {
+        if (any(propEq('id', deletedDeficientLibraryId), state.deficientLibraries)) {
             state.deficientLibraries = reject(
-                (library: DeficientLibrary) => deletedDeficientLibrary.id === library.id,
+                (library: DeficientLibrary) => deletedDeficientLibraryId === library.id,
                 state.deficientLibraries
             );
         }
@@ -101,7 +101,7 @@ const actions = {
         await DeficientService.deleteDeficientLibrary(payload.deficientLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedDeficientLibraryMutator', payload.deficientLibrary);
+                commit('deletedDeficientLibraryMutator', payload.deficientLibrary.id);
                 dispatch('setSuccessMessage', {message: 'Successfully deleted deficient library'});
                 }
             });
@@ -146,6 +146,13 @@ const actions = {
                             {message: `Deficient library '${deficientLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.deficientLibraries)) {
+                commit('deletedDeficientLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A deficient library has been deleted from another source`}
+                );
             }
         }
     }

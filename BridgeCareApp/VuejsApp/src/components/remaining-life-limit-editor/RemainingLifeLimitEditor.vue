@@ -470,7 +470,6 @@
         }
 
         onDeleteRemainingLifeLimitLibrary() {
-            console.log('!');
             this.alertBeforeDelete = {
                 showDialog: true,
                 heading: 'Warning',
@@ -482,7 +481,7 @@
         /**
          * Clears the selected remaining life limit library and resets the active tab to first tab
          */
-        onClearSelectedTreatmentLibrary() {
+        onClearSelectedRemainingLifeLimitLibrary() {
             this.librarySelectItemValue = hasValue(this.librarySelectItemValue) ? '' : '0';
         }
 

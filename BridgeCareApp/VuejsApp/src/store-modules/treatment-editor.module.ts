@@ -94,10 +94,10 @@ const mutations = {
             state.treatmentLibraries = treatmentLibraries;
         }
     },
-    deletedTreatmentLibraryMutator(state: any, deletedTreatmentLibrary: TreatmentLibrary) {
-        if (any(propEq('id', deletedTreatmentLibrary.id), state.treatmentLibraries)) {
+    deletedTreatmentLibraryMutator(state: any, deletedTreatmentLibraryId: string) {
+        if (any(propEq('id', deletedTreatmentLibraryId), state.treatmentLibraries)) {
             state.treatmentLibraries = reject(
-                (library: TreatmentLibrary) => deletedTreatmentLibrary.id === library.id,
+                (library: TreatmentLibrary) => deletedTreatmentLibraryId === library.id,
                 state.treatmentLibraries
             );
         }
@@ -150,7 +150,7 @@ const actions = {
         await TreatmentEditorService.deleteTreatmentLibrary(payload.treatmentLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedTreatmentLibraryMutator', payload.treatmentLibrary);
+                commit('deletedTreatmentLibraryMutator', payload.treatmentLibrary.id);
                 dispatch('setSuccessMessage', {message: 'Successfully deleted treatment library'});
                 }
             });
@@ -190,6 +190,13 @@ const actions = {
             if (payload.operationType == 'insert') {
                 const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
                 commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.treatmentLibraries)) {
+                commit('deletedTreatmentLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A treatment library has been deleted from another source`}
+                );
             }
         }
     }

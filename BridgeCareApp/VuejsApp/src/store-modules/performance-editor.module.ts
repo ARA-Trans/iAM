@@ -71,10 +71,10 @@ const mutations = {
             state.performanceLibraries = performanceLibraries;
         }
     },
-    deletedPerformanceLibraryMutator(state: any, deletedPerformanceLibrary: PerformanceLibrary) {
-        if (any(propEq('id', deletedPerformanceLibrary.id), state.performanceLibraries)) {
+    deletedPerformanceLibraryMutator(state: any, deletedPerformanceLibraryId: string) {
+        if (any(propEq('id', deletedPerformanceLibraryId), state.performanceLibraries)) {
             state.performanceLibraries = reject(
-                (library: PerformanceLibrary) => deletedPerformanceLibrary.id === library.id,
+                (library: PerformanceLibrary) => deletedPerformanceLibraryId === library.id,
                 state.performanceLibraries
             );
         }
@@ -127,7 +127,7 @@ const actions = {
         await PerformanceEditorService.deletePerformanceLibrary(payload.performanceLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedPerformanceLibraryMutator', payload.performanceLibrary);
+                commit('deletedPerformanceLibraryMutator', payload.performanceLibrary.id);
                 dispatch('setSuccessMessage', {message: 'Successfully deleted performance library'});
                 }
             });
@@ -165,6 +165,13 @@ const actions = {
             if (payload.operationType == 'insert') {
                 const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
                 commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.performanceLibraries)) {
+                commit('deletedPerformanceLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A performance library has been deleted from another source`}
+                );
             }
         }
     }

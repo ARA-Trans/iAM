@@ -49,10 +49,10 @@ const mutations = {
             );
         }
     },
-    deletedTargetLibraryMutator(state: any, deletedTargetLibrary: TargetLibrary) {
-        if (any(propEq('id', deletedTargetLibrary.id), state.targetLibraries)) {
+    deletedTargetLibraryMutator(state: any, deletedTargetLibraryId: string) {
+        if (any(propEq('id', deletedTargetLibraryId), state.targetLibraries)) {
             state.targetLibraries = reject(
-                (library: TargetLibrary) => deletedTargetLibrary.id === library.id,
+                (library: TargetLibrary) => deletedTargetLibraryId === library.id,
                 state.targetLibraries
             );
         }
@@ -101,7 +101,7 @@ const actions = {
         await TargetService.deleteTargetLibrary(payload.targetLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedTargetLibraryMutator', payload.targetLibrary);
+                commit('deletedTargetLibraryMutator', payload.targetLibrary.id);
                 dispatch('setSuccessMessage', {message: 'Successfully deleted target library'});
                 }
             });
@@ -148,6 +148,13 @@ const actions = {
                             {message: `Target library '${targetLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.targetLibraries)) {
+                commit('deletedTargetLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A target library has been deleted from another source`}
+                );
             }
         }
     }

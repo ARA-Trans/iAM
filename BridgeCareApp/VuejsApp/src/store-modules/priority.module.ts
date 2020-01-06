@@ -58,10 +58,10 @@ const mutations = {
             );
         }
     },
-    deletedPriorityLibraryMutator(state: any, deletedPriorityLibrary: PriorityLibrary) {
-        if (any(propEq('id', deletedPriorityLibrary.id), state.priorityLibraries)) {
+    deletedPriorityLibraryMutator(state: any, deletedPriorityLibraryId: string) {
+        if (any(propEq('id', deletedPriorityLibraryId), state.priorityLibraries)) {
             state.priorityLibraries = reject(
-                (library: PriorityLibrary) => deletedPriorityLibrary.id === library.id,
+                (library: PriorityLibrary) => deletedPriorityLibraryId === library.id,
                 state.priorityLibraries
             );
         }
@@ -112,7 +112,7 @@ const actions = {
         await PriorityService.deletePriorityLibrary(payload.priorityLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedPriorityLibraryMutator', payload.priorityLibrary);
+                commit('deletedPriorityLibraryMutator', payload.priorityLibrary.id);
                 dispatch('setSuccessMessage', {message: 'Successfully deleted priority library'});
                 }
             });
@@ -136,6 +136,7 @@ const actions = {
             });
     },
     async socket_priorityLibrary({dispatch, state, commit}: any, payload: any) {
+        console.log(payload);
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             const priorityLibrary: PriorityLibrary = convertFromMongoToVueModel(payload.fullDocument);
             switch (payload.operationType) {
@@ -154,9 +155,16 @@ const actions = {
                     if (!any(propEq('id', priorityLibrary.id), state.priorityLibraries)) {
                         commit('createdPriorityLibraryMutator', priorityLibrary);
                         dispatch('setInfoMessage',
-                            {message: ` Priority library '${priorityLibrary.name}' has been created from another source`}
+                            {message: `Priority library '${priorityLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.priorityLibraries)) {
+                commit('deletedPriorityLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A priority library has been deleted from another source`}
+                );
             }
         }
     }

@@ -56,7 +56,7 @@ function remainingLifeLimitLibraryController(RemainingLifeLimitLibrary) {
      * @param res
      */
     function deleteLibrary(req, res) {
-        RemainingLifeLimitLibrary.findOneAndDelete({_id: req.body._id}, (err, doc) => {
+        RemainingLifeLimitLibrary.findOneAndDelete({_id: req.params.libraryId}, (err, doc) => {
             if (err) {
                 return res.status(400).json(err);
             }

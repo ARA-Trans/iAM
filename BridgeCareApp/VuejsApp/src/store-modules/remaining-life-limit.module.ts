@@ -89,10 +89,10 @@ const mutations = {
             state.remainingLifeLimitLibraries = remainingLifeLimitLibraries;
         }
     },
-    deletedRemainingLifeLimitLibraryMutator(state: any, deletedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary) {
-        if (any(propEq('id', deletedRemainingLifeLimitLibrary.id), state.remainingLifeLimitLibraries)) {
+    deletedRemainingLifeLimitLibraryMutator(state: any, deletedRemainingLifeLimitLibraryId: string) {
+        if (any(propEq('id', deletedRemainingLifeLimitLibraryId), state.remainingLifeLimitLibraries)) {
             state.remainingLifeLimitLibraries = reject(
-                (library: RemainingLifeLimitLibrary) => deletedRemainingLifeLimitLibrary.id === library.id,
+                (library: RemainingLifeLimitLibrary) => deletedRemainingLifeLimitLibraryId === library.id,
                 state.remainingLifeLimitLibraries
             );
         }
@@ -151,7 +151,7 @@ const actions = {
         await RemainingLifeLimitService.deleteRemainingLifeLimitLibrary(payload.remainingLifeLimitLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedRemainingLifeLimitLibraryMutator', payload.remainingLifeLimitLibrary);
+                commit('deletedRemainingLifeLimitLibraryMutator', payload.remainingLifeLimitLibrary.id);
                 dispatch('setSuccessMessage', {message: 'Successfully deleted remaining life limit library'});
                 }
             });
@@ -180,6 +180,7 @@ const actions = {
             });
     },
     async socket_remainingLifeLimitLibrary({dispatch, state, commit}: any, payload: any) {
+        console.log(payload);
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             if (payload.operationType == 'update' || payload.operationType == 'replace') {
                 const updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(payload.fullDocument);
@@ -194,6 +195,13 @@ const actions = {
             if (payload.operationType === 'insert') {
                 const createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(payload.fullDocument);
                 commit('createdRemainingLifeLimitLibraryMutator', createdRemainingLifeLimitLibrary);
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.remainingLifeLimitLibraries)) {
+                commit('deletedRemainingLifeLimitLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A remaining life limit library has been deleted from another source`}
+                );
             }
         }
     }
