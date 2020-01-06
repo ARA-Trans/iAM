@@ -20,7 +20,7 @@ Vue.use(Vuetify, {
     iconfont: 'fa'
 });
 
-const socketioClient = io(process.env.VUE_APP_NODE_URL, { path: process.env.VUE_APP_SOCKET_PATH });
+const socketioClient = io(process.env.VUE_APP_NODE_URL, { path: process.env.VUE_APP_SOCKET_PATH, upgrade: true, transports: ['websocket'] });
 
 Vue.use(VueSocketio, socketioClient, { store });
 

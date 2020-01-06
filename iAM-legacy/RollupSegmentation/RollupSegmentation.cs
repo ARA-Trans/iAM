@@ -3737,66 +3737,6 @@ namespace RollupSegmentation
             return strNumber;
         }
 
-        private String CalculatePCI(String strMethod, String strArea, Hashtable hashDistress)
-        {
-            //hashDistress key = H_1   object = extent
-            String strPCI = "";
-            String strLevel;
-            String strDistress;
-            double dLargeDeductLimit = 5.0;
-
-            if (strMethod == "acmpr")
-            {
-                strMethod = "ac.mpr";
-                dLargeDeductLimit = 2.0;
-            }
-            else if (strMethod == "pccmpr")
-            {
-                strMethod = "pcc.mpr";
-                dLargeDeductLimit = 2.0;
-            }
-            else if (strMethod == "acfaa")
-            {
-                strMethod = "ac.faa";
-            }
-            else if (strMethod == "pccfaa")
-            {
-                strMethod = "pcc.faa";
-            }
-
-            List<double> listDeduct = new List<double>();
-
-
-
-            foreach (DictionaryEntry de in hashDistress)
-            {
-                strLevel = de.Key.ToString().Substring(0, 1);
-                strDistress = de.Key.ToString().Substring(2);
-                int nDistress = int.Parse(strDistress);
-
-                double dAmount = double.Parse(de.Value.ToString());
-                double dArea = double.Parse(strArea);
-
-                double dDeduct = PCI.Distress.pvt_ComputePCIDeduct(nDistress, strLevel, dAmount, dArea);
-                listDeduct.Add(double.Parse(dDeduct.ToString()));
-            }
-            listDeduct.Sort();
-            String strDeduct = "";
-
-            for (int i = listDeduct.Count - 1; i >= 0; i--) 
-            {
-                strDeduct += listDeduct[i].ToString();
-                strDeduct += ",";
-            }
-            strDeduct += "0";
-
-            double dPCI = 100 - PCI.Distress.pciCorrectedDeductValue(strMethod, strDeduct, dLargeDeductLimit);
-            //strPCI = dPCI.ToString("#");
-
-
-            return strPCI;
-        }
-
         /// <summary>
         /// Compiles equation for calculating area.  To calculate area for ALL LRS sections, default values must be available.  This function compiles and loads necessary defaults.
         /// </summary>
