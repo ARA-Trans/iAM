@@ -15,9 +15,10 @@ const TreatmentEditor = () => import(/* webpackChunkName: "treatmentEditor" */ '
 const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@/components/priority-editor/PriorityEditor.vue');
 const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
 const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
-const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@/components/Authentication.vue');
-const AuthenticationStart = () => import (/* webpackChunkName: "authenticationStart" */ '@/components/AuthenticationStart.vue');
-const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/AuthenticationFailure.vue');
+const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@/components/authentication/Authentication.vue');
+const AuthenticationStart = () => import (/* webpackChunkName: "authenticationStart" */ '@/components/authentication/AuthenticationStart.vue');
+const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/authentication/AuthenticationFailure.vue');
+const NoRole = () => import (/*webpackChunkName: "noRole" */ '@/components/authentication/NoRole.vue');
 
 Vue.use(VueRouter);
 
@@ -137,6 +138,11 @@ const router = new VueRouter({
             path: '/AuthenticationFailure/',
             name: 'AuthenticationFailure',
             component: AuthenticationFailure
+        },
+        {
+            path: '/NoRole/',
+            name: 'NoRole',
+            component: NoRole
         },
         {
             path: '/UnderConstruction/',
