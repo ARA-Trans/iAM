@@ -1,5 +1,4 @@
 const debug = require('debug')('app:scenarioController');
-var logger = require('../config/winston');
 
 function scenarioController(Scenario) {
     function post(req, res) {

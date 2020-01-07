@@ -4,6 +4,7 @@ const passportJwt = require('passport-jwt');
 const jwtStrategy = passportJwt.Strategy;
 const extractJwt = passportJwt.ExtractJwt;
 const authorizationConfig = require('./authorizationConfig');
+const logger = require('../config/winston');
 
 function authorizationFilter(permittedRoles) {
     const jwtStrategyOptions = {
@@ -21,6 +22,7 @@ function authorizationFilter(permittedRoles) {
         if (permittedRoles.some(permittedRole => permittedRole === role)){
             return done(null, jwtPayload);
         }
+        logger.error('User unauthorized');
         return done(null, false);
     }
 

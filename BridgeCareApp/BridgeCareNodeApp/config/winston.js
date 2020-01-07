@@ -16,6 +16,7 @@ var options = {
 var logger = new winston.createLogger({
     level: 'info',
     format: winston.format.json(),
+    handleException: true,
     maxsize: 5242880, // 5MB
     maxFiles: 5,
     transports: [

@@ -27,7 +27,7 @@ async function run() {
 
     const InvestmentLibrary = require('./models/investmentLibraryModel');
     const investmentLibraryRouter = require('./routers/investmentLibraryRouter')(InvestmentLibrary);
-
+    
     const Network = require('./models/NetworkModel');
     const networkRouter = require('./routers/networkRouter')(Network);
 
