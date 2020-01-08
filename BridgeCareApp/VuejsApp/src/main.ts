@@ -5,8 +5,8 @@ import 'vuetify/dist/vuetify.min.css';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Vuetify from 'vuetify';
-import VueSocketio from 'vue-socket.io-extended';
-import io from 'socket.io-client';
+// import VueSocketio from 'vue-socket.io-extended';
+// import io from 'socket.io-client';
 import App from './App.vue';
 import router from './router';
 import store from './store/root-store';
@@ -20,9 +20,9 @@ Vue.use(Vuetify, {
     iconfont: 'fa'
 });
 
-const socketioClient = io(process.env.VUE_APP_NODE_URL, { path: process.env.VUE_APP_SOCKET_PATH, upgrade: true, transports: ['websocket'] });
+// const socketioClient = io(process.env.VUE_APP_NODE_URL, { path: process.env.VUE_APP_SOCKET_PATH, upgrade: true, transports: ['websocket'] });
 
-Vue.use(VueSocketio, socketioClient, { store });
+// Vue.use(VueSocketio, socketioClient, { store });
 
 Vue.use(VueWorker);
 
