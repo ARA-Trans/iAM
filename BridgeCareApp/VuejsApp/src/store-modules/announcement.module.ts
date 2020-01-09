@@ -34,8 +34,11 @@ const mutations = {
             );
         }
     },
-    deltedAnnouncementMutator(state: any, deletedAnnouncement: Announcement) {
+    deletedAnnouncementMutator(state: any, deletedAnnouncement: Announcement) {
         state.announcements = reject(propEq('id', deletedAnnouncement.id), state.announcements);
+    },
+    sortAnnouncementsMutator(state: any) {
+        state.announcements.sort((a: Announcement, b: Announcement) => b.creationDate - a.creationDate);
     }
 };
 
@@ -46,6 +49,7 @@ const actions = {
                 const announcements: Announcement[] = response.data
                     .map((data: any) => convertFromMongoToVueModel(data));
                 commit('announcementsMutator', announcements);
+                commit('sortAnnouncementsMutator');
             }
         });
     },
@@ -55,6 +59,7 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const createdAnnouncement: Announcement = convertFromMongoToVueModel(response.data);
                     commit('createdAnnouncementMutator', createdAnnouncement);
+                    commit('sortAnnouncementsMutator');
                     dispatch('setSuccessMessage', {message: 'Successfully created announcement'});
                 }
             });
@@ -65,6 +70,7 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const updatedAnnouncement: Announcement = convertFromMongoToVueModel(response.data);
                     commit('updatedAnnouncementMutator', updatedAnnouncement);
+                    commit('sortAnnouncementsMutator');
                     dispatch('setSuccessMessage', {message: 'Successfully updated announcement'});
                 }
             });
@@ -78,35 +84,25 @@ const actions = {
                     dispatch('setSuccessMessage', {message: 'Successfully deleted announcement'});
                 }
             });
-    }
-    // TODO node socket setup 
-    /*,
+    },
     async socket_announcement({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const deficientLibrary: DeficientLibrary = convertFromMongoToVueModel(payload.fullDocument);
+            const announcement: Announcement = convertFromMongoToVueModel(payload.fullDocument);
             switch (payload.operationType) {
                 case 'update':
                 case 'replace':
-                    commit('updatedDeficientLibraryMutator', deficientLibrary);
-                    if (state.selectedDeficientLibrary.id === deficientLibrary.id &&
-                        !equals(state.selectedDeficientLibrary, deficientLibrary)) {
-                        commit('selectedDeficientLibraryMutator', deficientLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Deficient library '${deficientLibrary.name}' has been changed from another source`}
-                        );
-                    }
+                    commit('updatedAnnouncementMutator', announcement);
                     break;
                 case 'insert':
-                    if (!any(propEq('id', deficientLibrary.id), state.deficientLibraries)) {
-                        commit('createdDeficientLibraryMutator', deficientLibrary);
+                    if (!any(propEq('id', announcement.id), state.announcements)) {
+                        commit('createdAnnouncementMutator', announcement);
                         dispatch('setInfoMessage',
-                            {message: `Deficient library '${deficientLibrary.name}' has been created from another source`}
+                            {message: `New Announcement: ${announcement.title}`}
                         );
                     }
             }
         }
     }
-    */
 };
 
 const getters = {};

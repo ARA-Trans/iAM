@@ -49,7 +49,7 @@ function announcementController(Announcement) {
      * @param response Http response
      */
     function deleteAnnouncement(request, response) {
-        Announcement.deleteOne({_id: request.params.announcementId}, (error, Announcement) => {
+        Announcement.findOneAndDelete({_id: request.params.announcementId}, (error, Announcement) => {
             if (error)
                 return response.status(500).json(error);
 
