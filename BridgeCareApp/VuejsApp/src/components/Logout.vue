@@ -4,10 +4,15 @@
             <v-flex xs12>
                 <v-layout justify-center>
                     <v-card class="logged-out-card">
-                        <v-card-title>
+                        <div class="bridgecare-logo-img-div">
+                            <v-img :src="require('@/assets/images/logos/Banner-logo.jpg')"
+                                   class="bridgecare-logo-img">
+                            </v-img>
+                        </div>
+                        <v-card-title style="justify-content: center">
                             <h3>Logged Out</h3>
                         </v-card-title>
-                        <v-card-text>
+                        <v-card-text style="justify-content: center; text-align: center">
                             <p>You have been logged out. Log back in to gain full access to the site.</p>
                         </v-card-text>
                     </v-card>
@@ -50,6 +55,16 @@
 
 <style>
     .logged-out-card {
-        width: 800px;
+        width: 45%;
+    }
+
+    .bridgecare-logo-img-div {
+        width: 100%;
+    }
+
+    .bridgecare-logo-img {
+        width: 100%;
+        border-bottom-style: solid;
+        border-color:#008FCA;
     }
 </style>
