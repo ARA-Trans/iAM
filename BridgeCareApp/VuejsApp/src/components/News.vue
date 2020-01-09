@@ -29,7 +29,7 @@
                                 <v-textarea 
                                     style="padding-left: 1em; padding-right: 1em; padding-top: 0.2em" 
                                     class="announcement-content" 
-                                    auto-grow single-line dense rows=1 label="Content"
+                                    auto-grow single-line dense rows=1 label="Announcement Text (HTML tags can be used for detailed formatting.)"
                                     v-model="newAnnouncementContent"
                                     tabindex="2"/>
                             </v-card>
