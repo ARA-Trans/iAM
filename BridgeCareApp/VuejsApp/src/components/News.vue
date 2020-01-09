@@ -9,8 +9,8 @@
                                    class="bridgecare-logo-img">
                             </v-img>
                         </div>
-                        <div class="announcement" v-if="isAdmin">
-                            <v-card>
+                        <div class="announcement" v-if="isAdmin" style="padding-bottom: 0px; margin-bottom: 0px">
+                            <v-card style="margin-bottom: 0px; padding-bottom: 0px">
                                 <v-card-title style="padding-top: 0px; padding-bottom: 0px">
                                     <v-icon class="ara-orange" style="padding-right: 1em" 
                                         v-if="isEditingAnnouncement()"
@@ -35,7 +35,7 @@
                             </v-card>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center">
-                            <v-btn round class="ara-blue-bg white--text" style="margin-top: 0px; margin-bottom: 0px"
+                            <v-btn round class="ara-blue-bg white--text" style="margin-top: 10px; margin-bottom: 0px"
                                 v-if="announcementListOffset > 0" 
                                 @click="seeNewerAnnouncements()">
                                 See Newer Announcements
