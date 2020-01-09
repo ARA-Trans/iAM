@@ -23,7 +23,9 @@ const mutations = {
         state.announcements = clone(announcements);
     },
     createdAnnouncementMutator(state: any, createdAnnouncement: Announcement) {
-        state.announcements = append(createdAnnouncement, state.announcements);
+        if (!any(propEq('id', createdAnnouncement.id), state.announcements)) {
+            state.announcements = append(createdAnnouncement, state.announcements);
+        }
     },
     updatedAnnouncementMutator(state: any, updatedAnnouncement: Announcement) {
         if (any(propEq('id', updatedAnnouncement.id), state.announcements)) {

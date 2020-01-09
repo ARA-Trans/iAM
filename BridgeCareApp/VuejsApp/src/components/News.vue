@@ -20,7 +20,10 @@
                                     </v-icon>
                                     <v-text-field class="announcement-title" label="Title" single-line v-model="newAnnouncementTitle" tabindex="1"/>
                                     <v-spacer/>
-                                    <v-btn icon class="ara-blue" title="Send Announcement" @click="onSendAnnouncement" tabindex="3"><v-icon>fas fa-paper-plane</v-icon></v-btn>
+                                    <v-btn icon class="ara-blue" title="Send Announcement" 
+                                        @click="onSendAnnouncement" tabindex="3">
+                                        <v-icon>fas fa-paper-plane</v-icon>
+                                    </v-btn>
                                 </v-card-title>
                                 <v-card-text style="padding-top: 0px; padding-bottom: 0px">{{formatDate(Date.now())}}</v-card-text>
                                 <v-textarea 
@@ -31,8 +34,10 @@
                                     tabindex="2"/>
                             </v-card>
                         </div>
-                        <div style="display: flex; align-items: center; justify-content: center;">
-                            <v-btn round class="ara-blue-bg white--text" v-if="announcementListOffset > 0" @click="announcementListOffset = announcementListOffset > (isAdmin ? 2 : 3) ? announcementListOffset - (isAdmin ? 2 : 3) : 0">
+                        <div style="display: flex; align-items: center; justify-content: center">
+                            <v-btn round class="ara-blue-bg white--text" style="margin-top: 0px; margin-bottom: 0px"
+                                v-if="announcementListOffset > 0" 
+                                @click="seeNewerAnnouncements()">
                                 See Newer Announcements
                             </v-btn>
                         </div>
@@ -47,15 +52,25 @@
                                     </v-icon>
                                     {{announcement.title}}
                                     <v-spacer/>
-                                    <v-btn icon class="ara-blue" @click="onSetEditAnnouncement(announcement)" title="Edit Announcement" v-if="isAdmin"><v-icon>fas fa-edit</v-icon></v-btn>
-                                    <v-btn icon class="ara-orange" @click="onDeleteAnnouncement(announcement)" title="Delete Announcement" v-if="isAdmin"><v-icon>fas fa-trash</v-icon></v-btn>
+                                    <v-btn icon class="ara-blue" 
+                                        @click="onSetEditAnnouncement(announcement)" 
+                                        title="Edit Announcement" v-if="isAdmin">
+                                        <v-icon>fas fa-edit</v-icon>
+                                    </v-btn>
+                                    <v-btn icon class="ara-orange" 
+                                        @click="onDeleteAnnouncement(announcement)" 
+                                        title="Delete Announcement" v-if="isAdmin">
+                                        <v-icon>fas fa-trash</v-icon>
+                                    </v-btn>
                                 </v-card-title>
                                 <v-card-text class="announcement-date">{{formatDate(announcement.creationDate)}}</v-card-text>
                                 <v-card-text class="announcement-content">{{announcement.content}}</v-card-text>
                             </v-card>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center;">
-                            <v-btn round class="ara-blue-bg white--text" v-if="announcementListOffset < announcements.length - (isAdmin ? 2 : 3)" @click="announcementListOffset+=(isAdmin ? 2 : 3)">
+                            <v-btn round class="ara-blue-bg white--text" style="margin-top: 0px; margin-bottom: 10px"
+                                v-if="announcementListOffset < announcements.length - (isAdmin ? 2 : 3)" 
+                                @click="seeOlderAnnouncements()">
                                 See Older Announcements
                             </v-btn>
                         </div>
@@ -151,6 +166,25 @@
             if (announcement === undefined) { return this.editing !== undefined; }
             return this.editing !== undefined && this.editing.id === announcement.id;
         }
+
+        seeNewerAnnouncements() {
+            // Admins see the announcement creation card, so they're shown one less announcement at a time to save space
+            var decrement = this.isAdmin ? 2 : 3;
+            if (this.announcementListOffset > decrement) {
+                this.announcementListOffset -= decrement;
+            } else {
+                this.announcementListOffset = 0;
+            }
+        }
+
+        seeOlderAnnouncements() {
+            var increment = this.isAdmin ? 2 : 3;
+            if (this.announcementListOffset < this.announcements.length - increment) {
+                this.announcementListOffset += increment;
+            } else {
+                this.announcementListOffset = this.announcementListOffset - increment;
+            }
+        }
     }
 </script>
 
@@ -170,7 +204,10 @@
     }
 
     .announcement {
-        margin: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 
     .announcement-title {
