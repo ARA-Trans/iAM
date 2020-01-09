@@ -64,7 +64,7 @@
                                     </v-btn>
                                 </v-card-title>
                                 <v-card-text class="announcement-date">{{formatDate(announcement.creationDate)}}</v-card-text>
-                                <v-card-text class="announcement-content">{{announcement.content}}</v-card-text>
+                                <v-card-text class="announcement-content" v-html="announcement.content.replace(/(\r)*\n/g, '<br/>')"></v-card-text>
                             </v-card>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center;">
