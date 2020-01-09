@@ -26,7 +26,7 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetScenarioRemainingLifeLimitLibrary/{id}")]
         [ModelValidation("The scenario id is invalid.")]
-        [RestrictAccess]
+        [RestrictAccess(Role.ADMINISTRATOR)]
         public IHttpActionResult GetSimulationRemainingLifeLimitLibrary(int id) =>
             Ok(repo.GetSimulationRemainingLifeLimitLibrary(id, db));
 
