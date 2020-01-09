@@ -48,6 +48,9 @@ async function run() {
     const TreatmentLibrary = require('./models/treatmentLibraryModel');
     const treatmentLibraryRouter = require('./routers/treatmentLibraryRouter')(TreatmentLibrary);
 
+    const Announcement = require('./models/announcementModel');
+    const announcementRouter = require('./routers/announcementRouter')(Announcement);
+
     const options = { fullDocument: 'updateLookup' };
 
     DeficientLibrary.watch([], options).on('change', data => {
@@ -96,5 +99,6 @@ async function run() {
         scenarioRouter,
         targetLibraryRouter,
         treatmentLibraryRouter,
+        announcementRouter
     ]);
 }

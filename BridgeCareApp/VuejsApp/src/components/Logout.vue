@@ -22,7 +22,7 @@
     import Component from 'vue-class-component';
 
     @Component
-    export default class LandingPage extends Vue {
+    export default class Logout extends Vue {
         mounted() {
             /*
              * The /iAM/ pages of the penndot deployments fail to set the cookie until they have been refreshed.
