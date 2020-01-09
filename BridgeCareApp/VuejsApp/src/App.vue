@@ -264,7 +264,9 @@
          * @param routeName The route name to use when navigating a user
          */
         onNavigate(routeName: string) {
-            this.$router.push(routeName);
+            if(this.$router.currentRoute.path !== routeName) {
+                this.$router.push(routeName);
+            }
         }
     }
 </script>
