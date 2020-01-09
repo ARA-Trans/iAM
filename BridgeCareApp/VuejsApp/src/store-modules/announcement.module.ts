@@ -94,10 +94,12 @@ const actions = {
                 case 'update':
                 case 'replace':
                     commit('updatedAnnouncementMutator', announcement);
+                    commit('sortAnnouncementsMutator');
                     break;
                 case 'insert':
                     if (!any(propEq('id', announcement.id), state.announcements)) {
                         commit('createdAnnouncementMutator', announcement);
+                        commit('sortAnnouncementsMutator');
                         dispatch('setInfoMessage',
                             {message: `New Announcement: ${announcement.title}`}
                         );
