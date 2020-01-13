@@ -39,7 +39,7 @@
                         <v-list-tile @click="onNavigate('/DeficientEditor/Library/')">
                             <v-list-tile-title>Deficient</v-list-tile-title>
                         </v-list-tile>
-                        <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
+                        <v-list-tile v-if="isAdmin" @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
                             <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
                         </v-list-tile>
                     </v-list-group>
@@ -115,6 +115,7 @@
         @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;

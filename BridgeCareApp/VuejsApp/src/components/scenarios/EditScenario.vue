@@ -4,7 +4,7 @@
             <v-layout fixed justify-space-between>
                 <div>
                     <v-tabs>
-                        <v-tab v-for="navigationTab in navigationTabs"
+                        <v-tab v-for="navigationTab in visibleNavigationTabs()"
                                :key="navigationTab.tabName"
                                :to="navigationTab.navigation">
                             {{navigationTab.tabName}}
@@ -52,6 +52,7 @@
     export default class EditScenario extends Vue {
         @State(state => state.breadcrumb.navigation) navigation: any[];        
         @State(state => state.network.networks) networks: Network[];
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
 
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
@@ -143,6 +144,7 @@
                         {
                             tabName: 'Remaining Life Limit',
                             tabIcon: 'fas fa-business-time',
+                            visible: vm.isAdmin,
                             navigation: {
                                 path: '/RemainingLifeLimitEditor/Scenario/',
                                 query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
@@ -199,6 +201,10 @@
                         FileDownload(response.data, 'CommittedProjects.xlsx');
                     });
             }
+        }
+
+        visibleNavigationTabs() {
+            return this.navigationTabs.filter(navigationTab => navigationTab.visible === undefined || navigationTab.visible);
         }
     }
 </script>
