@@ -3,18 +3,20 @@
         <v-layout>
             <v-flex xs12>
                 <v-layout justify-center>
-                    <v-card>
-                        <v-card-title>
+                    <v-card class="no-role-container">
+                        <div class="bridgecare-logo-img-div">
+                            <v-img :src="require('@/assets/images/logos/Banner-logo.jpg')"
+                                   class="bridgecare-logo-img">
+                            </v-img>
+                        </div>
+                        <v-card-title style="justify-content: center">
                             <h3>Service Not Available</h3>
                         </v-card-title>
-                        <v-card-text>
-                            You do not have access to the iAM BridgeCare App.
+                        <v-card-text style="justify-content: center; text-align: center">
+                            <p>You do not have access to the iAM BridgeCare App.</p>
+                            <p>You can request access at:</p>
+                            <a href="mailto:">[Email for requesting access goes here]</a>
                         </v-card-text>
-                        <!-- We don't have a link to redirect to for requesting access
-                        <v-btn class="v-btn theme--light ara-blue-bg white--text" @click="onRequestAccess">
-                            Request Access
-                        </v-btn>
-                        -->
                     </v-card>
                 </v-layout>
             </v-flex>
@@ -33,3 +35,19 @@
         }
     }
 </script>
+
+<style>
+    .no-role-container {
+        width: 45%;
+    }
+
+    .bridgecare-logo-img-div {
+        width: 100%;
+    }
+
+    .bridgecare-logo-img {
+        width: 100%;
+        border-bottom-style: solid;
+        border-color:#008FCA;
+    }
+</style>

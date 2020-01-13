@@ -51,7 +51,7 @@
         @Watch('checkedForRole')
         onCheckedRole() {
             if (this.hasRole) {
-                this.$router.push('/Inventory/');
+                this.$router.push('/News/');
             } else {
                 this.$router.push('/NoRole/');
             }

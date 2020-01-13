@@ -1,11 +1,12 @@
 ﻿import Vue from 'vue';
 import VueRouter from 'vue-router';
 import './register-hooks';
-import Inventory from '@/components/Inventory.vue';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
-import LandingPage from '@/components/LandingPage.vue';
+import Logout from '@/components/Logout.vue';
+import News from '@/components/News.vue';
+import AuthenticationStart from '@/components/authentication/AuthenticationStart.vue';
 
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
@@ -16,9 +17,9 @@ const PriorityEditor = () => import (/* webpackChunkName: "priorityEditor" */ '@
 const TargetEditor = () => import (/* webpackChunkName: "targetEditor" */ '@/components/target-editor/TargetEditor.vue');
 const DeficientEditor = () => import (/* webpackChunkName: "deficientEditor" */ '@/components/deficient-editor/DeficientEditor.vue');
 const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@/components/authentication/Authentication.vue');
-const AuthenticationStart = () => import (/* webpackChunkName: "authenticationStart" */ '@/components/authentication/AuthenticationStart.vue');
 const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/authentication/AuthenticationFailure.vue');
 const NoRole = () => import (/*webpackChunkName: "noRole" */ '@/components/authentication/NoRole.vue');
+const Inventory = () => import (/*webpackChunkName: "inventory" */ '@/components/Inventory.vue');
 
 Vue.use(VueRouter);
 
@@ -152,7 +153,12 @@ const router = new VueRouter({
         {
             path: '/iAM/',
             name: 'iAM',
-            component: LandingPage
+            component: Logout
+        },
+        {
+            path: '/News/',
+            name: 'News',
+            component: News
         },
         {
             path: '*',
