@@ -63,7 +63,7 @@
         
         onAuthenticationSuccess() {
             this.setSuccessMessageAction({message: 'Authentication successful.'});
-            this.$router.push('/Inventory/');
+            this.$router.push('/News/');
         }
 
         onAuthenticationFailure() {
