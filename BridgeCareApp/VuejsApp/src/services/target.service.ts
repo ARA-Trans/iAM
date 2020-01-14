@@ -1,31 +1,14 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {Target, TargetLibrary} from '@/shared/models/iAM/target';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
-
-const modifyDataForMongoDB = (targetLibrary: TargetLibrary): any => {
-    const targetLibraryData: any = {
-        ...targetLibrary,
-        _id: targetLibrary.id,
-        targets: targetLibrary.targets.map((target: Target) => {
-            const targetData: any = {
-                ...target,
-                _id: target.id
-            };
-            delete targetData.id;
-            return targetData;
-        })
-    };
-    delete targetLibraryData.id;
-    return targetLibraryData;
-};
+import {TargetLibrary} from '@/shared/models/iAM/target';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class TargetService {
     /**
      * Gets target libraries data
      */
     static getTargetLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetTargetLibraries', {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.get('/api/GetTargetLibraries');
     }
 
     /**
@@ -33,7 +16,7 @@ export default class TargetService {
      * @param createdTargetLibrary The target library create data
      */
     static createTargetLibrary(createdTargetLibrary: TargetLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateTargetLibrary', modifyDataForMongoDB(createdTargetLibrary), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.post('/api/CreateTargetLibrary', convertFromVueToMongo(createdTargetLibrary));
     }
 
     /**
@@ -41,7 +24,7 @@ export default class TargetService {
      * @param updatedTargetLibrary The target library update data
      */
     static updateTargetLibrary(updatedTargetLibrary: TargetLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateTargetLibrary', modifyDataForMongoDB(updatedTargetLibrary), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.put('/api/UpdateTargetLibrary', convertFromVueToMongo(updatedTargetLibrary));
     }
 
     /**
@@ -49,7 +32,7 @@ export default class TargetService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioTargetLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioTargetLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
+        return axiosInstance.get(`/api/GetScenarioTargetLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -57,6 +40,6 @@ export default class TargetService {
      * @param scenarioTargetLibraryData Scenario target library upsert data
      */
     static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData);
     }
 }

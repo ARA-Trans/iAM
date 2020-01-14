@@ -3,7 +3,7 @@ import {clone, any, propEq, findIndex} from 'ramda';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
-import {Rollup} from '../shared/models/iAM/rollup';
+import {Rollup} from '@/shared/models/iAM/rollup';
 import RollupService from '../services/rollup.service';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 

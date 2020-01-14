@@ -109,7 +109,8 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-    import {getErrorMessage, setContentTypeCharset} from '@/shared/utils/http-utils';
+    import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
+    import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
     @Component({
         components: {Spinner}
@@ -188,6 +189,7 @@
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
                 request.headers = setContentTypeCharset(request.headers);
+                request.headers = setAuthHeader(request.headers);
                 this.setIsBusyAction({isBusy: true});
                 return request;
             };

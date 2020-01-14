@@ -3,25 +3,7 @@ import {clone, append, any, propEq, update, findIndex, equals} from 'ramda';
 import DeficientService from '@/services/deficient.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const deficientLibrary: any = {
-        ...data,
-        id: data._id,
-        deficients: data.deficients.map((deficient: any) => {
-            const subData: any = {
-                ...deficient,
-                id: data._id
-            };
-            delete subData._id;
-            delete subData.__v;
-            return subData;
-        })
-    };
-    delete deficientLibrary._id;
-    delete deficientLibrary.__v;
-    return deficientLibrary as DeficientLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     deficientLibraries: [] as DeficientLibrary[],
@@ -61,7 +43,7 @@ const actions = {
         await DeficientService.getDeficientLibraries().then((response: AxiosResponse<any[]>) => {
             if (hasValue(response, 'data')) {
                 const deficientLibraries: DeficientLibrary[] = response.data
-                    .map((data: any) => convertFromMongoToVueModel(data));
+                    .map((data: any) => convertFromMongoToVue(data));
                 commit('deficientLibrariesMutator', deficientLibraries);
             }
         });
@@ -70,7 +52,7 @@ const actions = {
         await DeficientService.createDeficientLibrary(payload.createdDeficientLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdDeficientLibrary: DeficientLibrary = convertFromMongoToVueModel(response.data);
+                    const createdDeficientLibrary: DeficientLibrary = convertFromMongoToVue(response.data);
                     commit('createdDeficientLibraryMutator', createdDeficientLibrary);
                     commit('selectedDeficientLibraryMutator', createdDeficientLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created deficient library'});
@@ -81,7 +63,7 @@ const actions = {
         await DeficientService.updateDeficientLibrary(payload.updatedDeficientLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedDeficientLibrary: DeficientLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedDeficientLibrary: DeficientLibrary = convertFromMongoToVue(response.data);
                     commit('updatedDeficientLibraryMutator', updatedDeficientLibrary);
                     commit('selectedDeficientLibraryMutator', updatedDeficientLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated deficient library'});
@@ -108,7 +90,7 @@ const actions = {
     },
     async socket_deficientLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const deficientLibrary: DeficientLibrary = convertFromMongoToVueModel(payload.fullDocument);
+            const deficientLibrary: DeficientLibrary = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
                 case 'update':
                 case 'replace':

@@ -1,15 +1,14 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise} from 'axios';
-import {RemainingLifeLimit, RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
+import {RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
 import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class RemainingLifeLimitService {
     /**
      * Gets all remaining life limit libraries
      */
     static getRemainingLifeLimitLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetRemainingLifeLimitLibraries', {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.get('/api/GetRemainingLifeLimitLibraries');
     }
 
     /**
@@ -17,7 +16,7 @@ export default class RemainingLifeLimitService {
      * @param createdRemainingLifeLimitLibrary The remaining life limit library create data
      */
     static createRemainingLifeLimitLibrary(createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateRemainingLifeLimitLibrary', convertFromVueToMongo(createdRemainingLifeLimitLibrary), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.post('/api/CreateRemainingLifeLimitLibrary', convertFromVueToMongo(createdRemainingLifeLimitLibrary));
     }
 
     /**
@@ -25,7 +24,7 @@ export default class RemainingLifeLimitService {
      * @param updatedRemainingLifeLimitLibrary The remaining life limit library update data
      */
     static updateRemainingLifeLimitLibrary(updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateRemainingLifeLimitLibrary', convertFromVueToMongo(updatedRemainingLifeLimitLibrary), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.put('/api/UpdateRemainingLifeLimitLibrary', convertFromVueToMongo(updatedRemainingLifeLimitLibrary));
     }
 
     /**
@@ -33,7 +32,7 @@ export default class RemainingLifeLimitService {
      * @param selectedScenarioId Scenario id to use in finding a scenario's remaining life limit library data
      */
     static getScenarioRemainingLifeLimitLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioRemainingLifeLimitLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
+        return axiosInstance.get(`/api/GetScenarioRemainingLifeLimitLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -41,6 +40,6 @@ export default class RemainingLifeLimitService {
      * @param saveRemainingLifeLimitLibraryData The scenario remaining life limit library upsert data
      */
     static saveScenarioRemainingLifeLimitLibrary(saveRemainingLifeLimitLibraryData: RemainingLifeLimitLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioRemainingLifeLimitLibrary', saveRemainingLifeLimitLibraryData, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/SaveScenarioRemainingLifeLimitLibrary', saveRemainingLifeLimitLibraryData);
     }
 }
