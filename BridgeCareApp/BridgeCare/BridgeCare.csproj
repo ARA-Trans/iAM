@@ -239,6 +239,13 @@
   <ItemGroup>
     <Compile Include="ApplicationLog\HandleException.cs" />
     <Compile Include="ApplicationLog\UnhandledExceptionLogger.cs" />
+    <Compile Include="DataAccessLayer\CashFlowLibraryDAL.cs" />
+    <Compile Include="EntityClasses\SplitTreatmentEntity.cs" />
+    <Compile Include="EntityClasses\SplitTreatmentLimitEntity.cs" />
+    <Compile Include="Interfaces\ICashFlowLibrary.cs" />
+    <Compile Include="Models\CashFlowLibraryModel.cs" />
+    <Compile Include="Models\SplitTreatmentLimitModel.cs" />
+    <Compile Include="Models\SplitTreatmentModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
     <Compile Include="Security\JWTParse.cs" />
     <Compile Include="DataAccessLayer\RunSimulationDAL.cs" />

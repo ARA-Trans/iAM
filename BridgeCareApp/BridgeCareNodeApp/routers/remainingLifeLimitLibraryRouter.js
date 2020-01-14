@@ -7,11 +7,11 @@ function remainingLifeLimitLibraryRouter(RemainingLifeLimitLibrary) {
     const controller = remainingLifeLimitLibraryController(RemainingLifeLimitLibrary);
 
     router.route('/GetRemainingLifeLimitLibraries')
-        .get(authorizationFilter(), controller.get);
+        .get(authorizationFilter(["PD-BAMS-Administrator"]), controller.get);
     router.route('/CreateRemainingLifeLimitLibrary')
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+        .post(authorizationFilter(["PD-BAMS-Administrator"]), controller.post);
     router.route('/UpdateRemainingLifeLimitLibrary')
-        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+        .put(authorizationFilter(["PD-BAMS-Administrator"]), controller.put);
 
     return router;
 }

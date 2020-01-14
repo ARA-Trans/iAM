@@ -81,7 +81,7 @@ namespace BridgeCare.DataAccessLayer
                                     splitTreatmentLimitModel.matched = true;
                                     splitTreatmentLimitModel.UpdateSplitTreatment(splitTreatmentLimit);
                                 }
-                            }); 
+                            });
                         }
 
                         if (splitTreatmentModel.SplitTreatmentLimits.Any(m => !m.matched))
