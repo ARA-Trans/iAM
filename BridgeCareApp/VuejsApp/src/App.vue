@@ -1,8 +1,12 @@
 <template>
     <v-app class="paper-white-bg">
         <v-content>
-            <v-navigation-drawer app v-if="authenticatedWithRole" class="paper-white-bg" v-model="drawer">
+            <v-navigation-drawer app v-if="authenticatedWithRole" class="paper-white-bg" v-model="drawer" :disable-resize-watcher="true">
                 <v-list dense class="pt-0">
+                    <v-list-tile @click="drawer=false; onNavigate('/News/')">
+                        <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-newspaper</v-icon></v-list-tile-action>
+                        <v-list-tile-title>Announcements</v-list-tile-title>
+                    </v-list-tile>
                     <v-list-tile @click="onNavigate('/Inventory/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-archive</v-icon></v-list-tile-action>
                         <v-list-tile-title>Inventory</v-list-tile-title>
@@ -46,7 +50,17 @@
                 </v-list>
             </v-navigation-drawer>
             <v-toolbar app class="ara-blue-pantone-289-bg">
-                <v-toolbar-side-icon v-if="authenticatedWithRole" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+                <v-toolbar-side-icon v-if="authenticatedWithRole && ($router.currentRoute.name !== 'News')" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+                <v-toolbar-title v-if="authenticatedWithRole && ($router.currentRoute.name === 'News')" class="white--text">
+                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/Inventory/')">
+                        <v-icon style="padding-right: 12px">fas fa-archive</v-icon>
+                        Inventory Lookup
+                    </v-btn>
+                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/Scenarios/')">
+                        <v-icon style="padding-right: 12px">fas fa-project-diagram</v-icon>
+                        BridgeCare Analysis
+                    </v-btn>
+                </v-toolbar-title>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
                     <span class="font-weight-light">Scenario: </span>
                     <span>{{selectedScenarioName}}</span>
@@ -264,7 +278,9 @@
          * @param routeName The route name to use when navigating a user
          */
         onNavigate(routeName: string) {
-            this.$router.push(routeName);
+            if(this.$router.currentRoute.path !== routeName) {
+                this.$router.push(routeName);
+            }
         }
     }
 </script>

@@ -7,6 +7,7 @@ const state = {
     authenticated: false,
     hasRole: false,
     checkedForRole: false,
+    isAdmin: false,
     username: ''
 };
 
@@ -19,6 +20,9 @@ const mutations = {
     },
     checkedForRoleMutator(state: any, status: boolean) {
         state.checkedForRole = status;
+    },
+    isAdminMutator(state: any, status: boolean) {
+        state.isAdmin = status;
     },
     usernameMutator(state: any, username: string) {
         state.username = username;
@@ -85,6 +89,9 @@ const actions = {
                         const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
                         const username: string = userInfo.sub.split(',')[0].split('=')[1];
                         commit('hasRoleMutator', userInfo.roles !== undefined);
+                        if (state.hasRole) {
+                            commit('isAdminMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-Administrator');
+                        }
                         commit('checkedForRoleMutator', true);
                         commit('usernameMutator', username);
                     } else {
