@@ -101,6 +101,7 @@
                 this.showError = false;
                 this.selectedScenarioData.networkId = this.dialogData.scenario.networkId;
                 this.selectedScenarioData.simulationId = this.dialogData.scenario.simulationId;
+                this.selectedScenarioData.simulationName = this.dialogData.scenario.simulationName;
             }
             if (!this.isBusy) {
                 this.selectedReports = [];

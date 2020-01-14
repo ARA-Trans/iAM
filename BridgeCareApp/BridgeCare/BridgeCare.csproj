@@ -455,6 +455,7 @@
     <Compile Include="Services\SummaryReport\PoorBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
     <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />
+    <Compile Include="Services\SummaryReport\SummaryReportParameters.cs" />
     <Compile Include="UtilityFunctions.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummary.cs" />
