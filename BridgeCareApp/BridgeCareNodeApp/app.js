@@ -54,7 +54,7 @@ async function run() {
     const options = { fullDocument: 'updateLookup' };
 
     Announcement.watch([], options).on('change', data => {
-        io.emit('announcement', data);
+        emitEvent('announcement', data);
     });
 
     DeficientLibrary.watch([], options).on('change', data => {
