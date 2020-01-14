@@ -2,7 +2,8 @@ function pollingController() {
     var eventList = [];
 
     /**
-     * GET Nodejs API endpoint for performance libraries; returns performance libraries if found
+     * GET Nodejs API endpoint for polling.
+     * Fetches any new events from the past ten seconds
      * @param req Http request
      * @param res Http response
      */
@@ -28,6 +29,9 @@ function pollingController() {
         eventList = eventList.filter(event => event.time > Date.now() - 10000);
     }
 
+    /**
+     * Sends out an event to any polling clients
+     */
     function emit(eventName, eventData) {
         eventList.push({eventName, payload: eventData, time: Date.now(), sentTo: []})
     }
