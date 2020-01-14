@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
@@ -13,6 +12,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class DeficientDAL : IDeficient
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(DeficientDAL));
         /// <summary>
         /// Fetches a simulation's deficient library data
         /// Throws a RowNotInTableException if no simulation is found
@@ -23,7 +23,10 @@ namespace BridgeCare.DataAccessLayer
         public DeficientLibraryModel GetSimulationDeficientLibrary(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}.");
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
+            }
 
             var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
 
@@ -42,7 +45,10 @@ namespace BridgeCare.DataAccessLayer
             var id = int.Parse(model.Id);
 
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Error($"No scenario was found with id {id}.");
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
+            }
 
             var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
 

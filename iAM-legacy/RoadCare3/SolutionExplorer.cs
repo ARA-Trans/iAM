@@ -1685,7 +1685,7 @@ namespace RoadCare3
 						String strSimID = tvSolutionExplorer.SelectedNode.Name;
 						FormSimulationResults formSimulation;
 
-						if( DBMgr.IsTableInDatabase( "SIMULATION_" + strNetworkID + "_" + strSimID ) )
+						if( DBMgr.IsTableInDatabase( "SIMULATION_" + strNetworkID + "_" + strSimID + "_0" ) )
 						{
 							if( !FormManager.IsFormSimulationCommittedOpen( strSimID, out formSimulation ) )
 							{
@@ -1711,7 +1711,7 @@ namespace RoadCare3
 						String strSimulationName = tvSolutionExplorer.SelectedNode.Parent.Text;
 						String strSimID = tvSolutionExplorer.SelectedNode.Name;
 
-						if (DBMgr.IsTableInDatabase("SIMULATION_" + strNetworkID + "_" + strSimID))
+						if (DBMgr.IsTableInDatabase("SIMULATION_" + strNetworkID + "_" + strSimID + "_0"))
 						{
 							FormSimulationResults formSimulation;
 							if (!FormManager.IsFormSimulationResultsOpen(strSimID, out formSimulation))

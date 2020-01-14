@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BridgeCare.Security;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -15,6 +16,7 @@ namespace BridgeCare.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(AuthenticationController));
         /// <summary>
         /// API endpoint for fetching user info from ESEC using the OpenID Connect protocol
         /// </summary>
@@ -146,12 +148,13 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
-        /// Sends an access token to the revocation endpoint, preventing the token from ever being used again.
+        /// Sends an access or refresh token to the revocation endpoint, preventing the token from ever being used again.
         /// </summary>
-        /// <param name="token">Access Token</param>
+        /// <param name="token">Access or Refresh Token</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("RevokeToken/{token}")]
+        [Route("RevokeToken/Access/{token}")]
+        [Route("RevokeToken/Refresh/{token}")]
         public IHttpActionResult RevokeToken(string token)
         {
             var esecConfig = (NameValueCollection)ConfigurationManager.GetSection("ESECConfig");
@@ -187,6 +190,21 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
+        /// Prevents an id token from being accepted by the application again.
+        /// ID tokens are not validated by the ESEC server, so they cannot be invalidated in the
+        /// same way as refresh or access tokens. Instead, we must locally keep track of them.
+        /// </summary>
+        [HttpPost]
+        [Route("RevokeToken/Id")]
+        public IHttpActionResult RevokeIdToken()
+        {
+            // A JWT is too large to store in the URL, so it is passed in the authorization header.
+            string idToken = Request.Headers.Authorization.Parameter;
+            JWTParse.RevokeToken(idToken);
+            return Ok();
+        }
+
+        /// <summary>
         /// Converts a JSON-formatted string into a Dictionary
         /// </summary>
         /// <param name="jsonString">JSON-formatted string</param>
@@ -205,6 +223,7 @@ namespace BridgeCare.Controllers
             var responseJSON = DictionaryFromJSON(response);
             if (responseJSON.ContainsKey("error"))
             {
+                log.Error($"ESEC endpoint returned error - {responseJSON["error"]}: {responseJSON["error_description"]}");
                 throw new AuthenticationException(responseJSON["error_description"]);
             }
         }

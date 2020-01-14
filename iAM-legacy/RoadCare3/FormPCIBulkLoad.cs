@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using AppliedResearchAssociates.PciDistress;
 using DatabaseManager;
 using DataObjects;
-using System.IO;
-using PCI;
-using Validation_;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
 
 namespace RoadCare3
 {
@@ -478,7 +476,7 @@ namespace RoadCare3
             }
             if (sbDeduct.Length > 0)
             {
-                dPCI = Distress.ComputePCIValue(sbDeduct.ToString(), strMethod);
+                dPCI = PciDistress.ComputePCIValue(sbDeduct.ToString(), strMethod);
             }
             string strPCI = nNextID.ToString() + "\t" + listPCI[0].Route + "\t" + listPCI[0].BeginStation.ToString() + "\t" + listPCI[0].EndStation.ToString() + "\t" + listPCI[0].Direction +
                 "\t\t\t\t" + listPCI[0].Date.ToString() + "\t\t" + listPCI[0].Method + "\t" + dArea.ToString() + "\t" + dPCI.ToString("f2") + "\t\t\t\t" + listPCI[0].Type;
@@ -527,7 +525,7 @@ namespace RoadCare3
                 {
 
                 }
-                dPCI = Distress.ComputePCIValue(sbDeduct.ToString(), strMethod);
+                dPCI = PciDistress.ComputePCIValue(sbDeduct.ToString(), strMethod);
             }
 
             string strPCI = m_nNextPCIID.ToString() + "\t\t\t\t\t" + listPCI[0].Facility + "\t" + listPCI[0].Section + "\t" + listPCI[0].Sample + "\t" + listPCI[0].Date.ToString() + "\t\t" + listPCI[0].Method + "\t" + dArea.ToString() + "\t" + dPCI.ToString("f2") + "\t\t\t\t" + listPCI[0].Type + "\t";
@@ -540,16 +538,16 @@ namespace RoadCare3
             if(method == null) return 0.0;
             
             double dPCIDeduct = 0.0;
-            if (Distress.IsWASHCLKMethod(method.Method))
+            if (PciDistress.IsWASHCLKMethod(method.Method))
             {
                 double dExtent = dAmount / dArea;
                 string extent = string.Format("{0:F2}", dExtent);
                 int nDistress = method.GetDistress(strDistress);
-                dPCIDeduct = Distress.pvt_ComputeNonPCIDeduct(method.Method, nDistress, strSeverity, dExtent);
+                dPCIDeduct = PciDistress.pvt_ComputeNonPCIDeduct(method.Method, nDistress, strSeverity, dExtent);
             }
             else
             {
-                dPCIDeduct = Distress.pvt_ComputePCIDeduct(method.GetDistress(strDistress), strSeverity, dAmount, dArea);
+                dPCIDeduct = PciDistress.pvt_ComputePCIDeduct(method.GetDistress(strDistress), strSeverity, dAmount, dArea);
             }
             return dPCIDeduct;
         }

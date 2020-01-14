@@ -348,12 +348,8 @@ namespace RoadCare3
 
         private void FormLogin_Load(object sender, EventArgs e)
         {
-
-            #if DEBUG
-
-            #endif
-
             //GetLicenseFileInfo();
+
             if (Settings.Default.DefaultTab.ToString() == "MSSQL")
             {
                 tcLogin.SelectedTab = TabSqlServer;
@@ -377,16 +373,17 @@ namespace RoadCare3
 
             tbRoadCareUserName.Text = Settings.Default.LAST_LOGIN;
             TabSqlServer.Enabled = true;
-            #if DEBUG
-                        tbRoadCarePassword.Text = "install";
-                        tbRoadCareUserName.Text = "install";
-                        tbMSSQLDatabaseName.Text = "PAMS";
-                        tbMSSQLServerName.Text = "13.92.210.73";
-                        tbMSSQLUserName.Text = "penndot";
-                        tbMSSQLPassword.Text = "roadcarepams";
-                        chkUseIntegratedSecurity.Checked = false;
-                        tcLogin.SelectedIndex= 0;
-            #endif
+
+//#if DEBUG
+//            tbRoadCarePassword.Text = "install";
+//            tbRoadCareUserName.Text = "install";
+//            tbMSSQLDatabaseName.Text = "PAMS";
+//            tbMSSQLServerName.Text = "13.92.210.73";
+//            tbMSSQLUserName.Text = "penndot";
+
+//            chkUseIntegratedSecurity.Checked = false;
+//            tcLogin.SelectedIndex = 0;
+//#endif
         }
 
         private void FormLogin_KeyPress(object sender, KeyPressEventArgs e)

@@ -5,12 +5,24 @@ import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     authenticated: false,
+    hasRole: false,
+    checkedForRole: false,
+    isAdmin: false,
     username: ''
 };
 
 const mutations = {
     authenticatedMutator(state: any, status: boolean) {
         state.authenticated = status;
+    },
+    hasRoleMutator(state: any, status: boolean) {
+        state.hasRole = status;
+    },
+    checkedForRoleMutator(state: any, status: boolean) {
+        state.checkedForRole = status;
+    },
+    isAdminMutator(state: any, status: boolean) {
+        state.isAdmin = status;
     },
     usernameMutator(state: any, username: string) {
         state.username = username;
@@ -39,9 +51,8 @@ const actions = {
             if (state.authenticated) {
                 return;
             }
+            dispatch('refreshTokens').then(() => dispatch('getUserInfo'));
             commit('authenticatedMutator', true);
-            dispatch('refreshTokens');
-            dispatch('getUserInfo');
         } else if (state.authenticated) {
             dispatch('logOut');
         }
@@ -77,6 +88,11 @@ const actions = {
                         localStorage.setItem('UserInfo', response.data);
                         const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
                         const username: string = userInfo.sub.split(',')[0].split('=')[1];
+                        commit('hasRoleMutator', userInfo.roles !== undefined);
+                        if (state.hasRole) {
+                            commit('isAdminMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-Administrator');
+                        }
+                        commit('checkedForRoleMutator', true);
                         commit('usernameMutator', username);
                     } else {
                         dispatch('logOut');
@@ -92,10 +108,14 @@ const actions = {
         } else {
             localStorage.removeItem('UserInfo');
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-            localStorage.removeItem('UserTokens');
+            // ID token is too long to pass as part of the URL, but it will be passed as the parameter
+            // of the Authorization header.
+            AuthenticationService.revokeToken('', 'Id').then(()=>
+                localStorage.removeItem('UserTokens')
+            );
             localStorage.removeItem('TokenExpiration');
-            AuthenticationService.revokeToken(userTokens.access_token);
-            AuthenticationService.revokeToken(userTokens.refresh_token);
+            AuthenticationService.revokeToken(userTokens.access_token, 'Access');
+            AuthenticationService.revokeToken(userTokens.refresh_token, 'Refresh');
             commit('usernameMutator', '');
             commit('authenticatedMutator', false);
         }

@@ -22,36 +22,43 @@ run().catch(error => debug(error));
 
 async function run() {
     const CashFlowLibrary = require('./models/cashFlowLibraryModel');
-    const cashFlowLibraryRoutes = require('./routes/cashFlowLibraryRoutes')(CashFlowLibrary);
+    const cashFlowLibraryRouter = require('./routers/cashFlowLibraryRouter')(CashFlowLibrary);
 
     const DeficientLibrary = require('./models/deficientLibraryModel');
-    const deficientLibraryRoutes = require('./routes/deficientLibraryRoutes')(DeficientLibrary);
+    const deficientLibraryRouter = require('./routers/deficientLibraryRouter')(DeficientLibrary);
 
     const InvestmentLibrary = require('./models/investmentLibraryModel');
-    const investmentLibraryRoutes = require('./routes/investmentLibraryRoutes')(InvestmentLibrary);
+    const investmentLibraryRouter = require('./routers/investmentLibraryRouter')(InvestmentLibrary);
 
     const Network = require('./models/NetworkModel');
-    const networkRoutes = require('./routes/networkRoutes')(Network);
+    const networkRouter = require('./routers/networkRouter')(Network);
 
     const PerformanceLibrary = require('./models/performanceLibraryModel');
-    const performanceLibraryRoutes = require('./routes/performanceLibraryRoutes')(PerformanceLibrary);
+    const performanceLibraryRouter = require('./routers/performanceLibraryRouter')(PerformanceLibrary);
 
     const PriorityLibrary = require('./models/priorityLibraryModel');
-    const priorityLibraryRoutes = require('./routes/priorityLibraryRoutes')(PriorityLibrary);
+    const priorityLibraryRouter = require('./routers/priorityLibraryRouter')(PriorityLibrary);
 
     const RemainingLifeLimitLibrary = require('./models/remainingLifeLimitLibraryModel');
-    const remainingLifeLimitLibraryRoutes = require('./routes/remainingLifeLimitLibraryRoutes')(RemainingLifeLimitLibrary);
+    const remainingLifeLimitLibraryRouter = require('./routers/remainingLifeLimitLibraryRouter')(RemainingLifeLimitLibrary);
 
     const Scenario = require('./models/scenarioModel');
-    const scenarioRoutes = require('./routes/scenarioRoutes')(Scenario);
+    const scenarioRouter = require('./routers/scenarioRouter')(Scenario);
 
     const TargetLibrary = require('./models/targetLibraryModel');
-    const targetLibraryRoutes = require('./routes/targetLibraryRoutes')(TargetLibrary);
+    const targetLibraryRouter = require('./routers/targetLibraryRouter')(TargetLibrary);
 
     const TreatmentLibrary = require('./models/treatmentLibraryModel');
-    const treatmentLibraryRoutes = require('./routes/treatmentLibraryRoutes')(TreatmentLibrary);
+    const treatmentLibraryRouter = require('./routers/treatmentLibraryRouter')(TreatmentLibrary);
+
+    const Announcement = require('./models/announcementModel');
+    const announcementRouter = require('./routers/announcementRouter')(Announcement);
 
     const options = { fullDocument: 'updateLookup' };
+
+    Announcement.watch([], options).on('change', data => {
+        io.emit('announcement', data);
+    });
 
     CashFlowLibrary.watch([], options).on('change', data => {
         io.emit('cashFlowLibrary', data);
@@ -94,15 +101,16 @@ async function run() {
     });
 
   app.use("/api", [
-      cashFlowLibraryRoutes,
-      deficientLibraryRoutes,
-      investmentLibraryRoutes,
-      networkRoutes,
-      performanceLibraryRoutes,
-      priorityLibraryRoutes,
-      remainingLifeLimitLibraryRoutes,
-      scenarioRoutes,
-      targetLibraryRoutes,
-      treatmentLibraryRoutes
+      cashFlowLibraryRouter,
+      deficientLibraryRouter,
+      investmentLibraryRouter,
+      networkRouter,
+      performanceLibraryRouter,
+      priorityLibraryRouter,
+      remainingLifeLimitLibraryRouter,
+      scenarioRouter,
+      targetLibraryRouter,
+      treatmentLibraryRouter,
+      announcementRouter
   ]);
 }
