@@ -49,7 +49,14 @@ async function run() {
     const TreatmentLibrary = require('./models/treatmentLibraryModel');
     const treatmentLibraryRouter = require('./routers/treatmentLibraryRouter')(TreatmentLibrary);
 
+    const Announcement = require('./models/announcementModel');
+    const announcementRouter = require('./routers/announcementRouter')(Announcement);
+
     const options = { fullDocument: 'updateLookup' };
+
+    Announcement.watch([], options).on('change', data => {
+        io.emit('announcement', data);
+    });
 
     DeficientLibrary.watch([], options).on('change', data => {
         io.emit('deficientLibrary', data);
@@ -97,5 +104,6 @@ async function run() {
         scenarioRouter,
         targetLibraryRouter,
         treatmentLibraryRouter,
+        announcementRouter
     ]);
 }

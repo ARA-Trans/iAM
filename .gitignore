@@ -347,5 +347,19 @@ connection.config
 # ESEC metadata, including client secret
 /BridgeCareApp/BridgeCare/esec.config
 /BridgeCareApp/BridgeCare/Logs/BridgeCareAPI.log
+
+# Deployment packages
+/Deployment/Deployment_Packages
+
+# Deployment configurations that include client_secret
+/Deployment/configurations/bams/esec.config
+/Deployment/configurations/bamsdev/esec.config
+/Deployment/configurations/bamssyst/esec.config
+/Deployment/configurations/iam-deploy/esec.config
+
+# Deployment logs
+/Deployment/npmLogs
+
+# Node error log files
 /BridgeCareApp/BridgeCareNodeApp/logs/nodeErrorLogs.log
 /BridgeCareApp/BridgeCareNodeApp/logs/nodeCombinedLogs.log
