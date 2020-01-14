@@ -1,6 +1,7 @@
 import {AxiosError, AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {prop} from 'ramda';
+import {UserTokens} from '@/shared/models/iAM/authentication';
 
 export const http2XX = /(2(0|2)[0-8])/;
 
@@ -33,6 +34,15 @@ export const setContentTypeCharset = (headers: any) => {
         } else {
             headers['Content-Type'] = 'charset=utf-8';
         }
+    }
+
+    return headers;
+};
+
+export const setAuthHeader = (headers: any) => {
+    if (headers && localStorage.getItem('UserTokens')) {
+        const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
+        headers['Authorization'] = `Bearer ${userTokens.id_token}`;
     }
 
     return headers;

@@ -1,7 +1,6 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 import {Scenario} from '@/shared/models/iAM/scenario';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class ReportsService {
     /**
@@ -9,7 +8,7 @@ export default class ReportsService {
      * @param selectedScenarioData Scenario data to use in generating the report
      */
     static getDetailedReport(selectedScenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/GetDetailedReport', selectedScenarioData, {responseType: 'blob', headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/GetDetailedReport', selectedScenarioData, {responseType: 'blob'});
     }
 
     /**
@@ -17,11 +16,11 @@ export default class ReportsService {
      * @param selectedScenarioData Scenario data to use in generating the report
      */
     static getSummaryReport(selectedScenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/GetSummaryReport', selectedScenarioData, {responseType: 'blob', headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/GetSummaryReport', selectedScenarioData, {responseType: 'blob'});
     }
 
     static getSummaryReportMissingAttributes(selectedScenarioId: number, selectedNetworkId: number) {
         return axiosInstance
-            .get(`/api/GetSummaryReportMissingAttributes?simulationId=${selectedScenarioId}&networkId=${selectedNetworkId}`, {headers: getAuthorizationHeader()});
+            .get(`/api/GetSummaryReportMissingAttributes?simulationId=${selectedScenarioId}&networkId=${selectedNetworkId}`);
     }
 }

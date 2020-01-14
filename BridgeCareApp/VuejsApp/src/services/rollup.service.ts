@@ -2,13 +2,12 @@
 import { axiosInstance, nodejsAxiosInstance } from '@/shared/utils/axios-instance';
 import { hasValue } from '@/shared/utils/has-value-util';
 import { any, propEq } from 'ramda';
-import { Rollup } from '../shared/models/iAM/rollup';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
+import { Rollup } from '@/shared/models/iAM/rollup';
 
 export default class RollupService {
     static getMongoRollups(): AxiosPromise {
         return new Promise<AxiosResponse<Rollup[]>>((resolve) => {
-            nodejsAxiosInstance.get('api/GetMongoRollups', {headers: getAuthorizationHeader()})
+            nodejsAxiosInstance.get('api/GetMongoRollups')
                 .then((response: AxiosResponse<Rollup[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);
@@ -22,7 +21,7 @@ export default class RollupService {
 
     static getLegacyNetworks(networks: Rollup[]): AxiosPromise {
         return new Promise<AxiosResponse<Rollup[]>>((resolve) => {
-            axiosInstance.get('api/GetNetworks', {headers: getAuthorizationHeader()})
+            axiosInstance.get('api/GetNetworks')
                 .then((responseLegacy: AxiosResponse<Rollup[]>) => {
                     if (hasValue(responseLegacy)) {
                         var resultant: Rollup[] = [];
@@ -34,7 +33,7 @@ export default class RollupService {
                         });
 
                         if (resultant.length != 0) {
-                            nodejsAxiosInstance.post('api/AddLegacyNetworks', resultant, {headers: getAuthorizationHeader()})
+                            nodejsAxiosInstance.post('api/AddLegacyNetworks', resultant)
                                 .then((res: AxiosResponse<Rollup[]>) => {
                                     if (hasValue(res)) {
                                         return resolve(res);
@@ -53,6 +52,6 @@ export default class RollupService {
     }
 
     static rollupNetwork(selectedNetwork: Rollup): AxiosPromise {
-        return axiosInstance.post('/api/RunRollup', selectedNetwork, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/RunRollup', selectedNetwork);
     }
 }
