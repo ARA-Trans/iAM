@@ -9,9 +9,9 @@ function cashFlowLibraryRouter(CashFlowLibrary) {
     router.route('/GetCashFlowLibraries')
         .get(authorizationFilter(), controller.get);
     router.route('/CreateCashFlowLibrary')
-        .post(authorizationFilter(["PD-BAMS-Administrator"]), controller.post);
+        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
     router.route('/UpdateCashFlowLibrary')
-        .put(authorizationFilter(["PD-BAMS-Administrator"]), controller.put);
+        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
 
     return router;
 }

@@ -239,6 +239,7 @@
   <ItemGroup>
     <Compile Include="ApplicationLog\HandleException.cs" />
     <Compile Include="ApplicationLog\UnhandledExceptionLogger.cs" />
+    <Compile Include="Controllers\CashFlowLibraryController.cs" />
     <Compile Include="DataAccessLayer\CashFlowLibraryDAL.cs" />
     <Compile Include="EntityClasses\SplitTreatmentEntity.cs" />
     <Compile Include="EntityClasses\SplitTreatmentLimitEntity.cs" />
@@ -555,12 +556,12 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>50697</DevelopmentServerPort>
+          <DevelopmentServerPort>50696</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:8081/</IISUrl>
+          <IISUrl>http://localhost:50696/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>http://localhost:50697</CustomServerUrl>
+          <CustomServerUrl>http://localhost:50696</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
