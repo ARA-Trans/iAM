@@ -47,8 +47,15 @@ async function run() {
     const polling = require('./routers/pollingRouter')();
     const pollingRouter = polling.router;
     const emitEvent = polling.emit;
+    
+    const Announcement = require('./models/announcementModel');
+    const announcementRouter = require('./routers/announcementRouter')(Announcement);
 
     const options = { fullDocument: 'updateLookup' };
+
+    Announcement.watch([], options).on('change', data => {
+        io.emit('announcement', data);
+    });
 
     DeficientLibrary.watch([], options).on('change', data => {
         emitEvent('deficientLibrary', data);
@@ -96,6 +103,7 @@ async function run() {
         scenarioRouter,
         targetLibraryRouter,
         treatmentLibraryRouter,
-        pollingRouter
+        pollingRouter,
+        announcementRouter
     ]);
 }
