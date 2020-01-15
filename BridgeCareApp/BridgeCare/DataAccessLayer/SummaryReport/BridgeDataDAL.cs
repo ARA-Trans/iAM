@@ -201,7 +201,9 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         }
 
         private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
-        {           
+        {
+            bool adtTotalHasValue = Int32.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
+            bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
             return new BridgeDataModel
             {
                 BRKey = penndotBridgeDataRow.BRKEY,
@@ -214,7 +216,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 FunctionalClass = pennDotReportADataRow.FUNC_CLASS,
                 NHS = pennDotReportADataRow.NHS_IND == "1" ? "Y" : "N",
                 YearBuilt = pennDotReportADataRow.YEAR_BUILT,
-                ADTOverTenThousand = Convert.ToInt32(pennDotReportADataRow.ADTTOTAL) > 10000 ? "Y" : "N",
+                ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
                 RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)
             };
         }        

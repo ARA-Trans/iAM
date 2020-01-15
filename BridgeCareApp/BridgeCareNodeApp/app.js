@@ -15,10 +15,6 @@ const server = app.listen(config.port, () => {
     debug(`Running on port ${config.port}`);
 });
 
-const io = require('./config/socketIO')(server, {
-    pingTimeout: 60000
-});
-
 run().catch(error => debug(error));
 
 async function run() {
@@ -52,13 +48,17 @@ async function run() {
     const TreatmentLibrary = require('./models/treatmentLibraryModel');
     const treatmentLibraryRouter = require('./routers/treatmentLibraryRouter')(TreatmentLibrary);
 
+    const polling = require('./routers/pollingRouter')();
+    const pollingRouter = polling.router;
+    const emitEvent = polling.emit;
+    
     const Announcement = require('./models/announcementModel');
     const announcementRouter = require('./routers/announcementRouter')(Announcement);
 
     const options = { fullDocument: 'updateLookup' };
 
     Announcement.watch([], options).on('change', data => {
-        io.emit('announcement', data);
+        emitEvent('announcement', data);
     });
 
     CashFlowLibrary.watch([], options).on('change', data => {
@@ -66,52 +66,54 @@ async function run() {
     });
 
     DeficientLibrary.watch([], options).on('change', data => {
-        io.emit('deficientLibrary', data);
+        emitEvent('deficientLibrary', data);
     });
 
     InvestmentLibrary.watch([], options).on('change', data => {
-        io.emit('investmentLibrary', data);
+        emitEvent('investmentLibrary', data);
     });
 
     Network.watch([], options).on('change', data => {
-        io.emit('rollupStatus', data);
+        emitEvent('rollupStatus', data);
     });
 
     PerformanceLibrary.watch([], options).on('change', data => {
-        io.emit('performanceLibrary', data);
+        emitEvent('performanceLibrary', data);
     });
 
     PriorityLibrary.watch([], options).on('change', data => {
-        io.emit('priorityLibrary', data);
+        emitEvent('priorityLibrary', data);
     });
 
     RemainingLifeLimitLibrary.watch([], options).on('change', data => {
-        io.emit('remainingLifeLimitLibrary', data);
+        emitEvent('remainingLifeLimitLibrary', data);
     });
 
     Scenario.watch([], options).on('change', data => {
-        io.emit('scenarioStatus', data);
+        emitEvent('scenarioStatus', data);
     });
 
     TargetLibrary.watch([], options).on('change', data => {
-        io.emit('targetLibrary', data);
+        emitEvent('targetLibrary', data);
     });
 
     TreatmentLibrary.watch([], options).on('change', data => {
-        io.emit('treatmentLibrary', data);
+        emitEvent('treatmentLibrary', data);
     });
 
-  app.use("/api", [
-      cashFlowLibraryRouter,
-      deficientLibraryRouter,
-      investmentLibraryRouter,
-      networkRouter,
-      performanceLibraryRouter,
-      priorityLibraryRouter,
-      remainingLifeLimitLibraryRouter,
-      scenarioRouter,
-      targetLibraryRouter,
-      treatmentLibraryRouter,
-      announcementRouter
-  ]);
+    app.use("/api", [
+        cashFlowLibraryRouter,
+        deficientLibraryRouter,
+        investmentLibraryRouter,
+        networkRouter,
+        performanceLibraryRouter,
+        priorityLibraryRouter,
+        remainingLifeLimitLibraryRouter,
+        scenarioRouter,
+        targetLibraryRouter,
+        treatmentLibraryRouter,
+        pollingRouter,
+        announcementRouter
+    ]);
+
 }
