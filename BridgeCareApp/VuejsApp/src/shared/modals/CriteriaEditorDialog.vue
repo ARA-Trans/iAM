@@ -1,40 +1,54 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
+    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="1000px">
         <v-card>
-            <v-card-title>
+            <v-card-text class="criteria-editor-card-text">
                 <v-layout column>
-                    <v-flex>
-                        <v-layout justify-center>
-                            <h3>Criteria Editor</h3>
-                        </v-layout>
-                    </v-flex>
-
-                    <v-flex>
-                        Current Criteria Output
-                        <v-textarea rows="5" no-resize outline readonly full-width :value="currentCriteriaOutput">
-                        </v-textarea>
-                        <div class="validation-message-div">
-                            <v-layout justify-end>
-                                <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
-                                <p class="valid-message" v-if="showValidMessage">{{validMessage}}</p>
-                            </v-layout>
-                        </div>
-                    </v-flex>
+                    <v-layout justify-space-between row>
+                        <v-flex xs5>
+                            <v-card>
+                                <v-card-title>
+                                    <v-layout justify-center><h3>Output</h3></v-layout>
+                                </v-card-title>
+                                <v-card-text class="clauses-container">
+                                    <div class="sub-text">
+                                        <v-layout justify-start>
+                                            <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
+                                            <p class="valid-message" v-if="showValidMessage">{{validMessage}}</p>
+                                        </v-layout>
+                                    </div>
+                                    <div v-for="(clause, index) in clauses">
+                                        <v-layout column>
+                                            <v-textarea  class="clause-textarea" rows="3" no-resize outline
+                                                         readonly full-width :value="clause">
+                                            </v-textarea>
+                                            <v-layout justify-center v-if="clauses.length > 1 && index !== clauses.length - 1">
+                                                <p>{{clauseConjunction}}</p>
+                                            </v-layout>
+                                        </v-layout>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-flex>
+                        <v-flex xs7>
+                            <v-card>
+                                <v-card-title>
+                                    <v-layout justify-center><h3>Criteria Editor</h3></v-layout>
+                                </v-card-title>
+                                <v-card-text class="criteria-editor-container">
+                                    <div class="sub-text"></div>
+                                    <vue-query-builder v-if="editorRules.length > 0" :labels="queryBuilderLabels"
+                                                       :rules="editorRules" :maxDepth="25" :styled="true" v-model="criteria">
+                                    </vue-query-builder>
+                                </v-card-text>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
                 </v-layout>
-            </v-card-title>
-            <v-divider></v-divider>
-            <v-card-text class="query-builder-card-text">
-                <div v-if="editorRules.length > 0">
-                    <vue-query-builder :labels="queryBuilderLabels" :rules="editorRules" :maxDepth="25" :styled="true"
-                                       v-model="criteria">
-                    </vue-query-builder>
-                </div>
             </v-card-text>
-            <v-divider></v-divider>
             <v-card-actions>
                 <v-layout justify-space-between row>
                     <v-flex xs2>
-                        <v-layout>
+                        <v-layout justify-space-around row>
                             <v-btn class="ara-blue-bg white--text" @click="onCheckCriteria">Check</v-btn>
                             <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">
                                 Save
@@ -54,8 +68,8 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, emptyCriteria} from '../models/iAM/criteria';
-    import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
+    import {Criteria, CriteriaType, emptyCriteria} from '../models/iAM/criteria';
+    import {parseCriteriaString, parseCriteriaJson, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
     import {isEmpty} from 'ramda';
@@ -94,6 +108,8 @@
         cannotSubmit: boolean = false;
         validMessage: string = '';
         invalidMessage: string = '';
+        clauseConjunction: string = 'OR';
+        clauses: string[] = [];
 
         /**
          * Component mounted event handler
@@ -147,31 +163,41 @@
             // reset criteria validation properties
             this.showInvalidMessage = false;
             this.showValidMessage = false;
-            this.cannotSubmit = !isEmpty(parseQueryBuilderJson(this.criteria).join('')) ||
-                                this.dialogData.criteria === parseQueryBuilderJson(this.criteria).join('');
+            this.cannotSubmit = !isEmpty(parseCriteriaJson(this.criteria).join('')) ||
+                                this.dialogData.criteria === parseCriteriaJson(this.criteria).join('');
         }
 
         /**
          * Sets the currentCriteriaOutput string based on if the current criteria is valid or not
          */
         setCurrentCriteriaOutput() {
-            if (this.isNotValidCriteria()) {
+            this.clauses = [];
+            if (hasValue(this.criteria) && hasValue(this.criteria.children)) {
+                this.clauseConjunction = hasValue(this.criteria.logicalOperator) ? this.criteria.logicalOperator : 'OR';
+                this.criteria.children!.forEach((criteriaType: CriteriaType) => {
+                    const clause: string = parseCriteriaTypeJson(criteriaType);
+                    if (hasValue(clause)) {
+                        this.clauses.push(clause);
+                    }
+                });
+            }
+            /*if (this.isNotValidCriteria()) {
                 this.currentCriteriaOutput = 'Could Not Parse Current Criteria';
             } else {
-                this.currentCriteriaOutput = parseQueryBuilderJson(this.criteria).join('');
-            }
+                this.currentCriteriaOutput = parseCriteriaJson(this.criteria).join('');
+            }*/
         }
 
         /**
          * Determines if the current criteria data is valid or not
          */
-        isNotValidCriteria() {
-            return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
-        }
+        /*isNotValidCriteria() {
+            return !hasValue(parseCriteriaJson(this.criteria).join(''));
+        }*/
 
         onCheckCriteria() {
             const criteriaValidation: CriteriaValidation = {
-                criteria: parseQueryBuilderJson(this.criteria).join('')
+                criteria: parseCriteriaJson(this.criteria).join('')
             };
 
             CriteriaEditorService.checkCriteriaValidity(criteriaValidation)
@@ -202,7 +228,7 @@
             this.resetComponentCalculatedProperties();
 
             if (submit) {
-                this.$emit('submit', parseQueryBuilderJson(this.criteria).join(''));
+                this.$emit('submit', parseCriteriaJson(this.criteria).join(''));
             } else {
                 this.$emit('submit', null);
             }
@@ -221,8 +247,9 @@
 </script>
 
 <style>
-    .query-builder-card-text {
+    .criteria-editor-card-text {
         height: 700px;
+        overflow: hidden !important;
     }
 
     .validation-message-div {
@@ -235,5 +262,19 @@
 
     .valid-message {
         color: green;
+    }
+
+    .clauses-container, .criteria-editor-container {
+        height: 600px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .clause-textarea {
+        font-size: 12px !important;
+    }
+
+    .sub-text {
+        height: 35px;
     }
 </style>

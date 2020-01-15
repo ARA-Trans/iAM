@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import {isNil, isEmpty} from 'ramda';
 import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/shared/models/iAM/criteria';
 import {hasValue} from '@/shared/utils/has-value-util';
 
@@ -8,10 +8,10 @@ const operators: string[] = ['<=', '>=', '<>', '=', '<', '>'];
  * Creates a clause string from a given criteria object
  * @param criteria The criteria object used to create the clause string
  */
-export const parseQueryBuilderJson = (criteria: Criteria) => {
+export const parseCriteriaJson = (criteria: Criteria) => {
     // create an empty string list to build the where clause
     const clause: string[] = [];
-    if (!R.isNil(criteria) && !R.isEmpty(criteria.children)) {
+    if (!isNil(criteria) && !isEmpty(criteria.children)) {
         // set the logical operator
         const logicalOperator = ` ${criteria.logicalOperator} `;
         // @ts-ignore
@@ -29,7 +29,7 @@ export const parseQueryBuilderJson = (criteria: Criteria) => {
                     clause.push(rule);
                 }
             } else {
-                const clauseGroup = parseQueryBuilderJson(child.query as Criteria);
+                const clauseGroup = parseCriteriaJson(child.query as Criteria);
                 const clauseGroupVal = clauseGroup.join('');
                 if (hasValue(clauseGroupVal)) {
                     // append the logical operator if the string list is not empty
@@ -43,6 +43,24 @@ export const parseQueryBuilderJson = (criteria: Criteria) => {
                 }
             }
         });
+    }
+    return clause;
+};
+
+export const parseCriteriaTypeJson = (criteriaType: CriteriaType) => {
+    let clause: string = '';
+    if (!isNil(criteriaType)) {
+        if (criteriaType.type === 'query-builder-rule') {
+            const rule = parseQueryBuilderRule(criteriaType.query as CriteriaRule);
+            if (hasValue(rule)) {
+                clause = rule;
+            }
+        } else {
+            const ruleGroup = parseCriteriaJson(criteriaType.query as Criteria).join('');
+            if (hasValue(ruleGroup)) {
+                clause = ruleGroup;
+            }
+        }
     }
     return clause;
 };
