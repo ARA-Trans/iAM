@@ -7,10 +7,12 @@ function networkRouter(Network){
     const controller = networkController(Network);
 
     router.route("/GetMongoRollups")
-        .post(authorizationFilter(), controller.post)
+        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post)
         .get(authorizationFilter(), controller.get);
-    router.route("/UpdateMongoRollup/:networkId").put(authorizationFilter(), controller.put);
-    router.route("/AddLegacyNetworks").post(authorizationFilter(), controller.postLegacyNetworks);
+    router.route("/UpdateMongoRollup/:networkId")
+        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+    router.route("/AddLegacyNetworks")
+        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.postLegacyNetworks);
 
     return router;
 }

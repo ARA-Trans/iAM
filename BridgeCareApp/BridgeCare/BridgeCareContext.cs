@@ -36,6 +36,8 @@ namespace BridgeCare
         public virtual DbSet<CommitConsequencesEntity> CommitConsequences { get; set; }
         public virtual DbSet<RemainingLifeLimitsEntity> RemainingLifeLimits { get; set; }
         public virtual DbSet<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
+        public virtual DbSet<SplitTreatmentEntity> SplitTreatments { get; set; }
+        public virtual DbSet<SplitTreatmentLimitEntity> SplitTreatmentLimits { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -62,6 +64,9 @@ namespace BridgeCare
 
             modelBuilder.Entity<PriorityEntity>()
               .HasMany(e => e.PRIORITYFUNDS);
+
+            modelBuilder.Entity<SplitTreatmentEntity>()
+                .HasMany(e => e.SPLIT_TREATMENT_LIMITS);
         }
     }
 }

@@ -1,7 +1,6 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 import {CriteriaValidation} from '@/shared/models/iAM/criteria-validation';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class CriteriaEditorService {
     /**
@@ -9,6 +8,6 @@ export default class CriteriaEditorService {
      * @param criteria Criteria string to validate
      */
     static checkCriteriaValidity(criteriaValidation: CriteriaValidation): AxiosPromise {
-        return axiosInstance.post('/api/ValidateCriteria', criteriaValidation, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/ValidateCriteria', criteriaValidation);
     }
 }

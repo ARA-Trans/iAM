@@ -3,16 +3,7 @@ import {clone, append, any, propEq, update, findIndex, equals, reject} from 'ram
 import AnnouncementService from '@/services/announcement.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const announcement: any = {
-        ...data,
-        id: data._id
-    };
-    delete announcement._id;
-    delete announcement.__v;
-    return announcement as Announcement;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     announcements: [] as Announcement[]
@@ -49,7 +40,7 @@ const actions = {
         await AnnouncementService.getAnnouncements().then((response: AxiosResponse<any[]>) => {
             if (hasValue(response, 'data')) {
                 const announcements: Announcement[] = response.data
-                    .map((data: any) => convertFromMongoToVueModel(data));
+                    .map((data: any) => convertFromMongoToVue(data));
                 commit('announcementsMutator', announcements);
                 commit('sortAnnouncementsMutator');
             }
@@ -59,7 +50,7 @@ const actions = {
         await AnnouncementService.createAnnouncement(payload.createdAnnouncement)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdAnnouncement: Announcement = convertFromMongoToVueModel(response.data);
+                    const createdAnnouncement: Announcement = convertFromMongoToVue(response.data);
                     commit('createdAnnouncementMutator', createdAnnouncement);
                     commit('sortAnnouncementsMutator');
                     dispatch('setSuccessMessage', {message: 'Successfully created announcement'});
@@ -70,7 +61,7 @@ const actions = {
         await AnnouncementService.updateAnnouncement(payload.updatedAnnouncement)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedAnnouncement: Announcement = convertFromMongoToVueModel(response.data);
+                    const updatedAnnouncement: Announcement = convertFromMongoToVue(response.data);
                     commit('updatedAnnouncementMutator', updatedAnnouncement);
                     commit('sortAnnouncementsMutator');
                     dispatch('setSuccessMessage', {message: 'Successfully updated announcement'});
@@ -81,7 +72,7 @@ const actions = {
         await AnnouncementService.deleteAnnouncement(payload.deletedAnnouncement)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const deletedAnnouncement: Announcement = convertFromMongoToVueModel(response.data);
+                    const deletedAnnouncement: Announcement = convertFromMongoToVue(response.data);
                     commit('deletedAnnouncementMutator', deletedAnnouncement);
                     dispatch('setSuccessMessage', {message: 'Successfully deleted announcement'});
                 }
@@ -89,7 +80,7 @@ const actions = {
     },
     async socket_announcement({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const announcement: Announcement = convertFromMongoToVueModel(payload.fullDocument);
+            const announcement: Announcement = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
                 case 'update':
                 case 'replace':

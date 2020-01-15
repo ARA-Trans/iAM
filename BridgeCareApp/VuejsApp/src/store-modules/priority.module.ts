@@ -1,36 +1,9 @@
-import {emptyPriorityLibrary, Priority, PriorityFund, PriorityLibrary} from '@/shared/models/iAM/priority';
+import {emptyPriorityLibrary, PriorityLibrary} from '@/shared/models/iAM/priority';
 import {clone, any, propEq, append, findIndex, equals, update} from 'ramda';
 import PriorityService from '@/services/priority.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const priorityLibrary: any = {
-        ...data,
-        id: data._id,
-        priorities: data.priorities.map((priority: any) => {
-            const subData: any = {
-                ...priority,
-                id: priority._id,
-                priorityFunds: priority.priorityFunds.map((priorityFund: any) => {
-                    const deepData: any = {
-                        ...priorityFund,
-                        id: priorityFund._id
-                    };
-                    delete deepData._id;
-                    delete deepData.__v;
-                    return deepData as PriorityFund;
-                })
-            };
-            delete subData._id;
-            delete subData.__v;
-            return subData as Priority;
-        })
-    };
-    delete priorityLibrary._id;
-    delete priorityLibrary.__v;
-    return priorityLibrary as PriorityLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     priorityLibraries: [] as PriorityLibrary[],
@@ -70,9 +43,8 @@ const actions = {
         await PriorityService.getPriorityLibraries()
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
-                    const priorityLibraries: PriorityLibrary[] = response.data.map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
+                    const priorityLibraries: PriorityLibrary[] = response.data
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('priorityLibrariesMutator', priorityLibraries);
                 }
             });
@@ -81,7 +53,7 @@ const actions = {
         await PriorityService.createPriorityLibrary(payload.createdPriorityLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(response.data);
+                    const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVue(response.data);
                     commit('createdPriorityLibraryMutator', createdPriorityLibrary);
                     commit('selectedPriorityLibraryMutator', createdPriorityLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created priority library'});
@@ -92,7 +64,7 @@ const actions = {
         await PriorityService.updatePriorityLibrary(payload.updatedPriorityLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVue(response.data);
                     commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
                     commit('selectedPriorityLibraryMutator', updatedPriorityLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated priority library'});
@@ -119,7 +91,7 @@ const actions = {
     },
     async socket_priorityLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const priorityLibrary: PriorityLibrary = convertFromMongoToVueModel(payload.fullDocument);
+            const priorityLibrary: PriorityLibrary = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
                 case 'update':
                 case 'replace':
