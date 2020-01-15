@@ -1,7 +1,6 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
 import { Scenario } from '@/shared/models/iAM/scenario';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class CommittedProjectsService {
     /**
@@ -25,12 +24,7 @@ export default class CommittedProjectsService {
         
         // Make the request to the API      
         return axiosInstance.post('/api/SaveCommittedProjectsFiles', formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    ...getAuthorizationHeader()
-                }
-            });
+            {headers: {'Content-Type': 'multipart/form-data'}});
     }
 
     /**
@@ -38,7 +32,7 @@ export default class CommittedProjectsService {
      * @param scenarioData
      */
     static ExportCommittedProjects(scenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/ExportCommittedProjects', scenarioData, { responseType: 'blob', headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/ExportCommittedProjects', scenarioData, {responseType: 'blob'});
     }
 }
     

@@ -3,25 +3,7 @@ import {clone, any, propEq, append, findIndex, equals, update} from 'ramda';
 import TargetService from '@/services/target.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const targetLibrary: any = {
-        ...data,
-        id: data._id,
-        targets: data.targets.map((target: any) => {
-            const subData: any = {
-                ...target,
-                id: target._id
-            };
-            delete subData._id;
-            delete subData.__v;
-            return subData;
-        })
-    };
-    delete targetLibrary._id;
-    delete targetLibrary.__v;
-    return targetLibrary as TargetLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     targetLibraries: [] as TargetLibrary[],
@@ -62,7 +44,7 @@ const actions = {
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
                     const targetLibraries: TargetLibrary[] = response.data
-                        .map((data: any) => convertFromMongoToVueModel(data));
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('targetLibrariesMutator', targetLibraries);
                 }
             });
@@ -71,7 +53,7 @@ const actions = {
         await TargetService.createTargetLibrary(payload.createdTargetLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdTargetLibrary: TargetLibrary = convertFromMongoToVueModel(response.data);
+                    const createdTargetLibrary: TargetLibrary = convertFromMongoToVue(response.data);
                     commit('createdTargetLibraryMutator', createdTargetLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created target library'});
                 }
@@ -81,7 +63,7 @@ const actions = {
         await TargetService.updateTargetLibrary(payload.updatedTargetLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedTargetLibrary: TargetLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedTargetLibrary: TargetLibrary = convertFromMongoToVue(response.data);
                     commit('updatedTargetLibraryMutator', updatedTargetLibrary);
                     commit('selectedTargetLibraryMutator', updatedTargetLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated target library'});
@@ -110,7 +92,7 @@ const actions = {
     },
     async socket_targetLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const targetLibrary: TargetLibrary = convertFromMongoToVueModel(payload.fullDocument);
+            const targetLibrary: TargetLibrary = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
                 case 'update':
                 case 'replace':

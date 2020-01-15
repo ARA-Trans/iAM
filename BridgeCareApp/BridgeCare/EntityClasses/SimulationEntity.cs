@@ -48,6 +48,7 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<CommittedEntity> COMMITTEDPROJECTS { get; set; }
         public virtual ICollection<RemainingLifeLimitsEntity> REMAINING_LIFE_LIMITS { get; set; }
         public virtual ICollection<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
+        public virtual ICollection<SplitTreatmentEntity> SPLIT_TREATMENTS { get; set; }
 
         public SimulationEntity()
         {

@@ -3,50 +3,7 @@ import {any, propEq, findIndex, clone, append, equals} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const treatmentLibrary: any = {
-        ...data,
-        id: data._id,
-        treatments: data.treatments
-            .map((treatment: any) => {
-                const subData: any = {
-                    ...treatment,
-                    id: treatment._id,
-                    feasibility: {
-                        ...treatment.feasibility,
-                        id: treatment.feasibility._id
-                    },
-                    costs: treatment.costs.map((cost: any) => {
-                        const childSubData: any = {
-                            ...cost,
-                            id: cost._id
-                        };
-                        delete childSubData._id;
-                        delete childSubData.__v;
-                        return childSubData;
-                    }),
-                    consequences: treatment.consequences.map((consequence: any) => {
-                        const childSubData: any = {
-                            ...consequence,
-                            id: consequence._id
-                        };
-                        delete childSubData._id;
-                        delete childSubData.__v;
-                        return childSubData;
-                    })
-                };
-                delete subData._id;
-                delete subData.__v;
-                delete subData.feasibility._id;
-                delete subData.feasibility.__v;
-                return subData as Treatment;
-            })
-    };
-    delete treatmentLibrary._id;
-    delete treatmentLibrary.__v;
-    return treatmentLibrary as TreatmentLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
     treatmentLibraries: [] as TreatmentLibrary[],
@@ -109,9 +66,8 @@ const actions = {
         await TreatmentEditorService.getTreatmentLibraries()
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
-                    const treatmentLibraries: TreatmentLibrary[] = response.data.map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
+                    const treatmentLibraries: TreatmentLibrary[] = response.data
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('treatmentLibrariesMutator', treatmentLibraries);
                 }
             });
@@ -120,7 +76,7 @@ const actions = {
         await TreatmentEditorService.createTreatmentLibrary(payload.createdTreatmentLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
+                    const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(response.data);
                     commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created treatment library'});
                 }
@@ -130,7 +86,7 @@ const actions = {
         await TreatmentEditorService.updateTreatmentLibrary(payload.updatedTreatmentLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(response.data);
                     commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
                     commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated treatment library'});
@@ -159,7 +115,7 @@ const actions = {
     async socket_treatmentLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             if (payload.operationType == 'update' || payload.operationType == 'replace') {
-                const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
 
                 if (state.selectedTreatmentLibrary.id === updatedTreatmentLibrary.id &&
@@ -170,7 +126,7 @@ const actions = {
             }
 
             if (payload.operationType == 'insert') {
-                const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
             }
         }

@@ -22,6 +22,9 @@ const io = require('./config/socketIO')(server, {
 run().catch(error => debug(error));
 
 async function run() {
+    const CashFlowLibrary = require('./models/cashFlowLibraryModel');
+    const cashFlowLibraryRouter = require('./routers/cashFlowLibraryRouter')(CashFlowLibrary);
+
     const DeficientLibrary = require('./models/deficientLibraryModel');
     const deficientLibraryRouter = require('./routers/deficientLibraryRouter')(DeficientLibrary);
 
@@ -56,6 +59,10 @@ async function run() {
 
     Announcement.watch([], options).on('change', data => {
         io.emit('announcement', data);
+    });
+
+    CashFlowLibrary.watch([], options).on('change', data => {
+        io.emit('cashFlowLibrary', data);
     });
 
     DeficientLibrary.watch([], options).on('change', data => {
@@ -94,16 +101,17 @@ async function run() {
         io.emit('treatmentLibrary', data);
     });
 
-    app.use("/api", [
-        deficientLibraryRouter,
-        investmentLibraryRouter,
-        networkRouter,
-        performanceLibraryRouter,
-        priorityLibraryRouter,
-        remainingLifeLimitLibraryRouter,
-        scenarioRouter,
-        targetLibraryRouter,
-        treatmentLibraryRouter,
-        announcementRouter
-    ]);
+  app.use("/api", [
+      cashFlowLibraryRouter,
+      deficientLibraryRouter,
+      investmentLibraryRouter,
+      networkRouter,
+      performanceLibraryRouter,
+      priorityLibraryRouter,
+      remainingLifeLimitLibraryRouter,
+      scenarioRouter,
+      targetLibraryRouter,
+      treatmentLibraryRouter,
+      announcementRouter
+  ]);
 }
