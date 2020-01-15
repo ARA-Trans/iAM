@@ -6,12 +6,11 @@ import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 import { any, propEq } from 'ramda';
 import {http2XX} from '@/shared/utils/http-utils';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-            nodejsAxiosInstance.get('api/GetMongoScenarios', {headers: getAuthorizationHeader()})
+            nodejsAxiosInstance.get('api/GetMongoScenarios')
                 .then((response: AxiosResponse<Scenario[]>) => {
                     if (hasValue(response)) {
                         return resolve(response);
@@ -46,7 +45,7 @@ export default class ScenarioService {
     private static removeMongoScenarios(scenarios: Scenario[]): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
             scenarios.forEach(simulation => {
-                nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${(simulation as any)._id}`, {headers: getAuthorizationHeader()})
+                nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${(simulation as any)._id}`)
                     .then((res: AxiosResponse) => {
                         if (hasValue(res)) {
                             return resolve(res);
@@ -64,7 +63,7 @@ export default class ScenarioService {
      */
     static getLegacyScenarios(): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-            axiosInstance.get('api/GetScenarios', {headers: getAuthorizationHeader()})
+            axiosInstance.get('api/GetScenarios')
                 .then((responseLegacy: AxiosResponse<Scenario[]>)=>{
                     if (hasValue(responseLegacy)){
                     this.getMongoScenarios()
@@ -73,7 +72,7 @@ export default class ScenarioService {
                                 var scenariosToAdd = this.getMissingScenarios(responseLegacy.data, responseMongo.data);
                                 var scenariosToRemove = this.getMissingScenarios(responseMongo.data, responseLegacy.data);
                                 if (scenariosToAdd.length > 0) {
-                                    nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd, {headers: getAuthorizationHeader()})
+                                    nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd)
                                         .then((res: AxiosResponse<Scenario[]>) => {
                                             if (hasValue(res)){
                                                 return resolve(res);
@@ -105,7 +104,7 @@ export default class ScenarioService {
      */
     static createScenario(createScenarioData: ScenarioCreationData, userId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/CreateScenario', createScenarioData, {headers: getAuthorizationHeader()})
+            axiosInstance.post('/api/CreateScenario', createScenarioData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
@@ -113,7 +112,7 @@ export default class ScenarioService {
                             shared: false,
                             status: 'New scenario'
                         };
-                        nodejsAxiosInstance.post('api/GetMongoScenarios', scenarioToTrackStatus, {headers: getAuthorizationHeader()})
+                        nodejsAxiosInstance.post('api/GetMongoScenarios', scenarioToTrackStatus)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
@@ -136,11 +135,11 @@ export default class ScenarioService {
 
     static updateScenario(scenarioUpdateData: Simulation, scenarioId: string): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            axiosInstance.post('/api/UpdateScenario', scenarioUpdateData, {headers: getAuthorizationHeader()})
+            axiosInstance.post('/api/UpdateScenario', scenarioUpdateData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
 
-                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenarioId}`, scenarioUpdateData, {headers: getAuthorizationHeader()})
+                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenarioId}`, scenarioUpdateData)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
                                     return resolve(res);
@@ -163,10 +162,10 @@ export default class ScenarioService {
 
     static deleteScenario(scenarioId: number, scenarioMongoId: string): AxiosPromise {
         return new Promise<AxiosResponse>((resolve) => {
-            axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`, {headers: getAuthorizationHeader()})
+            axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`)
                 .then((serverResponse: AxiosResponse) => {
                     if (hasValue(serverResponse, 'status') && http2XX.test(serverResponse.status.toString())) {
-                        nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${scenarioMongoId}`, {headers: getAuthorizationHeader()})
+                        nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${scenarioMongoId}`)
                             .then((mongoResponse: AxiosResponse) => {
                                 return resolve(mongoResponse);
                             })
@@ -189,6 +188,6 @@ export default class ScenarioService {
      * @param userId Current user's id
      */
     static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
-        return axiosInstance.post('/api/RunSimulation', selectedScenario, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/RunSimulation', selectedScenario);
     }
 }

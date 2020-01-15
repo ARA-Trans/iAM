@@ -42,6 +42,9 @@
                         <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
                             <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
                         </v-list-tile>
+                        <v-list-tile @click="onNavigate('/CashFlowEditor/Library/')">
+                            <v-list-tile-title>Cash Flow</v-list-tile-title>
+                        </v-list-tile>
                     </v-list-group>
                     <v-list-tile @click="onNavigate('/UnderConstruction/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>
@@ -106,7 +109,8 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-    import {getErrorMessage, setContentTypeCharset} from '@/shared/utils/http-utils';
+    import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
+    import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
     @Component({
         components: {Spinner}
@@ -187,6 +191,7 @@
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
                 request.headers = setContentTypeCharset(request.headers);
+                request.headers = setAuthHeader(request.headers);
                 this.setIsBusyAction({isBusy: true});
                 return request;
             };

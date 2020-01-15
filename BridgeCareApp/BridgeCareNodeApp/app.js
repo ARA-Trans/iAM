@@ -17,6 +17,9 @@ const server = app.listen(config.port, () => {
 run().catch(error => debug(error));
 
 async function run() {
+    const CashFlowLibrary = require('./models/cashFlowLibraryModel');
+    const cashFlowLibraryRouter = require('./routers/cashFlowLibraryRouter')(CashFlowLibrary);
+
     const DeficientLibrary = require('./models/deficientLibraryModel');
     const deficientLibraryRouter = require('./routers/deficientLibraryRouter')(DeficientLibrary);
 
@@ -57,6 +60,10 @@ async function run() {
         emitEvent('announcement', data);
     });
 
+    CashFlowLibrary.watch([], options).on('change', data => {
+        io.emit('cashFlowLibrary', data);
+    });
+
     DeficientLibrary.watch([], options).on('change', data => {
         emitEvent('deficientLibrary', data);
     });
@@ -94,6 +101,7 @@ async function run() {
     });
 
     app.use("/api", [
+        cashFlowLibraryRouter,
         deficientLibraryRouter,
         investmentLibraryRouter,
         networkRouter,
@@ -106,4 +114,5 @@ async function run() {
         pollingRouter,
         announcementRouter
     ]);
+
 }
