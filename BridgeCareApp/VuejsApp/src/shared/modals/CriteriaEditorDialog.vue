@@ -19,7 +19,7 @@
                                     <div v-for="(clause, index) in clauses">
                                         <v-layout column>
                                             <v-textarea  class="clause-textarea" rows="3" no-resize outline
-                                                         readonly full-width :value="clause">
+                                                         readonly full-width :value="clause" @click="onClickClauseTextarea(clause)">
                                             </v-textarea>
                                             <v-layout justify-center v-if="clauses.length > 1 && index !== clauses.length - 1">
                                                 <p>{{clauseConjunction}}</p>
@@ -36,7 +36,7 @@
                                 </v-card-title>
                                 <v-card-text class="criteria-editor-container">
                                     <div class="sub-text"></div>
-                                    <vue-query-builder v-if="editorRules.length > 0" :labels="queryBuilderLabels"
+                                    <vue-query-builder v-if="editorRules.length > 0" id="vqb" :labels="queryBuilderLabels"
                                                        :rules="editorRules" :maxDepth="25" :styled="true" v-model="criteria">
                                     </vue-query-builder>
                                 </v-card-text>
@@ -72,11 +72,12 @@
     import {parseCriteriaString, parseCriteriaJson, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
-    import {isEmpty} from 'ramda';
+    import {isEmpty, clone} from 'ramda';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import CriteriaEditorService from '@/services/criteria-editor.service';
     import {AxiosResponse} from 'axios';
     import {CriteriaValidation} from '@/shared/models/iAM/criteria-validation';
+    import {Mutation} from 'vuex';
 
     @Component({
         components: {VueQueryBuilder}
@@ -110,6 +111,8 @@
         invalidMessage: string = '';
         clauseConjunction: string = 'OR';
         clauses: string[] = [];
+        vqb: HTMLElement;
+        mutationObserver: MutationObserver;
 
         /**
          * Component mounted event handler
@@ -117,6 +120,21 @@
         mounted() {
             if (hasValue(this.stateAttributes)) {
                 this.setEditorRules();
+            }
+            this.mutationObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    console.log(`mutation.type = ${mutation.type}`);
+                    mutation.addedNodes.forEach((addedNode) => {
+                        console.log(`added node = ${addedNode}`);
+                    })
+                })
+            });
+        }
+
+        updated() {
+            if (!hasValue(this.vqb)) {
+                this.vqb = document.getElementById('vqb') as HTMLElement;
+                this.mutationObserver.observe(this.vqb, {childList: true});
             }
         }
 
@@ -194,6 +212,10 @@
         /*isNotValidCriteria() {
             return !hasValue(parseCriteriaJson(this.criteria).join(''));
         }*/
+
+        onClickClauseTextarea(clause: string) {
+            const vqbGroupBody = null;
+        }
 
         onCheckCriteria() {
             const criteriaValidation: CriteriaValidation = {
