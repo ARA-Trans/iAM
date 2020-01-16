@@ -132,7 +132,7 @@
                         <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
-                        <td>{{getStatus(props.item.status)}}</td>
+                        <td>{{props.item.status}}</td>
                         <td>
                             <v-layout row wrap>
                                 <v-flex>
@@ -306,10 +306,6 @@ import { getUserName } from '../../shared/utils/get-user-info';
 
         onLoadNetworks() {
             this.getLegacyNetworksAction({networks: this.adminRollup });
-        }
-
-        getStatus(isCompleted: boolean) {
-            return isCompleted ? 'Completed' : 'Running';
         }
 
         /**
