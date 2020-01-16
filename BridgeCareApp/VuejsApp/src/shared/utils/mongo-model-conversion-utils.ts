@@ -15,7 +15,13 @@ export const convertFromMongoToVue = (mongoModel: any) => {
         if (hasValue(convertedModel[prop])) {
             if (Array.isArray(convertedModel[prop])) {
                 convertedModel[prop] = convertedModel[prop]
-                    .map((model: any) => convertFromMongoToVue(model));
+                    .map((model: any) => {
+                        if (typeof model === 'object') {
+                            return convertFromMongoToVue(model);
+                        } else {
+                            return model;
+                        }
+                    });
             } else if (typeof convertedModel[prop] === 'object') {
                 convertedModel[prop] = convertFromMongoToVue(convertedModel[prop]);
             }
@@ -42,7 +48,13 @@ export const convertFromVueToMongo = (vueModel: any) => {
         if (hasValue(convertedModel[prop])) {
             if (Array.isArray(convertedModel[prop])) {
                 convertedModel[prop] = convertedModel[prop]
-                    .map((model: any) => convertFromVueToMongo(model));
+                    .map((model: any) => {
+                        if (typeof model === 'object') {
+                            return convertFromVueToMongo(model);
+                        } else {
+                            return model;
+                        }
+                    });
             } else if (typeof convertedModel[prop] === 'object') {
                 convertedModel[prop] = convertFromVueToMongo(convertedModel[prop]);
             }
