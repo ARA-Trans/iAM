@@ -1,28 +1,15 @@
 import {AxiosPromise} from 'axios';
-import {PerformanceLibrary, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
+import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
-const modifyDataForMongoDB = (performanceLibrary: PerformanceLibrary): any => {
-    const performanceLibraryData: any = {
-        ...performanceLibrary,
-        _id: performanceLibrary.id,
-        equations: performanceLibrary.equations.map((equation: PerformanceLibraryEquation) => {
-            const equationData: any = {...equation, _id: equation.id};
-            delete equationData.id;
-            return equationData;
-        })
-    };
-    delete performanceLibraryData.id;
-    return performanceLibraryData;
-};
 
 export default class PerformanceEditorService {
     /**
      * Gets all performance Libraries a user can read/edit
      */
     static getPerformanceLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetPerformanceLibraries', {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.get('/api/GetPerformanceLibraries');
     }
 
     /**
@@ -30,7 +17,7 @@ export default class PerformanceEditorService {
      * @param createPerformanceLibraryData The performance library create data
      */
     static createPerformanceLibrary(createPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', modifyDataForMongoDB(createPerformanceLibraryData), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.post('/api/CreatePerformanceLibrary', convertFromVueToMongo(createPerformanceLibraryData));
     }
 
     /**
@@ -38,7 +25,7 @@ export default class PerformanceEditorService {
      * @param updatePerformanceLibraryData The performance library update data
      */
     static updatePerformanceLibrary(updatePerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', modifyDataForMongoDB(updatePerformanceLibraryData), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.put('/api/UpdatePerformanceLibrary', convertFromVueToMongo(updatePerformanceLibraryData));
     }
 
     /**
@@ -46,7 +33,7 @@ export default class PerformanceEditorService {
      * @param performanceLibraryData The performance library to delete
      */
     static deletePerformanceLibrary(performanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return nodejsAxiosInstance.delete(`/api/DeletePerformanceLibrary/${performanceLibraryData.id}`, {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.delete(`/api/DeletePerformanceLibrary/${performanceLibraryData.id}`);
     }
 
     /**
@@ -54,7 +41,7 @@ export default class PerformanceEditorService {
      * @param selectedScenarioId Scenario object id
      */
     static getScenarioPerformanceLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
+        return axiosInstance.get(`/api/GetScenarioPerformanceLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -62,6 +49,6 @@ export default class PerformanceEditorService {
      * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
     static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData);
     }
 }

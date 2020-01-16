@@ -17,7 +17,9 @@ import target from '@/store-modules/target.module';
 import remainingLifeLimitEditor from '@/store-modules/remaining-life-limit.module';
 import criteriaDrivenBudgets from '@/store-modules/budget-criteria.module';
 import rollup from '../store-modules/rollup.module';
+import polling from '@/store-modules/polling.module';
 import announcement from '@/store-modules/announcement.module';
+import cashFlow from '@/store-modules/cash-flow.module';
 
 Vue.use(Vuex);
 
@@ -39,6 +41,8 @@ export default new Vuex.Store({
         remainingLifeLimitEditor,
         criteriaDrivenBudgets,
         rollup,
-        announcement
+        polling,
+        announcement,
+        cashFlow
     }
 });

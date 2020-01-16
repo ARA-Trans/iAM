@@ -1,39 +1,14 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {Priority, PriorityFund, PriorityLibrary} from '@/shared/models/iAM/priority';
-import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
-
-const modifyDataForMongoDB = (priorityLibrary: PriorityLibrary): any => {
-    const priorityLibraryData: any = {
-        ...priorityLibrary,
-        _id: priorityLibrary.id,
-        priorities: priorityLibrary.priorities.map((priority: Priority) => {
-            const priorityData: any = {
-                ...priority,
-                _id: priority.id,
-                priorityFunds: priority.priorityFunds.map((priorityFund: PriorityFund) => {
-                    const priorityFundData: any = {
-                        ...priorityFund,
-                        _id: priorityFund.id
-                    };
-                    delete priorityFundData.id;
-                    return priorityFundData;
-                })
-            };
-            delete priorityData.id;
-            return priorityData;
-        })
-    };
-    delete priorityLibraryData.id;
-    return priorityLibraryData;
-};
+import {PriorityLibrary} from '@/shared/models/iAM/priority';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class PriorityService {
     /**
      * Gets priority libraries data
      */
     static getPriorityLibraries(): AxiosPromise {
-        return nodejsAxiosInstance.get('/api/GetPriorityLibraries', {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.get('/api/GetPriorityLibraries');
     }
 
     /**
@@ -41,7 +16,7 @@ export default class PriorityService {
      * @param createdPriorityLibrary The priority library create data
      */
     static createPriorityLibrary(createdPriorityLibrary: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePriorityLibrary', modifyDataForMongoDB(createdPriorityLibrary), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.post('/api/CreatePriorityLibrary', convertFromVueToMongo(createdPriorityLibrary));
     }
 
     /**
@@ -49,7 +24,7 @@ export default class PriorityService {
      * @param updatedPriorityLibrary The priority library update data
      */
     static updatePriorityLibrary(updatedPriorityLibrary: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePriorityLibrary', modifyDataForMongoDB(updatedPriorityLibrary), {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.put('/api/UpdatePriorityLibrary', convertFromVueToMongo(updatedPriorityLibrary));
     }
 
     /**
@@ -57,7 +32,7 @@ export default class PriorityService {
      * @param priorityLibraryData The priority library to delete
      */
     static deletePriorityLibrary(priorityLibraryData: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.delete(`/api/DeletePriorityLibrary/${priorityLibraryData.id}`, {headers: getAuthorizationHeader()});
+        return nodejsAxiosInstance.delete(`/api/DeletePriorityLibrary/${priorityLibraryData.id}`);
     }
 
     /**
@@ -65,7 +40,7 @@ export default class PriorityService {
      * @param selectedScenarioId Scenario id to use in finding a scenario's priority library data
      */
     static getScenarioPriorityLibrary(selectedScenarioId: number): AxiosPromise {
-        return axiosInstance.get(`/api/GetScenarioPriorityLibrary/${selectedScenarioId}`, {headers: getAuthorizationHeader()});
+        return axiosInstance.get(`/api/GetScenarioPriorityLibrary/${selectedScenarioId}`);
     }
 
     /**
@@ -73,6 +48,6 @@ export default class PriorityService {
      * @param saveScenarioPriorityLibraryData The scenario priority library upsert data
      */
     static saveScenarioPriorityLibrary(saveScenarioPriorityLibraryData: PriorityLibrary): AxiosPromise {
-        return axiosInstance.post('/api/SaveScenarioPriorityLibrary', saveScenarioPriorityLibraryData, {headers: getAuthorizationHeader()});
+        return axiosInstance.post('/api/SaveScenarioPriorityLibrary', saveScenarioPriorityLibraryData);
     }
 }

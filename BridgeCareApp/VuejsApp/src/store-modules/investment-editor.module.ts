@@ -1,29 +1,10 @@
-import {emptyInvestmentLibrary, InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
+import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
 import {clone, any, propEq, append, findIndex, equals, reject} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-import { http2XX } from '@/shared/utils/http-utils';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const investmentLibrary: any = {
-        ...data,
-        id: data._id,
-        budgetYears: data.budgetYears
-            .map((budgetYear: any) => {
-                const subData: any = {
-                    ...budgetYear,
-                    id: budgetYear._id
-                };
-                delete subData._id;
-                delete subData.__v;
-                return subData as InvestmentLibraryBudgetYear;
-            })
-    };
-    delete investmentLibrary._id;
-    delete investmentLibrary.__v;
-    return investmentLibrary as InvestmentLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     investmentLibraries: [] as InvestmentLibrary[],
@@ -96,9 +77,7 @@ const actions = {
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
                     const investmentLibraries: InvestmentLibrary[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('investmentLibrariesMutator', investmentLibraries);
                 }
             });
@@ -107,7 +86,7 @@ const actions = {
         await InvestmentEditorService.createInvestmentLibrary(payload.createdInvestmentLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
+                    const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(response.data);
                     commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
                 }
@@ -117,7 +96,7 @@ const actions = {
         await InvestmentEditorService.updateInvestmentLibrary(payload.updatedInvestmentLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(response.data);
                     commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
                     commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated investment library'});
@@ -159,7 +138,7 @@ const actions = {
     async socket_investmentLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             if (payload.operationType == 'update' || payload.operationType == 'replace') {
-                const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
                 if (state.selectedInvestmentLibrary.id === updatedInvestmentLibrary.id &&
                     !equals(state.selectedInvestmentLibrary, updatedInvestmentLibrary)) {
@@ -169,7 +148,7 @@ const actions = {
             }
 
             if (payload.operationType == 'insert') {
-                const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
             }
         } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {

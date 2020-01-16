@@ -1,32 +1,10 @@
-import {
-    emptyRemainingLifeLimitLibrary,
-    RemainingLifeLimit,
-    RemainingLifeLimitLibrary
-} from '@/shared/models/iAM/remaining-life-limit';
+import {emptyRemainingLifeLimitLibrary, RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
 import {clone, any, propEq, findIndex, append, equals, reject} from 'ramda';
 import RemainingLifeLimitService from '@/services/remaining-life-limit.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-import { http2XX } from '@/shared/utils/http-utils';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const remainingLifeLimitLibrary: any = {
-        ...data,
-        id: data._id,
-        remainingLifeLimits: data.remainingLifeLimits.map((remainingLifeLimit: any) => {
-            const subData: any = {
-                ...remainingLifeLimit,
-                id: remainingLifeLimit._id
-            };
-            delete subData._id;
-            delete subData.__v;
-            return subData as RemainingLifeLimit;
-        })
-    };
-    delete remainingLifeLimitLibrary._id;
-    delete remainingLifeLimitLibrary.__v;
-    return remainingLifeLimitLibrary as RemainingLifeLimitLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     remainingLifeLimitLibraries: [] as RemainingLifeLimitLibrary[],
@@ -119,9 +97,7 @@ const actions = {
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
                     const remainingLifeLimitLibraries: RemainingLifeLimitLibrary[] = response.data
-                        .map((data: any) => {
-                            return convertFromMongoToVueModel(data);
-                        });
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('remainingLifeLimitLibrariesMutator', remainingLifeLimitLibraries);
                 }
             });
@@ -130,7 +106,7 @@ const actions = {
         await RemainingLifeLimitService.createRemainingLifeLimitLibrary(payload.createdRemainingLifeLimitLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(response.data);
+                    const createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVue(response.data);
                     commit('createdRemainingLifeLimitLibraryMutator', createdRemainingLifeLimitLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created remaining life limit library'});
                 }
@@ -140,7 +116,7 @@ const actions = {
         await RemainingLifeLimitService.updateRemainingLifeLimitLibrary(payload.updatedRemainingLifeLimitLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVue(response.data);
                     commit('updatedRemainingLifeLimitLibraryMutator', updatedRemainingLifeLimitLibrary);
                     commit('selectedRemainingLifeLimitLibraryMutator', updatedRemainingLifeLimitLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated remaining life limit library'});
@@ -183,7 +159,7 @@ const actions = {
         console.log(payload);
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             if (payload.operationType == 'update' || payload.operationType == 'replace') {
-                const updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('updatedRemainingLifeLimitLibraryMutator', updatedRemainingLifeLimitLibrary);
                 if (state.selectedRemainingLifeLimitLibrary.id === updatedRemainingLifeLimitLibrary.id &&
                     !equals(state.selectedRemainingLifeLimitLibrary, updatedRemainingLifeLimitLibrary)) {
@@ -193,7 +169,7 @@ const actions = {
             }
 
             if (payload.operationType === 'insert') {
-                const createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('createdRemainingLifeLimitLibraryMutator', createdRemainingLifeLimitLibrary);
             }
         } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {

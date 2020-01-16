@@ -42,6 +42,9 @@
                         <v-list-tile v-if="isAdmin" @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
                             <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
                         </v-list-tile>
+                        <v-list-tile @click="onNavigate('/CashFlowEditor/Library/')">
+                            <v-list-tile-title>Cash Flow</v-list-tile-title>
+                        </v-list-tile>
                     </v-list-group>
                     <v-list-tile @click="onNavigate('/UnderConstruction/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>
@@ -106,7 +109,8 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-    import {getErrorMessage, setContentTypeCharset} from '@/shared/utils/http-utils';
+    import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
+    import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
 
     @Component({
         components: {Spinner}
@@ -131,6 +135,8 @@
         @Action('setSuccessMessage') setSuccessMessageAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setInfoMessage') setInfoMessageAction: any;
+        @Action('pollEvents') pollEventsAction: any;
+        @Action('generatePollingSessionId') generatePollingSessionIdAction: any;
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
@@ -186,6 +192,7 @@
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
                 request.headers = setContentTypeCharset(request.headers);
+                request.headers = setAuthHeader(request.headers);
                 this.setIsBusyAction({isBusy: true});
                 return request;
             };
@@ -228,6 +235,10 @@
             // has been changed by another tab or window
             this.checkBrowserTokensAction();
             window.setInterval(this.checkBrowserTokensAction, 30000);
+
+            // Generate a polling session id, and begin polling once per 5 seconds
+            this.generatePollingSessionIdAction();
+            window.setInterval(this.pollEventsAction, 5000);
         }
 
         get authenticatedWithRole() {

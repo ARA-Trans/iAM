@@ -149,6 +149,14 @@
                                 path: '/RemainingLifeLimitEditor/Scenario/',
                                 query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                             }
+                        },
+                        {
+                            tabName: 'Cash Flow',
+                            tabIcon: 'fas fa-money-bill-wave',
+                            navigation: {
+                                path: '/CashFlowEditor/Scenario/',
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                            }
                         }
                     ];
 

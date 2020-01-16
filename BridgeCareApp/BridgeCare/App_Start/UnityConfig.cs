@@ -80,6 +80,7 @@ namespace BridgeCare
             container.RegisterType<IDeficient, DeficientDAL>();
             container.RegisterType<IRemainingLifeLimit, RemainingLifeLimitDAL>();
             container.RegisterType<IRunRollup, RunRollupDAL>();
+            container.RegisterType<ICashFlowLibrary, CashFlowLibraryDAL>();
 
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();
@@ -87,11 +88,9 @@ namespace BridgeCare
             container.RegisterType<SummaryReportBridgeData>();
             container.RegisterType<ICommonSummaryReportData, CommonSummaryReportDataDAL>();
             container.RegisterType<IBridgeWorkSummaryData, BridgeWorkSummaryDataDAL>();
-
             container.RegisterType<IInventoryItemDetailModelGenerator, InventoryItemDetailModelGenerator>();
             container.RegisterType<ICommittedProjects, CommittedProjects>();
             container.RegisterType<ICommitted, CommittedDAL>();
-
             container.RegisterType<ICriteriaDrivenBudgets, CriteriaDrivenBudgetsDAL>();
         }
     }

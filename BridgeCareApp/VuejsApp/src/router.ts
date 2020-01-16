@@ -4,6 +4,7 @@ import './register-hooks';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
+import CashFlowEditor from '@/components/cash-flow-editor/CashFlowEditor.vue';
 import Logout from '@/components/Logout.vue';
 import News from '@/components/News.vue';
 import AuthenticationStart from '@/components/authentication/AuthenticationStart.vue';
@@ -80,6 +81,11 @@ const router = new VueRouter({
                     path: '/RemainingLifeLimitEditor/Scenario/',
                     component: RemainingLifeLimitEditor,
                     props: true
+                },
+                {
+                    path: '/CashFlowEditor/Scenario',
+                    component: CashFlowEditor,
+                    props: true
                 }
             ]
         },
@@ -123,6 +129,12 @@ const router = new VueRouter({
             path: '/RemainingLifeLimitEditor/Library/',
             name: 'RemainingLifeLimitEditor',
             component: RemainingLifeLimitEditor,
+            props: true
+        },
+        {
+            path: '/CashFlowEditor/Library/',
+            name: 'CashFlowEditor',
+            component: CashFlowEditor,
             props: true
         },
         {

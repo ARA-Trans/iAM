@@ -1,29 +1,10 @@
-import {emptyPerformanceLibrary, PerformanceLibrary, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
+import {emptyPerformanceLibrary, PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {clone, append, any, propEq, findIndex, equals, reject} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-import { http2XX } from '@/shared/utils/http-utils';
-
-const convertFromMongoToVueModel = (data: any) => {
-    const performanceLibrary: any = {
-        ...data,
-        id: data._id,
-        equations: data.equations
-            .map((equation: any) => {
-                const subData: any = {
-                    ...equation,
-                    id: equation._id
-                };
-                delete subData._id;
-                delete subData.__v;
-                return subData as PerformanceLibraryEquation;
-            })
-    };
-    delete performanceLibrary._id;
-    delete performanceLibrary.__v;
-    return performanceLibrary as PerformanceLibrary;
-};
+import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     performanceLibraries: [] as PerformanceLibrary[],
@@ -95,9 +76,8 @@ const actions = {
         await PerformanceEditorService.getPerformanceLibraries()
             .then((response: AxiosResponse<any[]>) => {
                 if (hasValue(response, 'data')) {
-                    const performanceLibraries: PerformanceLibrary[] = response.data.map((data: any) => {
-                        return convertFromMongoToVueModel(data);
-                    });
+                    const performanceLibraries: PerformanceLibrary[] = response.data
+                        .map((data: any) => convertFromMongoToVue(data));
                     commit('performanceLibrariesMutator', performanceLibraries);
                 }
             });
@@ -106,7 +86,7 @@ const actions = {
         await PerformanceEditorService.createPerformanceLibrary(payload.createdPerformanceLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
+                    const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVue(response.data);
                     commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created performance library'});
                 }
@@ -116,7 +96,7 @@ const actions = {
         await PerformanceEditorService.updatePerformanceLibrary(payload.updatedPerformanceLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(response.data);
+                    const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVue(response.data);
                     commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
                     commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
@@ -153,7 +133,7 @@ const actions = {
     async socket_performanceLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             if (payload.operationType == 'update' || payload.operationType == 'replace') {
-                const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const updatedPerformanceLibrary: PerformanceLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
                 if (state.selectedPerformanceLibrary.id === updatedPerformanceLibrary.id &&
                     !equals(state.selectedPerformanceLibrary, updatedPerformanceLibrary)) {
@@ -163,7 +143,7 @@ const actions = {
             }
 
             if (payload.operationType == 'insert') {
-                const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVueModel(payload.fullDocument);
+                const createdPerformanceLibrary: PerformanceLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('createdPerformanceLibraryMutator', createdPerformanceLibrary);
             }
         } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
