@@ -6,32 +6,15 @@ import {hasValue} from '@/shared/utils/has-value-util';
  * @param mongoModel Mongo model to convert
  */
 export const convertFromMongoToVue = (mongoModel: any) => {
-    const convertedModel: any = {
+    var convertedModel: any = {
         ...mongoModel,
         id: mongoModel._id
     };
 
-    keys(convertedModel).forEach((prop) => {
-        if (hasValue(convertedModel[prop])) {
-            if (Array.isArray(convertedModel[prop])) {
-                convertedModel[prop] = convertedModel[prop]
-                    .map((model: any) => {
-                        if (typeof model === 'object') {
-                            return convertFromMongoToVue(model);
-                        } else {
-                            return model;
-                        }
-                    });
-            } else if (typeof convertedModel[prop] === 'object') {
-                convertedModel[prop] = convertFromMongoToVue(convertedModel[prop]);
-            }
-        }
-    });
-
     delete convertedModel._id;
     delete convertedModel.__v;
 
-    return convertedModel;
+    return performRecursiveModelConversions(convertedModel, convertFromMongoToVue);
 };
 
 /**
@@ -39,29 +22,40 @@ export const convertFromMongoToVue = (mongoModel: any) => {
  * @param vueModel Vue model to convert
  */
 export const convertFromVueToMongo = (vueModel: any) => {
-    const convertedModel: any = {
+    var convertedModel: any = {
         ...vueModel,
         _id: vueModel.id
     };
 
-    keys(convertedModel).forEach((prop) => {
-        if (hasValue(convertedModel[prop])) {
-            if (Array.isArray(convertedModel[prop])) {
-                convertedModel[prop] = convertedModel[prop]
-                    .map((model: any) => {
-                        if (typeof model === 'object') {
-                            return convertFromVueToMongo(model);
-                        } else {
-                            return model;
-                        }
-                    });
-            } else if (typeof convertedModel[prop] === 'object') {
-                convertedModel[prop] = convertFromVueToMongo(convertedModel[prop]);
-            }
-        }
-    });
-
     delete convertedModel.id;
 
-    return convertedModel;
+    return performRecursiveModelConversions(convertedModel, convertFromVueToMongo);
+};
+
+/**
+ * Performs a recursive model conversion on any objects in the given object
+ * @param model The model to convert
+ * @param conversionFunction The function to use to convert models within the model
+ */
+const performRecursiveModelConversions = (model: any, objectConversionFunction: any) => {
+    if (Array.isArray(model)) {
+        model = model.map((subModel) => {
+            if (typeof subModel === 'object') {
+                return objectConversionFunction(subModel);
+            }
+            return subModel;
+        });
+    } else if (typeof model === 'object') {
+        keys(model).forEach((prop) => {
+            if (!hasValue(model[prop])) {
+                return;
+            }
+            if (Array.isArray(model[prop])) {
+                model[prop] = performRecursiveModelConversions(model[prop], objectConversionFunction);
+            } else if (typeof model[prop] === 'object') {
+                model[prop] = objectConversionFunction(model[prop]);
+            }
+        });
+    }
+    return model;
 };
