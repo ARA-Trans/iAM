@@ -94,7 +94,7 @@
                                                 <input class="output" type="text" readonly :value="props.item.rank"
                                                        :class="{'invalid-input':splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(props.item) !== true}" />
                                                 <template slot="input">
-                                                    <v-text-field v-model="props.item.rank" label="Edit" single-line
+                                                    <v-text-field v-model.number="props.item.rank" label="Edit" single-line
                                                                   :rules="[splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(props.item)]">
                                                     </v-text-field>
                                                 </template>
@@ -106,7 +106,7 @@
                                                 <input class="output" type="text" readonly :value="props.item.amount"
                                                        :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}" />
                                                 <template slot="input">
-                                                    <v-text-field v-model="props.item.amount" label="Edit" single-line
+                                                    <v-text-field v-model.number="props.item.amount" label="Edit" single-line
                                                                   :rules="[splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)]">
                                                     </v-text-field>
                                                 </template>
