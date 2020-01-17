@@ -9,6 +9,7 @@ import Logout from '@/components/Logout.vue';
 import News from '@/components/News.vue';
 import AuthenticationStart from '@/components/authentication/AuthenticationStart.vue';
 
+// Lazily-loaded pages
 const Scenario = () => import(/* webpackChunkName: "scenario" */ '@/components/scenarios/Scenarios.vue');
 const EditScenario = () => import(/* webpackChunkName: "editScenario" */ '@/components/scenarios/EditScenario.vue');
 const InvestmentEditor = () => import(/* webpackChunkName: "investmentEditor" */ '@/components/investment-editor/InvestmentEditor.vue');
@@ -21,6 +22,7 @@ const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@
 const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/authentication/AuthenticationFailure.vue');
 const NoRole = () => import (/*webpackChunkName: "noRole" */ '@/components/authentication/NoRole.vue');
 const Inventory = () => import (/*webpackChunkName: "inventory" */ '@/components/Inventory.vue');
+const UserCriteria = () => import (/*webpackChunkName: "userCriteria" */ '@/components/user-criteria/UserCriteria.vue');
 
 Vue.use(VueRouter);
 
@@ -171,6 +173,11 @@ const router = new VueRouter({
             path: '/News/',
             name: 'News',
             component: News
+        },
+        {
+            path: '/UserCriteria/',
+            name: 'UserCriteria',
+            component: UserCriteria
         },
         {
             path: '*',
