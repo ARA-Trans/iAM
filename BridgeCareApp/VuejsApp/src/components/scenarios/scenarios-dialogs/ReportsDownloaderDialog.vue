@@ -123,7 +123,6 @@
                     for (let report of this.selectedReports) {
                         switch (report) {
                             case 'Detailed Report': {
-                                console.log('seriously?');
                                 await ReportsService.getDetailedReport(this.selectedScenarioData)
                                     .then((response: AxiosResponse<any>) => {
                                         FileDownload(response.data, 'DetailedReport.xlsx');
