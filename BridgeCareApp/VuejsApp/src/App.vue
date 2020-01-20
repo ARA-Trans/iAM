@@ -46,7 +46,7 @@
                             <v-list-tile-title>Cash Flow</v-list-tile-title>
                         </v-list-tile>
                     </v-list-group>
-                    <v-list-tile @click="onNavigate('/UnderConstruction/')">
+                    <v-list-tile v-if="isAdmin" @click="onNavigate('/UserCriteria/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>
                         <v-list-tile-title>Security</v-list-tile-title>
                     </v-list-tile>
@@ -62,6 +62,10 @@
                     <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/Scenarios/')">
                         <v-icon style="padding-right: 12px">fas fa-project-diagram</v-icon>
                         BridgeCare Analysis
+                    </v-btn>
+                    <v-btn v-if="isAdmin" round class="ara-blue-bg white--text" @click="onNavigate('/UserCriteria/')">
+                        <v-icon style="padding-right: 12px">fas fa-lock</v-icon>
+                        Security
                     </v-btn>
                 </v-toolbar-title>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
@@ -137,6 +141,7 @@
         @Action('setInfoMessage') setInfoMessageAction: any;
         @Action('pollEvents') pollEventsAction: any;
         @Action('generatePollingSessionId') generatePollingSessionIdAction: any;
+        @Action('getUserCriteria') getUserCriteriaAction: any;
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
@@ -263,6 +268,7 @@
             this.$forceUpdate();
             this.getNetworksAction();
             this.getAttributesAction();
+            this.getUserCriteriaAction();
         }
 
         /**

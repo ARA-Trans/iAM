@@ -22,7 +22,7 @@ const Authentication = () => import (/* webpackChunkName: "Authentication" */ '@
 const AuthenticationFailure = () => import (/* webpackChunkName: "authenticationFailure" */ '@/components/authentication/AuthenticationFailure.vue');
 const NoRole = () => import (/*webpackChunkName: "noRole" */ '@/components/authentication/NoRole.vue');
 const Inventory = () => import (/*webpackChunkName: "inventory" */ '@/components/Inventory.vue');
-const UserCriteria = () => import (/*webpackChunkName: "userCriteria" */ '@/components/user-criteria/UserCriteria.vue');
+const UserCriteriaEditor = () => import (/*webpackChunkName: "userCriteria" */ '@/components/user-criteria/UserCriteria.vue');
 
 Vue.use(VueRouter);
 
@@ -177,7 +177,7 @@ const router = new VueRouter({
         {
             path: '/UserCriteria/',
             name: 'UserCriteria',
-            component: UserCriteria
+            component: UserCriteriaEditor
         },
         {
             path: '*',

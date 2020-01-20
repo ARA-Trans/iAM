@@ -240,6 +240,7 @@
     <Compile Include="ApplicationLog\HandleException.cs" />
     <Compile Include="ApplicationLog\UnhandledExceptionLogger.cs" />
     <Compile Include="Controllers\CashFlowLibraryController.cs" />
+    <Compile Include="Controllers\UserCriteriaController.cs" />
     <Compile Include="DataAccessLayer\CashFlowLibraryDAL.cs" />
     <Compile Include="EntityClasses\SplitTreatmentEntity.cs" />
     <Compile Include="EntityClasses\SplitTreatmentLimitEntity.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
+    <Compile Include="Models\UserCriteriaModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
     <Compile Include="Security\JWTParse.cs" />
     <Compile Include="DataAccessLayer\RunSimulationDAL.cs" />

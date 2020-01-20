@@ -21,15 +21,12 @@ namespace BridgeCare.Security
         /// <param name="roles">Permitted roles</param>
         public RestrictAccessAttribute(params string[] roles) : base()
         {
-            ValidateRole = (role) =>
-            {
-                return roles.Contains(role);
-            };
+            ValidateRole = role => roles.Contains(role);
         }
 
         public RestrictAccessAttribute() : base()
         {
-            ValidateRole = (role) => true;
+            ValidateRole = role => true;
         }
 
         protected override bool IsAuthorized(HttpActionContext httpContext)
