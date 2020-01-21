@@ -234,8 +234,9 @@ namespace Simulation
         /// <param name="priority"></param>
         /// <param name="limits">Limits where treatments are split over multiple years</param>
         /// <returns></returns>
-        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, List<ISplitTreatmentLimit> limits, out string budgetHash, out ISplitTreatmentLimit splitTreatmentLimit)
+        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, List<ISplitTreatmentLimit> limits, string budgetLimitType, out string budgetHash, out ISplitTreatmentLimit splitTreatmentLimit)
         {
+            
             splitTreatmentLimit = limits[0];
 
             //Check priority.  If not possible just return null.
@@ -263,6 +264,12 @@ namespace Simulation
             try
             {
                 possibleBudgets = strBudget.Split('|');
+
+                for(int i = 0; i < possibleBudgets.Length; i++)
+                {
+                    possibleBudgets[i] = possibleBudgets[i].Trim();
+                }
+
             }
             catch (Exception e)
             {
@@ -348,8 +355,13 @@ namespace Simulation
 
                 bool currentBudgetAvailable = true;
 
-                //Starting here need to loop through year amounts.
+                if(budgetLimitType.ToLower() == "unlimited")//If the budget is available (possible budget) and is unlimited... we are good.
+                {
+                    return budgetCheck;
+                }
 
+
+                //Starting here need to loop through year amounts.
                 var year = Convert.ToInt32(strYear);
                 for (int i = 0; i < splitTreatmentLimit.Percentages.Count; i++)
                 {
@@ -420,6 +432,9 @@ namespace Simulation
                         throw e;
                     }
                 }
+            
+                
+                
                 //To be true here, there must be money available for each year.
                 if (currentBudgetAvailable) return budgetCheck;
             }
