@@ -8070,17 +8070,6 @@ namespace Simulation
                     }
                 }
 
-                if (SimulationMessaging.IsOMS)
-                {
-                    if (commit.OMSIsNotAllowed)
-                    {
-                        fAmount = 0;
-                    }
-                    else
-                    {
-                        fAmount = GetTreatmentCost(section, commit.OMSTreatment, out int cumulativeCostId) * section.Area;
-                    }
-                }
                 Investment.SpendBudget(fAmount, strBudget, nYear.ToString());
 
                 float fCost = fAmount / section.Area;
@@ -8166,7 +8155,7 @@ namespace Simulation
                         //break;
                 }
             }
-
+        }
 
 
         private void CommitOMSActivity(bool isNotAllowed)
