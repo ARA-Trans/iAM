@@ -33,14 +33,14 @@ namespace BridgeCare.Services
         /// <param name="dbContext"></param>
         /// <param name="simulationId"></param>        
         /// <returns>ChartRowsModel object for usage in other tab reports.</returns>
-        public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, List<int> simulationYears, BridgeCareContext dbContext, int simulationId)
+        public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, List<int> simulationYears, BridgeCareContext dbContext, int simulationId, List<string> treatments)
         {
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
             var yearlyBudgetModels = bridgeWorkSummaryData.GetYearlyBudgetModels(simulationId, dbContext);
 
-            costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetModels);
+            costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetModels, treatments);
 
-            bridgesCulvertsWorkSummary.FillBridgesCulvertsWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels);
+            bridgesCulvertsWorkSummary.FillBridgesCulvertsWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, treatments);
 
             var chartRowsModel = bridgeRateDeckAreaWorkSummary.FillBridgeRateDeckAreaWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels);
 

@@ -59,7 +59,7 @@ namespace BridgeCare.Services
                 Year = year
             };
             yearsData.MinC = Math.Min(Convert.ToDouble(yearsData.Deck), Convert.ToDouble(yearsData.Culv)).ToString();
-            yearsData.SD = Convert.ToDouble(yearsData.DeckD) < 5 ? "Y" : "N";
+            yearsData.SD = Convert.ToDouble(yearsData.MinC) < 5 ? "Y" : "N";
 
             yearsData.Project = year != 0 ? projectCostEntry?.TREATMENT : string.Empty;
             yearsData.Cost = year != 0 ? (projectCostEntry == null ? 0 : projectCostEntry.COST_) : 0;

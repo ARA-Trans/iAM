@@ -1,4 +1,5 @@
 ﻿using BridgeCare.Interfaces;
+using BridgeCare.Security;
 using System;
 using System.Web.Http;
 
@@ -21,6 +22,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpGet]
         [Route("api/GetNetworks")]
+        [RestrictAccess]
         public IHttpActionResult GetNetworks() => Ok(repo.GetAllNetworks(db));
     }
 }

@@ -12,6 +12,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 {
     public class BridgeDataDAL : IBridgeData
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BridgeDataDAL));
         /// <summary>
         /// Fetches bridge data using a list of br keys
         /// </summary>
@@ -62,10 +63,12 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             }
             catch (SqlException ex)
             {
-                HandleException.SqlError(ex, "Section_" + simulationModel.SimulationId);
+                log.Error(ex.Message);
+                HandleException.SqlError(ex, "Section_");
             }
             catch (OutOfMemoryException ex)
             {
+                log.Error(ex.Message);
                 HandleException.OutOfMemoryError(ex);
             }
 
@@ -163,12 +166,22 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         {            
             IQueryable<ReportProjectCost> rawQueryForReportData = null;
             var years = string.Join(",", simulationYears);
+            var listOfBudgets = dbContext.CriteriaDrivenBudgets.Where(y => y.SIMULATIONID == simulationModel.SimulationId)
+                .Select(cri => "'" + cri.BUDGET_NAME + "'").ToList();
+
+            var budgets = string.Join(",", listOfBudgets);
             var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
-                                        $"WITH (NOLOCK) WHERE BUDGET = 'actual_spent' AND YEARS IN (" + years + ")";
+                                        $"WITH (NOLOCK) WHERE BUDGET IN (" + budgets + ") AND YEARS IN (" + years + ")";
 
             rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();
 
             return rawQueryForReportData;
+        }
+
+        public List<string> GetTreatments(int simulationId, BridgeCareContext db)
+        {
+            var treatments = db.Treatments.Where(t => t.SIMULATIONID == simulationId).Select(t => t.TREATMENT).ToList();
+            return treatments;
         }
 
         #region private methods
@@ -188,7 +201,9 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         }
 
         private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
-        {           
+        {
+            bool adtTotalHasValue = Int32.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
+            bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
             return new BridgeDataModel
             {
                 BRKey = penndotBridgeDataRow.BRKEY,
@@ -201,7 +216,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 FunctionalClass = pennDotReportADataRow.FUNC_CLASS,
                 NHS = pennDotReportADataRow.NHS_IND == "1" ? "Y" : "N",
                 YearBuilt = pennDotReportADataRow.YEAR_BUILT,
-                ADTOverTenThousand = Convert.ToInt32(pennDotReportADataRow.ADTTOTAL) > 10000 ? "Y" : "N",
+                ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
                 RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)
             };
         }        

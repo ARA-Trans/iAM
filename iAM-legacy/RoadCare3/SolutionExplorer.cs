@@ -1685,7 +1685,7 @@ namespace RoadCare3
 						String strSimID = tvSolutionExplorer.SelectedNode.Name;
 						FormSimulationResults formSimulation;
 
-						if( DBMgr.IsTableInDatabase( "SIMULATION_" + strNetworkID + "_" + strSimID ) )
+						if( DBMgr.IsTableInDatabase( "SIMULATION_" + strNetworkID + "_" + strSimID + "_0" ) )
 						{
 							if( !FormManager.IsFormSimulationCommittedOpen( strSimID, out formSimulation ) )
 							{

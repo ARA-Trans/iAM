@@ -1,25 +1,7 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise} from 'axios';
-import {InvestmentLibrary, InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
-
-const modifyDataForMongoDB = (investmentLibrary: InvestmentLibrary): any => {
-    const investmentLibraryData: any = {
-        ...investmentLibrary,
-        _id: investmentLibrary.id,
-        budgetYears: investmentLibrary.budgetYears.map((budgetYear: InvestmentLibraryBudgetYear) => {
-            const budgetYearData: any = {...budgetYear, _id: budgetYear.id};
-            delete budgetYearData.id;
-            return budgetYearData;
-        }),
-        budgetCriteria: investmentLibrary.budgetCriteria.map((criteria: any) => {
-            delete criteria._id;
-            delete criteria.scenarioId;
-            return criteria;
-        })
-    };
-    delete investmentLibraryData.id;
-    return investmentLibraryData;
-};
+import {InvestmentLibrary} from '@/shared/models/iAM/investment';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class InvestmentEditorService {
     /**
@@ -34,7 +16,7 @@ export default class InvestmentEditorService {
      * @param createdInvestmentLibrary The investment library create data
      */
     static createInvestmentLibrary(createdInvestmentLibrary: InvestmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', modifyDataForMongoDB(createdInvestmentLibrary));
+        return nodejsAxiosInstance.post('/api/CreateInvestmentLibrary', convertFromVueToMongo(createdInvestmentLibrary));
     }
 
     /**
@@ -42,7 +24,7 @@ export default class InvestmentEditorService {
      * @param updatedInvestmentLibrary The investment library update data
      */
     static updateInvestmentLibrary(updatedInvestmentLibrary: InvestmentLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', modifyDataForMongoDB(updatedInvestmentLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateInvestmentLibrary', convertFromVueToMongo(updatedInvestmentLibrary));
     }
 
     /**

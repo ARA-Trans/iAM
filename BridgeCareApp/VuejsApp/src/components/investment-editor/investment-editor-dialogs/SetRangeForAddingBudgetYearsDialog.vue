@@ -10,7 +10,7 @@
                 <v-text-field v-model="range" label="Edit" single-line :mask="'####'"></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="range === ''">Submit</v-btn>
+                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="range === ''">Save</v-btn>
                 <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
             </v-card-actions>
         </v-card>

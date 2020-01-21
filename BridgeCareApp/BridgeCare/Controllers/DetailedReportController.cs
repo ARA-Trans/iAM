@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Security;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -25,6 +26,7 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/GetDetailedReport")]
         [ModelValidation("The scenario and/or network id are invalid.")]
+        [RestrictAccess]
         public HttpResponseMessage GetDetailedReport([FromBody] SimulationModel model)
         {
             var response = Request.CreateResponse();

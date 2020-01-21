@@ -1,4 +1,5 @@
-﻿using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
+﻿using BridgeCare.ApplicationLog;
+using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 using BridgeCare.Interfaces.CriteriaDrivenBudgets;
 using BridgeCare.Models.CriteriaDrivenBudgets;
 using System;
@@ -12,6 +13,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
 {
     public class CriteriaDrivenBudgetsDAL : ICriteriaDrivenBudgets
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CriteriaDrivenBudgetsDAL));
         /// <summary>
         /// Fetches a simulation's criteria driven budgets
         /// Throws RowNotInTableException if simulation is not found
@@ -22,7 +24,10 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         public List<CriteriaDrivenBudgetsModel> GetCriteriaDrivenBudgets(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+            {
+                log.Warn($"No scenario found with {id}");
                 throw new RowNotInTableException($"No scenario found with {id}");
+            }
 
             if (db.CriteriaDrivenBudgets.Any(cdb => cdb.SIMULATIONID == id))
                 return db.CriteriaDrivenBudgets.AsNoTracking()
@@ -46,7 +51,10 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             try
             {
                 if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                {
+                    log.Warn($"No scenario found with {id}");
                     throw new RowNotInTableException($"No scenario found with {id}");
+                }
 
                 if (db.CriteriaDrivenBudgets.Any(cdb => cdb.SIMULATIONID == id))
                     db.CriteriaDrivenBudgets
@@ -67,6 +75,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             }
             catch (Exception ex)
             {
+                log.Error(ex.Message);
                 return Task.FromResult($"Failed to save criteria driven budgets::{ex.Message}");
             }
         }

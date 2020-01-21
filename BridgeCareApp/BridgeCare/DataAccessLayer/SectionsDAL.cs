@@ -9,6 +9,7 @@ namespace BridgeCare.DataAccessLayer
 {
     public class SectionsDAL : ISections
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SectionsDAL));
         public SectionsDAL()
         {
         }
@@ -25,10 +26,12 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
+                log.Error(ex.Message);
                 HandleException.SqlError(ex, "Section_");
             }
             catch (OutOfMemoryException ex)
             {
+                log.Error(ex.Message);
                 HandleException.OutOfMemoryError(ex);
             }
             return rawQueryForData;
@@ -70,6 +73,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
+                log.Error(ex.Message);
                 HandleException.SqlError(ex, "SectionId error");
             }
             return -1;
@@ -111,6 +115,7 @@ namespace BridgeCare.DataAccessLayer
             }
             catch (SqlException ex)
             {
+                log.Error(ex.Message);
                 HandleException.SqlError(ex, "SectionId error");
             }
             return -1;

@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Web;
 using BridgeCare.Properties;
 using DatabaseManager;
+using log4net;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -38,7 +39,11 @@ namespace BridgeCare.DataAccessLayer
         public void UpdateSimulation(SimulationModel model, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
+            {
+                var log = LogManager.GetLogger(typeof(SimulationDAL));
+                log.Error($"No scenario found with id {model.SimulationId}");
                 throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
+            }
 
             var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
             simulation.SIMULATION = model.SimulationName;
@@ -79,9 +84,6 @@ namespace BridgeCare.DataAccessLayer
             db.Simulations.Add(simulation);
 
             db.SaveChanges();
-
-            var defaultBudgets = new List<string> { "Rehabilitation", "Maintenance", "Construction" };
-            PriorityDAL.SavePriorityFundInvestmentData(simulation.SIMULATIONID, defaultBudgets, db);
 
             simulation = db.Simulations.Include(s => s.NETWORK)
                 .Single(s => s.SIMULATIONID == simulation.SIMULATIONID);

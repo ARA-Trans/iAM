@@ -1,21 +1,7 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {AxiosPromise} from 'axios';
-import {RemainingLifeLimit, RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
-
-const modifyDataForMongoDB = (remainingLifeLimitLibrary: RemainingLifeLimitLibrary): any => {
-    const remainingLifeLimitLibraryData: any = {
-        ...remainingLifeLimitLibrary,
-        _id: remainingLifeLimitLibrary.id,
-        remainingLifeLimits: remainingLifeLimitLibrary.remainingLifeLimits
-            .map((remainingLifeLimit: RemainingLifeLimit) => {
-                const remainingLifeLimitData: any = {...remainingLifeLimit, _id: remainingLifeLimit.id};
-                delete remainingLifeLimitData.id;
-                return remainingLifeLimitData;
-            })
-    };
-    delete remainingLifeLimitLibraryData.id;
-    return remainingLifeLimitLibraryData;
-};
+import {RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class RemainingLifeLimitService {
     /**
@@ -30,7 +16,7 @@ export default class RemainingLifeLimitService {
      * @param createdRemainingLifeLimitLibrary The remaining life limit library create data
      */
     static createRemainingLifeLimitLibrary(createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreateRemainingLifeLimitLibrary', modifyDataForMongoDB(createdRemainingLifeLimitLibrary));
+        return nodejsAxiosInstance.post('/api/CreateRemainingLifeLimitLibrary', convertFromVueToMongo(createdRemainingLifeLimitLibrary));
     }
 
     /**
@@ -38,7 +24,7 @@ export default class RemainingLifeLimitService {
      * @param updatedRemainingLifeLimitLibrary The remaining life limit library update data
      */
     static updateRemainingLifeLimitLibrary(updatedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdateRemainingLifeLimitLibrary', modifyDataForMongoDB(updatedRemainingLifeLimitLibrary));
+        return nodejsAxiosInstance.put('/api/UpdateRemainingLifeLimitLibrary', convertFromVueToMongo(updatedRemainingLifeLimitLibrary));
     }
 
     /**

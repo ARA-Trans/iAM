@@ -1,31 +1,7 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {Priority, PriorityFund, PriorityLibrary} from '@/shared/models/iAM/priority';
-
-const modifyDataForMongoDB = (priorityLibrary: PriorityLibrary): any => {
-    const priorityLibraryData: any = {
-        ...priorityLibrary,
-        _id: priorityLibrary.id,
-        priorities: priorityLibrary.priorities.map((priority: Priority) => {
-            const priorityData: any = {
-                ...priority,
-                _id: priority.id,
-                priorityFunds: priority.priorityFunds.map((priorityFund: PriorityFund) => {
-                    const priorityFundData: any = {
-                        ...priorityFund,
-                        _id: priorityFund.id
-                    };
-                    delete priorityFundData.id;
-                    return priorityFundData;
-                })
-            };
-            delete priorityData.id;
-            return priorityData;
-        })
-    };
-    delete priorityLibraryData.id;
-    return priorityLibraryData;
-};
+import {PriorityLibrary} from '@/shared/models/iAM/priority';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class PriorityService {
     /**
@@ -40,7 +16,7 @@ export default class PriorityService {
      * @param createdPriorityLibrary The priority library create data
      */
     static createPriorityLibrary(createdPriorityLibrary: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.post('/api/CreatePriorityLibrary', modifyDataForMongoDB(createdPriorityLibrary));
+        return nodejsAxiosInstance.post('/api/CreatePriorityLibrary', convertFromVueToMongo(createdPriorityLibrary));
     }
 
     /**
@@ -48,7 +24,7 @@ export default class PriorityService {
      * @param updatedPriorityLibrary The priority library update data
      */
     static updatePriorityLibrary(updatedPriorityLibrary: PriorityLibrary): AxiosPromise {
-        return nodejsAxiosInstance.put('/api/UpdatePriorityLibrary', modifyDataForMongoDB(updatedPriorityLibrary));
+        return nodejsAxiosInstance.put('/api/UpdatePriorityLibrary', convertFromVueToMongo(updatedPriorityLibrary));
     }
 
     /**

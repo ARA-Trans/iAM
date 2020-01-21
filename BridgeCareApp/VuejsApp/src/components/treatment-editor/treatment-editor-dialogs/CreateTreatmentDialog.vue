@@ -14,7 +14,7 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn color="info" @click="onSubmit(true)" :disabled="createdTreatment.name === ''">Submit</v-btn>
+                        <v-btn color="info" @click="onSubmit(true)" :disabled="createdTreatment.name === ''">Save</v-btn>
                         <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>

@@ -48,6 +48,7 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<CommittedEntity> COMMITTEDPROJECTS { get; set; }
         public virtual ICollection<RemainingLifeLimitsEntity> REMAINING_LIFE_LIMITS { get; set; }
         public virtual ICollection<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
+        public virtual ICollection<SplitTreatmentEntity> SPLIT_TREATMENTS { get; set; }
 
         public SimulationEntity()
         {
@@ -64,7 +65,21 @@ namespace BridgeCare.EntityClasses
             WEIGHTING = "none";
             COMMITTED_START = DateTime.Now.Year;
             COMMITTED_PERIOD = 1;
-
+            PRIORITIES = new List<PriorityEntity>
+            {
+                new PriorityEntity
+                {
+                    PRIORITYLEVEL = 1,
+                    YEARS = DateTime.Now.Year,
+                    CRITERIA = "",
+                    PRIORITYFUNDS = new List<PriorityFundEntity>
+                    {
+                        new PriorityFundEntity {BUDGET = "Rehabilitation", FUNDING = 100},
+                        new PriorityFundEntity {BUDGET = "Maintenance", FUNDING = 100},
+                        new PriorityFundEntity {BUDGET = "Construction", FUNDING = 100}
+                    }
+                }
+            };
             YEARLYINVESTMENTS = new List<YearlyInvestmentEntity>
             {
                 new YearlyInvestmentEntity

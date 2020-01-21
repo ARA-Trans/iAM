@@ -24,11 +24,7 @@ export default class CommittedProjectsService {
         
         // Make the request to the API      
         return axiosInstance.post('/api/SaveCommittedProjectsFiles', formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            {headers: {'Content-Type': 'multipart/form-data'}});
     }
 
     /**
@@ -36,7 +32,7 @@ export default class CommittedProjectsService {
      * @param scenarioData
      */
     static ExportCommittedProjects(scenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/ExportCommittedProjects', scenarioData, { responseType: 'blob' });
+        return axiosInstance.post('/api/ExportCommittedProjects', scenarioData, {responseType: 'blob'});
     }
 }
     

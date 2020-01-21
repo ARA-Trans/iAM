@@ -1,4 +1,5 @@
 ﻿using BridgeCare.Interfaces;
+using BridgeCare.Security;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -24,6 +25,7 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult task</returns>
         [HttpPost]
         [Route("api/RunRollup")]
+        [RestrictAccess]
         public async Task<IHttpActionResult> Post([FromBody]SimulationModel model)
         {
             var result = await Task.Factory.StartNew(() => repo.RunRollup(model));

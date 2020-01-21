@@ -1,4 +1,6 @@
-﻿namespace BridgeCare.Models
+﻿using System.Collections.Generic;
+
+namespace BridgeCare.Models
 {
     public class ProjectRowNumberModel
     {
@@ -10,5 +12,6 @@
         public int BridgesPreservationRow { get; set; }
         public int BridgesRehabilitationRow { get; set; }
         public int BridgesReplacementRow { get; set; }
+        public Dictionary<string, int> TreatmentsCount { get; set; } = new Dictionary<string, int>();
     }
 }
