@@ -24,7 +24,6 @@ namespace BridgeCare.DataAccessLayer
                 .Include(s => s.INVESTMENTS)
                 .Include(s => s.YEARLYINVESTMENTS)
                 .Single(s => s.SIMULATIONID == id);
-
             return new InvestmentLibraryModel(simulation);
         }
 

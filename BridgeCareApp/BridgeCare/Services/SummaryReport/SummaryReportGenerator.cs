@@ -18,9 +18,12 @@ namespace BridgeCare.Services.SummaryReport
         private readonly ConditionDeckArea conditionDeckArea;
         private readonly PoorBridgeCount poorBridgeCount;
         private readonly PoorBridgeDeckArea poorBridgeDeckArea;
-        private readonly NHSConditionChart nhsConditionChart;        
+        private readonly NHSConditionChart nhsConditionChart;
+        private readonly SummaryReportParameters summaryReportParameters;
 
-        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData, BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount, PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount)
+        public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData,
+            BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
+            PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount, SummaryReportParameters summaryReportParameters)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
@@ -30,6 +33,7 @@ namespace BridgeCare.Services.SummaryReport
             this.poorBridgeCount = poorBridgeCount ?? throw new ArgumentNullException(nameof(poorBridgeCount));
             this.poorBridgeDeckArea = poorBridgeDeckArea ?? throw new ArgumentNullException(nameof(poorBridgeDeckArea));
             this.nhsConditionChart = nhsConditionBridgeCount ?? throw new ArgumentNullException(nameof(nhsConditionBridgeCount));
+            this.summaryReportParameters = summaryReportParameters ?? throw new ArgumentException(nameof(summaryReportParameters));
         }
 
         /// <summary>
@@ -48,6 +52,10 @@ namespace BridgeCare.Services.SummaryReport
             
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
+                // Simulation parameters TAB
+                var parametersWorksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
+                summaryReportParameters.Fill(parametersWorksheet, simulationModel);
+
                 // Bridge Data tab
                 var bridgeDataModels = new List<BridgeDataModel>();
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
