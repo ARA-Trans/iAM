@@ -53,12 +53,12 @@ namespace BridgeCare.Services.SummaryReport
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
                 // Simulation parameters TAB
-                var worksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
-                summaryReportParameters.Fill(worksheet, simulationModel, simulationYears);
+                var parametersWorksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
+                summaryReportParameters.Fill(parametersWorksheet, simulationModel);
 
                 // Bridge Data tab
                 var bridgeDataModels = new List<BridgeDataModel>();
-                worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
+                var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
                 // Bridge Work Summary tab

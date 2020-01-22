@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using BridgeCare.Interfaces;
@@ -31,7 +32,7 @@ namespace BridgeCare.Services.SummaryReport
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears)
+        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel)
         {
             var simulationId = simulationModel.SimulationId;
             var investmentPeriod = analysisData.GetSimulationAnalysis(simulationId, db);
@@ -47,12 +48,18 @@ namespace BridgeCare.Services.SummaryReport
 
             worksheet.Cells["A1:B1"].Value = "Simulation Name";
             worksheet.Cells["C1:J1"].Value = simulationModel.SimulationName;
-
             excelHelper.ApplyBorder(worksheet.Cells[1, 1, 1, 10]);
-
             // End of Simulation Name format
 
-            // Investment format
+            FillSimulationDetails(worksheet, investmentPeriod, inflationAndInvestments.InflationRate);
+            FillAnalysisDetails(worksheet, investmentPeriod);
+            FillJurisdictionCriteria(worksheet, investmentPeriod.Criteria);
+            FillPriorities(worksheet, priorities);
+            FillInvestmentAndBudgetCriteria(worksheet, inflationAndInvestments, criterias);
+        }
+
+        private void FillSimulationDetails(ExcelWorksheet worksheet, SimulationAnalysisModel investmentPeriod, double? inflationRate)
+        {
             excelHelper.MergeCells(worksheet, 6, 6, 6, 8);
             excelHelper.MergeCells(worksheet, 8, 6, 8, 7);
             excelHelper.MergeCells(worksheet, 10, 6, 10, 7);
@@ -67,12 +74,13 @@ namespace BridgeCare.Services.SummaryReport
 
             worksheet.Cells["H8"].Value = investmentPeriod.StartYear;
             worksheet.Cells["H10"].Value = investmentPeriod.AnalysisPeriod;
-            worksheet.Cells["H12"].Value = inflationAndInvestments.InflationRate;
+            worksheet.Cells["H12"].Value = inflationRate;
 
             excelHelper.ApplyBorder(worksheet.Cells[8, 8, 12, 8]);
-            // End of Investment format
+        }
 
-            //Analysis format
+        private void FillAnalysisDetails(ExcelWorksheet worksheet, SimulationAnalysisModel investmentPeriod)
+        {
             excelHelper.MergeCells(worksheet, 6, 12, 6, 15);
             excelHelper.MergeCells(worksheet, 8, 12, 8, 13);
             excelHelper.MergeCells(worksheet, 10, 12, 10, 13);
@@ -115,66 +123,56 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["N10:O10"].Value = investmentPeriod.BudgetType;
             worksheet.Cells["N12:O12"].Value = investmentPeriod.WeightingAttribute;
             worksheet.Cells["N14:O14"].Value = investmentPeriod.BenefitAttribute;
-            //End of Analysis format
+        }
 
-            // Jurisdiction Criteria
+        private void FillPriorities(ExcelWorksheet worksheet, List<PriorityModel> priorities)
+        {
+            excelHelper.MergeCells(worksheet, 19, 12, 19, worksheet.Dimension.End.Column);
+            excelHelper.MergeCells(worksheet, 20, 13, 20, worksheet.Dimension.End.Column);
+
+            excelHelper.ApplyBorder(worksheet.Cells[20, 12, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column]);
+
+            worksheet.Cells["L19:Z19"].Value = "Analysis Priorites:";
+
+            worksheet.Cells["L20"].Value = "Number";
+            worksheet.Cells["M20"].Value = "Criteria:";
+
+            var startingRow = 21;
+            foreach (var item in priorities)
+            {
+                excelHelper.MergeCells(worksheet, startingRow, 13, startingRow, worksheet.Dimension.End.Column, false);
+                excelHelper.ApplyBorder(worksheet.Cells[21, 12, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column]);
+                worksheet.Cells[startingRow, 12].Value = startingRow - 20;
+                worksheet.Cells[startingRow, 13].Value = item.Criteria;
+                startingRow++;
+            }
+        }
+
+        private void FillJurisdictionCriteria(ExcelWorksheet worksheet, string criteria)
+        {
             excelHelper.MergeCells(worksheet, 16, 12, 17, 13);
             excelHelper.MergeCells(worksheet, 16, 14, 17, 26, false);
 
             excelHelper.ApplyBorder(worksheet.Cells[16, 14, 17, 26]);
 
             worksheet.Cells["L16:M16"].Value = "Jurisdiction Criteria:";
-            worksheet.Cells["N16:Z16"].Value = investmentPeriod.Criteria;
-            // End Jurisdiction criteria
+            worksheet.Cells["N16:Z16"].Value = criteria;
+        }
 
-            // Analysis Priorities
-
-            ExcelRange range = worksheet.Cells[20, 12, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column];
-            ExcelTable table = worksheet.Tables.Add(range, "Priority");
-
-            table.TableStyle = TableStyles.Dark10;
-            table.ShowColumnStripes = true;
-
-            excelHelper.MergeCells(table.WorkSheet, 19, 12, 19, worksheet.Dimension.End.Column);
-            excelHelper.MergeCells(table.WorkSheet, 20, 13, 20, worksheet.Dimension.End.Column);
-
-            excelHelper.ApplyBorder(table.WorkSheet.Cells[20, 12, table.WorkSheet.Dimension.End.Row, table.WorkSheet.Dimension.End.Column]);
-
-            worksheet.Cells["L19:Z19"].Value = "Analysis Priorites:";
-
-            table.WorkSheet.Cells["L20"].Value = "Number";
-            table.WorkSheet.Cells["M20"].Value = "Criteria:";
-
-            var startingRow = 21;
-            foreach (var item in priorities)
-            {
-                excelHelper.MergeCells(worksheet, startingRow, 13, startingRow, worksheet.Dimension.End.Column, false);
-                excelHelper.ApplyBorder(table.WorkSheet.Cells[21, 12, table.WorkSheet.Dimension.End.Row, table.WorkSheet.Dimension.End.Column]);
-                table.WorkSheet.Cells[startingRow, 12].Value = startingRow - 20;
-                table.WorkSheet.Cells[startingRow, 13].Value = item.Criteria;
-                startingRow++;
-            }
-            // End Analysis priorities
-
-            // Investments
-            //var investmentTableRange = worksheet.Cells[38, 1, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column];
-            //var investmentTable = worksheet.Tables.Add(investmentTableRange, "Investments");
-
-            //investmentTable.TableStyle = TableStyles.Dark10;
-            //investmentTable.ShowColumnStripes = true;
-
+        private void FillInvestmentAndBudgetCriteria(ExcelWorksheet worksheet, InvestmentLibraryModel inflationAndInvestments, List<Models.CriteriaDrivenBudgets.CriteriaDrivenBudgetsModel> criterias)
+        {
             worksheet.Cells[38, 1].Value = "Years";
             worksheet.Cells[38, 2].Value = "Total Funding";
 
             var startingRowInvestment = 40;
-            var staringBudgetHeaderColumn = 2;
+            var startingBudgetHeaderColumn = 2;
             var nextBudget = 0;
             var investmentGrid = new Dictionary<int, List<(string BudgetName, double? BudgetAmount)>>();
             foreach (var item in inflationAndInvestments.BudgetYears)
             {
                 if (!investmentGrid.ContainsKey(item.Year))
                 {
-                    investmentGrid.Add(item.Year, new List<(string BudgetName, double? BudgetAmount)>{ (item.BudgetName, item.BudgetAmount)});
+                    investmentGrid.Add(item.Year, new List<(string BudgetName, double? BudgetAmount)> { (item.BudgetName, item.BudgetAmount) });
                 }
                 else
                 {
@@ -188,38 +186,33 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet.Cells[startingRowInvestment, 1].Value = item.Key;
                 foreach (var budget in item.Value)
                 {
-                    if(firstRow == true)
+                    if (firstRow == true)
                     {
-                        worksheet.Cells[39, staringBudgetHeaderColumn + nextBudget].Value = budget.BudgetName;
-                        //investmentTable.WorkSheet.Cells[startingRowInvestment, staringBudgetHeaderColumn + nextBudget].Style.Numberformat.Format = currencyFormat;
-                        worksheet.Cells[startingRowInvestment, staringBudgetHeaderColumn + nextBudget].Value = budget.BudgetAmount;
+                        worksheet.Cells[39, startingBudgetHeaderColumn + nextBudget].Value = budget.BudgetName;
+                        worksheet.Cells[startingRowInvestment, startingBudgetHeaderColumn + nextBudget].Value = budget.BudgetAmount.Value;
+                        //worksheet.Cells[startingRowInvestment, startingBudgetHeaderColumn + nextBudget].Style.Numberformat.Format = currencyFormat;
                         nextBudget++;
                         continue;
                     }
-                    for (var column = staringBudgetHeaderColumn; column <= item.Value.Count + 1; column++)
+                    for (var column = startingBudgetHeaderColumn; column <= item.Value.Count + 1; column++)
+                    {
+                        if (worksheet.Cells[39, column].Value.ToString() == budget.BudgetName)
                         {
-                            if (worksheet.Cells[39, column].Value.ToString() == budget.BudgetName)
-                            {
-                            //investmentTable.WorkSheet.Cells[startingRowInvestment, staringBudgetHeaderColumn + nextBudget].Style.Numberformat.Format = currencyFormat;
-                            worksheet.Cells[startingRowInvestment, column].Value = budget.BudgetAmount;
+                            //worksheet.Cells[startingRowInvestment, column].Style.Numberformat.Format = currencyFormat;
+                            worksheet.Cells[startingRowInvestment, column].Value = budget.BudgetAmount.Value;
                             break;
-                            }
                         }
+                    }
                 }
                 startingRowInvestment++;
                 firstRow = false;
                 nextBudget = 0;
             }
             excelHelper.MergeCells(worksheet, 38, 1, 39, 1);
-            excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count);
-            excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 1]);
-            //investmentTable.WorkSheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 1].AutoFitColumns();
-            //double minimumSize = 10;
-            //worksheet.Cells.AutoFitColumns(minimumSize);
+            excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count + 2);
+            excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 3]);
 
-            // End of Investments
-
-            // Format Budget Criteria
+            // Budget criteria
             var rowToApplyBorder = startingRowInvestment + 2;
             worksheet.Cells[startingRowInvestment + 2, 1].Value = "Budget Criteria";
             excelHelper.MergeCells(worksheet, startingRowInvestment + 2, 1, startingRowInvestment + 2, 5);
@@ -236,7 +229,8 @@ namespace BridgeCare.Services.SummaryReport
                 startingRowInvestment++;
             }
             excelHelper.ApplyBorder(worksheet.Cells[rowToApplyBorder, 1, startingRowInvestment + 3, 5]);
-            // End of Budget criteria
+            //End of Budget criteria
+            worksheet.Cells.AutoFitColumns(50);
         }
     }
 }
