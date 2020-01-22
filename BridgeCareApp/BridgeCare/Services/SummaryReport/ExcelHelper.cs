@@ -15,12 +15,20 @@ namespace BridgeCare.Services
         /// <param name="fromColumn"></param>
         /// <param name="toRow"></param>
         /// <param name="toColumn"></param>
-        public void MergeCells(ExcelWorksheet worksheet, int fromRow, int fromColumn, int toRow, int toColumn)
+        public void MergeCells(ExcelWorksheet worksheet, int fromRow, int fromColumn, int toRow, int toColumn, bool makeTextBold = true)
         {
             using (var cells = worksheet.Cells[fromRow, fromColumn, toRow, toColumn])
             {
                 cells.Merge = true;
-                ApplyStyle(cells);
+                if(makeTextBold == true)
+                {
+                    ApplyStyle(cells);
+                }
+                else
+                {
+                    cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    cells.Style.WrapText = true;
+                }
             }
         }
 
