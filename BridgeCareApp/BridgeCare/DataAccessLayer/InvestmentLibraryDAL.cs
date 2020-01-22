@@ -24,11 +24,10 @@ namespace BridgeCare.DataAccessLayer
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                     throw new RowNotInTableException($"No scenario found with id {id}");
 
-            var simulation = db.Simulations
+             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
                 .Include(s => s.YEARLYINVESTMENTS)
                 .Single(s => s.SIMULATIONID == id);
-
             return new InvestmentLibraryModel(simulation);
         }
 
