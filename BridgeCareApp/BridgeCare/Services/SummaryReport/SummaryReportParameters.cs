@@ -6,6 +6,7 @@ using System.Web;
 using BridgeCare.Interfaces;
 using BridgeCare.Interfaces.CriteriaDrivenBudgets;
 using BridgeCare.Models;
+using BridgeCare.Models.CriteriaDrivenBudgets;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
@@ -56,6 +57,7 @@ namespace BridgeCare.Services.SummaryReport
             FillJurisdictionCriteria(worksheet, investmentPeriod.Criteria);
             FillPriorities(worksheet, priorities);
             FillInvestmentAndBudgetCriteria(worksheet, inflationAndInvestments, criterias);
+            worksheet.Cells.AutoFitColumns(50);
         }
 
         private void FillSimulationDetails(ExcelWorksheet worksheet, SimulationAnalysisModel investmentPeriod, double? inflationRate)
@@ -211,8 +213,11 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 38, 1, 39, 1);
             excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count + 2);
             excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 3]);
+            FillBudgetCriteria(worksheet, startingRowInvestment, criterias);
+        }
 
-            // Budget criteria
+        private void FillBudgetCriteria(ExcelWorksheet worksheet, int startingRowInvestment, List<CriteriaDrivenBudgetsModel> criterias)
+        {
             var rowToApplyBorder = startingRowInvestment + 2;
             worksheet.Cells[startingRowInvestment + 2, 1].Value = "Budget Criteria";
             excelHelper.MergeCells(worksheet, startingRowInvestment + 2, 1, startingRowInvestment + 2, 5);
@@ -229,8 +234,6 @@ namespace BridgeCare.Services.SummaryReport
                 startingRowInvestment++;
             }
             excelHelper.ApplyBorder(worksheet.Cells[rowToApplyBorder, 1, startingRowInvestment + 3, 5]);
-            //End of Budget criteria
-            worksheet.Cells.AutoFitColumns(50);
         }
     }
 }
