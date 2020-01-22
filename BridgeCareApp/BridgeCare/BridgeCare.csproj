@@ -242,9 +242,12 @@
     <Compile Include="Controllers\CashFlowLibraryController.cs" />
     <Compile Include="Controllers\UserCriteriaController.cs" />
     <Compile Include="DataAccessLayer\CashFlowLibraryDAL.cs" />
+    <Compile Include="DataAccessLayer\UserCriteriaDAL.cs" />
     <Compile Include="EntityClasses\SplitTreatmentEntity.cs" />
     <Compile Include="EntityClasses\SplitTreatmentLimitEntity.cs" />
+    <Compile Include="EntityClasses\UserCriteriaEntity.cs" />
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
+    <Compile Include="Interfaces\IUserCriteria.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />

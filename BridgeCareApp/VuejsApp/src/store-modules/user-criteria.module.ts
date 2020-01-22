@@ -1,9 +1,8 @@
 import {UserCriteria} from '@/shared/models/iAM/user-criteria';
-import {any, propEq, findIndex, clone, append, equals, reject, insert} from 'ramda';
+import {propEq, clone, reject, insert} from 'ramda';
 import UserCriteriaService from '@/services/user-criteria.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
-import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     allUserCriteria: [] as UserCriteria[]
@@ -44,10 +43,7 @@ const actions = {
     async setUserCriteria({commit}: any, payload: any) {
         await UserCriteriaService.setUserCriteria(payload.userCriteria)
             .then((response: AxiosResponse<UserCriteria>) => {
-                if (hasValue(response, 'data')) {
-                    const userCriteria: UserCriteria = response.data;
-                    commit('userCriteriaMutator', userCriteria);
-                }
+                commit('userCriteriaMutator', payload.userCriteria);
             });
     }
 };
