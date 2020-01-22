@@ -6490,13 +6490,7 @@ namespace Simulation
         {
             for(int i = 1; i < limit.Percentages.Count; i++)
             {
-                var commit = new Committed();
-                commit.Year = year + i;
-                commit.YearSplitTreatmentComplete = year + limit.Percentages.Count - 1;
-                commit.Budget = budget;
-                commit.SplitTreatmentId = treatment.TreatmentID;
-                commit.Cost = amount * limit.Percentages[i] / 100;
-                commit.Treatment = treatment.Treatment;
+                var commit = new Committed(year+i, year + limit.Percentages.Count - 1, budget,treatment.TreatmentID, amount * limit.Percentages[i] / 100, treatment.Treatment);
                 section.YearCommit.Add(commit);
             }
         }

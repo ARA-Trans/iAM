@@ -125,7 +125,7 @@ namespace Simulation
             }
         }
 
-        public int MaximumYear { get; set; }
+        private int MaximumYear { get; set; }
 
         public void LoadBudgets()
         {
@@ -236,14 +236,14 @@ namespace Simulation
         /// <returns></returns>
         public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, List<ISplitTreatmentLimit> limits, string budgetLimitType, out string budgetHash, out ISplitTreatmentLimit splitTreatmentLimit)
         {
-            
+            string noBudgetAvailable = "";
             splitTreatmentLimit = limits[0];
 
             //Check priority.  If not possible just return null.
             if (!(priority.IsAllSections || priority.Criteria.IsCriteriaMet(hashAttributeValue)))
             {
                 budgetHash = "";
-                return null;
+                return noBudgetAvailable;
             }
 
             string[] possibleBudgets;
@@ -439,7 +439,7 @@ namespace Simulation
                 if (currentBudgetAvailable) return budgetCheck;
             }
 
-            return null;
+            return noBudgetAvailable;
         }
 
 

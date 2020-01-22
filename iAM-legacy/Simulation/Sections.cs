@@ -220,7 +220,6 @@ namespace Simulation
             set { m_nStartYear = value-1; }
         }
 
-        public Dictionary<int,float> ScheduledCost { get; set; }
 
 
         public void AddRemainingLifeHash(int nYear)
@@ -272,7 +271,6 @@ namespace Simulation
                 }
                 m_hashYearAttributeValues.Add(int.Parse(strYear), hashAttributeValue);
             }
-            ScheduledCost = new Dictionary<int, float>();
         }
 
 
