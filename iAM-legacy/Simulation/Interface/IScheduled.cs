@@ -5,11 +5,12 @@ using System.Text;
 
 namespace Simulation.Interface
 {
-    interface IScheduled
+    public interface IScheduled
     {
         int ScheduledId { get; }
         int ScheduledYear { get; }
         Treatments Treatment { get; }
         string  Budget { get; set; }
+
     }
 }

@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Simulation
 {
-    class Costs
+    public class Costs
     {
         bool _isDefault;
         Criterias _criteria = new Criterias();
