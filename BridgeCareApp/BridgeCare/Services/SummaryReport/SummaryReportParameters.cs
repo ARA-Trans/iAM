@@ -36,10 +36,10 @@ namespace BridgeCare.Services.SummaryReport
         internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel)
         {
             var simulationId = simulationModel.SimulationId;
-            var investmentPeriod = analysisData.GetSimulationAnalysis(simulationId, db);
-            var inflationAndInvestments = getInflationRate.GetSimulationInvestmentLibrary(simulationId, db);
-            var priorities = getPriorities.GetSimulationPriorityLibrary(simulationId, db).Priorities;
-            var criterias = budgetCriteria.GetCriteriaDrivenBudgets(simulationId, db);
+            var investmentPeriod = analysisData.GetAnySimulationAnalysis(simulationId, db);
+            var inflationAndInvestments = getInflationRate.GetAnySimulationInvestmentLibrary(simulationId, db);
+            var priorities = getPriorities.GetAnySimulationPriorityLibrary(simulationId, db).Priorities;
+            var criterias = budgetCriteria.GetAnyCriteriaDrivenBudgets(simulationId, db);
 
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
 
