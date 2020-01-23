@@ -246,12 +246,15 @@
     <Compile Include="ApplicationLog\UnhandledExceptionLogger.cs" />
     <Compile Include="Controllers\CashFlowLibraryController.cs" />
     <Compile Include="DataAccessLayer\CashFlowLibraryDAL.cs" />
+    <Compile Include="DataAccessLayer\SummaryReport\WorkSummaryByBudgetDAL.cs" />
     <Compile Include="EntityClasses\SplitTreatmentEntity.cs" />
     <Compile Include="EntityClasses\SplitTreatmentLimitEntity.cs" />
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
+    <Compile Include="Interfaces\SummaryReport\IWorkSummaryByBudget.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
+    <Compile Include="Models\SummaryReport\WorkSummaryByBudgetModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
     <Compile Include="Security\JWTParse.cs" />
     <Compile Include="DataAccessLayer\RunSimulationDAL.cs" />
@@ -458,6 +461,7 @@
     <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeWorkSummaryByBudget.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
     <Compile Include="Services\SummaryReport\ConditionBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
