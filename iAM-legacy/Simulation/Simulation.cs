@@ -271,6 +271,9 @@ namespace Simulation
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Beginning run simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Success");
             }
 
             try
