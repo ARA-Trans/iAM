@@ -1948,6 +1948,89 @@
             UpdateRoadCareForFunctionEquationTables();//  Adds the necessary columns to tables with equations for allowing use of complete functions for equations.
             UpdateRoadCareForConditionalRsl();
             UpdateRoadCareForCumulativeCost();
+            UpdateRoadCareForUseAcrossBudget();
+            UpdateRoadCareForRemainingLifeLimits();
+            UpdateRoadcareForBudgetCriteria();
+            UpdateRoadcareForSupercedes();
+            UpdateRoadCareForScheduled();
+            UpdateRoadCareForSplitTreatment();
+            UpdateRoadCareForSplitTreatmentLimit();
+
+        }
+
+        private static void UpdateRoadCareForSplitTreatmentLimit()
+        {
+            if (!DBMgr.CheckIfTableExists("SPLIT_TREATMENT_LIMIT"))
+            {
+                DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[SPLIT_TREATMENT_LIMIT]([SPLIT_TREATMENT_LIMIT_ID][int] IDENTITY(1, 1) NOT NULL,[SPLIT_TREATMENT_ID][int] NOT NULL,[RANK][int] NULL,[AMOUNT][float] NULL,[PERCENTAGE][varchar](max) NULL,CONSTRAINT[PK_SPLIT_TREATMENT_LIMIT] PRIMARY KEY CLUSTERED"+
+                        "([SPLIT_TREATMENT_LIMIT_ID] ASC )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT_LIMIT]  WITH CHECK ADD  CONSTRAINT [FK_SPLIT_TREATMENT_LIMIT_SPLIT_TREATMENT] FOREIGN KEY([SPLIT_TREATMENT_ID])REFERENCES[dbo].[SPLIT_TREATMENT]([SPLIT_TREATMENT_ID]) ON DELETE CASCADE");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT_LIMIT] CHECK CONSTRAINT [FK_SPLIT_TREATMENT_LIMIT_SPLIT_TREATMENT]");
+            }
+        }
+
+        private static void UpdateRoadCareForSplitTreatment()
+        {
+            if (!DBMgr.CheckIfTableExists("SPLIT_TREATMENT"))
+            {
+                DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[SPLIT_TREATMENT]([SIMULATIONID][int] NOT NULL,[SPLIT_TREATMENT_ID][int] IDENTITY(1, 1) NOT NULL,[DESCRIPTION][varchar](50) NULL,[CRITERIA][varchar](max) NULL, CONSTRAINT[PK_SPLIT_TREATMENT] PRIMARY KEY CLUSTERED" +
+                    "([SPLIT_TREATMENT_ID] ASC )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT]  WITH CHECK ADD  CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS] FOREIGN KEY([SIMULATIONID]) REFERENCES[dbo].[SIMULATIONS]([SIMULATIONID])");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT] CHECK CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS]");
+
+            }
+        }
+
+        private static void UpdateRoadCareForScheduled()
+        {
+            if (!DBMgr.CheckIfTableExists("SCHEDULED"))
+            {
+                DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[SCHEDULED]([SCHEDULEDID][int] IDENTITY(1, 1) NOT NULL,[TREATMENTID][int] NOT NULL,[SCHEDULEDYEAR][int] NOT NULL,[SCHEDULEDTREATMENTID][int] NOT NULL,"+
+                        "CONSTRAINT[PK_SCHEDULED] PRIMARY KEY CLUSTERED([SCHEDULEDID] ASC) WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]) ON[PRIMARY]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SCHEDULED]  WITH CHECK ADD  CONSTRAINT [FK_SCHEDULED_TREATMENTS] FOREIGN KEY([TREATMENTID])REFERENCES[dbo].[TREATMENTS]([TREATMENTID]) ON DELETE CASCADE");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SCHEDULED] CHECK CONSTRAINT [FK_SCHEDULED_TREATMENTS]");
+
+            }
+        }
+
+        private static void UpdateRoadcareForSupercedes()
+        {
+            if (!DBMgr.CheckIfTableExists("SUPERSEDES"))
+            {
+                DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[SUPERSEDES]([SUPERSEDE_ID][int] IDENTITY(1, 1) NOT NULL,[TREATMENT_ID][int] NULL,[SUPERSEDE_TREATMENT_ID][int] NULL,[CRITERIA][varchar](max) NULL," +
+                                    "CONSTRAINT[PK_SUPERSEDES] PRIMARY KEY CLUSTERED([SUPERSEDE_ID] ASC) WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SUPERSEDES]  WITH CHECK ADD  CONSTRAINT [FK_SUPERSEDES_TREATMENTS] FOREIGN KEY([TREATMENT_ID])REFERENCES[dbo].[TREATMENTS]([TREATMENTID])ON DELETE CASCADE");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SUPERSEDES] CHECK CONSTRAINT [FK_SUPERSEDES_TREATMENTS]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SUPERSEDES]  WITH CHECK ADD  CONSTRAINT [FK_SUPERSEDES_TREATMENTS_COMPONENT] FOREIGN KEY([SUPERSEDE_TREATMENT_ID]) REFERENCES[dbo].[TREATMENTS]([TREATMENTID])");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SUPERSEDES] CHECK CONSTRAINT [FK_SUPERSEDES_TREATMENTS_COMPONENT]");
+            }
+        }
+
+        private static void UpdateRoadcareForBudgetCriteria()
+        {
+            if (!DBMgr.CheckIfTableExists("BUDGET_CRITERIA"))
+            {
+                DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[BUDGET_CRITERIA]([BUDGET_CRITERIA_ID][int] IDENTITY(1, 1) NOT NULL,[SIMULATIONID][int] NOT NULL,[BUDGET_NAME][varchar](50) NOT NULL,[CRITERIA][varchar](max) NULL,"+
+                                    "CONSTRAINT[BUDGETCRITERIAPK] PRIMARY KEY CLUSTERED([BUDGET_CRITERIA_ID] ASC) WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[BUDGET_CRITERIA]  WITH CHECK ADD  CONSTRAINT [FK_BUDGETCRITERIA_SIMULATIONS] FOREIGN KEY([SIMULATIONID])REFERENCES[dbo].[SIMULATIONS]([SIMULATIONID]) ON UPDATE CASCADE ON DELETE CASCADE");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[BUDGET_CRITERIA] CHECK CONSTRAINT [FK_BUDGETCRITERIA_SIMULATIONS]");
+            }
+        }
+
+        private static void UpdateRoadCareForRemainingLifeLimits()
+        {
+            if (!DBMgr.CheckIfTableExists("REMAINING_LIFE_LIMITS"))
+            {
+                DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[REMAINING_LIFE_LIMITS]([REMAINING_LIFE_ID][int] IDENTITY(1, 1) NOT NULL,[SIMULATION_ID][int] NOT NULL,[ATTRIBUTE_][varchar](50) NOT NULL," +
+                                       "[REMAINING_LIFE_LIMIT][float] NULL,[CRITERIA][varchar](max) NULL, CONSTRAINT[PK_REMAINING_LIFE_LIMITS] PRIMARY KEY CLUSTERED([REMAINING_LIFE_ID] ASC )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]" +
+                                        ") ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]");
+
+
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[REMAINING_LIFE_LIMITS]  WITH CHECK ADD  CONSTRAINT [FK_REMAINING_LIFE_LIMITS_ATTRIBUTES_] FOREIGN KEY([ATTRIBUTE_])REFERENCES[dbo].[ATTRIBUTES_]([ATTRIBUTE_])ON UPDATE CASCADE ON DELETE CASCADE");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[REMAINING_LIFE_LIMITS] CHECK CONSTRAINT [FK_REMAINING_LIFE_LIMITS_ATTRIBUTES_]");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[REMAINING_LIFE_LIMITS]  WITH CHECK ADD  CONSTRAINT [FK_REMAINING_LIFE_LIMITS_REMAINING_LIFE_LIMITS] FOREIGN KEY([SIMULATION_ID]) REFERENCES[dbo].[SIMULATIONS]([SIMULATIONID]) ON DELETE CASCADE");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[REMAINING_LIFE_LIMITS] CHECK CONSTRAINT [FK_REMAINING_LIFE_LIMITS_REMAINING_LIFE_LIMITS]");
+            }
         }
 
         private static void UpdateRoadCareForCumulativeCost()
@@ -1974,8 +2057,32 @@
 	        }
         }
 
+        private static void UpdateRoadCareForUseAcrossBudget()
+        {
+            var ds = DBMgr.GetTableColumnsWithTypes("SIMULATIONS");
+            bool isCumulativeCost = false;
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                if (row["column_name"].ToString().ToUpper() == "USE_ACROSS_BUDGET")
+                {
+                    isCumulativeCost = true;
+                }
+            }
+            if (!isCumulativeCost)
+            {
+                if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_ACROSS_BUDGET NUMBER(1) NULL");
+                }
+                else
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_ACROSS_BUDGET BIT NULL");
+                }
+            }
+        }
 
-	    private static void UpdateRoadCareForConditionalRsl()
+
+        private static void UpdateRoadCareForConditionalRsl()
         {
             if (!DBMgr.IsTableInDatabase("CONDITIONAL_RSL"))
             {

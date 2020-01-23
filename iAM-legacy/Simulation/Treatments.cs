@@ -14,7 +14,7 @@ namespace Simulation
     /// <summary>
     /// Stores information for a single RoadCare Treatment include feasibility, cost and consequences.
     /// </summary>
-    class Treatments
+    public class Treatments
     {
         private String _treatment;
         private String _budget;

@@ -11,7 +11,6 @@ namespace Simulation
         public int ScheduledId { get; }
         public int ScheduledYear { get; }
         public Treatments Treatment { get; }
-
         public string Budget { get; set; }
 
 
