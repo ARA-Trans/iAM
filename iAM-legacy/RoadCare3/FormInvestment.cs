@@ -76,10 +76,88 @@ namespace RoadCare3
             m_bUpdate = true;
             UpdateInvestmentGrid();
             UpdateBudgetCriteria();
+            UpdateSplitTreatment();
+        }
+
+        private void UpdateSplitTreatment()
+        {
+            dataGridViewSplitTreatmentCriteria.Rows.Clear();
+            dataGridViewSplitTreatmentLimit.Rows.Clear();
+
+            var select = "SELECT SPLIT_TREATMENT_ID, DESCRIPTION, CRITERIA FROM SPLIT_TREATMENT WHERE SIMULATIONID='" + m_strSimID + "'";
+            try
+            {
+                DataSet ds = DBMgr.ExecuteQuery(select);
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    var tag = row["SPLIT_TREATMENT_ID"].ToString();
+                    string description = "";
+                    string criteria = "";
+
+                    if (row["DESCRIPTION"] != DBNull.Value) description = row["DESCRIPTION"].ToString();
+                    if (row["CRITERIA"] != DBNull.Value) criteria = row["CRITERIA"].ToString().Replace("|", "'");
+
+                    var rowIndex = dataGridViewSplitTreatmentCriteria.Rows.Add(description, criteria);
+                    dataGridViewSplitTreatmentCriteria.Rows[rowIndex].Tag = tag;
+                }
+            }
+            catch
+            {
+                Global.WriteOutput("Error loading split treatment criteria.");
+            }
+            if(dataGridViewSplitTreatmentCriteria.Rows.Count > 1)
+            {
+                
+                UpdateSplitTreatmentLimit(dataGridViewSplitTreatmentCriteria.Rows[0].Tag);
+            }
+            else
+            {
+                UpdateSplitTreatmentLimit(null);
+            }
+        }
+
+        private void UpdateSplitTreatmentLimit(object tag)
+        {
+            if(tag == null)
+            {
+                dataGridViewSplitTreatmentLimit.Enabled = false;
+                return;
+            }
+            dataGridViewSplitTreatmentLimit.Enabled = true;
+            dataGridViewSplitTreatmentLimit.Rows.Clear();
+
+
+
+            var select = "SELECT SPLIT_TREATMENT_LIMIT_ID, RANK, AMOUNT,PERCENTAGE FROM SPLIT_TREATMENT_LIMIT WHERE SPLIT_TREATMENT_ID='" + tag.ToString() + "' ORDER BY RANK";
+            try
+            {
+                DataSet ds = DBMgr.ExecuteQuery(select);
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    var limitTag = row["SPLIT_TREATMENT_LIMIT_ID"].ToString();
+                    string rank = "";
+                    string amount = "";
+                    string percentage = "";
+
+                    if (row["RANK"] != DBNull.Value) rank = row["RANK"].ToString();
+                    if (row["AMOUNT"] != DBNull.Value) amount = row["AMOUNT"].ToString();
+                    if (row["PERCENTAGE"] != DBNull.Value) percentage = row["PERCENTAGE"].ToString();
+
+                    var rowIndex = dataGridViewSplitTreatmentLimit.Rows.Add(rank, amount, percentage);
+                    dataGridViewSplitTreatmentLimit.Rows[rowIndex].Tag = limitTag;
+                }
+            }
+            catch
+            {
+                Global.WriteOutput("Error loading split treatment limit.");
+            }
+
+
+
 
         }
 
-		protected void SecureForm()
+        protected void SecureForm()
 		{
 			LockComboBox( cbYears );
 			LockTextBox( textBoxStartYear );
@@ -803,6 +881,438 @@ namespace RoadCare3
                     }
                 }
             }
+        }
+
+        private void DataGridViewSplitTreatmentLimit_CellValidated(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if(dataGridViewSplitTreatmentCriteria.CurrentRow  == null || dataGridViewSplitTreatmentCriteria.CurrentRow.Tag == null) return;
+            var splitTreatmentId = dataGridViewSplitTreatmentCriteria.CurrentRow.Tag.ToString();
+            if (e.ColumnIndex <= 0) return;
+            if (e.RowIndex > -1)
+            {
+                var strValue = "";
+                if (dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Tag == null)
+                {
+
+
+                    if (dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+                    {
+                        strValue = dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    }
+                   
+
+                    var insert = "";
+                    switch (e.ColumnIndex)
+                    {
+                        case 1:
+                            insert = "INSERT INTO SPLIT_TREATMENT_LIMIT (SPLIT_TREATMENT_ID, AMOUNT) VALUES ('" + splitTreatmentId + "','" +
+                                     strValue + "')";
+                            break;
+                        case 2:
+                            insert = "INSERT INTO SPLIT_TREATMENT_LIMIT (SPLIT_TREATMENT_ID, PERCENTAGE) VALUES ('" + splitTreatmentId + "','" +
+                                     strValue + "')";
+                            break;
+                        default:
+                            return;
+                    }
+
+
+
+                    try
+                    {
+                        String strIdentity;
+                        DBMgr.ExecuteNonQuery(insert);
+                        switch (DBMgr.NativeConnectionParameters.Provider)
+                        {
+                            case "MSSQL":
+                                strIdentity = "SELECT IDENT_CURRENT ('SPLIT_TREATMENT_LIMIT') FROM SPLIT_TREATMENT_LIMIT";
+                                break;
+                            case "ORACLE":
+                                strIdentity = "SELECT MAX(SPLIT_TREATMENT_LIMIT_ID) FROM SPLIT_TREATMENT_LIMIT";
+                                break;
+                            default:
+                                throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
+                                //break;
+                        }
+
+                        DataSet ds = DBMgr.ExecuteQuery(strIdentity);
+                        dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Tag = ds.Tables[0].Rows[0].ItemArray[0].ToString();
+
+                    }
+                    catch (Exception except)
+                    {
+                        Global.WriteOutput("Error inserting split treatment amount/percentages:" + except.Message.ToString());
+                    }
+                }
+                else
+                {
+                    String strTag = dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Tag.ToString();
+                    String strUpdate = "";
+
+
+                    if (dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+                    {
+                        strValue = dataGridViewSplitTreatmentLimit.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    }
+
+                    switch (e.ColumnIndex)
+                    {
+                        case 1:
+                            if (!string.IsNullOrWhiteSpace(strValue))
+                            {
+                                strUpdate = "UPDATE SPLIT_TREATMENT_LIMIT SET AMOUNT='" + strValue + "' WHERE SPLIT_TREATMENT_LIMIT_ID='" + strTag + "'";
+                            }
+                            else
+                            {
+                                strUpdate = "UPDATE SPLIT_TREATMENT_LIMIT SET AMOUNT=null WHERE SPLIT_TREATMENT_LIMIT_ID='" + strTag + "'";
+                            }
+                            break;
+                        case 2:
+                            strUpdate = "UPDATE SPLIT_TREATMENT_LIMIT SET PERCENTAGE='" + strValue + "' WHERE SPLIT_TREATMENT_LIMIT_ID='" + strTag + "'";
+                            break;
+                        default:
+                            return;
+                    }
+
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(strUpdate))
+                        {
+                            DBMgr.ExecuteNonQuery(strUpdate);
+                        }
+                    }
+                    catch (Exception except)
+                    {
+                        Global.WriteOutput("Error updating split limit treatment: " + except.Message.ToString());
+
+                    }
+                }
+            }
+            CheckLimits();
+        }
+
+
+        private void CheckLimits()
+        {
+            Global.ClearOutputWindow();
+            //These two checks just flag errors and do not correct them.
+            CheckSplitAmount();
+            CheckSplitPercentage();
+
+            //Will update database as this will change values.
+            UpdateSplitPercentages();
+        }
+
+
+        private void DataGridViewSplitTreatmentCriteria_CellValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex > -1)
+            {
+                var strValue = "";
+                if (dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Tag == null)
+                {
+                    if (dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+                    {
+                        strValue = dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    }
+
+                    var insert = "";
+                    switch (e.ColumnIndex)
+                    {
+                        case 0:
+                            insert = "INSERT INTO SPLIT_TREATMENT (SIMULATIONID, DESCRIPTION) VALUES ('" +
+                                     m_strSimID + "','" + strValue + "')";
+                            break;
+                        case 1:
+                            insert = "INSERT INTO SPLIT_TREATMENT (SIMULATIONID, CRITERIA) VALUES ('" +
+                                     m_strSimID + "','" + strValue.Replace("'", "|") + "')";
+
+                            break;
+                        default:
+                            return;
+                    }
+
+
+
+                    try
+                    {
+                        String strIdentity;
+                        DBMgr.ExecuteNonQuery(insert);
+                        switch (DBMgr.NativeConnectionParameters.Provider)
+                        {
+                            case "MSSQL":
+                                strIdentity = "SELECT IDENT_CURRENT ('SPLIT_TREATMENT') FROM SPLIT_TREATMENT";
+                                break;
+                            case "ORACLE":
+                                strIdentity = "SELECT MAX(SPLIT_TREATMENT_ID) FROM SPLIT_TREATMENT";
+                                break;
+                            default:
+                                throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
+                                //break;
+                        }
+
+                        DataSet ds = DBMgr.ExecuteQuery(strIdentity);
+                        dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Tag = ds.Tables[0].Rows[0].ItemArray[0].ToString();
+
+                    }
+                    catch (Exception except)
+                    {
+                        Global.WriteOutput("Error insert split treatment criteria:" + except.Message.ToString());
+                    }
+                }
+                else
+                {
+                    String strTag = dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Tag.ToString();
+                    String strUpdate = "";
+
+
+                    if (dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+                    {
+                        strValue = dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    }
+                    
+
+                    switch (e.ColumnIndex)
+                    {
+                        case 0:
+
+                            strUpdate = "UPDATE SPLIT_TREATMENT SET DESCRIPTION='" + strValue + "' WHERE SPLIT_TREATMENT_ID='" + strTag + "'";
+                            break;
+                        case 1:
+                            strUpdate = "UPDATE SPLIT_TREATMENT SET CRITERIA='" + strValue.Replace("'", "|") + "' WHERE SPLIT_TREATMENT_ID='" + strTag + "'";
+                            break;
+                        default:
+                            return;
+                    }
+
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(strUpdate))
+                        {
+                            DBMgr.ExecuteNonQuery(strUpdate);
+                        }
+                    }
+                    catch (Exception except)
+                    {
+                        Global.WriteOutput("Error updating Split Treatment: " + except.Message.ToString());
+
+                    }
+                }
+            }
+        }
+
+        private void DataGridViewSplitTreatmentCriteria_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if (e.RowIndex < 0) return;//Must be valid row index
+            if (e.ColumnIndex == 0) return;
+
+            var strCriteria = "";
+            if (dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+            {
+                strCriteria = dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+            }
+            else
+            {
+                dataGridViewSplitTreatmentCriteria.Rows.Add();
+            }
+            var formAdvancedSearch = new FormAdvancedSearch(m_strNetwork, m_hashAttributeYear, strCriteria, true);
+            if (formAdvancedSearch.ShowDialog() == DialogResult.OK)
+            {
+                dataGridViewSplitTreatmentCriteria[e.ColumnIndex, e.RowIndex].Value = formAdvancedSearch.GetWhereClause();
+            }
+            dataGridViewSplitTreatmentCriteria.Update();
+
+        }
+
+        private void DataGridViewSplitTreatmentCriteria_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+        {
+
+            String delete = "DELETE FROM SPLIT_TREATMENT WHERE SPLIT_TREATMENT_ID='" + e.Row.Tag + "'";
+            try
+            {
+                DBMgr.ExecuteNonQuery(delete);
+            }
+            catch (Exception except)
+            {
+                Global.WriteOutput("Error deleting Split Treatment criteria: " + except.Message);
+            }
+
+
+        }
+
+
+        private void UpdateSplitPercentages()
+        {
+            foreach (DataGridViewRow row in dataGridViewSplitTreatmentLimit.Rows)
+            {
+                string percentageCell = "";
+                if (row.Cells[2].Value != null) percentageCell = row.Cells[2].Value.ToString();
+                if (row.Index < dataGridViewSplitTreatmentLimit.Rows.Count - 1)
+                {
+                    if (row.Index == 0)
+                    {
+                        row.Cells[2].Value = FormatSplitPercentage(row.Index);
+                    }
+                    else
+                    {
+                        var countSlash = percentageCell.Split('/');
+                        if (countSlash.Length != row.Index + 1)
+                        {
+                            row.Cells[2].Value = FormatSplitPercentage(row.Index);
+                        }
+                    }
+                    row.Cells[0].Value = row.Index + 1;
+                }
+            }
+
+
+            foreach (DataGridViewRow row in dataGridViewSplitTreatmentLimit.Rows)
+            {
+                if (row.Index >= dataGridViewSplitTreatmentLimit.RowCount - 1) return;
+
+                var update = "UPDATE SPLIT_TREATMENT_LIMIT SET RANK='" + row.Cells[0].Value.ToString() + "', PERCENTAGE='" + row.Cells[2].Value.ToString() + "' WHERE SPLIT_TREATMENT_LIMIT_ID='" + row.Tag + "'";
+
+                try
+                {
+                    DBMgr.ExecuteNonQuery(update);
+                }
+                catch (Exception except)
+                {
+                    Global.WriteOutput("Error updating split limit treatment: " + except.Message.ToString());
+
+                }
+
+            }
+        }
+
+        private string FormatSplitPercentage(int count)
+        {
+            switch(count)
+            {
+                case 0:
+                    return "100";
+                case 1:
+                    return "50/50";
+                case 2:
+                    return "33/33/34";
+                case 3:
+                    return "25/25/25/25";
+                case 4:
+                    return "20/20/20/20/20";
+                case 5:
+                    return "16/16/17/17/17/17";
+            }
+            return "Split exceeded";
+        }
+
+        private void CheckSplitAmount()
+        {
+            double previousAmount = 0;
+            foreach (DataGridViewRow row in dataGridViewSplitTreatmentLimit.Rows)
+            {
+                row.Cells[1].Style.BackColor = Color.White;
+
+                if (row.Cells[1].Value != null && row.Index < dataGridViewSplitTreatmentLimit.Rows.Count-2)
+                {
+                    try
+                    {
+                        var currentAmount = Convert.ToDouble(row.Cells[1].Value);
+                        if(currentAmount < previousAmount)
+                        {
+                            Global.WriteOutput("Split treatment amount must be greater than previous amount.");
+                            row.Cells[1].Style.BackColor = Color.Salmon;
+                            return;
+                        }
+                        previousAmount = currentAmount;
+                    }
+                    catch
+                    {
+                        Global.WriteOutput("Split treatment amount must be a number.");
+                        row.Cells[1].Style.BackColor = Color.Salmon;
+                        return;
+
+                    }
+                }
+            }
+            if (dataGridViewSplitTreatmentLimit.Rows.Count <= 1) return;
+            var lastRowAmount = dataGridViewSplitTreatmentLimit.Rows[dataGridViewSplitTreatmentLimit.Rows.Count - 2].Cells[1];
+            if (lastRowAmount.Value != null && dataGridViewSplitTreatmentLimit.Rows.Count > 2)
+            {
+                if(!String.IsNullOrWhiteSpace(lastRowAmount.Value.ToString()))
+                {
+                    Global.WriteOutput("The last split treatment amount may be blank to which sets no upper limit.");
+                    lastRowAmount.Style.BackColor = Color.LightYellow;
+                }
+            }
+
+        }
+
+
+        private void CheckSplitPercentage()
+        {
+            foreach (DataGridViewRow row in dataGridViewSplitTreatmentLimit.Rows)
+            {
+                row.Cells[2].Style.BackColor = Color.White;
+
+                if (row.Cells[2].Value != null)
+                {
+
+                    var values = row.Cells[2].Value.ToString().Split('/');
+
+                    double sum = 0;
+                    foreach (var value in values)
+                    {
+                        try
+                        {
+                            var percentage = Convert.ToDouble(value);
+                            sum += percentage;
+                        }
+                        catch
+                        {
+                            
+                            Global.WriteOutput("Split treatment percentages must be numbers separated by \\ without % symbol");
+                            row.Cells[2].Style.BackColor = Color.Salmon;
+                            return;
+                        }
+                    }
+
+                    if (sum < 99.9 || sum > 100.1)
+                    {
+                        
+                        Global.WriteOutput("Split treatment percentages must sum to 100");
+                        row.Cells[2].Style.BackColor = Color.Salmon;
+                        return;
+                    }
+
+
+                }
+            }
+        }
+
+        private void DataGridViewSplitTreatmentCriteria_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            var tag = dataGridViewSplitTreatmentCriteria.Rows[e.RowIndex].Tag;
+            UpdateSplitTreatmentLimit(tag);
+        }
+
+        private void DataGridViewSplitTreatmentLimit_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            if (e.Row.Tag != null)
+            {
+                String strDelete = "DELETE FROM SPLIT_TREATMENT_LIMIT WHERE SPLIT_TREATMENT_LIMIT_ID='" + e.Row.Tag.ToString() + "'";
+                try
+                {
+                    DBMgr.ExecuteNonQuery(strDelete);
+                }
+                catch (Exception except)
+                {
+                    Global.WriteOutput("Error Deleting Split Treatment Limits:" + except.Message.ToString());
+                }
+            }
+            CheckLimits();
         }
     }
 }

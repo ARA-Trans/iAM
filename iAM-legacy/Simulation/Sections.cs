@@ -220,6 +220,8 @@ namespace Simulation
             set { m_nStartYear = value-1; }
         }
 
+
+
         public void AddRemainingLifeHash(int nYear)
         {
             if (m_hashYearRemainingLife.Contains(nYear))
@@ -863,35 +865,12 @@ namespace Simulation
 
 
 
-        public void ApplyDeteriorate(Deteriorate deteriorate, int nYear,Investments investment)
+        public void ApplyDeteriorate(Deteriorate deteriorate, int nYear)
         {
             int nPreviousYear = nYear - 1;
             Hashtable hashAttributeValue = null;
-            if (!SimulationMessaging.IsOMS)
-            {
-                hashAttributeValue = (Hashtable)m_hashYearAttributeValues[nPreviousYear];
-            }
-            else
-            {
-                if (investment.StartDate.Year == nYear) //First year.  Use current year.
-                {
-                    hashAttributeValue = (Hashtable)m_hashYearAttributeValues[nYear];//Because OMS rolled forward already.
-                    if (_attributeValueYear == null)
-                    {
-                        _attributeValueYear = new Dictionary<string, List<DataOMS>>();
-                        foreach (string key in hashAttributeValue.Keys)
-                        {
-                            List<DataOMS> datas = new List<DataOMS>();
-                            datas.Add(new DataOMS(hashAttributeValue[key], investment.StartDate));
-                            _attributeValueYear.Add(key, datas);
-                        }
-                    }
-                }
-                else // Get the previous years hashtable.  
-                {
-                    hashAttributeValue = (Hashtable)m_hashYearAttributeValues[nPreviousYear];
-                }
-            }
+            hashAttributeValue = (Hashtable)m_hashYearAttributeValues[nPreviousYear];
+            
             
             Hashtable hashAttributeRemainingLife = (Hashtable)m_hashYearRemainingLife[nYear];//This was set on 
 
@@ -902,25 +881,8 @@ namespace Simulation
             if(deteriorate.IsCriteriaMet(hashAttributeValue))
             {
                 bool bOutOfRange = false;
-                if (SimulationMessaging.IsOMS)
-                {
-                    _oci.SetConditionIndex(deteriorate.Attribute, deteriorate.PerformanceID);//This is sets the deterioration to use for this asset
-                    if (nYear == investment.StartDate.Year)//Don't iterate first year for OMS.  We rolled forward to the correct place.
-                    {
-                        int count = _attributeValueYear[deteriorate.Attribute].Count;
-                        dValue = Convert.ToDouble(_attributeValueYear[deteriorate.Attribute][count - 1].Value);
-                        _oci.UpdateConditionIndex(deteriorate.Attribute, dValue);
-                    }
-                    else
-                    {
-                        dValue = _oci.AddYears(deteriorate.Attribute, 1);
-                    }
-                }
-                else
-                {
-                    dValue = deteriorate.IterateOneYear(hashAttributeValue, out bOutOfRange);//Iterate for RoadCare all years and OMS after first. Can use hashAttribute for all equations.  No OMS COUNTS
-                }
-
+                dValue = deteriorate.IterateOneYear(hashAttributeValue, out bOutOfRange);//Iterate for RoadCare all years and OMS after first. Can use hashAttribute for all equations.  No OMS COUNTS
+            
 
                 if (bOutOfRange)
                 {
