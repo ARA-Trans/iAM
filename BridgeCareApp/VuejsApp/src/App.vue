@@ -96,6 +96,7 @@
                 <v-spacer></v-spacer>
             </v-footer>
             <Spinner />
+            <Alert :dialog-data="alertDialogData" @submit="alertResult = $event"/>
         </v-content>
     </v-app>
 </template>
@@ -111,11 +112,16 @@
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
     import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
     import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
+    import {checkStateForUnsavedChanges} from '@/shared/utils/state-checker-helper';
+    import Alert from '@/shared/modals/Alert.vue';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import {clone} from 'ramda';
 
     @Component({
-        components: {Spinner}
+        components: {Alert, Spinner}
     })
     export default class AppComponent extends Vue {
+        @State(state => state) state: any;
         @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
@@ -139,6 +145,27 @@
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
+        dmlPaths: string[] = [
+            '/EditAnalysis/',
+            '/InvestmentEditor/Scenario/',
+            '/PerformanceEditor/Scenario/',
+            '/TreatmentEditor/Scenario/',
+            '/PriorityEditor/Scenario/',
+            '/TargetEditor/Scenario/',
+            '/DeficientEditor/Scenario/',
+            '/RemainingLifeLimitEditor/Scenario/',
+            '/CashFlowEditor/Scenario',
+            '/InvestmentEditor/Library/',
+            '/PerformanceEditor/Library/',
+            '/TreatmentEditor/Library/',
+            '/PriorityEditor/Library/',
+            '/TargetEditor/Library/',
+            '/DeficientEditor/Library/',
+            '/RemainingLifeLimitEditor/Library/',
+            '/CashFlowEditor/Library/'
+        ];
+        alertDialogData: AlertData = clone(emptyAlertData);
+        preventRouteUpdate: boolean = true;
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
@@ -187,6 +214,19 @@
             this.selectedScenarioName = hasValue(this.stateSelectedScenarioName) ? this.stateSelectedScenarioName : '';
         }
 
+        get authenticatedWithRole() {
+            return this.authenticated && this.hasRole;
+        }
+
+        @Watch('authenticatedWithRole')
+        onAuthenticationChange() {
+            if (this.authenticated && this.hasRole) {
+                this.onLogin();
+            } else if (!this.authenticated) {
+                this.onLogout();
+            }
+        }
+
         created() {
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
@@ -197,11 +237,11 @@
             };
             // set axios request interceptor to use request handler
             axiosInstance.interceptors.request.use(
-                (request: any) => requestHandler(request)
+              (request: any) => requestHandler(request)
             );
             // set nodejs axios request interceptor to use request handler
             nodejsAxiosInstance.interceptors.request.use(
-                (request: any) => requestHandler(request)
+              (request: any) => requestHandler(request)
             );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {
@@ -221,13 +261,13 @@
             };
             // set axios response handler to use success & error handlers
             axiosInstance.interceptors.response.use(
-                (response: any) => successHandler(response),
-                (error: any) => errorHandler(error)
+              (response: any) => successHandler(response),
+              (error: any) => errorHandler(error)
             );
             // set nodejs axios response handler to user success & error handlers
             nodejsAxiosInstance.interceptors.response.use(
-                (response: any) => successHandler(response),
-                (error: any) => errorHandler(error)
+              (response: any) => successHandler(response),
+              (error: any) => errorHandler(error)
             );
 
             // Upon opening the page, and every 30 seconds, check if authentication data
@@ -240,16 +280,24 @@
             window.setInterval(this.pollEventsAction, 5000);
         }
 
-        get authenticatedWithRole() {
-            return this.authenticated && this.hasRole;
+        beforeRouteUpdate(to: any, from: any, next: any) {
+            if (this.dmlPaths.indexOf(from.path) !== -1) {
+                if (checkStateForUnsavedChanges(from.path, this.state) && !this.preventRouteUpdate) {
+                    this.alertDialogData = {
+                        showDialog: true,
+                        heading: 'Unsaved Changes',
+                        message: 'You have unsaved changes. Are you sure you wish to continue?',
+                        choice: true
+                    }
+                }
+            }
+            this.preventRouteUpdate = false;
+            next();
         }
 
-        @Watch('authenticatedWithRole')
-        onAuthenticationChange() {
-            if (this.authenticated && this.hasRole) {
-                this.onLogin();
-            } else if (!this.authenticated) {
-                this.onLogout();
+        onAlertResult(submit: boolean) {
+            if (submit) {
+
             }
         }
         
