@@ -42,6 +42,11 @@ namespace BridgeCare.DataAccessLayer
             return new UserCriteriaModel(userCriteria);
         }
 
+        /// <summary>
+        /// Updates a user's criteria settings
+        /// </summary>
+        /// <param name="model">UserCriteriaModel</param>
+        /// <param name="db">BridgeCareContext</param>
         public void SaveUserCriteria(UserCriteriaModel model, BridgeCareContext db)
         {
             if (!db.UserCriteria.Any(criteria => criteria.USERNAME == model.Username))
