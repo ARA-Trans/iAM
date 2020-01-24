@@ -271,6 +271,9 @@ namespace Simulation
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Beginning run simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Success");
             }
 
             try
@@ -2027,7 +2030,7 @@ namespace Simulation
                             Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                         }
 
-                        creatorCriteriaDataSet = new DataSet();
+                        return false;
                     }
                     creatorHasAccess = Convert.ToBoolean(creatorCriteriaDataSet.Tables[0].Rows[0].ItemArray[0]);
                     creatorCriteria = creatorCriteriaDataSet.Tables[0].Rows[0].ItemArray[1]?.ToString();
@@ -2043,7 +2046,7 @@ namespace Simulation
                             .Set(s => s.status, $"Simulation owner does not have permission to run simulations on any inventory items.");
                         Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                     }
-                    throw new UnauthorizedAccessException($"Simulation owner is not permitted to run simulations on any inventory items.");
+                    return false;
                 }
 
                 m_strJurisdiction = ds.Tables[0].Rows[0].ItemArray[0].ToString();
