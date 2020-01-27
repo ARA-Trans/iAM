@@ -38,7 +38,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>TreatmentLibraryModel</returns>
         public TreatmentLibraryModel GetOwnedSimulationTreatmentLibrary(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username)))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's treatments.");
             return GetSimulationTreatmentLibrary(id, db);
         }
@@ -187,7 +187,7 @@ namespace BridgeCare.DataAccessLayer
         public TreatmentLibraryModel SaveOwnedSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.UserCanModify(username)))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's treatments.");
             return SaveSimulationTreatmentLibrary(model, db);
         }

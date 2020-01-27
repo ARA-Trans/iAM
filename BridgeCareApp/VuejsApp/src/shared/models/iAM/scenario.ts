@@ -34,6 +34,7 @@ export interface Scenario {
     status?: string;
     shared?: boolean;
     owner?: string;
+    creator?: string;
     id: number | string;
 }
 

@@ -42,7 +42,8 @@
         public: boolean = false;
 
         mounted() {
-            this.createScenarioData.owner = getUserName();
+            this.createScenarioData.creator = getUserName();
+            this.createScenarioData.owner = this.createScenarioData.creator;
         }
 
         @Watch('public')
@@ -61,7 +62,8 @@
             }
 
             this.createScenarioData = clone(emptyCreateScenarioData);
-            this.createScenarioData.owner = getUserName();
+            this.createScenarioData.creator = getUserName();
+            this.createScenarioData.owner = this.createScenarioData.creator;
             this.public = false;
         }
     }

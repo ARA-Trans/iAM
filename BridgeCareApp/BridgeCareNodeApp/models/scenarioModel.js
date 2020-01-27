@@ -13,7 +13,8 @@ const scenarioModel = new Schema({
     status: { type: String },
     rollupStatus: {type: String},
     shared: {type: Boolean },
-    owner: {type: String }
+    owner: {type: String },
+    creator: {type: String}
 });
 
 module.exports = mongoose.model('Scenario', scenarioModel, 'scenarios');

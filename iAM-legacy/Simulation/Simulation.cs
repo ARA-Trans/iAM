@@ -1992,7 +1992,7 @@ namespace Simulation
             if (!IsUpdateOMS)
             {
                 //Get the Jurisdiction from the simulation table.
-                strQuery = "SELECT JURISDICTION,WEIGHTING,USERNAME FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
+                strQuery = "SELECT JURISDICTION,WEIGHTING,CREATOR FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
                 try
                 {
                     ds = DBMgr.ExecuteQuery(strQuery);

@@ -30,7 +30,7 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
-        /// Fetches all simulations belonging to the user, and without owners
+        /// Fetches all simulations to which the user has any level of access
         /// </summary>
         /// <param name="db">BridgeCareContext</param>
         /// <param name="userInformation">UserInformationModel</param>
@@ -38,7 +38,7 @@ namespace BridgeCare.DataAccessLayer
         public List<SimulationModel> GetOwnedSimulations(BridgeCareContext db, string username)
         {
             return db.Simulations.Include(s => s.NETWORK).ToList()
-                .Where(s => s.USERNAME == username || s.USERNAME == null)
+                .Where(s => s.UserCanRead(username))
                 .Select(s => new SimulationModel(s)).ToList();
         }
 
@@ -61,7 +61,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.UserCanModify(username)))
             {
                 log.Warn($"User {username} is not authorized to modify scenario {model.SimulationId}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario.");
@@ -118,7 +118,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void DeleteOwnedSimulation(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.UserCanModify(username)))
             {
                 log.Warn($"User {username} is not authorized to delete scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to delete this scenario.");
@@ -184,7 +184,7 @@ namespace BridgeCare.DataAccessLayer
 
         public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.UserCanModify(username)))
             {
                 log.Warn($"User {username} is not authorized to run scenario {model.SimulationId}.");
                 throw new UnauthorizedAccessException("You are not authorized to run this scenario.");

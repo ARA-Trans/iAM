@@ -42,7 +42,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>SimulationAnalysisModel</returns>
         public SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username)))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's analysis.");
             return GetSimulationAnalysis(id, db);
         }
@@ -66,7 +66,7 @@ namespace BridgeCare.DataAccessLayer
 
         public void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, BridgeCareContext db, string username, bool updateWeighting = true)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.Id && (s.USERNAME == username)))
+            if (!db.Simulations.Any(s => s.UserCanModify(username)))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's analysis.");
 
             var simulation = db.Simulations.Single(s => s.SIMULATIONID == model.Id);

@@ -35,7 +35,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>DeficientLibraryModel</returns>
         public DeficientLibraryModel GetOwnedSimulationDeficientLibrary(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id && (s.USERNAME == username || s.USERNAME == null)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username)))
             {
                 log.Warn($"User {username} is not authorized to view scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's deficients.");
@@ -110,7 +110,7 @@ namespace BridgeCare.DataAccessLayer
         public DeficientLibraryModel SaveOwnedSimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.UserCanModify(username)))
             {
                 log.Warn($"User {username} is not authorized to modify scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's deficients.");

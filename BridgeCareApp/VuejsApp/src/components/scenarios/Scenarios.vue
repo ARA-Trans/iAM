@@ -65,6 +65,7 @@
                                 </template>
                             </v-edit-dialog>
                         </td>
+                        <td>{{props.item.creator ? props.item.creator : '[ Unknown ]'}}</td>
                         <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
@@ -129,6 +130,7 @@
                                 </template>
                             </v-edit-dialog>
                         </td>
+                        <td>{{props.item.creator ? props.item.creator : '[ Unknown ]'}}</td>
                         <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
@@ -230,6 +232,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         showCreateScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'simulationName'},
+            {text: 'Creator', sortable: false, value: 'creator'},
             {text: 'Owner', sortable: false, value: 'owner'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
             {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
