@@ -9,18 +9,18 @@
                 </v-card-title>
                 <v-card-text>
                     <v-layout column>
-                        <v-text-field label="Name" v-model="createdPerformanceLibraryEquation.equationName" outline>
+                        <v-text-field label="Name" v-model="newPerformanceLibraryEquation.equationName" outline>
                         </v-text-field>
                         <v-select label="Select Attribute" :items="attributesSelectListItems"
-                                  v-model="createdPerformanceLibraryEquation.attribute" outline>
+                                  v-model="newPerformanceLibraryEquation.attribute" outline>
                         </v-select>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
                         <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)"
-                               :disabled="createdPerformanceLibraryEquation.equationName === '' ||
-                                          createdPerformanceLibraryEquation.attribute === ''">
+                               :disabled="newPerformanceLibraryEquation.equationName === '' ||
+                                          newPerformanceLibraryEquation.attribute === ''">
                             Save
                         </v-btn>
                         <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
@@ -40,15 +40,16 @@
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
+    const ObjectID = require('bson-objectid');
 
     @Component
-    export default class CreatePerformanceLibraryDialog extends Vue {
+    export default class CreatePerformanceLibraryEquationDialog extends Vue {
         @Prop() showDialog: boolean;
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         attributesSelectListItems: SelectItem[] = [];
-        createdPerformanceLibraryEquation: PerformanceLibraryEquation = clone(emptyEquation);
+        newPerformanceLibraryEquation: PerformanceLibraryEquation = {...emptyEquation, id: ObjectID.generate()};
 
         /**
          * Component mounted event handler
@@ -80,18 +81,18 @@
         }
 
         /**
-         * Emits the createdPerformanceLibraryEquation object or a null value to the parent component and resets the
-         * createdPerformanceLibraryEquation object
-         * @param submit Whether or not to emit the createdPerformanceLibraryEquation object
+         * Emits the newPerformanceLibraryEquation object or a null value to the parent component and resets the
+         * newPerformanceLibraryEquation object
+         * @param submit Whether or not to emit the newPerformanceLibraryEquation object
          */
         onSubmit(submit: boolean) {
             if (submit) {
-                this.$emit('submit', this.createdPerformanceLibraryEquation);
+                this.$emit('submit', this.newPerformanceLibraryEquation);
             } else {
                 this.$emit('submit', null);
             }
 
-            this.createdPerformanceLibraryEquation = {...emptyEquation};
+            this.newPerformanceLibraryEquation = {...emptyEquation, id: ObjectID.generate()};
         }
     }
 </script>

@@ -69,33 +69,6 @@
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-layout>
-                                <!--<div v-else>
-                                    <input :id="'priority' + props.item.priorityId" readonly :value="props.item.criteria">
-                                        <template slot="append-outer">
-                                            <v-layout row class="criteria-input-icons">
-                                                <v-menu left min-width="500px"
-                                                        min-height="500px">
-                                                    <template slot="activator">
-                                                        <v-btn :id="'priority' + props.item.priorityId + 'EyeIcon'"
-                                                               hidden icon class="ara-blue">
-                                                            <v-icon>fas fa-eye</v-icon>
-                                                        </v-btn>
-                                                    </template>
-                                                    <v-card>
-                                                        <v-card-text>
-                                                            <v-textarea rows="5" no-resize readonly full-width outline
-                                                                        :value="props.item.criteria">
-                                                            </v-textarea>
-                                                        </v-card-text>
-                                                    </v-card>
-                                                </v-menu>
-                                                <v-icon class="edit-icon"
-                                                        @click="onEditPriorityCriteria(props.item)">
-                                                    fas fa-edit
-                                                </v-icon>
-                                            </v-layout>
-                                        </template>
-                                </div>-->
                             </div>
                             <div v-else>
                                 <v-edit-dialog @save="onEditPriorityFundAmount(props.item, header.value, props.item[header.value])"
@@ -187,9 +160,9 @@
             CreatePriorityLibraryDialog, CreatePriorityDialog, PrioritiesCriteriaEditor: CriteriaEditorDialog}
     })
     export default class PriorityEditor extends Vue {
-        @State(state => state.priority.priorityLibraries) statePriorityLibraries: PriorityLibrary[];
-        @State(state => state.priority.selectedPriorityLibrary) stateSelectedPriorityLibrary: PriorityLibrary;
-        @State(state => state.priority.scenarioPriorityLibrary) stateScenarioPriorityLibrary: PriorityLibrary;
+        @State(state => state.priorityEditor.priorityLibraries) statePriorityLibraries: PriorityLibrary[];
+        @State(state => state.priorityEditor.selectedPriorityLibrary) stateSelectedPriorityLibrary: PriorityLibrary;
+        @State(state => state.priorityEditor.scenarioPriorityLibrary) stateScenarioPriorityLibrary: PriorityLibrary;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -283,7 +256,7 @@
             ) as PriorityLibrary;
 
             this.selectPriorityLibraryAction({
-                selectedPriorityLibrary: hasValue(selectedPriorityLibrary) ? selectedPriorityLibrary : clone(emptyPriorityLibrary)
+                selectedPriorityLibrary: hasValue(selectedPriorityLibrary) ? selectedPriorityLibrary : emptyPriorityLibrary
             });
         }
 
@@ -293,13 +266,6 @@
         @Watch('stateSelectedPriorityLibrary')
         onStateSelectedPriorityLibraryChanged() {
             this.selectedPriorityLibrary = clone(this.stateSelectedPriorityLibrary);
-        }
-
-        /**
-         * Sets component UI properties based on the selected priority library data
-         */
-        @Watch('selectedPriorityLibrary')
-        onSelectedPriorityLibraryChanged() {
             this.hasSelectedPriorityLibrary = this.selectedPriorityLibrary.id !== '0';
             this.budgets = getPropertyValues('budget',
                 flatten(getPropertyValues('priorityFunds', this.selectedPriorityLibrary.priorities))
@@ -407,26 +373,6 @@
 
                     return row;
                 });
-                /*this.selectedPriorityLibrary.priorities.forEach((priority: Priority) => {
-                    const row: PrioritiesDataTableRow = {
-                        priorityId: priority.id,
-                        priorityLevel: priority.priorityLevel.toString(),
-                        year: priority.year.toString(),
-                        criteria: priority.criteria
-                    };
-
-                    this.budgets.forEach((budgetName: any) => {
-                        let amount = '';
-                        if (any(propEq('budget', budgetName), priority.priorityFunds)) {
-                            const priorityFund: PriorityFund = priority.priorityFunds
-                                .find((pf: PriorityFund) => pf.budget === budgetName) as PriorityFund;
-                            amount = priorityFund.funding.toString();
-                        }
-                        row[budgetName] = amount.toString();
-                    });
-
-                    this.prioritiesDataTableRows.push(row);
-                });*/
             }
         }
 
@@ -473,18 +419,22 @@
          * @param property Selected Priority object's property
          * @param value Value to set on the selected Priority object's property
          */
-        onEditPriorityProperty(priorityRow: PrioritiesDataTableRow, property: string, value: string | number) {
-            const priority: Priority = find(propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities) as Priority;
+        onEditPriorityProperty(priorityRow: PrioritiesDataTableRow, property: string, value: any) {
+            if (any(propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities)) {
+                const priority: Priority = find(
+                    propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities
+                ) as Priority;
 
-            this.selectPriorityLibraryAction({selectedPriorityLibrary: {
-                    ...this.selectedPriorityLibrary,
-                    priorities: update(
-                        findIndex(propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities),
-                        setItemPropertyValue(property, value, priority) as Priority,
-                        this.selectedPriorityLibrary.priorities
-                    )
-                }
-            });
+                this.selectPriorityLibraryAction({selectedPriorityLibrary: {
+                        ...this.selectedPriorityLibrary,
+                        priorities: update(
+                            findIndex(propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities),
+                            setItemPropertyValue(property, value, priority) as Priority,
+                            this.selectedPriorityLibrary.priorities
+                        )
+                    }
+                });
+            }
         }
 
         /**
@@ -576,10 +526,8 @@
          * Dispatches an action to update the scenario's priority library data in the sql server database
          */
         onApplyPriorityLibraryToScenario() {
-            this.saveScenarioPriorityLibraryAction({saveScenarioPriorityLibraryData: {
-                    ...this.selectedPriorityLibrary,
-                    id: this.selectedScenarioId
-                }
+            this.saveScenarioPriorityLibraryAction({
+                saveScenarioPriorityLibraryData: {...this.selectedPriorityLibrary, id: this.selectedScenarioId}
             }).then(() => this.onDiscardPriorityLibraryChanges());
         }
 

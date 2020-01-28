@@ -278,26 +278,20 @@
 
         @Watch('cashFlowLibrarySelectItemValue')
         onCashFlowLibrarySelectItemChanged() {
-            if (any(propEq('id', this.cashFlowLibrarySelectItemValue), this.stateCashFlowLibraries)) {
-                this.selectCashFlowLibraryAction({
-                    selectedCashFlowLibrary: find(
-                        propEq('id', this.cashFlowLibrarySelectItemValue), this.stateCashFlowLibraries)
-                });
-            } else {
-                this.selectCashFlowLibraryAction({selectedCashFlowLibrary: emptyCashFlowLibrary});
-            }
+            const selectedCashFlowLibrary: CashFlowLibrary = find(
+                propEq('id', this.cashFlowLibrarySelectItemValue), this.stateCashFlowLibraries
+            ) as CashFlowLibrary;
+
+            this.selectCashFlowLibraryAction({
+                selectedCashFlowLibrary: hasValue(selectedCashFlowLibrary) ? selectedCashFlowLibrary : emptyCashFlowLibrary
+            });
         }
 
         @Watch('stateSelectedCashFlowLibrary')
         onStateSelectedCashFlowLibraryChanged() {
             this.selectedCashFlowLibrary = clone(this.stateSelectedCashFlowLibrary);
-            if (this.selectedCashFlowLibrary.id !== '0') {
-                this.hasSelectedCashFlowLibrary = true;
-                this.splitTreatmentTableData = clone(this.selectedCashFlowLibrary.splitTreatments);
-            } else {
-                this.hasSelectedCashFlowLibrary = false;
-                this.splitTreatmentTableData = [];
-            }
+            this.hasSelectedCashFlowLibrary = this.selectedCashFlowLibrary.id !== '0';
+            this.splitTreatmentTableData = clone(this.selectedCashFlowLibrary.splitTreatments);
         }
 
         @Watch('splitTreatmentTableData')

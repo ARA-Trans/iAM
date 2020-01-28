@@ -96,14 +96,15 @@
                 <v-spacer></v-spacer>
             </v-footer>
             <Spinner />
-            <Alert :dialog-data="alertDialogData" @submit="alertResult = $event"/>
+            <Alert :dialog-data="alertDialogData" @submit="onAlertResult"/>
         </v-content>
     </v-app>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import Component from 'vue-class-component';
+    import {Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import Spinner from './shared/modals/Spinner.vue';
     import iziToast from 'izitoast';
@@ -165,7 +166,8 @@
             '/CashFlowEditor/Library/'
         ];
         alertDialogData: AlertData = clone(emptyAlertData);
-        preventRouteUpdate: boolean = true;
+        pushRouteUpdate: boolean = false;
+        route: any = {};
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
@@ -270,6 +272,27 @@
               (error: any) => errorHandler(error)
             );
 
+            this.$router.beforeEach((to: any, from: any, next: any) => {
+                this.route = to;
+
+                if (this.dmlPaths.indexOf(from.path) !== -1) {
+                    if (checkStateForUnsavedChanges(from.path, this.state) && !this.pushRouteUpdate) {
+                        this.alertDialogData = {
+                            showDialog: true,
+                            heading: 'Unsaved Changes',
+                            message: 'You have unsaved changes. Are you sure you wish to continue?',
+                            choice: true
+                        };
+                    } else {
+                        this.pushRouteUpdate = false;
+                        next();
+                    }
+                } else {
+                    this.pushRouteUpdate = false;
+                    next();
+                }
+            });
+
             // Upon opening the page, and every 30 seconds, check if authentication data
             // has been changed by another tab or window
             this.checkBrowserTokensAction();
@@ -280,24 +303,11 @@
             window.setInterval(this.pollEventsAction, 5000);
         }
 
-        beforeRouteUpdate(to: any, from: any, next: any) {
-            if (this.dmlPaths.indexOf(from.path) !== -1) {
-                if (checkStateForUnsavedChanges(from.path, this.state) && !this.preventRouteUpdate) {
-                    this.alertDialogData = {
-                        showDialog: true,
-                        heading: 'Unsaved Changes',
-                        message: 'You have unsaved changes. Are you sure you wish to continue?',
-                        choice: true
-                    }
-                }
-            }
-            this.preventRouteUpdate = false;
-            next();
-        }
-
         onAlertResult(submit: boolean) {
+            this.alertDialogData = clone(emptyAlertData);
             if (submit) {
-
+                this.pushRouteUpdate = true;
+                this.onNavigate(this.route);
             }
         }
         
@@ -336,9 +346,9 @@
          * Navigates a user to a page using the specified routeName
          * @param routeName The route name to use when navigating a user
          */
-        onNavigate(routeName: string) {
-            if(this.$router.currentRoute.path !== routeName) {
-                this.$router.push(routeName);
+        onNavigate(route: any) {
+            if(this.$router.currentRoute.path !== route.path) {
+                this.$router.push(route);
             }
         }
     }

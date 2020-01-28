@@ -38,7 +38,6 @@
         PriorityFund,
         PriorityLibrary
     } from '@/shared/models/iAM/priority';
-    import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
     const ObjectID = require('bson-objectid');
@@ -47,7 +46,7 @@
     export default class CreatePriorityLibraryDialog extends Vue {
         @Prop() dialogData: CreatePriorityLibraryDialogData;
 
-        newPriorityLibrary: PriorityLibrary = clone({...emptyPriorityLibrary, id: ObjectID.generate()});
+        newPriorityLibrary: PriorityLibrary = {...emptyPriorityLibrary, id: ObjectID.generate()};
 
         /**
          * Sets the newPriorityLibrary object's description & priorities properties with the dialogData object's
@@ -69,7 +68,7 @@
         onSubmit(submit: boolean) {
             if (submit) {
                 if (!hasValue(this.newPriorityLibrary.priorities)) {
-                    this.newPriorityLibrary.priorities.push(clone({...emptyPriority, year: moment().year()}));
+                    this.newPriorityLibrary.priorities.push({...emptyPriority, year: moment().year()});
                 }
                 this.setIdsForNewPriorityLibrarySubData();
                 this.$emit('submit', this.newPriorityLibrary);
@@ -77,7 +76,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newPriorityLibrary = clone({...emptyPriorityLibrary, id: ObjectID.generate()});
+            this.newPriorityLibrary = {...emptyPriorityLibrary, id: ObjectID.generate()};
         }
 
         /**

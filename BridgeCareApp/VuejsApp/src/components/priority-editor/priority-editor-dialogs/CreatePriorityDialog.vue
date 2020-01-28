@@ -33,13 +33,12 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
     const ObjectID = require('bson-objectid');
-    import {clone} from 'ramda';
 
     @Component
     export default class CreatePriorityDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        newPriority: Priority = clone({...emptyPriority, id: ObjectID.generate(), year: moment().year()});
+        newPriority: Priority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
         selectedYear: string = moment().year().toString();
         years: string[] = [];
 
@@ -81,7 +80,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newPriority = clone({...emptyPriority, id: ObjectID.generate(), year: this.newPriority.year});
+            this.newPriority = {...emptyPriority, id: ObjectID.generate(), year: this.newPriority.year};
         }
     }
 </script>

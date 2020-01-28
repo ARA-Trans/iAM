@@ -31,14 +31,19 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {CreateRemainingLifeLimitLibraryDialogData} from '@/shared/models/modals/create-remaining-life-limit-library-dialog-data';
-    import {emptyRemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
+    import {
+        emptyRemainingLifeLimitLibrary,
+        RemainingLifeLimit,
+        RemainingLifeLimitLibrary
+    } from '@/shared/models/iAM/remaining-life-limit';
+    import {hasValue} from '@/shared/utils/has-value-util';
     const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateRemainingLifeLimitLibraryDialog extends Vue {
         @Prop() dialogData: CreateRemainingLifeLimitLibraryDialogData;
 
-        newRemainingLifeLimitLibrary = {...emptyRemainingLifeLimitLibrary, id: ObjectID.generate()};
+        newRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = {...emptyRemainingLifeLimitLibrary, id: ObjectID.generate()};
 
         /**
          * Instantiates a newRemainingLifeLimitLibrary object with the description and remainingLifeLimits data in
@@ -59,12 +64,23 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
+                this.setIdsForNewRemainingLifeLimitLibrarySubData();
                 this.$emit('submit', this.newRemainingLifeLimitLibrary);
             } else {
                 this.$emit('submit', null);
             }
 
             this.newRemainingLifeLimitLibrary = {...emptyRemainingLifeLimitLibrary, id: ObjectID.generate()};
+        }
+
+        /**
+         * Generates new ids for the newRemainingLifeLimitLibrary object's remaining life limits if it has any
+         */
+        setIdsForNewRemainingLifeLimitLibrarySubData() {
+            this.newRemainingLifeLimitLibrary.remainingLifeLimits.map((remainingLifeLimit: RemainingLifeLimit) => ({
+                ...remainingLifeLimit,
+                id: ObjectID.generate()
+            }));
         }
     }
 </script>

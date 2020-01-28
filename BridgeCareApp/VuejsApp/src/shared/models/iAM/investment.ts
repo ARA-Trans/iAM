@@ -1,14 +1,14 @@
 import { CriteriaDrivenBudgets } from './criteria-driven-budgets';
 
 export interface InvestmentLibraryBudgetYear {
-    id: number | string;
+    id: string;
     year: number;
     budgetName: string;
     budgetAmount: number;
 }
 
 export interface InvestmentLibrary {
-    id: number | string;
+    id: string;
     name: string;
     inflationRate: number;
     description: string;
@@ -23,7 +23,7 @@ export interface BudgetYearsGridData {
 }
 
 export const emptyInvestmentLibrary: InvestmentLibrary = {
-    id: 0,
+    id: '0',
     name: '',
     inflationRate: 0,
     description: '',

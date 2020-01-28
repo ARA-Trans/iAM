@@ -1,6 +1,6 @@
 import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex, equals} from 'ramda';
+import {clone, update, propEq, append, findIndex, equals, any} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
@@ -13,55 +13,29 @@ const state = {
 
 const mutations = {
     investmentLibrariesMutator(state: any, investmentLibraries: InvestmentLibrary[]) {
-        // update state.investmentLibraries with a clone of the incoming list of investment libraries
         state.investmentLibraries = clone(investmentLibraries);
     },
-    selectedInvestmentLibraryMutator(state: any, investmentLibraryId: any) {
-        if (any(propEq('id', investmentLibraryId), state.investmentLibraries)) {
-            // find the existing investment library in state.investmentLibraries where the id matches investmentLibraryId,
-            // clone it, then update state.selectedInvestmentLibrary with the cloned, existing investment library
-            state.selectedInvestmentLibrary = clone(state.investmentLibraries
-                .find((investmentLibrary: InvestmentLibrary) =>
-                    investmentLibrary.id === investmentLibraryId
-                ) as InvestmentLibrary);
-        } else {
-            // update state.selectedInvestmentLibrary with a new empty investment library object
-            state.selectedInvestmentLibrary = clone(emptyInvestmentLibrary);
-        }
-    },
-    updatedSelectedInvestmentLibraryMutator(state: any, updatedSelectedInvestmentLibrary: InvestmentLibrary) {
-        state.selectedInvestmentLibrary = clone(updatedSelectedInvestmentLibrary);
+    selectedInvestmentLibraryMutator(state: any, selectedInvestmentLibrary: InvestmentLibrary) {
+        state.selectedInvestmentLibrary = clone(selectedInvestmentLibrary);
     },
     createdInvestmentLibraryMutator(state: any, createdInvestmentLibrary: InvestmentLibrary) {
-        // append the created investment library to a cloned list of state.investmentLibraries, then update
-        // state.investmentLibraries with the cloned list
         state.investmentLibraries = append(createdInvestmentLibrary, state.investmentLibraries);
     },
     updatedInvestmentLibraryMutator(state: any, updatedInvestmentLibrary: InvestmentLibrary) {
-        if (any(propEq('id', updatedInvestmentLibrary.id), state.investmentLibraries)) {
-            // clone the list of investment libraries in state
-            const investmentLibraries: InvestmentLibrary[] = clone(state.investmentLibraries);
-            // find the index of the existing investment library in the cloned list of investment libraries that has
-            // a matching id with the updated investment library
-            const index: number = findIndex(propEq('id', updatedInvestmentLibrary.id), investmentLibraries);
-            // set the investment libraries at the specified index with the updated investment library
-            investmentLibraries[index] = updatedInvestmentLibrary;
-            // update state.investmentLibraries with the cloned list of investment libraries
-            state.investmentLibraries = investmentLibraries;
-        }
+        state.investmentLibraries = update(
+            findIndex(propEq('id', updatedInvestmentLibrary.id), state.investmentLibraries),
+            updatedInvestmentLibrary,
+            state.investmentLibraries
+        );
     },
     scenarioInvestmentLibraryMutator(state: any, scenarioInvestmentLibrary: InvestmentLibrary) {
-        // update state.investmentLibraries with a clone of the incoming list of investment libraries
         state.scenarioInvestmentLibrary = clone(scenarioInvestmentLibrary);
     }
 };
 
 const actions = {
     selectInvestmentLibrary({commit}: any, payload: any) {
-        commit('selectedInvestmentLibraryMutator', payload.investmentLibraryId);
-    },
-    updateSelectedInvestmentLibrary({commit}: any, payload: any) {
-        commit('updatedSelectedInvestmentLibraryMutator', payload.updatedSelectedInvestmentLibrary);
+        commit('selectedInvestmentLibraryMutator', payload.selectedInvestmentLibrary);
     },
     async getInvestmentLibraries({commit}: any) {
         await InvestmentEditorService.getInvestmentLibraries()
@@ -119,19 +93,26 @@ const actions = {
     },
     async socket_investmentLibrary({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            if (payload.operationType == 'update' || payload.operationType == 'replace') {
-                const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
-                commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
-                if (state.selectedInvestmentLibrary.id === updatedInvestmentLibrary.id &&
-                    !equals(state.selectedInvestmentLibrary, updatedInvestmentLibrary)) {
-                    commit('selectedInvestmentLibraryMutator', updatedInvestmentLibrary.id);
-                    dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
-                }
-            }
-
-            if (payload.operationType == 'insert') {
-                const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
-                commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+            const investmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
+            switch (payload.operationType) {
+                case 'update':
+                case 'replace':
+                    commit('updatedInvestmentLibraryMutator', investmentLibrary);
+                    if (state.selectedInvestmentLibrary.id === investmentLibrary.id &&
+                        !equals(state.selectedInvestmentLibrary, investmentLibrary)) {
+                        commit('selectedInvestmentLibraryMutator', investmentLibrary);
+                        dispatch('setInfoMessage',
+                            {message: `Investment library '${investmentLibrary.name}' has been changed from another source`}
+                        );
+                    }
+                    break;
+                case 'insert':
+                    if (!any(propEq('id', investmentLibrary.id), state.investmentLibraries)) {
+                        commit('createdInvestmentLibraryMutator', investmentLibrary);
+                        dispatch('setInfoMessage',
+                            {message: `Investment library '${investmentLibrary.name}' has been created from another source`}
+                        );
+                    }
             }
         }
     }

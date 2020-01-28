@@ -7,13 +7,13 @@
                         New Library
                     </v-btn>
                     <v-select v-if="!hasSelectedRemainingLifeLimitLibrary || selectedScenarioId !== '0'"
-                              :items="librarySelectListItems" label="Select a Remaining Life Limit Library" outline
-                              v-model="librarySelectItemValue">
+                              :items="selectListItems" label="Select a Remaining Life Limit Library" outline
+                              v-model="selectItemValue">
                     </v-select>
                     <v-text-field v-if="hasSelectedRemainingLifeLimitLibrary && selectedScenarioId === '0'" label="Library Name"
                                   v-model="selectedRemainingLifeLimitLibrary.name">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="librarySelectItemValue = '0'">
+                            <v-btn class="ara-orange" icon @click="selectItemValue = null">
                                 <v-icon>fas fa-times</v-icon>
                             </v-btn>
                         </template>
@@ -49,7 +49,7 @@
                         <td>
                             <v-text-field readonly :value="props.item.criteria">
                                 <template slot="append-outer">
-                                    <v-icon class="edit-icon" @click="onEditCriteria(props.item.id, props.item.criteria)">
+                                    <v-icon class="edit-icon" @click="onEditCriteria(props.item, props.item.criteria)">
                                         fas fa-edit
                                     </v-icon>
                                 </template>
@@ -81,7 +81,7 @@
         </v-flex>
 
         <CreateRemainingLifeLimitLibraryDialog :dialogData="createRemainingLifeLimitLibraryDialogData"
-                                               @submit="onCreateRemainingLifeLimitLibrary" />
+                                               @submit="onCreateLibrary" />
 
         <CreateRemainingLifeLimitDialog :dialogData="createRemainingLifeLimitDialogData"
                                         @submit="onCreateRemainingLifeLimit" />
@@ -97,11 +97,12 @@
     import {State, Action} from 'vuex-class';
     import {Watch} from 'vue-property-decorator';
     import {
+        emptyRemainingLifeLimit,
         emptyRemainingLifeLimitLibrary,
         RemainingLifeLimit,
         RemainingLifeLimitLibrary
     } from '@/shared/models/iAM/remaining-life-limit';
-    import {clone, isNil, append} from 'ramda';
+    import {clone, isNil, append, update, findIndex, propEq, find} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
@@ -121,6 +122,7 @@
         CreateRemainingLifeLimitDialogData,
         emptyCreateRemainingLifeLimitDialogData
     } from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
+    import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     const ObjectID = require('bson-objectid');
     @Component({
         components: {CreateRemainingLifeLimitLibraryDialog, CreateRemainingLifeLimitDialog, CriteriaEditorDialog}
@@ -144,8 +146,8 @@
         scenarioRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = clone(emptyRemainingLifeLimitLibrary);
         selectedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = clone(emptyRemainingLifeLimitLibrary);
         selectedScenarioId: string = '0';
-        librarySelectItemValue: string = '';
-        librarySelectListItems: SelectItem[] = [];
+        selectItemValue: string | null = '';
+        selectListItems: SelectItem[] = [];
         hasSelectedRemainingLifeLimitLibrary: boolean = false;
         gridHeaders: DataTableHeader[] = [
             {text: 'Remaining Life Attribute', value: 'attribute', align: 'left', sortable: true, class: '', width: '12.4%'},
@@ -156,7 +158,7 @@
         numericAttributesSelectListItems: SelectItem[] = [];
         selectedGridRows: any[] = [];
         createRemainingLifeLimitDialogData: CreateRemainingLifeLimitDialogData = clone(emptyCreateRemainingLifeLimitDialogData);
-        selectedRemainingLifeLimitForCriteriaEditIndex: number = -1;
+        selectedRemainingLifeLimit: RemainingLifeLimit = clone(emptyRemainingLifeLimit);
         remainingLifeLimitCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createRemainingLifeLimitLibraryDialogData: CreateRemainingLifeLimitLibraryDialogData = clone(
             emptyCreateRemainingLifeLimitLibraryDialogData
@@ -167,6 +169,8 @@
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
+                vm.selectedScenarioId = '0';
+
                 if (to.path === '/RemainingLifeLimitEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
                     if (vm.selectedScenarioId === '0') {
@@ -175,7 +179,7 @@
                     }
                 }
 
-                vm.librarySelectItemValue = '0';
+                vm.selectItemValue = null;
                 setTimeout(() => {
                     vm.getRemainingLifeLimitLibrariesAction()
                         .then(() => {
@@ -190,30 +194,30 @@
         }
 
         /**
-         * Resets component UI properties that triggers cascading UI updates
-         */
-        beforeRouteUpdate(to: any, from: any, next: any) {
-            if (to.path === 'RemainingLifeLimitEditor/Library/') {
-                this.selectedScenarioId = '0';
-                this.librarySelectItemValue = '0';
-                next();
-            }
-        }
-
-        /**
          * Sets remainingLifeLimitLibraries with a copy of stateRemainingLifeLimitLibraries
          */
         @Watch('stateRemainingLifeLimitLibraries')
         onStateRemainingLifeLimitLibrariesChanged() {
-            this.remainingLifeLimitLibraries = clone(this.stateRemainingLifeLimitLibraries);
+            this.selectListItems = this.stateRemainingLifeLimitLibraries
+                .map((remainingLifeLimitLibrary: RemainingLifeLimitLibrary) => ({
+                    text: remainingLifeLimitLibrary.name,
+                    value: remainingLifeLimitLibrary.id.toString()
+                }));
         }
 
         /**
-         * Sets scenarioRemainingLifeLimitLibrary with a copy of stateScenarioRemainingLifeLimitLibrary
+         * Dispatches selectRemainingLifeLimitLibraryAction with selectItemValue
          */
-        @Watch('stateScenarioRemainingLifeLimitLibrary')
-        onStateScenarioRemainingLifeLimitLibraryChanged() {
-            this.scenarioRemainingLifeLimitLibrary = clone(this.stateScenarioRemainingLifeLimitLibrary);
+        @Watch('selectItemValue')
+        onSelectItemValueChanged() {
+            const selectedRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = find(
+                propEq('id', this.selectItemValue), this.stateRemainingLifeLimitLibraries
+            ) as RemainingLifeLimitLibrary;
+
+            this.selectRemainingLifeLimitLibraryAction({
+                selectedRemainingLifeLimitLibrary: hasValue(selectedRemainingLifeLimitLibrary)
+                    ? selectedRemainingLifeLimitLibrary : emptyRemainingLifeLimitLibrary
+            });
         }
 
         /**
@@ -222,6 +226,8 @@
         @Watch('stateSelectedRemainingLifeLimitLibrary')
         onStateSelectedRemainingLifeLimitLibraryChanged() {
             this.selectedRemainingLifeLimitLibrary = clone(this.stateSelectedRemainingLifeLimitLibrary);
+            this.hasSelectedRemainingLifeLimitLibrary = this.selectedRemainingLifeLimitLibrary.id !== '0';
+            this.gridData = clone(this.selectedRemainingLifeLimitLibrary.remainingLifeLimits);
         }
 
         /**
@@ -229,65 +235,30 @@
          */
         @Watch('stateNumericAttributes')
         onStateNumericAttributesChanged() {
-            if (hasValue(this.stateNumericAttributes)) {
-                this.setAttributesSelectListItems();
-            }
-        }
-
-        /**
-         * Sets the librarySelectListItems using the remainingLifeLimitLibraries
-         */
-        @Watch('remainingLifeLimitLibraries')
-        onRemainingLifeLimitLibrariesChanged() {
-            this.librarySelectListItems = this.remainingLifeLimitLibraries.map((remainingLifeLimitLibrary: RemainingLifeLimitLibrary) => ({
-                text: remainingLifeLimitLibrary.name,
-                value: remainingLifeLimitLibrary.id.toString()
-            }));
-        }
-
-        /**
-         * Dispatches selectRemainingLifeLimitLibraryAction with librarySelectItemValue
-         */
-        @Watch('librarySelectItemValue')
-        onSelectItemValueChanged() {
-            this.selectRemainingLifeLimitLibraryAction({remainingLifeLimitLibraryId: this.librarySelectItemValue});
-        }
-
-        /**
-         *
-         */
-        @Watch('selectedRemainingLifeLimitLibrary')
-        onSelectedRemainingLifeLimitLibraryChanged() {
-            if (hasValue(this.selectedRemainingLifeLimitLibrary) && this.selectedRemainingLifeLimitLibrary.id !== '0') {
-                this.hasSelectedRemainingLifeLimitLibrary = true;
-                this.gridData = this.selectedRemainingLifeLimitLibrary.remainingLifeLimits;
-            } else {
-                this.hasSelectedRemainingLifeLimitLibrary = false;
-                this.gridData = [];
-            }
+            this.setAttributesSelectListItems();
         }
 
         /**
          * Component mounted event handler
          */
         mounted() {
+            this.setAttributesSelectListItems();
+        }
+
+        /**
+         * Setter for the numericAttributesSelectListItems object
+         */
+        setAttributesSelectListItems() {
             if (hasValue(this.stateNumericAttributes)) {
-                this.setAttributesSelectListItems();
+                this.numericAttributesSelectListItems = this.stateNumericAttributes.map((attribute: Attribute) => ({
+                    text: attribute.name,
+                    value: attribute.name
+                }));
             }
         }
 
         /**
-         * Sets the attributes select items using the numeric attributes from state
-         */
-        setAttributesSelectListItems() {
-            this.numericAttributesSelectListItems = this.stateNumericAttributes.map((attribute: Attribute) => ({
-                text: attribute.name,
-                value: attribute.name
-            }));
-        }
-
-        /**
-         * Instantiates a new createRemainingLifeLimitLibraryDialogData object with showDialog set to 'true'
+         * Toggles the CreateRemainingLifeLimitLibraryDialog modal
          */
         onNewLibrary() {
             this.createRemainingLifeLimitLibraryDialogData = {
@@ -297,8 +268,7 @@
         }
 
         /**
-         * Instantiates a new createRemainingLifeLimitDialogData object with showDialog set to true and
-         * numericAttributesSelectListItems set with this component's numericAttributesSelectListItems
+         * Toggles the CreateRemainingLifeLimitDialog modal
          */
         onAddRemainingLifeLimit() {
             this.createRemainingLifeLimitDialogData = {
@@ -308,16 +278,15 @@
         }
 
         /**
-         * Dispatches an updateSelectedRemainingLifeLimitLibrary action to update the selectedRemainingLifeLimitLibrary
-         * with newRemainingLifeLimit appended to the selectedRemainingLifeLimitLibrary.remainingLifeLimits list
-         * @param newRemainingLifeLimit Remaining life limit to append
+         * Dispatches an action to append a new RemainingLifeLimit to the selectedRemainingLifeLimitLibrary
+         * remainingLifeLimits property
          */
         onCreateRemainingLifeLimit(newRemainingLifeLimit: RemainingLifeLimit) {
             this.createRemainingLifeLimitDialogData = clone(emptyCreateRemainingLifeLimitDialogData);
 
             if (!isNil(newRemainingLifeLimit)) {
-                this.updateSelectedRemainingLifeLimitLibraryAction({
-                    updatedSelectedRemainingLifeLimitLibrary: {
+                this.selectRemainingLifeLimitLibraryAction({
+                    selectedRemainingLifeLimitLibrary: {
                         ...this.selectedRemainingLifeLimitLibrary,
                         remainingLifeLimits: append(
                             newRemainingLifeLimit, this.selectedRemainingLifeLimitLibrary.remainingLifeLimits
@@ -328,14 +297,10 @@
         }
 
         /**
-         * Sets the index of the remaining life limit in the selectedRemainingLifeLimitLibrary.remainingLifeLimits list,
-         * then instantiates a new remainingLifeLimitCriteriaEditorDialogData object
-         * @param remainingLifeLimitId Remaining life limit id
-         * @param criteria Remaining life limit criteria
+         * Toggles the CriteriaEditorDialog modal
          */
-        onEditCriteria(remainingLifeLimitId: any, criteria: string) {
-            this.selectedRemainingLifeLimitForCriteriaEditIndex = this.selectedRemainingLifeLimitLibrary
-                .remainingLifeLimits.findIndex((r: RemainingLifeLimit) => r.id === remainingLifeLimitId);
+        onEditCriteria(remainingLifeLimit: RemainingLifeLimit, criteria: string) {
+            this.selectedRemainingLifeLimit = remainingLifeLimit;
 
             this.remainingLifeLimitCriteriaEditorDialogData = {
                 showDialog: true,
@@ -344,31 +309,31 @@
         }
 
         /**
-         * Updates the criteria of the remaining life limit at the specified index in the
-         * selectedRemainingLifeLimitLibrary.remainingLifeLimits list with the submitted CriteriaEditorDialog criteria,
-         * if present, then dispatches an updateSelectedRemainingLifeLimitLibraryAction to update the
-         * selectedRemainingLifeLimitLibrary in state
-         * @param criteria
+         * Modifies a RemainingLifeLimit criteria property with the CriteriaEditorDialog modal result
          */
         onSubmitEditedCriteria(criteria: string) {
             this.remainingLifeLimitCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                const remainingLifeLimits = clone(this.selectedRemainingLifeLimitLibrary.remainingLifeLimits);
-                remainingLifeLimits[this.selectedRemainingLifeLimitForCriteriaEditIndex].criteria = criteria;
 
-                this.updateSelectedRemainingLifeLimitLibraryAction({
-                    updatedSelectedRemainingLifeLimitLibrary: {
+                this.selectRemainingLifeLimitLibraryAction({
+                    selectedRemainingLifeLimitLibrary: {
                         ...this.selectedRemainingLifeLimitLibrary,
-                        remainingLifeLimits: remainingLifeLimits
+                        remainingLifeLimits: update(
+                            findIndex(propEq('id', this.selectedRemainingLifeLimit.id), this.selectedRemainingLifeLimitLibrary.remainingLifeLimits),
+                            setItemPropertyValue('criteria', criteria, this.selectedRemainingLifeLimit),
+                            this.selectedRemainingLifeLimitLibrary.remainingLifeLimits
+                        )
                     }
                 });
+
+                this.selectedRemainingLifeLimit = clone(emptyRemainingLifeLimit);
             }
         }
 
         /**
-         * Instantiates a new createRemainingLifeLimitLibraryDialogData object with the description and remainingLifeLimits
-         * data of the current selectedRemainingLifeLimitLibrary
+         * Toggles the CreateRemainingLifeLimitLibraryDialog modal to create a new RemainingLifeLimitLibrary using
+         * the selectedRemainingLifeLimitLibrary data
          */
         onCreateAsNewLibrary() {
             this.createRemainingLifeLimitLibraryDialogData = {
@@ -379,85 +344,41 @@
         }
 
         /**
-         * Dispatches a createRemainingLifeLimitLibraryAction with the createdRemainingLifeLimitLibrary to insert
-         * into the Mongo DB
-         * @param createdRemainingLifeLimitLibrary Remaining life limit library
+         * Dispatches an action to create a new RemainingLifeLimitLibrary in the mongo database
          */
-        onCreateRemainingLifeLimitLibrary(createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary) {
+        onCreateLibrary(createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary) {
             this.createRemainingLifeLimitLibraryDialogData = clone(emptyCreateRemainingLifeLimitLibraryDialogData);
 
             if (!isNil(createdRemainingLifeLimitLibrary)) {
-                createdRemainingLifeLimitLibrary = this.setIdsForNewRemainingLifeLimitLibraryData(createdRemainingLifeLimitLibrary);
-
                 this.createRemainingLifeLimitLibraryAction({createdRemainingLifeLimitLibrary: createdRemainingLifeLimitLibrary})
-                    .then(() => {
-                        this.librarySelectItemValue = createdRemainingLifeLimitLibrary.id;
-                    });
+                    .then(() => this.selectItemValue = createdRemainingLifeLimitLibrary.id);
             }
         }
 
         /**
-         * Generates new ids for the createdRemainingLifeLimitLibrary's remaining life limits if it has any
-         * @param createdRemainingLifeLimitLibrary Remaining life limit library
-         */
-        setIdsForNewRemainingLifeLimitLibraryData(createdRemainingLifeLimitLibrary: RemainingLifeLimitLibrary) {
-            if (hasValue(createdRemainingLifeLimitLibrary.remainingLifeLimits)) {
-                createdRemainingLifeLimitLibrary.remainingLifeLimits.map((remainingLifeLimit: RemainingLifeLimit) => ({
-                    ...remainingLifeLimit,
-                    id: ObjectID.generate()
-                }));
-            }
-
-            return createdRemainingLifeLimitLibrary;
-        }
-
-        /**
-         * Dispatches a saveScenarioRemainingLifeLimitLibraryAction to upsert the scenario's remaining life limit library
-         * with the selectedRemainingLifeLimitLibrary
+         * Dispatches an action to modify a scenario's RemainingLifeLimitLibrary data in the sql server database
          */
         onApplyToScenario() {
-            this.saveScenarioRemainingLifeLimitLibraryAction({saveScenarioRemainingLifeLimitLibraryData: {
-                    ...this.selectedRemainingLifeLimitLibrary,
-                    id: this.selectedScenarioId.toString(),
-                    name: this.scenarioRemainingLifeLimitLibrary.name
-                }
-            }).then(() => {
-                this.librarySelectItemValue = '0';
-                setTimeout(() => {
-                    this.updateSelectedRemainingLifeLimitLibraryAction({
-                        updatedSelectedRemainingLifeLimitLibrary: this.scenarioRemainingLifeLimitLibrary
-                    });
-                });
-            });
+            this.saveScenarioRemainingLifeLimitLibraryAction(
+                {saveScenarioRemainingLifeLimitLibraryData: {...this.selectedRemainingLifeLimitLibrary, id: this.selectedScenarioId.toString()}
+            }).then(() => this.onDiscardChanges());
         }
 
         /**
-         * Dispatches an updateRemainingLifeLimitLibraryAction to update the selectedRemainingLifeLimitLibrary in the
-         * Mongo DB
+         * Dispatches an action to modify the selectedRemainingLifeLimitLibrary data in the mongo database
          */
         onUpdateLibrary() {
             this.updateRemainingLifeLimitLibraryAction({updatedRemainingLifeLimitLibrary: this.selectedRemainingLifeLimitLibrary});
         }
 
         /**
-         * Clears the selected remaining life limit library, then dispatches an updateSelectedRemainingLifeLimitLibraryAction
-         * to set the selectedRemainingLifeLimitLibrary with the scenarioRemainingLifeLimitLibrary, if present, otherwise
-         * a getScenarioRemainingLifeLimitLibraryAction is dispatched to get the scenarios remaining life limit library
+         * Dispatches an action to reset the selectedRemainingLifeLimitLibrary with the current stateScenarioRemainingLifeLimitLibrary
          */
         onDiscardChanges() {
-            this.librarySelectItemValue = '0';
-
-            if (this.scenarioRemainingLifeLimitLibrary.id !== '0') {
-                setTimeout(() => {
-                    this.updateSelectedRemainingLifeLimitLibraryAction({
-                        updatedSelectedRemainingLifeLimitLibrary: this.scenarioRemainingLifeLimitLibrary
-                    });
-                });
-            } else {
-                setTimeout(() => {
-                    this.getScenarioRemainingLifeLimitLibraryAction({selectedScenarioId: this.selectedScenarioId});
-                });
-            }
+            this.selectItemValue = null;
+            setTimeout(() =>
+                this.selectRemainingLifeLimitLibraryAction({selectedRemainingLifeLimitLibrary: this.stateScenarioRemainingLifeLimitLibrary})
+            );
         }
     }
 </script>
