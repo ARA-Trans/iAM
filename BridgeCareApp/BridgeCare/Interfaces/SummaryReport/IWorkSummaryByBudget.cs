@@ -6,8 +6,8 @@ using BridgeCare.Models.SummaryReport;
 
 namespace BridgeCare.Interfaces.SummaryReport
 {
-    interface IWorkSummaryByBudget
+    public interface IWorkSummaryByBudget
     {
-        IQueryable<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel model, BridgeCareContext db);
+        List<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel model, BridgeCareContext db);
     }
 }

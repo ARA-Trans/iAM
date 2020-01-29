@@ -9,6 +9,7 @@ using System;
 using BridgeCare.DataAccessLayer.Inventory;
 using BridgeCare.DataAccessLayer.SummaryReport;
 using Unity;
+using BridgeCare.Interfaces.SummaryReport;
 
 namespace BridgeCare
 {
@@ -92,6 +93,7 @@ namespace BridgeCare
             container.RegisterType<ICommittedProjects, CommittedProjects>();
             container.RegisterType<ICommitted, CommittedDAL>();
             container.RegisterType<ICriteriaDrivenBudgets, CriteriaDrivenBudgetsDAL>();
+            container.RegisterType<IWorkSummaryByBudget, WorkSummaryByBudgetDAL>();
         }
     }
 }

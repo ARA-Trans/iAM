@@ -7,10 +7,12 @@ namespace BridgeCare.Models.SummaryReport
 {
     public class WorkSummaryByBudgetModel
     {
-        public int YEARS { get; }
+        public int YEARS { get; set; }
 
-        public string TREATMENT { get; }
+        public string TREATMENT { get; set; }
 
-        public double CostPerTreatmentPerYear { get; }
+        public string BUDGET { get; set; }
+
+        public double CostPerTreatmentPerYear { get; set; }
     }
 }

@@ -10,9 +10,15 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 {
     public class WorkSummaryByBudgetDAL : IWorkSummaryByBudget
     {
-        public IQueryable<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel model, BridgeCareContext db)
+        public List<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            throw new NotImplementedException();
+            var selectReportStatement = $"SELECT YEARS, TREATMENT, BUDGET, SUM(COST_) AS CostPerTreatmentPerYear FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
+                                        $"WITH (NOLOCK) WHERE BUDGET IS NOT NULL " +
+                                        $"GROUP BY TREATMENT, YEARS, BUDGET";
+
+            var budgetsPerTreatmentPerYear = dbContext.Database.SqlQuery<WorkSummaryByBudgetModel>(selectReportStatement).ToList();
+
+            return budgetsPerTreatmentPerYear;
         }
     }
 }
