@@ -26,6 +26,9 @@ namespace BridgeCare.Services.SummaryReport
             this.bridgeData = bridgeData ?? throw new ArgumentNullException(nameof(bridgeData));
             dbContext = context ?? throw new ArgumentNullException(nameof(context));
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "<Pending>")]
         internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, List<string> treatments)
         {
             var startYear = simulationYears[0];
@@ -38,9 +41,9 @@ namespace BridgeCare.Services.SummaryReport
             {
                 var costForCulvertBudget = budgetsPerYearPerTreatment
                                              .FindAll(_ => _.BUDGET.Equals(budget.Replace("'", "")) && _.TREATMENT.ToLower().Contains("culvert"));
-                var costForbridgeBudgets = budgetsPerYearPerTreatment
+                var costForBridgeBudgets = budgetsPerYearPerTreatment
                                              .FindAll(_ => _.BUDGET.Equals(budget.Replace("'", "")) && !_.TREATMENT.ToLower().Contains("culvert"));
-                if (costForCulvertBudget.Count == 0 && costForbridgeBudgets.Count == 0)
+                if (costForCulvertBudget.Count == 0 && costForBridgeBudgets.Count == 0)
                 {
                     continue;
                 }
@@ -53,11 +56,18 @@ namespace BridgeCare.Services.SummaryReport
                 bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Culvert Work");
 
                 var totalBudgetPerYearForCulvert = new Dictionary<int, double>();
+                var totalBudgetPerYearForBridgeWork = new Dictionary<int, double>();
                 foreach (var year in simulationYears)
                 {
                     var yearlyBudget = costForCulvertBudget.FindAll(_ => _.YEARS == year);
                     var sum = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
                     totalBudgetPerYearForCulvert.Add(year, sum);
+
+                    yearlyBudget.Clear();
+
+                    yearlyBudget = costForBridgeBudgets.FindAll(_ => _.YEARS == year);
+                    sum = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
+                    totalBudgetPerYearForBridgeWork.Add(year, sum);
                 }
 
                 currentCell.Row += 1;
@@ -119,7 +129,7 @@ namespace BridgeCare.Services.SummaryReport
                 currentCell.Row += 1;
                 currentCell.Column = 1;
                 uniqueTreatments.Clear();
-                foreach (var item in costForbridgeBudgets)
+                foreach (var item in costForBridgeBudgets)
                 {
                     if (!uniqueTreatments.ContainsKey(item.TREATMENT))
                     {
