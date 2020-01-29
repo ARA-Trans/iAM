@@ -66,7 +66,8 @@
             simulationId: this.selectedScenarioId,
             networkId: this.networkId,
             simulationName: '',
-            networkName: ''
+            networkName: '',
+            users: []
         };
         navigationTabs: NavigationTab[] = [];
 
@@ -155,6 +156,14 @@
                             tabIcon: 'fas fa-money-bill-wave',
                             navigation: {
                                 path: '/CashFlowEditor/Scenario/',
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                            }
+                        },
+                        {
+                            tabName: 'Sharing',
+                            tabIcon: 'fas fa-users',
+                            navigation: {
+                                path: '/SharingEditor/Scenario/',
                                 query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
                             }
                         }

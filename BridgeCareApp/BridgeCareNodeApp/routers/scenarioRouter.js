@@ -8,7 +8,7 @@ function scenarioRouter(Scenario){
     const controller = scenarioController(Scenario);
 
     router.route("/GetMongoScenarios")
-        .post(authorizationFilter([roles.administrator, roles.engineer]), controller.post)
+        .post(authorizationFilter(), controller.post)
         .get(authorizationFilter(), controller.get);
     router.route("/DeleteMongoScenario/:scenarioId")
         .delete(authorizationFilter(), controller.deleteScenario);

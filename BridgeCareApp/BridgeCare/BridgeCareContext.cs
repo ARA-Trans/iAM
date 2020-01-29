@@ -68,6 +68,9 @@ namespace BridgeCare
 
             modelBuilder.Entity<SplitTreatmentEntity>()
                 .HasMany(e => e.SPLIT_TREATMENT_LIMITS);
+
+            modelBuilder.Entity<SimulationEntity>()
+                .HasMany(e => e.USERS);
         }
     }
 }

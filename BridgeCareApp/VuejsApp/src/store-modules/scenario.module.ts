@@ -174,6 +174,9 @@ const actions = {
                     break;
             }
         }
+    },
+    async setScenarioUsers({commit}: any, payload: any) {
+        await ScenarioService.setScenarioUsers(payload.scenarioId, payload.scenarioUsers);
     }
 };
 

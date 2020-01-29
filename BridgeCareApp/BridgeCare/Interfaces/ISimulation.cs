@@ -16,6 +16,7 @@ namespace BridgeCare.Interfaces
         Task<string> RunSimulation(SimulationModel model);
         Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username);
         void SetSimulationLastRunDate(int id, BridgeCareContext db);
-
+        void SetOwnedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username);
+        void SetAnySimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db);
     }
 }

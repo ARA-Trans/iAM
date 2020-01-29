@@ -75,6 +75,7 @@ namespace BridgeCare.EntityClasses
         public SimulationEntity()
         {
             YEARLYINVESTMENTS = new HashSet<YearlyInvestmentEntity>();
+            USERS = new List<SimulationUserEntity>();
         }
 
         public SimulationEntity(CreateSimulationDataModel model)

@@ -3,6 +3,7 @@ using BridgeCare.Models;
 using BridgeCare.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
@@ -191,6 +192,14 @@ namespace BridgeCare.Controllers
                 return InternalServerError(new Exception(result.Result));
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("api/SetScenarioUsers/{id}")]
+        public IHttpActionResult SetSimulationUsers(int id, [FromBody]SimulationUserModel[] simulationUsers)
+        {
+            repo.SetAnySimulationUsers(id, simulationUsers.ToList(), db);
+            return Ok(simulationUsers);
         }
     }
 }

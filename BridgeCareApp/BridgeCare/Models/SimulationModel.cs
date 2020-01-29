@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using BridgeCare.EntityClasses;
 
 namespace BridgeCare.Models
@@ -16,6 +18,7 @@ namespace BridgeCare.Models
         public int NetworkId { get; set; }
         public DateTime? Created { get; set; }
         public DateTime? LastRun { get; set; }
+        public List<SimulationUserModel> Users { get; set; }
 
         public SimulationModel() { }
 
@@ -29,6 +32,7 @@ namespace BridgeCare.Models
             Created = entity.DATE_CREATED;
             LastRun = entity.DATE_LAST_RUN ?? DateTime.Now;
             NetworkName = entity.NETWORK.NETWORK_NAME;
+            Users = entity.USERS.Select(userEntity => new SimulationUserModel(userEntity)).ToList();
         }
     }
 }
