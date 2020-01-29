@@ -179,8 +179,9 @@ namespace Simulation
 
 
                 // Apply No Treatment or Committed Consequences (or Scheduled)
-                var committed = CommittedProjects.Find(c => c.Year == Year);
+                var committed = CommittedProjects.Find(c => c.Year == Year + i);
                 var scheduled = Treatment.Scheduleds.Find(s => s.ScheduledYear == i);
+
 
                 //If both a committed and scheduled.  No benefit.  Can't do both!
                 if (scheduled != null && committed != null)
@@ -196,6 +197,13 @@ namespace Simulation
                         var scheduledTreatment =
                             SimulationTreatments.Find(f => f.TreatmentID == committed.ScheduledTreatmentId);
                         currentAttributeValue = ApplyConsequences(scheduledTreatment.ConsequenceList, currentAttributeValue);
+                        noTreatmentConsequences = GetReducedSetConsequences(currentAttributeValue);
+                    }
+                    else if(!string.IsNullOrWhiteSpace(committed.SplitTreatmentId) && committed.YearSplitTreatmentComplete == Year + i)
+                    {
+                        var splitTreatment =
+                            SimulationTreatments.Find(f => f.TreatmentID == committed.SplitTreatmentId);
+                        currentAttributeValue = ApplyConsequences(splitTreatment.ConsequenceList, currentAttributeValue);
                         noTreatmentConsequences = GetReducedSetConsequences(currentAttributeValue);
                     }
                     else

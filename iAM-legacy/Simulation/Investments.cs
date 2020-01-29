@@ -5,6 +5,8 @@ using System.Data;
 using DatabaseManager;
 using System.Collections;
 using System.Data.SqlClient;
+using Simulation.Interface;
+
 namespace Simulation
 {
     public class Investments
@@ -123,6 +125,8 @@ namespace Simulation
             }
         }
 
+        private int MaximumYear { get; set; }
+
         public void LoadBudgets()
         {
             string[] budgets = BudgetOrderString.Split(',');
@@ -148,11 +152,16 @@ namespace Simulation
             String strYear;
 
             String strAmount;
-
+            MaximumYear = Int32.MinValue;
 
             foreach(DataRow row in ds.Tables[0].Rows)
             {
                 strYear = row[0].ToString();
+                var year = Convert.ToInt32(strYear);
+                if (year > MaximumYear)
+                {
+                    MaximumYear = year;
+                }
                 strBudget = row[1].ToString();
                 strAmount = row[2].ToString();
 
@@ -201,6 +210,18 @@ namespace Simulation
                     BudgetYearOriginal.Add(strBudget, hashYearAmountOriginal);
                 }
             }
+
+            foreach(var budget in BudgetYear.Keys)
+            {
+                var hashYearAmount = (Hashtable)BudgetYear[budget];
+                var hashYearAmountOriginal = (Hashtable)BudgetYearOriginal[budget];
+
+                for(int year = MaximumYear + 1; year < MaximumYear + 101; year++)
+                {
+                    hashYearAmount.Add(year.ToString(), hashYearAmount[MaximumYear.ToString()]);
+                    hashYearAmountOriginal.Add(year.ToString(), hashYearAmountOriginal[MaximumYear.ToString()]);
+                }
+            }
         }
 
         /// <summary>
@@ -211,14 +232,44 @@ namespace Simulation
         /// <param name="strYear"></param>
         /// <param name="hashAttributeValue"></param>
         /// <param name="priority"></param>
+        /// <param name="limits">Limits where treatments are split over multiple years</param>
         /// <returns></returns>
-        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, out string budgetHash)
+        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, List<ISplitTreatmentLimit> limits, string budgetLimitType, out string budgetHash, out ISplitTreatmentLimit splitTreatmentLimit)
         {
+            string noBudgetAvailable = "";
+            splitTreatmentLimit = limits[0];
+
+            //Check priority.  If not possible just return null.
+            if (!(priority.IsAllSections || priority.Criteria.IsCriteriaMet(hashAttributeValue)))
+            {
+                budgetHash = "";
+                return noBudgetAvailable;
+            }
+
             string[] possibleBudgets;
+
+
+            foreach (var limit in limits)
+            {
+                if (limit.Amount > fAmount)
+                {
+                    splitTreatmentLimit = limit;
+                    break;
+                }
+            }
+
+           
+
             budgetHash = "";
             try
             {
                 possibleBudgets = strBudget.Split('|');
+
+                for(int i = 0; i < possibleBudgets.Length; i++)
+                {
+                    possibleBudgets[i] = possibleBudgets[i].Trim();
+                }
+
             }
             catch (Exception e)
             {
@@ -259,7 +310,7 @@ namespace Simulation
             }
 
 
-            
+
             foreach (string budget in budgets)
             {
                 string budgetCheck = budget.Trim();
@@ -275,7 +326,7 @@ namespace Simulation
                 {
                     if (!BudgetYear.Contains(budgetCheck)) continue;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     SimulationMessaging.AddMessage(new SimulationMessage("Error: Checking budget year. " + e.Message));
                     throw e;
@@ -286,28 +337,9 @@ namespace Simulation
                 {
                     hashYearAmount = (Hashtable)BudgetYear[budgetCheck];
                 }
-                catch(Exception e)
-                {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving budget year. " + e.Message));
-                    throw e;
-                }
-                try
-                {
-                    if (!hashYearAmount.Contains(strYear)) continue;
-                }
-                catch(Exception e)
-                {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Checking year amount. " + e.Message));
-                    throw e;
-                }
-
-                try
-                {
-                    fAvailable = (float)hashYearAmount[strYear];
-                }
                 catch (Exception e)
                 {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving year amount. " + e.Message));
+                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving budget year. " + e.Message));
                     throw e;
                 }
 
@@ -321,103 +353,95 @@ namespace Simulation
                     throw e;
                 }
 
-                try
+                bool currentBudgetAvailable = true;
+
+                if(budgetLimitType.ToLower() == "unlimited")//If the budget is available (possible budget) and is unlimited... we are good.
                 {
-                    hashYearAmountOriginal = (Hashtable)BudgetYearOriginal[budgetCheck];
-                }
-                catch (Exception e)
-                {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving budget year original. " + e.Message));
-                    throw e;
+                    return budgetCheck;
                 }
 
 
-                try
+                //Starting here need to loop through year amounts.
+                var year = Convert.ToInt32(strYear);
+                for (int i = 0; i < splitTreatmentLimit.Percentages.Count; i++)
                 {
-                    if (!hashYearAmountOriginal.Contains(strYear)) continue;
-                }
-                catch (Exception e)
-                {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Checking year amount original. " + e.Message));
-                    throw e;
-                }
-                
-                try
-                {
-                    fOriginal = (float)hashYearAmountOriginal[strYear];
-                }
-                catch (Exception e)
-                {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving year amount original. " + e.Message));
-                    throw e;
-                }
-                
-                fAfterSpending = fAvailable - fAmount;
-                if (fOriginal <= 0) continue;
-                fPercent = (1 - fAfterSpending / fOriginal) * 100;
-                
-                try
-                {
-                    if (priority.IsAllSections)
+                    var currentYearAmount = fAmount * splitTreatmentLimit.Percentages[i] / 100;
+                    var currentYear = year + i;
+
+                    //Priority must be all years, match the current year or the current year must be greater than maximum year and the Maximum year must be a priority.
+                    if(!(priority.IsAllYears || priority.Years == currentYear || (currentYear > MaximumYear && priority.Years==MaximumYear)))
+                    {
+                        return null;
+                    }
+
+                    try
+                    {
+                        //This occurs when a split treament goes pas then end.
+                        if (!hashYearAmount.Contains(currentYear.ToString())) continue;
+                        //Not past end of analysis.
+                        fAvailable = (float)hashYearAmount[currentYear.ToString()];
+                    }
+                    catch (Exception e)
+                    {
+                        SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving year amount. " + e.Message));
+                        throw e;
+                    }
+
+                    
+                    //This gets a hash of all years and the amount of budgets originally available.                    
+                    try
+                    {
+                        hashYearAmountOriginal = (Hashtable)BudgetYearOriginal[budgetCheck];
+                        //This occurs when a split treament goes pas then end.
+                        if (!hashYearAmountOriginal.ContainsKey(currentYear.ToString())) continue;
+                    }
+                    catch (Exception e)
+                    {
+                        SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving budget year original. " + e.Message));
+                        throw e;
+                    }
+
+                    
+                    try
+                    {
+                        if (!hashYearAmountOriginal.Contains(strYear)) continue;
+                        fOriginal = (float)hashYearAmountOriginal[strYear];
+                    }
+                    catch (Exception e)
+                    {
+                        SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving year amount original. " + e.Message));
+                        throw e;
+                    }
+
+                    fAfterSpending = fAvailable - fAmount;
+                    if (fOriginal <= 0) continue;
+                    fPercent = (1 - fAfterSpending / fOriginal) * 100;
+
+
+                    try
                     {
                         float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
                         var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal;
                         budgetHash = fAmount + "/" + fAvailable.ToString("f0") + "/" + original.ToString("f0");
-                        if (fPercent < fPercentLimit) return budgetCheck;
-                        
+                        //if (fPercent < fPercentLimit) return budgetCheck;
+                        if (fPercent > fPercentLimit) currentBudgetAvailable = false;
                     }
-                    else
+                    catch (Exception e)
                     {
-                        if (priority.Criteria.IsCriteriaMet(hashAttributeValue))
-                        {
-                            float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
-                            var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal;
-                            budgetHash = fAmount + "/" + fAvailable.ToString("f0") + "(" + original.ToString("f2") + ")";
-                            if (fPercent < fPercentLimit) return budgetCheck;
-                        }
+                        SimulationMessaging.AddMessage(new SimulationMessage("Error: Evaluating priority. " + e.Message));
+                        throw e;
                     }
                 }
-                catch (Exception e)
-                {
-                    SimulationMessaging.AddMessage(new SimulationMessage("Error: Retrieving budget year original. " + e.Message));
-                    throw e;
-                }
+            
+                
+                
+                //To be true here, there must be money available for each year.
+                if (currentBudgetAvailable) return budgetCheck;
             }
 
-            return null;
+            return noBudgetAvailable;
         }
 
-
-        /// <summary>
-        /// Check if budget can support treatment.  For targets and deficiency met.
-        /// </summary>
-        /// <param name="fAmount"></param>
-        /// <param name="strBudget"></param>
-        /// <param name="strYear"></param>
-        /// <returns>The budget that is available</returns>
-        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear)
-        {
-            string[] budgets = strBudget.Split('|');
-         
-            foreach (string budget in budgets)
-            {
-                string budgetCheck = budget.Trim();
-
-                //Budget not defined
-                if (!BudgetYear.Contains(budgetCheck)) continue;
-                Hashtable hashYearAmount = (Hashtable)BudgetYear[budgetCheck];
-                if (!hashYearAmount.Contains(strYear)) continue;
-                float fAvailable = (float)hashYearAmount[strYear];
-
-                if (!BudgetYearOriginal.Contains(budgetCheck)) continue;
-                Hashtable hashYearAmountOriginal = (Hashtable)BudgetYearOriginal[budgetCheck];
-                if (!hashYearAmountOriginal.Contains(strYear)) continue;
-                float fOriginal = (float)hashYearAmountOriginal[strYear];
-                float fAfterSpending = fAvailable - fAmount;
-                if (fAfterSpending >= 0) return budgetCheck;
-            }
-            return null;
-        }
 
 
         public void SpendBudget(float fAmount, String strBudget, String strYear)

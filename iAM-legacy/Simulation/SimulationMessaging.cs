@@ -87,6 +87,8 @@ namespace Simulation
         static private Dictionary<string,string> _noTreatmentRemainingLife;
         [ThreadStatic]
         static private List<BudgetCriteria> _budgetCriteria;
+        [ThreadStatic]
+        static private List<ISplitTreatment> _splitTreatments;
 
         public static void ReleaseSimulationData()
         {
@@ -278,6 +280,12 @@ namespace Simulation
         {
             get { return _budgetCriteria; }
             set { _budgetCriteria = value; }
+        }
+
+        static public List<ISplitTreatment> SplitTreatments
+        {
+            get { return _splitTreatments; }
+            set { _splitTreatments = value; }
         }
 
         /// <summary>
