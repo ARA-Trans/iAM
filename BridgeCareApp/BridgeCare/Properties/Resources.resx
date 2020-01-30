@@ -234,4 +234,7 @@
   <data name="NHSConditionByDeckAreaLLCC" xml:space="preserve">
     <value>NHS Condition By Deck Area LLCC</value>
   </data>
+  <data name="TotalSpent" xml:space="preserve">
+    <value>Total Spent</value>
+  </data>
 </root>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using BridgeCare.Interfaces;
@@ -47,6 +48,8 @@ namespace BridgeCare.Services.SummaryReport
                 {
                     continue;
                 }
+                var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
+
                 currentCell.Column = 1;
                 currentCell.Row += 1;
                 worksheet.Cells[currentCell.Row, currentCell.Column].Value = budget;
@@ -57,53 +60,26 @@ namespace BridgeCare.Services.SummaryReport
 
                 var totalBudgetPerYearForCulvert = new Dictionary<int, double>();
                 var totalBudgetPerYearForBridgeWork = new Dictionary<int, double>();
+                var totalSpent = new List<(int year, double amount)>();
                 foreach (var year in simulationYears)
                 {
                     var yearlyBudget = costForCulvertBudget.FindAll(_ => _.YEARS == year);
-                    var sum = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
-                    totalBudgetPerYearForCulvert.Add(year, sum);
+                    var culvertAmountSum = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
+                    totalBudgetPerYearForCulvert.Add(year, culvertAmountSum);
 
                     yearlyBudget.Clear();
 
                     yearlyBudget = costForBridgeBudgets.FindAll(_ => _.YEARS == year);
-                    sum = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
-                    totalBudgetPerYearForBridgeWork.Add(year, sum);
+                    var budgetAmountSum = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
+                    totalBudgetPerYearForBridgeWork.Add(year, budgetAmountSum);
+
+                    totalSpent.Add((year, culvertAmountSum + budgetAmountSum));
                 }
 
                 currentCell.Row += 1;
+                var startOfCulvertBudget = currentCell.Row += 1;
                 currentCell.Column = 1;
 
-                //var row = currentCell.Row;
-                //var column = currentCell.Column;
-                //foreach (var item in treatments)
-                //{
-                //    if (item.ToLower().Contains("culvert"))
-                //    {
-                //        worksheet.Cells[row++, column].Value = item;
-                //    }
-                //}
-                //worksheet.Cells[row++, column].Value = Properties.Resources.CulvertTotal;
-                //column++;
-                //var fromColumn = column + 1;
-
-                //foreach (var year in simulationYears)
-                //{
-                //    double culvertTotalCost = 0;
-                //    row = startRow + 2;
-                //    column = ++column;
-
-                //    foreach (var item in treatments)
-                //    {
-                //        if (item.ToLower().Contains("culvert"))
-                //        {
-                //            var culvertCost = bridgeWorkSummaryComputationHelper.CalculateCost(simulationDataModels, year, item);
-                //            worksheet.Cells[row++, column].Value = culvertCost;
-                //            culvertTotalCost += culvertCost;
-                //        }
-                //    }
-                //    worksheet.Cells[row, column].Value = culvertTotalCost;
-                //    culvertTotalRow = row;
-                //}
                 var uniqueTreatments = new Dictionary<string, int>();
                 foreach (var item in costForCulvertBudget)
                 {
@@ -123,10 +99,21 @@ namespace BridgeCare.Services.SummaryReport
                 }
 
                 worksheet.Cells[currentCell.Row, currentCell.Column].Value = Properties.Resources.CulvertTotal;
+
+                foreach (var totalculvertBudget in totalBudgetPerYearForCulvert)
+                {
+                    var cellToEnterTotalCulvertCost = totalculvertBudget.Key - startYear;
+                    worksheet.Cells[currentCell.Row, currentCell.Column + cellToEnterTotalCulvertCost + 2].Value = totalculvertBudget.Value;
+                }
+                excelHelper.ApplyBorder(worksheet.Cells[startOfCulvertBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
+                excelHelper.SetCustomFormat(worksheet.Cells[startOfCulvertBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
+                excelHelper.ApplyColor(worksheet.Cells[startOfCulvertBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.LawnGreen);
+
                 currentCell.Row += 1;
                 bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Bridge Work");
 
                 currentCell.Row += 1;
+                var startOfBridgeBudget = currentCell.Row;
                 currentCell.Column = 1;
                 uniqueTreatments.Clear();
                 foreach (var item in costForBridgeBudgets)
@@ -146,6 +133,29 @@ namespace BridgeCare.Services.SummaryReport
                     }
                 }
                 worksheet.Cells[currentCell.Row, currentCell.Column].Value = Properties.Resources.BridgeTotal;
+
+                foreach (var totalBridgeBudget in totalBudgetPerYearForBridgeWork)
+                {
+                    var cellToEnterTotalBridgeCost = totalBridgeBudget.Key - startYear;
+                    worksheet.Cells[currentCell.Row, currentCell.Column + cellToEnterTotalBridgeCost + 2].Value = totalBridgeBudget.Value;
+                }
+                excelHelper.ApplyBorder(worksheet.Cells[startOfBridgeBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
+                excelHelper.SetCustomFormat(worksheet.Cells[startOfBridgeBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
+                excelHelper.ApplyColor(worksheet.Cells[startOfBridgeBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.LawnGreen);
+
+                currentCell.Row += 1;
+                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget");
+                currentCell.Row += 1;
+                currentCell.Column = 1;
+                worksheet.Cells[currentCell.Row, currentCell.Column].Value = Properties.Resources.TotalSpent;
+                foreach (var spentAmount in totalSpent)
+                {
+                    var totalSpentAmount = spentAmount.year - startYear;
+                    worksheet.Cells[currentCell.Row, currentCell.Column + totalSpentAmount + 2].Value = spentAmount.amount;
+                }
+                excelHelper.ApplyBorder(worksheet.Cells[currentCell.Row, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
+                excelHelper.SetCustomFormat(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
+                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.DarkSeaGreen);
             }
             worksheet.Cells.AutoFitColumns();
         }
