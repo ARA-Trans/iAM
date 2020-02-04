@@ -39,8 +39,6 @@ namespace BridgeCare.Services.SummaryReport
             var priorities = getPriorities.GetSimulationPriorityLibrary(simulationId, db).Priorities;
             var criterias = budgetCriteria.GetCriteriaDrivenBudgets(simulationId, db);
 
-            var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
-
             // Simulation Name format
             excelHelper.MergeCells(worksheet, 1, 1, 1, 2);
             excelHelper.MergeCells(worksheet, 1, 3, 1, 10);
@@ -65,7 +63,8 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A3:B3"].Value = "BridgeCare Rules Creator:";
             excelHelper.MergeCells(worksheet, 3, 1, 3, 2);
             worksheet.Cells["C3"].Value = "Central Office";
-            worksheet.Cells["A4:B4"].Value = "BridgeCare Rules Creator:";
+            worksheet.Cells["A4:B4"].Value = "BridgeCare Rules Date:";
+            worksheet.Cells["C4"].Value = "10/25/2019";
             excelHelper.MergeCells(worksheet, 4, 1, 4, 2);
             excelHelper.ApplyBorder(worksheet.Cells[3, 1, 4, 2]);
 
@@ -73,8 +72,14 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A6:B6"].Value = "NHS";
             worksheet.Cells["A7"].Value = "NHS";
             worksheet.Cells["A8"].Value = "Non-NHS";
+            var flag = worksheet.DataValidations.AddListValidation("B7");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["B7"].Value = "Y";
+            flag = worksheet.DataValidations.AddListValidation("B8");
+            flag.Formula.Values.Add("Y");
             worksheet.Cells["B8"].Value = "Y";
+            flag.Formula.Values.Add("N");
             excelHelper.ApplyBorder(worksheet.Cells[6, 1, 8, 2]);
 
             excelHelper.MergeCells(worksheet, 10, 1, 10, 2);
@@ -84,10 +89,26 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A13"].Value = "3";
             worksheet.Cells["A14"].Value = "4";
             worksheet.Cells["A15"].Value = "H";
+
+            flag = worksheet.DataValidations.AddListValidation("B11");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["B11"].Value = "Y";
+            flag = worksheet.DataValidations.AddListValidation("B12");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("B13");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("B14");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["B12"].Value = "Y";
             worksheet.Cells["B13"].Value = "Y";
             worksheet.Cells["B14"].Value = "Y";
+            flag = worksheet.DataValidations.AddListValidation("B15");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
             worksheet.Cells["B15"].Value = "N";
 
             worksheet.Cells["A16"].Value = "L";
@@ -95,6 +116,22 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A18"].Value = "D";
             worksheet.Cells["A19"].Value = "N";
             worksheet.Cells["A20"].Value = "Blank";
+
+            flag = worksheet.DataValidations.AddListValidation("B16");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("B17");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("B18");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("B19");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("B20");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["B16"].Value = "Y";
             worksheet.Cells["B17"].Value = "N";
             worksheet.Cells["B18"].Value = "N";
@@ -106,6 +143,13 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A23:B23"].Value = "Bridge Length";
             worksheet.Cells["A24"].Value = "8-20";
             worksheet.Cells["A25"].Value = "NBIS Length";
+
+            flag = worksheet.DataValidations.AddListValidation("B24");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("B25");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["B24"].Value = "Y";
             worksheet.Cells["B25"].Value = "Y";
 
@@ -115,6 +159,19 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A29"].Value = "Closed";
             worksheet.Cells["A30"].Value = "P3";
             worksheet.Cells["A31"].Value = "Posted";
+
+            flag = worksheet.DataValidations.AddListValidation("B28");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("B29");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("B30");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("B31");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["B28"].Value = "Y";
             worksheet.Cells["B29"].Value = "N";
             worksheet.Cells["B30"].Value = "N";
@@ -167,6 +224,69 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 35, 4, 35, 5, false);
             worksheet.Cells["D35:E35"].Value = "XX - Demolished/Replaced";
 
+            flag = worksheet.DataValidations.AddListValidation("F15");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("F16");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F17");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F18");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F19");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F20");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F21");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F22");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F23");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F24");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F25");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F26");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F27");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F28");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F29");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F30");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F31");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F32");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F33");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F34");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
+            flag = worksheet.DataValidations.AddListValidation("F35");
+            flag.Formula.Values.Add("N");
+            flag.Formula.Values.Add("Y");
             worksheet.Cells["F15"].Value = "Y";
             worksheet.Cells["F16"].Value = "N";
             worksheet.Cells["F17"].Value = "N";
@@ -210,6 +330,27 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 22, 8, 22, 9, false);
             worksheet.Cells["H22:I22"].Value = "NN - Other";
 
+            flag = worksheet.DataValidations.AddListValidation("J16");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J17");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J18");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J19");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J20");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J21");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J22");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["J16"].Value = "Y";
             worksheet.Cells["J17"].Value = "Y";
             worksheet.Cells["J18"].Value = "Y";
@@ -238,6 +379,30 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 31, 8, 31, 9, false);
             worksheet.Cells["H31:I31"].Value = "99 - Ramp";
 
+            flag = worksheet.DataValidations.AddListValidation("J24");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J25");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J26");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J27");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J28");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J29");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J30");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
+            flag = worksheet.DataValidations.AddListValidation("J31");
+            flag.Formula.Values.Add("Y");
+            flag.Formula.Values.Add("N");
             worksheet.Cells["J24"].Value = "Y";
             worksheet.Cells["J25"].Value = "Y";
             worksheet.Cells["J26"].Value = "Y";
@@ -352,6 +517,7 @@ namespace BridgeCare.Services.SummaryReport
 
         private void FillInvestmentAndBudgetCriteria(ExcelWorksheet worksheet, InvestmentLibraryModel inflationAndInvestments, List<Models.CriteriaDrivenBudgets.CriteriaDrivenBudgetsModel> criterias)
         {
+            var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
             worksheet.Cells[38, 1].Value = "Years";
             worksheet.Cells[38, 2].Value = "Total Funding";
 
@@ -381,7 +547,7 @@ namespace BridgeCare.Services.SummaryReport
                     {
                         worksheet.Cells[39, startingBudgetHeaderColumn + nextBudget].Value = budget.BudgetName;
                         worksheet.Cells[startingRowInvestment, startingBudgetHeaderColumn + nextBudget].Value = budget.BudgetAmount.Value;
-                        //worksheet.Cells[startingRowInvestment, startingBudgetHeaderColumn + nextBudget].Style.Numberformat.Format = currencyFormat;
+                        worksheet.Cells[startingRowInvestment, startingBudgetHeaderColumn + nextBudget].Style.Numberformat.Format = currencyFormat;
                         nextBudget++;
                         continue;
                     }
@@ -389,7 +555,7 @@ namespace BridgeCare.Services.SummaryReport
                     {
                         if (worksheet.Cells[39, column].Value.ToString() == budget.BudgetName)
                         {
-                            //worksheet.Cells[startingRowInvestment, column].Style.Numberformat.Format = currencyFormat;
+                            worksheet.Cells[startingRowInvestment, column].Style.Numberformat.Format = currencyFormat;
                             worksheet.Cells[startingRowInvestment, column].Value = budget.BudgetAmount.Value;
                             break;
                         }
