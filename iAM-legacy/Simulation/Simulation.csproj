@@ -254,6 +254,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=2.7.82.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
+      <HintPath>..\..\BridgeCareApp\packages\CommandLineParser.2.7.82\lib\net461\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="Crc32C.NET, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
     </Reference>
@@ -264,6 +267,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Microsoft SQL Server assemblies\2012 (v11)\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MongoDB.Bson, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\BridgeCareApp\packages\MongoDB.Bson.2.10.1\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -312,6 +316,8 @@
   <ItemGroup>
     <Compile Include="AnalysisMethod.cs" />
     <Compile Include="AnalysisParameters.cs" />
+    <Compile Include="AnalysisProcessQueueing\AnalysisProcessHandle.cs" />
+    <Compile Include="AnalysisProcessQueueing\AnalysisStatus.cs" />
     <Compile Include="AppliedTreatment.cs" />
     <Compile Include="AttributeChange.cs" />
     <Compile Include="BenefitCost.cs" />
@@ -320,6 +326,7 @@
     <Compile Include="CalculatedAttribute.cs" />
     <Compile Include="CommitCopy.cs" />
     <Compile Include="CommittedEquation.cs" />
+    <Compile Include="AnalysisProcessQueueing\SimulationAnalysisService.cs" />
     <Compile Include="CompoundTreatment.cs" />
     <Compile Include="CompoundTreatmentElement.cs" />
     <Compile Include="ConditionalRSL.cs" />
@@ -346,6 +353,9 @@
     <Compile Include="OMSCriteria.cs" />
     <Compile Include="OverallConditionIndex.cs" />
     <Compile Include="Priorities.cs" />
+    <Compile Include="AnalysisProcessQueueing\Program.cs" />
+    <Compile Include="AnalysisProcessQueueing\ProgramExitCode.cs" />
+    <Compile Include="AnalysisProcessQueueing\AnalysisProcessOptions.cs" />
     <Compile Include="RemainingLife.cs" />
     <Compile Include="ReportOMS.cs" />
     <Compile Include="Scheduled.cs" />
@@ -356,6 +366,7 @@
     <Compile Include="SimulationMessaging.cs" />
     <Compile Include="SplitTreatment.cs" />
     <Compile Include="SplitTreatmentLimit.cs" />
+    <Compile Include="AnalysisProcessQueueing\Static.cs" />
     <Compile Include="Supersede.cs" />
     <Compile Include="Targets.cs" />
     <Compile Include="TreatmentCopy.cs" />
