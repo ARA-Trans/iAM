@@ -62,6 +62,8 @@ namespace Simulation.AnalysisProcessQueueing
 
         public AnalysisProcessOptions SimulationOptions { get; }
 
+        public AnalysisStatus Status { get; private set; } = AnalysisStatus.New;
+
         public void CancelAnalysis() => StopAnalysis(StopCode.AbnormalTermination);
 
         public void Dispose()
@@ -74,9 +76,9 @@ namespace Simulation.AnalysisProcessQueueing
         {
             lock (Lock_AnalysisStatus)
             {
-                if (AnalysisStatus == AnalysisStatus.New)
+                if (Status == AnalysisStatus.New)
                 {
-                    AnalysisStatus = AnalysisStatus.Starting;
+                    Status = AnalysisStatus.Starting;
                     OnAnalysisStarting(EventArgs.Empty);
 
                     AnalysisTask.Start();
@@ -88,8 +90,6 @@ namespace Simulation.AnalysisProcessQueueing
 
         private readonly Task AnalysisTask;
         private readonly object Lock_AnalysisStatus = new object();
-
-        public AnalysisStatus AnalysisStatus { get; private set; } = AnalysisStatus.New;
         private Process ChildProcess;
         private Exception ChildProcessError;
         private bool ChildProcessHasExited;
@@ -103,7 +103,7 @@ namespace Simulation.AnalysisProcessQueueing
 
         private void KillChildProcess()
         {
-            if (AnalysisStatus == AnalysisStatus.Started && !ChildProcessHasExited)
+            if (Status == AnalysisStatus.Started && !ChildProcessHasExited)
             {
                 try
                 {
@@ -146,7 +146,7 @@ namespace Simulation.AnalysisProcessQueueing
 
                     lock (Lock_AnalysisStatus)
                     {
-                        if (AnalysisStatus != AnalysisStatus.Starting)
+                        if (Status != AnalysisStatus.Starting)
                         {
                             return;
                         }
@@ -167,7 +167,7 @@ namespace Simulation.AnalysisProcessQueueing
                             throw new InvalidOperationException("Could not start analysis process.");
                         }
 
-                        AnalysisStatus = AnalysisStatus.Started;
+                        Status = AnalysisStatus.Started;
                     }
 
                     inputPipe.DisposeLocalCopyOfClientHandle();
@@ -215,14 +215,14 @@ namespace Simulation.AnalysisProcessQueueing
         {
             lock (Lock_AnalysisStatus)
             {
-                if (AnalysisStatus != AnalysisStatus.Stopped)
+                if (Status != AnalysisStatus.Stopped)
                 {
                     if (stopCode != StopCode.NormalTermination)
                     {
                         KillChildProcess();
                     }
 
-                    AnalysisStatus = AnalysisStatus.Stopped;
+                    Status = AnalysisStatus.Stopped;
 
                     if (stopCode != StopCode.Disposal)
                     {

@@ -55,7 +55,7 @@ namespace Simulation.AnalysisProcessQueueing
 
         private void ScanHandles()
         {
-            var concurrentHandles = _AllHandles.Values.Where(handle => handle.AnalysisStatus != AnalysisStatus.New).ToList();
+            var concurrentHandles = _AllHandles.Values.Where(handle => handle.Status != AnalysisStatus.New).ToList();
             var maximumConcurrency = GetConcurrencyLevel().Clip(1, Environment.ProcessorCount);
 
             while (concurrentHandles.Count < maximumConcurrency)
