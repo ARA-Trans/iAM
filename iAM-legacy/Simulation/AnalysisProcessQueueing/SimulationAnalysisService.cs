@@ -68,7 +68,7 @@ namespace Simulation.AnalysisProcessQueueing
                     var safeApproximationOfMaximumVirtualMemoryPerSimulation = concurrentHandles.Max(h => h.ChildProcessPeakVirtualMemorySize) * SAFETY_FACTOR;
 
                     var computerInfo = new ComputerInfo();
-                    if (safeApproximationOfMaximumPhysicalMemoryPerSimulation >= computerInfo.AvailablePhysicalMemory &&
+                    if (safeApproximationOfMaximumPhysicalMemoryPerSimulation >= computerInfo.AvailablePhysicalMemory ||
                         safeApproximationOfMaximumVirtualMemoryPerSimulation >= computerInfo.AvailableVirtualMemory)
                     {
                         continue;
