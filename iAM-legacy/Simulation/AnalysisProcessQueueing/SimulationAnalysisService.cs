@@ -77,6 +77,12 @@ namespace Simulation.AnalysisProcessQueueing
                     var safeApproximationOfMaximumPhysicalMemoryPerSimulation = Peaks.Values.Max(peak => peak.WorkingSet) * SAFETY_FACTOR;
                     var safeApproximationOfMaximumVirtualMemoryPerSimulation = Peaks.Values.Max(peak => peak.VirtualMemorySize) * SAFETY_FACTOR;
 
+                    if (safeApproximationOfMaximumPhysicalMemoryPerSimulation == null ||
+                        safeApproximationOfMaximumVirtualMemoryPerSimulation == null)
+                    {
+                        break;
+                    }
+
                     var computerInfo = new ComputerInfo();
                     if (safeApproximationOfMaximumPhysicalMemoryPerSimulation >= computerInfo.AvailablePhysicalMemory ||
                         safeApproximationOfMaximumVirtualMemoryPerSimulation >= computerInfo.AvailableVirtualMemory)
