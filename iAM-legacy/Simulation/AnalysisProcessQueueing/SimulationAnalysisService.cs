@@ -71,7 +71,7 @@ namespace Simulation.AnalysisProcessQueueing
                     if (safeApproximationOfMaximumPhysicalMemoryPerSimulation >= computerInfo.AvailablePhysicalMemory ||
                         safeApproximationOfMaximumVirtualMemoryPerSimulation >= computerInfo.AvailableVirtualMemory)
                     {
-                        continue;
+                        break;
                     }
                 }
 
