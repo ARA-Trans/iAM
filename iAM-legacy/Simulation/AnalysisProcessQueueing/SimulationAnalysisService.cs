@@ -51,11 +51,21 @@ namespace Simulation.AnalysisProcessQueueing
         private readonly Func<int> GetConcurrencyLevel;
         private readonly Timer HandleScanner;
         private readonly object HandleScanningLock = new object();
+        private readonly ConcurrentDictionary<int, Peak> Peaks = new ConcurrentDictionary<int, Peak>();
         private readonly ConcurrentQueue<AnalysisProcessHandle> PendingHandles = new ConcurrentQueue<AnalysisProcessHandle>();
 
         private void ScanHandles()
         {
-            var concurrentHandles = _AllHandles.Values.Where(handle => handle.Status != AnalysisStatus.New).ToList();
+            foreach (var kv in _AllHandles)
+            {
+                Peaks[kv.Key] = new Peak
+                {
+                    WorkingSet = kv.Value.ChildProcessPeakWorkingSet,
+                    VirtualMemorySize = kv.Value.ChildProcessPeakVirtualMemorySize,
+                };
+            }
+
+            var concurrentHandles = _AllHandles.Values.Where(handle => handle.Status == AnalysisStatus.Starting || handle.Status == AnalysisStatus.Started).ToList();
             var maximumConcurrency = GetConcurrencyLevel().Clip(1, Environment.ProcessorCount);
 
             while (concurrentHandles.Count < maximumConcurrency)
@@ -64,8 +74,8 @@ namespace Simulation.AnalysisProcessQueueing
                 {
                     const double SAFETY_FACTOR = 1.1;
 
-                    var safeApproximationOfMaximumPhysicalMemoryPerSimulation = concurrentHandles.Max(h => h.ChildProcessPeakWorkingSet) * SAFETY_FACTOR;
-                    var safeApproximationOfMaximumVirtualMemoryPerSimulation = concurrentHandles.Max(h => h.ChildProcessPeakVirtualMemorySize) * SAFETY_FACTOR;
+                    var safeApproximationOfMaximumPhysicalMemoryPerSimulation = Peaks.Values.Max(peak => peak.WorkingSet) * SAFETY_FACTOR;
+                    var safeApproximationOfMaximumVirtualMemoryPerSimulation = Peaks.Values.Max(peak => peak.VirtualMemorySize) * SAFETY_FACTOR;
 
                     var computerInfo = new ComputerInfo();
                     if (safeApproximationOfMaximumPhysicalMemoryPerSimulation >= computerInfo.AvailablePhysicalMemory ||
@@ -92,5 +102,11 @@ namespace Simulation.AnalysisProcessQueueing
         }
 
         private void ScanHandles_Locked(object state) => Static.TryLock(HandleScanningLock, ScanHandles);
+
+        private struct Peak
+        {
+            public long? VirtualMemorySize;
+            public long? WorkingSet;
+        }
     }
 }
