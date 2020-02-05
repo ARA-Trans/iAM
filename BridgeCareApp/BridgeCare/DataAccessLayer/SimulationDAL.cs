@@ -1,26 +1,25 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.EntityClasses;
-using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
-using BridgeCare.Interfaces;
-using BridgeCare.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
+using BridgeCare.EntityClasses;
+using BridgeCare.Interfaces;
+using BridgeCare.Models;
 using BridgeCare.Properties;
 using DatabaseManager;
 using log4net;
+using Simulation.AnalysisProcessQueueing;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class SimulationDAL : ISimulation
     {
+        private static readonly SimulationAnalysisService AnalysisService = new SimulationAnalysisService();
+
         /// <summary>
         /// Fetches all simulations
         /// </summary>
@@ -98,20 +97,40 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>string Task</returns>
         public Task<string> RunSimulation(SimulationModel model)
         {
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             try
             {
                 var connectionString = ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString;
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
+
 #if DEBUG
                 var mongoConnection = Settings.Default.MongoDBDevConnectionString;
 #else
                 var mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var simulation = new Simulation.Simulation(model.SimulationName, model.NetworkName, model.SimulationId, model.NetworkId, mongoConnection);
 
-                Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
+                var simulationOptions = new AnalysisProcessOptions
+                {
+                    SimulationName = model.SimulationName,
+                    NetworkName = model.NetworkName,
+                    SimulationId = model.SimulationId,
+                    NetworkId = model.NetworkId,
+                    ConnectionString = mongoConnection,
+                };
 
-                simulationThread.Start(true);
+                var simulationHandle = new AnalysisProcessHandle(simulationOptions);
+
+                AnalysisService.AddPendingAnalysis(simulationHandle);
+
+                //var simulation = new Simulation.Simulation(model.SimulationName, model.NetworkName, model.SimulationId, model.NetworkId, mongoConnection);
+
+                //Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
+
+                //simulationThread.Start(true);
 
                 return Task.FromResult("Simulation running...");
             }

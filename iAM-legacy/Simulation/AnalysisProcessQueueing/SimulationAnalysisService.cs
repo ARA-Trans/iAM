@@ -15,9 +15,9 @@ namespace Simulation.AnalysisProcessQueueing
             HandleScanner = new Timer(ScanHandles_Locked, null, 0, 500);
         }
 
-        public IReadOnlyDictionary<string, AnalysisProcessHandle> AllHandles => _AllHandles;
+        public IReadOnlyDictionary<int, AnalysisProcessHandle> AllHandles => _AllHandles;
 
-        public string AddPendingAnalysis(AnalysisProcessHandle handle)
+        public int AddPendingAnalysis(AnalysisProcessHandle handle)
         {
             var key = handle.SimulationOptions.SimulationId;
             if (!_AllHandles.TryAdd(key, handle))
@@ -39,7 +39,7 @@ namespace Simulation.AnalysisProcessQueueing
             }
         }
 
-        public void RemoveAnalysis(string key)
+        public void RemoveAnalysis(int key)
         {
             if (_AllHandles.TryRemove(key, out var handle))
             {
@@ -47,7 +47,7 @@ namespace Simulation.AnalysisProcessQueueing
             }
         }
 
-        private readonly ConcurrentDictionary<string, AnalysisProcessHandle> _AllHandles = new ConcurrentDictionary<string, AnalysisProcessHandle>();
+        private readonly ConcurrentDictionary<int, AnalysisProcessHandle> _AllHandles = new ConcurrentDictionary<int, AnalysisProcessHandle>();
         private readonly Func<int> GetConcurrencyLevel;
         private readonly Timer HandleScanner;
         private readonly object HandleScanningLock = new object();

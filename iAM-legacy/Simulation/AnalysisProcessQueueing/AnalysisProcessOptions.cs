@@ -11,13 +11,13 @@ namespace Simulation.AnalysisProcessQueueing
         public bool IsApiCall { get; set; }
 
         [Option(Required = true)]
-        public string NetworkId { get; set; }
+        public int NetworkId { get; set; }
 
         [Option(Required = true)]
         public string NetworkName { get; set; }
 
         [Option(Required = true)]
-        public string SimulationId { get; set; }
+        public int SimulationId { get; set; }
 
         [Option(Required = true)]
         public string SimulationName { get; set; }
