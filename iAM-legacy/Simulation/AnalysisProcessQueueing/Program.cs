@@ -24,20 +24,32 @@ namespace Simulation.AnalysisProcessQueueing
             }
         }
 
-        private static string GetElapsedTimeLogEntry(string label, TimeSpan elapsed) => $"[{DateTime.Now.ToString("u")}] [INFO] Total elapsed time ({label}): {elapsed}";
-
         private static int Main(string[] args)
         {
             var timer = Stopwatch.StartNew();
 
-            _ = Parser.Default.ParseArguments<AnalysisProcessOptions>(args).WithParsed(Simulation);
-
-            Console.Error.WriteLine(GetElapsedTimeLogEntry("CLI program", timer.Elapsed));
+            _ = Parser.Default.ParseArguments<AnalysisProcessOptions>(args).WithParsed(options =>
+            {
+                if (options.PipeHandle is null)
+                {
+                    Simulation(options);
+                }
+                else
+                {
+                    SimulationWithIpc(options);
+                }
+            });
 
             return (int)ProgramExitCode.Success;
         }
 
         private static void Simulation(AnalysisProcessOptions options)
+        {
+            var simulation = new Simulation(options.SimulationName, options.NetworkName, options.SimulationId, options.NetworkId, options.ConnectionString);
+            simulation.CompileSimulation(options.IsApiCall);
+        }
+
+        private static void SimulationWithIpc(AnalysisProcessOptions options)
         {
             using (var outputPipe = new AnonymousPipeClientStream(PipeDirection.Out, options.PipeHandle))
             using (var writer = new BinaryWriter(outputPipe))
@@ -45,8 +57,7 @@ namespace Simulation.AnalysisProcessQueueing
             {
                 try
                 {
-                    var simulation = new Simulation(options.SimulationName, options.NetworkName, options.SimulationId, options.NetworkId, options.ConnectionString);
-                    simulation.CompileSimulation(options.IsApiCall);
+                    Simulation(options);
                 }
                 catch (Exception e)
                 {

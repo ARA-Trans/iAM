@@ -7,7 +7,7 @@ namespace Simulation.AnalysisProcessQueueing
         [Option(Required = true)]
         public string ConnectionString { get; set; }
 
-        [Option("api-call", Required = true)]
+        [Option("api-call")]
         public bool IsApiCall { get; set; }
 
         [Option(Required = true)]
@@ -22,7 +22,7 @@ namespace Simulation.AnalysisProcessQueueing
         [Option(Required = true)]
         public string SimulationName { get; set; }
 
-        [Option(Required = true)]
+        [Option]
         internal string PipeHandle { get; set; }
     }
 }
