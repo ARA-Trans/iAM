@@ -122,6 +122,7 @@ namespace Simulation.AnalysisProcessQueueing
 
         private void RunChildProcess()
         {
+            AdHocLogging.Log(SimulationOptions.SimulationId);
             try
             {
                 var tempFolderPath = Path.GetTempPath();

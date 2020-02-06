@@ -27,16 +27,20 @@ namespace Simulation.AnalysisProcessQueueing
 
         private static int Main(string[] args)
         {
+            AdHocLogging.Log("top of main");
             var timer = Stopwatch.StartNew();
 
             _ = Parser.Default.ParseArguments<AnalysisProcessOptions>(args).WithParsed(options =>
             {
+                AdHocLogging.Log("parsed arguments");
                 if (options.PipeHandle is null)
                 {
+                    AdHocLogging.Log("running regular sim");
                     Simulation(options);
                 }
                 else
                 {
+                    AdHocLogging.Log("running child process sim");
                     SimulationWithIpc(options);
                 }
             });
