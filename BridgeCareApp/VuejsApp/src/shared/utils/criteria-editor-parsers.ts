@@ -11,38 +11,42 @@ const operators: string[] = ['<=', '>=', '<>', '=', '<', '>'];
 export const parseCriteriaJson = (criteria: Criteria) => {
     // create an empty string list to build the where clause
     const clause: string[] = [];
-    if (!isNil(criteria) && !isEmpty(criteria.children)) {
-        // set the logical operator
-        const logicalOperator = ` ${criteria.logicalOperator} `;
-        // @ts-ignore
-        // loop over the criteria children and append all rules
-        criteria.children.forEach((child: CriteriaType) => {
-            if (child.type === 'query-builder-rule') {
-                // create a clause rule from the query builder child.query
-                const rule = parseQueryBuilderRule(child.query as CriteriaRule);
-                if (hasValue(rule)) {
-                    // append the logical operator if the string list is not empty
-                    if (hasValue(clause)) {
-                        clause.push(logicalOperator);
+    try {
+        if (!isNil(criteria) && !isEmpty(criteria.children)) {
+            // set the logical operator
+            const logicalOperator = ` ${criteria.logicalOperator} `;
+            // @ts-ignore
+            // loop over the criteria children and append all rules
+            criteria.children.forEach((child: CriteriaType) => {
+                if (child.type === 'query-builder-rule') {
+                    // create a clause rule from the query builder child.query
+                    const rule = parseQueryBuilderRule(child.query as CriteriaRule);
+                    if (hasValue(rule)) {
+                        // append the logical operator if the string list is not empty
+                        if (hasValue(clause)) {
+                            clause.push(logicalOperator);
+                        }
+                        // append rule to string list
+                        clause.push(rule);
                     }
-                    // append rule to string list
-                    clause.push(rule);
-                }
-            } else {
-                const clauseGroup = parseCriteriaJson(child.query as Criteria);
-                const clauseGroupVal = clauseGroup.join('');
-                if (hasValue(clauseGroupVal)) {
-                    // append the logical operator if the string list is not empty
-                    if (hasValue(clause)) {
-                        clause.push(logicalOperator);
+                } else {
+                    const clauseGroup = parseCriteriaJson(child.query as Criteria);
+                    const clauseGroupVal = clauseGroup.join('');
+                    if (hasValue(clauseGroupVal)) {
+                        // append the logical operator if the string list is not empty
+                        if (hasValue(clause)) {
+                            clause.push(logicalOperator);
+                        }
+                        // recursively call this function to create a rule group
+                        clause.push('(');
+                        clause.push(...clauseGroup);
+                        clause.push(')');
                     }
-                    // recursively call this function to create a rule group
-                    clause.push('(');
-                    clause.push(...clauseGroup);
-                    clause.push(')');
                 }
-            }
-        });
+            });
+        }
+    } catch (e) {
+        return null;
     }
     return clause;
 };
@@ -89,22 +93,27 @@ function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
  * @param clause The clause string to parse
  */
 export const parseCriteriaString = (clause: string) => {
-    if (hasValue(clause)) {
-        // create a new criteria object
-        const newCriteria: Criteria = {
-            logicalOperator: '',
-            children: []
-        };
-        // if no open parentheses are present, assume clause string was created in legacy app
-        if ((clause.match(/\(/g) || []).length === 0) {
-            // ensure there are no close parentheses in the string before parsing
-            clause = clause.replace(/\)/g, '');
-            // parse the clause string and return
-            return parseLegacyAppClause(clause, newCriteria);
-        } else {
-            // parse the clause as a query builder string and return
-            return parseQueryBuilderClause(clause, newCriteria);
+    try {
+        if (hasValue(clause)) {
+            // create a new criteria object
+            const newCriteria: Criteria = {
+                logicalOperator: '',
+                children: []
+            };
+            // if no open parentheses are present, assume clause string was created in legacy app
+            if ((clause.match(/\(/g) || []).length === 0) {
+                // ensure there are no close parentheses in the string before parsing
+                clause = clause.replace(/\)/g, '');
+                // parse the clause string and return
+                return parseLegacyAppClause(clause, newCriteria);
+            } else {
+                // parse the clause as a query builder string and return
+                return parseQueryBuilderClause(clause, newCriteria);
+            }
         }
+    }
+    catch (e) {
+        return null;
     }
     return {...emptyCriteria};
 };
