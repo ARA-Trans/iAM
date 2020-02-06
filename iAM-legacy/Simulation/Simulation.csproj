@@ -321,6 +321,7 @@
     <Compile Include="AnalysisParameters.cs" />
     <Compile Include="AnalysisProcessQueueing\AnalysisProcessHandle.cs" />
     <Compile Include="AnalysisProcessQueueing\AnalysisStatus.cs" />
+    <Compile Include="AnalysisProcessQueueing\ResourceConsumptionStatistics.cs" />
     <Compile Include="AppliedTreatment.cs" />
     <Compile Include="AttributeChange.cs" />
     <Compile Include="BenefitCost.cs" />

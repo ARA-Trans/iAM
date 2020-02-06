@@ -38,10 +38,6 @@ namespace Simulation.AnalysisProcessQueueing
             }
         }
 
-        public long? ChildProcessPeakVirtualMemorySize => ChildProcess?.PeakVirtualMemorySize64;
-
-        public long? ChildProcessPeakWorkingSet => ChildProcess?.PeakWorkingSet64;
-
         public Exception Exception
         {
             get
@@ -59,6 +55,8 @@ namespace Simulation.AnalysisProcessQueueing
                 }
             }
         }
+
+        public ResourceConsumptionStatistics ResourceConsumption { get; private set; }
 
         public AnalysisProcessOptions SimulationOptions { get; }
 
@@ -193,6 +191,10 @@ namespace Simulation.AnalysisProcessQueueing
                             {
                                 case Program.StreamContentCode.Error:
                                     ChildProcessError = read<Exception>();
+                                    break;
+
+                                case Program.StreamContentCode.ResourceConsumptionStatistics:
+                                    ResourceConsumption = read<ResourceConsumptionStatistics>();
                                     break;
 
                                 default:

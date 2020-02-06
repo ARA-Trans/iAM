@@ -51,18 +51,17 @@ namespace Simulation.AnalysisProcessQueueing
         private readonly Func<int> GetConcurrencyLevel;
         private readonly Timer HandleScanner;
         private readonly object HandleScanningLock = new object();
-        private readonly ConcurrentDictionary<int, Peak> Peaks = new ConcurrentDictionary<int, Peak>();
+        private readonly ConcurrentDictionary<int, ResourceConsumptionStatistics> ResourceConsumptionPerHandle = new ConcurrentDictionary<int, ResourceConsumptionStatistics>();
         private readonly ConcurrentQueue<AnalysisProcessHandle> PendingHandles = new ConcurrentQueue<AnalysisProcessHandle>();
 
         private void ScanHandles()
         {
             foreach (var kv in _AllHandles)
             {
-                Peaks[kv.Key] = new Peak
+                if (kv.Value.ResourceConsumption != null)
                 {
-                    WorkingSet = kv.Value.ChildProcessPeakWorkingSet,
-                    VirtualMemorySize = kv.Value.ChildProcessPeakVirtualMemorySize,
-                };
+                    ResourceConsumptionPerHandle[kv.Key] = kv.Value.ResourceConsumption;
+                }
             }
 
             var concurrentHandles = _AllHandles.Values.Where(handle => handle.Status == AnalysisStatus.Starting || handle.Status == AnalysisStatus.Started).ToList();
@@ -72,16 +71,15 @@ namespace Simulation.AnalysisProcessQueueing
             {
                 if (concurrentHandles.Count != 0)
                 {
-                    const double SAFETY_FACTOR = 1.1;
-
-                    var safeApproximationOfMaximumPhysicalMemoryPerSimulation = Peaks.Values.Max(peak => peak.WorkingSet) * SAFETY_FACTOR;
-                    var safeApproximationOfMaximumVirtualMemoryPerSimulation = Peaks.Values.Max(peak => peak.VirtualMemorySize) * SAFETY_FACTOR;
-
-                    if (safeApproximationOfMaximumPhysicalMemoryPerSimulation == null ||
-                        safeApproximationOfMaximumVirtualMemoryPerSimulation == null)
+                    if (ResourceConsumptionPerHandle.Count == 0)
                     {
                         break;
                     }
+
+                    const double SAFETY_FACTOR = 2;
+
+                    var safeApproximationOfMaximumPhysicalMemoryPerSimulation = ResourceConsumptionPerHandle.Values.Max(resourceConsumption => resourceConsumption.PeakWorkingSet) * SAFETY_FACTOR;
+                    var safeApproximationOfMaximumVirtualMemoryPerSimulation = ResourceConsumptionPerHandle.Values.Max(resourceConsumption => resourceConsumption.PeakVirtualMemorySize) * SAFETY_FACTOR;
 
                     var computerInfo = new ComputerInfo();
                     if (safeApproximationOfMaximumPhysicalMemoryPerSimulation >= computerInfo.AvailablePhysicalMemory ||
@@ -104,15 +102,13 @@ namespace Simulation.AnalysisProcessQueueing
                         concurrentHandles.Add(handle);
                     }
                 }
+                else
+                {
+                    break;
+                }
             }
         }
 
         private void ScanHandles_Locked(object state) => Static.TryLock(HandleScanningLock, ScanHandles);
-
-        private struct Peak
-        {
-            public long? VirtualMemorySize;
-            public long? WorkingSet;
-        }
     }
 }

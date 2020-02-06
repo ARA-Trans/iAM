@@ -13,6 +13,7 @@ namespace Simulation.AnalysisProcessQueueing
         internal enum StreamContentCode
         {
             Error,
+            ResourceConsumptionStatistics,
         }
 
         private static void CheckPipe(object state)
@@ -64,6 +65,15 @@ namespace Simulation.AnalysisProcessQueueing
                     report(e, StreamContentCode.Error);
                     throw;
                 }
+
+                var currentProcess = Process.GetCurrentProcess();
+                var resourceConsumption = new ResourceConsumptionStatistics
+                {
+                    PeakWorkingSet = currentProcess.PeakWorkingSet64,
+                    PeakVirtualMemorySize = currentProcess.PeakVirtualMemorySize64,
+                };
+
+                report(resourceConsumption, StreamContentCode.ResourceConsumptionStatistics);
 
                 void report<T>(T data, StreamContentCode contentCode)
                 {
