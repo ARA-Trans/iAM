@@ -367,7 +367,7 @@ namespace Simulation
         static public void AddMessage(string baseMessage, Exception ex)
 		{
 			Exception currentException = ex;
-			while (currentException != null)
+			if (currentException != null)
 			{
 				baseMessage += "{" + currentException.Message + "}";
 			}
