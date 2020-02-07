@@ -237,4 +237,7 @@
   <data name="TotalSpent" xml:space="preserve">
     <value>Total Spent</value>
   </data>
+  <data name="MPMSTotal" xml:space="preserve">
+    <value>MPMS Total</value>
+  </data>
 </root>

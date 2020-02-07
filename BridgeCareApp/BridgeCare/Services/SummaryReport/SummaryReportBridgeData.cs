@@ -121,7 +121,10 @@ namespace BridgeCare.Services
                 }
                 row++;
             }
-            worksheet.Cells[3, totalColumn].Value = totalColumnValue;
+            if(totalColumn != 0)
+            {
+                worksheet.Cells[3, totalColumn].Value = totalColumnValue;
+            }
             currentCell.Row = row - 1;
             currentCell.Column = column - 1;            
         }

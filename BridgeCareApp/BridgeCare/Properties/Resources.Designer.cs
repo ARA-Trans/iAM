@@ -250,6 +250,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MPMS Total.
+        /// </summary>
+        internal static string MPMSTotal {
+            get {
+                return ResourceManager.GetString("MPMSTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NHS Condition By Bridge Count LLCC.
         /// </summary>
         internal static string NHSConditionByBridgeCountLLCC {
