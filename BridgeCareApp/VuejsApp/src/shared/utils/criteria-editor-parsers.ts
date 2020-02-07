@@ -31,13 +31,12 @@ export const parseCriteriaJson = (criteria: Criteria) => {
                     }
                 } else {
                     const clauseGroup = parseCriteriaJson(child.query as Criteria);
-                    const clauseGroupVal = clauseGroup.join('');
-                    if (hasValue(clauseGroupVal)) {
+                    if (clauseGroup && hasValue(clauseGroup.join(''))) {
                         // append the logical operator if the string list is not empty
                         if (hasValue(clause)) {
                             clause.push(logicalOperator);
                         }
-                        // recursively call this function to create a rule group
+                        // create a rule group
                         clause.push('(');
                         clause.push(...clauseGroup);
                         clause.push(')');
@@ -60,9 +59,9 @@ export const parseCriteriaTypeJson = (criteriaType: CriteriaType) => {
                 clause = rule;
             }
         } else {
-            const ruleGroup = parseCriteriaJson(criteriaType.query as Criteria).join('');
-            if (hasValue(ruleGroup)) {
-                clause = ruleGroup;
+            const ruleGroup = parseCriteriaJson(criteriaType.query as Criteria);
+            if (ruleGroup && hasValue(ruleGroup.join(''))) {
+                clause = ruleGroup.join('');
             }
         }
     }
