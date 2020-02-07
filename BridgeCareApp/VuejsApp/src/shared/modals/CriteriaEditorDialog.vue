@@ -295,15 +295,17 @@
          */
         onClickSubCriteriaClauseTextarea(subCriteriaClause: string, subCriteriaClauseIndex: number) {
             this.resetSubCriteriaSelectedProperties();
-            this.selectedSubCriteriaClauseIndex = subCriteriaClauseIndex;
-            this.selectedSubCriteriaClause = parseCriteriaString(subCriteriaClause);
-            if (this.selectedSubCriteriaClause) {
-                if (!hasValue(this.selectedSubCriteriaClause.logicalOperator)) {
-                    this.selectedSubCriteriaClause.logicalOperator = 'OR';
+            setTimeout(() => {
+                this.selectedSubCriteriaClauseIndex = subCriteriaClauseIndex;
+                this.selectedSubCriteriaClause = parseCriteriaString(subCriteriaClause);
+                if (this.selectedSubCriteriaClause) {
+                    if (!hasValue(this.selectedSubCriteriaClause.logicalOperator)) {
+                        this.selectedSubCriteriaClause.logicalOperator = 'OR';
+                    }
+                } else {
+                    this.invalidSubCriteriaMessage = 'Unable to parse selected criteria';
                 }
-            } else {
-                this.invalidSubCriteriaMessage = 'Unable to parse selected criteria';
-            }
+            });
         }
 
         /**
