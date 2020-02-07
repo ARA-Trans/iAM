@@ -213,7 +213,6 @@
          */
         @Watch('selectedSubCriteriaClause')
         onSelectedClauseChanged() {
-            console.log(this.selectedSubCriteriaClause);
             this.resetSubCriteriaValidationMessageProperties();
         }
 
