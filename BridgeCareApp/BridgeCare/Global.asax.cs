@@ -7,18 +7,21 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using BridgeCare.ExceptionHandling;
+using Hangfire;
+using Unity;
 
 namespace BridgeCare
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
+        private BackgroundJobServer _backgroundJobServer;
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            GlobalConfiguration.Configuration.Filters.Add(
+            System.Web.Http.GlobalConfiguration.Configuration.Filters.Add(
                 new UnhandledExceptionFilterAttribute()
                     .Register<RowNotInTableException>((exception, request) =>
                         request.CreateErrorResponse(HttpStatusCode.BadRequest, exception.Message)
@@ -65,6 +68,20 @@ namespace BridgeCare
                         }
                     )
             );
+
+            var container = UnityConfig.Container;
+
+            Hangfire.GlobalConfiguration.Configuration
+                .UseSqlServerStorage("BridgeCareContext");
+
+            Hangfire.GlobalConfiguration.Configuration.UseUnityActivator(container);
+
+            _backgroundJobServer = new BackgroundJobServer();
+        }
+
+        protected void Application_End(object sender, EventArgs e)
+        {
+            _backgroundJobServer.Dispose();
         }
     }
 }

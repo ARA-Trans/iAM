@@ -3,6 +3,7 @@ using BridgeCare.Models;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace BridgeCare.Services.SummaryReport
 {
@@ -42,10 +43,11 @@ namespace BridgeCare.Services.SummaryReport
         /// <param name="simulationModel"></param>
         /// <returns></returns>
         public byte[] GenerateExcelReport(SimulationModel simulationModel)
-        {   
+        {
+            Console.WriteLine("queue");
             // Get data
             var simulationId = simulationModel.SimulationId;
-            var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationId);
+           var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationId);
             var simulationYears = simulationYearsModel.Years;
             var simulationYearsCount = simulationYears.Count;            
             var dbContext = new BridgeCareContext();
@@ -89,7 +91,11 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge DA");
                 poorBridgeDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow, simulationYearsCount);
 
-                return excelPackage.GetAsByteArray();
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SummaryReport.xlsx");
+                byte[] bin = excelPackage.GetAsByteArray();
+                File.WriteAllBytes(filePath, bin);
+
+                return bin;
             }
         }
     }

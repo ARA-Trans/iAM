@@ -1,6 +1,7 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Security;
+using Hangfire;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -45,8 +46,10 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public HttpResponseMessage GetSummaryReport([FromBody] SimulationModel model)
         {
+            BackgroundJob.Enqueue(() => summaryReportGenerator.GenerateExcelReport(model));
             var response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(model));
+            //response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(model));
+            response.Content = new StringContent("Test");
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {

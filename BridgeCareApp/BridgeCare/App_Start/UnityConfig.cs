@@ -9,6 +9,11 @@ using System;
 using BridgeCare.DataAccessLayer.Inventory;
 using BridgeCare.DataAccessLayer.SummaryReport;
 using Unity;
+using Hangfire;
+using Unity.Injection;
+using Hangfire.Common;
+using Hangfire.Client;
+using Hangfire.States;
 
 namespace BridgeCare
 {
@@ -92,6 +97,13 @@ namespace BridgeCare
             container.RegisterType<ICommittedProjects, CommittedProjects>();
             container.RegisterType<ICommitted, CommittedDAL>();
             container.RegisterType<ICriteriaDrivenBudgets, CriteriaDrivenBudgetsDAL>();
+
+            container.RegisterType<JobStorage>(new InjectionFactory(c => JobStorage.Current));
+            container.RegisterType<IJobFilterProvider, JobFilterAttributeFilterProvider>(new InjectionConstructor(true));
+            container.RegisterType<IBackgroundJobFactory, BackgroundJobFactory>();
+            container.RegisterType<IRecurringJobManager, RecurringJobManager>();
+            container.RegisterType<IBackgroundJobClient, BackgroundJobClient>();
+            container.RegisterType<IBackgroundJobStateChanger, BackgroundJobStateChanger>();
         }
     }
 }
