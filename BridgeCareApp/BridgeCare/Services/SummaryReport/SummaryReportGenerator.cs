@@ -91,7 +91,8 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge DA");
                 poorBridgeDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow, simulationYearsCount);
 
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SummaryReport.xlsx");
+                var folderPath = "DownloadedReports";
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, "SummaryReport.xlsx");
                 byte[] bin = excelPackage.GetAsByteArray();
                 File.WriteAllBytes(filePath, bin);
 
