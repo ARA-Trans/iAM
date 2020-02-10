@@ -73,24 +73,35 @@
                         <td>
                             <v-layout row wrap>
                                 <v-flex>
-                                    <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)">
+                                    <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
+                                        title="Run Scenario">
                                         <v-icon>fas fa-play</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)">
+                                    <v-btn icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)"
+                                        title="Download Reports">
                                         <v-icon>fas fa-chart-line</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="edit-icon"
-                                           @click="onEditScenario(props.item.simulationId, props.item.simulationName)">
+                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
+                                        title="Edit Scenario">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
+                                    <v-btn icon class="ara-blue"
+                                        @click="onShareScenario(props.item.simulationId)"
+                                        title="Share Scenario">
+                                        <v-icon>fas fa-users</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
                                     <v-btn icon class="ara-orange"
-                                           @click="onDeleteScenario(props.item.simulationId, props.item.id)">
+                                        @click="onDeleteScenario(props.item.simulationId, props.item.id)"
+                                        title="Delete Scenario">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
@@ -138,24 +149,28 @@
                         <td>
                             <v-layout row wrap>
                                 <v-flex>
-                                    <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)">
+                                    <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
+                                        title="Run Scenario">
                                         <v-icon>fas fa-play</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn flat icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)">
+                                    <v-btn flat icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)"
+                                        title="Download Reports">
                                         <v-icon>fas fa-chart-line</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn flat icon class="edit-icon"
-                                           @click="onEditScenario(props.item.simulationId, props.item.simulationName)">
+                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
+                                        title="Edit Scenario">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="ara-orange"
-                                           @click="onDeleteScenario(props.item.simulationId, props.item.id)">
+                                        @click="onDeleteScenario(props.item.simulationId, props.item.id)"
+                                        title="Delete Scenario">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
