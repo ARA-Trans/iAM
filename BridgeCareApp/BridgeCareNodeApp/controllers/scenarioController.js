@@ -64,7 +64,13 @@ function scenarioController(Scenario) {
                 return res.json(scenariostatus);
             });
         } else {
-            Scenario.find({ owner: [req.user.username, undefined] }, (err, scenariostatus) => {
+            const query = {
+                $or: [
+                    {owner: [req.user.username, undefined]},
+                    {users: { $elemMatch: {username: req.user.username}}}
+                ]
+            };
+            Scenario.find(query, (err, scenariostatus) => {
                 if (err) {
                     return res.send(err);
                 }
