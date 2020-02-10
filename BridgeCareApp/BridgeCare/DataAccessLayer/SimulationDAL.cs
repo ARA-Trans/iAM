@@ -61,11 +61,10 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == model.SimulationId))
-            {
-                log.Warn($"User {username} is not authorized to modify scenario {model.SimulationId}.");
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
+                throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
+            if (!db.Simulations.First(s => s.SIMULATIONID == model.SimulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario.");
-            }
             UpdateSimulation(model, db);
         }
 
@@ -77,10 +76,7 @@ namespace BridgeCare.DataAccessLayer
         public void UpdateAnySimulation(SimulationModel model, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
-            {
-                log.Error($"No scenario found with id {model.SimulationId}");
                 throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
-            }
             UpdateSimulation(model, db);
         }
 
@@ -118,11 +114,10 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void DeleteOwnedSimulation(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == id))
-            {
-                log.Warn($"User {username} is not authorized to delete scenario {id}.");
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+            if (!db.Simulations.First(s => s.SIMULATIONID == id).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to delete this scenario.");
-            }
             DeleteSimulation(id, db);
         }
 
@@ -184,11 +179,10 @@ namespace BridgeCare.DataAccessLayer
 
         public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == model.SimulationId))
-            {
-                log.Warn($"User {username} is not authorized to run scenario {model.SimulationId}.");
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
+                throw new RowNotInTableException($"No scenario was found with id {model.SimulationId}");
+            if (!db.Simulations.First(s => s.SIMULATIONID == model.SimulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to run this scenario.");
-            }
             return RunSimulation(model);
         }
 
@@ -212,7 +206,9 @@ namespace BridgeCare.DataAccessLayer
 
         public void SetOwnedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId && s.UserCanModify(username)))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId))
+                throw new RowNotInTableException($"No scenario found with id {simulationId}.");
+            if (!db.Simulations.First(s => s.SIMULATIONID == simulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException($"User {username} cannot modify scenario {simulationId}.");
 
             var simulation = db.Simulations.Single(s => s.SIMULATIONID == simulationId);
