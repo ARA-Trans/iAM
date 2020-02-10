@@ -41,7 +41,7 @@ namespace BridgeCare.DataAccessLayer
         public void SaveOwnedCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db, string username)
         {
             foreach (var committedProjectModel in committedProjectModels) {
-                if (!db.Simulations.Any(s => s.UserCanModify(username)))
+                if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == committedProjectModel.SimulationId))
                     throw new UnauthorizedAccessException("You are not authorized to modify this scenario's committed projects.");
             }
             SaveCommittedProjects(committedProjectModels, db);
@@ -67,7 +67,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         public List<CommittedEntity> GetOwnedCommittedProjects(int simulationId, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanRead(username)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username) && s.SIMULATIONID == simulationId))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's committed projects.");
             return GetCommittedProjects(simulationId, db);
         }

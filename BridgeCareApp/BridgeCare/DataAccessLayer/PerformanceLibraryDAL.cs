@@ -34,7 +34,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>PerformanceLibraryModel</returns>
         public PerformanceLibraryModel GetOwnedSimulationPerformanceLibrary(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanRead(username)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username) && s.SIMULATIONID == id))
             {
                 log.Warn($"User {username} is not authorized to view scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's performance.");
@@ -101,7 +101,7 @@ namespace BridgeCare.DataAccessLayer
         public PerformanceLibraryModel SaveOwnedSimulationPerformanceLibrary(PerformanceLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-            if (!db.Simulations.Any(s => s.UserCanModify(username)))
+            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == id))
             {
                 log.Warn($"User {username} is not authorized to modify scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's performance.");

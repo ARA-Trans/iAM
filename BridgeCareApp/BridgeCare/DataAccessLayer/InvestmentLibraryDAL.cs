@@ -37,7 +37,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>InvestmentLibraryModel</returns>
         public InvestmentLibraryModel GetOwnedSimulationInvestmentLibrary(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanRead(username)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username) && s.SIMULATIONID == id))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's investments.");
             return GetSimulationInvestmentLibrary(id, db);
         }
@@ -145,7 +145,7 @@ namespace BridgeCare.DataAccessLayer
         public InvestmentLibraryModel SaveOwnedSimulationInvestmentLibrary(InvestmentLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-            if (!db.Simulations.Any(s => s.UserCanModify(username)))
+            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == id))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's investments.");
             return SaveSimulationInvestmentLibrary(model, db);
         }

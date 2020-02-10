@@ -100,7 +100,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>TargetLibraryModel</returns>
         public TargetLibraryModel GetOwnedSimulationTargetLibrary(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanRead(username)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username) && s.SIMULATIONID == id))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's targets.");
             return GetSimulationTargetLibrary(id, db);
         }
@@ -171,7 +171,7 @@ namespace BridgeCare.DataAccessLayer
         public TargetLibraryModel SaveOwnedSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
-            if (!db.Simulations.Any(s => s.UserCanModify(username)))
+            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == id))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's targets.");
             return SaveSimulationTargetLibrary(model, db);
         }

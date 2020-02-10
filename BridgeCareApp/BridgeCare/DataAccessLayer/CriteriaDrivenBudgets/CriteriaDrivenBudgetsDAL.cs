@@ -42,7 +42,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         /// <returns>CriteriaDrivenBudgetsModel list</returns>
         public List<CriteriaDrivenBudgetsModel> GetOwnedCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanRead(username)))
+            if (!db.Simulations.Any(s => s.UserCanRead(username) && s.SIMULATIONID == id))
             {
                 log.Warn($"User {username} is not authorized to view scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's criteria driven budgets.");
@@ -104,7 +104,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
 
         public Task<string> SaveOwnedCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.UserCanModify(username)))
+            if (!db.Simulations.Any(s => s.UserCanModify(username) && s.SIMULATIONID == id))
             {
                 log.Warn($"User {username} is not authorized to modify scenario {id}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's criteria driven budgets.");
