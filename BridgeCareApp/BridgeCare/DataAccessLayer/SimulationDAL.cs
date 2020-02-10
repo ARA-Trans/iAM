@@ -12,13 +12,13 @@ using BridgeCare.Models;
 using BridgeCare.Properties;
 using DatabaseManager;
 using log4net;
-using Simulation.AnalysisProcessQueueing;
+using Simulation;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class SimulationDAL : ISimulation
     {
-        private static readonly SimulationAnalysisService AnalysisService = new SimulationAnalysisService();
+        private static readonly SimulationQueue SimulationQueue = new SimulationQueue(1);
 
         /// <summary>
         /// Fetches all simulations
@@ -113,24 +113,15 @@ namespace BridgeCare.DataAccessLayer
                 var mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
 
-                var simulationOptions = new AnalysisProcessOptions
-                {
-                    SimulationName = model.SimulationName,
-                    NetworkName = model.NetworkName,
-                    SimulationId = model.SimulationId,
-                    NetworkId = model.NetworkId,
-                    ConnectionString = mongoConnection,
-                };
+                var simulationParameters = new SimulationParameters(
+                    model.SimulationName,
+                    model.NetworkName,
+                    model.SimulationId,
+                    model.NetworkId,
+                    mongoConnection,
+                    true);
 
-                var simulationHandle = new AnalysisProcessHandle(simulationOptions);
-
-                AnalysisService.AddPendingAnalysis(simulationHandle);
-
-                //var simulation = new Simulation.Simulation(model.SimulationName, model.NetworkName, model.SimulationId, model.NetworkId, mongoConnection);
-
-                //Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
-
-                //simulationThread.Start(true);
+                var simulationTask = SimulationQueue.Enqueue(simulationParameters);
 
                 return Task.FromResult("Simulation running...");
             }
