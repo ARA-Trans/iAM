@@ -17,6 +17,15 @@ namespace BridgeCare
         private BackgroundJobServer _backgroundJobServer;
         protected void Application_Start()
         {
+            var container = UnityConfig.Container;
+
+            Hangfire.GlobalConfiguration.Configuration
+                .UseSqlServerStorage("BridgeCareContext");
+
+            Hangfire.GlobalConfiguration.Configuration.UseUnityActivator(container);
+
+            _backgroundJobServer = new BackgroundJobServer();
+
             AreaRegistration.RegisterAllAreas();
             System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -68,15 +77,6 @@ namespace BridgeCare
                         }
                     )
             );
-
-            var container = UnityConfig.Container;
-
-            Hangfire.GlobalConfiguration.Configuration
-                .UseSqlServerStorage("BridgeCareContext");
-
-            Hangfire.GlobalConfiguration.Configuration.UseUnityActivator(container);
-
-            _backgroundJobServer = new BackgroundJobServer();
         }
 
         protected void Application_End(object sender, EventArgs e)

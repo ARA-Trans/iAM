@@ -15,7 +15,6 @@ namespace BridgeCare
         {
             var dashboardPath = "/hangfire";
 
-            app.UseHangfireServer();
             app.UseHangfireDashboard(dashboardPath);
         }
     }

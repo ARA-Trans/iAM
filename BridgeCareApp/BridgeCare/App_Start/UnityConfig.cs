@@ -14,6 +14,7 @@ using Unity.Injection;
 using Hangfire.Common;
 using Hangfire.Client;
 using Hangfire.States;
+using BridgeCare.Controllers;
 
 namespace BridgeCare
 {
@@ -86,6 +87,8 @@ namespace BridgeCare
             container.RegisterType<IRemainingLifeLimit, RemainingLifeLimitDAL>();
             container.RegisterType<IRunRollup, RunRollupDAL>();
             container.RegisterType<ICashFlowLibrary, CashFlowLibraryDAL>();
+
+            container.RegisterType<DetailedReportController, DetailedReportController>();
 
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();

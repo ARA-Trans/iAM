@@ -12,7 +12,6 @@ namespace BridgeCare.Controllers
     public class DetailedReportController : ApiController
     {
         private readonly IReportCreator reportCreator;
-
         public DetailedReportController(IReportCreator reportCreator)
         {
             this.reportCreator = reportCreator ?? throw new ArgumentNullException(nameof(reportCreator));
