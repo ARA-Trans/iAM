@@ -138,10 +138,14 @@
                                 break;
                             }
                             case 'Summary Report': {
-                                await ReportsService.getSummaryReport(this.selectedScenarioData)
+                                await ReportsService.downloadSummaryReport(this.selectedScenarioData)
                                     .then((response: AxiosResponse<any>) => {
-                                        this.setSuccessMessageAction({message: 'Report generation started'});
-                                        //FileDownload(response.data, 'SummaryReport.xlsx');
+                                        if(response == undefined){
+                                            this.setErrorMessageAction({message: 'Summary report does not exists on the target path. Please generate the report before downloading'});
+                                        } else{
+                                            this.setSuccessMessageAction({message: 'Report has been downloaded'});
+                                        }
+                                        FileDownload(response.data, 'SummaryReport.xlsx');
                                     });
                                 break;
                             }

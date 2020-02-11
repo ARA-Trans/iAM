@@ -16,11 +16,15 @@ export default class ReportsService {
      * @param selectedScenarioData Scenario data to use in generating the report
      */
     static getSummaryReport(selectedScenarioData: Scenario): AxiosPromise {
-        return axiosInstance.post('/api/GetSummaryReport', selectedScenarioData, {});
+        return axiosInstance.post('/api/GenerateSummaryReport', selectedScenarioData, {});
     }
 
     static getSummaryReportMissingAttributes(selectedScenarioId: number, selectedNetworkId: number) {
         return axiosInstance
             .get(`/api/GetSummaryReportMissingAttributes?simulationId=${selectedScenarioId}&networkId=${selectedNetworkId}`);
+    }
+
+    static downloadSummaryReport(selectedScenarioData: Scenario): AxiosPromise {
+        return axiosInstance.post('/api/DownloadSummaryReport', selectedScenarioData, {responseType: 'blob'});
     }
 }

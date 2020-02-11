@@ -2,6 +2,8 @@
 using BridgeCare.Models;
 using BridgeCare.Security;
 using Hangfire;
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,6 +17,8 @@ namespace BridgeCare.Controllers
         private readonly IBridgeData repo;
         private readonly BridgeCareContext db;
         private readonly ISummaryReportGenerator summaryReportGenerator;
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportController));
 
         public SummaryReportController(IBridgeData repo, BridgeCareContext db, ISummaryReportGenerator summaryReportGenerator)
         {
@@ -41,22 +45,42 @@ namespace BridgeCare.Controllers
         /// <param name="model">SimulationModel</param>
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
-        [Route("api/GetSummaryReport")]
+        [Route("api/GenerateSummaryReport")]
         [ModelValidation("The scenario data is invalid.")]
         [RestrictAccess]
-        public HttpResponseMessage GetSummaryReport([FromBody] SimulationModel model)
+        public HttpResponseMessage GenerateSummaryReport([FromBody] SimulationModel model)
         {
             BackgroundJob.Enqueue(() => summaryReportGenerator.GenerateExcelReport(model));
             var response = Request.CreateResponse(HttpStatusCode.OK, "Report generation started");
-            //response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(model));
-            //response.Content = new StringContent("Test");
-            //response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            //response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-            //{
-            //    FileName = "SummaryReport.xlsx"
-            //};
             return response;
-            //return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("api/DownloadSummaryReport")]
+        [ModelValidation("The scenario data is invalid.")]
+        [RestrictAccess]
+        public HttpResponseMessage DownloadSummaryReport([FromBody] SimulationModel model)
+        {
+            var folderPath = "DownloadedReports";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, "SummaryReport.xlsx");
+            var response = new HttpResponseMessage();
+            if (!File.Exists(filePath))
+            {
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError, $"Summary report is not available in the path {filePath}");
+                log.Error($"Summary report is not available in the path {filePath}");
+                return response;
+            }
+            else
+            {
+                response = Request.CreateResponse(HttpStatusCode.OK);
+                response.Content = new ByteArrayContent(summaryReportGenerator.DownloadExcelReport(model));
+            }
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "SummaryReport.xlsx"
+            };
+            return response;
         }
     }
 }

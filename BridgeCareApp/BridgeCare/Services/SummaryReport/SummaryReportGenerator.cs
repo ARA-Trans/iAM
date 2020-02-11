@@ -6,6 +6,7 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace BridgeCare.Services.SummaryReport
 {
@@ -23,6 +24,8 @@ namespace BridgeCare.Services.SummaryReport
         private readonly PoorBridgeDeckArea poorBridgeDeckArea;
         private readonly NHSConditionChart nhsConditionChart;
         private readonly SummaryReportParameters summaryReportParameters;
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportGenerator));
 
         public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData,
             BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
@@ -138,6 +141,20 @@ namespace BridgeCare.Services.SummaryReport
                     .Set(s => s.status, "Report has been generated");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
             }
+        }
+
+        public byte[] DownloadExcelReport(SimulationModel simulationModel)
+        {
+            var folderPath = "DownloadedReports";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, "SummaryReport.xlsx");
+            if (File.Exists(filePath))
+            {
+                byte[] summaryReportData = File.ReadAllBytes(filePath);
+                return summaryReportData;
+            }
+            log.Error($"Summary report is not available in the path {filePath}");
+            //return Encoding.ASCII.GetBytes($"Summary report is not available in the path {filePath}");
+            throw new FileNotFoundException($"Summary report is not available in the path {filePath}", "SummaryReport.xlsx");
         }
     }
 }
