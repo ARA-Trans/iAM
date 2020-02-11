@@ -98,6 +98,7 @@ namespace BridgeCare
             container.RegisterType<ICommitted, CommittedDAL>();
             container.RegisterType<ICriteriaDrivenBudgets, CriteriaDrivenBudgetsDAL>();
 
+            //Hangfire IoC configuration
             container.RegisterType<JobStorage>(new InjectionFactory(c => JobStorage.Current));
             container.RegisterType<IJobFilterProvider, JobFilterAttributeFilterProvider>(new InjectionConstructor(true));
             container.RegisterType<IBackgroundJobFactory, BackgroundJobFactory>();

@@ -173,10 +173,6 @@ const router = new VueRouter({
             component: News
         },
         {
-            path: '/Hangfire/',
-            name: 'Hangfire'
-        },
-        {
             path: '*',
             redirect: '/AuthenticationStart/'
         }

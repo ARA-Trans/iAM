@@ -70,6 +70,12 @@
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-title v-if="authenticated" class="white--text">
+                    <v-btn round class="pink white--text" @click="onJobQueue()">
+                        Job list
+                        <v-icon right>star</v-icon>
+                    </v-btn>
+                </v-toolbar-title>
+                <v-toolbar-title v-if="authenticated" class="white--text">
                     <span class="font-weight-light">Hello, </span>
                     <span>{{username}}</span>
                 </v-toolbar-title>
@@ -292,6 +298,9 @@
             if(this.$router.currentRoute.path !== routeName) {
                 this.$router.push(routeName);
             }
+        }
+        onJobQueue(){
+            window.open(process.env.VUE_APP_URL + '/hangfire/');
         }
     }
 </script>

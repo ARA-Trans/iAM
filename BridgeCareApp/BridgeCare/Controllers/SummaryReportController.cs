@@ -47,15 +47,14 @@ namespace BridgeCare.Controllers
         public HttpResponseMessage GetSummaryReport([FromBody] SimulationModel model)
         {
             BackgroundJob.Enqueue(() => summaryReportGenerator.GenerateExcelReport(model));
-            var response = Request.CreateResponse(HttpStatusCode.OK);
+            var response = Request.CreateResponse(HttpStatusCode.OK, "Report generation started");
             //response.Content = new ByteArrayContent(summaryReportGenerator.GenerateExcelReport(model));
-            response.Content = new StringContent("Test");
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-            {
-                FileName = "SummaryReport.xlsx"
-            };
-
+            //response.Content = new StringContent("Test");
+            //response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            //response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            //{
+            //    FileName = "SummaryReport.xlsx"
+            //};
             return response;
             //return Ok(response);
         }
