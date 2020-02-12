@@ -171,7 +171,7 @@ namespace Simulation
             m_strNetworkID = strNetworkID;
             m_strSimulationID = strSimulationID;
             _isUpdateOMS = false;
-            cgOMS.Prefix = "cgDE_";
+            cgOMS.Prefix = "";
         }
 
         public Simulation(string simulationID, string sectionID, string action, string treatment, int year, string value, string connectionString)
@@ -188,7 +188,7 @@ namespace Simulation
             _yearOMS = year;
             _valueOMS = value;
             _isUpdateOMS = true;
-            cgOMS.Prefix = "cgDE_";
+            cgOMS.Prefix = "";
         }
 
         public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, string simulations)
@@ -265,6 +265,7 @@ namespace Simulation
             //Create table for each attribute year pair into the future.
             SimulationMessaging.AddMessage(new SimulationMessage("Compile simulation complete: " + DateTime.Now.ToString("HH:mm:ss")));
             SimulationMessaging.AddMessage(new SimulationMessage("Beginning run simulation: " + DateTime.Now.ToString("HH:mm:ss")));
+            Console.WriteLine("Compile simulation complete: " + DateTime.Now.ToString("HH:mm:ss"));
 
             if (isAPICall.Equals(true))
             {
@@ -876,6 +877,7 @@ namespace Simulation
             //Everything is rolled up to the year of the start date.
             for (int nYear = Investment.StartYear; nYear < Investment.StartYear + Investment.AnalysisPeriod; nYear++)
             {
+                Console.WriteLine("Begin analysis year =" + nYear);
                 //Apply Deteriorate/Performance curves.
                 SimulationMessaging.AddMessage(new SimulationMessage("Applying Performance/Deterioration equations for " + nYear.ToString() + " at " + DateTime.Now.ToString("HH:mm:ss")));
                 if (APICall.Equals(true))
@@ -884,8 +886,8 @@ namespace Simulation
                     .Set(s => s.status, "Applying Performance/Deterioration equations for" + nYear.ToString());
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
+                Console.WriteLine("Apply deterioration");
                 ApplyDeterioration(nYear);
-
                 //Determine Benefit/Cost
                 SimulationMessaging.AddMessage(new SimulationMessage("Determining Treament Feasibilty and calculating benefit/remaining life versus cost ratios for " + nYear.ToString() + " at " + DateTime.Now.ToString("HH:mm:ss")));
                 if (APICall.Equals(true))
@@ -896,8 +898,9 @@ namespace Simulation
                 }
 
                 m_listApplyTreatment.Clear();
+                Console.WriteLine("Determine Benefit/Cost");
                 DetermineBenefitCostIterative(nYear);
-
+                
                 //Load Committed Projects.  These get comitted (and spent) regardless of budget.
                 //Apply committed projects
                 SimulationMessaging.AddMessage(new SimulationMessage("Applying committed projects for " + nYear.ToString() + " at " + DateTime.Now.ToString("HH:mm:ss")));
@@ -907,6 +910,7 @@ namespace Simulation
                     .Set(s => s.status, "Applying committed projects for " + nYear.ToString());
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
+                Console.WriteLine("Apply committed");
                 ApplyCommitted(nYear);
 
                 //Calculate network averages and deficient base (after committed).
@@ -926,6 +930,7 @@ namespace Simulation
                 }
                 else
                 {
+                    Console.WriteLine("Spend budget "  + Method.TypeBudget);
                     switch (Method.TypeBudget)
                     {
                         case "No Spending":
