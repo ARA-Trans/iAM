@@ -7,25 +7,13 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using BridgeCare.ExceptionHandling;
-using Hangfire;
-using Unity;
 
 namespace BridgeCare
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        private BackgroundJobServer _backgroundJobServer;
         protected void Application_Start()
         {
-            var container = UnityConfig.Container;
-
-            Hangfire.GlobalConfiguration.Configuration
-                .UseSqlServerStorage("BridgeCareContext");
-
-            Hangfire.GlobalConfiguration.Configuration.UseUnityActivator(container);
-
-            _backgroundJobServer = new BackgroundJobServer();
-
             AreaRegistration.RegisterAllAreas();
             System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -77,11 +65,6 @@ namespace BridgeCare
                         }
                     )
             );
-        }
-
-        protected void Application_End(object sender, EventArgs e)
-        {
-            _backgroundJobServer.Dispose();
         }
     }
 }
