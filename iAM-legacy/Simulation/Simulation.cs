@@ -222,6 +222,7 @@ namespace Simulation
         public void CompileSimulation(object isAPICall)
         {
             APICall = isAPICall;
+            SimulationMessaging.IsDesktop = !isAPICall.Equals(true);
 
             SimulationMessaging.DateTimeStart = DateTime.Now;
             //Get Attribute types
@@ -272,6 +273,9 @@ namespace Simulation
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Beginning run simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Success");
             }
 
             try
