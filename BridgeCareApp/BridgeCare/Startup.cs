@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Web;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using BridgeCare.Security;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.SqlServer;
 using Microsoft.Owin;
 using Owin;
@@ -21,8 +26,10 @@ namespace BridgeCare
             app.UseHangfireAspNet(GetHangfireServers);
 
             var dashboardPath = "/hangfire";
-
-            app.UseHangfireDashboard(dashboardPath);
+            
+            app.UseHangfireDashboard(dashboardPath, new DashboardOptions {
+                Authorization = new [] {new MyAuthorizationFilter() }
+            });
         }
 
         private IEnumerable<IDisposable> GetHangfireServers()
@@ -47,6 +54,15 @@ namespace BridgeCare
             public override object ActivateJob(Type type)
             {
                 return _container.Resolve(type);
+            }
+        }
+        public class MyAuthorizationFilter: IDashboardAuthorizationFilter
+        {
+            public bool Authorize(DashboardContext context)
+            {
+                var owinContext = new OwinContext(context.GetOwinEnvironment());
+
+                return owinContext.Authentication.User.Identity.IsAuthenticated;
             }
         }
     }
