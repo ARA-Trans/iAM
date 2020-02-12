@@ -93,7 +93,7 @@
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="ara-blue"
-                                        @click="onShareScenario(props.item.simulationId)"
+                                        @click="onShareScenario(props.item)"
                                         title="Share Scenario">
                                         <v-icon>fas fa-users</v-icon>
                                     </v-btn>
@@ -168,6 +168,12 @@
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
+                                    <v-btn flat icon class="ara-blue" @click="onShareScenario(props.item)"
+                                        title="Share Scenario">
+                                        <v-icon>fas fa-users</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
                                     <v-btn icon class="ara-orange"
                                         @click="onDeleteScenario(props.item.simulationId, props.item.id)"
                                         title="Delete Scenario">
@@ -192,6 +198,8 @@
         <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario" />
 
         <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
+
+        <ShareScenarioDialog :showDialog="showShareScenarioDialog" @submit="onSubmitShareScenario" :scenarioUsers="selectedScenarioUsers"/>
     </v-layout>
 </template>
 
@@ -200,7 +208,7 @@
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import moment from 'moment';
-    import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
+    import {emptyScenario, Scenario, ScenarioUser} from '@/shared/models/iAM/scenario';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
@@ -211,6 +219,7 @@
     } from '@/shared/models/modals/reports-downloader-dialog-data';
     import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
     import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
+    import ShareScenarioDialog from '@/components/scenarios/scenarios-dialogs/ShareScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
     import { clone } from 'ramda';
     import { Simulation } from '../../shared/models/iAM/simulation';
@@ -219,7 +228,7 @@
 import { getUserName } from '../../shared/utils/get-user-info';
 
     @Component({
-        components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog}
+        components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog, ShareScenarioDialog}
     })
     export default class Scenarios extends Vue {
         @State(state => state.scenario.scenarios) scenarios: Scenario[];
@@ -245,6 +254,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         alertBeforeRunRollup: AlertData = clone(emptyAlertData);
         reportsDownloaderDialogData: ReportsDownloaderDialogData = clone(emptyReportsDownloadDialogData);
         showCreateScenarioDialog: boolean = false;
+        showShareScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
             {text: 'Scenario Name', align: 'left', sortable: false, value: 'simulationName'},
             {text: 'Creator', sortable: false, value: 'creator'},
@@ -273,6 +283,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         scenarioId: string = '';
         currentScenario: Scenario = clone(emptyScenario);
         currentRollup: Rollup = clone(emptyRollup);
+        selectedScenarioUsers: ScenarioUser[] = [];
 
         @Watch('scenarios')
         onScenariosChanged() {
@@ -468,6 +479,11 @@ import { getUserName } from '../../shared/utils/get-user-info';
             this.showCreateScenarioDialog = true;
         }
 
+        onShareScenario(scenario: Scenario) {
+            this.showShareScenarioDialog = true;
+            this.selectedScenarioUsers = scenario.users;
+        }
+
         onEditScenarioName(scenarioName: string, id: string, simulationId: any) {
             var scenarioData : Simulation = {
                 simulationId: simulationId,
@@ -490,7 +506,14 @@ import { getUserName } from '../../shared/utils/get-user-info';
                     userId: this.userId
                 });
             }
+        }
 
+        onSubmitShareScenario(shareScenarioData: any) {
+            this.showShareScenarioDialog = false;
+
+            if (hasValue(shareScenarioData)) {
+                // sharescenarioaction?
+            }
         }
     }
 </script>
