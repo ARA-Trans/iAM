@@ -88,8 +88,6 @@ namespace BridgeCare
             container.RegisterType<IRunRollup, RunRollupDAL>();
             container.RegisterType<ICashFlowLibrary, CashFlowLibraryDAL>();
 
-            container.RegisterType<DetailedReportController, DetailedReportController>();
-
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();
             container.RegisterType<IBridgeData, BridgeDataDAL>();
