@@ -35,11 +35,11 @@ namespace BridgeCare.Services.SummaryReport
 
         internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel)
         {
-            var simulationId = simulationModel.SimulationId;
-            var investmentPeriod = analysisData.GetSimulationAnalysis(simulationId, db);
-            var inflationAndInvestments = getInflationRate.GetSimulationInvestmentLibrary(simulationId, db);
-            var priorities = getPriorities.GetSimulationPriorityLibrary(simulationId, db).Priorities;
-            var criterias = budgetCriteria.GetCriteriaDrivenBudgets(simulationId, db);
+            var simulationId = simulationModel.simulationId;
+            var investmentPeriod = analysisData.GetSimulationAnalysis((int)simulationId, db);
+            var inflationAndInvestments = getInflationRate.GetSimulationInvestmentLibrary((int)simulationId, db);
+            var priorities = getPriorities.GetSimulationPriorityLibrary((int)simulationId, db).Priorities;
+            var criterias = budgetCriteria.GetCriteriaDrivenBudgets((int)simulationId, db);
 
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
 
@@ -48,7 +48,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 1, 3, 1, 10);
 
             worksheet.Cells["A1:B1"].Value = "Simulation Name";
-            worksheet.Cells["C1:J1"].Value = simulationModel.SimulationName;
+            worksheet.Cells["C1:J1"].Value = simulationModel.simulationName;
             excelHelper.ApplyBorder(worksheet.Cells[1, 1, 1, 10]);
             // End of Simulation Name format
 

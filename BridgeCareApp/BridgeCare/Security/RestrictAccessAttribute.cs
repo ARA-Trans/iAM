@@ -40,7 +40,6 @@ namespace BridgeCare.Security
             }
 
             Models.UserInformationModel userInformation = JWTParse.GetUserInformation(idToken);
-
             return ValidateRole(userInformation.Role);
         }
 

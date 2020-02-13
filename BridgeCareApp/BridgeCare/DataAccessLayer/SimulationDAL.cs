@@ -38,15 +38,15 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateSimulation(SimulationModel model, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
             {
                 var log = LogManager.GetLogger(typeof(SimulationDAL));
-                log.Error($"No scenario found with id {model.SimulationId}");
-                throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
+                log.Error($"No scenario found with id {model.simulationId}");
+                throw new RowNotInTableException($"No scenario found with id {model.simulationId}");
             }
 
-            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
-            simulation.SIMULATION = model.SimulationName;
+            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.simulationId);
+            simulation.SIMULATION = model.simulationName;
             db.SaveChanges();
         }
 
@@ -107,7 +107,7 @@ namespace BridgeCare.DataAccessLayer
 #else
                 var mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var simulation = new Simulation.Simulation(model.SimulationName, model.NetworkName, model.SimulationId, model.NetworkId, mongoConnection);
+                var simulation = new Simulation.Simulation(model.simulationName, model.networkName, model.simulationId, model.networkId, mongoConnection);
 
                 Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
 

@@ -39,7 +39,7 @@ namespace BridgeCare.DataAccessLayer
             var yearsForBudget = new List<YearlyDataModel>();
             try
             {
-                yearsForBudget = db.YearlyInvestments.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId)
+                yearsForBudget = db.YearlyInvestments.AsNoTracking().Where(_ => _.SIMULATIONID == data.simulationId)
                                                               .OrderBy(year => year.YEAR_)
                                                               .Select(p => new YearlyDataModel
                                                               {
@@ -60,8 +60,8 @@ namespace BridgeCare.DataAccessLayer
         public IQueryable<DetailedReportDAL> GetRawQuery(SimulationModel data, BridgeCareContext dbContext)
         {
             var query = "SELECT Facility, Section, Treatment, NumberTreatment, IsCommitted, Years " +
-                        $"FROM Report_{data.NetworkId}_{data.SimulationId} Rpt WITH (NOLOCK) " +
-                        $"INNER JOIN Section_{data.NetworkId} Sec WITH (NOLOCK) " +
+                        $"FROM Report_{data.networkId}_{data.simulationId} Rpt WITH (NOLOCK) " +
+                        $"INNER JOIN Section_{data.networkId} Sec WITH (NOLOCK) " +
                         "ON Rpt.SectionID = Sec.SectionID " +
                         "Order By Facility, Section, Years";
 
