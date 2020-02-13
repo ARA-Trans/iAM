@@ -12,14 +12,14 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
     {
         public List<WorkSummaryByBudgetModel> GetCommittedProjectsBudget(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            var selectQuery = $"select YEARS, treatmentname as TREATMENT, BUDGET, sum(cost_) as CostPerTreatmentPerYear from COMMITTED_ where simulationid = { simulationModel.SimulationId } group by budget, TREATMENTNAME, years";
+            var selectQuery = $"select YEARS, treatmentname as TREATMENT, BUDGET, sum(cost_) as CostPerTreatmentPerYear from COMMITTED_ where simulationid = { simulationModel.simulationId } group by budget, TREATMENTNAME, years";
             var committedProjectsBudget = dbContext.Database.SqlQuery<WorkSummaryByBudgetModel>(selectQuery).ToList();
             return committedProjectsBudget;
         }
 
         public List<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            var selectReportStatement = $"SELECT YEARS, TREATMENT, BUDGET, SUM(COST_) AS CostPerTreatmentPerYear FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
+            var selectReportStatement = $"SELECT YEARS, TREATMENT, BUDGET, SUM(COST_) AS CostPerTreatmentPerYear FROM REPORT_{simulationModel.networkId}_{simulationModel.simulationId} " +
                                         $"WITH (NOLOCK) WHERE BUDGET IS NOT NULL " +
                                         $"GROUP BY TREATMENT, YEARS, BUDGET";
 

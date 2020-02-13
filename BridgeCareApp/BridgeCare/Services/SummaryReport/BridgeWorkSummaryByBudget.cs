@@ -37,7 +37,7 @@ namespace BridgeCare.Services.SummaryReport
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
             var budgetsPerYearPerTreatment = workSummaryByBudgetData.GetworkSummaryByBudgetsData(simulationModel, dbContext);
             
-            var budgets = bridgeData.GetBudgets(simulationModel.SimulationId, dbContext);
+            var budgets = bridgeData.GetBudgets(simulationModel.simulationId, dbContext);
    
             FillCommittedProjectsBudget(worksheet, currentCell, simulationModel, simulationYears);
             
