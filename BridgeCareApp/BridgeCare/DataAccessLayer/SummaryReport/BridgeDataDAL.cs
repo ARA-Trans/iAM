@@ -56,7 +56,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             IQueryable<Section> rawQueryForSectionData = null;
 
             // FACILITY is BRKEY, SECTION is BRIDGE_ID
-            var selectSectionStatement = "SELECT SECTIONID, FACILITY, SECTION " + " FROM SECTION_" + simulationModel.NetworkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
+            var selectSectionStatement = "SELECT SECTIONID, FACILITY, SECTION " + " FROM SECTION_" + simulationModel.networkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
             try
             {
                 rawQueryForSectionData = dbContext.Database.SqlQuery<Section>(selectSectionStatement).AsQueryable();
@@ -137,7 +137,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
             var selectSimulationStatement = $"SELECT SECTIONID, {Properties.Resources.DeckSeeded}0, {Properties.Resources.SupSeeded}0, {Properties.Resources.SubSeeded}0, {Properties.Resources.CulvSeeded}0, " +
                                             $"{Properties.Resources.DeckDurationN}0, {Properties.Resources.SupDurationN}0, {Properties.Resources.SubDurationN}0, {Properties.Resources.CulvDurationN}0, " +
-                                            dynamicColumns + $" FROM SIMULATION_{simulationModel.NetworkId}_{simulationModel.SimulationId}_0 WITH (NOLOCK);";
+                                            dynamicColumns + $" FROM SIMULATION_{simulationModel.networkId}_{simulationModel.simulationId}_0 WITH (NOLOCK);";
 
             using (var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString))
             {
@@ -166,11 +166,11 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         {            
             IQueryable<ReportProjectCost> rawQueryForReportData = null;
             var years = string.Join(",", simulationYears);
-            var listOfBudgets = dbContext.CriteriaDrivenBudgets.Where(y => y.SIMULATIONID == simulationModel.SimulationId)
+            var listOfBudgets = dbContext.CriteriaDrivenBudgets.Where(y => y.SIMULATIONID == simulationModel.simulationId)
                 .Select(cri => "'" + cri.BUDGET_NAME + "'").ToList();
 
             var budgets = string.Join(",", listOfBudgets);
-            var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
+            var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.networkId}_{simulationModel.simulationId} " +
                                         $"WITH (NOLOCK) WHERE BUDGET IN (" + budgets + ") AND YEARS IN (" + years + ")";
 
             rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();

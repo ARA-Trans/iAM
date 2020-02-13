@@ -359,3 +359,7 @@ connection.config
 
 # Deployment logs
 /Deployment/npmLogs
+/BridgeCareApp/BridgeCare/Logs
+/BridgeCareApp/BridgeCare/RoadCare Projects/Temp
+/RoadCare Projects/Temp
+/BridgeCareApp/BridgeCare/DownloadedReports

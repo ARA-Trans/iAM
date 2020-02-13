@@ -34,7 +34,7 @@ namespace BridgeCare.Services
             var BRKeys = new List<int>();
 
             var sections = bridgeData.GetSectionData(simulationModel, dbContext);
-            var treatments = bridgeData.GetTreatments(simulationModel.SimulationId, dbContext);
+            var treatments = bridgeData.GetTreatments(simulationModel.simulationId, dbContext);
             var simulationDataTable = bridgeData.GetSimulationData(simulationModel, dbContext, simulationYears);
             var projectCostModels = bridgeData.GetReportData(simulationModel, dbContext, simulationYears);
             var sectionIdsFromSimulationTable = from dt in simulationDataTable.AsEnumerable()

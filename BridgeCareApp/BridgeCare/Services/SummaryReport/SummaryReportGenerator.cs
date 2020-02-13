@@ -1,8 +1,13 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Properties;
+using Hangfire;
+using MongoDB.Driver;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace BridgeCare.Services.SummaryReport
 {
@@ -21,6 +26,8 @@ namespace BridgeCare.Services.SummaryReport
         private readonly NHSConditionChart nhsConditionChart;
         private readonly SummaryReportParameters summaryReportParameters;
         private readonly BridgeWorkSummaryByBudget bridgeWorkSummaryByBudget;
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportGenerator));
 
         public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData,
             BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
@@ -44,17 +51,31 @@ namespace BridgeCare.Services.SummaryReport
         /// </summary>
         /// <param name="simulationModel"></param>
         /// <returns></returns>
-        public byte[] GenerateExcelReport(SimulationModel simulationModel)
-        {   
+        [AutomaticRetry(Attempts = 0)]
+        public void GenerateExcelReport(SimulationModel simulationModel)
+        {
             // Get data
-            var simulationId = simulationModel.SimulationId;
-            var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationId);
+            var simulationId = simulationModel.simulationId;
+           var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData((int)simulationId);
             var simulationYears = simulationYearsModel.Years;
             var simulationYearsCount = simulationYears.Count;            
             var dbContext = new BridgeCareContext();
             
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("SummaryReport.xlsx")))
             {
+#if DEBUG
+                var mongoConnection = Settings.Default.MongoDBDevConnectionString;
+#else
+                var mongoConnection = Settings.Default.MongoDBProdConnectionString;
+#endif
+                var client = new MongoClient(mongoConnection);
+                var MongoDatabase = client.GetDatabase("BridgeCare");
+                var simulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
+
+                var updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Begin summary report generation");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
                 // Simulation parameters TAB
                 var parametersWorksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
                 summaryReportParameters.Fill(parametersWorksheet, simulationModel);
@@ -64,9 +85,17 @@ namespace BridgeCare.Services.SummaryReport
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - Bridge data TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationId, workSummaryModel.Treatments);
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, (int)simulationId, workSummaryModel.Treatments);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - work summary TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // Bridge work summary by Budget TAB 
                 var summaryByBudgetWorksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary By Budget");
@@ -76,6 +105,10 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition Bridge Cnt");
                 nhsConditionChart.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NHSBridgeCountPercentSectionYearsRow, Properties.Resources.NHSConditionByBridgeCountLLCC, simulationYearsCount);
 
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - NHS Condition TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
                 // NHS Condition DA tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition DA");
                 nhsConditionChart.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NHSBridgeDeckAreaPercentSectionYearsRow, Properties.Resources.NHSConditionByDeckAreaLLCC, simulationYearsCount);
@@ -83,6 +116,10 @@ namespace BridgeCare.Services.SummaryReport
                 // Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
                 conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYearsCount);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - condition bridge count TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // Condition DA tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Condition DA");
@@ -92,12 +129,43 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge Cnt");
                 poorBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesCountSectionYearsRow, simulationYearsCount);
 
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - Poor Bridge count TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
                 // Poor Bridge DA tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge DA");
                 poorBridgeDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow, simulationYearsCount);
 
-                return excelPackage.GetAsByteArray();
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - Poor Bridge DA TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
+                var folderPathForSimulation = $"DownloadedReports\\{simulationModel.simulationId}";
+                string relativeFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation);
+                Directory.CreateDirectory(relativeFolderPath);
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation, "SummaryReport.xlsx");
+                byte[] bin = excelPackage.GetAsByteArray();
+                File.WriteAllBytes(filePath, bin);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Summary report has been generated");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
             }
+        }
+
+        public byte[] DownloadExcelReport(SimulationModel simulationModel)
+        {
+            var folderPathForSimulation = $"DownloadedReports\\{simulationModel.simulationId}";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation, "SummaryReport.xlsx");
+            if (File.Exists(filePath))
+            {
+                byte[] summaryReportData = File.ReadAllBytes(filePath);
+                return summaryReportData;
+            }
+            log.Error($"Summary report is not available in the path {filePath}");
+            //return Encoding.ASCII.GetBytes($"Summary report is not available in the path {filePath}");
+            throw new FileNotFoundException($"Summary report is not available in the path {filePath}", "SummaryReport.xlsx");
         }
     }
 }
