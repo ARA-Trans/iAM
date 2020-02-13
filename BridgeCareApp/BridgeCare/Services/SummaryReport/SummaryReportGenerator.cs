@@ -1,6 +1,7 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Properties;
+using Hangfire;
 using MongoDB.Driver;
 using OfficeOpenXml;
 using System;
@@ -47,6 +48,7 @@ namespace BridgeCare.Services.SummaryReport
         /// </summary>
         /// <param name="simulationModel"></param>
         /// <returns></returns>
+        [AutomaticRetry(Attempts = 0)]
         public void GenerateExcelReport(SimulationModel simulationModel)
         {
             // Get data

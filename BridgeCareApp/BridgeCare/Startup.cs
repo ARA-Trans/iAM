@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using BridgeCare.Models;
 using BridgeCare.Security;
 using Hangfire;
 using Hangfire.Dashboard;
@@ -23,26 +24,27 @@ namespace BridgeCare
             var container = UnityConfig.Container;
 
             Hangfire.GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(container));
+            var dashboardPath = "/hangfire";
+
             app.UseHangfireAspNet(GetHangfireServers);
 
-            var dashboardPath = "/hangfire";
-            
-            app.UseHangfireDashboard(dashboardPath, new DashboardOptions {
-                Authorization = new [] {new MyAuthorizationFilter() }
+            app.UseHangfireDashboard(dashboardPath, new DashboardOptions
+            {
+                Authorization = new[] { new MyAuthorizationFilter() }
             });
         }
 
         private IEnumerable<IDisposable> GetHangfireServers()
         {
             Hangfire.GlobalConfiguration.Configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .SetDataCompatibilityLevel(Hangfire.CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseSqlServerStorage("BridgeCareContext");
 
             yield return new BackgroundJobServer();
         }
-        public class ContainerJobActivator : JobActivator
+        protected class ContainerJobActivator : JobActivator
         {
             private IUnityContainer _container;
 
@@ -56,12 +58,19 @@ namespace BridgeCare
                 return _container.Resolve(type);
             }
         }
-        public class MyAuthorizationFilter: IDashboardAuthorizationFilter
+
+        protected class MyAuthorizationFilter : IDashboardAuthorizationFilter
         {
             public bool Authorize(DashboardContext context)
             {
-                var owinContext = new OwinContext(context.GetOwinEnvironment());
+                //if (HttpContext.Current.User.IsInRole(Role.ADMINISTRATOR))
+                //{
+                //    return true;
+                //}
 
+                //return false;
+                var owinContext = new OwinContext(context.GetOwinEnvironment());
+                //return HttpContext.Current.User.Identity.IsAuthenticated;
                 return owinContext.Authentication.User.Identity.IsAuthenticated;
             }
         }

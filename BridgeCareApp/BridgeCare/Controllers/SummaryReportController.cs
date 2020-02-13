@@ -82,5 +82,15 @@ namespace BridgeCare.Controllers
             };
             return response;
         }
+
+        [HttpGet]
+        [Route("api/GetJobList")]
+        [ModelValidation("Something went wrong on GetJobList API")]
+        [RestrictAccess]
+        public HttpResponseMessage GetJobList()
+        {
+            var response = Request.CreateResponse(HttpStatusCode.OK, "Access granted");
+            return response;
+        }
     }
 }

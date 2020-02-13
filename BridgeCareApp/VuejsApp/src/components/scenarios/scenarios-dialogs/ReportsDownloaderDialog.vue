@@ -15,7 +15,8 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-flex>
-                        <v-btn class="green darken-2 white--text"  @click="generateSummaryReport()">
+                        <v-btn class="green darken-2 white--text"  @click="generateSummaryReport()"
+                        :disabled="showMissingAttributesMessage">
                         Generate summary report
                         <v-icon right>star</v-icon>
                     </v-btn>
