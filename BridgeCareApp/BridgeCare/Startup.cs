@@ -28,10 +28,12 @@ namespace BridgeCare
 
             app.UseHangfireAspNet(GetHangfireServers);
 
-            app.UseHangfireDashboard(dashboardPath, new DashboardOptions
-            {
-                Authorization = new[] { new MyAuthorizationFilter() }
-            });
+            app.UseHangfireDashboard(dashboardPath);
+
+            //app.UseHangfireDashboard(dashboardPath, new DashboardOptions
+            //{
+            //    Authorization = new[] { new MyAuthorizationFilter() }
+            //});
         }
 
         private IEnumerable<IDisposable> GetHangfireServers()
