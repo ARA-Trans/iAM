@@ -70,7 +70,7 @@ namespace BridgeCare.Services.SummaryReport
                 var simulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
 
                 var updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Begin report generation");
+                    .Set(s => s.status, "Begin summary report generation");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // Simulation parameters TAB
@@ -140,7 +140,7 @@ namespace BridgeCare.Services.SummaryReport
                 File.WriteAllBytes(filePath, bin);
 
                 updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Report has been generated");
+                    .Set(s => s.status, "Summary report has been generated");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
             }
         }
