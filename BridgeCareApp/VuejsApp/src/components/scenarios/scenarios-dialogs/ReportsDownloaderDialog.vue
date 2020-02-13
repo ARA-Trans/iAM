@@ -14,6 +14,14 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+                <v-flex>
+                        <v-btn class="green darken-2 white--text"  @click="generateSummaryReport()"
+                        :disabled="showMissingAttributesMessage">
+                        Generate summary report
+                        <v-icon right>star</v-icon>
+                    </v-btn>
+                </v-flex>
+                <v-divider></v-divider>
                 <v-list-tile v-for="item in reports" :key="item" avatar :disabled="isBusy">
                     <v-layout align-start row v-if="item === 'Summary Report'">
                         <v-flex xs4>
@@ -86,6 +94,7 @@
 
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('clearSummaryReportMissingAttributes') clearSummaryReportMissingAttributesAction: any;
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
 
         selectedScenarioData: Scenario = clone(emptyScenario);
         reports: string[] = ['Detailed Report', 'Summary Report'];
@@ -130,8 +139,13 @@
                                 break;
                             }
                             case 'Summary Report': {
-                                await ReportsService.getSummaryReport(this.selectedScenarioData)
+                                await ReportsService.downloadSummaryReport(this.selectedScenarioData)
                                     .then((response: AxiosResponse<any>) => {
+                                        if(response == undefined){
+                                            this.setErrorMessageAction({message: 'Summary report does not exists on the target path. Please generate the report before downloading'});
+                                        } else{
+                                            this.setSuccessMessageAction({message: 'Report has been downloaded'});
+                                        }
                                         FileDownload(response.data, 'SummaryReport.xlsx');
                                     });
                                 break;
@@ -143,6 +157,13 @@
                this.clearSummaryReportMissingAttributesAction();
                 this.dialogData.showModal = false;
             }
+        }
+
+        async generateSummaryReport(){
+            await ReportsService.getSummaryReport(this.selectedScenarioData)
+                                    .then((response: AxiosResponse<any>) => {
+                                        this.setSuccessMessageAction({message: 'Report generation started, please check the dashboard for status update'});
+                                    });
         }
     }
 </script>
