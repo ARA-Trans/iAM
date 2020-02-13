@@ -33,7 +33,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>TargetReportModel</returns>
         public TargetReportModel GetTarget(SimulationModel model, int[] totalYears, BridgeCareContext db)
         {
-            var select = $"SELECT TargetID, Years, coalesce(TARGETMET, 0) as TargetMet, IsDeficient FROM Target_{model.NetworkId}_{model.SimulationId}";
+            var select = $"SELECT TargetID, Years, coalesce(TARGETMET, 0) as TargetMet, IsDeficient FROM Target_{model.networkId}_{model.simulationId}";
 
             var deficientReportResults = db.Database.SqlQuery<DeficientReportModel>(select)
                 .AsQueryable().Where(_ => _.IsDeficient == false);
@@ -53,7 +53,7 @@ namespace BridgeCare.DataAccessLayer
         /// <returns></returns>
         private TargetReportModel GetTargetInformation(SimulationModel model, Hashtable yearsIdValues, int[] totalYears, BridgeCareContext db)
         {
-            var targetData = db.Targets.AsNoTracking().Where(t => t.SIMULATIONID == model.SimulationId);
+            var targetData = db.Targets.AsNoTracking().Where(t => t.SIMULATIONID == model.simulationId);
 
             var listRows = new List<string>();
             var idTargets = new Hashtable();

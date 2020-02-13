@@ -13,6 +13,8 @@ function scenarioRouter(Scenario){
         .delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteScenario);
     router.route("/UpdateMongoScenario/:scenarioId")
         .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+    router.route("/UpdateMongoScenarioStatus/:scenarioId")
+        .put(controller.updateScenarioStatus);
     router.route("/AddMultipleScenarios")
         .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.postMultipleScenarios);
 

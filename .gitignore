@@ -359,6 +359,10 @@ connection.config
 
 # Deployment logs
 /Deployment/npmLogs
+/BridgeCareApp/BridgeCare/Logs
+/BridgeCareApp/BridgeCare/RoadCare Projects/Temp
+/RoadCare Projects/Temp
+/BridgeCareApp/BridgeCare/DownloadedReports
 
 # Node error log files
 /BridgeCareApp/BridgeCareNodeApp/logs/nodeErrorLogs.log
