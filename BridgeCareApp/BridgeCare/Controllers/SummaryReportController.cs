@@ -61,7 +61,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public HttpResponseMessage DownloadSummaryReport([FromBody] SimulationModel model)
         {
-            var folderPath = "DownloadedReports";
+            var folderPath = $"DownloadedReports\\{model.simulationId}";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, "SummaryReport.xlsx");
             var response = new HttpResponseMessage();
             if (!File.Exists(filePath))
