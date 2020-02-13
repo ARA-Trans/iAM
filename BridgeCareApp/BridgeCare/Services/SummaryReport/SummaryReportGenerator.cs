@@ -134,8 +134,10 @@ namespace BridgeCare.Services.SummaryReport
                     .Set(s => s.status, "Report generation - Poor Bridge DA TAB");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
-                var folderPath = "DownloadedReports";
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, "SummaryReport.xlsx");
+                var folderPathForSimulation = $"DownloadedReports\\{simulationModel.simulationId}";
+                string relativeFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation);
+                Directory.CreateDirectory(relativeFolderPath);
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation, "SummaryReport.xlsx");
                 byte[] bin = excelPackage.GetAsByteArray();
                 File.WriteAllBytes(filePath, bin);
 
@@ -147,8 +149,8 @@ namespace BridgeCare.Services.SummaryReport
 
         public byte[] DownloadExcelReport(SimulationModel simulationModel)
         {
-            var folderPath = "DownloadedReports";
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, "SummaryReport.xlsx");
+            var folderPathForSimulation = $"DownloadedReports\\{simulationModel.simulationId}";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation, "SummaryReport.xlsx");
             if (File.Exists(filePath))
             {
                 byte[] summaryReportData = File.ReadAllBytes(filePath);
