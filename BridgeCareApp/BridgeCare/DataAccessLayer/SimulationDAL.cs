@@ -37,15 +37,15 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateSimulation(SimulationModel model, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
             {
                 var log = LogManager.GetLogger(typeof(SimulationDAL));
-                log.Error($"No scenario found with id {model.SimulationId}");
-                throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
+                log.Error($"No scenario found with id {model.simulationId}");
+                throw new RowNotInTableException($"No scenario found with id {model.simulationId}");
             }
 
-            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
-            simulation.SIMULATION = model.SimulationName;
+            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.simulationId);
+            simulation.SIMULATION = model.simulationName;
             db.SaveChanges();
         }
 
@@ -114,10 +114,10 @@ namespace BridgeCare.DataAccessLayer
 #endif
 
                 var simulationParameters = new SimulationParameters(
-                    model.SimulationName,
-                    model.NetworkName,
-                    model.SimulationId,
-                    model.NetworkId,
+                    model.simulationName,
+                    model.networkName,
+                    model.simulationId,
+                    model.networkId,
                     mongoConnection,
                     true);
 
