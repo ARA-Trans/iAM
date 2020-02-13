@@ -69,12 +69,12 @@
                     <span>{{selectedScenarioName}}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-toolbar-title  class="white--text">
+                <!-- <v-toolbar-title  class="white--text">
                     <v-btn round class="pink white--text" @click="onJobQueue()">
                         Job list
                         <v-icon right>star</v-icon>
                     </v-btn>
-                </v-toolbar-title>
+                </v-toolbar-title> -->
                 <v-toolbar-title v-if="authenticated" class="white--text">
                     <span class="font-weight-light">Hello, </span>
                     <span>{{username}}</span>
