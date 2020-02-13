@@ -6,6 +6,7 @@ using DatabaseManager;
 using System.Data;
 using System.IO;
 using Simulation.Interface;
+using System.Configuration;
 
 namespace Simulation
 {
@@ -765,11 +766,17 @@ namespace Simulation
 
         static public TextWriter CreateTextWriter(String strFile, out String strOutFile)
         {
-			String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
-			Directory.CreateDirectory(strMyDocumentsFolder);
+            //String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
 
-			strOutFile = strMyDocumentsFolder + "\\" + strFile;
+            // This path will be "..\BridgeCare\iAMApp\BridgeCareApp\BridgeCare"
+            //string workingDirectory = HostingEnvironment.ApplicationPhysicalPath;
+            string val = ConfigurationManager.AppSettings["TempFilePath"];
+            string path = System.Environment.ExpandEnvironmentVariables(val);
+
+            Directory.CreateDirectory(path);
+
+			strOutFile = path + "\\" + strFile;
             TextWriter tw = new StreamWriter(strOutFile);
             return tw;
         }
