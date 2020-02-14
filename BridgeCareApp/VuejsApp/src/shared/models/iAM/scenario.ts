@@ -25,7 +25,7 @@ export const emptyAnalysis: Analysis = {
 };
 
 export interface ScenarioUser {
-    id: number;
+    id?: number;
     username?: string;
     canModify: boolean;
 }

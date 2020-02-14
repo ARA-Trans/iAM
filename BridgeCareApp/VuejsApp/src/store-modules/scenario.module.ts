@@ -102,6 +102,13 @@ const actions = {
                 dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
             });
     },
+    async updateScenarioUsers({ dispatch, commit }: any, payload: any) {
+        return await ScenarioService.updateScenarioUsers(payload.scenario)
+            .then(() => {
+                commit('updatedScenarioMutator', payload.scenario);
+                dispatch('setSuccessMessage', {message: 'Successfully updated scenario sharing settings'});
+            });
+    },
     async deleteScenario({ dispatch, state, commit }: any, payload: any) {
         return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
             .then((response: AxiosResponse<any>) => {

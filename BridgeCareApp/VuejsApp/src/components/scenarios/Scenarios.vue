@@ -199,7 +199,7 @@
 
         <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
 
-        <ShareScenarioDialog :showDialog="showShareScenarioDialog" @submit="onSubmitShareScenario" :scenarioUsers="selectedScenarioUsers"/>
+        <ShareScenarioDialog :showDialog="showShareScenarioDialog" @submit="onSubmitShareScenario" :scenario="sharingScenario"/>
     </v-layout>
 </template>
 
@@ -244,6 +244,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @Action('createScenario') createScenarioAction: any;
         @Action('deleteScenario') deleteScenarioAction: any;
         @Action('updateScenario') updateScenarioAction: any;
+        @Action('updateScenarioUsers') updateScenarioUsersAction: any;
         @Action('getSummaryReportMissingAttributes') getSummaryReportMissingAttributesAction: any;
         @Action('getMongoRollups') getMongoRollupsAction: any;
         @Action('rollupNetwork') rollupNetworkAction: any;
@@ -283,7 +284,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         scenarioId: string = '';
         currentScenario: Scenario = clone(emptyScenario);
         currentRollup: Rollup = clone(emptyRollup);
-        selectedScenarioUsers: ScenarioUser[] = [];
+        sharingScenario: Scenario = clone(emptyScenario);
 
         @Watch('scenarios')
         onScenariosChanged() {
@@ -481,7 +482,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
 
         onShareScenario(scenario: Scenario) {
             this.showShareScenarioDialog = true;
-            this.selectedScenarioUsers = scenario.users;
+            this.sharingScenario = scenario;
         }
 
         onEditScenarioName(scenarioName: string, id: string, simulationId: any) {
@@ -508,12 +509,18 @@ import { getUserName } from '../../shared/utils/get-user-info';
             }
         }
 
-        onSubmitShareScenario(shareScenarioData: any) {
+        onSubmitShareScenario(scenarioUsers: ScenarioUser[]) {
             this.showShareScenarioDialog = false;
 
-            if (hasValue(shareScenarioData)) {
-                // sharescenarioaction?
+            if (scenarioUsers !== null) {
+                this.sharingScenario.users = scenarioUsers;
+
+                this.updateScenarioUsersAction({
+                    scenario: this.sharingScenario
+                });
             }
+            
+            this.sharingScenario = clone(emptyScenario);
         }
     }
 </script>

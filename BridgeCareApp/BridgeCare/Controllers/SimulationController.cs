@@ -14,6 +14,7 @@ namespace BridgeCare.Controllers
     using SimulationUpdateMethod = Action<SimulationModel, UserInformationModel>;
     using SimulationRunMethod = Func<SimulationModel, UserInformationModel, Task<string>>;
     using SimulationDeletionMethod = Action<int, UserInformationModel>;
+    using SimulationUserUpdateMethod = Action<int, List<SimulationUserModel>, UserInformationModel>;
 
     public class SimulationController : ApiController
     {
@@ -27,6 +28,8 @@ namespace BridgeCare.Controllers
         private readonly IReadOnlyDictionary<string, SimulationRunMethod> SimulationRunMethods;
         /// <summary>Maps user roles to methods for deleting simulations</summary>
         private readonly IReadOnlyDictionary<string, SimulationDeletionMethod> SimulationDeletionMethods;
+        /// <summary>Maps user roles to methods for setting simulation users</summary>
+        private readonly IReadOnlyDictionary<string, SimulationUserUpdateMethod> SimulationUserUpdateMethods;
 
         public SimulationController(ISimulation repo, BridgeCareContext db)
         {
@@ -37,6 +40,7 @@ namespace BridgeCare.Controllers
             SimulationUpdateMethods = CreateUpdateMethods();
             SimulationRunMethods = CreateRunMethods();
             SimulationDeletionMethods = CreateDeletionMethods();
+            SimulationUserUpdateMethods = CreateUserUpdateMethods();
         }
 
         /// <summary>
@@ -112,6 +116,22 @@ namespace BridgeCare.Controllers
                 [Role.DISTRICT_ENGINEER] = DeleteOwnedSimulation,
                 [Role.CWOPA] = DeleteOwnedSimulation,
                 [Role.PLANNING_PARTNER] = DeleteOwnedSimulation
+            };
+        }
+
+        private Dictionary<string, SimulationUserUpdateMethod> CreateUserUpdateMethods()
+        {
+            void SetAnySimulationUsers(int id, List<SimulationUserModel> users, UserInformationModel userInformation) =>
+                repo.SetAnySimulationUsers(id, users, db);
+            void SetOwnedSimulationUsers(int id, List<SimulationUserModel> users, UserInformationModel userInformation) =>
+                repo.SetOwnedSimulationUsers(id, users, db, userInformation.Name);
+
+            return new Dictionary<string, SimulationUserUpdateMethod>
+            {
+                [Role.ADMINISTRATOR] = SetAnySimulationUsers,
+                [Role.DISTRICT_ENGINEER] = SetOwnedSimulationUsers,
+                [Role.CWOPA] = SetOwnedSimulationUsers,
+                [Role.PLANNING_PARTNER] = SetOwnedSimulationUsers
             };
         }
 

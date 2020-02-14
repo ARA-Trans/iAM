@@ -6,6 +6,7 @@ import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 import { any, propEq } from 'ramda';
 import {http2XX} from '@/shared/utils/http-utils';
+import { convertFromVueToMongo } from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
@@ -155,6 +156,17 @@ export default class ScenarioService {
                                 };
                                 return resolve(axiosResponse);
                             });
+                    }
+                });
+        });
+    }
+
+    static updateScenarioUsers(scenario: Scenario): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario>>((resolve) => {
+            axiosInstance.post(`/api/SetScenarioUsers/${scenario.simulationId}`, scenario.users)
+                .then((response: AxiosResponse<Scenario>) => {
+                    if (hasValue(response)) {
+                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenario.id}`, convertFromVueToMongo({users: response.data}));
                     }
                 });
         });
