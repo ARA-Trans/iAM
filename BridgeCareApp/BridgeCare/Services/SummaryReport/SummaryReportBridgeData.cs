@@ -29,7 +29,7 @@ namespace BridgeCare.Services
         /// <param name="simulationYears"></param>
         /// <param name="dbContext"></param>
         /// <returns>WorkSummaryModel with simulation and bridge data models</returns>
-        public WorkSummaryModel Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
+        internal WorkSummaryModel Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
         {
             var BRKeys = new List<int>();
 
@@ -121,7 +121,10 @@ namespace BridgeCare.Services
                 }
                 row++;
             }
-            worksheet.Cells[3, totalColumn].Value = totalColumnValue;
+            if(totalColumn != 0)
+            {
+                worksheet.Cells[3, totalColumn].Value = totalColumnValue;
+            }
             currentCell.Row = row - 1;
             currentCell.Column = column - 1;            
         }

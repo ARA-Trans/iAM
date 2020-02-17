@@ -1,10 +1,8 @@
-﻿using BridgeCare.ApplicationLog;
-using BridgeCare.Interfaces;
+﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace BridgeCare.DataAccessLayer
@@ -23,6 +21,10 @@ namespace BridgeCare.DataAccessLayer
 
         public YearlyBudgetAndCost GetData(SimulationModel data, string[] budgetTypes)
         {
+            if(data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
             var budgetForYear = new Hashtable();
 
             var query = "SELECT Years, Budget, Cost_ " +

@@ -15,6 +15,7 @@ using Hangfire.Common;
 using Hangfire.Client;
 using Hangfire.States;
 using BridgeCare.Controllers;
+using BridgeCare.Interfaces.SummaryReport;
 
 namespace BridgeCare
 {
@@ -98,6 +99,7 @@ namespace BridgeCare
             container.RegisterType<ICommittedProjects, CommittedProjects>();
             container.RegisterType<ICommitted, CommittedDAL>();
             container.RegisterType<ICriteriaDrivenBudgets, CriteriaDrivenBudgetsDAL>();
+            container.RegisterType<IWorkSummaryByBudget, WorkSummaryByBudgetDAL>();
 
             //Hangfire IoC configuration
             container.RegisterType<JobStorage>(new InjectionFactory(c => JobStorage.Current));

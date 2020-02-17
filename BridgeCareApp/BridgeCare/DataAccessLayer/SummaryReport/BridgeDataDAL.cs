@@ -183,6 +183,11 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             var treatments = db.Treatments.Where(t => t.SIMULATIONID == simulationId).Select(t => t.TREATMENT).ToList();
             return treatments;
         }
+        public List<string> GetBudgets(int simulationId, BridgeCareContext db)
+        {
+            var budgets = db.CriteriaDrivenBudgets.Where(t => t.SIMULATIONID == simulationId).Select(cri => "'" + cri.BUDGET_NAME + "'").ToList();
+            return budgets;
+        }
 
         #region private methods
         private string GetDynamicColumns(List<int> simulationYears)

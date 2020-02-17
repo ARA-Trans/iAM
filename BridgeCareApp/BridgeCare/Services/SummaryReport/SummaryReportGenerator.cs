@@ -25,12 +25,14 @@ namespace BridgeCare.Services.SummaryReport
         private readonly PoorBridgeDeckArea poorBridgeDeckArea;
         private readonly NHSConditionChart nhsConditionChart;
         private readonly SummaryReportParameters summaryReportParameters;
+        private readonly BridgeWorkSummaryByBudget bridgeWorkSummaryByBudget;
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportGenerator));
 
         public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData,
             BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
-            PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount, SummaryReportParameters summaryReportParameters)
+            PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount, SummaryReportParameters summaryReportParameters,
+            BridgeWorkSummaryByBudget workSummaryByBudget)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
@@ -39,8 +41,9 @@ namespace BridgeCare.Services.SummaryReport
             this.conditionDeckArea = conditionDeckArea ?? throw new ArgumentNullException(nameof(conditionDeckArea));
             this.poorBridgeCount = poorBridgeCount ?? throw new ArgumentNullException(nameof(poorBridgeCount));
             this.poorBridgeDeckArea = poorBridgeDeckArea ?? throw new ArgumentNullException(nameof(poorBridgeDeckArea));
-            this.nhsConditionChart = nhsConditionBridgeCount ?? throw new ArgumentNullException(nameof(nhsConditionBridgeCount));
-            this.summaryReportParameters = summaryReportParameters ?? throw new ArgumentException(nameof(summaryReportParameters));
+            nhsConditionChart = nhsConditionBridgeCount ?? throw new ArgumentNullException(nameof(nhsConditionBridgeCount));
+            this.summaryReportParameters = summaryReportParameters ?? throw new ArgumentNullException(nameof(summaryReportParameters));
+            bridgeWorkSummaryByBudget = workSummaryByBudget ?? throw new ArgumentNullException(nameof(workSummaryByBudget));
         }
 
         /// <summary>
@@ -92,6 +95,14 @@ namespace BridgeCare.Services.SummaryReport
 
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - work summary TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
+                // Bridge work summary by Budget TAB 
+                var summaryByBudgetWorksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary By Budget");
+                bridgeWorkSummaryByBudget.Fill(summaryByBudgetWorksheet, simulationModel, simulationYears);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - Work Summary By Budget");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // NHS Condition Bridge Cnt tab
