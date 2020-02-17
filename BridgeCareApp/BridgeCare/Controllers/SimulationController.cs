@@ -186,7 +186,7 @@ namespace BridgeCare.Controllers
             var result = await Task.Factory.StartNew(() => SimulationRunMethods[userInformation.Role](model, userInformation));
 
             if (result.IsCompleted)
-                repo.SetSimulationLastRunDate(model.SimulationId, db);
+                repo.SetSimulationLastRunDate(model.simulationId, db);
             else
                 return InternalServerError(new Exception(result.Result));
 

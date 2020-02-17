@@ -234,4 +234,16 @@
   <data name="NHSConditionByDeckAreaLLCC" xml:space="preserve">
     <value>NHS Condition By Deck Area LLCC</value>
   </data>
+  <data name="TotalSpent" xml:space="preserve">
+    <value>Total Spent</value>
+  </data>
+  <data name="MPMSTotal" xml:space="preserve">
+    <value>MPMS Total</value>
+  </data>
+  <data name="TotalBridgeCareBudget" xml:space="preserve">
+    <value>Total Bridge Care Budget</value>
+  </data>
+  <data name="RemainingBudget" xml:space="preserve">
+    <value>Remaining Budget</value>
+  </data>
 </root>
