@@ -50,8 +50,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         private void UpdateSimulation(SimulationModel model, BridgeCareContext db)
         {
-            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
-            simulation.SIMULATION = model.SimulationName;
+            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.simulationId);
+            simulation.SIMULATION = model.simulationName;
             db.SaveChanges();
         }
 
@@ -62,9 +62,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId && s.USERNAME == username))
             {
-                log.Warn($"User {username} is not authorized to modify scenario {model.SimulationId}.");
+                log.Warn($"User {username} is not authorized to modify scenario {model.simulationId}.");
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario.");
             }
             UpdateSimulation(model, db);
@@ -196,9 +196,9 @@ namespace BridgeCare.DataAccessLayer
 
         public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId && s.USERNAME == username))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId && s.USERNAME == username))
             {
-                log.Warn($"User {username} is not authorized to run scenario {model.SimulationId}.");
+                log.Warn($"User {username} is not authorized to run scenario {model.simulationId}.");
                 throw new UnauthorizedAccessException("You are not authorized to run this scenario.");
             }
             return RunSimulation(model);
