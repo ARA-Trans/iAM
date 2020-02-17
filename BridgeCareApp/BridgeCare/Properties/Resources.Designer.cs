@@ -340,6 +340,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remaining Budget.
+        /// </summary>
+        internal static string RemainingBudget {
+            get {
+                return ResourceManager.GetString("RemainingBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Replacement.
         /// </summary>
         internal static string Replacement {
@@ -417,6 +426,15 @@ namespace BridgeCare.Properties {
         internal static string Total {
             get {
                 return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Bridge Care Budget.
+        /// </summary>
+        internal static string TotalBridgeCareBudget {
+            get {
+                return ResourceManager.GetString("TotalBridgeCareBudget", resourceCulture);
             }
         }
         

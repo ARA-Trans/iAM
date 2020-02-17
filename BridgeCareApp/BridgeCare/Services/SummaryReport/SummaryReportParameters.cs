@@ -42,6 +42,7 @@ namespace BridgeCare.Services.SummaryReport
             // Simulation Name format
             excelHelper.MergeCells(worksheet, 1, 1, 1, 2);
             excelHelper.MergeCells(worksheet, 1, 3, 1, 10);
+            excelHelper.ApplyColor(worksheet.Cells[1, 1, 1, 2], Color.Gray);
 
             worksheet.Cells["A1:B1"].Value = "Simulation Name";
             worksheet.Cells["C1:J1"].Value = simulationModel.simulationName;
@@ -69,6 +70,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[3, 1, 4, 2]);
 
             excelHelper.MergeCells(worksheet, 6, 1, 6, 2);
+            excelHelper.ApplyColor(worksheet.Cells[6, 1, 6, 2], Color.Gray);
             worksheet.Cells["A6:B6"].Value = "NHS";
             worksheet.Cells["A7"].Value = "NHS";
             worksheet.Cells["A8"].Value = "Non-NHS";
@@ -83,6 +85,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[6, 1, 8, 2]);
 
             excelHelper.MergeCells(worksheet, 10, 1, 10, 2);
+            excelHelper.ApplyColor(worksheet.Cells[10, 1, 10, 2], Color.Gray);
             worksheet.Cells["A10:B10"].Value = "6A19 BPN";
             worksheet.Cells["A11"].Value = "1";
             worksheet.Cells["A12"].Value = "2";
@@ -140,6 +143,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[10, 1, 20, 2]);
 
             excelHelper.MergeCells(worksheet, 23, 1, 23, 2);
+            excelHelper.ApplyColor(worksheet.Cells[23, 1, 23, 2], Color.Gray);
             worksheet.Cells["A23:B23"].Value = "Bridge Length";
             worksheet.Cells["A24"].Value = "8-20";
             worksheet.Cells["A25"].Value = "NBIS Length";
@@ -154,6 +158,7 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["B25"].Value = "Y";
 
             excelHelper.MergeCells(worksheet, 27, 1, 27, 2);
+            excelHelper.ApplyColor(worksheet.Cells[27, 1, 27, 2], Color.Gray);
             worksheet.Cells["A27:B27"].Value = "Status";
             worksheet.Cells["A28"].Value = "Open";
             worksheet.Cells["A29"].Value = "Closed";
@@ -179,6 +184,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[23, 1, 31, 2]);
 
             excelHelper.MergeCells(worksheet, 14, 4, 14, 6);
+            excelHelper.ApplyColor(worksheet.Cells[14, 4, 14, 6], Color.Gray);
             worksheet.Cells["D14:F14"].Value = "5A21 Owner";
 
             excelHelper.MergeCells(worksheet, 15, 4, 15, 5, false);
@@ -311,8 +317,10 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[14, 4, 35, 6]);
 
             excelHelper.MergeCells(worksheet, 14, 8, 14, 10);
+            excelHelper.ApplyColor(worksheet.Cells[14, 8, 14, 10], Color.Gray);
             worksheet.Cells["H14:J14"].Value = "5C22 Functional Class";
             excelHelper.MergeCells(worksheet, 15, 8, 15, 10);
+            excelHelper.ApplyColor(worksheet.Cells[15, 8, 15, 10], Color.DimGray);
             worksheet.Cells["H15:J15"].Value = "Rural";
 
             excelHelper.MergeCells(worksheet, 16, 8, 16, 9, false);
@@ -360,6 +368,7 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["J22"].Value = "Y";
 
             excelHelper.MergeCells(worksheet, 23, 8, 23, 10);
+            excelHelper.ApplyColor(worksheet.Cells[23, 8, 23, 10], Color.DimGray);
             worksheet.Cells["H23:J23"].Value = "Urban";
 
             excelHelper.MergeCells(worksheet, 24, 8, 24, 9, false);
@@ -421,6 +430,8 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 10, 6, 10, 7);
             excelHelper.MergeCells(worksheet, 12, 6, 12, 7);
 
+            excelHelper.ApplyColor(worksheet.Cells[6, 6, 6, 8], Color.Gray);
+
             worksheet.Cells["F6:H6"].Value = "Investment:";
             worksheet.Cells["F8:G8"].Value = "Start Year:";
             worksheet.Cells["F10:G10"].Value = "Analysis Period:";
@@ -453,6 +464,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[8, 14, 14, 15]);
 
             worksheet.Cells["L6:O6"].Value = "Analysis:";
+            excelHelper.ApplyColor(worksheet.Cells[6, 12, 6, 15], Color.Gray);
             worksheet.Cells["L8:M8"].Value = "Optimization:";
             worksheet.Cells["L10:M10"].Value = "Budget:";
             worksheet.Cells["L12:M12"].Value = "Weighting:";
@@ -484,9 +496,10 @@ namespace BridgeCare.Services.SummaryReport
         private void FillPriorities(ExcelWorksheet worksheet, List<PriorityModel> priorities)
         {
             excelHelper.MergeCells(worksheet, 19, 12, 19, worksheet.Dimension.End.Column);
+            excelHelper.ApplyColor(worksheet.Cells[19, 12, 19, worksheet.Dimension.End.Column], Color.Gray);
             excelHelper.MergeCells(worksheet, 20, 13, 20, worksheet.Dimension.End.Column);
 
-            excelHelper.ApplyBorder(worksheet.Cells[20, 12, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column]);
+            excelHelper.ApplyBorder(worksheet.Cells[20, 12, 20, worksheet.Dimension.End.Column]);
 
             worksheet.Cells["L19:Z19"].Value = "Analysis Priorites:";
 
@@ -497,11 +510,11 @@ namespace BridgeCare.Services.SummaryReport
             foreach (var item in priorities)
             {
                 excelHelper.MergeCells(worksheet, startingRow, 13, startingRow, worksheet.Dimension.End.Column, false);
-                excelHelper.ApplyBorder(worksheet.Cells[21, 12, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column]);
                 worksheet.Cells[startingRow, 12].Value = startingRow - 20;
                 worksheet.Cells[startingRow, 13].Value = item.Criteria;
                 startingRow++;
             }
+            excelHelper.ApplyBorder(worksheet.Cells[21, 12, startingRow, worksheet.Dimension.End.Column]);
         }
 
         private void FillJurisdictionCriteria(ExcelWorksheet worksheet, string criteria)
@@ -520,6 +533,8 @@ namespace BridgeCare.Services.SummaryReport
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
             worksheet.Cells[38, 1].Value = "Years";
             worksheet.Cells[38, 2].Value = "Total Funding";
+            excelHelper.ApplyColor(worksheet.Cells[38, 2], Color.DimGray);
+            excelHelper.ApplyColor(worksheet.Cells[38, 1], Color.DimGray);
 
             var startingRowInvestment = 40;
             var startingBudgetHeaderColumn = 2;
@@ -567,7 +582,7 @@ namespace BridgeCare.Services.SummaryReport
             }
             excelHelper.MergeCells(worksheet, 38, 1, 39, 1);
             excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count + 2);
-            excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 3]);
+            excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 2]);
             FillBudgetCriteria(worksheet, startingRowInvestment, criterias);
         }
 
@@ -576,6 +591,7 @@ namespace BridgeCare.Services.SummaryReport
             var rowToApplyBorder = startingRowInvestment + 2;
             worksheet.Cells[startingRowInvestment + 2, 1].Value = "Budget Criteria";
             excelHelper.MergeCells(worksheet, startingRowInvestment + 2, 1, startingRowInvestment + 2, 5);
+            excelHelper.ApplyColor(worksheet.Cells[startingRowInvestment + 2, 1, startingRowInvestment + 2, 5], Color.Gray);
 
             worksheet.Cells[startingRowInvestment + 3, 1].Value = "Budget Name";
             worksheet.Cells[startingRowInvestment + 3, 2].Value = "Criteria";

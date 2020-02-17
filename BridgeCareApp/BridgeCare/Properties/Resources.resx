@@ -240,4 +240,10 @@
   <data name="MPMSTotal" xml:space="preserve">
     <value>MPMS Total</value>
   </data>
+  <data name="TotalBridgeCareBudget" xml:space="preserve">
+    <value>Total Bridge Care Budget</value>
+  </data>
+  <data name="RemainingBudget" xml:space="preserve">
+    <value>Remaining Budget</value>
+  </data>
 </root>

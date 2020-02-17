@@ -99,7 +99,11 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Bridge work summary by Budget TAB 
                 var summaryByBudgetWorksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary By Budget");
-                bridgeWorkSummaryByBudget.Fill(summaryByBudgetWorksheet, simulationModel, simulationYears, workSummaryModel.Treatments);
+                bridgeWorkSummaryByBudget.Fill(summaryByBudgetWorksheet, simulationModel, simulationYears);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Report generation - Work Summary By Budget");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // NHS Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition Bridge Cnt");
