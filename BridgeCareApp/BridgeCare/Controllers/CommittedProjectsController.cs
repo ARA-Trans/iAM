@@ -51,7 +51,7 @@ namespace BridgeCare.Controllers
         public HttpResponseMessage ExportCommittedProjects([FromBody]SimulationModel model)
         {
             var response = Request.CreateResponse();
-            response.Content = new ByteArrayContent(repo.ExportCommittedProjects(model.SimulationId, model.NetworkId, db));
+            response.Content = new ByteArrayContent(repo.ExportCommittedProjects(model.simulationId, model.networkId, db));
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {

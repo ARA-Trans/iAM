@@ -250,6 +250,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MPMS Total.
+        /// </summary>
+        internal static string MPMSTotal {
+            get {
+                return ResourceManager.GetString("MPMSTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NHS Condition By Bridge Count LLCC.
         /// </summary>
         internal static string NHSConditionByBridgeCountLLCC {
@@ -331,6 +340,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remaining Budget.
+        /// </summary>
+        internal static string RemainingBudget {
+            get {
+                return ResourceManager.GetString("RemainingBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Replacement.
         /// </summary>
         internal static string Replacement {
@@ -408,6 +426,24 @@ namespace BridgeCare.Properties {
         internal static string Total {
             get {
                 return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Bridge Care Budget.
+        /// </summary>
+        internal static string TotalBridgeCareBudget {
+            get {
+                return ResourceManager.GetString("TotalBridgeCareBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Spent.
+        /// </summary>
+        internal static string TotalSpent {
+            get {
+                return ResourceManager.GetString("TotalSpent", resourceCulture);
             }
         }
     }

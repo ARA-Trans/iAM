@@ -29,12 +29,12 @@ namespace BridgeCare.Services
         /// <param name="simulationYears"></param>
         /// <param name="dbContext"></param>
         /// <returns>WorkSummaryModel with simulation and bridge data models</returns>
-        public WorkSummaryModel Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
+        internal WorkSummaryModel Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, List<int> simulationYears, BridgeCareContext dbContext)
         {
             var BRKeys = new List<int>();
 
             var sections = bridgeData.GetSectionData(simulationModel, dbContext);
-            var treatments = bridgeData.GetTreatments(simulationModel.SimulationId, dbContext);
+            var treatments = bridgeData.GetTreatments(simulationModel.simulationId, dbContext);
             var simulationDataTable = bridgeData.GetSimulationData(simulationModel, dbContext, simulationYears);
             var projectCostModels = bridgeData.GetReportData(simulationModel, dbContext, simulationYears);
             var sectionIdsFromSimulationTable = from dt in simulationDataTable.AsEnumerable()
@@ -121,7 +121,10 @@ namespace BridgeCare.Services
                 }
                 row++;
             }
-            worksheet.Cells[3, totalColumn].Value = totalColumnValue;
+            if(totalColumn != 0)
+            {
+                worksheet.Cells[3, totalColumn].Value = totalColumnValue;
+            }
             currentCell.Row = row - 1;
             currentCell.Column = column - 1;            
         }
