@@ -62,9 +62,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
-                throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
-            if (!db.Simulations.First(s => s.SIMULATIONID == model.SimulationId).UserCanModify(username))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
+                throw new RowNotInTableException($"No scenario found with id {model.simulationId}");
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == model.simulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario.");
             UpdateSimulation(model, db);
         }
@@ -76,8 +76,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         public void UpdateAnySimulation(SimulationModel model, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
-                throw new RowNotInTableException($"No scenario found with id {model.SimulationId}");
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
+                throw new RowNotInTableException($"No scenario found with id {model.simulationId}");
             UpdateSimulation(model, db);
         }
 
@@ -117,7 +117,7 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with id {id}");
-            if (!db.Simulations.First(s => s.SIMULATIONID == id).UserCanModify(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to delete this scenario.");
             DeleteSimulation(id, db);
         }
@@ -191,9 +191,9 @@ namespace BridgeCare.DataAccessLayer
 
         public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == model.SimulationId))
-                throw new RowNotInTableException($"No scenario was found with id {model.SimulationId}");
-            if (!db.Simulations.First(s => s.SIMULATIONID == model.SimulationId).UserCanModify(username))
+            if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
+                throw new RowNotInTableException($"No scenario was found with id {model.simulationId}");
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == model.simulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to run this scenario.");
             return RunSimulation(model);
         }
@@ -220,10 +220,15 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId))
                 throw new RowNotInTableException($"No scenario found with id {simulationId}.");
-            if (!db.Simulations.First(s => s.SIMULATIONID == simulationId).UserCanModify(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == simulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException($"User {username} cannot modify scenario {simulationId}.");
 
-            var simulation = db.Simulations.Single(s => s.SIMULATIONID == simulationId);
+            var simulation = db.Simulations.Include(s => s.USERS).Single(s => s.SIMULATIONID == simulationId);
+
+            foreach (var user in simulation.USERS.ToArray())
+            {
+                SimulationUserEntity.DeleteEntry(user, db);
+            }
 
             simulation.USERS = simulationUsers.Select(user => new SimulationUserEntity(simulationId, user)).ToList();
 

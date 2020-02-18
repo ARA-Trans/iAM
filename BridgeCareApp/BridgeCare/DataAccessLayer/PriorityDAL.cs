@@ -38,7 +38,7 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
-            if (!db.Simulations.First(s => s.SIMULATIONID == id).UserCanRead(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanRead(username))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's priorities.");
             return GetSimulationPriorityLibrary(id, db);
         }
@@ -130,7 +130,7 @@ namespace BridgeCare.DataAccessLayer
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario was found with id {id}");
-            if (!db.Simulations.First(s => s.SIMULATIONID == id).UserCanModify(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's priorities.");
             return SaveSimulationPriorityLibrary(model, db);
         }

@@ -9,8 +9,6 @@
             <v-card-text>
                 <v-layout column>
                     <v-text-field label="Name" v-model="createScenarioData.name" outline></v-text-field>
-                    <v-checkbox label="Make Public" v-model="public"/> 
-                    <div v-if="public">Warning: You will not be this scenario's owner. Your access to it may be restricted.</div>
                 </v-layout>
             </v-card-text>
             <v-card-actions>

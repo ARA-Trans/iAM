@@ -218,7 +218,8 @@ namespace BridgeCare.Controllers
         [Route("api/SetScenarioUsers/{id}")]
         public IHttpActionResult SetSimulationUsers(int id, [FromBody]SimulationUserModel[] simulationUsers)
         {
-            repo.SetAnySimulationUsers(id, simulationUsers.ToList(), db);
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            SimulationUserUpdateMethods[userInformation.Role](id, simulationUsers.ToList(), userInformation);
             return Ok(simulationUsers);
         }
     }

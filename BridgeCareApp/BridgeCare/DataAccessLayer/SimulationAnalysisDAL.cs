@@ -3,6 +3,7 @@ using BridgeCare.Models;
 using System;
 using System.Data;
 using System.Linq;
+using System.Data.Entity;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -44,7 +45,7 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
-            if (!db.Simulations.First(s => s.SIMULATIONID == id).UserCanRead(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanRead(username))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's analysis.");
             return GetSimulationAnalysis(id, db);
         }
@@ -70,7 +71,7 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.Id))
                 throw new RowNotInTableException($"No scenario found with id {model.Id}");
-            if (!db.Simulations.First(s => s.SIMULATIONID == model.Id).UserCanModify(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == model.Id).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to modify this scenario's analysis.");
 
             var simulation = db.Simulations.Single(s => s.SIMULATIONID == model.Id);

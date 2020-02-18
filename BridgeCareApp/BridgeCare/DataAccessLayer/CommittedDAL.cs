@@ -43,7 +43,7 @@ namespace BridgeCare.DataAccessLayer
             foreach (var committedProjectModel in committedProjectModels) {
                 if (!db.Simulations.Any(s => s.SIMULATIONID == committedProjectModel.SimulationId))
                     throw new RowNotInTableException($"No simulation found with id {committedProjectModel.SimulationId}");
-                if (!db.Simulations.First(s => s.SIMULATIONID == committedProjectModel.SimulationId).UserCanModify(username))
+                if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == committedProjectModel.SimulationId).UserCanModify(username))
                     throw new UnauthorizedAccessException("You are not authorized to modify this scenario's committed projects.");
             }
             SaveCommittedProjects(committedProjectModels, db);
@@ -71,7 +71,7 @@ namespace BridgeCare.DataAccessLayer
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId))
                 throw new RowNotInTableException($"No scenario found with id {simulationId}.");
-            if (!db.Simulations.First(s => s.SIMULATIONID == simulationId).UserCanRead(username))
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == simulationId).UserCanRead(username))
                 throw new UnauthorizedAccessException("You are not authorized to view this scenario's committed projects.");
             return GetCommittedProjects(simulationId, db);
         }

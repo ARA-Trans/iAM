@@ -39,7 +39,7 @@ function scenarioController(Scenario) {
         });
     }
 
-/**
+    /**
      * PUT Nodejs API endpoint for scenario; returns updates & returns a scenario
      * @param req
      * @param res
@@ -76,8 +76,8 @@ function scenarioController(Scenario) {
         } else {
             const query = {
                 $or: [
-                    {owner: [req.user.username, undefined]},
-                    {users: { $elemMatch: {username: req.user.username}}}
+                    {owner: [req.user.username, null, undefined]},
+                    {users: { $elemMatch: {username: [req.user.username, null, undefined]}}}
                 ]
             };
             Scenario.find(query, (err, scenariostatus) => {

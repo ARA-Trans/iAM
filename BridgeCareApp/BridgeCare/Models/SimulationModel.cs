@@ -16,7 +16,6 @@ namespace BridgeCare.Models
         public string Creator { get; set; }
         [Required]
         public int networkId { get; set; }
-        public string Owner { get; set; }
         public DateTime? Created { get; set; }
         public DateTime? LastRun { get; set; }
         public List<SimulationUserModel> Users { get; set; }

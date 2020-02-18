@@ -18,11 +18,20 @@
                         <div class="sharing-text">
                             {{newUser.canModify ? "Can Modify" : "Cannot Modify"}}
                         </div>
-                        <v-btn icon title="Add User"
+                        <v-btn title="Add User"
                             :disabled="newUser.username==''"
-                            class="ara-blue sharing-button"
+                            class="ara-blue-bg white--text sharing-button"
                             @click="onAddUser()">
-                            <v-icon>fas fa-plus</v-icon>
+                            Share
+                        </v-btn>
+                    </v-layout>
+                    <v-layout>
+                        <v-btn class="ara-blue-bg white--text"
+                            title="Share With Everyone"
+                            style="margin: auto"
+                            :disabled="public"
+                            @click="onSetPublic()">
+                            Share with everyone
                         </v-btn>
                     </v-layout>
                     <v-layout justify-center style="margin-top: 2em"
@@ -32,7 +41,7 @@
                     <v-layout class="sharing-row"
                         v-for="user in scenarioUsers">
                         <div class="sharing-username">
-                            {{user.username}}
+                            {{user.username === null ? "[All Users]" : user.username}}
                         </div>
                         <v-switch class="sharing-checkbox" 
                             v-model="user.canModify" />
@@ -65,7 +74,7 @@
     import {
         ScenarioCreationData, emptyCreateScenarioData
     } from '@/shared/models/modals/scenario-creation-data';
-    import {clone, append, reject} from 'ramda';
+    import {clone, append, reject, any} from 'ramda';
     import { getUserName } from '../../../shared/utils/get-user-info';
 import { ScenarioUser, Scenario, emptyScenario } from '../../../shared/models/iAM/scenario';
 
@@ -75,19 +84,29 @@ import { ScenarioUser, Scenario, emptyScenario } from '../../../shared/models/iA
         @Prop() scenario: Scenario;
         scenarioUsers: ScenarioUser[] = [];
         newUser: ScenarioUser = {username: '', canModify: false};
+        public: boolean = false;
 
         @Watch('scenario')
         onScenarioChanged() {
             this.scenarioUsers = clone(this.scenario.users);
+            this.public = any(user => user.username === null, this.scenarioUsers);
         }
 
         onRemoveUser(removedUser: ScenarioUser) {
+            if (removedUser.username === null) {
+                this.public = false;
+            }
             this.scenarioUsers = reject(user => user.username == removedUser.username, this.scenarioUsers);
         }
 
         onAddUser() {
             this.scenarioUsers = append(clone(this.newUser), this.scenarioUsers);
             this.newUser = {username: '', canModify: false};
+        }
+
+        onSetPublic() {
+            this.scenarioUsers = append({username: null, canModify: false}, this.scenarioUsers);
+            this.public = true;
         }
 
         /**
