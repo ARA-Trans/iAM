@@ -73,6 +73,12 @@
                     <span>{{selectedScenarioName}}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
+                <!-- <v-toolbar-title  class="white--text">
+                    <v-btn round class="pink white--text" @click="onJobQueue()">
+                        Job list
+                        <v-icon right>star</v-icon>
+                    </v-btn>
+                </v-toolbar-title> -->
                 <v-toolbar-title v-if="authenticated" class="white--text">
                     <span class="font-weight-light">Hello, </span>
                     <span>{{username}}</span>
@@ -115,6 +121,7 @@
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
     import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
     import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
+    import ReportsService from './services/reports.service';
 
     @Component({
         components: {Spinner}
@@ -299,6 +306,16 @@
             if(this.$router.currentRoute.path !== routeName) {
                 this.$router.push(routeName);
             }
+        }
+        async onJobQueue(){
+            await ReportsService.getJobList()
+                                    .then((response: AxiosResponse<any>) => {
+                                        if(response == undefined){
+                                          this.setErrorMessageAction({message: 'unauthorized access'});
+                                        } else{
+                                          window.open(process.env.VUE_APP_URL + '/hangfire/');
+                                        }
+                                    });
         }
     }
 </script>

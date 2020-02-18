@@ -1,4 +1,4 @@
-﻿using BridgeCare.EntityClasses;
+using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
@@ -8,17 +8,18 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using BridgeCare.Properties;
 using DatabaseManager;
 using log4net;
+using Simulation;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class SimulationDAL : ISimulation
     {
         private static readonly log4net.ILog log = LogManager.GetLogger(typeof(SimulationDAL));
+        private static readonly SimulationQueue SimulationQueue = new SimulationQueue(1);
         /// <summary>
         /// Fetches all simulations
         /// </summary>
@@ -49,8 +50,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         private void UpdateSimulation(SimulationModel model, BridgeCareContext db)
         {
-            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.SimulationId);
-            simulation.SIMULATION = model.SimulationName;
+            var simulation = db.Simulations.Single(b => b.SIMULATIONID == model.simulationId);
+            simulation.SIMULATION = model.simulationName;
             db.SaveChanges();
         }
 
@@ -153,20 +154,31 @@ namespace BridgeCare.DataAccessLayer
         /// <returns>string Task</returns>
         public Task<string> RunSimulation(SimulationModel model)
         {
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             try
             {
                 var connectionString = ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString;
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
+
 #if DEBUG
                 var mongoConnection = Settings.Default.MongoDBDevConnectionString;
 #else
                 var mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var simulation = new Simulation.Simulation(model.SimulationName, model.NetworkName, model.SimulationId, model.NetworkId, mongoConnection);
 
-                Thread simulationThread = new Thread(new ParameterizedThreadStart(simulation.CompileSimulation));
+                var simulationParameters = new SimulationParameters(
+                    model.simulationName,
+                    model.networkName,
+                    model.simulationId,
+                    model.networkId,
+                    mongoConnection,
+                    true);
 
-                simulationThread.Start(true);
+                var simulationTask = SimulationQueue.Enqueue(simulationParameters);
 
                 return Task.FromResult("Simulation running...");
             }

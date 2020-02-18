@@ -34,8 +34,8 @@ namespace BridgeCare.DataAccessLayer
 #else
                 mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
-                var rollupSegmentation = new RollupSegmentation.RollupSegmentation(model.NetworkName,
-                    model.NetworkId.ToString(), true, mongoConnection) {strNetwork = model.NetworkName};
+                var rollupSegmentation = new RollupSegmentation.RollupSegmentation(model.networkName,
+                    model.networkId.ToString(), true, mongoConnection) {strNetwork = model.networkName};
 
                 var rollupAndSimulation = new Thread(rollupSegmentation.DoRollup);
                 rollupAndSimulation.Start();

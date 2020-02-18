@@ -52,7 +52,7 @@ namespace BridgeCare.Controllers
         {
             var response = Request.CreateResponse();
             var userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
-            byte[] byteArray = repo.ExportCommittedProjects(model.SimulationId, model.NetworkId, db, userInformation);
+            byte[] byteArray = repo.ExportCommittedProjects(model.simulationId, model.networkId, db, userInformation);
             response.Content = new ByteArrayContent(byteArray);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")

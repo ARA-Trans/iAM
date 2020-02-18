@@ -171,6 +171,17 @@ export default class ScenarioService {
                 });
         });
     }
+    
+    static updateScenarioStatus(scenarioStatus: String, scenarioId: number): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario>>((resolve) => {
+            nodejsAxiosInstance.put(`api/UpdateMongoScenarioStatus/${scenarioId}`, {status: scenarioStatus})
+                .then((response: AxiosResponse<Scenario>) => {
+                    if (hasValue(response)) {
+                        return resolve(response);
+                    }
+                });
+        });
+    }
 
     static deleteScenario(scenarioId: number, scenarioMongoId: string): AxiosPromise {
         return new Promise<AxiosResponse>((resolve) => {

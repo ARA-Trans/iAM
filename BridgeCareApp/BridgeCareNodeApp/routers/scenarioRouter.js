@@ -14,6 +14,8 @@ function scenarioRouter(Scenario){
         .delete(authorizationFilter(), controller.deleteScenario);
     router.route("/UpdateMongoScenario/:scenarioId")
         .put(authorizationFilter(), controller.put);
+    router.route("/UpdateMongoScenarioStatus/:scenarioId")
+        .put(controller.updateScenarioStatus);
     router.route("/AddMultipleScenarios")
         .post(authorizationFilter(), controller.postMultipleScenarios);
 

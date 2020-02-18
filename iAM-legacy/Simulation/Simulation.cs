@@ -222,6 +222,7 @@ namespace Simulation
         public void CompileSimulation(object isAPICall)
         {
             APICall = isAPICall;
+            SimulationMessaging.IsDesktop = !isAPICall.Equals(true);
 
             SimulationMessaging.DateTimeStart = DateTime.Now;
             //Get Attribute types

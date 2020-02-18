@@ -1,47 +1,101 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
+    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="1000px">
         <v-card>
-            <v-card-title>
+            <v-card-text class="criteria-editor-card-text">
                 <v-layout column>
-                    <v-flex>
-                        <v-layout justify-center>
-                            <h3>Criteria Editor</h3>
-                        </v-layout>
-                    </v-flex>
-
-                    <v-flex>
-                        Current Criteria Output
-                        <v-textarea rows="5" no-resize outline readonly full-width :value="currentCriteriaOutput">
-                        </v-textarea>
-                        <div class="validation-message-div">
-                            <v-layout justify-end>
-                                <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
-                                <p class="valid-message" v-if="showValidMessage">{{validMessage}}</p>
-                            </v-layout>
-                        </div>
-                    </v-flex>
+                    <v-layout justify-space-between row>
+                        <v-flex xs5>
+                            <v-card>
+                                <v-card-title>
+                                    <v-layout justify-center><h3>Output</h3></v-layout>
+                                </v-card-title>
+                                <div class="conjunction-and-messages-container">
+                                    <div class="sub-text">
+                                        <v-layout justify-start>
+                                            <p class="invalid-message" v-if="invalidCriteriaMessage !== null">{{invalidCriteriaMessage}}</p>
+                                            <p class="valid-message" v-if="validCriteriaMessage !== null">{{validCriteriaMessage}}</p>
+                                        </v-layout>
+                                    </div>
+                                    <v-layout justify-space-between>
+                                        <div class="conjunction-select-list-container">
+                                            <v-select class="conjunction-select-list" :items="conjunctionSelectListItems"
+                                                      v-model="selectedConjunction" lablel="Select a Conjunction">
+                                            </v-select>
+                                        </div>
+                                        <v-btn class="ara-blue-bg white--text" @click="onAddSubCriteria">Add Criteria</v-btn>
+                                    </v-layout>
+                                </div>
+                                <v-card-text class="clauses-card">
+                                    <div v-for="(clause, index) in subCriteriaClauses">
+                                        <v-layout column>
+                                            <v-textarea class="clause-textarea" rows="3" no-resize box :class="{'textarea-focused': index === selectedSubCriteriaClauseIndex}"
+                                                         readonly full-width :value="clause" @click="onClickSubCriteriaClauseTextarea(clause, index)">
+                                                <template slot="append">
+                                                    <v-btn class="ara-orange" icon @click="onRemoveSubCriteria(index)">
+                                                        <v-icon>fas fa-times</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                            </v-textarea>
+                                            <v-layout justify-center v-if="subCriteriaClauses.length > 1 && index !== subCriteriaClauses.length - 1">
+                                                <p>{{selectedConjunction}}</p>
+                                            </v-layout>
+                                        </v-layout>
+                                    </div>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn class="ara-blue-bg white--text" @click="onCheckCriteria" :disabled="onDisableCriteriaCheck()">
+                                        Check
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-flex>
+                        <v-flex xs7>
+                            <v-card>
+                                <v-card-title>
+                                    <v-layout justify-center><h3>Criteria Editor</h3></v-layout>
+                                </v-card-title>
+                                <div class="sub-criteria-messages-container">
+                                    <div class="sub-text">
+                                        <v-layout justify-start>
+                                            <p class="invalid-message" v-if="invalidSubCriteriaMessage !== null">{{invalidSubCriteriaMessage}}</p>
+                                            <p class="valid-message" v-if="validSubCriteriaMessage !== null">{{validSubCriteriaMessage}}</p>
+                                        </v-layout>
+                                    </div>
+                                </div>
+                                <v-card-text class="criteria-editor-container">
+                                    <v-tabs v-if="selectedSubCriteriaClauseIndex !== -1" centered>
+                                        <v-tab ripple @click="onParseRawSubCriteria">
+                                            Tree View
+                                        </v-tab>
+                                        <v-tab ripple @click="onParseSubCriteriaJson">
+                                            Raw Criteria
+                                        </v-tab>
+                                        <v-tab-item>
+                                            <vue-query-builder v-if="queryBuilderRules.length > 0" :labels="queryBuilderLabels"
+                                                               :rules="queryBuilderRules" :maxDepth="25" :styled="true"
+                                                               v-model="selectedSubCriteriaClause">
+                                            </vue-query-builder>
+                                        </v-tab-item>
+                                        <v-tab-item>
+                                            <v-textarea rows="20" no-resize outline v-model="selectedRawSubCriteriaClause"></v-textarea>
+                                        </v-tab-item>
+                                    </v-tabs>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn class="ara-blue-bg white--text" @click="onCheckSubCriteria" :disabled="onDisableSubCriteriaCheck()">
+                                        Check
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
                 </v-layout>
-            </v-card-title>
-            <v-divider></v-divider>
-            <v-card-text class="query-builder-card-text">
-                <div v-if="editorRules.length > 0">
-                    <vue-query-builder :labels="queryBuilderLabels" :rules="editorRules" :maxDepth="25" :styled="true"
-                                       v-model="criteria">
-                    </vue-query-builder>
-                </div>
             </v-card-text>
-            <v-divider></v-divider>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-flex xs2>
-                        <v-layout>
-                            <v-btn class="ara-blue-bg white--text" @click="onCheckCriteria">Check</v-btn>
-                            <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">
-                                Save
-                            </v-btn>
-                        </v-layout>
-                    </v-flex>
-
+                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">
+                        Save
+                    </v-btn>
                     <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
@@ -54,15 +108,15 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, emptyCriteria} from '../models/iAM/criteria';
-    import {parseCriteriaString, parseQueryBuilderJson} from '../utils/criteria-editor-parsers';
+    import {Criteria, CriteriaType, emptyCriteria} from '../models/iAM/criteria';
+    import {parseCriteriaString, parseCriteriaJson, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
-    import {isEmpty} from 'ramda';
+    import {isEmpty, clone, update, remove, findIndex, isNil, equals} from 'ramda';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import CriteriaEditorService from '@/services/criteria-editor.service';
     import {AxiosResponse} from 'axios';
-    import {CriteriaValidation} from '@/shared/models/iAM/criteria-validation';
+    import {SelectItem} from '@/shared/models/vue/select-item';
 
     @Component({
         components: {VueQueryBuilder}
@@ -74,8 +128,8 @@
 
         @Action('getAttributes') getAttributesAction: any;
 
-        criteria: Criteria = {...emptyCriteria};
-        editorRules: any[] = [];
+        mainCriteria: Criteria = clone(emptyCriteria);
+        queryBuilderRules: any[] = [];
         queryBuilderLabels: object = {
             'matchType': '',
             'matchTypes': [
@@ -88,49 +142,93 @@
             'removeGroup': '&times;',
             'textInputPlaceholder': 'value'
         };
-        currentCriteriaOutput = '';
-        showInvalidMessage: boolean = false;
-        showValidMessage: boolean = false;
-        cannotSubmit: boolean = false;
-        validMessage: string = '';
-        invalidMessage: string = '';
+        cannotSubmit: boolean = true;
+        validCriteriaMessage: string | null = null;
+        invalidCriteriaMessage: string | null = null;
+        validSubCriteriaMessage: string | null = null;
+        invalidSubCriteriaMessage: string | null = null;
+        conjunctionSelectListItems: SelectItem[] = [
+            {text: 'OR', value: 'OR'},
+            {text: 'AND', value: 'AND'}
+        ];
+        selectedConjunction: string = 'OR';
+        subCriteriaClauses: string[] = [];
+        selectedSubCriteriaClauseIndex: number = -1;
+        selectedSubCriteriaClause: Criteria | null = null;
+        selectedRawSubCriteriaClause: string = '';
+        activeTab = 'tree-view';
 
         /**
          * Component mounted event handler
          */
         mounted() {
             if (hasValue(this.stateAttributes)) {
-                this.setEditorRules();
+                this.setQueryBuilderRules();
             }
         }
 
         /**
-         * Sets the criteria object with the dialogData object's parsed criteria string, then dispatches an action to
-         * get the attributes from the server if the attributes array is empty
+         * Setter: mainCriteria property
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            this.criteria = parseCriteriaString(this.dialogData.criteria);
-            if (isEmpty(this.criteria.logicalOperator)) {
-                this.criteria.logicalOperator = 'AND';
+            this.mainCriteria = parseCriteriaString(this.dialogData.criteria) as Criteria;
+            if (this.mainCriteria && isEmpty(this.mainCriteria.logicalOperator)) {
+                this.mainCriteria.logicalOperator = 'OR';
             }
         }
 
         /**
-         * Calls the setEditorRules function if a change to stateAttributes causes it to have a value
+         * Calls setQueryBuilderRules func. if stateAttributes property has value
          */
         @Watch('stateAttributes')
         onStateAttributesChanged() {
             if (hasValue(this.stateAttributes)) {
-                this.setEditorRules();
+                this.setQueryBuilderRules();
             }
         }
 
         /**
-         * Sets editorRules property using the attributes from state
+         * Calls the setter for the subCriteriaClauses property and sets related component UI properties
          */
-        setEditorRules() {
-            this.editorRules = this.stateAttributes.map((attribute: Attribute) => ({
+        @Watch('mainCriteria')
+        onCriteriaChanged() {
+            this.resetComponentCriteriaUIProperties();
+            this.setSubCriteriaClauses();
+        }
+
+        /**
+         * Setter: selectedConjunction property
+         */
+        @Watch('subCriteriaClauses')
+        onSubCriteriaClausesChanged() {
+            if (!hasValue(this.selectedConjunction) && hasValue(this.mainCriteria)) {
+                this.selectedConjunction = hasValue(this.mainCriteria.logicalOperator)
+                    ? this.mainCriteria.logicalOperator : 'OR';
+            }
+        }
+
+        /**
+         * Calls the resetSubCriteriaValidationMessageProperties func. on selectedSubCriteriaClause property change
+         */
+        @Watch('selectedSubCriteriaClause')
+        onSelectedClauseChanged() {
+            this.resetSubCriteriaValidationMessageProperties();
+        }
+
+        /**
+         * Calls the resetSubCriteriaValidationMessageProperties func. on selectedRawSubCriteriaClause property change
+         */
+        @Watch('selectedRawSubCriteriaClause')
+        onSelectedClauseRawChanged() {
+            this.resetSubCriteriaValidationMessageProperties();
+        }
+
+        /**
+         * Setter: queryBuilderRules property
+         */
+        setQueryBuilderRules() {
+            this.queryBuilderRules = this.stateAttributes.map((attribute: Attribute) => ({
                 type: 'text',
                 label: attribute.name,
                 id: attribute.name,
@@ -139,94 +237,284 @@
         }
 
         /**
-         * Calls the setCurrentCriteriaOutput function when the criteria object has been modified
+         * Setter: subCriteriaClauses property
          */
-        @Watch('criteria')
-        onCriteriaChanged() {
-            this.setCurrentCriteriaOutput();
-            // reset criteria validation properties
-            this.showInvalidMessage = false;
-            this.showValidMessage = false;
-            this.cannotSubmit = !isEmpty(parseQueryBuilderJson(this.criteria).join('')) ||
-                                this.dialogData.criteria === parseQueryBuilderJson(this.criteria).join('');
-        }
-
-        /**
-         * Sets the currentCriteriaOutput string based on if the current criteria is valid or not
-         */
-        setCurrentCriteriaOutput() {
-            if (this.isNotValidCriteria()) {
-                this.currentCriteriaOutput = 'Could Not Parse Current Criteria';
-            } else {
-                this.currentCriteriaOutput = parseQueryBuilderJson(this.criteria).join('');
+        setSubCriteriaClauses() {
+            this.subCriteriaClauses = [];
+            if (hasValue(this.mainCriteria) && hasValue(this.mainCriteria.children)) {
+                this.mainCriteria.children!.forEach((criteriaType: CriteriaType) => {
+                    const clause: string = parseCriteriaTypeJson(criteriaType);
+                    if (hasValue(clause)) {
+                        this.subCriteriaClauses.push(clause);
+                    }
+                });
             }
         }
 
         /**
-         * Determines if the current criteria data is valid or not
+         * Resets component criteria UI related properties to their default values
          */
-        isNotValidCriteria() {
-            return !hasValue(parseQueryBuilderJson(this.criteria).join(''));
+        resetComponentCriteriaUIProperties() {
+            this.validCriteriaMessage = null;
+            this.invalidCriteriaMessage = null;
+            this.cannotSubmit = true;
         }
 
+        /**
+         * Resets component sub-criteria UI related properties to their default values
+         */
+        resetSubCriteriaValidationMessageProperties() {
+            this.validSubCriteriaMessage = null;
+            this.invalidSubCriteriaMessage = null;
+        }
+
+        /**
+         * Resets component sub-criteria 'selected' named properties to their default values
+         */
+        resetSubCriteriaSelectedProperties() {
+            this.selectedSubCriteriaClauseIndex = -1;
+            this.selectedSubCriteriaClause = null;
+            this.selectedRawSubCriteriaClause = '';
+        }
+
+        /**
+         * Functionality for adding a new clause
+         */
+        onAddSubCriteria() {
+            this.resetSubCriteriaSelectedProperties();
+            setTimeout(() => {
+                this.subCriteriaClauses.push('');
+                this.selectedSubCriteriaClauseIndex = this.subCriteriaClauses.length - 1;
+                this.selectedSubCriteriaClause = clone(emptyCriteria);
+            });
+        }
+
+        /**
+         * Sets the selectedSubCriteriaClause & selectedSubCriteriaClauseIndex property with the specified clause & clauseIndex parameters;
+         * sets an invalid sub-criteria message if the clause cannot be parsed
+         */
+        onClickSubCriteriaClauseTextarea(subCriteriaClause: string, subCriteriaClauseIndex: number) {
+            this.resetSubCriteriaSelectedProperties();
+            setTimeout(() => {
+                this.selectedSubCriteriaClauseIndex = subCriteriaClauseIndex;
+                this.selectedSubCriteriaClause = parseCriteriaString(subCriteriaClause);
+                if (this.selectedSubCriteriaClause) {
+                    if (!hasValue(this.selectedSubCriteriaClause.logicalOperator)) {
+                        this.selectedSubCriteriaClause.logicalOperator = 'OR';
+                    }
+                } else {
+                    this.invalidSubCriteriaMessage = 'Unable to parse selected criteria';
+                }
+            });
+        }
+
+        /**
+         * Removes a sub-criteria from the subCriteriaClauses property
+         */
+        onRemoveSubCriteria(subCriteriaClauseIndex: number) {
+            this.subCriteriaClauses = remove(subCriteriaClauseIndex, 1, this.subCriteriaClauses);
+
+            if (this.selectedSubCriteriaClauseIndex === subCriteriaClauseIndex) {
+                this.resetSubCriteriaSelectedProperties();
+            } else {
+                this.selectedSubCriteriaClauseIndex = findIndex((subCriteriaClause: string) => {
+                    const parsedCriteriaJson = parseCriteriaJson(this.selectedSubCriteriaClause as Criteria);
+                    if (parsedCriteriaJson) {
+                        return subCriteriaClause === parsedCriteriaJson.join('');
+                    }
+                    return subCriteriaClause === this.selectedRawSubCriteriaClause;
+                }, this.subCriteriaClauses);
+            }
+        }
+
+        /**
+         * Parses the raw criteria for the tree view if valid; otherwise sets an invalid sub-criteria message
+         */
+        onParseRawSubCriteria() {
+            this.activeTab = 'tree-view';
+            this.resetSubCriteriaValidationMessageProperties();
+            const parsedRawSubCriteria = parseCriteriaString(this.selectedRawSubCriteriaClause);
+            if (parsedRawSubCriteria) {
+                this.selectedSubCriteriaClause = parsedRawSubCriteria;
+                if (!hasValue(this.selectedSubCriteriaClause.logicalOperator)) {
+                    this.selectedSubCriteriaClause.logicalOperator = 'OR';
+                }
+            } else {
+                this.invalidSubCriteriaMessage = 'The raw criteria string is invalid';
+            }
+        }
+
+        /**
+         * Parses the tree view criteria json for the raw criteria view
+         */
+        onParseSubCriteriaJson() {
+            this.activeTab = 'raw-criteria';
+            this.resetSubCriteriaValidationMessageProperties();
+            const parsedSubCriteria = parseCriteriaJson(this.selectedSubCriteriaClause as Criteria);
+            if (parsedSubCriteria) {
+                this.selectedRawSubCriteriaClause = parsedSubCriteria.join('');
+            } else {
+                this.invalidSubCriteriaMessage = 'The criteria json is invalid';
+            }
+        }
+
+        /**
+         * Checks criteria editor validity and if valid modifies the main criteria with the editor changes; otherwise
+         * sets an invalid criteria message
+         */
         onCheckCriteria() {
-            const criteriaValidation: CriteriaValidation = {
-                criteria: parseQueryBuilderJson(this.criteria).join('')
+            this.resetSubCriteriaSelectedProperties();
+
+            const criteria: Criteria = {
+                logicalOperator: this.selectedConjunction,
+                children: this.subCriteriaClauses
+                    .filter((subCriteriaClause: string) => !isEmpty(subCriteriaClause))
+                    .map((subCriteriaClause: string) => {
+                        const parsedSubCriteriaClause: Criteria = parseCriteriaString(subCriteriaClause) as Criteria;
+                        if (parsedSubCriteriaClause.children!.length === 1) {
+                            return parsedSubCriteriaClause.children![0];
+                        }
+                        return {
+                            type: 'query-builder-group',
+                            query: {
+                                logicalOperator: parsedSubCriteriaClause.logicalOperator,
+                                children: parsedSubCriteriaClause.children
+                            }
+                        };
+                    })
             };
 
-            CriteriaEditorService.checkCriteriaValidity(criteriaValidation)
+            const parsedCriteria = parseCriteriaJson(criteria);
+            if (parsedCriteria) {
+                CriteriaEditorService.checkCriteriaValidity({criteria: parsedCriteria.join('')})
+                    .then((response: AxiosResponse<string>) => {
+                        if (response.data.indexOf('results match query') !== -1) {
+                            this.mainCriteria = clone(criteria);
+                            setTimeout(() => {
+                                this.validCriteriaMessage = response.data;
+                                this.cannotSubmit = false;
+                            });
+                        } else {
+                            this.resetComponentCriteriaUIProperties();
+                            setTimeout(() => this.invalidCriteriaMessage = response.data);
+                        }
+                    });
+            } else {
+                this.invalidCriteriaMessage = 'Unable to parse criteria';
+            }
+        }
+
+        /**
+         * Checks the validity of the currently selected sub-criteria and sets an appropriate validation message based
+         * on the validity
+         */
+        onCheckSubCriteria() {
+            const criteria = this.getSubCriteriaValueToCheck();
+
+            if (isNil(criteria)) {
+                this.invalidSubCriteriaMessage = 'Unable to parse criteria';
+                return;
+            }
+            if (isEmpty(criteria)) {
+                this.invalidSubCriteriaMessage = 'No criteria to evaluate';
+                return;
+            }
+
+            CriteriaEditorService.checkCriteriaValidity({criteria: criteria})
                 .then((response: AxiosResponse<string>) => {
+                    this.resetSubCriteriaValidationMessageProperties();
+
                     if (response.data.indexOf('results match query') !== -1) {
-                        this.validMessage = response.data;
-                        // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
-                        this.showValidMessage = true;
-                        this.cannotSubmit = false;
-                        this.showInvalidMessage = false;
+                        this.resetComponentCriteriaUIProperties();
+                        this.validSubCriteriaMessage = response.data;
+                        this.subCriteriaClauses = update(
+                            this.selectedSubCriteriaClauseIndex,
+                            criteria,
+                            this.subCriteriaClauses
+                        );
                     } else {
-                        this.invalidMessage = response.data;
-                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
-                        this.invalidMessage = response.data;
-                        this.showInvalidMessage = true;
-                        this.cannotSubmit = true;
-                        this.showValidMessage = false;
+                        this.invalidSubCriteriaMessage = response.data;
                     }
                 });
         }
 
         /**
-         * Emits the parsed criteria object's data to the calling parent component, or null if the user clicked the
-         * 'Cancel' button
+         * Getter: the sub-criteria value to check
          */
-        onSubmit(submit: boolean) {
-            // reset component's calculated properties
-            this.resetComponentCalculatedProperties();
-
-            if (submit) {
-                this.$emit('submit', parseQueryBuilderJson(this.criteria).join(''));
-            } else {
-                this.$emit('submit', null);
+        getSubCriteriaValueToCheck() {
+            if (this.activeTab === 'tree-view') {
+                const parsedCriteriaJson = parseCriteriaJson(this.selectedSubCriteriaClause as Criteria);
+                if (parsedCriteriaJson) {
+                    return parsedCriteriaJson.join('');
+                }
+                return null;
             }
-
+            return this.selectedRawSubCriteriaClause;
         }
 
         /**
-         * Resets component's calculated properties
+         * Emits the parsed criteria object's data to the calling parent component or null if the user clicked the
+         * 'Cancel' button
          */
-        resetComponentCalculatedProperties() {
-            this.showInvalidMessage = false;
-            this.showValidMessage = false;
-            this.cannotSubmit = false;
+        onSubmit(submit: boolean) {
+            this.resetSubCriteriaSelectedProperties();
+            this.resetComponentCriteriaUIProperties();
+
+            if (submit) {
+                const parsedCriteria = parseCriteriaJson(this.mainCriteria);
+                if (parsedCriteria) {
+                    this.selectedConjunction = 'OR';
+                    this.$emit('submit', parsedCriteria.join(''));
+                } else {
+                    this.invalidCriteriaMessage = 'Unable to parse the criteria';
+                }
+            } else {
+                this.selectedConjunction = 'OR';
+                this.$emit('submit', null);
+            }
+        }
+
+        /**
+         * Determines whether or not the main criteria 'Check' button should be disabled
+         */
+        onDisableCriteriaCheck() {
+            const subCriteriaClausesAreEmpty = this.subCriteriaClauses
+                .every((subCriteriaClause: string) => isEmpty(subCriteriaClause));
+            return (equals(this.mainCriteria, emptyCriteria) && subCriteriaClausesAreEmpty) ||
+                   (!hasValue(this.mainCriteria.children) && subCriteriaClausesAreEmpty);
+        }
+
+        /**
+         * Determines whether or not the sub-criteria 'Check' button should be disabled
+         */
+        onDisableSubCriteriaCheck() {
+            const parsedSelectedSubCriteriaClause = parseCriteriaJson(this.selectedSubCriteriaClause as Criteria);
+            const parsedSelectedRawSubCriteriaClause = parseCriteriaJson(parseCriteriaString(this.selectedRawSubCriteriaClause) as Criteria);
+            return this.selectedSubCriteriaClauseIndex === -1 ||
+                   (
+                       this.activeTab === 'tree-view' &&
+                       (
+                           parsedSelectedSubCriteriaClause === null ||
+                           equals(this.selectedSubCriteriaClause, emptyCriteria)) ||
+                           (parsedSelectedSubCriteriaClause && isEmpty(parsedSelectedSubCriteriaClause.join(''))
+                       )
+                   ) ||
+                   (
+                       this.activeTab === 'raw-criteria' &&
+                       (
+                           isEmpty(this.selectedRawSubCriteriaClause) ||
+                           parsedSelectedRawSubCriteriaClause === null ||
+                           (parsedSelectedRawSubCriteriaClause && isEmpty(parsedSelectedRawSubCriteriaClause.join('')))
+                       )
+                   );
         }
     }
 </script>
 
 <style>
-    .query-builder-card-text {
+    .criteria-editor-card-text {
         height: 700px;
-    }
-
-    .validation-message-div {
-        height: 21px;
+        overflow: hidden !important;
     }
 
     .invalid-message {
@@ -235,5 +523,46 @@
 
     .valid-message {
         color: green;
+    }
+
+    .clauses-card, .criteria-editor-container {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .clauses-card {
+        height: 445px;
+    }
+
+    .criteria-editor-container {
+        height: 513px;
+    }
+
+    .clause-textarea {
+        font-size: 12px !important;
+    }
+
+    .clause-textarea .v-input__slot {
+        background-color: transparent !important;
+    }
+
+    .clause-textarea textarea {
+        border: 1px solid;
+    }
+
+    .sub-text {
+        height: 35px;
+    }
+
+    .conjunction-and-messages-container, .sub-criteria-messages-container {
+        padding-left: 20px;
+    }
+
+    .conjunction-select-list {
+        width: 100px;
+    }
+
+    .textarea-focused textarea {
+        background: lightblue;
     }
 </style>

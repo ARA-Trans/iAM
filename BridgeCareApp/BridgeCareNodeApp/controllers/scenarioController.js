@@ -55,6 +55,16 @@ function scenarioController(Scenario) {
         });
     }
 
+    function updateScenarioStatus(request, response) {
+        var newStatus = request.body.status;
+        Scenario.findOneAndUpdate({simulationId: request.params.scenarioId}, {status: newStatus}, {new: true}, (error, document) => {
+            if (error) {
+                return response.status(400).json(error);
+            }
+            return response.status(200).json(document);
+        });
+    }
+
     function get(req, res) {
         if (req.user.role === roles.administrator || req.user.role === roles.cwopa) {
             Scenario.find((err, scenariostatus) => {
@@ -93,7 +103,7 @@ function scenarioController(Scenario) {
         });
     }
 
-    return { post, get, deleteScenario, put, postMultipleScenarios};
+    return { post, get, deleteScenario, put, updateScenarioStatus, postMultipleScenarios};
 }
 
 module.exports = scenarioController;
