@@ -57,9 +57,9 @@ namespace BridgeCare.Controllers
             return new Dictionary<string, SimulationGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAllSimulations,
-                [Role.DISTRICT_ENGINEER] = GetOwnedSimulations,
+                [Role.DISTRICT_ENGINEER] = GetAllSimulations,
                 [Role.CWOPA] = GetAllSimulations,
-                [Role.PLANNING_PARTNER] = GetOwnedSimulations
+                [Role.PLANNING_PARTNER] = GetAllSimulations
             };
         }
 

@@ -36,16 +36,15 @@
                 <v-card-title>
                     <v-flex xs4>
                         <v-chip color="ara-blue-bg" text-color="white">
-                            New Scenarios
+                            My Scenarios
                             <v-icon right>star</v-icon>
                         </v-chip>
                     </v-flex>
-                    <v-spacer></v-spacer>
                     <v-flex xs6>
                         <v-text-field v-model="searchMine" append-icon="fas fa-search" lablel="Search" single-line hide-details>
                         </v-text-field>
                     </v-flex>
-                    <v-flex xs-2>
+                    <v-flex xs2>
                         <v-btn round class="ara-blue-bg white--text" @click="onUpdateScenarioList()">
                             Load legacy scenarios
                         </v-btn>
@@ -113,6 +112,7 @@
                     </v-alert>
                 </v-data-table>
                 <v-card-actions>
+                    <div style="width:2em"/>
                     <v-btn color="ara-blue-bg white--text" @click="onCreateScenario">Create new</v-btn>
                 </v-card-actions>
             </v-card>
@@ -121,11 +121,17 @@
         <v-flex xs12>
             <v-card>
                 <v-card-title>
-                    Shared with Me
-                    <v-spacer></v-spacer>
+                    <v-flex xs4>
+                        <v-chip class="ara-blue-bg white--text">
+                            Shared with Me
+                        </v-chip>
+                    </v-flex>
+                    <v-spacer/>
+                    <v-flex xs6>
                     <v-text-field v-model="searchShared" append-icon="fas fa-search" lablel="Search" single-line
                                   hide-details>
                     </v-text-field>
+                    </v-flex>
                 </v-card-title>
                 <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                     <template slot="items" slot-scope="props">
@@ -221,7 +227,7 @@
     import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
     import ShareScenarioDialog from '@/components/scenarios/scenarios-dialogs/ShareScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
-    import { clone } from 'ramda';
+    import { clone, any } from 'ramda';
     import { Simulation } from '../../shared/models/iAM/simulation';
     import { Rollup, emptyRollup } from '../../shared/models/iAM/rollup';
 
@@ -237,6 +243,8 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.rollup.rollups) rollups: Rollup[];
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
+        @State(state => state.authentication.isCWOPA) isCWOPA: boolean;
         
         @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('getLegacyScenarios') getLegacyScenariosAction: any;
@@ -293,7 +301,11 @@ import { getUserName } from '../../shared/utils/get-user-info';
                 // filter scenarios that are the user's
                 this.userScenarios = this.scenarios.filter((simulation: Scenario) => simulation.owner === username);
                 // filter scenarios that are shared with the user
-                this.sharedScenarios = this.scenarios.filter((simulation: Scenario) => simulation.owner !== username);
+                const scenarioUserMatch = (user: ScenarioUser) => 
+                    user.username === username || user.username === null || user.username === undefined;
+                const sharedScenarioFilter = (simulation: Scenario) => simulation.owner !== username &&
+                    (this.isAdmin || this.isCWOPA || any(scenarioUserMatch, simulation.users));
+                this.sharedScenarios = this.scenarios.filter(sharedScenarioFilter);
             }
             else {
                 this.userScenarios = [];
@@ -526,7 +538,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
 </script>
 
 <style>
-    .pad-button{
+    .pad-button {
         padding-top:33px;
     }
 </style>
