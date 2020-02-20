@@ -1937,7 +1937,7 @@ namespace RoadCare3
 					+ "2','"
 					+ "3','"
                     + "Rehabilitation,Maintenance,Construction','"
-                    + "new simulation')";
+                    + "New simulation')";
 
 				try
 				{
