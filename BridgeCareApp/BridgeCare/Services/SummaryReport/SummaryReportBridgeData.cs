@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Models.SummaryReport;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -41,9 +42,10 @@ namespace BridgeCare.Services
                                                 select dt.Field<int>("SECTIONID");
             var sectionsForSummaryReport = sections.Where(sm => sectionIdsFromSimulationTable.Contains(sm.SECTIONID)).ToList();
             BRKeys = sectionsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
-            var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, dbContext);
-                        
-            var simulationDataModels = bridgeDataHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels);
+            var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, simulationModel, dbContext);
+            var budgetsPerBrKey = bridgeData.GetBudgetsPerBRKey(simulationModel, dbContext);
+
+            var simulationDataModels = bridgeDataHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels, budgetsPerBrKey);
 
             // Add data to excel.
             var headers = GetHeaders();
@@ -61,7 +63,7 @@ namespace BridgeCare.Services
             // ExcelHelper.ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
 
-            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments };            
+            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey };            
             return workSummaryModel;
         }
 
@@ -112,12 +114,12 @@ namespace BridgeCare.Services
 
                 // Last Year simulation data
                 var lastYearData = yearsData.FirstOrDefault();
-                column = AddSimulationYearData(worksheet, row, column, lastYearData, familyId);
+                column = AddSimulationYearData(worksheet, row, column, lastYearData, familyId, bridgeDataModel);
 
                 // Add all yrs from current year simulation data
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
-                    column = AddSimulationYearData(worksheet, row, column, yearsData[index], familyId);
+                    column = AddSimulationYearData(worksheet, row, column, yearsData[index], familyId, bridgeDataModel);
                 }
                 row++;
             }
@@ -129,7 +131,7 @@ namespace BridgeCare.Services
             currentCell.Column = column - 1;            
         }
 
-        private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId)
+        private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId, BridgeDataModel bridgeDataModel)
         {
             var familyIdLessThanEleven = Convert.ToInt32(familyId) < 11;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Deck;
@@ -144,15 +146,41 @@ namespace BridgeCare.Services
             yearData.CulvD = familyIdLessThanEleven ? "N" : yearData.CulvD;
             worksheet.Cells[row, ++column].Value = yearData.MinC;
             worksheet.Cells[row, ++column].Value = yearData.SD;
+            worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
+
             if (yearData.Year != 0)
-            {
+            {   
+                worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted == "Y" ? getPostedType(yearData.Project) : "N"; // Posted
+                if(yearData.ProjectPick == "Committed Pick")
+                {
+                    var test = 0;
+                }
+                worksheet.Cells[row, ++column].Value = yearData.ProjectPick; // Project Pick
+                worksheet.Cells[row, ++column].Value = yearData.Budget; // Budget
                 worksheet.Cells[row, ++column].Value = yearData.Project;
                 worksheet.Cells[row, ++column].Value = yearData.Cost;
                 excelHelper.SetCurrencyFormat(worksheet.Cells[row, column]);
+                worksheet.Cells[row, ++column].Value = ""; // District Remarks
+            }
+            else
+            {
+                worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted; // Posted
             }
             // Empty column
             column++;
             return column;
+        }
+
+        private string getPostedType(string project)
+        {
+            if (project == "Culvert Rehab(Other)" || project == "Culvert Replacement (Box/Frame/Arch)"
+                    || project == "Culvert Replacement (Other)" || project == "Culvert Replacement (Pipe)" || project == "Substructure Rehab"
+                    || project == "Superstructure Rep/Rehab" || project == "Deck Replacement" || project == "Rehabilitation"
+                    || project == "Repair" || project == "Bridge Replacement" || project == "Replacement" || project == "Removal")
+            {
+                return "N";
+            }
+            return "Y";
         }
 
         private CurrentCell AddHeadersCells(ExcelWorksheet worksheet, List<string> headers, List<int> simulationYears)
@@ -204,7 +232,7 @@ namespace BridgeCare.Services
             var simulationHeaderTexts = GetSimulationHeaderTexts();
             worksheet.Cells[row, ++column].Value = simulationYears[0] - 1;
             column = currentCell.Column;
-            column = AddSimulationHeaderTexts(worksheet, currentCell, column, row, simulationHeaderTexts, simulationHeaderTexts.Count - 2);
+            column = AddSimulationHeaderTexts(worksheet, currentCell, column, row, simulationHeaderTexts, simulationHeaderTexts.Count - 5);
             excelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
 
             // Empty column
@@ -247,8 +275,13 @@ namespace BridgeCare.Services
                 "Culv D",
                 "Min C",
                 "SD",
+                "Poor",
+                "Posted",
+                "Project Pick",
+                "Budget",
                 "Project",
-                "Cost"
+                "Cost",
+                "District Remarks"
             };
         }
                 
@@ -263,15 +296,21 @@ namespace BridgeCare.Services
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BridgeID;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BRKey;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.District;
+                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BridgeCulvert;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.DeckArea;
+                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.StructureLength;
+                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.PlanningPartner;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BridgeFamily;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.NHS;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BPN;
+                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.StructureType;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.FunctionalClass;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.YearBuilt;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.Age;
+                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.AdtTotal;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.ADTOverTenThousand;
-                worksheet.Cells[rowNo, columnNo].Value = bridgeDataModel.RiskScore;
+                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.RiskScore;
+                worksheet.Cells[rowNo, columnNo].Value = bridgeDataModel.P3 > 0 ? "Y" : "N";
             }
             currentCell.Row = rowNo;
             currentCell.Column = columnNo;
@@ -284,15 +323,21 @@ namespace BridgeCare.Services
                 "BridgeID",
                 "BRKey",
                 "District",
+                "Bridge (B/C)",
                 "Deck Area",
+                "Structure Length",
+                "Planning Partner",
                 "Bridge Family",
                 "NHS",
                 "BPN",
+                "Struct Type",
                 "Functional Class",
                 "Year Built",
                 "Age",
+                "ADTT",
                 "ADT Over 10,000",
-                "Risk Score"
+                "Risk Score",
+                "P3"
             };
         }        
     }

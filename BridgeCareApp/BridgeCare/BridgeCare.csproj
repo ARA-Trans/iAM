@@ -274,6 +274,7 @@
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
+    <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryByBudgetModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
     <Compile Include="Security\JWTParse.cs" />

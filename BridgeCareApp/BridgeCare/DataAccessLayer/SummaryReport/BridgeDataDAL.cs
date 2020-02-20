@@ -7,6 +7,7 @@ using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Models.SummaryReport;
 
 namespace BridgeCare.DataAccessLayer.SummaryReport
 {
@@ -19,7 +20,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         /// <param name="brKeys">br keys list</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>BridgeDataModel list</returns>        
-        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, BridgeCareContext db)
+        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, SimulationModel model, BridgeCareContext db)
         {
             var bridgeDataModels = new List<BridgeDataModel>();
 
@@ -38,7 +39,6 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
 
                 var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
-
                 bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow, sdRiskRow));
             }
 
@@ -214,6 +214,8 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 BRKey = penndotBridgeDataRow.BRKEY,
                 BridgeFamily = penndotBridgeDataRow.BRIDGE_FAMILY_ID,
                 Age = penndotBridgeDataRow.CONDITION_BASED_AGE,
+                BridgeCulvert = penndotBridgeDataRow.BridgeCulvert,
+
                 BridgeID = pennDotReportADataRow.BRIDGE_ID,
                 District = pennDotReportADataRow.DISTRICT,
                 DeckArea = pennDotReportADataRow.DECK_AREA,
@@ -221,10 +223,38 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 FunctionalClass = pennDotReportADataRow.FUNC_CLASS,
                 NHS = pennDotReportADataRow.NHS_IND == "1" ? "Y" : "N",
                 YearBuilt = pennDotReportADataRow.YEAR_BUILT,
+                StructureLength = pennDotReportADataRow.StructureLength,
+                PlanningPartner = pennDotReportADataRow.PlanningPartner,
+                StructureType = pennDotReportADataRow.StructureType,
+                Posted = pennDotReportADataRow.Posted,
+                AdtTotal = pennDotReportADataRow.ADTTOTAL,
+                P3 = pennDotReportADataRow.P3,
+
                 ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
                 RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)
             };
-        }        
+        }
+
+        public List<BudgetsPerBRKey> GetBudgetsPerBRKey(SimulationModel simulationModel, BridgeCareContext dbContext)
+        {
+            var budgetsPerBrKey = new List<BudgetsPerBRKey>();
+            var selectBugetForBrKey = $"select SECTION_13.SECTIONID, SECTION_13.FACILITY as BRKey, SECTION_13.SECTION as BridgeId, BUDGET, YEARS, ISCOMMITTED, TREATMENT " +
+                $"from SECTION_{simulationModel.networkId} " +
+                $"INNER JOIN Report_{simulationModel.networkId}_{simulationModel.simulationId} " +
+                $"on SECTION_{simulationModel.networkId}.SECTIONID = Report_{simulationModel.networkId}_{simulationModel.simulationId}.SECTIONID " +
+                $" WHERE BUDGET IS NOT NULL OR ISCOMMITTED != 0 Order By BRKey ASC";
+
+            try
+            {
+                budgetsPerBrKey = dbContext.Database.SqlQuery<BudgetsPerBRKey>(selectBugetForBrKey).ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+            }
+
+            return budgetsPerBrKey;
+        }
         #endregion
     }
 }

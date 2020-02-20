@@ -19,10 +19,20 @@
 
         public string YearBuilt { get; set; }
 
+        public string StructureLength { get; set; }
+
+        public string StructureType { get; set; }
+        public string PlanningPartner { get; set; }
+        public string Posted { get; set; }
+        public string AdtTotal { get; set; }
+        public int P3 { get; set; }
+
         //Below data fetched from table PENNDOT_BRIDGE_DATA
         public string BridgeFamily { get; set; }
 
         public string Age { get; set; }
+
+        public string BridgeCulvert { get; set; }
 
         //Computed
         public string ADTOverTenThousand { get; set; }

@@ -67,6 +67,26 @@ namespace BridgeCare
 
             modelBuilder.Entity<SplitTreatmentEntity>()
                 .HasMany(e => e.SPLIT_TREATMENT_LIMITS);
+
+            modelBuilder.Entity<PennDotBridgeData>()
+                .Property(p => p.BridgeCulvert)
+                .HasColumnName("BRIDGE_CULVERT");
+
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.StructureLength)
+                .HasColumnName("LENGTH");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.StructureType)
+                .HasColumnName("STRUCTURE_TYPE");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.PlanningPartner)
+                .HasColumnName("MPO_NAME");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.Posted)
+                .HasColumnName("POST_STATUS");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.P3)
+                .HasColumnName("P3_Bridge");
         }
     }
 }
