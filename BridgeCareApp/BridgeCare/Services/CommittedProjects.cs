@@ -10,18 +10,51 @@ using OfficeOpenXml;
 using BridgeCare.Models;
 using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
+using BridgeCare.Security;
 
 namespace BridgeCare.Services
 {
+    using CommittedProjectsGetMethod = Func<int, BridgeCareContext, UserInformationModel, List<CommittedEntity>>;
+    using CommittedProjectsSaveMethod = Action<List<CommittedProjectModel>, BridgeCareContext, UserInformationModel>;
+
     public class CommittedProjects : ICommittedProjects
     {
         readonly ICommitted committedRepo;
         private readonly ISections sectionsRepo;
+        /// <summary>Maps user roles to methods for fetching committed projects</summary>
+        private readonly IReadOnlyDictionary<string, CommittedProjectsGetMethod> CommittedProjectsGetMethods;
+        /// <summary>Maps user roles to methods for saving committed projects</summary>
+        private readonly IReadOnlyDictionary<string, CommittedProjectsSaveMethod> CommittedProjectsSaveMethods;
 
         public CommittedProjects(ICommitted committedRepo, ISections sectionsRepo)
         {
             this.committedRepo = committedRepo;
             this.sectionsRepo = sectionsRepo;
+
+            List<CommittedEntity> GetAnyProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.GetCommittedProjects(id, db);
+            List<CommittedEntity> GetPermittedProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.GetPermittedCommittedProjects(id, db, userInformation.Name);
+
+            void SaveAnyProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.SaveCommittedProjects(models, db);
+            void SavePermittedProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.SavePermittedCommittedProjects(models, db, userInformation.Name);
+
+            CommittedProjectsGetMethods = new Dictionary<string, CommittedProjectsGetMethod>
+            {
+                [Role.ADMINISTRATOR] = GetAnyProjects,
+                [Role.DISTRICT_ENGINEER] = GetPermittedProjects,
+                [Role.CWOPA] = GetPermittedProjects,
+                [Role.PLANNING_PARTNER] = GetPermittedProjects
+            };
+            CommittedProjectsSaveMethods = new Dictionary<string, CommittedProjectsSaveMethod>
+            {
+                [Role.ADMINISTRATOR] = SaveAnyProjects,
+                [Role.DISTRICT_ENGINEER] = SavePermittedProjects,
+                [Role.CWOPA] = SavePermittedProjects,
+                [Role.PLANNING_PARTNER] = SavePermittedProjects
+            };
         }
 
         /// <summary>
@@ -29,7 +62,7 @@ namespace BridgeCare.Services
         /// </summary>
         /// <param name="httpRequest"></param>
         /// <param name="db"></param>
-        public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db)
+        public void SaveCommittedProjectsFiles(HttpRequest httpRequest, BridgeCareContext db, UserInformationModel userInformation)
         {
             if (httpRequest.Files.Count < 1)
                 throw new ConstraintException("Files Not Found");
@@ -44,7 +77,7 @@ namespace BridgeCare.Services
             for (int i = 0; i < files.Count; i++)
             {
                 GetCommittedProjectModels(files[i], simulationId, networkId, applyNoTreatment, committedProjectModels, db);
-                committedRepo.SaveCommittedProjects(committedProjectModels, db);
+                CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
             }
         }
 
@@ -55,12 +88,12 @@ namespace BridgeCare.Services
         /// <param name="networkId"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public byte[] ExportCommittedProjects(int simulationId, int networkId, BridgeCareContext db)
+        public byte[] ExportCommittedProjects(int simulationId, int networkId, BridgeCareContext db, UserInformationModel userInformation)
         {
             using (ExcelPackage excelPackage = new ExcelPackage(new System.IO.FileInfo("CommittedProjects.xlsx")))
             {
                 // This method may stay here or if too long then move to helper class   Fill(worksheet, , db);
-                var committedProjects = committedRepo.GetCommittedProjects(simulationId, db);
+                var committedProjects = CommittedProjectsGetMethods[userInformation.Role](simulationId, db, userInformation);
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Committed Projects");
                 if (committedProjects.Count != 0)
                 {

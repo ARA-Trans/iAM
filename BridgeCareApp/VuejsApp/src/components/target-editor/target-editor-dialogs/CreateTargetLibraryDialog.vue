@@ -33,6 +33,7 @@
     import {CreateTargetLibraryDialogData} from '@/shared/models/modals/create-target-library-dialog-data';
     import {emptyTargetLibrary, Target, TargetLibrary} from '@/shared/models/iAM/target';
     import {clone} from 'ramda';
+    import {getUserName} from '@/shared/utils/get-user-info';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -62,6 +63,7 @@
         onSubmit(submit: boolean) {
             if (submit) {
                 this.setIdsForNewTargetLibrarySubData();
+                this.newTargetLibrary.owner = getUserName();
                 this.$emit('submit', this.newTargetLibrary);
             }
             else {

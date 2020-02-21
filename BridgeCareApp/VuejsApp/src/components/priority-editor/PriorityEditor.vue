@@ -18,6 +18,9 @@
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedPriorityLibrary.owner ? selectedPriorityLibrary.owner : "[ No Owner ]"}}
+                    </div>
                 </v-flex>
             </v-layout>
             <v-flex xs3 v-show="hasSelectedPriorityLibrary">
@@ -133,11 +136,16 @@
                 <v-btn class="ara-blue-bg white--text" @click="onAddAsNewPriorityLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text" @click="onDeletePriorityLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardPriorityLibraryChanges">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreatePriorityLibraryDialog :dialogData="createPriorityLibraryDialogData" @submit="onCreateNewPriorityLibrary" />
 
@@ -180,11 +188,13 @@
     import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
     const ObjectID = require('bson-objectid');
 
     @Component({
         components: {
-            CreatePriorityLibraryDialog, CreatePriorityDialog, PrioritiesCriteriaEditor: CriteriaEditorDialog}
+            CreatePriorityLibraryDialog, CreatePriorityDialog, PrioritiesCriteriaEditor: CriteriaEditorDialog, Alert}
     })
     export default class PriorityEditor extends Vue {
         @State(state => state.priority.priorityLibraries) statePriorityLibraries: PriorityLibrary[];
@@ -197,6 +207,7 @@
         @Action('selectPriorityLibrary') selectPriorityLibraryAction: any;
         @Action('createPriorityLibrary') createPriorityLibraryAction: any;
         @Action('updatePriorityLibrary') updatePriorityLibraryAction: any;
+        @Action('deletePriorityLibrary') deletePriorityLibraryAction: any;
         @Action('getScenarioPriorityLibrary') getScenarioPriorityLibraryAction: any;
         @Action('saveScenarioPriorityLibrary') saveScenarioPriorityLibraryAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
@@ -223,6 +234,7 @@
         rule: any = {
             fundingPercent: (value: number) => (value >= 0 && value <= 100) || 'Value range is 0 to 100'
         };
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -611,6 +623,24 @@
          */
         onUpdatePriorityLibrary() {
             this.updatePriorityLibraryAction({updatedPriorityLibrary: this.selectedPriorityLibrary});
+        }
+
+        onDeletePriorityLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deletePriorityLibraryAction({priorityLibrary: this.selectedPriorityLibrary});
+                this.onClearSelectedPriorityLibrary();
+            }
         }
     }
 </script>

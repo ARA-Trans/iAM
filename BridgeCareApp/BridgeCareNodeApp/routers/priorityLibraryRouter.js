@@ -1,6 +1,7 @@
 const express = require('express');
 const priorityLibraryController = require('../controllers/priorityLibraryController');
 const authorizationFilter = require('../authorization/authorizationFilter');
+const roles = require('../authorization/roleConfig');
 
 function priorityLibraryRouter(PriorityLibrary) {
     const router = express.Router();
@@ -9,9 +10,11 @@ function priorityLibraryRouter(PriorityLibrary) {
     router.route('/GetPriorityLibraries')
         .get(authorizationFilter(), controller.get);
     router.route('/CreatePriorityLibrary')
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+        .post(authorizationFilter([roles.administrator, roles.engineer]), controller.post);
     router.route('/UpdatePriorityLibrary')
-        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+        .put(authorizationFilter([roles.administrator, roles.engineer]), controller.put);
+    router.route('/DeletePriorityLibrary/:libraryId')
+        .delete(authorizationFilter([roles.administrator, roles.engineer]), controller.deleteLibrary);
 
     return router;
 }

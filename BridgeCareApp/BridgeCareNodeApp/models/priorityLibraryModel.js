@@ -17,6 +17,7 @@ const prioritySchema = new Schema({
 
 const priorityLibrarySchema = new Schema({
     name: { type: String },
+    owner: {type: String},
     description: { type: String },
     priorities: [prioritySchema]
 });

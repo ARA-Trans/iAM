@@ -1,6 +1,7 @@
 const express = require('express');
 const treatmentLibraryController = require('../controllers/treatmentLibraryController');
 const authorizationFilter = require('../authorization/authorizationFilter');
+const roles = require('../authorization/roleConfig');
 
 function treatmentLibraryRouter(TreatmentLibrary, connectionTest) {
     const router = express.Router();
@@ -9,14 +10,14 @@ function treatmentLibraryRouter(TreatmentLibrary, connectionTest) {
     router.route('/GetTreatmentLibraries')
         .get(authorizationFilter(), controller.get);
     router.route('/CreateTreatmentLibrary')
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+        .post(authorizationFilter([roles.administrator, roles.engineer]), controller.post);
     router.route('/UpdateTreatmentLibrary')
-        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
-    router.route('/DeleteTreatmentLibrary/:treatmentLibraryId')
-        .delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
+        .put(authorizationFilter([roles.administrator, roles.engineer]), controller.put);
+    router.route('/DeleteTreatmentLibrary/:libraryId')
+        .delete(authorizationFilter([roles.administrator, roles.engineer]), controller.deleteLibrary);
     router.route('/')
-        .get((req, res) => {
-            return res.send(connectionTest);
+        .get((request, response) => {
+            return response.send(connectionTest);
         });
 
     return router;
