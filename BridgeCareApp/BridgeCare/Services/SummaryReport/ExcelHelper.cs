@@ -90,5 +90,10 @@ namespace BridgeCare.Services
             cells.Style.Fill.PatternType = ExcelFillStyle.Solid;
             cells.Style.Fill.BackgroundColor.SetColor(color);
         }
+
+        public void SetTextColor(ExcelRange cells, Color color)
+        {
+            cells.Style.Font.Color.SetColor(color);
+        }
     }
 }

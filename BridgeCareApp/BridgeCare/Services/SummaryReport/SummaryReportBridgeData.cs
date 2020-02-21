@@ -1,10 +1,10 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
-using BridgeCare.Models.SummaryReport;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 
 namespace BridgeCare.Services
@@ -85,11 +85,13 @@ namespace BridgeCare.Services
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 simulationDataModel.BRKey = brKey;
                 var yearsData = simulationDataModel.YearsData;
-                // Add work done cellls
+                // Add work done cells
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     var cost = yearsData[index].Cost;
-                    worksheet.Cells[row, ++column].Value = cost > 0 ? "Yes" : "--";
+                    var range = worksheet.Cells[row, ++column];
+                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].ProjectPickType, yearsData[index].Treatment, range);
+                    range.Value = cost > 0 ? yearsData[index].Treatment : "--";
                     workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
                 worksheet.Cells[row, ++column].Value = workDoneMoreThanOnce > 1 ? "Yes" : "--";
@@ -130,6 +132,58 @@ namespace BridgeCare.Services
             currentCell.Row = row - 1;
             currentCell.Column = column - 1;            
         }
+
+        private void setColor(int parallelBridge, int projectPickType, string treatment, ExcelRange range)
+        {
+            CheckConditions(parallelBridge, projectPickType, treatment, range);
+        }
+
+        private void CheckConditions(int parallelBridge, int projectPickType, string treatment, ExcelRange range)
+        {
+            if (treatment.Length > 0)
+            {
+                ParallelBridgeBAMs(parallelBridge, projectPickType, range);
+                ParallelBridgeMPMS(parallelBridge, projectPickType, range);
+            }
+        }
+
+        private void ParallelBridgeBAMs(int isParallel, int projectPickType, ExcelRange range)
+        {
+            if(isParallel == 1 && projectPickType == 0)
+            {
+                excelHelper.ApplyColor(range, Color.LightSkyBlue);
+                excelHelper.SetTextColor(range, Color.Black);
+            }
+        }
+        //private void ParallelBridgeCashFlow(int isParallel, int projectPickType, ExcelRange range)
+        //{
+        //    if (isParallel == 1 && projectPick == "BAMs Pick")
+        //    {
+        //        excelHelper.ApplyColor(range, Color.Blue);
+        //        return;
+        //    }
+        //}
+        private void ParallelBridgeMPMS(int isParallel, int projectPickType, ExcelRange range)
+        {
+            if (isParallel == 1 && projectPickType == 1)
+            {
+                excelHelper.ApplyColor(range, Color.LightSkyBlue);
+                excelHelper.SetTextColor(range, Color.White);
+            }
+        }
+        // These method will be used when Analysis engine put relevant data in the db
+        //private void CashFlowedBridge()
+        //{
+
+        //}
+        //private void NoParallerBridgePMC()
+        //{
+
+        //}
+        //private void ParallelBridgePMC()
+        //{
+
+        //}
 
         private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId, BridgeDataModel bridgeDataModel)
         {

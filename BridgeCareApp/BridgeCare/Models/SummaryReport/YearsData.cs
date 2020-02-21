@@ -34,5 +34,7 @@
         //Below data is fetched from inner join of Section_{networkId} and Report_{networkId}_{simulationId} tables
         public string Budget { get; set; }
         public string ProjectPick { get; set; }
+        public string Treatment { get; set; }
+        public int ProjectPickType { get; set; }
     }
 }

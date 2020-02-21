@@ -229,6 +229,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 Posted = pennDotReportADataRow.Posted,
                 AdtTotal = pennDotReportADataRow.ADTTOTAL,
                 P3 = pennDotReportADataRow.P3,
+                ParallelBridge = pennDotReportADataRow.ParallelBridge,
 
                 ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
                 RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)

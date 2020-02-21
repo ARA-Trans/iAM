@@ -74,6 +74,8 @@ namespace BridgeCare.Services
             yearsData.Project = yearsData.Cost == 0 ? "No Treatment" : yearsData.Project;
             yearsData.Budget = budgetPerBrKey != null ? budgetPerBrKey.Budget : "";
             yearsData.ProjectPick = budgetPerBrKey != null ? (budgetPerBrKey.IsCommitted ? "Committed Pick" : "BAMs Pick") : "BAMs Pick";
+            yearsData.ProjectPickType = budgetPerBrKey != null ? (budgetPerBrKey.IsCommitted ? 1 : 0) : 0;
+            yearsData.Treatment = budgetPerBrKey != null ? budgetPerBrKey.Treatment : "";
             return yearsData;
         }        
     }

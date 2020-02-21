@@ -87,6 +87,9 @@ namespace BridgeCare
             modelBuilder.Entity<PennDotReportAData>()
                 .Property(p => p.P3)
                 .HasColumnName("P3_Bridge");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.ParallelBridge)
+                .HasColumnName("Parallel_Struct");
         }
     }
 }

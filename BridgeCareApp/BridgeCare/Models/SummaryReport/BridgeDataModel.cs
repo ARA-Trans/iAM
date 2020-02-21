@@ -26,6 +26,7 @@
         public string Posted { get; set; }
         public string AdtTotal { get; set; }
         public int P3 { get; set; }
+        public int ParallelBridge { get; set; }
 
         //Below data fetched from table PENNDOT_BRIDGE_DATA
         public string BridgeFamily { get; set; }
