@@ -36,15 +36,15 @@ namespace BridgeCare.Controllers
         {
             PerformanceLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationPerformanceLibrary(id, db);
-            PerformanceLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
-                repo.GetOwnedSimulationPerformanceLibrary(id, db, userInformation.Name);
+            PerformanceLibraryModel GetPermittedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetPermittedSimulationPerformanceLibrary(id, db, userInformation.Name);
 
             return new Dictionary<string, PerformanceLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.DISTRICT_ENGINEER] = GetPermittedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
-                [Role.PLANNING_PARTNER] = GetOwnedLibrary
+                [Role.PLANNING_PARTNER] = GetPermittedLibrary
             };
         }
 
@@ -55,13 +55,13 @@ namespace BridgeCare.Controllers
         {
             PerformanceLibraryModel SaveAnyLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
                 repo.SaveAnySimulationPerformanceLibrary(model, db);
-            PerformanceLibraryModel SaveOwnedLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationPerformanceLibrary(model, db, userInformation.Name);
+            PerformanceLibraryModel SavePermittedLibrary(PerformanceLibraryModel model, UserInformationModel userInformation) =>
+                repo.SavePermittedSimulationPerformanceLibrary(model, db, userInformation.Name);
 
             return new Dictionary<string, PerformanceLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary
+                [Role.DISTRICT_ENGINEER] = SavePermittedLibrary
             };
         }
 

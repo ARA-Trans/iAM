@@ -38,15 +38,15 @@ namespace BridgeCare.Controllers
         {
             DeficientLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationDeficientLibrary(id, db);
-            DeficientLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
-                repo.GetOwnedSimulationDeficientLibrary(id, db, userInformation.Name);
+            DeficientLibraryModel GetPermittedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetPermittedSimulationDeficientLibrary(id, db, userInformation.Name);
 
             return new Dictionary<string, DeficientLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.DISTRICT_ENGINEER] = GetPermittedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
-                [Role.PLANNING_PARTNER] = GetOwnedLibrary
+                [Role.PLANNING_PARTNER] = GetPermittedLibrary
             };
         }
 
@@ -57,15 +57,15 @@ namespace BridgeCare.Controllers
         {
             DeficientLibraryModel SaveAnyLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
                 repo.SaveAnySimulationDeficientLibrary(model, db);
-            DeficientLibraryModel SaveOwnedLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationDeficientLibrary(model, db, userInformation.Name);
+            DeficientLibraryModel SavePermittedLibrary(DeficientLibraryModel model, UserInformationModel userInformation) =>
+                repo.SavePermittedSimulationDeficientLibrary(model, db, userInformation.Name);
 
             return new Dictionary<string, DeficientLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary,
-                [Role.CWOPA] = SaveOwnedLibrary,
-                [Role.PLANNING_PARTNER] = SaveOwnedLibrary
+                [Role.DISTRICT_ENGINEER] = SavePermittedLibrary,
+                [Role.CWOPA] = SavePermittedLibrary,
+                [Role.PLANNING_PARTNER] = SavePermittedLibrary
             };
         }
 

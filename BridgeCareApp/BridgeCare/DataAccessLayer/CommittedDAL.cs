@@ -38,7 +38,7 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="committedProjectModels"></param>
         /// <param name="db"></param>
-        public void SaveOwnedCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db, string username)
+        public void SavePermittedCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db, string username)
         {
             foreach (var committedProjectModel in committedProjectModels) {
                 if (!db.Simulations.Any(s => s.SIMULATIONID == committedProjectModel.SimulationId))
@@ -67,7 +67,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db"></param>
         /// <param name="username"></param>
         /// <returns></returns>
-        public List<CommittedEntity> GetOwnedCommittedProjects(int simulationId, BridgeCareContext db, string username)
+        public List<CommittedEntity> GetPermittedCommittedProjects(int simulationId, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId))
                 throw new RowNotInTableException($"No scenario found with id {simulationId}.");

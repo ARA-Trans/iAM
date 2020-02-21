@@ -36,7 +36,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         /// <param name="userInformation">UserInformationModel</param>
         /// <returns>SimulationModel list</returns>
-        public List<SimulationModel> GetOwnedSimulations(BridgeCareContext db, string username)
+        public List<SimulationModel> GetPermittedSimulations(BridgeCareContext db, string username)
         {
             return db.Simulations.Include(s => s.NETWORK).Include(s => s.USERS).ToList()
                 .Where(s => s.UserCanRead(username))
@@ -60,7 +60,7 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="model">SimulationModel</param>
         /// <param name="db">BridgeCareContext</param>
-        public void UpdateOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
+        public void UpdatePermittedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
                 throw new RowNotInTableException($"No scenario found with id {model.simulationId}");
@@ -113,7 +113,7 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
-        public void DeleteOwnedSimulation(int id, BridgeCareContext db, string username)
+        public void DeletePermittedSimulation(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with id {id}");
@@ -189,7 +189,7 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        public Task<string> RunOwnedSimulation(SimulationModel model, BridgeCareContext db, string username)
+        public Task<string> RunPermittedSimulation(SimulationModel model, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
                 throw new RowNotInTableException($"No scenario was found with id {model.simulationId}");
@@ -216,7 +216,7 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
         }
 
-        public void SetOwnedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username)
+        public void SetPermittedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == simulationId))
                 throw new RowNotInTableException($"No scenario found with id {simulationId}.");

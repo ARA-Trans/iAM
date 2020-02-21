@@ -51,8 +51,8 @@ namespace BridgeCare.Controllers
         {
             List<SimulationModel> GetAllSimulations(UserInformationModel userInformation) =>
                 repo.GetSimulations(db);
-            List<SimulationModel> GetOwnedSimulations(UserInformationModel userInformation) =>
-                repo.GetOwnedSimulations(db, userInformation.Name);
+            List<SimulationModel> GetPermittedSimulations(UserInformationModel userInformation) =>
+                repo.GetPermittedSimulations(db, userInformation.Name);
 
             return new Dictionary<string, SimulationGetMethod>
             {
@@ -71,15 +71,15 @@ namespace BridgeCare.Controllers
         {
             void UpdateAnySimulation(SimulationModel model, UserInformationModel userInformation) =>
                 repo.UpdateAnySimulation(model, db);
-            void UpdateOwnedSimulation(SimulationModel model, UserInformationModel userInformation) =>
-                repo.UpdateOwnedSimulation(model, db, userInformation.Name);
+            void UpdatePermittedSimulation(SimulationModel model, UserInformationModel userInformation) =>
+                repo.UpdatePermittedSimulation(model, db, userInformation.Name);
 
             return new Dictionary<string, SimulationUpdateMethod>
             {
                 [Role.ADMINISTRATOR] = UpdateAnySimulation,
-                [Role.DISTRICT_ENGINEER] = UpdateOwnedSimulation,
-                [Role.CWOPA] = UpdateOwnedSimulation,
-                [Role.PLANNING_PARTNER] = UpdateOwnedSimulation
+                [Role.DISTRICT_ENGINEER] = UpdatePermittedSimulation,
+                [Role.CWOPA] = UpdatePermittedSimulation,
+                [Role.PLANNING_PARTNER] = UpdatePermittedSimulation
             };
         }
 
@@ -87,15 +87,15 @@ namespace BridgeCare.Controllers
         {
             Task<string> RunAnySimulation(SimulationModel model, UserInformationModel userInformation) =>
                 repo.RunSimulation(model);
-            Task<string> RunOwnedSimulation(SimulationModel model, UserInformationModel userInformation) =>
-                repo.RunOwnedSimulation(model, db, userInformation.Name);
+            Task<string> RunPermittedSimulation(SimulationModel model, UserInformationModel userInformation) =>
+                repo.RunPermittedSimulation(model, db, userInformation.Name);
 
             return new Dictionary<string, SimulationRunMethod>
             {
                 [Role.ADMINISTRATOR] = RunAnySimulation,
-                [Role.DISTRICT_ENGINEER] = RunOwnedSimulation,
-                [Role.CWOPA] = RunOwnedSimulation,
-                [Role.PLANNING_PARTNER] = RunOwnedSimulation
+                [Role.DISTRICT_ENGINEER] = RunPermittedSimulation,
+                [Role.CWOPA] = RunPermittedSimulation,
+                [Role.PLANNING_PARTNER] = RunPermittedSimulation
             };
         }
 
@@ -107,15 +107,15 @@ namespace BridgeCare.Controllers
         {
             void DeleteAnySimulation(int id, UserInformationModel userInformation) =>
                 repo.DeleteAnySimulation(id, db);
-            void DeleteOwnedSimulation(int id, UserInformationModel userInformation) =>
-                repo.DeleteOwnedSimulation(id, db, userInformation.Name);
+            void DeletePermittedSimulation(int id, UserInformationModel userInformation) =>
+                repo.DeletePermittedSimulation(id, db, userInformation.Name);
 
             return new Dictionary<string, SimulationDeletionMethod>
             {
                 [Role.ADMINISTRATOR] = DeleteAnySimulation,
-                [Role.DISTRICT_ENGINEER] = DeleteOwnedSimulation,
-                [Role.CWOPA] = DeleteOwnedSimulation,
-                [Role.PLANNING_PARTNER] = DeleteOwnedSimulation
+                [Role.DISTRICT_ENGINEER] = DeletePermittedSimulation,
+                [Role.CWOPA] = DeletePermittedSimulation,
+                [Role.PLANNING_PARTNER] = DeletePermittedSimulation
             };
         }
 
@@ -123,15 +123,15 @@ namespace BridgeCare.Controllers
         {
             void SetAnySimulationUsers(int id, List<SimulationUserModel> users, UserInformationModel userInformation) =>
                 repo.SetAnySimulationUsers(id, users, db);
-            void SetOwnedSimulationUsers(int id, List<SimulationUserModel> users, UserInformationModel userInformation) =>
-                repo.SetOwnedSimulationUsers(id, users, db, userInformation.Name);
+            void SetPermittedSimulationUsers(int id, List<SimulationUserModel> users, UserInformationModel userInformation) =>
+                repo.SetPermittedSimulationUsers(id, users, db, userInformation.Name);
 
             return new Dictionary<string, SimulationUserUpdateMethod>
             {
                 [Role.ADMINISTRATOR] = SetAnySimulationUsers,
-                [Role.DISTRICT_ENGINEER] = SetOwnedSimulationUsers,
-                [Role.CWOPA] = SetOwnedSimulationUsers,
-                [Role.PLANNING_PARTNER] = SetOwnedSimulationUsers
+                [Role.DISTRICT_ENGINEER] = SetPermittedSimulationUsers,
+                [Role.CWOPA] = SetPermittedSimulationUsers,
+                [Role.PLANNING_PARTNER] = SetPermittedSimulationUsers
             };
         }
 

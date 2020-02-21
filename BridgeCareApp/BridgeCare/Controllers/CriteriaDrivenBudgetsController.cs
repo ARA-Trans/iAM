@@ -39,15 +39,15 @@ namespace BridgeCare.Controllers
         {
             List<CriteriaDrivenBudgetsModel> GetAnyBudgets(int id, UserInformationModel userInformation) =>
                 repo.GetAnyCriteriaDrivenBudgets(id, db);
-            List<CriteriaDrivenBudgetsModel> GetOwnedBudgets(int id, UserInformationModel userInformation) =>
-                repo.GetOwnedCriteriaDrivenBudgets(id, db, userInformation.Name);
+            List<CriteriaDrivenBudgetsModel> GetPermittedBudgets(int id, UserInformationModel userInformation) =>
+                repo.GetPermittedCriteriaDrivenBudgets(id, db, userInformation.Name);
 
             return new Dictionary<string, CriteriaDrivenBudgetsGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyBudgets,
-                [Role.DISTRICT_ENGINEER] = GetOwnedBudgets,
+                [Role.DISTRICT_ENGINEER] = GetPermittedBudgets,
                 [Role.CWOPA] = GetAnyBudgets,
-                [Role.PLANNING_PARTNER] = GetOwnedBudgets
+                [Role.PLANNING_PARTNER] = GetPermittedBudgets
             };
         }
 
@@ -58,15 +58,15 @@ namespace BridgeCare.Controllers
         {
             Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
                 repo.SaveAnyCriteriaDrivenBudgets(id, models, db);
-            Task<string> SaveOwnedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
-                repo.SaveOwnedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
+            Task<string> SavePermittedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
+                repo.SavePermittedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
 
             return new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyBudgets,
-                [Role.DISTRICT_ENGINEER] = SaveOwnedBudgets,
-                [Role.CWOPA] = SaveOwnedBudgets,
-                [Role.PLANNING_PARTNER] = SaveOwnedBudgets
+                [Role.DISTRICT_ENGINEER] = SavePermittedBudgets,
+                [Role.CWOPA] = SavePermittedBudgets,
+                [Role.PLANNING_PARTNER] = SavePermittedBudgets
             };
         }
 

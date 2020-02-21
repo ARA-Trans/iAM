@@ -33,27 +33,27 @@ namespace BridgeCare.Services
 
             List<CommittedEntity> GetAnyProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
                 committedRepo.GetCommittedProjects(id, db);
-            List<CommittedEntity> GetOwnedProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
-                committedRepo.GetOwnedCommittedProjects(id, db, userInformation.Name);
+            List<CommittedEntity> GetPermittedProjects(int id, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.GetPermittedCommittedProjects(id, db, userInformation.Name);
 
             void SaveAnyProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
                 committedRepo.SaveCommittedProjects(models, db);
-            void SaveOwnedProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
-                committedRepo.SaveOwnedCommittedProjects(models, db, userInformation.Name);
+            void SavePermittedProjects(List<CommittedProjectModel> models, BridgeCareContext db, UserInformationModel userInformation) => 
+                committedRepo.SavePermittedCommittedProjects(models, db, userInformation.Name);
 
             CommittedProjectsGetMethods = new Dictionary<string, CommittedProjectsGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyProjects,
-                [Role.DISTRICT_ENGINEER] = GetOwnedProjects,
-                [Role.CWOPA] = GetOwnedProjects,
-                [Role.PLANNING_PARTNER] = GetOwnedProjects
+                [Role.DISTRICT_ENGINEER] = GetPermittedProjects,
+                [Role.CWOPA] = GetPermittedProjects,
+                [Role.PLANNING_PARTNER] = GetPermittedProjects
             };
             CommittedProjectsSaveMethods = new Dictionary<string, CommittedProjectsSaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyProjects,
-                [Role.DISTRICT_ENGINEER] = SaveOwnedProjects,
-                [Role.CWOPA] = SaveOwnedProjects,
-                [Role.PLANNING_PARTNER] = SaveOwnedProjects
+                [Role.DISTRICT_ENGINEER] = SavePermittedProjects,
+                [Role.CWOPA] = SavePermittedProjects,
+                [Role.PLANNING_PARTNER] = SavePermittedProjects
             };
         }
 

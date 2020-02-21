@@ -41,7 +41,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         /// <param name="username">Username</param>
         /// <returns>SimulationAnalysisModel</returns>
-        public SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, BridgeCareContext db, string username)
+        public SimulationAnalysisModel GetPermittedSimulationAnalysis(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
@@ -67,7 +67,7 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
         }
 
-        public void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, BridgeCareContext db, string username, bool updateWeighting = true)
+        public void PartialUpdatePermittedSimulationAnalysis(SimulationAnalysisModel model, BridgeCareContext db, string username, bool updateWeighting = true)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == model.Id))
                 throw new RowNotInTableException($"No scenario found with id {model.Id}");

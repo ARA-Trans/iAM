@@ -98,7 +98,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         /// <param name="username">Username</param>
         /// <returns>TargetLibraryModel</returns>
-        public TargetLibraryModel GetOwnedSimulationTargetLibrary(int id, BridgeCareContext db, string username)
+        public TargetLibraryModel GetPermittedSimulationTargetLibrary(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario was found with id {id}.");
@@ -170,7 +170,7 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db">BridgeCareContext</param>
         /// <param name="username">Username</param>
         /// <returns>TargetLibraryModel</returns>
-        public TargetLibraryModel SaveOwnedSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db, string username)
+        public TargetLibraryModel SavePermittedSimulationTargetLibrary(TargetLibraryModel model, BridgeCareContext db, string username)
         {
             var id = int.Parse(model.Id);
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))

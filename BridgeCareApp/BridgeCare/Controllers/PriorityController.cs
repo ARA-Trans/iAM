@@ -38,15 +38,15 @@ namespace BridgeCare.Controllers
         {
             PriorityLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationPriorityLibrary(id, db);
-            PriorityLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
-                repo.GetOwnedSimulationPriorityLibrary(id, db, userInformation.Name);
+            PriorityLibraryModel GetPermittedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetPermittedSimulationPriorityLibrary(id, db, userInformation.Name);
 
             return new Dictionary<string, PriorityLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.DISTRICT_ENGINEER] = GetPermittedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
-                [Role.PLANNING_PARTNER] = GetOwnedLibrary
+                [Role.PLANNING_PARTNER] = GetPermittedLibrary
             };
         }
 
@@ -57,13 +57,13 @@ namespace BridgeCare.Controllers
         {
             PriorityLibraryModel SaveAnyLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
                 repo.SaveAnySimulationPriorityLibrary(model, db);
-            PriorityLibraryModel SaveOwnedLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationPriorityLibrary(model, db, userInformation.Name);
+            PriorityLibraryModel SavePermittedLibrary(PriorityLibraryModel model, UserInformationModel userInformation) =>
+                repo.SavePermittedSimulationPriorityLibrary(model, db, userInformation.Name);
 
             return new Dictionary<string, PriorityLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary
+                [Role.DISTRICT_ENGINEER] = SavePermittedLibrary
             };
         }
 

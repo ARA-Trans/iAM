@@ -36,15 +36,15 @@ namespace BridgeCare.Controllers
         {
             TreatmentLibraryModel GetAnyLibrary(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationTreatmentLibrary(id, db);
-            TreatmentLibraryModel GetOwnedLibrary(int id, UserInformationModel userInformation) =>
-                repo.GetOwnedSimulationTreatmentLibrary(id, db, userInformation.Name);
+            TreatmentLibraryModel GetPermittedLibrary(int id, UserInformationModel userInformation) =>
+                repo.GetPermittedSimulationTreatmentLibrary(id, db, userInformation.Name);
 
             return new Dictionary<string, TreatmentLibraryGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = GetOwnedLibrary,
+                [Role.DISTRICT_ENGINEER] = GetPermittedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
-                [Role.PLANNING_PARTNER] = GetOwnedLibrary
+                [Role.PLANNING_PARTNER] = GetPermittedLibrary
             };
         }
 
@@ -55,13 +55,13 @@ namespace BridgeCare.Controllers
         {
             TreatmentLibraryModel SaveAnyLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) =>
                 repo.SaveAnySimulationTreatmentLibrary(model, db);
-            TreatmentLibraryModel SaveOwnedLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) =>
-                repo.SaveOwnedSimulationTreatmentLibrary(model, db, userInformation.Name);
+            TreatmentLibraryModel SavePermittedLibrary(TreatmentLibraryModel model, UserInformationModel userInformation) =>
+                repo.SavePermittedSimulationTreatmentLibrary(model, db, userInformation.Name);
 
             return new Dictionary<string, TreatmentLibrarySaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
-                [Role.DISTRICT_ENGINEER] = SaveOwnedLibrary
+                [Role.DISTRICT_ENGINEER] = SavePermittedLibrary
             };
         }
 

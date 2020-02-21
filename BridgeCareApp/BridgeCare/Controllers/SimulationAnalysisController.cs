@@ -27,15 +27,15 @@ namespace BridgeCare.Controllers
         {
             SimulationAnalysisModel GetAnySimulationAnalysis(int id, UserInformationModel userInformation) =>
                 repo.GetAnySimulationAnalysis(id, db);
-            SimulationAnalysisModel GetOwnedSimulationAnalysis(int id, UserInformationModel userInformation) =>
-                repo.GetOwnedSimulationAnalysis(id, db, userInformation.Name);
+            SimulationAnalysisModel GetPermittedSimulationAnalysis(int id, UserInformationModel userInformation) =>
+                repo.GetPermittedSimulationAnalysis(id, db, userInformation.Name);
 
             return new Dictionary<string, SimulationAnalysisGetMethod>
             {
                 [Role.ADMINISTRATOR] = GetAnySimulationAnalysis,
-                [Role.DISTRICT_ENGINEER] = GetOwnedSimulationAnalysis,
-                [Role.CWOPA] = GetOwnedSimulationAnalysis,
-                [Role.PLANNING_PARTNER] = GetOwnedSimulationAnalysis
+                [Role.DISTRICT_ENGINEER] = GetPermittedSimulationAnalysis,
+                [Role.CWOPA] = GetPermittedSimulationAnalysis,
+                [Role.PLANNING_PARTNER] = GetPermittedSimulationAnalysis
             };
         }
 
@@ -46,17 +46,17 @@ namespace BridgeCare.Controllers
         {
             void UpdateSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
                 repo.UpdateSimulationAnalysis(model, db);
-            void PartialUpdateOwnedSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
-                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name);
-            void PartialUpdateOwnedSimulationAnalysisWithoutWeights(SimulationAnalysisModel model, UserInformationModel userInformation) =>
-                repo.PartialUpdateOwnedSimulationAnalysis(model, db, userInformation.Name, updateWeighting: false);
+            void PartialUpdatePermittedSimulationAnalysis(SimulationAnalysisModel model, UserInformationModel userInformation) =>
+                repo.PartialUpdatePermittedSimulationAnalysis(model, db, userInformation.Name);
+            void PartialUpdatePermittedSimulationAnalysisWithoutWeights(SimulationAnalysisModel model, UserInformationModel userInformation) =>
+                repo.PartialUpdatePermittedSimulationAnalysis(model, db, userInformation.Name, updateWeighting: false);
 
             return new Dictionary<string, SimulationAnalysisUpdateMethod>
             {
                 [Role.ADMINISTRATOR] = UpdateSimulationAnalysis,
-                [Role.DISTRICT_ENGINEER] = PartialUpdateOwnedSimulationAnalysis,
-                [Role.CWOPA] = PartialUpdateOwnedSimulationAnalysisWithoutWeights,
-                [Role.PLANNING_PARTNER] = PartialUpdateOwnedSimulationAnalysis
+                [Role.DISTRICT_ENGINEER] = PartialUpdatePermittedSimulationAnalysis,
+                [Role.CWOPA] = PartialUpdatePermittedSimulationAnalysisWithoutWeights,
+                [Role.PLANNING_PARTNER] = PartialUpdatePermittedSimulationAnalysis
             };
         }
 
