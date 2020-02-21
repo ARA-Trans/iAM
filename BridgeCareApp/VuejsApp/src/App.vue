@@ -39,14 +39,14 @@
                         <v-list-tile @click="onNavigate('/DeficientEditor/Library/')">
                             <v-list-tile-title>Deficient</v-list-tile-title>
                         </v-list-tile>
-                        <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
+                        <v-list-tile v-if="isAdmin" @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
                             <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
                         </v-list-tile>
                         <v-list-tile @click="onNavigate('/CashFlowEditor/Library/')">
                             <v-list-tile-title>Cash Flow</v-list-tile-title>
                         </v-list-tile>
                     </v-list-group>
-                    <v-list-tile @click="onNavigate('/UnderConstruction/')">
+                    <v-list-tile v-if="isAdmin" @click="onNavigate('/UserCriteria/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>
                         <v-list-tile-title>Security</v-list-tile-title>
                     </v-list-tile>
@@ -62,6 +62,10 @@
                     <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/Scenarios/')">
                         <v-icon style="padding-right: 12px">fas fa-project-diagram</v-icon>
                         BridgeCare Analysis
+                    </v-btn>
+                    <v-btn v-if="isAdmin" round class="ara-blue-bg white--text" @click="onNavigate('/UserCriteria/')">
+                        <v-icon style="padding-right: 12px">fas fa-lock</v-icon>
+                        Security
                     </v-btn>
                 </v-toolbar-title>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
@@ -126,12 +130,12 @@
         @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
-        @State(state => state.authentication.isAdmin) isAdmin: boolean;
 
         @Action('refreshTokens') refreshTokensAction: any;
         @Action('checkBrowserTokens') checkBrowserTokensAction: any;
@@ -144,6 +148,7 @@
         @Action('setInfoMessage') setInfoMessageAction: any;
         @Action('pollEvents') pollEventsAction: any;
         @Action('generatePollingSessionId') generatePollingSessionIdAction: any;
+        @Action('getUserCriteria') getUserCriteriaAction: any;
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
@@ -270,6 +275,7 @@
             this.$forceUpdate();
             this.getNetworksAction();
             this.getAttributesAction();
+            this.getUserCriteriaAction();
         }
 
         /**

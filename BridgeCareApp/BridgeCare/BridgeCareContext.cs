@@ -38,6 +38,7 @@ namespace BridgeCare
         public virtual DbSet<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
         public virtual DbSet<SplitTreatmentEntity> SplitTreatments { get; set; }
         public virtual DbSet<SplitTreatmentLimitEntity> SplitTreatmentLimits { get; set; }
+        public virtual DbSet<UserCriteriaEntity> UserCriteria { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -90,6 +91,9 @@ namespace BridgeCare
             modelBuilder.Entity<PennDotReportAData>()
                 .Property(p => p.ParallelBridge)
                 .HasColumnName("Parallel_Struct");
+
+            modelBuilder.Entity<SimulationEntity>()
+                .HasMany(e => e.USERS);
         }
     }
 }

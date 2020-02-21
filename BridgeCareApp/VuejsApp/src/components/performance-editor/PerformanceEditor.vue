@@ -19,6 +19,9 @@
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0">
+                        Owner: {{selectedPerformanceLibrary.owner ? selectedPerformanceLibrary.owner : "[ No Owner ]"}}
+                    </div>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -139,12 +142,17 @@
                 <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedPerformanceLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === 0" class="ara-orange-bg white--text" @click="onDeletePerformanceLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedPerformanceLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreatePerformanceLibraryDialog :dialogData="createPerformanceLibraryDialogData"
                                         @submit="onCreatePerformanceLibrary" />
@@ -192,10 +200,12 @@
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
     const ObjectID = require('bson-objectid');
 
     @Component({
-        components: {CreatePerformanceLibraryDialog, CreatePerformanceLibraryEquationDialog, EquationEditorDialog, CriteriaEditorDialog}
+        components: {CreatePerformanceLibraryDialog, CreatePerformanceLibraryEquationDialog, EquationEditorDialog, CriteriaEditorDialog, Alert}
     })
     export default class PerformanceEditor extends Vue {
         @State(state => state.performanceEditor.performanceLibraries) statePerformanceLibraries: PerformanceLibrary[];
@@ -207,6 +217,7 @@
         @Action('selectPerformanceLibrary') selectPerformanceLibraryAction: any;
         @Action('createPerformanceLibrary') createPerformanceLibraryAction: any;
         @Action('updatePerformanceLibrary') updatePerformanceLibraryAction: any;
+        @Action('deletePerformanceLibrary') deletePerformanceLibraryAction: any;
         @Action('updateSelectedPerformanceLibrary') updateSelectedPerformanceLibraryAction: any;
         @Action('getScenarioPerformanceLibrary') getScenarioPerformanceLibraryAction: any;
         @Action('saveScenarioPerformanceLibrary') saveScenarioPerformanceLibraryAction: any;
@@ -237,6 +248,7 @@
         equationEditorDialogData: EquationEditorDialogData = clone(emptyEquationEditorDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         showCreatePerformanceLibraryEquationDialog = false;
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * beforeRouteEnter event handler
@@ -624,6 +636,24 @@
                 setTimeout(() => {
                     this.getScenarioPerformanceLibraryAction({selectedScenarioId: this.selectedScenarioId});
                 });
+            }
+        }
+
+        onDeletePerformanceLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deletePerformanceLibraryAction({performanceLibrary: this.selectedPerformanceLibrary});
+                this.onClearSelectedPerformanceLibrary();
             }
         }
     }

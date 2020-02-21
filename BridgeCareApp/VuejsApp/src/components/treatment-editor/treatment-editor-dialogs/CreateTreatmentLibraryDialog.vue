@@ -18,8 +18,7 @@
                 <v-card-actions>
                     <v-layout justify-space-between row>
                         <v-btn color="info" @click="onSubmit(true)"
-                               :disabled="createdTreatmentLibrary.name === '' ||
-                                          createdTreatmentLibrary.description === ''">
+                               :disabled="createdTreatmentLibrary.name === ''">
                             Save
                         </v-btn>
                         <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
@@ -39,6 +38,7 @@
     import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {clone} from 'ramda';
+    import {getUserName} from '@/shared/utils/get-user-info';
 
     @Component
     export default class CreateTreatmentLibraryDialog extends Vue {
@@ -67,6 +67,7 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
+                this.createdTreatmentLibrary.owner = getUserName();
                 this.$emit('submit', this.createdTreatmentLibrary);
             } else {
                 this.$emit('submit', null);

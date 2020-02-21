@@ -1,6 +1,7 @@
 const express = require('express');
 const performanceLibraryController = require('../controllers/performanceLibraryController');
 const authorizationFilter = require('../authorization/authorizationFilter');
+const roles = require('../authorization/roleConfig');
 
 function performanceLibraryRouter(PerformanceLibrary, connectionTest) {
     const router = express.Router();
@@ -9,14 +10,14 @@ function performanceLibraryRouter(PerformanceLibrary, connectionTest) {
     router.route('/GetPerformanceLibraries')
         .get(authorizationFilter(), controller.get);
     router.route('/CreatePerformanceLibrary')
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+        .post(authorizationFilter([roles.administrator, roles.engineer]), controller.post);
     router.route('/UpdatePerformanceLibrary')
-        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
-    router.route('/DeletePerformanceLibrary/:performanceLibraryId')
-        .delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteLibrary);
+        .put(authorizationFilter([roles.administrator, roles.engineer]), controller.put);
+    router.route('/DeletePerformanceLibrary/:libraryId')
+        .delete(authorizationFilter([roles.administrator, roles.engineer]), controller.deleteLibrary);
     router.route('/')
-        .get((req, res) => {
-            return res.send(connectionTest);
+        .get((request, response) => {
+            return response.send(connectionTest);
         });
 
     return router;

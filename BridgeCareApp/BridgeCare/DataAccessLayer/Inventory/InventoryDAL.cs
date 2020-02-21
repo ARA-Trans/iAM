@@ -38,19 +38,57 @@ namespace BridgeCare.DataAccessLayer.Inventory
             return GetInventoryModelData(db, selectStatement, brKey);
         }
 
+
         /// <summary>
-        /// Get BRKey and BMSId pairs in form of InventorySelectionModels
+        /// Get BRKey and BMSId pairs in form of InventorySelectionModels, if they match the provided user's criteria.
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public List<InventorySelectionModel> GetInventorySelectionModels(BridgeCareContext db)
+        public List<InventorySelectionModel> GetInventorySelectionModels(BridgeCareContext db, UserInformationModel userInformation)
         {
-            var select = string.Format("SELECT BRKEY as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A");
+            var userCriteriaEntity = db.UserCriteria.Where(criteria => criteria.USERNAME == userInformation.Name).First();
+            var userCriteria = new UserCriteriaModel(userCriteriaEntity);
+
+            if (!userCriteria.HasAccess)
+            {
+                throw new UnauthorizedAccessException($"User {userInformation.Name} has no inventory access.");
+            }
+
+            string query = "SELECT BRKEY as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A";
+
+            if (userCriteria.HasCriteria)
+            {
+                string networkId = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
+                query = ConstructInventoryQuery(userCriteria.Criteria, networkId);
+            }
 
             return db.Database
-                .SqlQuery<InventorySelectionModel>(select)
+                .SqlQuery<InventorySelectionModel>(query)
                 .AsQueryable()
                 .ToList();
+        }
+
+        /// <summary>
+        /// Constructs a SQL query for fetching keys and IDs of bridges matching the provided criteria string.
+        /// </summary>
+        /// <param name="userCriteriaString">User Criteria String</param>
+        /// <param name="networkIDString">Network ID as String</param>
+        /// <returns>SQL query string</returns>
+        private string ConstructInventoryQuery(string userCriteriaString, string networkIDString)
+        {
+            var innerJoinColumns = new List<string> { "FEATURE_CARRIED", "FEATURE_INTERSECTED", "LOCATION", "DISTRICT", "OWNER_CODE", "MPO" };
+            var innerJoinConditionList = innerJoinColumns.Select(column => $"PennDot_Report_A.{column} = SEGMENT_{networkIDString}_NS0.{column}").ToList();
+            var innerJoinConditions = string.Join(" and ", innerJoinConditionList);
+
+            var selectClause = "SELECT PennDot_Report_A.BRKEY as BRKey, PennDot_Report_A.BRIDGE_ID as BMSId";
+            // SEGMENT_#_NS0 contains the bridge data to be checked by the criteria string
+            var fromClause = $"FROM SEGMENT_{networkIDString}_NS0";
+            // PennDot_Report_A contains keys and IDs of bridges.
+            var joinClause = $"INNER JOIN PennDot_Report_A on {innerJoinConditions}";
+            var whereClause = $"WHERE ({userCriteriaString})";
+            whereClause = whereClause.Replace("[", $"SEGMENT_{networkIDString}_NS0.[");
+
+            return string.Join(" ", selectClause, fromClause, joinClause, whereClause);
         }
 
         /// <summary>

@@ -87,6 +87,7 @@ namespace BridgeCare
             container.RegisterType<IRemainingLifeLimit, RemainingLifeLimitDAL>();
             container.RegisterType<IRunRollup, RunRollupDAL>();
             container.RegisterType<ICashFlowLibrary, CashFlowLibraryDAL>();
+            container.RegisterType<IUserCriteria, UserCriteriaDAL>();
 
             //Summary Report types
             container.RegisterType<ISummaryReportGenerator, SummaryReportGenerator>();

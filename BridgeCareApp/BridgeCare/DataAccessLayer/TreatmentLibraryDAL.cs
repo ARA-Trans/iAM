@@ -5,6 +5,7 @@ using BridgeCare.Models;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using System;
 
 namespace BridgeCare.DataAccessLayer
 {
@@ -16,11 +17,8 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="id"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public TreatmentLibraryModel GetSimulationTreatmentLibrary(int id, BridgeCareContext db)
+        private TreatmentLibraryModel GetSimulationTreatmentLibrary(int id, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario found with id {id}");
-
             var simulation = db.Simulations.Include(s => s.TREATMENTS)
                 .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
                 .Include(s => s.TREATMENTS.Select(t => t.COSTS))
@@ -31,18 +29,39 @@ namespace BridgeCare.DataAccessLayer
         }
 
         /// <summary>
+        /// Fetches a simulation's treatment library data if it belongs to the user
+        /// Throws a RowNotInTableException if no such simulation is found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <param name="username"></param>
+        /// <returns>TreatmentLibraryModel</returns>
+        public TreatmentLibraryModel GetPermittedSimulationTreatmentLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanRead(username))
+                throw new UnauthorizedAccessException("You are not authorized to view this scenario's treatments.");
+            return GetSimulationTreatmentLibrary(id, db);
+        }
+
+        public TreatmentLibraryModel GetAnySimulationTreatmentLibrary(int id, BridgeCareContext db)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+            return GetSimulationTreatmentLibrary(id, db);
+        }
+
+        /// <summary>
         /// Executes an upsert/delete operation on a simulation's treatment library data
         /// Throws a RowNotInTableException if no simulation is found
         /// </summary>
         /// <param name="model">TreatmentLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>TreatmentLibraryModel</returns>
-        public TreatmentLibraryModel SaveSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
+        private TreatmentLibraryModel SaveSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-                throw new RowNotInTableException($"No scenario found with id {id}");
 
             var simulation = db.Simulations.Include(s => s.TREATMENTS)
                 .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
@@ -165,6 +184,24 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new TreatmentLibraryModel(simulation);
+        }
+
+        public TreatmentLibraryModel SavePermittedSimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanModify(username))
+                throw new UnauthorizedAccessException("You are not authorized to modify this scenario's treatments.");
+            return SaveSimulationTreatmentLibrary(model, db);
+        }
+
+        public TreatmentLibraryModel SaveAnySimulationTreatmentLibrary(TreatmentLibraryModel model, BridgeCareContext db)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario found with id {id}");
+            return SaveSimulationTreatmentLibrary(model, db);
         }
     }
 }

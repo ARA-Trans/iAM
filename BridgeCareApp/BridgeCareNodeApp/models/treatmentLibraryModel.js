@@ -33,6 +33,7 @@ const treatmentSchema = new Schema({
 
 const treatmentLibrarySchema = new Schema({
     name: {type: String},
+    owner: {type: String},
     description: {type: String},
     treatments: [treatmentSchema]
 });

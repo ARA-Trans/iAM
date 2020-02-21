@@ -13,6 +13,7 @@ const targetSchema = new Schema({
 
 const targetLibrarySchema = new Schema({
     name: {type: String},
+    owner: {type: String},
     description: {type: String},
     targets: [targetSchema]
 });
