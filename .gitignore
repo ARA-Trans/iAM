@@ -358,8 +358,8 @@ connection.config
 /Deployment/configurations/iam-deploy/esec.config
 
 # Deployment logs
-/Deployment/npmLogs
-/BridgeCareApp/BridgeCare/Logs
-/BridgeCareApp/BridgeCare/RoadCare Projects/Temp
-/RoadCare Projects/Temp
-/BridgeCareApp/BridgeCare/DownloadedReports
+/Deployment/npmLogs/*
+/BridgeCareApp/BridgeCare/Logs/*
+/BridgeCareApp/BridgeCare/RoadCare Projects/Temp/*
+/RoadCare Projects/Temp/*
+/BridgeCareApp/BridgeCare/DownloadedReports/*
