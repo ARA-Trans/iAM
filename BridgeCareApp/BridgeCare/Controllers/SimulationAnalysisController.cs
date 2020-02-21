@@ -1,9 +1,9 @@
-﻿using BridgeCare.Interfaces;
-using BridgeCare.Models;
-using BridgeCare.Security;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using BridgeCare.Interfaces;
+using BridgeCare.Models;
+using BridgeCare.Security;
 
 namespace BridgeCare.Controllers
 {
@@ -12,22 +12,16 @@ namespace BridgeCare.Controllers
 
     public class SimulationAnalysisController : ApiController
     {
-        private readonly ISimulationAnalysis repo;
         private readonly BridgeCareContext db;
+
+        private readonly ISimulationAnalysis repo;
+
         private readonly IReadOnlyDictionary<string, SimulationAnalysisGetMethod> SimulationAnalysisGetMethods;
+
         private readonly IReadOnlyDictionary<string, SimulationAnalysisUpdateMethod> SimulationAnalysisUpdateMethods;
 
-        public SimulationAnalysisController(ISimulationAnalysis simulationAnalysis, BridgeCareContext context)
-        {
-            repo = simulationAnalysis ?? throw new ArgumentNullException(nameof(simulationAnalysis));
-            db = context ?? throw new ArgumentNullException(nameof(context));
-
-            SimulationAnalysisGetMethods = CreateGetMethods();
-            SimulationAnalysisUpdateMethods = CreateUpdateMethods();
-        }
-
         /// <summary>
-        /// Creates a mapping from user roles to the appropriate methods for getting simulation analyses
+        ///     Creates a mapping from user roles to the appropriate methods for getting simulation analyses
         /// </summary>
         private Dictionary<string, SimulationAnalysisGetMethod> CreateGetMethods()
         {
@@ -46,7 +40,7 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
-        /// Creates a mapping from user roles to the appropriate methods for updating simulation analyses
+        ///     Creates a mapping from user roles to the appropriate methods for updating simulation analyses
         /// </summary>
         private Dictionary<string, SimulationAnalysisUpdateMethod> CreateUpdateMethods()
         {
@@ -66,8 +60,17 @@ namespace BridgeCare.Controllers
             };
         }
 
+        public SimulationAnalysisController(ISimulationAnalysis simulationAnalysis, BridgeCareContext context)
+        {
+            repo = simulationAnalysis ?? throw new ArgumentNullException(nameof(simulationAnalysis));
+            db = context ?? throw new ArgumentNullException(nameof(context));
+
+            SimulationAnalysisGetMethods = CreateGetMethods();
+            SimulationAnalysisUpdateMethods = CreateUpdateMethods();
+        }
+
         /// <summary>
-        /// API endpoint for fetching a simulation's analysis data
+        ///     API endpoint for fetching a simulation's analysis data
         /// </summary>
         /// <param name="id">Simulation identifier</param>
         /// <returns>IHttpActionResult</returns>
@@ -81,7 +84,7 @@ namespace BridgeCare.Controllers
         }
 
         /// <summary>
-        /// API endpoint for upserting a simulation's analysis data
+        ///     API endpoint for upserting a simulation's analysis data
         /// </summary>
         /// <param name="model">SimulationAnalysisModel</param>
         /// <returns>IHttpActionResult</returns>

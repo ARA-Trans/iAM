@@ -363,3 +363,6 @@ connection.config
 /BridgeCareApp/BridgeCare/RoadCare Projects/Temp/*
 /RoadCare Projects/Temp/*
 /BridgeCareApp/BridgeCare/DownloadedReports/*
+
+# DatabaseManager binary
+iAM-legacy/DatabaseManager.dll
