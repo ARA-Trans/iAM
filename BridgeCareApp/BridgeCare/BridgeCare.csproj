@@ -486,7 +486,10 @@
     <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
-    <Compile Include="Services\SummaryReport\BridgeWorkSummaryByBudget.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummaryByBudget\BridgeWorkCost.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummaryByBudget\BridgeWorkSummaryByBudget.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummaryByBudget\CommittedProjectsCost.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummaryByBudget\CulvertCost.cs" />
     <Compile Include="Services\SummaryReport\BridgeWorkSummaryCommon.cs" />
     <Compile Include="Services\SummaryReport\ConditionBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
