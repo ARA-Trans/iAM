@@ -67,7 +67,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
 
                 var filteredCommittedProject = comittedProjectsData.FindAll(_ => _.BUDGET.Equals(budget));
 
-                if (costForCulvertBudget.Count == 0 && costForBridgeBudgets.Count == 0)
+                if (costForCulvertBudget.Count == 0 && costForBridgeBudgets.Count == 0 && filteredCommittedProject.Count == 0)
                 {
                     continue;
                 }
