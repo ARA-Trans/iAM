@@ -548,7 +548,7 @@ namespace Simulation
             m_strJurisdiction = ConvertOMSAttribute(m_strJurisdiction);
 
             m_strWeighting = ds.Tables[0].Rows[0].ItemArray[1].ToString();
-            if (m_strWeighting != "none" && m_strWeighting != "")
+            if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
             {
                 if (!m_listAttributes.Contains(m_strWeighting))
                 {
@@ -2062,7 +2062,7 @@ namespace Simulation
                 }
                 m_strJurisdiction = ConvertOMSAttribute(m_strJurisdiction);
                 m_strWeighting = ds.Tables[0].Rows[0].ItemArray[1].ToString();
-                if (m_strWeighting != "none" && m_strWeighting != "")
+                if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
                 {
                     if (!m_listAttributes.Contains(m_strWeighting))
                     {
@@ -3608,7 +3608,7 @@ namespace Simulation
                         double dBCRatio;
 
                         double dWeighting = 1;
-                        if (m_strWeighting != "none" && m_strWeighting != "")
+                        if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
                         {
                             if (section.m_hashNextAttributeValue.Contains(m_strWeighting))
                             {
@@ -4061,7 +4061,7 @@ namespace Simulation
                     double dBCRatio;
 
                     double dWeighting = 1;
-                    if (m_strWeighting != "none" && m_strWeighting != "")
+                    if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
                     {
                         if (hash.Contains(m_strWeighting))
                         {
