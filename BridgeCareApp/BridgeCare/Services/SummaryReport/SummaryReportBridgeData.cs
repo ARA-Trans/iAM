@@ -240,11 +240,14 @@ namespace BridgeCare.Services
         private CurrentCell AddHeadersCells(ExcelWorksheet worksheet, List<string> headers, List<int> simulationYears)
         {
             int headerRow = 1;
+            var initialColumn = 1;
             for (int column = 0; column < headers.Count; column++)
             {
                 worksheet.Cells[headerRow, column + 1].Value = headers[column];
             }
             var currentCell = new CurrentCell { Row = headerRow, Column = headers.Count };
+            excelHelper.ApplyColor(worksheet.Cells[headerRow, initialColumn, currentCell.Row, currentCell.Column], Color.Gray);
+            excelHelper.ApplyBorder(worksheet.Cells[headerRow, initialColumn, currentCell.Row, currentCell.Column]);
 
             AddDynamicHeadersCells(worksheet, currentCell, simulationYears);
             return currentCell;
@@ -255,6 +258,7 @@ namespace BridgeCare.Services
             const string HeaderConstText = "Work Done in ";
             var column = currentCell.Column;
             var row = currentCell.Row;
+            var initialColumn = column;
             foreach (var year in simulationYears)
             {
                 worksheet.Cells[row, ++column].Value = HeaderConstText + year;
@@ -300,7 +304,8 @@ namespace BridgeCare.Services
                 excelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
                 currentCell.Column = ++column;
             }
-
+            excelHelper.ApplyColor(worksheet.Cells[row, initialColumn, currentCell.Row, currentCell.Column], Color.Gray);
+            excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, currentCell.Row, currentCell.Column]);
             currentCell.Row = currentCell.Row + 2;
         }
 
