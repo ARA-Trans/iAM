@@ -70,7 +70,7 @@
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
                         <td>
-                            <v-layout row wrap>
+                            <v-layout row nowrap>
                                 <v-flex>
                                     <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
                                         title="Run Scenario">
@@ -153,7 +153,7 @@
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
                         <td>
-                            <v-layout row wrap>
+                            <v-layout row nowrap>
                                 <v-flex>
                                     <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
                                         title="Run Scenario">
