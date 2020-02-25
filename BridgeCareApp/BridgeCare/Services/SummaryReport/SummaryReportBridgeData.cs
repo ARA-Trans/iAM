@@ -75,6 +75,10 @@ namespace BridgeCare.Services
             int totalColumnValue = 0;
             foreach (var bridgeDataModel in bridgeDataModels)
             {
+                if (row % 2 == 0)
+                {
+                    excelHelper.ApplyColor(worksheet.Cells[row, 1, row, worksheet.Dimension.Columns], Color.LightGray);
+                }
                 column = currentCell.Column;
                 var brKey = bridgeDataModel.BRKey;
                 var familyId = bridgeDataModel.BridgeFamily;
@@ -187,6 +191,7 @@ namespace BridgeCare.Services
 
         private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId, BridgeDataModel bridgeDataModel)
         {
+            int initialColumn = column;
             var familyIdLessThanEleven = Convert.ToInt32(familyId) < 11;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Deck;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
@@ -205,10 +210,6 @@ namespace BridgeCare.Services
             if (yearData.Year != 0)
             {   
                 worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted == "Y" ? getPostedType(yearData.Project) : "N"; // Posted
-                if(yearData.ProjectPick == "Committed Pick")
-                {
-                    var test = 0;
-                }
                 worksheet.Cells[row, ++column].Value = yearData.ProjectPick; // Project Pick
                 worksheet.Cells[row, ++column].Value = yearData.Budget; // Budget
                 worksheet.Cells[row, ++column].Value = yearData.Project;
@@ -240,14 +241,12 @@ namespace BridgeCare.Services
         private CurrentCell AddHeadersCells(ExcelWorksheet worksheet, List<string> headers, List<int> simulationYears)
         {
             int headerRow = 1;
-            var initialColumn = 1;
             for (int column = 0; column < headers.Count; column++)
             {
                 worksheet.Cells[headerRow, column + 1].Value = headers[column];
             }
             var currentCell = new CurrentCell { Row = headerRow, Column = headers.Count };
-            excelHelper.ApplyColor(worksheet.Cells[headerRow, initialColumn, currentCell.Row, currentCell.Column], Color.Gray);
-            excelHelper.ApplyBorder(worksheet.Cells[headerRow, initialColumn, currentCell.Row, currentCell.Column]);
+            excelHelper.ApplyBorder(worksheet.Cells[headerRow, 1, headerRow + 1, worksheet.Dimension.Columns]);
 
             AddDynamicHeadersCells(worksheet, currentCell, simulationYears);
             return currentCell;
@@ -264,6 +263,7 @@ namespace BridgeCare.Services
                 worksheet.Cells[row, ++column].Value = HeaderConstText + year;
                 worksheet.Cells[row + 2, column].Value = year;
                 excelHelper.ApplyStyle(worksheet.Cells[row + 2, column]);
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.IndianRed);
             }
             worksheet.Cells[row, ++column].Value = "Work Done more than once";
             worksheet.Cells[row, ++column].Value = "Total";
@@ -290,26 +290,26 @@ namespace BridgeCare.Services
             var simulationHeaderTexts = GetSimulationHeaderTexts();
             worksheet.Cells[row, ++column].Value = simulationYears[0] - 1;
             column = currentCell.Column;
-            column = AddSimulationHeaderTexts(worksheet, currentCell, column, row, simulationHeaderTexts, simulationHeaderTexts.Count - 5);
+            column = AddSimulationHeaderTexts(worksheet, column, row, simulationHeaderTexts, simulationHeaderTexts.Count - 5);
             excelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
 
             // Empty column
             currentCell.Column = ++column;
-
+            var yearHeaderColumn = currentCell.Column;
             foreach (var simulationYear in simulationYears)
             {
                 worksheet.Cells[row, ++column].Value = simulationYear;
                 column = currentCell.Column;
-                column = AddSimulationHeaderTexts(worksheet, currentCell, column, row, simulationHeaderTexts, simulationHeaderTexts.Count);
+                column = AddSimulationHeaderTexts(worksheet, column, row, simulationHeaderTexts, simulationHeaderTexts.Count);
                 excelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
                 currentCell.Column = ++column;
             }
-            excelHelper.ApplyColor(worksheet.Cells[row, initialColumn, currentCell.Row, currentCell.Column], Color.Gray);
-            excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, currentCell.Row, currentCell.Column]);
+            excelHelper.ApplyColor(worksheet.Cells[1, yearHeaderColumn - 2, 1, currentCell.Column], Color.DimGray);
+            excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, row + 1, worksheet.Dimension.Columns]);
             currentCell.Row = currentCell.Row + 2;
         }
 
-        private int AddSimulationHeaderTexts(ExcelWorksheet worksheet, CurrentCell currentCell, int column, int row, List<string> simulationHeaderTexts, int length)
+        private int AddSimulationHeaderTexts(ExcelWorksheet worksheet, int column, int row, List<string> simulationHeaderTexts, int length)
         {
             for (var index = 0; index < length; index++)
             {

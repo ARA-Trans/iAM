@@ -205,6 +205,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             return dynamicColumns;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
         private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
         {
             bool adtTotalHasValue = Int32.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
@@ -226,7 +227,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 StructureLength = pennDotReportADataRow.StructureLength,
                 PlanningPartner = pennDotReportADataRow.PlanningPartner,
                 StructureType = pennDotReportADataRow.StructureType,
-                Posted = pennDotReportADataRow.Posted,
+                Posted = pennDotReportADataRow.Posted.ToLower() == "posted" ? "Y" : "N",
                 AdtTotal = pennDotReportADataRow.ADTTOTAL,
                 P3 = pennDotReportADataRow.P3,
                 ParallelBridge = pennDotReportADataRow.ParallelBridge,
