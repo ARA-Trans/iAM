@@ -14,7 +14,6 @@ using Unity.Injection;
 using Hangfire.Common;
 using Hangfire.Client;
 using Hangfire.States;
-using BridgeCare.Controllers;
 using BridgeCare.Interfaces.SummaryReport;
 
 namespace BridgeCare

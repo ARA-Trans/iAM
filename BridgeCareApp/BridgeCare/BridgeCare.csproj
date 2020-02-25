@@ -281,6 +281,7 @@
     <Compile Include="Models\SplitTreatmentModel.cs" />
     <Compile Include="Models\UserCriteriaModel.cs" />
     <Compile Include="Interfaces\SummaryReport\IWorkSummaryByBudget.cs" />
+    <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryByBudgetModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
     <Compile Include="Security\JWTParse.cs" />
