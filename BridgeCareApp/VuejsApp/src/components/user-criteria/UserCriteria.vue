@@ -12,7 +12,7 @@
                     <v-divider style="margin: 0px"/>
                     <div v-for="user in unassignedUsers">
                     <v-layout row style="margin: auto; width: 75%;text-align: center">
-                        <v-flex xs2 style="display: flex; flex-direction: column; justify-content: center; font-size: 1.2em; padding-top: 0px; padding-bottom: 0px">
+                        <v-flex xs4 style="display: flex; flex-direction: column; justify-content: center; font-size: 1.2em; padding-top: 0px; padding-bottom: 0px">
                         {{user.username}}
                         </v-flex>
                         <v-flex xs4 style="padding: 0px">
