@@ -69,8 +69,8 @@
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
-                        <td>
-                            <v-layout row wrap>
+                        <td style="width: 1px">
+                            <v-layout row nowrap>
                                 <v-flex>
                                     <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
                                         title="Run Scenario">
@@ -152,8 +152,8 @@
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
-                        <td>
-                            <v-layout row wrap>
+                        <td style="width: 1px">
+                            <v-layout row nowrap>
                                 <v-flex>
                                     <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
                                         title="Run Scenario">
