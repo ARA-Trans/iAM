@@ -32,21 +32,12 @@ function priorityLibraryController(PriorityLibrary) {
         });
     }
 
-    /**
-     * PUT NodeJS API endpoint for priority libraries; updates & returns a priority library
-     * @param request Http request
-     * @param response Http response
-     */
-    function put(request, response) {
-        PriorityLibrary.findOneAndUpdate({_id: request.body._id}, request.body, {new: true}, (error, priorityLibrary) => {
-            if (error)
-                return response.status(500).json(error);
+    const {getUpdateFunction, getDeletionFunction} = require('./libraryAPIFunctions');
 
-            return response.status(200).json(priorityLibrary);
-        });
-    }
+    put = getUpdateFunction(PriorityLibrary);
+    deleteLibrary = getDeletionFunction(PriorityLibrary);
 
-    return {get, post, put};
+    return {get, post, put, deleteLibrary};
 }
 
 module.exports = priorityLibraryController;

@@ -1,9 +1,10 @@
 import {emptyPriorityLibrary, PriorityLibrary} from '@/shared/models/iAM/priority';
-import {clone, any, propEq, append, findIndex, equals, update} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
 import PriorityService from '@/services/priority.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     priorityLibraries: [] as PriorityLibrary[],
@@ -26,6 +27,14 @@ const mutations = {
             state.priorityLibraries = update(
                 findIndex(propEq('id', updatedPriorityLibrary.id), state.priorityLibraries),
                 updatedPriorityLibrary,
+                state.priorityLibraries
+            );
+        }
+    },
+    deletedPriorityLibraryMutator(state: any, deletedPriorityLibraryId: string) {
+        if (any(propEq('id', deletedPriorityLibraryId), state.priorityLibraries)) {
+            state.priorityLibraries = reject(
+                (library: PriorityLibrary) => deletedPriorityLibraryId === library.id,
                 state.priorityLibraries
             );
         }
@@ -71,6 +80,15 @@ const actions = {
                 }
             });
     },
+    async deletePriorityLibrary({dispatch, commit}: any, payload: any) {
+        await PriorityService.deletePriorityLibrary(payload.priorityLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedPriorityLibraryMutator', payload.priorityLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted priority library'});
+                }
+            });
+    },
     async getScenarioPriorityLibrary({commit}: any, payload: any) {
         await PriorityService.getScenarioPriorityLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<PriorityLibrary>) => {
@@ -90,6 +108,7 @@ const actions = {
             });
     },
     async socket_priorityLibrary({dispatch, state, commit}: any, payload: any) {
+        console.log(payload);
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             const priorityLibrary: PriorityLibrary = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
@@ -108,9 +127,16 @@ const actions = {
                     if (!any(propEq('id', priorityLibrary.id), state.priorityLibraries)) {
                         commit('createdPriorityLibraryMutator', priorityLibrary);
                         dispatch('setInfoMessage',
-                            {message: ` Priority library '${priorityLibrary.name}' has been created from another source`}
+                            {message: `Priority library '${priorityLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.priorityLibraries)) {
+                commit('deletedPriorityLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A priority library has been deleted from another source`}
+                );
             }
         }
     }

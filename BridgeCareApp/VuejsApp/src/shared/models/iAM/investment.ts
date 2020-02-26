@@ -10,6 +10,7 @@ export interface InvestmentLibraryBudgetYear {
 export interface InvestmentLibrary {
     id: number | string;
     name: string;
+    owner?: string;
     inflationRate: number;
     description: string;
     budgetOrder: string[];

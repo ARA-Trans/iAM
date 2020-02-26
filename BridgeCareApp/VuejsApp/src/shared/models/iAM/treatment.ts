@@ -33,6 +33,7 @@ export interface Treatment {
 export interface TreatmentLibrary {
     id: string;
     name: string;
+    owner?: string;
     description: string;
     treatments: Treatment[];
 }

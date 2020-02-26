@@ -1,13 +1,15 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
-import {UserInfo, UserTokens} from '@/shared/models/iAM/authentication';
+import {UserTokens, UserInfo} from '@/shared/models/iAM/authentication';
 import {http2XX} from '@/shared/utils/http-utils';
+import {getUserName} from '@/shared/utils/get-user-info';
 
 const state = {
     authenticated: false,
     hasRole: false,
     checkedForRole: false,
     isAdmin: false,
+    isCWOPA: false,
     username: ''
 };
 
@@ -23,6 +25,9 @@ const mutations = {
     },
     isAdminMutator(state: any, status: boolean) {
         state.isAdmin = status;
+    },
+    isCWOPAMutator(state: any, status: boolean) {
+        state.isCWOPA = status;
     },
     usernameMutator(state: any, username: string) {
         state.username = username;
@@ -91,6 +96,7 @@ const actions = {
                         commit('hasRoleMutator', userInfo.roles !== undefined);
                         if (state.hasRole) {
                             commit('isAdminMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-Administrator');
+                            commit('isCWOPAMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-CWOPA');
                         }
                         commit('checkedForRoleMutator', true);
                         commit('usernameMutator', username);
