@@ -172,7 +172,7 @@
                         <div>
                             <v-layout justify-space-between row>
                                 <v-btn class="ara-blue-bg white--text" @click="onCheckEquation">Check</v-btn>
-                                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="onDisableSaveBtn()">Save</v-btn>
+                                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">Save</v-btn>
                                 <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
                             </v-layout>
                         </div>
@@ -285,7 +285,7 @@
             this.showInvalidMessage = false;
             this.showValidMessage = false;
 
-            this.cannotSubmit = !this.isPiecewise && this.equation !== '';
+            this.cannotSubmit = !(this.equation === '' && !this.isPiecewise);
         }
 
         /**
