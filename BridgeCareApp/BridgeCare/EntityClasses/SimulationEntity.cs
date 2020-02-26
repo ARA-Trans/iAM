@@ -95,7 +95,7 @@ namespace BridgeCare.EntityClasses
                 new PriorityEntity
                 {
                     PRIORITYLEVEL = 1,
-                    YEARS = DateTime.Now.Year,
+                    YEARS = null,
                     CRITERIA = "",
                     PRIORITYFUNDS = new List<PriorityFundEntity>
                     {
