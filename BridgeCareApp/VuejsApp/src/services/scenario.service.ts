@@ -110,7 +110,6 @@ export default class ScenarioService {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
                             ...response.data,
-                            shared: false,
                             status: 'New scenario'
                         };
                         nodejsAxiosInstance.post('api/GetMongoScenarios', scenarioToTrackStatus)
@@ -178,6 +177,36 @@ export default class ScenarioService {
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         return resolve(response);
+                    }
+                });
+        });
+    }
+
+    static cloneScenario(scenarioId: number): AxiosPromise {
+        return new Promise<AxiosResponse>((resolve) => {
+            axiosInstance.post(`/api/CloneScenario/${scenarioId}`)
+                .then((response: AxiosResponse) => {
+                    if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                        const newScenario: Scenario = {
+                            ...response.data,
+                            status: 'New scenario'
+                        };
+                        nodejsAxiosInstance.post('api/GetMongoScenarios', newScenario)
+                            .then((res: AxiosResponse<Scenario>) => {
+                                if (hasValue(res)) {
+                                    return resolve(res);
+                                }
+                            })
+                            .catch((error: any) => {
+                                const axiosResponse: AxiosResponse<Scenario> = {
+                                    data: {} as Scenario,
+                                    status: 500,
+                                    statusText: error.toString(),
+                                    headers: {},
+                                    config: {}
+                                };
+                                return resolve(axiosResponse);
+                            });
                     }
                 });
         });

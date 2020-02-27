@@ -73,34 +73,41 @@
                             <v-layout row nowrap>
                                 <v-flex>
                                     <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
-                                        title="Run Scenario">
+                                        title="Run Analysis">
                                         <v-icon>fas fa-play</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)"
-                                        title="Download Reports">
+                                        title="Reports">
                                         <v-icon>fas fa-chart-line</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="edit-icon"
                                         @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
-                                        title="Edit Scenario">
+                                        title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="ara-blue"
                                         @click="onShareScenario(props.item)"
-                                        title="Share Scenario">
+                                        title="Share">
                                         <v-icon>fas fa-users</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon class="ara-blue"
+                                        @click="onCloneScenario(props.item.simulationId)"
+                                        title="Clone">
+                                        <v-icon>fas fa-paste</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="ara-orange"
                                         @click="onDeleteScenario(props.item.simulationId, props.item.id)"
-                                        title="Delete Scenario">
+                                        title="Delete">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
@@ -156,33 +163,40 @@
                             <v-layout row nowrap>
                                 <v-flex>
                                     <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
-                                        title="Run Scenario">
+                                        title="Run Analysis">
                                         <v-icon>fas fa-play</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn flat icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)"
-                                        title="Download Reports">
+                                        title="Reports">
                                         <v-icon>fas fa-chart-line</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn flat icon class="edit-icon"
                                         @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
-                                        title="Edit Scenario">
+                                        title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn flat icon class="ara-blue" @click="onShareScenario(props.item)"
-                                        title="Share Scenario">
+                                        title="Share">
                                         <v-icon>fas fa-users</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon class="ara-blue"
+                                        @click="onCloneScenario(props.item.simulationId)"
+                                        title="Clone">
+                                        <v-icon>fas fa-paste</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="ara-orange"
                                         @click="onDeleteScenario(props.item.simulationId, props.item.id)"
-                                        title="Delete Scenario">
+                                        title="Delete">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
@@ -257,6 +271,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @Action('getMongoRollups') getMongoRollupsAction: any;
         @Action('rollupNetwork') rollupNetworkAction: any;
         @Action('getLegacyNetworks') getLegacyNetworksAction: any;
+        @Action('cloneScenario') cloneScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
@@ -394,6 +409,10 @@ import { getUserName } from '../../shared/utils/get-user-info';
                 simulationId: this.simulationId,
                 scenarioId: this.scenarioId
             });
+        }
+
+        onCloneScenario(scenarioId: number) {
+            this.cloneScenarioAction({scenarioId});
         }
         
         /**
