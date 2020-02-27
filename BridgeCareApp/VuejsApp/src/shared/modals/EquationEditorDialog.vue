@@ -105,12 +105,9 @@
                                                         <v-btn class="ara-blue-bg white--text" @click="onAddTimeAttributeDataPoint">
                                                             Add
                                                         </v-btn>
-                                                        <!--<v-btn class="ara-blue-bg white&#45;&#45;text piecewise-switch-btn" @click="onSwitchDataPointsGridView">
-                                                            <v-layout justify-space-between row>
-                                                                <v-icon>fas fa-sync-alt</v-icon>
-                                                                <span>{{dataPointsGridTypeBtnTxt}}</span>
-                                                            </v-layout>
-                                                        </v-btn>-->
+                                                        <v-btn class="ara-blue-bg white--text" @click="showAddDataPointMultiPopup = true">
+                                                            Add Multi
+                                                        </v-btn>
                                                     </v-layout>
                                                     <div class="data-points-grid">
                                                         <v-data-table :headers="piecewiseGridHeaders" :items="dataPointsGridData"
@@ -156,15 +153,6 @@
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <!--<kendo-chart :category-axis-title-text="'Time'" :value-axis-title-text="'Attribute'"
-                                                                 :legend-visible="false" :series-defaults-type="'line'" :series-defaults-style="'smooth'"
-                                                                 :category-axis-categories="getDataPointsGridDataPropertyValues('timeValue')"
-                                                                 :category-axis-major-grid-lines-visible="false" :value-axis-major-grid-lines-visible="false"
-                                                                 :category-axis-visible="showCategoryAxis"
-                                                                 :y-axis-title-visible="true" :tooltip-visible="true" :theme="'sass'">
-                                                        <kendo-chart-series-item :data="getDataPointsGridDataPropertyValues('attributeValue')">
-                                                        </kendo-chart-series-item>
-                                                    </kendo-chart>-->
                                                     <kendo-chart :data-source="chartData"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
@@ -172,11 +160,8 @@
                                                                  :zoomable-selection-lock="'y'"
                                                                  :category-axis="categoryAxis"
                                                                  :theme="'sass'"
-                                                                 :category-axis-title-text="'Time'"
                                                                  :value-axis-title-text="'Attribute'"
-                                                                 :tooltip="tooltip"
-                                                                 :plot-area="plotArea">
-                                                        <kendo-chart-plot-area :border-dash-type="'solid'"></kendo-chart-plot-area>
+                                                                 :tooltip="tooltip">
                                                     </kendo-chart>
                                                 </div>
                                             </v-flex>
@@ -191,6 +176,9 @@
                                                     <v-layout justify-space-between row>
                                                         <v-btn class="ara-blue-bg white--text" @click="onAddTimeAttributeDataPoint">
                                                             Add
+                                                        </v-btn>
+                                                        <v-btn class="ara-blue-bg white--text" @click="showAddDataPointMultiPopup = true">
+                                                            Add Multi
                                                         </v-btn>
                                                     </v-layout>
                                                     <div class="data-points-grid">
@@ -237,15 +225,6 @@
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <!--<kendo-chart :category-axis-title-text="'Time'" :value-axis-title-text="'Attribute'"
-                                                                 :legend-visible="false" :series-defaults-type="'line'" :series-defaults-style="'smooth'"
-                                                                 :category-axis-categories="getDataPointsGridDataPropertyValues('timeValue')"
-                                                                 :category-axis-major-grid-lines-visible="false" :value-axis-major-grid-lines-visible="false"
-                                                                 :category-axis-visible="showCategoryAxis"
-                                                                 :y-axis-title-visible="true" :tooltip-visible="true" :theme="'sass'" :pannable="true">
-                                                        <kendo-chart-series-item :data="getDataPointsGridDataPropertyValues('attributeValue')">
-                                                        </kendo-chart-series-item>
-                                                    </kendo-chart>-->
                                                     <kendo-chart :data-source="chartData"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
@@ -253,10 +232,8 @@
                                                                  :zoomable-selection-lock="'y'"
                                                                  :category-axis="categoryAxis"
                                                                  :theme="'sass'"
-                                                                 :category-axis-title-text="'Time'"
                                                                  :value-axis-title-text="'Attribute'"
-                                                                 :tooltip="tooltip"
-                                                                 :plotarea="plotArea">
+                                                                 :tooltip="tooltip">
                                                     </kendo-chart>
                                                 </div>
                                             </v-flex>
@@ -283,7 +260,7 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog :class="'data-points-popup'" v-model="showAddDataPointPopup" persistent max-width="250px">
+        <v-dialog v-model="showAddDataPointPopup" persistent max-width="250px">
             <v-card>
                 <v-card-text>
                     <v-layout justify-center column>
@@ -304,6 +281,30 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="showAddDataPointMultiPopup" persistent max-width="200px">
+            <v-card>
+                <v-card-text>
+                    <v-layout justify-center column>
+                        <p>Data point entries must follow the format <span class="format-span"><strong>#,#</strong></span> (time,attribute) with each entry on a separate line.</p>
+                        <v-flex xs2>
+                            <v-textarea rows="20" no-resize outline v-model="multiDataPoints">
+                            </v-textarea>
+                        </v-flex>
+
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-layout justify-space-between row>
+                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPointMulti(true)"
+                               :disabled="disableMultiDataPointsSubmit()">
+                            Save
+                        </v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="submitNewDataPointMulti(false)">Cancel</v-btn>
+                    </v-layout>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-layout>
 </template>
 
@@ -316,14 +317,14 @@
     import EquationEditorService from '@/services/equation-editor.service';
     import {formulas} from '@/shared/utils/formulas';
     import {AxiosResponse} from 'axios';
-    import {getPropertyValues, getPropertyValuesNonUniq} from '@/shared/utils/getter-utils';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {EquationValidation} from '@/shared/models/iAM/equation-validation';
     import {http2XX} from '@/shared/utils/http-utils';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {emptyTimeAttributeDataPoint, TimeAttributeDataPoint} from '@/shared/models/iAM/time-attribute-data-point';
-    import {isNil, reverse, clone, remove} from 'ramda';
+    import {isNil, clone} from 'ramda';
     import {emptyPagination, Pagination} from '@/shared/models/vue/pagination';
     import {SelectItem} from '@/shared/models/vue/select-item';
     const ObjectID = require('bson-objectid');
@@ -358,7 +359,6 @@
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'}
         ];
         dataPointsGridData: TimeAttributeDataPoint[] = [];
-        piecewiseRegex: RegExp = /(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))+/;
         pagination: Pagination = clone(emptyPagination);
         page: number = 1;
         rowsPerPageItems: SelectItem[] = [
@@ -368,19 +368,12 @@
         pages: number = 0;
         showAddDataPointPopup: boolean = false;
         newDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
-        series: any[] = [{
-            type: 'line', field: 'attributeValue', categoryField: 'timeValue'
-        }];
-        categoryAxis: any = {
-            min: 0, max: 10, labels: {rotation: 'auto'}
-        };
-        tooltip: any = {
-            visible: true, template: '#= category #, #= value #'
-        };
-        plotArea: any = {
-            border: {dashType: 'solid'}
-        };
+        series: any[] = [{type: 'line', field: 'attributeValue', categoryField: 'timeValue', markers: {visible: false}}];
+        categoryAxis: any = {min: 0, max: 10, labels: {rotation: 'auto', step: 1}, title: {text: 'Time', visible: true}};
+        tooltip: any = {visible: true, template: '#= category #, #= value #'};
         chartData: TimeAttributeDataPoint[] = [];
+        showAddDataPointMultiPopup: boolean = false;
+        multiDataPoints: string = '';
 
         /**
          * Component mounted event handler
@@ -398,11 +391,10 @@
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            // if (this.piecewiseRegex.test(this.dialogData.equation)) {
-            if (true) {
+            if ((/(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))+/).test(this.dialogData.equation)) {
                 this.isPiecewise = true;
                 this.onParsePiecewiseEquation();
-                this.getDataPointsGridDataPropertyValues();
+                this.setDataPointsChartData();
             } else {
                 this.isPiecewise = false;
             }
@@ -476,7 +468,7 @@
                 this.pages = pages;
             }
 
-            this.getDataPointsGridDataPropertyValues();
+            this.setDataPointsChartData();
         }
 
         /**
@@ -550,7 +542,7 @@
         }
 
         /**
-         *
+         * Shows the new data point popup
          */
         onAddTimeAttributeDataPoint() {
             this.newDataPoint = {
@@ -580,13 +572,35 @@
         /**
          * Gets the specified property values from a list of TimeAttributeDataPoint objects then applies pagination
          */
-        getDataPointsGridDataPropertyValues() {
+        setDataPointsChartData() {
             this.chartData = [];
+
             if (this.pagination.rowsPerPage === -1) {
                 this.chartData.push(...this.dataPointsGridData);
             } else {
                 for (let i = (this.pagination.page - 1) * this.pagination.rowsPerPage; i < (this.pagination.page * this.pagination.rowsPerPage) && i < this.dataPointsGridData.length; i++) {
                     this.chartData.push(this.dataPointsGridData[i]);
+                }
+            }
+
+            this.setChartLabelsStep();
+        }
+
+        /**
+         * Sets the step value for the chart's category axis values
+         */
+        setChartLabelsStep() {
+            if (this.pagination.rowsPerPage !== -1) {
+                this.categoryAxis.labels.step = 1;
+            } else {
+                if (this.chartData.length <= 104) {
+                    this.categoryAxis.labels.step = 2;
+                } else if (this.chartData.length > 104 && this.chartData.length <= 208) {
+                    this.categoryAxis.labels.step = 3;
+                } else if (this.chartData.length > 208 && this.chartData.length <= 312) {
+                    this.categoryAxis.labels.step = 4;
+                } else {
+                    this.categoryAxis.labels.step = 5;
                 }
             }
         }
@@ -674,6 +688,9 @@
             this.showValidMessage = false;
         }
 
+        /**
+         * Creates a new data point from the new data point popup
+         */
         submitNewDataPoint(submit: boolean) {
             this.showAddDataPointPopup = false;
 
@@ -682,6 +699,45 @@
             }
 
             this.newDataPoint = clone(emptyTimeAttributeDataPoint);
+        }
+
+        /**
+         * Creates new data points from the multiple data points popup result
+         */
+        submitNewDataPointMulti(submit: boolean) {
+            if (submit) {
+                const splitDataPoints: string[] = this.multiDataPoints
+                    .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '');
+
+                if (hasValue(splitDataPoints)) {
+                    const dataPoints: TimeAttributeDataPoint[] = splitDataPoints.map((dataPoints: string) => {
+                        const splitValues: string[] = dataPoints.split(',');
+                        return {
+                            id: ObjectID.generate(),
+                            timeValue: parseFloat(splitValues[0]),
+                            attributeValue: parseFloat(splitValues[1])
+                        }
+                    });
+                    this.dataPointsGridData.push(...dataPoints);
+                }
+            }
+
+            this.showAddDataPointMultiPopup = false;
+            this.multiDataPoints = '';
+        };
+
+        /**
+         * Disables the multiple data points popup 'Save' button if the criteria isn't met
+         */
+        disableMultiDataPointsSubmit() {
+            const eachDataPointIsValid = this.multiDataPoints
+                .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '')
+                .every((dataPoints: string) => {
+                    return (/\d+(\.{1}\d+)*,\d+(\.{1}\d+)*/).test(dataPoints) &&
+                           dataPoints.split(',').every((value: string) => parseFloat(value) !== NaN);
+                });
+
+            return this.multiDataPoints === '' || !eachDataPointIsValid;
         }
     }
 </script>
@@ -750,9 +806,7 @@
         height: 505px;
     }
 
-    /*.kendo-chart-container {
-        height: 999px;
-        width: 999px;
-        overflow: scroll;
-    }*/
+    .format-span {
+        color: red;
+    }
 </style>
