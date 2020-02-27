@@ -3,3 +3,9 @@ export interface TimeAttributeDataPoint {
     timeValue: number;
     attributeValue: number;
 }
+
+export const emptyTimeAttributeDataPoint = {
+    id: '',
+    timeValue: 0,
+    attributeValue: 0
+};
