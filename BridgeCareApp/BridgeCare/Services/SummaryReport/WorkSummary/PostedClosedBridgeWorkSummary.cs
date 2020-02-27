@@ -24,32 +24,42 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
             this.bridgeWorkSummaryComputationHelper = bridgeWorkSummaryComputationHelper ?? throw new ArgumentNullException(nameof(bridgeWorkSummaryComputationHelper));
         }
 
-        internal void FillPostedBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
-            List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
+        internal ChartRowsModel FillPostedBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
+            List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
             excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Posted Bridges - Count", true);
+            chartRowsModel.TotalBridgePostedCountByBPNYearsRow = currentCell.Row;
             AddDetailsForPostedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            return chartRowsModel;
         }
 
-        internal void FillClosedBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
+        internal ChartRowsModel FillClosedBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
             excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Closed Bridges - Count", true);
+            chartRowsModel.TotalClosedBridgeCountByBPNYearsRow = currentCell.Row;
             AddDetailsForClosedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            return chartRowsModel;
         }
 
-        internal void FillBridgeCountTotal(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
+        internal ChartRowsModel FillBridgeCountTotal(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
+            List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
             excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Posted Bridges - Count", true);
+            chartRowsModel.TotalPostedAndClosedByBPNYearsRow = currentCell.Row;
             AddDetailsForTotalBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            return chartRowsModel;
         }
-        internal void FillMoneyNeededByBPN(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)
+        internal ChartRowsModel FillMoneyNeededByBPN(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
+            List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
             excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Dollar Needs By BPN", true);
+            chartRowsModel.TotalCashNeededByBPNYearsRow = currentCell.Row;
             AddDetailsForMoneyNeededByBPN(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
+            return chartRowsModel;
         }
 
         private void AddDetailsForMoneyNeededByBPN(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)

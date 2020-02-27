@@ -264,4 +264,25 @@
   <data name="Posted" xml:space="preserve">
     <value>Posted</value>
   </data>
+  <data name="PoorDeckAreaByBPN" xml:space="preserve">
+    <value>Poor Deck Area By BPN</value>
+  </data>
+  <data name="PostedBridgeCountByBPN" xml:space="preserve">
+    <value>Posted Bridge Count By BPN</value>
+  </data>
+  <data name="CashNeededByBPNUnconstrainedBudget" xml:space="preserve">
+    <value>Cash Needed By BPN - Unconstrained Budget</value>
+  </data>
+  <data name="ClosedBridgeCountByBPN" xml:space="preserve">
+    <value>Closed Bridge Count By BPN</value>
+  </data>
+  <data name="ClosedBridgeDeckAreaByBPN" xml:space="preserve">
+    <value>Closed Bridge Deck Area By BPN</value>
+  </data>
+  <data name="CombinedPostedAndClosed" xml:space="preserve">
+    <value>Combined Posted And Closed</value>
+  </data>
+  <data name="PostedBridgeDeckAreaByBPN" xml:space="preserve">
+    <value>Posted Bridge Deck Area By BPN</value>
+  </data>
 </root>

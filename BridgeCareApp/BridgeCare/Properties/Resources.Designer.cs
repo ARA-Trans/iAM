@@ -124,11 +124,47 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cash Needed By BPN - Unconstrained Budget.
+        /// </summary>
+        internal static string CashNeededByBPNUnconstrainedBudget {
+            get {
+                return ResourceManager.GetString("CashNeededByBPNUnconstrainedBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Closed.
         /// </summary>
         internal static string Closed {
             get {
                 return ResourceManager.GetString("Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed Bridge Count By BPN.
+        /// </summary>
+        internal static string ClosedBridgeCountByBPN {
+            get {
+                return ResourceManager.GetString("ClosedBridgeCountByBPN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed Bridge Deck Area By BPN.
+        /// </summary>
+        internal static string ClosedBridgeDeckAreaByBPN {
+            get {
+                return ResourceManager.GetString("ClosedBridgeDeckAreaByBPN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Combined Posted And Closed.
+        /// </summary>
+        internal static string CombinedPostedAndClosed {
+            get {
+                return ResourceManager.GetString("CombinedPostedAndClosed", resourceCulture);
             }
         }
         
@@ -358,11 +394,38 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Poor Deck Area By BPN.
+        /// </summary>
+        internal static string PoorDeckAreaByBPN {
+            get {
+                return ResourceManager.GetString("PoorDeckAreaByBPN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Posted.
         /// </summary>
         internal static string Posted {
             get {
                 return ResourceManager.GetString("Posted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted Bridge Count By BPN.
+        /// </summary>
+        internal static string PostedBridgeCountByBPN {
+            get {
+                return ResourceManager.GetString("PostedBridgeCountByBPN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted Bridge Deck Area By BPN.
+        /// </summary>
+        internal static string PostedBridgeDeckAreaByBPN {
+            get {
+                return ResourceManager.GetString("PostedBridgeDeckAreaByBPN", resourceCulture);
             }
         }
         
