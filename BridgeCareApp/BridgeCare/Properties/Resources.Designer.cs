@@ -61,6 +61,42 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BPN 1.
+        /// </summary>
+        internal static string BPN1 {
+            get {
+                return ResourceManager.GetString("BPN1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BPN 2.
+        /// </summary>
+        internal static string BPN2 {
+            get {
+                return ResourceManager.GetString("BPN2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BPN 3.
+        /// </summary>
+        internal static string BPN3 {
+            get {
+                return ResourceManager.GetString("BPN3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BPN 4.
+        /// </summary>
+        internal static string BPN4 {
+            get {
+                return ResourceManager.GetString("BPN4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bridge Care.
         /// </summary>
         internal static string BridgeCare {
@@ -84,6 +120,15 @@ namespace BridgeCare.Properties {
         internal static string BridgeTotal {
             get {
                 return ResourceManager.GetString("BridgeTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed.
+        /// </summary>
+        internal static string Closed {
+            get {
+                return ResourceManager.GetString("Closed", resourceCulture);
             }
         }
         
@@ -309,6 +354,15 @@ namespace BridgeCare.Properties {
         internal static string PoorBridgeCompareDeckArea {
             get {
                 return ResourceManager.GetString("PoorBridgeCompareDeckArea", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted.
+        /// </summary>
+        internal static string Posted {
+            get {
+                return ResourceManager.GetString("Posted", resourceCulture);
             }
         }
         

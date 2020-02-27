@@ -246,4 +246,22 @@
   <data name="RemainingBudget" xml:space="preserve">
     <value>Remaining Budget</value>
   </data>
+  <data name="BPN1" xml:space="preserve">
+    <value>BPN 1</value>
+  </data>
+  <data name="BPN2" xml:space="preserve">
+    <value>BPN 2</value>
+  </data>
+  <data name="BPN3" xml:space="preserve">
+    <value>BPN 3</value>
+  </data>
+  <data name="BPN4" xml:space="preserve">
+    <value>BPN 4</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Posted" xml:space="preserve">
+    <value>Posted</value>
+  </data>
 </root>

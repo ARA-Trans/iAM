@@ -502,6 +502,8 @@
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
     <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportParameters.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\DeckAreaBridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\PostedClosedBridgeWorkSummary.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UtilityFunctions.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
@@ -548,6 +550,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
