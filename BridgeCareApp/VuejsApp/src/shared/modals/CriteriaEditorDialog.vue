@@ -176,6 +176,7 @@
             if (this.mainCriteria && isEmpty(this.mainCriteria.logicalOperator)) {
                 this.mainCriteria.logicalOperator = 'OR';
             }
+            this.selectedConjunction = this.mainCriteria.logicalOperator;
         }
 
         /**
