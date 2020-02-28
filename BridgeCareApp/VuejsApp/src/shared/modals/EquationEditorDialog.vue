@@ -621,11 +621,13 @@
                     if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                         this.showValidMessage = true;
                         this.showInvalidMessage = false;
+                        this.cannotSubmit = false;
                     } else {
                         this.invalidMessage = response.data;
                         // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
                         this.showInvalidMessage = true;
                         this.showValidMessage = false;
+                        this.cannotSubmit = true;
                     }
                 });
         }
