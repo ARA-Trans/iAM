@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BridgeCare.Interfaces;
+using BridgeCare.Interfaces.SummaryReport;
 using BridgeCare.Models;
 using BridgeCare.Services.SummaryReport.WorkSummary;
 using OfficeOpenXml;
@@ -16,11 +17,12 @@ namespace BridgeCare.Services
         private readonly NHSBridgeDeckAreaWorkSummary nhsBridgeDeckAreaWorkSummary;
         private readonly PostedClosedBridgeWorkSummary postedClosedBridgeWorkSummary;
         private readonly DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary;
+        private readonly IWorkSummaryByBudget workSummaryByBudgetData;
 
         public BridgeWorkSummary(CostBudgetsWorkSummary costBudgetsWorkSummary, BridgesCulvertsWorkSummary bridgesCulvertsWorkSummary,
             BridgeRateDeckAreaWorkSummary bridgeRateDeckAreaWorkSummary, IBridgeWorkSummaryData bridgeWorkSummaryData,
             NHSBridgeDeckAreaWorkSummary nhsBridgeDeckAreaWorkSummary, PostedClosedBridgeWorkSummary postedClosedBridgeWorkSummary,
-            DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary)
+            DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary, IWorkSummaryByBudget summaryByBudget)
         {
             this.costBudgetsWorkSummary = costBudgetsWorkSummary ?? throw new ArgumentNullException(nameof(costBudgetsWorkSummary));
             this.bridgesCulvertsWorkSummary = bridgesCulvertsWorkSummary ?? throw new ArgumentNullException(nameof(bridgesCulvertsWorkSummary));
@@ -29,6 +31,7 @@ namespace BridgeCare.Services
             this.nhsBridgeDeckAreaWorkSummary = nhsBridgeDeckAreaWorkSummary ?? throw new ArgumentNullException(nameof(nhsBridgeDeckAreaWorkSummary));
             this.postedClosedBridgeWorkSummary = postedClosedBridgeWorkSummary ?? throw new ArgumentNullException(nameof(postedClosedBridgeWorkSummary));
             this.deckAreaBridgeWorkSummary = deckAreaBridgeWorkSummary ?? throw new ArgumentNullException(nameof(deckAreaBridgeWorkSummary));
+            workSummaryByBudgetData = summaryByBudget ?? throw new ArgumentNullException(nameof(summaryByBudget));
         }
 
         /// <summary>
@@ -45,8 +48,9 @@ namespace BridgeCare.Services
         {
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
             var yearlyBudgetModels = bridgeWorkSummaryData.GetYearlyBudgetModels(simulationId, dbContext);
+            var comittedProjectsData = workSummaryByBudgetData.GetCommittedProjectsBudget(new SimulationModel { simulationId = simulationId }, dbContext);
 
-            costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetModels, treatments);
+            costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetModels, treatments, comittedProjectsData);
 
             bridgesCulvertsWorkSummary.FillBridgesCulvertsWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, treatments);
 
