@@ -12,6 +12,8 @@ namespace BridgeCare.Services
         private readonly BridgeWorkSummaryCommon bridgeWorkSummaryCommon;
         private readonly ExcelHelper excelHelper;
         private readonly BridgeWorkSummaryComputationHelper bridgeWorkSummaryComputationHelper;
+        private Dictionary<int, double> TotalCulvertSpent = new Dictionary<int, double>();
+        private Dictionary<int, double> TotalBridgeSpent = new Dictionary<int, double>();
 
         public CostBudgetsWorkSummary(BridgeWorkSummaryCommon bridgeWorkSummaryCommon, ExcelHelper excelHelper, BridgeWorkSummaryComputationHelper bridgeWorkSummaryComputationHelper)
         {
@@ -94,6 +96,7 @@ namespace BridgeCare.Services
                 }
                 worksheet.Cells[row, column].Value = culvertTotalCost;
                 culvertTotalRow = row;
+                TotalCulvertSpent.Add(year, culvertTotalCost);
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
@@ -106,15 +109,17 @@ namespace BridgeCare.Services
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            int budgetTotalRow = 0;           
-            worksheet.Cells[row++, column].Value = Properties.Resources.Total;
+            int budgetTotalRow = 0;
+            worksheet.Cells[row++, column].Value = Properties.Resources.TotalSpent;
+            worksheet.Cells[row++, column].Value = Properties.Resources.TotalBudget;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
             {
                 row = startRow;
-                column = ++column;              
+                column = ++column;
 
+                worksheet.Cells[row++, column].Value = TotalCulvertSpent[year] + TotalBridgeSpent[year];
                 worksheet.Cells[row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.budgetAmount ?? 0);
                 budgetTotalRow = row;
             }
@@ -179,6 +184,7 @@ namespace BridgeCare.Services
 
                 worksheet.Cells[row, column].Value = nonCulvertTotalCost;
                 bridgeTotalRow = row;
+                TotalBridgeSpent.Add(year, nonCulvertTotalCost);
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
