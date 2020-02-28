@@ -197,7 +197,7 @@ namespace BridgeCare.Services
         internal double CalculatePostedAndClosedDeckAreaForRemainingBPN(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string postStatus)
         {
             var sum = 0.0;
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "2");
+            var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
             foreach (var simulationDataModel in filteredSimulationDataModels)
             {
@@ -208,10 +208,34 @@ namespace BridgeCare.Services
         }
         #endregion
 
-        internal double CalculateMoneyNeededByBPN(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string bpn)
+        internal double CalculateMoneyNeededByBPN13(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string bpn)
         {
             var sum = 0.0;
             var filteredBPNBridges = bridgeDataModels.FindAll(b => b.BPN == bpn);
+            var filteredSimulationDataModels = simulationDataModels.FindAll(s => filteredBPNBridges.Exists(b => b.BRKey == s.BRKey));
+            foreach (var simulationDataModel in filteredSimulationDataModels)
+            {
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year);
+                sum += yearData != null ? yearData.Cost : 0;
+            }
+            return sum;
+        }
+        internal double CalculateMoneyNeededByBPN2H(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year)
+        {
+            var sum = 0.0;
+            var filteredBPNBridges = bridgeDataModels.FindAll(b => b.BPN == "2" || b.BPN == "H");
+            var filteredSimulationDataModels = simulationDataModels.FindAll(s => filteredBPNBridges.Exists(b => b.BRKey == s.BRKey));
+            foreach (var simulationDataModel in filteredSimulationDataModels)
+            {
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year);
+                sum += yearData != null ? yearData.Cost : 0;
+            }
+            return sum;
+        }
+        internal double CalculateMoneyNeededByRemainingBPN(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year)
+        {
+            var sum = 0.0;
+            var filteredBPNBridges = bridgeDataModels.FindAll(b => b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => filteredBPNBridges.Exists(b => b.BRKey == s.BRKey));
             foreach (var simulationDataModel in filteredSimulationDataModels)
             {

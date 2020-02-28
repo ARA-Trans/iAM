@@ -135,19 +135,18 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
         private double AddMoneyNeededByBPN(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int row, int column, int year)
         {
             var totalMoney = 0.0;
-            var moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN(simulationDataModels, bridgeDataModels, year, "1");
+            var moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN13(simulationDataModels, bridgeDataModels, year, "1");
             worksheet.Cells[row++, column].Value = moneyForBPN;
             totalMoney += moneyForBPN;
-            moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN(simulationDataModels, bridgeDataModels, year, "2");
+            moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN2H(simulationDataModels, bridgeDataModels, year);
             worksheet.Cells[row++, column].Value = moneyForBPN;
             totalMoney += moneyForBPN;
-            moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN(simulationDataModels, bridgeDataModels, year, "3");
+            moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN13(simulationDataModels, bridgeDataModels, year, "3");
             worksheet.Cells[row++, column].Value = moneyForBPN;
             totalMoney += moneyForBPN;
-            moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByBPN(simulationDataModels, bridgeDataModels, year, "4");
+            moneyForBPN = bridgeWorkSummaryComputationHelper.CalculateMoneyNeededByRemainingBPN(simulationDataModels, bridgeDataModels, year);
             worksheet.Cells[row, column].Value = moneyForBPN;
             totalMoney += moneyForBPN;
-            //worksheet.Cells[row, column].Value = totalMoney;
             return totalMoney;
         }
         private int AddClosedBridgeCount(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int row, int column, int year)
