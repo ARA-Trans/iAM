@@ -151,42 +151,45 @@ namespace BridgeCare.Services
         #region posted and closed bridge count functions
         internal int CalculatePostedAndClosedBridgeCountForBPN13(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string bpn, string posted)
         {
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted.ToUpper() == posted && b.BPN == bpn);
             var postedCount = 0;
             if (posted == "Y")
             {
+                var postedBridges = bridgeDataModels.FindAll(b => b.BPN == bpn);
                 postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             else
             {
+                var postedBridges = bridgeDataModels.FindAll(b => b.Posted.ToUpper() == posted && b.BPN == bpn);
                 postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             return postedCount;
         }
         internal int CalculatePostedAndClosedBridgeCountForBPN2H(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string posted)
         {
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted.ToUpper() == posted && b.BPN == "2" || b.BPN == "H");
             var postedCount = 0;
             if (posted == "Y")
             {
+                var postedBridges = bridgeDataModels.FindAll(b => b.BPN == "2" || b.BPN == "H");
                 postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             else
             {
+                var postedBridges = bridgeDataModels.FindAll(b => b.Posted.ToUpper() == posted && b.BPN == "2" || b.BPN == "H");
                 postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             return postedCount;
         }
         internal int CalculatePostedAndClosedBridgeCountForRemaining(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string posted)
         {
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted.ToUpper() == posted && b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
             var postedCount = 0;
             if (posted == "Y")
             {
+                var postedBridges = bridgeDataModels.FindAll(b => b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
                 postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             else
             {
+                var postedBridges = bridgeDataModels.FindAll(b => b.Posted.ToUpper() == posted && b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
                 postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             return postedCount;
@@ -197,16 +200,21 @@ namespace BridgeCare.Services
         internal double CalculatePostedAndClosedDeckAreaForBPN13(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string bpn, string postStatus)
         {
             var sum = 0.0;
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN == bpn);
-            var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
-            foreach (var simulationDataModel in filteredSimulationDataModels)
+            if (postStatus == "Y")
             {
-                if(postStatus == "Y")
+                var postedBridges = bridgeDataModels.FindAll(b => b.BPN == bpn);
+                var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
+                foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
                     var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
-                else
+            }
+            else
+            {
+                var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN == bpn);
+                var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
+                foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
                     var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
@@ -217,16 +225,21 @@ namespace BridgeCare.Services
         internal double CalculatePostedAndClosedDeckAreaForBPN2H(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string postStatus)
         {
             var sum = 0.0;
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN == "2" || b.BPN == "H");
-            var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
-            foreach (var simulationDataModel in filteredSimulationDataModels)
+            if (postStatus == "Y")
             {
-                if (postStatus == "Y")
+                var postedBridges = bridgeDataModels.FindAll(b => b.BPN == "2" || b.BPN == "H");
+                var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
+                foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
                     var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
-                else
+            }
+            else
+            {
+                var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN == "2" || b.BPN == "H");
+                var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
+                foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
                     var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
@@ -237,16 +250,21 @@ namespace BridgeCare.Services
         internal double CalculatePostedAndClosedDeckAreaForRemainingBPN(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year, string postStatus)
         {
             var sum = 0.0;
-            var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
-            var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
-            foreach (var simulationDataModel in filteredSimulationDataModels)
+            if (postStatus == "Y")
             {
-                if (postStatus == "Y")
+                var postedBridges = bridgeDataModels.FindAll(b => b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
+                var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
+                foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
                     var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
-                else
+            }
+            else
+            {
+                var postedBridges = bridgeDataModels.FindAll(b => b.Posted == postStatus && b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
+                var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
+                foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
                     var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
