@@ -488,7 +488,10 @@
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\Charts\BridgeWorkSummaryCharts.cs" />
+    <Compile Include="Services\SummaryReport\Charts\CashNeededByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\ClosedBridgeDeckAreaByBPN.cs" />
     <Compile Include="Services\SummaryReport\Charts\ClosedBridgeCountByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\CombinedPostedClosedByBPN.cs" />
     <Compile Include="Services\SummaryReport\Charts\PoorDeckAreaByBPN\PoorBridgeDeckAreaByBPN.cs" />
     <Compile Include="Services\SummaryReport\Charts\PostedBridgeDeckAreaByBPN.cs" />
     <Compile Include="Services\SummaryReport\Charts\PostedCountByBPN\PostedBridgeCountByBPN.cs" />

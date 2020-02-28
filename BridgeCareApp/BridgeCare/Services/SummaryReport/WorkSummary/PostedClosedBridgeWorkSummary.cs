@@ -75,7 +75,10 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
                 var totalMoneyPerYear = AddMoneyNeededByBPN(worksheet, simulationDataModels, bridgeDataModels, row, column, year);
                 totalMoney += totalMoneyPerYear;
             }
-            worksheet.Cells[row + 4, startColumn + 2].Value = totalMoney/ simulationYears.Count;
+            for (var i = 0; i < simulationYears.Count; i++)
+            {
+                worksheet.Cells[row + 4, startColumn + i + 2].Value = totalMoney / simulationYears.Count;
+            }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 4, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn, row + 4, column], "NegativeCurrency");
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 4, column);

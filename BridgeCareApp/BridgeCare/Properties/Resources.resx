@@ -285,4 +285,7 @@
   <data name="PostedBridgeDeckAreaByBPN" xml:space="preserve">
     <value>Posted Bridge Deck Area By BPN</value>
   </data>
+  <data name="MeanAnnualSpending" xml:space="preserve">
+    <value>Mean Annual Spending</value>
+  </data>
 </root>

@@ -331,6 +331,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mean Annual Spending.
+        /// </summary>
+        internal static string MeanAnnualSpending {
+            get {
+                return ResourceManager.GetString("MeanAnnualSpending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MPMS Total.
         /// </summary>
         internal static string MPMSTotal {

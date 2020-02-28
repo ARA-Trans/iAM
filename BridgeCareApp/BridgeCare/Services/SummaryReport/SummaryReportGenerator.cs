@@ -171,6 +171,14 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet = excelPackage.Workbook.Worksheets.Add("Closed By BPN Bridge DA");
                 bridgeWorkSummaryCharts.FillClosedBridgeDeckAreaByBPN(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalClosedBridgeDeckAreaByBPNYearsRow, simulationYearsCount);
 
+                // Combiled posted and closed
+                worksheet = excelPackage.Workbook.Worksheets.Add("Combined Posted and Closed");
+                bridgeWorkSummaryCharts.FillCombinedPostedAndClosedByBPN(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPostedAndClosedByBPNYearsRow, simulationYearsCount);
+
+                // Cash Needed DA By BPN
+                worksheet = excelPackage.Workbook.Worksheets.Add("Cash Needed DA By BPN");
+                bridgeWorkSummaryCharts.FillCashNeededDeckAreaByBPN(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalCashNeededByBPNYearsRow, simulationYearsCount);
+
                 var folderPathForSimulation = $"DownloadedReports\\{simulationModel.simulationId}";
                 string relativeFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPathForSimulation);
                 Directory.CreateDirectory(relativeFolderPath);
