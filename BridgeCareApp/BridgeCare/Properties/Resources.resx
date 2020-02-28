@@ -288,4 +288,7 @@
   <data name="MeanAnnualSpending" xml:space="preserve">
     <value>Mean Annual Spending</value>
   </data>
+  <data name="TotalBudget" xml:space="preserve">
+    <value>Total Budget</value>
+  </data>
 </root>
