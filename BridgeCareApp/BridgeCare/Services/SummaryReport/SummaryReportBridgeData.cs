@@ -223,9 +223,9 @@ namespace BridgeCare.Services
             }
             else if(yearData.Culv == "N")
             {
-                var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub)));
-                worksheet.Cells[row, ++column].Value = minValue.ToString();
-                yearData.MinC = minValue.ToString();
+                var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub))).ToString();
+                worksheet.Cells[row, ++column].Value = minValue;
+                yearData.MinC = minValue;
             }
             else
             {
