@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Services.SummaryReport.WorkSummary;
 using OfficeOpenXml;
 
 namespace BridgeCare.Services
@@ -13,14 +14,21 @@ namespace BridgeCare.Services
         private readonly BridgeRateDeckAreaWorkSummary bridgeRateDeckAreaWorkSummary;
         private readonly IBridgeWorkSummaryData bridgeWorkSummaryData;
         private readonly NHSBridgeDeckAreaWorkSummary nhsBridgeDeckAreaWorkSummary;
+        private readonly PostedClosedBridgeWorkSummary postedClosedBridgeWorkSummary;
+        private readonly DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary;
 
-        public BridgeWorkSummary(CostBudgetsWorkSummary costBudgetsWorkSummary, BridgesCulvertsWorkSummary bridgesCulvertsWorkSummary, BridgeRateDeckAreaWorkSummary bridgeRateDeckAreaWorkSummary, IBridgeWorkSummaryData bridgeWorkSummaryData, NHSBridgeDeckAreaWorkSummary nhsBridgeDeckAreaWorkSummary)
+        public BridgeWorkSummary(CostBudgetsWorkSummary costBudgetsWorkSummary, BridgesCulvertsWorkSummary bridgesCulvertsWorkSummary,
+            BridgeRateDeckAreaWorkSummary bridgeRateDeckAreaWorkSummary, IBridgeWorkSummaryData bridgeWorkSummaryData,
+            NHSBridgeDeckAreaWorkSummary nhsBridgeDeckAreaWorkSummary, PostedClosedBridgeWorkSummary postedClosedBridgeWorkSummary,
+            DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary)
         {
             this.costBudgetsWorkSummary = costBudgetsWorkSummary ?? throw new ArgumentNullException(nameof(costBudgetsWorkSummary));
             this.bridgesCulvertsWorkSummary = bridgesCulvertsWorkSummary ?? throw new ArgumentNullException(nameof(bridgesCulvertsWorkSummary));
             this.bridgeRateDeckAreaWorkSummary = bridgeRateDeckAreaWorkSummary ?? throw new ArgumentNullException(nameof(bridgeRateDeckAreaWorkSummary));
             this.bridgeWorkSummaryData = bridgeWorkSummaryData ?? throw new ArgumentNullException(nameof(bridgeWorkSummaryData));
             this.nhsBridgeDeckAreaWorkSummary = nhsBridgeDeckAreaWorkSummary ?? throw new ArgumentNullException(nameof(nhsBridgeDeckAreaWorkSummary));
+            this.postedClosedBridgeWorkSummary = postedClosedBridgeWorkSummary ?? throw new ArgumentNullException(nameof(postedClosedBridgeWorkSummary));
+            this.deckAreaBridgeWorkSummary = deckAreaBridgeWorkSummary ?? throw new ArgumentNullException(nameof(deckAreaBridgeWorkSummary));
         }
 
         /// <summary>
@@ -45,6 +53,20 @@ namespace BridgeCare.Services
             var chartRowsModel = bridgeRateDeckAreaWorkSummary.FillBridgeRateDeckAreaWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels);
 
             nhsBridgeDeckAreaWorkSummary.FillNHSBridgeDeckAreaWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = deckAreaBridgeWorkSummary.FillPoorDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = postedClosedBridgeWorkSummary.FillPostedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = deckAreaBridgeWorkSummary.FillPostedDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = postedClosedBridgeWorkSummary.FillClosedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = deckAreaBridgeWorkSummary.FillClosedDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = postedClosedBridgeWorkSummary.FillBridgeCountTotal(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+
+            chartRowsModel = postedClosedBridgeWorkSummary.FillMoneyNeededByBPN(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
             worksheet.Calculate();
             worksheet.Cells.AutoFitColumns();

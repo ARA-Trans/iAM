@@ -487,6 +487,14 @@
     <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\Charts\BridgeWorkSummaryCharts.cs" />
+    <Compile Include="Services\SummaryReport\Charts\CashNeededByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\ClosedBridgeDeckAreaByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\ClosedBridgeCountByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\CombinedPostedClosedByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\PoorDeckAreaByBPN\PoorBridgeDeckAreaByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\PostedBridgeDeckAreaByBPN.cs" />
+    <Compile Include="Services\SummaryReport\Charts\PostedCountByBPN\PostedBridgeCountByBPN.cs" />
     <Compile Include="Services\SummaryReport\WorkSummaryByBudget\BridgeWorkCost.cs" />
     <Compile Include="Services\SummaryReport\WorkSummaryByBudget\BridgeWorkSummaryByBudget.cs" />
     <Compile Include="Services\SummaryReport\WorkSummaryByBudget\CommittedProjectsCost.cs" />
@@ -502,6 +510,8 @@
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
     <Compile Include="Services\SummaryReport\StackedColumnChartCommon.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportParameters.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\DeckAreaBridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\PostedClosedBridgeWorkSummary.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UtilityFunctions.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
@@ -548,6 +558,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
