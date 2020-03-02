@@ -5,6 +5,7 @@ module.exports = {
             splitChunks: {
                 chunks: 'all',
                 maxInitialRequests: Infinity,
+                automaticNameDelimiter: '_',
                 cacheGroups: {
                     vendor: {
                         test: /[\\/]node_modules[\\/]/,
