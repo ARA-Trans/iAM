@@ -116,4 +116,8 @@ async function run() {
         announcementRouter
     ]);
 
+    app.use(function (err, req, res, next) {
+        winston.error(err.stack);
+      });
+
 }
