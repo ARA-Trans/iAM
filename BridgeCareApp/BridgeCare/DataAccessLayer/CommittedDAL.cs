@@ -18,12 +18,11 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db"></param>
         public void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
-            // Remove all existing commitments for the sections in the submitted commitments
+            // Remove all existing commitments for the scenarios of the new commitments
             foreach (var committedProjectModel in committedProjectModels)
             {
                 var oldCommittments = db.CommittedProjects
                     .Where(c =>
-                        c.SECTIONID == committedProjectModel.SectionId &&
                         c.SIMULATIONID == committedProjectModel.SimulationId
                     );
 
