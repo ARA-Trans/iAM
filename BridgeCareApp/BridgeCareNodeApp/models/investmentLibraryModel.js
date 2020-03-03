@@ -19,6 +19,7 @@ const investmentLibrarySchema = new Schema({
     discountRate: { type: Number },
     inflationRate: { type: Number },
     name: { type: String },
+    owner: { type: String },
     budgetOrder: [{ type: String }],
     budgetYears: [investmentLibraryBudgetYearSchema],
     budgetCriteria: [budgetNameCriteriaSchema]

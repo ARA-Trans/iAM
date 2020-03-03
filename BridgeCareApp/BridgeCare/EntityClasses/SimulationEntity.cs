@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using BridgeCare.Models;
+using System.Linq;
 
 namespace BridgeCare.EntityClasses
 {
@@ -33,6 +34,8 @@ namespace BridgeCare.EntityClasses
         public string COMMENTS { get; set; }
         [StringLength(50)]
         public string SIMULATION { get; set; }
+        public string CREATOR { get; set; }
+        public string OWNER { get; set; }
 
         public virtual NetworkEntity NETWORK { get; set; }
         public virtual InvestmentsEntity INVESTMENTS { get; set; }
@@ -49,16 +52,38 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<RemainingLifeLimitsEntity> REMAINING_LIFE_LIMITS { get; set; }
         public virtual ICollection<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
         public virtual ICollection<SplitTreatmentEntity> SPLIT_TREATMENTS { get; set; }
+        public virtual ICollection<SimulationUserEntity> USERS { get; set; }
+
+        public bool UserCanModify(string username)
+        {
+            bool userIsOwner = username == this.OWNER;
+            bool simulationIsSharedWithUser = USERS.Any(
+                user => (user.USERNAME == username || user.USERNAME == null) && user.CAN_MODIFY
+            );
+            return userIsOwner || simulationIsSharedWithUser;
+        }
+
+        public bool UserCanRead(string username)
+        {
+            bool userIsOwner = username == this.OWNER;
+            bool simulationIsSharedWithUser = USERS.Any(
+                user => user.USERNAME == username || user.USERNAME == null
+            );
+            return userIsOwner || simulationIsSharedWithUser;
+        }
 
         public SimulationEntity()
         {
             YEARLYINVESTMENTS = new HashSet<YearlyInvestmentEntity>();
+            USERS = new List<SimulationUserEntity>();
         }
 
         public SimulationEntity(CreateSimulationDataModel model)
         {
             NETWORKID = model.NetworkId;
             SIMULATION = model.Name;
+            OWNER = model.Owner;
+            CREATOR = model.Creator;
             DATE_CREATED = DateTime.Now;
             ANALYSIS = "Incremental Benefit/Cost";
             BUDGET_CONSTRAINT = "As Budget Permits";
@@ -70,7 +95,7 @@ namespace BridgeCare.EntityClasses
                 new PriorityEntity
                 {
                     PRIORITYLEVEL = 1,
-                    YEARS = DateTime.Now.Year,
+                    YEARS = null,
                     CRITERIA = "",
                     PRIORITYFUNDS = new List<PriorityFundEntity>
                     {
@@ -160,6 +185,8 @@ namespace BridgeCare.EntityClasses
                     CRITERIA = ""
                 }
             };
+
+            USERS = new List<SimulationUserEntity>();
         }
     }
 }

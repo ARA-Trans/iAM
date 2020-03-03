@@ -72,7 +72,7 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const scenarios: Scenario[] = response.data
                         .map((data: any) => convertFromMongoToVue(data));
-                    commit('scenariosMutator', scenarios);
+                    // The list will update itself via polling
                 }
             });
     },
@@ -101,6 +101,13 @@ const actions = {
                 const updatedScenario: Scenario = convertFromMongoToVue(response.data);
                 commit('updatedScenarioMutator', updatedScenario);
                 dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
+            });
+    },
+    async updateScenarioUsers({ dispatch, commit }: any, payload: any) {
+        return await ScenarioService.updateScenarioUsers(payload.scenario)
+            .then(() => {
+                commit('updatedScenarioMutator', payload.scenario);
+                dispatch('setSuccessMessage', {message: 'Successfully updated scenario sharing settings'});
             });
     },
     async deleteScenario({ dispatch, state, commit }: any, payload: any) {
@@ -175,6 +182,9 @@ const actions = {
                     break;
             }
         }
+    },
+    async setScenarioUsers({commit}: any, payload: any) {
+        await ScenarioService.setScenarioUsers(payload.scenarioId, payload.scenarioUsers);
     }
 };
 

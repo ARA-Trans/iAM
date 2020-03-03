@@ -15,5 +15,7 @@ namespace BridgeCare.EntityClasses
 
         [Column(TypeName = "VARCHAR")]        
         public string CONDITION_BASED_AGE { get; set; }
+
+        public string BridgeCulvert { get; private set; }
     }
 }

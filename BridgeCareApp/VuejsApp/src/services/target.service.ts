@@ -28,6 +28,14 @@ export default class TargetService {
     }
 
     /**
+     * Deletes a target library
+     * @param targetLibrary The target library to delete
+     */
+    static deleteTargetLibrary(targetLibrary: TargetLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteTargetLibrary/${targetLibrary.id}`);
+    }
+
+    /**
      * Gets a scenario's target library data
      * @param selectedScenarioId Scenario object id
      */

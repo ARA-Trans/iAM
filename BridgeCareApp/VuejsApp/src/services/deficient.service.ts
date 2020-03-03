@@ -28,6 +28,14 @@ export default class DeficientService {
     }
 
     /**
+     * Deletes a deficient library
+     * @param deficientLibrary The deficient library to delete
+     */
+    static deleteDeficientLibrary(deficientLibrary: DeficientLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteDeficientLibrary/${deficientLibrary.id}`);
+    }
+
+    /**
      * Gets scenario deficient library data
      * @param selectedScenarioId Scenario object id
      */

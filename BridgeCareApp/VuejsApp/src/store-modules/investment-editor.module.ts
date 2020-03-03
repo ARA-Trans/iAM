@@ -1,9 +1,10 @@
 import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex, equals} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals, reject} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     investmentLibraries: [] as InvestmentLibrary[],
@@ -53,6 +54,14 @@ const mutations = {
     scenarioInvestmentLibraryMutator(state: any, scenarioInvestmentLibrary: InvestmentLibrary) {
         // update state.investmentLibraries with a clone of the incoming list of investment libraries
         state.scenarioInvestmentLibrary = clone(scenarioInvestmentLibrary);
+    },
+    deletedInvestmentLibraryMutator(state: any, deletedInvestmentLibraryId: string) {
+        if (any(propEq('id', deletedInvestmentLibraryId), state.investmentLibraries)) {
+            state.investmentLibraries = reject(
+                (library: InvestmentLibrary) => deletedInvestmentLibraryId === library.id,
+                state.investmentLibraries
+            );
+        }
     }
 };
 
@@ -94,6 +103,15 @@ const actions = {
                 }
             });
     },
+    async deleteInvestmentLibrary({dispatch, commit}: any, payload: any) {
+        await InvestmentEditorService.deleteInvestmentLibrary(payload.investmentLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedInvestmentLibraryMutator', payload.investmentLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted investment library'});
+                }
+            });
+    },
     async getScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
         if (payload.selectedScenarioId !== '0') {
             await InvestmentEditorService.getScenarioInvestmentLibrary(payload.selectedScenarioId)
@@ -132,6 +150,13 @@ const actions = {
             if (payload.operationType == 'insert') {
                 const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.investmentLibraries)) {
+                commit('deletedInvestmentLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `An investment library has been deleted from another source`}
+                );
             }
         }
     }

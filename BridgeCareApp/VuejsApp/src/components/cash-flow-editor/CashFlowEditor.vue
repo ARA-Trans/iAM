@@ -103,7 +103,7 @@
                                         <td>
                                             <v-edit-dialog :return-value.sync="props.item.amount" large lazy persistent full-width
                                                            @save="onEditSelectedLibraryListData(props.item, 'amount')">
-                                                <input class="output" type="text" readonly :value="props.item.amount"
+                                                <input class="output" type="text" readonly :value="formatAsCurrency(props.item.amount)"
                                                        :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}" />
                                                 <template slot="input">
                                                     <v-text-field v-model.number="props.item.amount" label="Edit" single-line
@@ -149,7 +149,7 @@
             <v-layout v-show="hasSelectedCashFlowLibrary" justify-end row>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyToScenario"
                        :disabled="disableSubmitButtons()">
-                    Apply
+                    Save
                 </v-btn>
                 <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateLibrary"
                        :disabled="disableSubmitButtons()">

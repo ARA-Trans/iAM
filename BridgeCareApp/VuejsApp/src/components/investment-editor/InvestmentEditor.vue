@@ -18,6 +18,9 @@
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0">
+                        Owner: {{selectedInvestmentLibrary.owner ? selectedInvestmentLibrary.owner : "[ No Owner ]"}}
+                    </div>
                 </v-flex>
             </v-layout>
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
@@ -112,12 +115,17 @@
                 <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === 0" class="ara-orange-bg white--text" @click="onDeleteInvestmentLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedInvestmentLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreateInvestmentLibraryDialog :dialogData="createInvestmentLibraryDialogData"
                                        @submit="onCreateInvestmentLibrary" />
@@ -161,10 +169,12 @@
     import { EditedBudget } from '@/shared/models/modals/edit-budgets-dialog';
     import { CriteriaDrivenBudgets } from '@/shared/models/iAM/criteria-driven-budgets';
     import {formatAsCurrency} from '@/shared/utils/currency-formatter';
+    import Alert from '@/shared/modals/Alert.vue';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     const ObjectID = require('bson-objectid');
 
     @Component({
-        components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog }
+        components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, Alert }
     })
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentLibraries) stateInvestmentLibraries: InvestmentLibrary[];
@@ -179,6 +189,7 @@
         @Action('updateSelectedInvestmentLibrary') updateSelectedInvestmentLibraryAction: any;
         @Action('createInvestmentLibrary') createInvestmentLibraryAction: any;
         @Action('updateInvestmentLibrary') updateInvestmentLibraryAction: any;
+        @Action('deleteInvestmentLibrary') deleteInvestmentLibraryAction: any;
         @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('getBudgetCriteria') getBudgetCriteriaAction: any;
@@ -212,6 +223,7 @@
         createInvestmentLibraryDialogData: CreateInvestmentLibraryDialogData = clone(emptyCreateInvestmentLibraryDialogData);
         editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -724,6 +736,24 @@
          */
         formatAsCurrency(value: any) {
             return formatAsCurrency(value);
+        }
+
+        onDeleteInvestmentLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+
+            if (response) {
+                this.deleteInvestmentLibraryAction({investmentLibrary: this.selectedInvestmentLibrary});
+                this.onClearSelectedInvestmentLibrary();
+            }
         }
     }
 </script>

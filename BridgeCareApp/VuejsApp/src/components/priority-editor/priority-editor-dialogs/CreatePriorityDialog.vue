@@ -39,8 +39,8 @@
     export default class CreatePriorityDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        newPriority: Priority = clone({...emptyPriority, id: ObjectID.generate(), year: moment().year()});
-        selectedYear: string = moment().year().toString();
+        newPriority: Priority = clone({...emptyPriority, id: ObjectID.generate()});
+        selectedYear: string = '';
         years: string[] = [];
 
         mounted() {

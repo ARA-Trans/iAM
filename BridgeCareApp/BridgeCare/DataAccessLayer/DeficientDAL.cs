@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
@@ -20,17 +18,42 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>DeficientLibraryModel</returns>
-        public DeficientLibraryModel GetSimulationDeficientLibrary(int id, BridgeCareContext db)
+        private DeficientLibraryModel GetSimulationDeficientLibrary(int id, BridgeCareContext db)
         {
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-            {
-                log.Error($"No scenario was found with id {id}.");
-                throw new RowNotInTableException($"No scenario was found with id {id}.");
-            }
-
             var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
 
             return new DeficientLibraryModel(simulation);
+        }
+
+        /// <summary>
+        /// Fetches a simulation's deficient library data if it is owned by the user
+        /// Throws a RowNotInTableException if no simulation is found for the user
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>DeficientLibraryModel</returns>
+        public DeficientLibraryModel GetPermittedSimulationDeficientLibrary(int id, BridgeCareContext db, string username)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanRead(username))
+                throw new UnauthorizedAccessException("You are not authorized to view this scenario's deficients.");
+            return GetSimulationDeficientLibrary(id, db);
+        }
+
+        /// <summary>
+        /// Fetches a simulation's deficient library data regardless of ownership
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="id">Simulation identifier</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <returns>DeficientLibraryModel</returns>
+        public DeficientLibraryModel GetAnySimulationDeficientLibrary(int id, BridgeCareContext db)
+        {
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+            return GetSimulationDeficientLibrary(id, db);
         }
 
         /// <summary>
@@ -40,16 +63,9 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="model">DeficientLibraryModel</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>DeficientLibraryModel</returns>
-        public DeficientLibraryModel SaveSimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db)
+        private DeficientLibraryModel SaveSimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db)
         {
             var id = int.Parse(model.Id);
-
-            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
-            {
-                log.Error($"No scenario was found with id {id}.");
-                throw new RowNotInTableException($"No scenario was found with id {id}.");
-            }
-
             var simulation = db.Simulations.Include(s => s.DEFICIENTS).Single(s => s.SIMULATIONID == id);
 
             if (simulation.DEFICIENTS.Any())
@@ -77,6 +93,40 @@ namespace BridgeCare.DataAccessLayer
             db.SaveChanges();
 
             return new DeficientLibraryModel(simulation);
+        }
+
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's deficient library data if the user owns it
+        /// Throws a RowNotInTableException if no simulation is found for the user
+        /// </summary>
+        /// <param name="model">DeficientLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>DeficientLibraryModel</returns>
+        public DeficientLibraryModel SavePermittedSimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db, string username)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+            if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == id).UserCanModify(username))
+                throw new UnauthorizedAccessException("You are not authorized to modify this scenario's deficients.");
+            return SaveSimulationDeficientLibrary(model, db);
+        }
+
+        /// <summary>
+        /// Executes an upsert/delete operation on a simulation's deficient library data regardless of ownership
+        /// Throws a RowNotInTableException if no simulation is found
+        /// </summary>
+        /// <param name="model">DeficientLibraryModel</param>
+        /// <param name="db">BridgeCareContext</param>
+        /// <param name="username">Username</param>
+        /// <returns>DeficientLibraryModel</returns>
+        public DeficientLibraryModel SaveAnySimulationDeficientLibrary(DeficientLibraryModel model, BridgeCareContext db)
+        {
+            var id = int.Parse(model.Id);
+            if (!db.Simulations.Any(s => s.SIMULATIONID == id))
+                throw new RowNotInTableException($"No scenario was found with id {id}.");
+            return SaveSimulationDeficientLibrary(model, db);
         }
     }
 }

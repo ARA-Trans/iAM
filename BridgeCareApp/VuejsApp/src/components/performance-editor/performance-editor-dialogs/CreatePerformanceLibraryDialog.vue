@@ -36,6 +36,7 @@
         CreatePerformanceLibraryDialogData
     } from '@/shared/models/modals/create-performance-library-dialog-data';
     import {clone} from 'ramda';
+    import {getUserName} from '@/shared/utils/get-user-info';
 
     @Component
     export default class CreatePerformanceLibraryDialog extends Vue {
@@ -64,6 +65,7 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
+                this.createdPerformanceLibrary.owner = getUserName();
                 this.$emit('submit', this.createdPerformanceLibrary);
             } else {
                 this.$emit('submit', null);
