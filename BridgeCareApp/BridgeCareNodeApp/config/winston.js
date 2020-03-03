@@ -1,18 +1,6 @@
 var appRoot = require('app-root-path');
 var winston = require('winston');
 
-var options = {
-    file: {
-        level: 'info',
-        filename: `${appRoot}/logs/nodeErrorLogs.log`,
-        handleException: true,
-        json: true,
-        maxsize: 5242880, // 5MB
-        maxFiles: 5,
-        colorize: false
-    }
-};
-
 var logger = new winston.createLogger({
     level: 'info',
     format: winston.format.combine(
