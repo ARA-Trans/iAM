@@ -18,5 +18,19 @@ namespace BridgeCare.Models
         public int NHSBridgeCountPercentSectionYearsRow { get; set; }
         
         public int NHSBridgeDeckAreaPercentSectionYearsRow { get; set; }
+
+        public int TotalPoorDeckAreaByBPNSectionYearsRow { get; set; }
+
+        public int TotalBridgePostedCountByBPNYearsRow { get; set; }
+
+        public int TotalPostedBridgeDeckAreaByBPNYearsRow { get; internal set; }
+
+        public int TotalClosedBridgeCountByBPNYearsRow { get; internal set; }
+
+        public int TotalClosedBridgeDeckAreaByBPNYearsRow { get; internal set; }
+
+        public int TotalPostedAndClosedByBPNYearsRow { get; internal set; }
+
+        public int TotalCashNeededByBPNYearsRow { get; internal set; }
     }
 }

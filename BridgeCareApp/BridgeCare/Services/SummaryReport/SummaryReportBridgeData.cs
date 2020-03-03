@@ -197,13 +197,40 @@ namespace BridgeCare.Services
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Sub;
             worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.Culv;
+
             yearData.Culv = familyIdLessThanEleven ? "N" : yearData.Culv;
+            yearData.Deck = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Deck;
+            yearData.Super = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
+            yearData.Sub = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Sub;
+
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.DeckD;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SuperD;
             worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SubD;
             worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.CulvD;
             yearData.CulvD = familyIdLessThanEleven ? "N" : yearData.CulvD;
-            worksheet.Cells[row, ++column].Value = yearData.MinC;
+
+            // This if else condition is a last minute change before deployment. It should be refactored
+            if(yearData.Culv == "N" && yearData.Deck == "N" && yearData.Super == "N" && yearData.Sub == "N")
+            {
+                worksheet.Cells[row, ++column].Value = "N";
+                // It is a dummy value
+                yearData.MinC = "100";
+            }
+            else if(yearData.Deck == "N" && yearData.Super == "N" && yearData.Sub == "N")
+            {
+                worksheet.Cells[row, ++column].Value = yearData.Culv;
+                yearData.MinC = yearData.Culv;
+            }
+            else if(yearData.Culv == "N")
+            {
+                var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub))).ToString();
+                worksheet.Cells[row, ++column].Value = minValue;
+                yearData.MinC = minValue;
+            }
+            else
+            {
+                worksheet.Cells[row, ++column].Value = yearData.MinC;
+            }
             worksheet.Cells[row, ++column].Value = yearData.SD;
             worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
 

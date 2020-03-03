@@ -165,5 +165,21 @@ namespace BridgeCare.Services
             worksheet.Cells[row++, column].Value = Properties.Resources.Fair;
             worksheet.Cells[row++, column++].Value = Properties.Resources.Poor;
         }
+
+        public void InitializeBPNLabels(ExcelWorksheet worksheet, CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
+        {
+            SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
+            worksheet.Cells[row++, column].Value = Properties.Resources.BPN1;
+            worksheet.Cells[row++, column].Value = Properties.Resources.BPN2;
+            worksheet.Cells[row++, column].Value = Properties.Resources.BPN3;
+            worksheet.Cells[row++, column++].Value = Properties.Resources.BPN4;
+        }
+
+        public void InitializeTotalBridgeCountLabels(ExcelWorksheet worksheet, CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
+        {
+            SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
+            worksheet.Cells[row++, column].Value = Properties.Resources.Posted;
+            worksheet.Cells[row++, column++].Value = Properties.Resources.Closed;
+        }
     }
 }
