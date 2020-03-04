@@ -174,13 +174,15 @@
         onDialogDataChanged() {
             const mainCriteria = parseCriteriaString(this.dialogData.criteria) as Criteria;
 
-            if (mainCriteria && isEmpty(mainCriteria.logicalOperator)) {
-                mainCriteria.logicalOperator = 'OR';
+            if (mainCriteria) {
+                if (!hasValue(mainCriteria.logicalOperator)) {
+                    mainCriteria.logicalOperator = 'OR';
+                }
+
+                this.selectedConjunction = mainCriteria.logicalOperator;
+
+                this.setSubCriteriaClauses(mainCriteria);
             }
-
-            this.selectedConjunction = mainCriteria.logicalOperator;
-
-            this.setSubCriteriaClauses(mainCriteria);
         }
 
         /**
@@ -467,7 +469,8 @@
             const mainCriteria: Criteria = this.getMainCriteria();
             const subCriteriaClausesAreEmpty = this.subCriteriaClauses
                 .every((subCriteriaClause: string) => isEmpty(subCriteriaClause));
-            return (equals(mainCriteria, emptyCriteria) && subCriteriaClausesAreEmpty) ||
+
+            return !mainCriteria || (equals(mainCriteria, emptyCriteria) && subCriteriaClausesAreEmpty) ||
                    (!hasValue(mainCriteria.children) && subCriteriaClausesAreEmpty) ||
                    isEmpty(parseCriteriaJson(mainCriteria));
         }
