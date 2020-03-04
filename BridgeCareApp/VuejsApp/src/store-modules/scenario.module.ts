@@ -95,6 +95,16 @@ const actions = {
                 }
             });
     },
+    async cloneScenario({dispatch, commit}: any, payload: any) {
+        return await ScenarioService.cloneScenario(payload.scenarioId)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'data')) {
+                    const newScenario: Scenario = convertFromMongoToVue(response.data);
+                    commit('createdScenarioMutator', newScenario);
+                    dispatch('setSuccessMessage', {message: 'Successfully cloned scenario'});
+                }
+            });
+    },
     async updateScenario({ dispatch, commit }: any, payload: any) {
         return await ScenarioService.updateScenario(payload.updateScenarioData, payload.scenarioId)
             .then((response: AxiosResponse<Scenario>) => {

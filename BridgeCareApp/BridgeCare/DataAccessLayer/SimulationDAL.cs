@@ -147,6 +147,32 @@ namespace BridgeCare.DataAccessLayer
             return new SimulationModel(simulation);
         }
 
+        public SimulationModel CloneSimulation(int simulationId, BridgeCareContext db, string username)
+        {
+            var simulation = db.Simulations.AsNoTracking()
+                .Include(s => s.INVESTMENTS)
+                .Include(s => s.PERFORMANCES)
+                .Include(s => s.TREATMENTS.Select(t => t.CONSEQUENCES))
+                .Include(s => s.TREATMENTS.Select(t => t.COSTS))
+                .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
+                .Include(s => s.TREATMENTS.Select(t => t.SCHEDULEDS))
+                .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
+                .Include(s => s.TARGETS)
+                .Include(s => s.DEFICIENTS)
+                .Include(s => s.REMAINING_LIFE_LIMITS)
+                .Include(s => s.SPLIT_TREATMENTS.Select(st => st.SPLIT_TREATMENT_LIMITS))
+                .Include(s => s.COMMITTEDPROJECTS.Select(c => c.COMMIT_CONSEQUENCES))
+                .Include(s => s.YEARLYINVESTMENTS)
+                .Include(s => s.PRIORITIZEDNEEDS)
+                .Include(s => s.TARGET_DEFICIENTS)
+                .Include(s => s.CriteriaDrivenBudgets)
+                .First(entity => entity.SIMULATIONID == simulationId);
+            simulation.OWNER = username;
+            db.Simulations.Add(simulation); // Primary key will automatically be changed
+            db.SaveChanges();
+            return new SimulationModel(simulation);
+        }
+
         /// <summary>
         /// Creates/starts a rollup/simulation
         /// </summary>

@@ -15,6 +15,7 @@ namespace BridgeCare.Controllers
     using SimulationRunMethod = Func<SimulationModel, UserInformationModel, Task<string>>;
     using SimulationDeletionMethod = Action<int, UserInformationModel>;
     using SimulationUserUpdateMethod = Action<int, List<SimulationUserModel>, UserInformationModel>;
+    using SimulationCloneMethod = Action<int>;
 
     public class SimulationController : ApiController
     {
@@ -160,6 +161,15 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult CreateSimulation([FromBody]CreateSimulationDataModel model) =>
             Ok(repo.CreateSimulation(model, db));
+
+        [HttpPost]
+        [Route("api/CloneScenario/{id}")]
+        [RestrictAccess]
+        public IHttpActionResult CloneSimulation(int id)
+        {
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            return Ok(repo.CloneSimulation(id, db, userInformation.Name));
+        }
 
         /// <summary>
         /// API endpoint for updating a simulation
