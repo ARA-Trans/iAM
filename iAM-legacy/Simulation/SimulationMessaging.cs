@@ -766,13 +766,26 @@ namespace Simulation
 
         static public TextWriter CreateTextWriter(String strFile, out String strOutFile)
         {
-            //String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            //strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+
 
             // This path will be "..\BridgeCare\iAMApp\BridgeCareApp\BridgeCare"
             //string workingDirectory = HostingEnvironment.ApplicationPhysicalPath;
             string val = ConfigurationManager.AppSettings["TempFilePath"];
-            string path = System.Environment.ExpandEnvironmentVariables(val);
+
+            string path = "";
+
+            if (val != null)
+            {
+                path = System.Environment.ExpandEnvironmentVariables(val);
+            }
+            else
+            {
+                String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+                path = strMyDocumentsFolder;
+            }
+
+
 
             Directory.CreateDirectory(path);
 
