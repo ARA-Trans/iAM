@@ -42,6 +42,9 @@
                             </template>
                         </v-data-table>
                     </div>
+                </v-layout row>
+                    Warning: Uploading new committed projects will override ALL previous commitments.
+                <v-layout>
                 </v-layout>
             </v-card-text>
             <v-card-actions>

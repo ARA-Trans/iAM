@@ -1,5 +1,6 @@
 const debug = require('debug')('app:scenarioController');
 const roles = require('../authorization/roleConfig');
+const logger = require('../config/winston');
 
 function scenarioController(Scenario) {
     function post(req, res) {
@@ -18,7 +19,6 @@ function scenarioController(Scenario) {
     function postMultipleScenarios(req, res) {
         const multipleScenarios = [];
         multipleScenarios.push(...req.body);
-        const resultant = [];
 
         multipleScenarios.forEach(item => {
             const scenario = new Scenario(item);
@@ -69,6 +69,7 @@ function scenarioController(Scenario) {
         if (req.user.role === roles.administrator || req.user.role === roles.cwopa) {
             Scenario.find((err, scenariostatus) => {
                 if (err) {
+                    logger.error('Error in get request of scenarioController: ', err);
                     return res.send(err);
                 }
                 return res.json(scenariostatus);

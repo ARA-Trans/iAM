@@ -366,3 +366,7 @@ connection.config
 
 # DatabaseManager binary
 iAM-legacy/DatabaseManager.dll
+
+# Node error log files
+/BridgeCareApp/BridgeCareNodeApp/logs/nodeErrorLogs.log
+/BridgeCareApp/BridgeCareNodeApp/logs/nodeCombinedLogs.log

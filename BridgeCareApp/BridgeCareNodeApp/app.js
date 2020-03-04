@@ -1,7 +1,8 @@
 ﻿const express = require("express");
 const debug = require('debug')('app');
+var winston = require('./config/winston');
 const app = express();
-require('./config/express')(app);
+require('./config/express')(app, winston);
 
 const passport = require("passport");
 
@@ -25,7 +26,7 @@ async function run() {
 
     const InvestmentLibrary = require('./models/investmentLibraryModel');
     const investmentLibraryRouter = require('./routers/investmentLibraryRouter')(InvestmentLibrary);
-
+    
     const Network = require('./models/NetworkModel');
     const networkRouter = require('./routers/networkRouter')(Network);
 
@@ -114,5 +115,9 @@ async function run() {
         pollingRouter,
         announcementRouter
     ]);
+
+    app.use(function (err, req, res, next) {
+        winston.error(err.stack);
+      });
 
 }
