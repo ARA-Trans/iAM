@@ -172,11 +172,15 @@
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            this.mainCriteria = parseCriteriaString(this.dialogData.criteria) as Criteria;
-            if (this.mainCriteria && isEmpty(this.mainCriteria.logicalOperator)) {
-                this.mainCriteria.logicalOperator = 'OR';
+            const mainCriteria = parseCriteriaString(this.dialogData.criteria) as Criteria;
+
+            if (mainCriteria && isEmpty(mainCriteria.logicalOperator)) {
+                mainCriteria.logicalOperator = 'OR';
             }
-            this.selectedConjunction = this.mainCriteria.logicalOperator;
+
+            this.selectedConjunction = mainCriteria.logicalOperator;
+
+            this.setSubCriteriaClauses(mainCriteria);
         }
 
         /**
@@ -192,21 +196,18 @@
         /**
          * Calls the setter for the subCriteriaClauses property and sets related component UI properties
          */
-        @Watch('mainCriteria')
+        /*@Watch('mainCriteria')
         onCriteriaChanged() {
-            this.resetComponentCriteriaUIProperties();
             this.setSubCriteriaClauses();
-        }
+            this.resetComponentCriteriaUIProperties();
+        }*/
 
         /**
          * Setter: selectedConjunction property
          */
         @Watch('subCriteriaClauses')
         onSubCriteriaClausesChanged() {
-            if (!hasValue(this.selectedConjunction) && hasValue(this.mainCriteria)) {
-                this.selectedConjunction = hasValue(this.mainCriteria.logicalOperator)
-                    ? this.mainCriteria.logicalOperator : 'OR';
-            }
+            this.resetComponentCriteriaUIProperties();
         }
 
         /**
@@ -240,10 +241,10 @@
         /**
          * Setter: subCriteriaClauses property
          */
-        setSubCriteriaClauses() {
+        setSubCriteriaClauses(mainCriteria: Criteria) {
             this.subCriteriaClauses = [];
-            if (hasValue(this.mainCriteria) && hasValue(this.mainCriteria.children)) {
-                this.mainCriteria.children!.forEach((criteriaType: CriteriaType) => {
+            if (hasValue(mainCriteria) && hasValue(mainCriteria.children)) {
+                mainCriteria.children!.forEach((criteriaType: CriteriaType) => {
                     const clause: string = parseCriteriaTypeJson(criteriaType);
                     if (hasValue(clause)) {
                         this.subCriteriaClauses.push(clause);
@@ -258,7 +259,7 @@
         resetComponentCriteriaUIProperties() {
             this.validCriteriaMessage = null;
             this.invalidCriteriaMessage = null;
-            this.cannotSubmit = true;
+            this.cannotSubmit = !isEmpty(parseCriteriaJson(this.getMainCriteria()));
         }
 
         /**
@@ -287,6 +288,7 @@
                 this.subCriteriaClauses.push('');
                 this.selectedSubCriteriaClauseIndex = this.subCriteriaClauses.length - 1;
                 this.selectedSubCriteriaClause = clone(emptyCriteria);
+                this.resetComponentCriteriaUIProperties();
             });
         }
 
@@ -326,6 +328,8 @@
                     return subCriteriaClause === this.selectedRawSubCriteriaClause;
                 }, this.subCriteriaClauses);
             }
+
+            this.resetComponentCriteriaUIProperties();
         }
 
         /**
@@ -366,31 +370,12 @@
         onCheckCriteria() {
             this.resetSubCriteriaSelectedProperties();
 
-            const criteria: Criteria = {
-                logicalOperator: this.selectedConjunction,
-                children: this.subCriteriaClauses
-                    .filter((subCriteriaClause: string) => !isEmpty(subCriteriaClause))
-                    .map((subCriteriaClause: string) => {
-                        const parsedSubCriteriaClause: Criteria = parseCriteriaString(subCriteriaClause) as Criteria;
-                        if (parsedSubCriteriaClause.children!.length === 1) {
-                            return parsedSubCriteriaClause.children![0];
-                        }
-                        return {
-                            type: 'query-builder-group',
-                            query: {
-                                logicalOperator: parsedSubCriteriaClause.logicalOperator,
-                                children: parsedSubCriteriaClause.children
-                            }
-                        };
-                    })
-            };
+            const parsedCriteria = parseCriteriaJson(this.getMainCriteria());
 
-            const parsedCriteria = parseCriteriaJson(criteria);
             if (parsedCriteria) {
                 CriteriaEditorService.checkCriteriaValidity({criteria: parsedCriteria.join('')})
                     .then((response: AxiosResponse<string>) => {
                         if (response.data.indexOf('results match query') !== -1) {
-                            this.mainCriteria = clone(criteria);
                             setTimeout(() => {
                                 this.validCriteriaMessage = response.data;
                                 this.cannotSubmit = false;
@@ -426,13 +411,13 @@
                     this.resetSubCriteriaValidationMessageProperties();
 
                     if (response.data.indexOf('results match query') !== -1) {
-                        this.resetComponentCriteriaUIProperties();
                         this.validSubCriteriaMessage = response.data;
                         this.subCriteriaClauses = update(
                             this.selectedSubCriteriaClauseIndex,
                             criteria,
                             this.subCriteriaClauses
                         );
+                        this.resetComponentCriteriaUIProperties();
                     } else {
                         this.invalidSubCriteriaMessage = response.data;
                     }
@@ -462,7 +447,7 @@
             this.resetComponentCriteriaUIProperties();
 
             if (submit) {
-                const parsedCriteria = parseCriteriaJson(this.mainCriteria);
+                const parsedCriteria = parseCriteriaJson(this.getMainCriteria());
                 if (parsedCriteria) {
                     this.selectedConjunction = 'OR';
                     this.$emit('submit', parsedCriteria.join(''));
@@ -479,10 +464,12 @@
          * Determines whether or not the main criteria 'Check' button should be disabled
          */
         onDisableCriteriaCheck() {
+            const mainCriteria: Criteria = this.getMainCriteria();
             const subCriteriaClausesAreEmpty = this.subCriteriaClauses
                 .every((subCriteriaClause: string) => isEmpty(subCriteriaClause));
-            return (equals(this.mainCriteria, emptyCriteria) && subCriteriaClausesAreEmpty) ||
-                   (!hasValue(this.mainCriteria.children) && subCriteriaClausesAreEmpty);
+            return (equals(mainCriteria, emptyCriteria) && subCriteriaClausesAreEmpty) ||
+                   (!hasValue(mainCriteria.children) && subCriteriaClausesAreEmpty) ||
+                   isEmpty(parseCriteriaJson(mainCriteria));
         }
 
         /**
@@ -508,6 +495,34 @@
                            (parsedSelectedRawSubCriteriaClause && isEmpty(parsedSelectedRawSubCriteriaClause.join('')))
                        )
                    );
+        }
+
+        getMainCriteria() {
+            const filteredSubCriteria: string[] = this.subCriteriaClauses
+                .filter((subCriteriaClause: string) => !isEmpty(subCriteriaClause));
+
+            if (hasValue(filteredSubCriteria)) {
+                return {
+                    logicalOperator: this.selectedConjunction,
+                    children: this.subCriteriaClauses
+                        .filter((subCriteriaClause: string) => !isEmpty(subCriteriaClause))
+                        .map((subCriteriaClause: string) => {
+                            const parsedSubCriteriaClause: Criteria = parseCriteriaString(subCriteriaClause) as Criteria;
+                            if (parsedSubCriteriaClause.children!.length === 1) {
+                                return parsedSubCriteriaClause.children![0];
+                            }
+                            return {
+                                type: 'query-builder-group',
+                                query: {
+                                    logicalOperator: parsedSubCriteriaClause.logicalOperator,
+                                    children: parsedSubCriteriaClause.children
+                                }
+                            };
+                        })
+                };
+            }
+
+            return clone(emptyCriteria);
         }
     }
 </script>
