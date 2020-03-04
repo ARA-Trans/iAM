@@ -7,6 +7,7 @@ using SimulationDataAccess;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
@@ -992,11 +993,23 @@ namespace Simulation
             {
                 tw.Close();
             }
-            String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+
+            string val = ConfigurationManager.AppSettings["TempFilePath"];
+            string path = "";
+            if (val != null)
+            {
+                path = Environment.ExpandEnvironmentVariables(val);
+            }
+            else
+            {
+                String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+                path = strMyDocumentsFolder;
+            }
+
             for (var j = 0; j < m_dictionarySimulationTables.Count; j++)
             {
-                string sOutFile = strMyDocumentsFolder + "\\" + SimulationMessaging.SimulationTable + "_" + j + ".txt";
+                string sOutFile = path + "\\" + SimulationMessaging.SimulationTable + "_" + j + ".txt";
                 _spanAnalysis += DateTime.Now - _dateTimeLast;
                 _dateTimeLast = DateTime.Now;
 
