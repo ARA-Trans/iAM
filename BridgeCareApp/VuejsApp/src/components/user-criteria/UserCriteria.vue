@@ -26,7 +26,7 @@
                             <v-btn class="ara-blue-bg white--text" @click="onGiveUnrestrictedAccess(user)"
                                 title="Allow the user to access the full bridge inventory">
                                 <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-lock-open</v-icon>
-                                Give Unrestricted Access
+                                Allow All Assets
                             </v-btn>
                         </v-flex>
                     </v-layout>
@@ -61,7 +61,7 @@
                                         </v-card>
                                     </v-menu>
                                     <div v-if="!props.item.hasCriteria" style="font-size: 1.2em; font-weight: bold; padding-top: 0.4em; padding-right: 1em">
-                                        Unrestricted Access
+                                        All Assets
                                     </div>
                                     <v-btn v-if="props.item.hasCriteria" icon class="edit-icon" @click="onEditCriteria(props.item)"
                                         title="Edit Criteria">
@@ -75,7 +75,7 @@
                                     <v-icon>fas fa-lock</v-icon>
                                 </v-btn>
                                 <v-btn v-if="props.item.hasCriteria" icon class="ara-blue" @click="onGiveUnrestrictedAccess(props.item)"
-                                    title="Give Unrestricted Access">
+                                    title="Allow All Assets">
                                     <v-icon>fas fa-lock-open</v-icon>
                                 </v-btn>
                                 <v-btn icon class="ara-orange" @click="onRevokeAccess(props.item)"

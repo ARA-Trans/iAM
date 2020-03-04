@@ -718,7 +718,7 @@
                             id: ObjectID.generate(),
                             timeValue: parseFloat(splitValues[0]),
                             attributeValue: parseFloat(splitValues[1])
-                        }
+                        };
                     });
                     this.dataPointsGridData.push(...dataPoints);
                 }
@@ -726,7 +726,7 @@
 
             this.showAddDataPointMultiPopup = false;
             this.multiDataPoints = '';
-        };
+        }
 
         /**
          * Disables the multiple data points popup 'Save' button if the criteria isn't met
