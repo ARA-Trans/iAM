@@ -1,9 +1,10 @@
 import {emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
-import {any, propEq, findIndex, clone, append, equals} from 'ramda';
+import {any, propEq, findIndex, clone, append, equals, reject} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     treatmentLibraries: [] as TreatmentLibrary[],
@@ -50,6 +51,14 @@ const mutations = {
             state.treatmentLibraries = treatmentLibraries;
         }
     },
+    deletedTreatmentLibraryMutator(state: any, deletedTreatmentLibraryId: string) {
+        if (any(propEq('id', deletedTreatmentLibraryId), state.treatmentLibraries)) {
+            state.treatmentLibraries = reject(
+                (library: TreatmentLibrary) => deletedTreatmentLibraryId === library.id,
+                state.treatmentLibraries
+            );
+        }
+    },
     scenarioTreatmentLibraryMutator(state: any, scenarioTreatmentLibrary: TreatmentLibrary) {
         state.scenarioTreatmentLibrary = clone(scenarioTreatmentLibrary);
     }
@@ -93,6 +102,15 @@ const actions = {
                 }
             });
     },
+    async deleteTreatmentLibrary({dispatch, commit}: any, payload: any) {
+        await TreatmentEditorService.deleteTreatmentLibrary(payload.treatmentLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedTreatmentLibraryMutator', payload.treatmentLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted treatment library'});
+                }
+            });
+    },
     async getScenarioTreatmentLibrary({commit}: any, payload: any) {
         await TreatmentEditorService.getScenarioTreatmentLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
@@ -128,6 +146,13 @@ const actions = {
             if (payload.operationType == 'insert') {
                 const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(payload.fullDocument);
                 commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.treatmentLibraries)) {
+                commit('deletedTreatmentLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A treatment library has been deleted from another source`}
+                );
             }
         }
     }

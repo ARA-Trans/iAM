@@ -246,4 +246,52 @@
   <data name="RemainingBudget" xml:space="preserve">
     <value>Remaining Budget</value>
   </data>
+  <data name="BPN1" xml:space="preserve">
+    <value>BPN 1</value>
+  </data>
+  <data name="BPN2" xml:space="preserve">
+    <value>BPN 2</value>
+  </data>
+  <data name="BPN3" xml:space="preserve">
+    <value>BPN 3</value>
+  </data>
+  <data name="BPN4" xml:space="preserve">
+    <value>BPN 4</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Posted" xml:space="preserve">
+    <value>Posted</value>
+  </data>
+  <data name="PoorDeckAreaByBPN" xml:space="preserve">
+    <value>Poor Deck Area By BPN</value>
+  </data>
+  <data name="PostedBridgeCountByBPN" xml:space="preserve">
+    <value>Posted Bridge Count By BPN</value>
+  </data>
+  <data name="CashNeededByBPNUnconstrainedBudget" xml:space="preserve">
+    <value>Cash Needed By BPN - Unconstrained Budget</value>
+  </data>
+  <data name="ClosedBridgeCountByBPN" xml:space="preserve">
+    <value>Closed Bridge Count By BPN</value>
+  </data>
+  <data name="ClosedBridgeDeckAreaByBPN" xml:space="preserve">
+    <value>Closed Bridge Deck Area By BPN</value>
+  </data>
+  <data name="CombinedPostedAndClosed" xml:space="preserve">
+    <value>Combined Posted And Closed</value>
+  </data>
+  <data name="PostedBridgeDeckAreaByBPN" xml:space="preserve">
+    <value>Posted Bridge Deck Area By BPN</value>
+  </data>
+  <data name="MeanAnnualSpending" xml:space="preserve">
+    <value>Mean Annual Spending</value>
+  </data>
+  <data name="TotalBudget" xml:space="preserve">
+    <value>Total Budget</value>
+  </data>
+  <data name="CommittedTotal" xml:space="preserve">
+    <value>Committed Total</value>
+  </data>
 </root>

@@ -15,6 +15,7 @@ const performanceLibraryEquationSchema = new Schema({
 
 const performanceLibrarySchema = new Schema({
    name: {type: String},
+   owner: {type: String},
    description: {type: String},
    equations: [performanceLibraryEquationSchema]
 });

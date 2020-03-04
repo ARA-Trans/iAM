@@ -41,6 +41,7 @@
     import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {getUserName} from '@/shared/utils/get-user-info';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -72,6 +73,7 @@
                     this.newPriorityLibrary.priorities.push(clone({...emptyPriority, year: moment().year()}));
                 }
                 this.setIdsForNewPriorityLibrarySubData();
+                this.newPriorityLibrary.owner = getUserName();
                 this.$emit('submit', this.newPriorityLibrary);
             } else {
                 this.$emit('submit', null);

@@ -1,9 +1,10 @@
 import {emptyTargetLibrary, TargetLibrary} from '@/shared/models/iAM/target';
-import {clone, any, propEq, append, findIndex, equals, update} from 'ramda';
+import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
 import TargetService from '@/services/target.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     targetLibraries: [] as TargetLibrary[],
@@ -26,6 +27,14 @@ const mutations = {
             state.targetLibraries = update(
                 findIndex(propEq('id', updatedTargetLibrary.id), state.targetLibraries),
                 updatedTargetLibrary,
+                state.targetLibraries
+            );
+        }
+    },
+    deletedTargetLibraryMutator(state: any, deletedTargetLibraryId: string) {
+        if (any(propEq('id', deletedTargetLibraryId), state.targetLibraries)) {
+            state.targetLibraries = reject(
+                (library: TargetLibrary) => deletedTargetLibraryId === library.id,
                 state.targetLibraries
             );
         }
@@ -67,6 +76,15 @@ const actions = {
                     commit('updatedTargetLibraryMutator', updatedTargetLibrary);
                     commit('selectedTargetLibraryMutator', updatedTargetLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated target library'});
+                }
+            });
+    },
+    async deleteTargetLibrary({dispatch, commit}: any, payload: any) {
+        await TargetService.deleteTargetLibrary(payload.targetLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedTargetLibraryMutator', payload.targetLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted target library'});
                 }
             });
     },
@@ -112,6 +130,13 @@ const actions = {
                             {message: `Target library '${targetLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.targetLibraries)) {
+                commit('deletedTargetLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A target library has been deleted from another source`}
+                );
             }
         }
     }

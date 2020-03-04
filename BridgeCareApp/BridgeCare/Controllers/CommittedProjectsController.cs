@@ -28,14 +28,14 @@ namespace BridgeCare.Controllers
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveCommittedProjectsFiles")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public IHttpActionResult SaveCommittedProjectsFiles()
         {
             if (!Request.Content.IsMimeMultipartContent())
                 throw new ConstraintException("The data provided is not a valid MIME type.");
 
-            repo.SaveCommittedProjectsFiles(HttpContext.Current.Request, db);
-
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            repo.SaveCommittedProjectsFiles(HttpContext.Current.Request, db, userInformation);
             return Ok();
         }
 
@@ -47,11 +47,13 @@ namespace BridgeCare.Controllers
         [HttpPost]
         [Route("api/ExportCommittedProjects")]
         [ModelValidation("The scenario data is invalid.")]
-        [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
+        [RestrictAccess]
         public HttpResponseMessage ExportCommittedProjects([FromBody]SimulationModel model)
         {
             var response = Request.CreateResponse();
-            response.Content = new ByteArrayContent(repo.ExportCommittedProjects(model.simulationId, model.networkId, db));
+            var userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            byte[] byteArray = repo.ExportCommittedProjects(model.simulationId, model.networkId, db, userInformation);
+            response.Content = new ByteArrayContent(byteArray);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {

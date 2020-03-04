@@ -17,6 +17,9 @@
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedDeficientLibrary.owner ? selectedDeficientLibrary.owner : "[ No Owner ]"}}
+                    </div>
                 </v-flex>
             </v-layout>
             <v-flex xs3 v-show="hasSelectedDeficientLibrary">
@@ -99,11 +102,16 @@
                 <v-btn class="ara-blue-bg white--text" @click="onAddAsNewDeficientLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text" @click="onDeleteDeficientLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardDeficientLibraryChanges">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreateDeficientLibraryDialog :dialogData="createDeficientLibraryDialogData" @submit="onCreateNewDeficientLibrary" />
 
@@ -137,9 +145,11 @@
     import {SelectItem} from '@/shared/models/vue/select-item';
     import CreateDeficientLibraryDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
 
     @Component({
-        components: {CreateDeficientLibraryDialog, CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog}
+        components: {CreateDeficientLibraryDialog, CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog, Alert}
     })
     export default class DeficientEditor extends Vue {
         @State(state => state.deficient.deficientLibraries) stateDeficientLibraries: DeficientLibrary[];
@@ -152,6 +162,7 @@
         @Action('selectDeficientLibrary') selectDeficientLibraryAction: any;
         @Action('createDeficientLibrary') createDeficientLibraryAction: any;
         @Action('updateDeficientLibrary') updateDeficientLibraryAction: any;
+        @Action('deleteDeficientLibrary') deleteDeficientLibraryAction: any;
         @Action('getScenarioDeficientLibrary') getScenarioDeficientLibraryAction: any;
         @Action('saveScenarioDeficientLibrary') saveScenarioDeficientLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
@@ -178,6 +189,7 @@
         showCreateDeficientDialog: boolean = false;
         deficientCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createDeficientLibraryDialogData: CreateDeficientLibraryDialogData = clone(emptyCreateDeficientLibraryDialogData);
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * Sets onload component UI properties
@@ -424,6 +436,24 @@
          */
         onUpdateDeficientLibrary() {
             this.updateDeficientLibraryAction({updatedDeficientLibrary: this.selectedDeficientLibrary});
+        }
+
+        onDeleteDeficientLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deleteDeficientLibraryAction({deficientLibrary: this.selectedDeficientLibrary});
+                this.onClearSelectedDeficientLibrary();
+            }
         }
     }
 </script>

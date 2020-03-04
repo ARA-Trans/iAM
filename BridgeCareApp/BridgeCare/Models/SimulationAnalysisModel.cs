@@ -43,5 +43,14 @@ namespace BridgeCare.Models
             entity.BENEFIT_VARIABLE = BenefitAttribute;
             entity.WEIGHTING = WeightingAttribute;
         }
+
+        public void PartialUpdateSimulationAnalysis(SimulationEntity entity, bool updateWeighting)
+        {
+            entity.JURISDICTION = Criteria;
+            entity.COMMENTS = Description;
+            entity.COMMITTED_PERIOD = AnalysisPeriod;
+            entity.COMMITTED_START = StartYear;
+            entity.WEIGHTING = updateWeighting ? WeightingAttribute : entity.WEIGHTING;
+        }
   }
 }

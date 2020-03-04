@@ -1,8 +1,9 @@
 import {Deficient, DeficientLibrary, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
-import {clone, append, any, propEq, update, findIndex, equals} from 'ramda';
+import {clone, append, any, propEq, update, findIndex, equals, reject} from 'ramda';
 import DeficientService from '@/services/deficient.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
+import {http2XX} from '@/shared/utils/http-utils';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
@@ -26,6 +27,14 @@ const mutations = {
             state.deficientLibraries = update(
                 findIndex(propEq('id', updatedDeficientLibrary.id), state.deficientLibraries),
                 updatedDeficientLibrary,
+                state.deficientLibraries
+            );
+        }
+    },
+    deletedDeficientLibraryMutator(state: any, deletedDeficientLibraryId: string) {
+        if (any(propEq('id', deletedDeficientLibraryId), state.deficientLibraries)) {
+            state.deficientLibraries = reject(
+                (library: DeficientLibrary) => deletedDeficientLibraryId === library.id,
                 state.deficientLibraries
             );
         }
@@ -70,6 +79,15 @@ const actions = {
                 }
             });
     },
+    async deleteDeficientLibrary({dispatch, commit}: any, payload: any) {
+        await DeficientService.deleteDeficientLibrary(payload.deficientLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedDeficientLibraryMutator', payload.deficientLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted deficient library'});
+                }
+            });
+    },
     async getScenarioDeficientLibrary({commit}: any, payload: any) {
         await DeficientService.getScenarioDeficientLibrary(payload.selectedScenarioId)
             .then((response: AxiosResponse<Deficient[]>) => {
@@ -110,6 +128,13 @@ const actions = {
                             {message: `Deficient library '${deficientLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.deficientLibraries)) {
+                commit('deletedDeficientLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A deficient library has been deleted from another source`}
+                );
             }
         }
     }

@@ -6,8 +6,10 @@ namespace BridgeCare.Interfaces
 {
     public interface IInvestmentLibrary
     {
-        InvestmentLibraryModel GetSimulationInvestmentLibrary(int selectedScenarioId, BridgeCareContext db);
+        InvestmentLibraryModel GetAnySimulationInvestmentLibrary(int selectedScenarioId, BridgeCareContext db);
+        InvestmentLibraryModel GetPermittedSimulationInvestmentLibrary(int selectedScenarioId, BridgeCareContext db, string username);
 
-        InvestmentLibraryModel SaveSimulationInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db);
+        InvestmentLibraryModel SaveAnySimulationInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db);
+        InvestmentLibraryModel SavePermittedSimulationInvestmentLibrary(InvestmentLibraryModel data, BridgeCareContext db, string username);
     }
 }

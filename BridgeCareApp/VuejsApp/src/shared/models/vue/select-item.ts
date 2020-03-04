@@ -1,6 +1,6 @@
 export interface SelectItem {
     text: string;
-    value: string;
+    value: string | number;
 }
 
 export const emptySelectItem: SelectItem = {

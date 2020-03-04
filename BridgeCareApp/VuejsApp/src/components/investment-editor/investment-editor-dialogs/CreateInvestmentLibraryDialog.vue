@@ -40,6 +40,7 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {CreateInvestmentLibraryDialogData} from '@/shared/models/modals/create-investment-library-dialog-data';
     import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
+    import {getUserName} from '../../../shared/utils/get-user-info';
     import {clone} from 'ramda';
 
     @Component
@@ -70,6 +71,7 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
+                this.createdInvestmentLibrary.owner = getUserName();
                 this.$emit('submit', this.createdInvestmentLibrary);
             } else {
                 this.$emit('submit', null);

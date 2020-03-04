@@ -38,6 +38,7 @@ namespace BridgeCare
         public virtual DbSet<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
         public virtual DbSet<SplitTreatmentEntity> SplitTreatments { get; set; }
         public virtual DbSet<SplitTreatmentLimitEntity> SplitTreatmentLimits { get; set; }
+        public virtual DbSet<UserCriteriaEntity> UserCriteria { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -67,6 +68,32 @@ namespace BridgeCare
 
             modelBuilder.Entity<SplitTreatmentEntity>()
                 .HasMany(e => e.SPLIT_TREATMENT_LIMITS);
+
+            modelBuilder.Entity<PennDotBridgeData>()
+                .Property(p => p.BridgeCulvert)
+                .HasColumnName("BRIDGE_CULVERT");
+
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.StructureLength)
+                .HasColumnName("LENGTH");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.StructureType)
+                .HasColumnName("STRUCTURE_TYPE");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.PlanningPartner)
+                .HasColumnName("MPO_NAME");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.Posted)
+                .HasColumnName("POST_STATUS");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.P3)
+                .HasColumnName("P3_Bridge");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.ParallelBridge)
+                .HasColumnName("Parallel_Struct");
+
+            modelBuilder.Entity<SimulationEntity>()
+                .HasMany(e => e.USERS);
         }
     }
 }

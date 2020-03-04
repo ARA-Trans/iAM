@@ -34,10 +34,12 @@ namespace BridgeCare.Services.SummaryReport
         internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel)
         {
             var simulationId = simulationModel.simulationId;
-            var investmentPeriod = analysisData.GetSimulationAnalysis((int)simulationId, db);
-            var inflationAndInvestments = getInflationRate.GetSimulationInvestmentLibrary((int)simulationId, db);
-            var priorities = getPriorities.GetSimulationPriorityLibrary((int)simulationId, db).Priorities;
-            var criterias = budgetCriteria.GetCriteriaDrivenBudgets((int)simulationId, db);
+            var investmentPeriod = analysisData.GetAnySimulationAnalysis(simulationId, db);
+            var inflationAndInvestments = getInflationRate.GetAnySimulationInvestmentLibrary(simulationId, db);
+            var priorities = getPriorities.GetAnySimulationPriorityLibrary(simulationId, db).Priorities;
+            var criterias = budgetCriteria.GetAnyCriteriaDrivenBudgets(simulationId, db);
+
+            var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
 
             // Simulation Name format
             excelHelper.MergeCells(worksheet, 1, 1, 1, 2);
