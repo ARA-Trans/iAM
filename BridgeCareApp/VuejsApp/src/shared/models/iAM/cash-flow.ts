@@ -15,6 +15,7 @@ export interface SplitTreatment {
 export interface CashFlowLibrary {
     id: string;
     name: string;
+    owner?: string;
     description: string;
     splitTreatments: SplitTreatment[];
 }

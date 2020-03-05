@@ -28,6 +28,14 @@ export default class CashFlowService {
     }
 
     /**
+     * Deletes a cash flow library
+     * @param cashFlowLibrary The cash flow library to delete
+     */
+    static deleteCashFlowLibrary(cashFlowLibrary: CashFlowLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteCashFLowLibrary/${cashFlowLibrary.id}`);
+    }
+
+    /**
      * Gets a scenario's cash flow library data
      * @param selectedScenarioId Selected scenario's identifier
      */
