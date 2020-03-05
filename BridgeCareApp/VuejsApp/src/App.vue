@@ -94,7 +94,7 @@
                     </v-btn>
                 </v-toolbar-title>
             </v-toolbar>
-            <v-container fluid grid-list-xl>
+            <v-container fluid v-bind="container">
                 <router-view></router-view>
             </v-container>
             <v-footer app fixed class="ara-blue-pantone-289-bg white--text">
@@ -152,6 +152,32 @@
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
+
+        get container() {
+            const container: any = {};
+
+            if (this.$vuetify.breakpoint.xs) {
+                container['grid-list-xs'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.sm) {
+                container['grid-list-sm'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.md) {
+                container['grid-list-md'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.lg) {
+                container['grid-list-lg'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.xl) {
+                container['grid-list-xl'] = true;
+            }
+
+            return container;
+        }
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
