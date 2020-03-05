@@ -221,7 +221,7 @@
 
             if (this.$vuetify.breakpoint.smAndUp) {
                 layout.row = true;
-                layout.wrap = true
+                layout.wrap = true;
             }
 
             return layout;
