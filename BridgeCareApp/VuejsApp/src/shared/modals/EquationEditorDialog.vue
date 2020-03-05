@@ -111,8 +111,7 @@
                                                     </v-layout>
                                                     <div class="data-points-grid">
                                                         <v-data-table :headers="piecewiseGridHeaders" :items="dataPointsGridData"
-                                                                      hide-actions :pagination.sync="pagination"
-                                                                      class="elevation-1 v-table__overflow">
+                                                                      hide-actions class="elevation-1 v-table__overflow">
                                                             <template slot="items" slot-scope="props">
                                                                 <td v-for="header in piecewiseGridHeaders">
                                                                     <div v-if="header.value !== ''">
@@ -133,34 +132,18 @@
                                                             </template>
                                                         </v-data-table>
                                                     </div>
-                                                    <div>
-                                                        <v-layout column>
-                                                            <v-layout justify-center>
-                                                                <v-flex xs4>
-                                                                    <v-select label="Rows per page" :items="rowsPerPageItems"
-                                                                              v-model="rowsPerPage">
-                                                                    </v-select>
-                                                                </v-flex>
-                                                            </v-layout>
-                                                            <v-layout justify-center>
-                                                                <v-pagination v-show="rowsPerPage !== -1" v-model="page"
-                                                                              :total-visible="5" :length="pages">
-                                                                </v-pagination>
-                                                            </v-layout>
-                                                        </v-layout>
-                                                    </div>
                                                 </div>
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <kendo-chart :data-source="chartData"
+                                                    <kendo-chart :data-source="dataPointsGridData"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
                                                                  :zoomable-selection-lock="'y'"
                                                                  :category-axis="categoryAxis"
                                                                  :theme="'sass'"
-                                                                 :value-axis-title-text="'Attribute'"
+                                                                 :value-axis-title-text="'Condition'"
                                                                  :tooltip="tooltip">
                                                     </kendo-chart>
                                                 </div>
@@ -183,8 +166,7 @@
                                                     </v-layout>
                                                     <div class="data-points-grid">
                                                         <v-data-table :headers="timeInRatingGridHeaders" :items="dataPointsGridData"
-                                                                      hide-actions :pagination.sync="pagination"
-                                                                      class="elevation-1 v-table__overflow">
+                                                                      hide-actions class="elevation-1 v-table__overflow">
                                                             <template slot="items" slot-scope="props">
                                                                 <td v-for="header in timeInRatingGridHeaders">
                                                                     <div v-if="header.value !== ''">
@@ -205,34 +187,18 @@
                                                             </template>
                                                         </v-data-table>
                                                     </div>
-                                                    <div>
-                                                        <v-layout column>
-                                                            <v-layout justify-center>
-                                                                <v-flex xs4>
-                                                                    <v-select label="Rows per page" :items="rowsPerPageItems"
-                                                                              v-model="rowsPerPage">
-                                                                    </v-select>
-                                                                </v-flex>
-                                                            </v-layout>
-                                                            <v-layout justify-center>
-                                                                <v-pagination v-show="rowsPerPage !== -1" v-model="page"
-                                                                              :total-visible="5" :length="pages">
-                                                                </v-pagination>
-                                                            </v-layout>
-                                                        </v-layout>
-                                                    </div>
                                                 </div>
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <kendo-chart :data-source="chartData"
+                                                    <kendo-chart :data-source="dataPointsGridData"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
                                                                  :zoomable-selection-lock="'y'"
                                                                  :category-axis="categoryAxis"
                                                                  :theme="'sass'"
-                                                                 :value-axis-title-text="'Attribute'"
+                                                                 :value-axis-title-text="'Condition'"
                                                                  :tooltip="tooltip">
                                                     </kendo-chart>
                                                 </div>
@@ -359,19 +325,11 @@
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'}
         ];
         dataPointsGridData: TimeAttributeDataPoint[] = [];
-        pagination: Pagination = clone(emptyPagination);
-        page: number = 1;
-        rowsPerPageItems: SelectItem[] = [
-            {text: '5', value: 5}, {text: '10', value: 10}, {text: '15', value: 15}, {text: '20', value: 20}, {text: 'All', value: -1}
-        ];
-        rowsPerPage: number = 5;
-        pages: number = 0;
         showAddDataPointPopup: boolean = false;
         newDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
         series: any[] = [{type: 'line', field: 'attributeValue', categoryField: 'timeValue', markers: {visible: false}}];
         categoryAxis: any = {min: 0, max: 10, labels: {rotation: 'auto', step: 1}, title: {text: 'Time', visible: true}};
         tooltip: any = {visible: true, template: '#= category #, #= value #'};
-        chartData: TimeAttributeDataPoint[] = [];
         showAddDataPointMultiPopup: boolean = false;
         multiDataPoints: string = '';
 
@@ -394,7 +352,6 @@
             if ((/(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))+/).test(this.dialogData.equation)) {
                 this.isPiecewise = true;
                 this.onParsePiecewiseEquation();
-                this.setDataPointsChartData();
             } else {
                 this.isPiecewise = false;
             }
@@ -428,47 +385,8 @@
          */
         @Watch('dataPointsGridData')
         onDataPointsGridDataChanged() {
-            this.pagination = {
-                ...this.pagination,
-                totalItems: this.dataPointsGridData.length
-            };
-
             this.cannotSubmit = true;
-        }
-
-        /**
-         * Setter: pagination.rowsPerPage
-         */
-        @Watch('rowsPerPage')
-        onRowsPerPageChanged() {
-            this.pagination = {
-                ...this.pagination,
-                rowsPerPage: this.rowsPerPage
-            };
-        }
-
-        /**
-         * Setter: pagination.page
-         */
-        @Watch('page')
-        onPageChanged() {
-            this.pagination = {
-                ...this.pagination,
-                page: this.page
-            };
-        }
-
-        /**
-         * Setter: pages (conditional)
-         */
-        @Watch('pagination')
-        onPaginationChanged() {
-            const pages: number = Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage);
-            if (this.pages !== pages) {
-                this.pages = pages;
-            }
-
-            this.setDataPointsChartData();
+            this.setChartLabelsStep();
         }
 
         /**
@@ -570,38 +488,19 @@
         }
 
         /**
-         * Gets the specified property values from a list of TimeAttributeDataPoint objects then applies pagination
-         */
-        setDataPointsChartData() {
-            this.chartData = [];
-
-            if (this.pagination.rowsPerPage === -1) {
-                this.chartData.push(...this.dataPointsGridData);
-            } else {
-                for (let i = (this.pagination.page - 1) * this.pagination.rowsPerPage; i < (this.pagination.page * this.pagination.rowsPerPage) && i < this.dataPointsGridData.length; i++) {
-                    this.chartData.push(this.dataPointsGridData[i]);
-                }
-            }
-
-            this.setChartLabelsStep();
-        }
-
-        /**
          * Sets the step value for the chart's category axis values
          */
         setChartLabelsStep() {
-            if (this.pagination.rowsPerPage !== -1) {
-                this.categoryAxis.labels.step = 1;
+            this.categoryAxis.labels.step = 1;
+
+            if (this.dataPointsGridData.length <= 104) {
+                this.categoryAxis.labels.step = 2;
+            } else if (this.dataPointsGridData.length > 104 && this.dataPointsGridData.length <= 208) {
+                this.categoryAxis.labels.step = 3;
+            } else if (this.dataPointsGridData.length > 208 && this.dataPointsGridData.length <= 312) {
+                this.categoryAxis.labels.step = 4;
             } else {
-                if (this.chartData.length <= 104) {
-                    this.categoryAxis.labels.step = 2;
-                } else if (this.chartData.length > 104 && this.chartData.length <= 208) {
-                    this.categoryAxis.labels.step = 3;
-                } else if (this.chartData.length > 208 && this.chartData.length <= 312) {
-                    this.categoryAxis.labels.step = 4;
-                } else {
-                    this.categoryAxis.labels.step = 5;
-                }
+                this.categoryAxis.labels.step = 5;
             }
         }
 
