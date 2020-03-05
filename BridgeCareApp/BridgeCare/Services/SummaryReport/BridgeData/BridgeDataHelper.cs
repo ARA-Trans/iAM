@@ -66,8 +66,15 @@ namespace BridgeCare.Services
                 CulvD = simulationRow["CULV_DURATION_N_" + year].ToString(),
                 Year = year
             };
-            yearsData.MinC = Math.Min(Convert.ToDouble(yearsData.Deck),Math.Min(Convert.ToDouble(yearsData.Culv), Math.Min(Convert.ToDouble(yearsData.Super), Convert.ToDouble(yearsData.Sub)))).ToString();
-            yearsData.SD = Convert.ToDouble(yearsData.MinC) < 5 ? "Y" : "N";
+            var isDeckConverted = double.TryParse(yearsData.Deck, out var deck);
+            var isCulvConverted = double.TryParse(yearsData.Deck, out var culv);
+            var isSuperConverted = double.TryParse(yearsData.Deck, out var super);
+            var isSubConverted = double.TryParse(yearsData.Deck, out var sub);
+            if(isDeckConverted && isCulvConverted && isSuperConverted && isSubConverted)
+            {
+                yearsData.MinC = Math.Min(deck, Math.Min(culv, Math.Min(super, sub)));
+            }
+            yearsData.SD = yearsData.MinC < 5 ? "Y" : "N";
 
             yearsData.Project = year != 0 ? projectCostEntry?.TREATMENT : string.Empty;
             yearsData.Cost = year != 0 ? (projectCostEntry == null ? 0 : projectCostEntry.COST_) : 0;

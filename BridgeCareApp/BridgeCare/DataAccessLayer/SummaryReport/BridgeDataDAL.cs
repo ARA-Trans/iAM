@@ -206,34 +206,44 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "<Pending>")]
         private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
         {
-            bool adtTotalHasValue = Int32.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
+            bool adtTotalHasValue = int.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
             bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
+
+            int.TryParse(penndotBridgeDataRow.BRIDGE_FAMILY_ID, out var familyId);
+            double.TryParse(pennDotReportADataRow.DECK_AREA, out var deckArea);
+            int.TryParse(penndotBridgeDataRow.CONDITION_BASED_AGE, out var age);
+            int.TryParse(pennDotReportADataRow.YEAR_BUILT, out var yearBuilt);
+            int.TryParse(pennDotReportADataRow.StructureLength, out var structureLength);
+            int.TryParse(pennDotReportADataRow.ADTTOTAL, out var ADTTotal);
+            double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
+
             return new BridgeDataModel
             {
                 BRKey = penndotBridgeDataRow.BRKEY,
-                BridgeFamily = penndotBridgeDataRow.BRIDGE_FAMILY_ID,
-                Age = penndotBridgeDataRow.CONDITION_BASED_AGE,
+                BridgeFamily = familyId,
+                Age = age,
                 BridgeCulvert = penndotBridgeDataRow.BridgeCulvert,
 
                 BridgeID = pennDotReportADataRow.BRIDGE_ID,
                 District = pennDotReportADataRow.DISTRICT,
-                DeckArea = pennDotReportADataRow.DECK_AREA,
+                DeckArea = deckArea,
                 BPN = pennDotReportADataRow.BUS_PLAN_NETWORK,
                 FunctionalClass = pennDotReportADataRow.FUNC_CLASS,
                 NHS = pennDotReportADataRow.NHS_IND == "1" ? "Y" : "N",
-                YearBuilt = pennDotReportADataRow.YEAR_BUILT,
-                StructureLength = pennDotReportADataRow.StructureLength,
+                YearBuilt = yearBuilt,
+                StructureLength = structureLength,
                 PlanningPartner = pennDotReportADataRow.PlanningPartner,
                 StructureType = pennDotReportADataRow.StructureType,
                 Posted = pennDotReportADataRow.Posted.ToLower() == "posted" ? "Y" : "N",
-                AdtTotal = pennDotReportADataRow.ADTTOTAL,
+                AdtTotal = ADTTotal,
                 P3 = pennDotReportADataRow.P3,
                 ParallelBridge = pennDotReportADataRow.ParallelBridge,
 
                 ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
-                RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)
+                RiskScore = sdRisk
             };
         }
 
