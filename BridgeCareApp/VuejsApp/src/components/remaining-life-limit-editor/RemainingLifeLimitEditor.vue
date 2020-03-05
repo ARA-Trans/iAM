@@ -14,7 +14,7 @@
                                   v-model="selectedRemainingLifeLimitLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="librarySelectItemValue = '0'">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
