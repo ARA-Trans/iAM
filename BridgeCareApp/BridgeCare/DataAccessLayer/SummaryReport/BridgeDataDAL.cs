@@ -240,7 +240,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         public List<BudgetsPerBRKey> GetBudgetsPerBRKey(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
             var budgetsPerBrKey = new List<BudgetsPerBRKey>();
-            var selectBugetForBrKey = $"select SECTION_13.SECTIONID, SECTION_13.FACILITY as BRKey, SECTION_13.SECTION as BridgeId, BUDGET, YEARS, ISCOMMITTED, TREATMENT " +
+            var selectBugetForBrKey = $"select SECTION_13.SECTIONID, SECTION_13.FACILITY as BRKey, SECTION_13.SECTION as BridgeId, BUDGET, YEARS, ISCOMMITTED, TREATMENT, PROJECT_TYPE as ProjectType " +
                 $"from SECTION_{simulationModel.networkId} " +
                 $"INNER JOIN Report_{simulationModel.networkId}_{simulationModel.simulationId} " +
                 $"on SECTION_{simulationModel.networkId}.SECTIONID = Report_{simulationModel.networkId}_{simulationModel.simulationId}.SECTIONID " +

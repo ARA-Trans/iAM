@@ -89,12 +89,14 @@ namespace BridgeCare.Services
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 simulationDataModel.BRKey = brKey;
                 var yearsData = simulationDataModel.YearsData;
+                var projectPickByYear = new Dictionary<int, int>();
                 // Add work done cells
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     var cost = yearsData[index].Cost;
                     var range = worksheet.Cells[row, ++column];
-                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].ProjectPickType, yearsData[index].Treatment, range);
+                    projectPickByYear.Add(yearsData[index].Year, yearsData[index].ProjectPickType);
+                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index);
                     range.Value = cost > 0 ? yearsData[index].Treatment : "--";
                     workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
@@ -137,49 +139,67 @@ namespace BridgeCare.Services
             currentCell.Column = column - 1;            
         }
 
-        private void setColor(int parallelBridge, int projectPickType, string treatment, ExcelRange range)
+        private void setColor(int parallelBridge, string treatment, ExcelRange range,
+            Dictionary<int, int> projectPickByYear, int year, int index)
         {
-            CheckConditions(parallelBridge, projectPickType, treatment, range);
+            CheckConditions(parallelBridge, treatment, range, projectPickByYear, year, index);
         }
 
-        private void CheckConditions(int parallelBridge, int projectPickType, string treatment, ExcelRange range)
+        private void CheckConditions(int parallelBridge, string treatment, ExcelRange range,
+            Dictionary<int, int> projectPickByYear, int year, int index)
         {
             if (treatment.Length > 0)
             {
-                ParallelBridgeBAMs(parallelBridge, projectPickType, range);
-                ParallelBridgeMPMS(parallelBridge, projectPickType, range);
+                ParallelBridgeBAMs(parallelBridge, projectPickByYear[year], range);
+                ParallelBridgeMPMS(parallelBridge, projectPickByYear[year], range);
+                ParallelBridgeCashFlow(parallelBridge, projectPickByYear[year], range);
+                CashFlowedBridge(projectPickByYear[year], range);
+                if(index != 1 && (projectPickByYear[year] == 1 && projectPickByYear[year - 1] == 1))
+                {
+                    CommittedForConsecutiveYears(range);
+                }
             }
+        }
+
+        private void CommittedForConsecutiveYears(ExcelRange range)
+        {
+            excelHelper.ApplyColor(range, Color.FromArgb(255, 153, 0));
+            excelHelper.SetTextColor(range, Color.White);
         }
 
         private void ParallelBridgeBAMs(int isParallel, int projectPickType, ExcelRange range)
         {
             if(isParallel == 1 && projectPickType == 0)
             {
-                excelHelper.ApplyColor(range, Color.LightSkyBlue);
+                excelHelper.ApplyColor(range, Color.FromArgb(0, 204, 255));
                 excelHelper.SetTextColor(range, Color.Black);
             }
         }
-        //private void ParallelBridgeCashFlow(int isParallel, int projectPickType, ExcelRange range)
-        //{
-        //    if (isParallel == 1 && projectPick == "BAMs Pick")
-        //    {
-        //        excelHelper.ApplyColor(range, Color.Blue);
-        //        return;
-        //    }
-        //}
+        private void ParallelBridgeCashFlow(int isParallel, int projectPickType, ExcelRange range)
+        {
+            if (isParallel == 1 && projectPickType == 2)
+            {
+                excelHelper.ApplyColor(range, Color.FromArgb(0, 204, 255));
+                excelHelper.SetTextColor(range, Color.FromArgb(255, 0 , 0));
+                return;
+            }
+        }
         private void ParallelBridgeMPMS(int isParallel, int projectPickType, ExcelRange range)
         {
             if (isParallel == 1 && projectPickType == 1)
             {
-                excelHelper.ApplyColor(range, Color.LightSkyBlue);
+                excelHelper.ApplyColor(range, Color.FromArgb(0, 204, 255));
                 excelHelper.SetTextColor(range, Color.White);
             }
         }
-        // These method will be used when Analysis engine put relevant data in the db
-        //private void CashFlowedBridge()
-        //{
-
-        //}
+        private void CashFlowedBridge(int projectPickType, ExcelRange range)
+        {
+            if (projectPickType == 2)
+            {
+                excelHelper.ApplyColor(range, Color.FromArgb(0, 255, 0));
+                excelHelper.SetTextColor(range, Color.Red);
+            }
+        }
         //private void NoParallerBridgePMC()
         //{
 
