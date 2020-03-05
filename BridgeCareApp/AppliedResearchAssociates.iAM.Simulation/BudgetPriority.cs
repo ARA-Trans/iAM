@@ -4,7 +4,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class BudgetPriority
     {
-        public List<BudgetPercentage> BudgetPercentages { get; } = new List<BudgetPercentage>();
+        public List<BudgetPercentage> BudgetPercentages { get; }
 
         public Criterion Criterion { get; }
 

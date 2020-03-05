@@ -4,7 +4,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class InvestmentPlan
     {
-        public List<BudgetCategory> BudgetCategories { get; } = new List<BudgetCategory>();
+        public List<BudgetCategory> BudgetCategories { get; }
 
         public decimal DiscountRatePercentage { get; }
 

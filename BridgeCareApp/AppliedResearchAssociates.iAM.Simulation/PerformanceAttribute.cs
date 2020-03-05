@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         // This member makes this type "historical", and the simulation might warrant a separate
         // "evolving" type.
-        public List<PerformanceAttributeDatum> Data { get; } = new List<PerformanceAttributeDatum>();
+        public List<PerformanceAttributeDatum> Data { get; }
 
         public string Name { get; }
     }

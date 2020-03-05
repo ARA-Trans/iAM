@@ -6,6 +6,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public string Name { get; }
 
-        public List<ConditionalEquation> ConditionalEquations { get; } = new List<ConditionalEquation>();
+        public List<ConditionalEquation> ConditionalEquations { get; }
     }
 }

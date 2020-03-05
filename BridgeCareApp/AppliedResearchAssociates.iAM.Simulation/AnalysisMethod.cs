@@ -10,9 +10,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
         // ???
         public int BenefitLimit { get; }
 
-        public List<BudgetPriority> BudgetPriorities { get; } = new List<BudgetPriority>();
+        public List<BudgetPriority> BudgetPriorities { get; }
 
-        public List<DeficientConditionGoal> DeficientConditionGoals { get; } = new List<DeficientConditionGoal>();
+        public List<DeficientConditionGoal> DeficientConditionGoals { get; }
 
         public string Description { get; }
 
@@ -22,7 +22,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public ISpendingStrategy SpendingStrategy { get; }
 
-        public List<TargetConditionGoal> TargetConditionGoals { get; } = new List<TargetConditionGoal>();
+        public List<TargetConditionGoal> TargetConditionGoals { get; }
 
         // ???
         public object Weighting { get; }

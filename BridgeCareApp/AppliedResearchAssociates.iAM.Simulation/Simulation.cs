@@ -17,11 +17,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Network Network { get; }
 
-        public List<PerformanceEquation> PerformanceEquations { get; } = new List<PerformanceEquation>();
+        public List<PerformanceEquation> PerformanceEquations { get; }
 
-        public List<SimulationResult> Results { get; } = new List<SimulationResult>();
+        public List<SimulationResult> Results { get; }
 
-        public List<Treatment> Treatments { get; } = new List<Treatment>();
+        public List<Treatment> Treatments { get; }
 
         public void Run()
         {

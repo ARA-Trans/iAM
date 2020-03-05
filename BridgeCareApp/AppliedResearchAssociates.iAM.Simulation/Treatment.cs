@@ -6,9 +6,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public BudgetCategory BudgetCategory { get; }
 
-        public List<TreatmentConsequence> Consequences { get; } = new List<TreatmentConsequence>();
+        public List<TreatmentConsequence> Consequences { get; }
 
-        public List<TreatmentCost> Costs { get; } = new List<TreatmentCost>();
+        public List<TreatmentCost> Costs { get; }
 
         public string Description { get; }
 

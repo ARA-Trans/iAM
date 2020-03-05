@@ -6,6 +6,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public Section Section { get; }
 
-        public List<TreatmentApplication> YearlyTreatmentApplications { get; } = new List<TreatmentApplication>();
+        public List<TreatmentApplication> YearlyTreatmentApplications { get; }
     }
 }
