@@ -13,7 +13,7 @@
                     <v-text-field v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'" label="Library Name"
                                   v-model="selectedCashFlowLibrary.name">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="cashFlowLibrarySelectItemValue = null">
+                            <v-btn class="ara-orange" icon @click="onClearSelectedCashFlowLibrary">
                                 <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
@@ -342,9 +342,10 @@
             }
         }
 
-        /*onClearSelectedCashFlowLibrary() {
+        onClearSelectedCashFlowLibrary() {
             this.cashFlowLibrarySelectItemValue = null;
-        }*/
+            this.selectCashFlowLibraryAction({selectedCashFlowLibrary: emptyCashFlowLibrary});
+        }
 
         onNewLibrary() {
             this.createCashFlowLibraryDialogData = clone({
