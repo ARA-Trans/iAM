@@ -21,8 +21,6 @@ function cashFlowLibraryController(CashFlowLibrary) {
      */
     function post(req, res) {
         const cashFlowLibrary = new CashFlowLibrary(req.body);
-        console.log(req.body);
-        console.log(cashFlowLibrary);
 
         if (!req.body.name) {
             return res.status(400).send('Library name required');
