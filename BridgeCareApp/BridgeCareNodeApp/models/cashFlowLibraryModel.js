@@ -17,6 +17,7 @@ const splitTreatmentSchema = new Schema({
 
 const cashFlowLibrarySchema = new Schema({
     name: {type: String},
+    owner: {type: String},
     description: {type: String},
     splitTreatments: [splitTreatmentSchema]
 });

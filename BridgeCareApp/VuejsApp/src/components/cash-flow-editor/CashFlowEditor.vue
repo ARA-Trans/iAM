@@ -14,7 +14,7 @@
                                   v-model="selectedCashFlowLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="cashFlowLibrarySelectItemValue = null">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
@@ -158,11 +158,16 @@
                 <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="disableSubmitButtons()">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text" @click="onDeleteCashFlowLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardChanges">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreateCashFlowLibraryDialog :dialogData="createCashFlowLibraryDialogData" @submit="onCreateCashFlowLibrary" />
 
@@ -198,10 +203,12 @@
     import {formatAsCurrency} from '@/shared/utils/currency-formatter';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {getLatestPropertyValue, getPropertyValuesNonUniq} from '@/shared/utils/getter-utils';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
     const ObjectID = require('bson-objectid');
 
     @Component({
-        components: {CreateCashFlowLibraryDialog, CriteriaEditorDialog}
+        components: {CreateCashFlowLibraryDialog, CriteriaEditorDialog, Alert}
     })
     export default class CashFlowEditor extends Vue {
         @State(state => state.cashFlow.cashFlowLibraries) stateCashFlowLibraries: CashFlowLibrary[];
@@ -212,6 +219,7 @@
         @Action('selectCashFlowLibrary') selectCashFlowLibraryAction: any;
         @Action('createCashFlowLibrary') createCashFlowLibraryAction: any;
         @Action('updateCashFlowLibrary') updateCashFlowLibraryAction: any;
+        @Action('deleteCashFlowLibrary') deleteCashFlowLibraryAction: any;
         @Action('getScenarioCashFlowLibrary') getScenarioCashFlowLibraryAction: any;
         @Action('saveScenarioCashFlowLibrary') saveScenarioCashFlowLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -240,6 +248,7 @@
         splitTreatmentLimitTableData: SplitTreatmentLimit[] = [];
         createCashFlowLibraryDialogData: CreateCashFlowLibraryDialogData = clone(emptyCreateCashFlowLibraryDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -612,6 +621,24 @@
             }
 
             return parseInt(value) === 100 || 'Percents must add up to 100';
+        }
+
+        onDeleteCashFlowLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deleteCashFlowLibraryAction({cashFlowLibrary: this.selectedCashFlowLibrary});
+                this.onClearSelectedCashFlowLibrary();
+            }
         }
     }
 </script>

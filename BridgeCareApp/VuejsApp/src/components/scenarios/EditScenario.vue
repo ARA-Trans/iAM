@@ -112,7 +112,7 @@
                         },
                         {
                             tabName: 'Treatment',
-                            tabIcon: 'fas fa-heartbeat',
+                            tabIcon: 'fas fa-tools',
                             navigation: {
                                 path: '/TreatmentEditor/Scenario/',
                                 query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}

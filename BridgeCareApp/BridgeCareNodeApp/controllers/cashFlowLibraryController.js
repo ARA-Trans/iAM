@@ -35,22 +35,12 @@ function cashFlowLibraryController(CashFlowLibrary) {
         });
     }
 
-    /**
-     * PUT NodeJS API endpoint for cash flow libraries; updates & returns a cash flow library
-     * @param req Http request
-     * @param res Http response
-     */
-    function put(req, res) {
-        CashFlowLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, library) => {
-            if (err) {
-                return res.status(500).json(err);
-            }
+    const {getUpdateFunction, getDeletionFunction} = require('./libraryAPIFunctions');
 
-            return res.status(200).json(library);
-        });
-    }
+    put = getUpdateFunction(CashFlowLibrary);
+    deleteLibrary = getDeletionFunction(CashFlowLibrary);
 
-    return {get, post, put};
+    return {get, post, put, deleteLibrary};
 }
 
 module.exports = cashFlowLibraryController;
