@@ -99,7 +99,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 var uniqueTreatments = new Dictionary<string, int>();
                 foreach (var data in filteredCommittedProject)
                 {
-                    if (data.YEARS < startYear)
+                    if (data.YEARS < startYear || data.TREATMENT.ToLower() == "no treatment")
                     {
                         continue;
                     }
