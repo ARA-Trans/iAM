@@ -4,6 +4,7 @@ using BridgeCare.Properties;
 using BridgeCare.Services.SummaryReport.Charts;
 using BridgeCare.Services.SummaryReport.Charts.PostedCountByBPN;
 using BridgeCare.Services.SummaryReport.PoorDeckAreaByBPN;
+using BridgeCare.Services.SummaryReport.ShortNameGlossary;
 using BridgeCare.Services.SummaryReport.WorkSummaryByBudget;
 using Hangfire;
 using MongoDB.Driver;
@@ -31,13 +32,15 @@ namespace BridgeCare.Services.SummaryReport
         private readonly SummaryReportParameters summaryReportParameters;
         private readonly BridgeWorkSummaryByBudget bridgeWorkSummaryByBudget;
         private readonly BridgeWorkSummaryCharts bridgeWorkSummaryCharts;
+        private readonly SummaryReportGlossary summaryReportGlossary;
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportGenerator));
 
         public SummaryReportGenerator(ICommonSummaryReportData commonSummaryReportData, SummaryReportBridgeData summaryReportBridgeData,
             BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
             PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount, SummaryReportParameters summaryReportParameters,
-            BridgeWorkSummaryByBudget workSummaryByBudget, BridgeWorkSummaryCharts bridgeWorkSummaryCharts)
+            BridgeWorkSummaryByBudget workSummaryByBudget, BridgeWorkSummaryCharts bridgeWorkSummaryCharts,
+            SummaryReportGlossary summaryReportGlossary)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
@@ -50,6 +53,7 @@ namespace BridgeCare.Services.SummaryReport
             this.summaryReportParameters = summaryReportParameters ?? throw new ArgumentNullException(nameof(summaryReportParameters));
             bridgeWorkSummaryByBudget = workSummaryByBudget ?? throw new ArgumentNullException(nameof(workSummaryByBudget));
             this.bridgeWorkSummaryCharts = bridgeWorkSummaryCharts ?? throw new ArgumentNullException(nameof(bridgeWorkSummaryCharts));
+            this.summaryReportGlossary = summaryReportGlossary ?? throw new ArgumentNullException(nameof(summaryReportGlossary));
         }
 
         /// <summary>
@@ -94,6 +98,10 @@ namespace BridgeCare.Services.SummaryReport
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - Bridge data TAB");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
+                // Simulation ShortName TAB
+                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("ShortName");
+                summaryReportGlossary.Fill(shortNameWorksheet);
 
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
