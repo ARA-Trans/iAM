@@ -42,7 +42,7 @@ namespace BridgeCare.Services
 
             CreateSeries(bridgeWorkSummaryWorkSheet, totalBridgeCountSectionYearsRow, count, chart, totalBridgeCountSectionYearsRow + 2, Properties.Resources.Fair, Color.Yellow);
 
-            CreateSeries(bridgeWorkSummaryWorkSheet, totalBridgeCountSectionYearsRow, count, chart, totalBridgeCountSectionYearsRow + 1, Properties.Resources.Good, Color.Green);
+            CreateSeries(bridgeWorkSummaryWorkSheet, totalBridgeCountSectionYearsRow, count, chart, totalBridgeCountSectionYearsRow + 1, Properties.Resources.Good, Color.FromArgb(0, 176, 80));
         }
 
         private void CreateSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalBridgeCountSectionYearsRow, int count, ExcelChart chart, int fromRow, string header, Color color)

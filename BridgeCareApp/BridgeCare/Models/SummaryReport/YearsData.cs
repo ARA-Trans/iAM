@@ -20,7 +20,7 @@
 
         public string CulvD { get; set; }
 
-        public string MinC { get; set; }
+        public double MinC { get; set; }
 
         public string SD { get; set; }
 

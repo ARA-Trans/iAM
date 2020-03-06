@@ -60,15 +60,15 @@ namespace BridgeCare.Services
 
             chartRowsModel = deckAreaBridgeWorkSummary.FillPoorDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
-            chartRowsModel = postedClosedBridgeWorkSummary.FillPostedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+            //chartRowsModel = postedClosedBridgeWorkSummary.FillPostedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
-            chartRowsModel = deckAreaBridgeWorkSummary.FillPostedDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+            //chartRowsModel = deckAreaBridgeWorkSummary.FillPostedDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
-            chartRowsModel = postedClosedBridgeWorkSummary.FillClosedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+            //chartRowsModel = postedClosedBridgeWorkSummary.FillClosedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
-            chartRowsModel = deckAreaBridgeWorkSummary.FillClosedDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+            //chartRowsModel = deckAreaBridgeWorkSummary.FillClosedDeckArea(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
-            chartRowsModel = postedClosedBridgeWorkSummary.FillBridgeCountTotal(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
+            //chartRowsModel = postedClosedBridgeWorkSummary.FillBridgeCountTotal(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 
             chartRowsModel = postedClosedBridgeWorkSummary.FillMoneyNeededByBPN(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels, chartRowsModel);
 

@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Services.SummaryReport.BridgeData;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,15 @@ namespace BridgeCare.Services
         private readonly IBridgeData bridgeData;
         private readonly BridgeDataHelper bridgeDataHelper;
         private readonly ExcelHelper excelHelper;
+        private readonly HighlightWorkDoneCells highlightWorkDoneCells;
 
-        public SummaryReportBridgeData(IBridgeData bridgeData, BridgeDataHelper bridgeDataHelper, ExcelHelper excelHelper)
+        public SummaryReportBridgeData(IBridgeData bridgeData, BridgeDataHelper bridgeDataHelper, ExcelHelper excelHelper,
+            HighlightWorkDoneCells highlightWorkDoneCells)
         {
             this.bridgeData = bridgeData;
             this.bridgeDataHelper = bridgeDataHelper;
             this.excelHelper = excelHelper;
+            this.highlightWorkDoneCells = highlightWorkDoneCells;
         }
 
         /// <summary>
@@ -89,12 +93,14 @@ namespace BridgeCare.Services
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 simulationDataModel.BRKey = brKey;
                 var yearsData = simulationDataModel.YearsData;
+                var projectPickByYear = new Dictionary<int, int>();
                 // Add work done cells
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
                     var cost = yearsData[index].Cost;
                     var range = worksheet.Cells[row, ++column];
-                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].ProjectPickType, yearsData[index].Treatment, range);
+                    projectPickByYear.Add(yearsData[index].Year, yearsData[index].ProjectPickType);
+                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index);
                     range.Value = cost > 0 ? yearsData[index].Treatment : "--";
                     workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
@@ -109,8 +115,8 @@ namespace BridgeCare.Services
                 // Add Poor On/Off Rate column: Formula (prev yr MinC < 5 and  curr yr Minc >= 5 then "Off"), (prev yr MinC >= 5 and curr ye MinC < 5 then "On")   
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
-                    double.TryParse(yearsData[index - 1].MinC, out double prevYrMinc);
-                    double.TryParse(yearsData[index].MinC, out double thisYrMinc);
+                    var prevYrMinc = yearsData[index - 1].MinC;
+                    var thisYrMinc = yearsData[index].MinC;
                     worksheet.Cells[row, ++column].Value = prevYrMinc < 5 ? (thisYrMinc >= 5 ? "Off" : "--") : (thisYrMinc < 5 ? "On" : "--");
                     yearsData[index].PoorOnOffRate = worksheet.Cells[row, column].Value.ToString();
                 }
@@ -137,75 +143,29 @@ namespace BridgeCare.Services
             currentCell.Column = column - 1;            
         }
 
-        private void setColor(int parallelBridge, int projectPickType, string treatment, ExcelRange range)
+        private void setColor(int parallelBridge, string treatment, ExcelRange range,
+            Dictionary<int, int> projectPickByYear, int year, int index)
         {
-            CheckConditions(parallelBridge, projectPickType, treatment, range);
+            highlightWorkDoneCells.CheckConditions(parallelBridge, treatment, range, projectPickByYear, year, index);
         }
 
-        private void CheckConditions(int parallelBridge, int projectPickType, string treatment, ExcelRange range)
-        {
-            if (treatment.Length > 0)
-            {
-                ParallelBridgeBAMs(parallelBridge, projectPickType, range);
-                ParallelBridgeMPMS(parallelBridge, projectPickType, range);
-            }
-        }
-
-        private void ParallelBridgeBAMs(int isParallel, int projectPickType, ExcelRange range)
-        {
-            if(isParallel == 1 && projectPickType == 0)
-            {
-                excelHelper.ApplyColor(range, Color.LightSkyBlue);
-                excelHelper.SetTextColor(range, Color.Black);
-            }
-        }
-        //private void ParallelBridgeCashFlow(int isParallel, int projectPickType, ExcelRange range)
-        //{
-        //    if (isParallel == 1 && projectPick == "BAMs Pick")
-        //    {
-        //        excelHelper.ApplyColor(range, Color.Blue);
-        //        return;
-        //    }
-        //}
-        private void ParallelBridgeMPMS(int isParallel, int projectPickType, ExcelRange range)
-        {
-            if (isParallel == 1 && projectPickType == 1)
-            {
-                excelHelper.ApplyColor(range, Color.LightSkyBlue);
-                excelHelper.SetTextColor(range, Color.White);
-            }
-        }
-        // These method will be used when Analysis engine put relevant data in the db
-        //private void CashFlowedBridge()
-        //{
-
-        //}
-        //private void NoParallerBridgePMC()
-        //{
-
-        //}
-        //private void ParallelBridgePMC()
-        //{
-
-        //}
-
-        private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, string familyId, BridgeDataModel bridgeDataModel)
+        private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, int familyId, BridgeDataModel bridgeDataModel)
         {
             int initialColumn = column;
-            var familyIdLessThanEleven = Convert.ToInt32(familyId) < 11;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Deck;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Sub;
+            var familyIdLessThanEleven = familyId < 11;
+            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Deck;
+            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Super;
+            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Sub;
             worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.Culv;
 
             yearData.Culv = familyIdLessThanEleven ? "N" : yearData.Culv;
-            yearData.Deck = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Deck;
-            yearData.Super = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Super;
-            yearData.Sub = Convert.ToInt32(familyId) > 10 ? "N" : yearData.Sub;
+            yearData.Deck = familyId > 10 ? "N" : yearData.Deck;
+            yearData.Super = familyId > 10 ? "N" : yearData.Super;
+            yearData.Sub = familyId > 10 ? "N" : yearData.Sub;
 
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.DeckD;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SuperD;
-            worksheet.Cells[row, ++column].Value = Convert.ToInt32(familyId) > 10 ? "N" : yearData.SubD;
+            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.DeckD;
+            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.SuperD;
+            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.SubD;
             worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.CulvD;
             yearData.CulvD = familyIdLessThanEleven ? "N" : yearData.CulvD;
 
@@ -214,29 +174,29 @@ namespace BridgeCare.Services
             {
                 worksheet.Cells[row, ++column].Value = "N";
                 // It is a dummy value
-                yearData.MinC = "100";
+                yearData.MinC = 100;
             }
             else if(yearData.Deck == "N" && yearData.Super == "N" && yearData.Sub == "N")
             {
                 worksheet.Cells[row, ++column].Value = yearData.Culv;
-                yearData.MinC = yearData.Culv;
+                yearData.MinC = Convert.ToDouble(yearData.Culv);
             }
             else if(yearData.Culv == "N")
             {
-                var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub))).ToString();
-                worksheet.Cells[row, ++column].Value = minValue;
+                var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub)));
+                worksheet.Cells[row, ++column].Value = minValue.ToString();
                 yearData.MinC = minValue;
             }
             else
             {
-                worksheet.Cells[row, ++column].Value = yearData.MinC;
+                worksheet.Cells[row, ++column].Value = yearData.MinC.ToString();
             }
-            worksheet.Cells[row, ++column].Value = yearData.SD;
-            worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
+            //worksheet.Cells[row, ++column].Value = yearData.SD;
+            //worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
 
             if (yearData.Year != 0)
             {   
-                worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted == "Y" ? getPostedType(yearData.Project) : "N"; // Posted
+                //worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted == "Y" ? getPostedType(yearData.Project) : "N"; // Posted
                 worksheet.Cells[row, ++column].Value = yearData.ProjectPick; // Project Pick
                 worksheet.Cells[row, ++column].Value = yearData.Budget; // Budget
                 worksheet.Cells[row, ++column].Value = yearData.Project;
@@ -246,6 +206,8 @@ namespace BridgeCare.Services
             }
             else
             {
+                worksheet.Cells[row, ++column].Value = yearData.SD;
+                worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N";
                 worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted; // Posted
             }
             // Empty column
@@ -323,15 +285,24 @@ namespace BridgeCare.Services
             // Empty column
             currentCell.Column = ++column;
             var yearHeaderColumn = currentCell.Column;
+            simulationHeaderTexts.RemoveAll(_ => _.Equals("SD") || _.Equals("Poor") || _.Equals("Posted"));
             foreach (var simulationYear in simulationYears)
             {
                 worksheet.Cells[row, ++column].Value = simulationYear;
                 column = currentCell.Column;
                 column = AddSimulationHeaderTexts(worksheet, column, row, simulationHeaderTexts, simulationHeaderTexts.Count);
                 excelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
+                if(simulationYear % 2 != 0)
+                {
+                    excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column + 1, row, column], Color.Gray);
+                }
+                else
+                {
+                    excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column + 1, row, column], Color.LightGray);
+                }
                 currentCell.Column = ++column;
             }
-            excelHelper.ApplyColor(worksheet.Cells[1, yearHeaderColumn - 2, 1, currentCell.Column], Color.DimGray);
+            //excelHelper.ApplyColor(worksheet.Cells[1, yearHeaderColumn - 2, 1, currentCell.Column], Color.DimGray);
             excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, row + 1, worksheet.Dimension.Columns]);
             currentCell.Row = currentCell.Row + 2;
         }
