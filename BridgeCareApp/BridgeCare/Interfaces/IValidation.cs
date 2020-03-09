@@ -6,6 +6,6 @@ namespace BridgeCare.Interfaces
     {
         void ValidateEquation(ValidateEquationModel data, BridgeCareContext db);
 
-        string ValidateCriteria(string data, BridgeCareContext db);
+        CriteriaValidationResult ValidateCriteria(string data, BridgeCareContext db);
     }
 }

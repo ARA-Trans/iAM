@@ -276,6 +276,7 @@
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
     <Compile Include="Interfaces\IUserCriteria.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
+    <Compile Include="Models\CriteriaValidationResult.cs" />
     <Compile Include="Models\SimulationUserModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />

@@ -61,12 +61,6 @@
                                     </v-tab-item>
                                 </v-tabs>
                             </v-card-text>
-                            <!--<v-card-actions>
-                                <v-btn class="ara-blue-bg white&#45;&#45;text" @click="onCheckSubCriteria"
-                                       :disabled="onDisableSubCriteriaCheck()">
-                                    Check
-                                </v-btn>
-                            </v-card-actions>-->
                         </v-card>
                     </v-flex>
                 </v-layout>
@@ -85,8 +79,13 @@
                                             </v-btn>
                                         </v-flex>
                                         <v-flex xs8>
-                                            <p class="invalid-message" v-if="invalidCriteriaMessage !== null">{{invalidCriteriaMessage}}</p>
-                                            <p class="valid-message" v-if="validCriteriaMessage !== null">{{validCriteriaMessage}}</p>
+                                            <p class="invalid-message" v-if="invalidCriteriaMessage !== null">
+                                                <strong>{{invalidCriteriaMessage}}</strong>
+                                            </p>
+                                            <p class="valid-message" v-if="validCriteriaMessage !== null">
+                                                {{validCriteriaMessage}}
+                                            </p>
+                                            <p v-if="checkOutput">Please click here to check entire rule</p>
                                         </v-flex>
                                     </v-layout>
                                 </div>
@@ -99,8 +98,12 @@
                                             </v-btn>
                                         </v-flex>
                                         <v-flex>
-                                            <p class="invalid-message" v-if="invalidSubCriteriaMessage !== null">{{invalidSubCriteriaMessage}}</p>
-                                            <p class="valid-message" v-if="validSubCriteriaMessage !== null">{{validSubCriteriaMessage}}</p>
+                                            <p class="invalid-message" v-if="invalidSubCriteriaMessage !== null">
+                                                <strong>{{invalidSubCriteriaMessage}}</strong>
+                                            </p>
+                                            <p class="valid-message" v-if="validSubCriteriaMessage !== null">
+                                                {{validSubCriteriaMessage}}
+                                            </p>
                                         </v-flex>
                                     </v-layout>
                                 </div>
@@ -127,7 +130,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State, Action} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, CriteriaType, emptyCriteria} from '../models/iAM/criteria';
+    import {Criteria, CriteriaType, CriteriaValidationResult, emptyCriteria} from '../models/iAM/criteria';
     import {parseCriteriaString, parseCriteriaJson, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
@@ -176,6 +179,7 @@
         selectedSubCriteriaClause: Criteria | null = null;
         selectedRawSubCriteriaClause: string = '';
         activeTab = 'tree-view';
+        checkOutput: boolean = false;
 
         /**
          * Component mounted event handler
@@ -345,6 +349,7 @@
         resetSubCriteriaValidationMessageProperties() {
             this.validSubCriteriaMessage = null;
             this.invalidSubCriteriaMessage = null;
+            this.checkOutput = false;
         }
 
         /**
@@ -445,21 +450,30 @@
          * sets an invalid criteria message
          */
         onCheckCriteria() {
+            this.checkOutput = false;
             this.resetSubCriteriaSelectedProperties();
 
             const parsedCriteria = parseCriteriaJson(this.getMainCriteria());
 
             if (parsedCriteria) {
                 CriteriaEditorService.checkCriteriaValidity({criteria: parsedCriteria.join('')})
-                    .then((response: AxiosResponse<string>) => {
-                        if (response.data.indexOf('results match query') !== -1) {
-                            setTimeout(() => {
-                                this.validCriteriaMessage = response.data;
+                    .then((response: AxiosResponse<CriteriaValidationResult>) => {
+                        if (hasValue(response, 'data')) {
+                            const validationResult: CriteriaValidationResult = response.data;
+                            const message = `${validationResult.numberOfResults} result(s) returned`;
+                            if (validationResult.isValid) {
+                                this.validCriteriaMessage = message;
                                 this.cannotSubmit = false;
-                            });
-                        } else {
-                            this.resetComponentCriteriaUIProperties();
-                            setTimeout(() => this.invalidCriteriaMessage = response.data);
+                            } else {
+                                this.resetComponentCriteriaUIProperties();
+                                setTimeout(() => {
+                                    if (validationResult.numberOfResults === 0) {
+                                        this.invalidCriteriaMessage = message;
+                                    } else {
+                                        this.invalidCriteriaMessage = validationResult.message;
+                                    }
+                                });
+                            }
                         }
                     });
             } else {
@@ -484,19 +498,28 @@
             }
 
             CriteriaEditorService.checkCriteriaValidity({criteria: criteria})
-                .then((response: AxiosResponse<string>) => {
+                .then((response: AxiosResponse<CriteriaValidationResult>) => {
                     this.resetSubCriteriaValidationMessageProperties();
 
-                    if (response.data.indexOf('results match query') !== -1) {
-                        this.validSubCriteriaMessage = response.data;
-                        this.subCriteriaClauses = update(
-                            this.selectedSubCriteriaClauseIndex,
-                            criteria,
-                            this.subCriteriaClauses
-                        );
-                        this.resetComponentCriteriaUIProperties();
-                    } else {
-                        this.invalidSubCriteriaMessage = response.data;
+                    if (hasValue(response, 'data')) {
+                        const validationResult: CriteriaValidationResult = response.data;
+                        const message = `${validationResult.numberOfResults} result(s) returned`;
+                        if (validationResult.isValid) {
+                            this.validSubCriteriaMessage = message;
+                            this.subCriteriaClauses = update(
+                                this.selectedSubCriteriaClauseIndex,
+                                criteria,
+                                this.subCriteriaClauses
+                            );
+                            this.resetComponentCriteriaUIProperties();
+                            this.checkOutput = true;
+                        } else {
+                            if (validationResult.numberOfResults === 0) {
+                                this.invalidSubCriteriaMessage = message;
+                            } else {
+                                this.invalidSubCriteriaMessage = validationResult.message;
+                            }
+                        }
                     }
                 });
         }
@@ -575,6 +598,9 @@
                    );
         }
 
+        /**
+         * Returns the main criteria object parsed from the sub-criteria clauses
+         */
         getMainCriteria() {
             const filteredSubCriteria: string[] = this.subCriteriaClauses
                 .filter((subCriteriaClause: string) => !isEmpty(subCriteriaClause));
