@@ -92,7 +92,6 @@ function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
  * @param clause The clause string to parse
  */
 export const parseCriteriaString = (clause: string) => {
-    console.log(clause);
     try {
         if (hasValue(clause)) {
             var trimmedClause: string = clause.trim();
