@@ -18,6 +18,9 @@
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedCashFlowLibrary.owner ? selectedCashFlowLibrary.owner : "[ No Owner ]"}}
+                    </div>
                 </v-flex>
             </v-layout>
         </v-flex>
