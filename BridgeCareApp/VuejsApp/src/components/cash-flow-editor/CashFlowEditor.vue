@@ -21,6 +21,8 @@
                     <div v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'">
                         Owner: {{selectedCashFlowLibrary.owner ? selectedCashFlowLibrary.owner : "[ No Owner ]"}}
                     </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'" 
+                        v-model="selectedCashFlowLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -678,5 +680,14 @@
 
     .invalid-input {
         color: red;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>
