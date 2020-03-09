@@ -17,6 +17,7 @@ namespace BridgeCare.Services
         private readonly BridgeDataHelper bridgeDataHelper;
         private readonly ExcelHelper excelHelper;
         private readonly HighlightWorkDoneCells highlightWorkDoneCells;
+        private Dictionary<MinCValue, Func<ExcelWorksheet, int, int, YearsData, int>> valueForMinC;
 
         public SummaryReportBridgeData(IBridgeData bridgeData, BridgeDataHelper bridgeDataHelper, ExcelHelper excelHelper,
             HighlightWorkDoneCells highlightWorkDoneCells)
@@ -79,6 +80,14 @@ namespace BridgeCare.Services
             int totalColumn = 0;
             int totalColumnValue = 0;
             var abbreviatedTreatmentNames = ShortNamesForTreatments.GetShortNamesForTreatments();
+
+            // making dictionary to remove if else, which was used to enter value for MinC
+            valueForMinC = new Dictionary<MinCValue, Func<ExcelWorksheet, int, int, YearsData, int>>();
+            valueForMinC.Add(MinCValue.defaultValue, new Func<ExcelWorksheet, int, int, YearsData, int>(EnterDefaultMinCValue));
+            valueForMinC.Add(MinCValue.valueEqualsCulv, new Func<ExcelWorksheet, int, int, YearsData, int>(EnterValueEqualsCulv));
+            valueForMinC.Add(MinCValue.minOfDeckSubSuper, new Func<ExcelWorksheet, int, int, YearsData, int>(EnterMinDeckSuperSub));
+            valueForMinC.Add(MinCValue.minOfCulvDeckSubSuper, new Func<ExcelWorksheet, int, int, YearsData, int>(EnterMinDeckSuperSubCulv));
+
             foreach (var bridgeDataModel in bridgeDataModels)
             {
                 if (row % 2 == 0)
@@ -161,45 +170,56 @@ namespace BridgeCare.Services
         private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, int familyId,
             BridgeDataModel bridgeDataModel, Dictionary<int, int> projectPickByYear)
         {
+            var minCActionCallDecider = MinCValue.minOfCulvDeckSubSuper;
             var familyIdLessThanEleven = familyId < 11;
-            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Deck;
-            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Super;
-            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Sub;
-            worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.Culv;
-
-            yearData.Culv = familyIdLessThanEleven ? "N" : yearData.Culv;
-            yearData.Deck = familyId > 10 ? "N" : yearData.Deck;
-            yearData.Super = familyId > 10 ? "N" : yearData.Super;
-            yearData.Sub = familyId > 10 ? "N" : yearData.Sub;
-
-            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.DeckD;
-            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.SuperD;
-            worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.SubD;
-            worksheet.Cells[row, ++column].Value = familyIdLessThanEleven ? "N" : yearData.CulvD;
-            yearData.CulvD = familyIdLessThanEleven ? "N" : yearData.CulvD;
-
-            // This if else condition is a last minute change before deployment. It should be refactored
-            if(yearData.Culv == "N" && yearData.Deck == "N" && yearData.Super == "N" && yearData.Sub == "N")
+            if(familyId > 10)
             {
                 worksheet.Cells[row, ++column].Value = "N";
-                // It is a dummy value
-                yearData.MinC = 100;
-            }
-            else if(yearData.Deck == "N" && yearData.Super == "N" && yearData.Sub == "N")
-            {
-                worksheet.Cells[row, ++column].Value = yearData.Culv;
-                yearData.MinC = Convert.ToDouble(yearData.Culv);
-            }
-            else if(yearData.Culv == "N")
-            {
-                var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub)));
-                worksheet.Cells[row, ++column].Value = minValue.ToString();
-                yearData.MinC = minValue;
+                worksheet.Cells[row, ++column].Value = "N";
+                worksheet.Cells[row, ++column].Value = "N";
+
+                worksheet.Cells[row, column + 2].Value = "N";
+                worksheet.Cells[row, column + 3].Value = "N";
+                worksheet.Cells[row, column + 4].Value = "N";
+                yearData.Deck = "N";
+                yearData.Super = "N";
+                yearData.Sub = "N";
+                minCActionCallDecider = MinCValue.valueEqualsCulv;
             }
             else
             {
-                worksheet.Cells[row, ++column].Value = yearData.MinC.ToString();
+                worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.Deck);
+                worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.Super);
+                worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.Sub);
+
+                worksheet.Cells[row, column + 2].Value = Convert.ToDouble(yearData.DeckD);
+                worksheet.Cells[row, column + 3].Value = Convert.ToDouble(yearData.SuperD);
+                worksheet.Cells[row, column + 4].Value = Convert.ToDouble(yearData.SubD);
             }
+            if (familyIdLessThanEleven)
+            {
+                worksheet.Cells[row, ++column].Value = "N";
+                worksheet.Cells[row, column + 4].Value = "N";
+                yearData.Culv = "N";
+                yearData.CulvD = "N";
+                if(minCActionCallDecider == MinCValue.valueEqualsCulv)
+                {
+                    minCActionCallDecider = MinCValue.defaultValue;
+                }
+                else
+                {
+                    minCActionCallDecider = MinCValue.minOfDeckSubSuper;
+                }
+            }
+            else
+            {
+                worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.Culv);
+
+                worksheet.Cells[row, column + 4].Value = Convert.ToDouble(yearData.CulvD);
+            }
+            column += 4;
+
+            column = valueForMinC[minCActionCallDecider](worksheet, row, column, yearData);
 
             if(bridgeDataModel.P3 > 0 && yearData.MinC < 5)
             {
@@ -415,6 +435,39 @@ namespace BridgeCare.Services
                 "Risk Score",
                 "P3"
             };
+        }
+
+        private int EnterDefaultMinCValue(ExcelWorksheet worksheet, int row, int column, YearsData yearData)
+        {
+            worksheet.Cells[row, ++column].Value = "N";
+            // It is a dummy value
+            yearData.MinC = 100;
+            return column;
+        }
+        private int EnterValueEqualsCulv(ExcelWorksheet worksheet, int row, int column, YearsData yearData)
+        {
+            yearData.MinC = Convert.ToDouble(yearData.Culv);
+            worksheet.Cells[row, ++column].Value = yearData.MinC;
+            return column;
+        }
+        private int EnterMinDeckSuperSub(ExcelWorksheet worksheet, int row, int column, YearsData yearData)
+        {
+            var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub)));
+            worksheet.Cells[row, ++column].Value = minValue;
+            yearData.MinC = minValue;
+            return column;
+        }
+        private int EnterMinDeckSuperSubCulv(ExcelWorksheet worksheet, int row, int column, YearsData yearData)
+        {
+            worksheet.Cells[row, ++column].Value = yearData.MinC;
+            return column;
+        }
+        private enum MinCValue
+        {
+            minOfCulvDeckSubSuper,
+            minOfDeckSubSuper,
+            valueEqualsCulv,
+            defaultValue
         }
     }
 }
