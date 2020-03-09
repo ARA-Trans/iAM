@@ -66,7 +66,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.InitializeBPNLabels(worksheet, currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[startRow + 4, column - 1].Value = "Average Amount";
+            worksheet.Cells[startRow + 4, column - 1].Value = "Annualized Amount";
             var totalMoney = 0.0;
             foreach (var year in simulationYears)
             {
