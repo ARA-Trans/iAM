@@ -67,9 +67,9 @@ namespace BridgeCare.Services
                 Year = year
             };
             var isDeckConverted = double.TryParse(yearsData.Deck, out var deck);
-            var isCulvConverted = double.TryParse(yearsData.Deck, out var culv);
-            var isSuperConverted = double.TryParse(yearsData.Deck, out var super);
-            var isSubConverted = double.TryParse(yearsData.Deck, out var sub);
+            var isCulvConverted = double.TryParse(yearsData.Culv, out var culv);
+            var isSuperConverted = double.TryParse(yearsData.Super, out var super);
+            var isSubConverted = double.TryParse(yearsData.Sub, out var sub);
             if(isDeckConverted && isCulvConverted && isSuperConverted && isSubConverted)
             {
                 yearsData.MinC = Math.Min(deck, Math.Min(culv, Math.Min(super, sub)));
