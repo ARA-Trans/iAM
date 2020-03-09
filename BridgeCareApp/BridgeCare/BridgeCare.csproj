@@ -276,6 +276,7 @@
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
     <Compile Include="Interfaces\IUserCriteria.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
+    <Compile Include="Models\CriteriaValidationResult.cs" />
     <Compile Include="Models\SimulationUserModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
@@ -486,6 +487,8 @@
     <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
     <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeData\HighlightWorkDoneCells.cs" />
+    <Compile Include="Services\SummaryReport\ShortNameGlossary\SummaryReportGlossary.cs" />
+    <Compile Include="Services\SummaryReport\ShortNamesForTreatments.cs" />
     <Compile Include="Services\SummaryReport\WorkSummary\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\WorkSummary\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\Charts\BridgeWorkSummaryCharts.cs" />

@@ -33,7 +33,7 @@ namespace BridgeCare.DataAccessLayer
             }
         }
 
-        public string ValidateCriteria(string data, BridgeCareContext db)
+        public CriteriaValidationResult ValidateCriteria(string data, BridgeCareContext db)
         {
             string criteria = data.Replace("|", "'").ToUpper();
             criteria = checkAttributes(criteria, true, db);
@@ -152,12 +152,12 @@ namespace BridgeCare.DataAccessLayer
             return;
         }
 
-        public string NumberOfHits(string criteria, BridgeCareContext db)
+        public CriteriaValidationResult NumberOfHits(string criteria, BridgeCareContext db)
         {
             if (criteria == "" || criteria == null)
             {
                 log.Error("There is no criteria created");
-                return "There is no criteria created";
+                return new CriteriaValidationResult(false, 0, "There is no criteria created");
             }
             // create the sql select statement
             var strNetworkID = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
@@ -190,17 +190,18 @@ namespace BridgeCare.DataAccessLayer
                 // close the connection
                 connection.Close();
                 // return the results
-                return count + " results match query";
+                return new CriteriaValidationResult((int)count > 0, (int)count, (int)count > 0 ? "Success" : "Invalid");
             }
             catch (SqlException e)
             {
-                log.Error($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
-                throw new System.InvalidOperationException($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
+                var message = $"Failed SQL Query: {strSelect}, Error Message: {e.Message}";
+                log.Error(message);
+                return new CriteriaValidationResult(false, 0, message);
             }
             catch (Exception e2)
             {
                 log.Error(e2.Message);
-                throw new System.InvalidOperationException(e2.Message);
+                return new CriteriaValidationResult(false, 0, e2.Message);
             }
         }
 
@@ -236,8 +237,8 @@ namespace BridgeCare.DataAccessLayer
                     break;
                 }
 
-                if (criteria[index + 1] == '(' || criteria[index + 1] == '[' 
-                    || criteria.Substring(index + 1, 3) == "AND" 
+                if (criteria[index + 1] == '(' || criteria[index + 1] == '['
+                    || criteria.Substring(index + 1, 3) == "AND"
                     || criteria.Substring(index + 1, 2) == "OR")
                 {
                     if (spacedString == 0)

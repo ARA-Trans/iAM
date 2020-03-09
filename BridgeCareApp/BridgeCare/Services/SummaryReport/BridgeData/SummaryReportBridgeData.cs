@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Services.SummaryReport;
 using BridgeCare.Services.SummaryReport.BridgeData;
 using OfficeOpenXml;
 using System;
@@ -77,6 +78,7 @@ namespace BridgeCare.Services
             var column = currentCell.Column;
             int totalColumn = 0;
             int totalColumnValue = 0;
+            var abbreviatedTreatmentNames = ShortNamesForTreatments.GetShortNamesForTreatments();
             foreach (var bridgeDataModel in bridgeDataModels)
             {
                 if (row % 2 == 0)
@@ -101,7 +103,14 @@ namespace BridgeCare.Services
                     var range = worksheet.Cells[row, ++column];
                     projectPickByYear.Add(yearsData[index].Year, yearsData[index].ProjectPickType);
                     setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index);
-                    range.Value = cost > 0 ? yearsData[index].Treatment : "--";
+                    if (abbreviatedTreatmentNames.ContainsKey(yearsData[index].Treatment))
+                    {
+                        range.Value = cost > 0 ? abbreviatedTreatmentNames[yearsData[index].Treatment] : "--";
+                    }
+                    else
+                    {
+                        range.Value = cost > 0 ? yearsData[index].Treatment : "--";
+                    }
                     workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
                 worksheet.Cells[row, ++column].Value = workDoneMoreThanOnce > 1 ? "Yes" : "--";
@@ -126,12 +135,12 @@ namespace BridgeCare.Services
 
                 // Last Year simulation data
                 var lastYearData = yearsData.FirstOrDefault();
-                column = AddSimulationYearData(worksheet, row, column, lastYearData, familyId, bridgeDataModel);
+                column = AddSimulationYearData(worksheet, row, column, lastYearData, familyId, bridgeDataModel, projectPickByYear);
 
                 // Add all yrs from current year simulation data
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
-                    column = AddSimulationYearData(worksheet, row, column, yearsData[index], familyId, bridgeDataModel);
+                    column = AddSimulationYearData(worksheet, row, column, yearsData[index], familyId, bridgeDataModel, projectPickByYear);
                 }
                 row++;
             }
@@ -149,9 +158,9 @@ namespace BridgeCare.Services
             highlightWorkDoneCells.CheckConditions(parallelBridge, treatment, range, projectPickByYear, year, index);
         }
 
-        private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, int familyId, BridgeDataModel bridgeDataModel)
+        private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, int familyId,
+            BridgeDataModel bridgeDataModel, Dictionary<int, int> projectPickByYear)
         {
-            int initialColumn = column;
             var familyIdLessThanEleven = familyId < 11;
             worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Deck;
             worksheet.Cells[row, ++column].Value = familyId > 10 ? "N" : yearData.Super;
@@ -191,6 +200,12 @@ namespace BridgeCare.Services
             {
                 worksheet.Cells[row, ++column].Value = yearData.MinC.ToString();
             }
+
+            if(bridgeDataModel.P3 > 0 && yearData.MinC < 5)
+            {
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Yellow);
+                excelHelper.SetTextColor(worksheet.Cells[row, column], Color.Black);
+            }
             //worksheet.Cells[row, ++column].Value = yearData.SD;
             //worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
 
@@ -200,6 +215,11 @@ namespace BridgeCare.Services
                 worksheet.Cells[row, ++column].Value = yearData.ProjectPick; // Project Pick
                 worksheet.Cells[row, ++column].Value = yearData.Budget; // Budget
                 worksheet.Cells[row, ++column].Value = yearData.Project;
+                if (projectPickByYear[yearData.Year] == 2)
+                {
+                    excelHelper.ApplyColor(worksheet.Cells[row, column], Color.FromArgb(0, 255, 0));
+                    excelHelper.SetTextColor(worksheet.Cells[row, column], Color.Black);
+                }
                 worksheet.Cells[row, ++column].Value = yearData.Cost;
                 excelHelper.SetCurrencyFormat(worksheet.Cells[row, column]);
                 worksheet.Cells[row, ++column].Value = ""; // District Remarks
@@ -302,7 +322,6 @@ namespace BridgeCare.Services
                 }
                 currentCell.Column = ++column;
             }
-            //excelHelper.ApplyColor(worksheet.Cells[1, yearHeaderColumn - 2, 1, currentCell.Column], Color.DimGray);
             excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, row + 1, worksheet.Dimension.Columns]);
             currentCell.Row = currentCell.Row + 2;
         }
@@ -396,6 +415,6 @@ namespace BridgeCare.Services
                 "Risk Score",
                 "P3"
             };
-        }        
+        }
     }
 }
