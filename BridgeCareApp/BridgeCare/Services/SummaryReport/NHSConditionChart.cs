@@ -39,7 +39,7 @@ namespace BridgeCare.Services
 
             CreateSeries(bridgeWorkSummaryWorkSheet, nhsPercentSectionYearsRow, count, chart, nhsPercentSectionYearsRow + 2, Properties.Resources.Fair, Color.Yellow);
 
-            CreateSeries(bridgeWorkSummaryWorkSheet, nhsPercentSectionYearsRow, count, chart, nhsPercentSectionYearsRow + 1, Properties.Resources.Good, Color.Green);
+            CreateSeries(bridgeWorkSummaryWorkSheet, nhsPercentSectionYearsRow, count, chart, nhsPercentSectionYearsRow + 1, Properties.Resources.Good, Color.FromArgb(0, 176, 80));
         }
 
         private void CreateSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int nhsPercentSectionYearsRow, int count, ExcelChart chart, int fromRow, string header, Color color)
@@ -55,6 +55,7 @@ namespace BridgeCare.Services
         {
             stackedColumnChartCommon.SetChartAxes(chart);
             chart.YAxis.Format = "#0%";
+            chart.YAxis.MaxValue = 1;
         }
     }
 }

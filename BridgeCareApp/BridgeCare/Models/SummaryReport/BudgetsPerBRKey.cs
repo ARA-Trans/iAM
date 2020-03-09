@@ -14,5 +14,7 @@ namespace BridgeCare.Models.SummaryReport
         public int YEARS { get; private set; }
         public bool IsCommitted { get; set; }
         public string Treatment { get; set; }
+
+        public int ProjectType { get; set; }
     }
 }
