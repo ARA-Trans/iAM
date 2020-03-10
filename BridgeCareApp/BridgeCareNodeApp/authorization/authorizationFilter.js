@@ -15,13 +15,13 @@ function authorizationFilter(permittedRoles) {
     };
 
     function verify(jwtPayload, done) {
-        role = jwtPayload.roles.split(',')[0].split('=')[1];
+        roles = jwtPayload.roles.split('^').map(segment => segment.split(',')[0].split('=')[1]);
         username = jwtPayload.sub.split(',')[0].split('=')[1];
         if (!Array.isArray(permittedRoles) || permittedRoles.length === 0) {
-            return done(null, { username, role });
+            return done(null, { username, roles });
         }
-        if (permittedRoles.some(permittedRole => permittedRole === role)){
-            return done(null, { username, role });
+        if (permittedRoles.some(permittedRole => roles.some(role => permittedRole === role))){
+            return done(null, { username, roles });
         }
         logger.error('User unauthorized');
         return done(null, false, {message: 'You are not authorized to perform that action'});

@@ -66,7 +66,7 @@ function scenarioController(Scenario) {
     }
 
     function get(req, res) {
-        if (req.user.role === roles.administrator || req.user.role === roles.cwopa) {
+        if (req.user.roles.indexOf(roles.administrator) >= 0 || req.user.roles.indexOf(roles.cwopa) >= 0) {
             Scenario.find((err, scenariostatus) => {
                 if (err) {
                     logger.error('Error in get request of scenarioController: ', err);

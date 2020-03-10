@@ -3,6 +3,7 @@ import {AxiosResponse} from 'axios';
 import {UserTokens, UserInfo} from '@/shared/models/iAM/authentication';
 import {http2XX} from '@/shared/utils/http-utils';
 import {getUserName} from '@/shared/utils/get-user-info';
+import {parseLDAP, checkLDAP} from '@/shared/utils/parse-ldap';
 
 const state = {
     authenticated: false,
@@ -92,11 +93,11 @@ const actions = {
                     if (http2XX.test(response.status.toString())) {
                         localStorage.setItem('UserInfo', response.data);
                         const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
-                        const username: string = userInfo.sub.split(',')[0].split('=')[1];
+                        const username: string = parseLDAP(userInfo.sub)[0];
                         commit('hasRoleMutator', userInfo.roles !== undefined);
                         if (state.hasRole) {
-                            commit('isAdminMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-Administrator');
-                            commit('isCWOPAMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-CWOPA');
+                            commit('isAdminMutator', checkLDAP(userInfo.roles, 'PD-BAMS-Administrator'));
+                            commit('isCWOPAMutator', checkLDAP(userInfo.roles, 'PD-BAMS-CWOPA'));
                         }
                         commit('checkedForRoleMutator', true);
                         commit('usernameMutator', username);
