@@ -32,8 +32,9 @@
                     <v-flex xs8>
                         <v-card>
                             <v-card-title>
-                                <v-btn icon class="plus-icon" @click="onAddSplitTreatment"><v-icon>fas fa-plus</v-icon></v-btn>
-                                Split Treatments
+                                <v-btn @click="onAddSplitTreatment">
+                                    <v-icon left class="plus-icon">fas fa-plus</v-icon>Add Cash Flow Rule
+                                </v-btn>
                             </v-card-title>
                             <v-card-text class="cash-flow-library-card">
                                 <v-data-table :headers="splitTreatmentTableHeaders" :items="splitTreatmentTableData" item-key="id"
@@ -86,8 +87,9 @@
                     <v-flex xs4 v-if="selectedSplitTreatment.id !== '0'">
                         <v-card>
                             <v-card-title>
-                                <v-btn icon class="plus-icon" @click="onAddSplitTreatmentLimit"><v-icon>fas fa-plus</v-icon></v-btn>
-                                Split Treatment Limits
+                                <v-btn @click="onAddSplitTreatmentLimit">
+                                    <v-icon left class="plus-icon">fas fa-plus</v-icon>Add Distribution Rule
+                                </v-btn>
                             </v-card-title>
                             <v-card-text class="cash-flow-library-card">
                                 <v-data-table :headers="splitTreatmentLimitTableHeaders" :items="splitTreatmentLimitTableData"
@@ -235,8 +237,8 @@
         cashFlowLibrarySelectItemValue: any = null;
         selectedCashFlowLibrary: CashFlowLibrary = clone(emptyCashFlowLibrary);
         splitTreatmentTableHeaders: DataTableHeader[] = [
-            {text: '', value: '', align: 'left', sortable: false, class: '', width: '5%'},
-            {text: 'Description', value: 'description', align: 'left', sortable: false, class: '', width: '25%'},
+            {text: 'Select', value: '', align: 'left', sortable: false, class: '', width: '5%'},
+            {text: 'Rule Name', value: 'description', align: 'left', sortable: false, class: '', width: '25%'},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '65%'},
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '5%'}
         ];
@@ -245,9 +247,9 @@
         selectedSplitTreatment: SplitTreatment = clone(emptySplitTreatment);
         selectedSplitTreatmentForCriteriaEdit: SplitTreatment = clone(emptySplitTreatment);
         splitTreatmentLimitTableHeaders: DataTableHeader[] = [
-            {text: 'Split Year', value: 'rank', align: 'left', sortable: false, class: '', width: '31.6%'},
-            {text: 'Amount', value: 'amount', align: 'left', sortable: false, class: '', width: '31.6%'},
-            {text: 'Percentages', value: 'percentage', align: 'left', sortable: false, class: '', width: '31.6%'},
+            {text: 'Duration (yr)', value: 'rank', align: 'left', sortable: false, class: '', width: '31.6%'},
+            {text: 'Up to Amount', value: 'amount', align: 'left', sortable: false, class: '', width: '31.6%'},
+            {text: 'Distribution (%)', value: 'percentage', align: 'left', sortable: false, class: '', width: '31.6%'},
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '4.2%'}
         ];
         splitTreatmentLimitTableData: SplitTreatmentLimit[] = [];
