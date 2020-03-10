@@ -15,13 +15,15 @@
                                   v-model="selectedPerformanceLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedPerformanceLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
                     <div v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0">
                         Owner: {{selectedPerformanceLibrary.owner ? selectedPerformanceLibrary.owner : "[ No Owner ]"}}
                     </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0" 
+                        v-model="selectedPerformanceLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -680,5 +682,14 @@
 
     .header-height{
         height: 45px;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

@@ -13,6 +13,7 @@ export interface PerformanceLibrary {
     id: number | string;
     name: string;
     owner?: string;
+    shared?: boolean;
     description: string;
     equations: PerformanceLibraryEquation[];
 }

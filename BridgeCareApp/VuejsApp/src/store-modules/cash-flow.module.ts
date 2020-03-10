@@ -1,9 +1,10 @@
 import {CashFlowLibrary, emptyCashFlowLibrary} from '@/shared/models/iAM/cash-flow';
-import {clone, append, update, findIndex, propEq, equals, any} from 'ramda';
+import {clone, append, update, findIndex, propEq, equals, any, reject} from 'ramda';
 import CashFlowService from '@/services/cash-flow.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import { http2XX } from '@/shared/utils/http-utils';
 
 const state = {
     cashFlowLibraries: []  as CashFlowLibrary[],
@@ -27,6 +28,14 @@ const mutations = {
             updatedCashFlowLibrary,
             state.cashFlowLibraries
         );
+    },
+    deletedCashFlowLibraryMutator(state: any, deletedCashFlowLibraryId: string) {
+        if (any(propEq('id', deletedCashFlowLibraryId), state.cashFlowLibraries)) {
+            state.cashFlowLibraries = reject(
+                (library: CashFlowLibrary) => deletedCashFlowLibraryId === library.id,
+                state.cashFlowLibraries
+            );
+        }
     },
     scenarioCashFlowLibraryMutator(state: any, scenarioCashFlowLibrary: CashFlowLibrary) {
         state.scenarioCashFlowLibrary = clone(scenarioCashFlowLibrary);
@@ -65,6 +74,15 @@ const actions = {
                     commit('updatedCashFlowLibraryMutator', updatedCashFlowLibrary);
                     commit('selectedCashFlowLibraryMutator', updatedCashFlowLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated cash flow library'});
+                }
+            });
+    },
+    async deleteCashFlowLibrary({dispatch, commit}: any, payload: any) {
+        await CashFlowService.deleteCashFlowLibrary(payload.cashFlowLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                    commit('deletedCashFlowLibraryMutator', payload.cashFlowLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted cash flow library'});
                 }
             });
     },

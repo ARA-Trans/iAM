@@ -14,13 +14,15 @@
                                   v-model="selectedInvestmentLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedInvestmentLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
                     <div v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0">
                         Owner: {{selectedInvestmentLibrary.owner ? selectedInvestmentLibrary.owner : "[ No Owner ]"}}
                     </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0" 
+                        v-model="selectedInvestmentLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
@@ -763,5 +765,14 @@
         height: 730px;
         overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

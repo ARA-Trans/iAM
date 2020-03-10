@@ -14,13 +14,15 @@
                                   v-model="selectedPriorityLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedPriorityLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
                     <div v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'">
                         Owner: {{selectedPriorityLibrary.owner ? selectedPriorityLibrary.owner : "[ No Owner ]"}}
                     </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'" 
+                        v-model="selectedPriorityLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
             <v-flex xs3 v-show="hasSelectedPriorityLibrary">
@@ -658,5 +660,14 @@
 
     .priorities-data-table .v-menu--inline, .priority-criteria-output {
         width: 100%;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

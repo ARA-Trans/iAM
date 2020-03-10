@@ -14,13 +14,15 @@
                                   label="Treatment Name" v-model="selectedTreatmentLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedTreatmentLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
                     <div v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'">
                         Owner: {{selectedTreatmentLibrary.owner ? selectedTreatmentLibrary.owner : "[ No Owner ]"}}
                     </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" 
+                        v-model="selectedTreatmentLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -578,5 +580,14 @@
 
     .treatment-library-select {
         height: 60px;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

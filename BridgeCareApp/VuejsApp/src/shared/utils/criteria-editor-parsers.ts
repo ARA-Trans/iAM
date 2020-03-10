@@ -94,20 +94,23 @@ function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
 export const parseCriteriaString = (clause: string) => {
     try {
         if (hasValue(clause)) {
+            var trimmedClause: string = clause.trim();
+            // Whenever any of the following operands (or space) are followed by an extra space, trim away that space
+            trimmedClause = trimmedClause.replace(/ *([ <>=]) */g, (_, group1) => group1);
             // create a new criteria object
             const newCriteria: Criteria = {
                 logicalOperator: '',
                 children: []
             };
             // if no open parentheses are present, assume clause string was created in legacy app
-            if ((clause.match(/\(/g) || []).length === 0) {
+            if ((trimmedClause.match(/\(/g) || []).length === 0) {
                 // ensure there are no close parentheses in the string before parsing
-                clause = clause.replace(/\)/g, '');
+                trimmedClause = trimmedClause.replace(/\)/g, '');
                 // parse the clause string and return
-                return parseLegacyAppClause(clause, newCriteria);
+                return parseLegacyAppClause(trimmedClause, newCriteria);
             } else {
                 // parse the clause as a query builder string and return
-                return parseQueryBuilderClause(clause, newCriteria);
+                return parseQueryBuilderClause(trimmedClause, newCriteria);
             }
         }
     }

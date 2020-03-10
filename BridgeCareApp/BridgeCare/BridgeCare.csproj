@@ -276,6 +276,7 @@
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
     <Compile Include="Interfaces\IUserCriteria.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
+    <Compile Include="Models\CriteriaValidationResult.cs" />
     <Compile Include="Models\SimulationUserModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
@@ -485,8 +486,11 @@
     <Compile Include="Services\DetailedReport\Target.cs" />
     <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
     <Compile Include="DataAccessLayer\NetworkDAL.cs" />
-    <Compile Include="Services\SummaryReport\BridgeRateDeckAreaWorkSummary.cs" />
-    <Compile Include="Services\SummaryReport\BridgesCulvertsWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\BridgeData\HighlightWorkDoneCells.cs" />
+    <Compile Include="Services\SummaryReport\ShortNameGlossary\SummaryReportGlossary.cs" />
+    <Compile Include="Services\SummaryReport\ShortNamesForTreatments.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\BridgeRateDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\Charts\BridgeWorkSummaryCharts.cs" />
     <Compile Include="Services\SummaryReport\Charts\CashNeededByBPN.cs" />
     <Compile Include="Services\SummaryReport\Charts\ClosedBridgeDeckAreaByBPN.cs" />
@@ -504,7 +508,7 @@
     <Compile Include="Services\SummaryReport\ConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\CostBudgetsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\ExcelHelper.cs" />
-    <Compile Include="Services\SummaryReport\NHSBridgeDeckAreaWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\NHSBridgeDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\NHSConditionChart.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeCount.cs" />
     <Compile Include="Services\SummaryReport\PoorBridgeDeckArea.cs" />
@@ -514,11 +518,11 @@
     <Compile Include="Services\SummaryReport\WorkSummary\PostedClosedBridgeWorkSummary.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UtilityFunctions.cs" />
-    <Compile Include="Services\SummaryReport\SummaryReportBridgeData.cs" />
-    <Compile Include="Services\SummaryReport\BridgeWorkSummary.cs" />
-    <Compile Include="Services\SummaryReport\BridgeWorkSummaryHelper.cs" />
+    <Compile Include="Services\SummaryReport\BridgeData\SummaryReportBridgeData.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\BridgeWorkSummary.cs" />
+    <Compile Include="Services\SummaryReport\WorkSummary\BridgeWorkSummaryHelper.cs" />
     <Compile Include="Services\SummaryReport\SummaryReportGenerator.cs" />
-    <Compile Include="Services\SummaryReport\BridgeDataHelper.cs" />
+    <Compile Include="Services\SummaryReport\BridgeData\BridgeDataHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

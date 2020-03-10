@@ -11,6 +11,7 @@ export interface InvestmentLibrary {
     id: number | string;
     name: string;
     owner?: string;
+    shared?: boolean;
     inflationRate: number;
     description: string;
     budgetOrder: string[];

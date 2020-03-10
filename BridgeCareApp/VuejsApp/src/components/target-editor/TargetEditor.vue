@@ -13,13 +13,15 @@
                                   v-model="selectedTargetLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedTargetLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
                     <div v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'">
                         Owner: {{selectedTargetLibrary.owner ? selectedTargetLibrary.owner : "[ No Owner ]"}}
                     </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'" 
+                        v-model="selectedTargetLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
             <v-flex xs3 v-show="hasSelectedTargetLibrary">
@@ -467,5 +469,14 @@
 
     .targets-data-table .v-menu--inline, .target-criteria-output {
         width: 100%;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>
