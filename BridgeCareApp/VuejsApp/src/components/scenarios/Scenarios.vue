@@ -435,8 +435,8 @@ import { getUserName } from '../../shared/utils/get-user-info';
                 showDialog: true,
                 heading: 'Warning',
                 choice: true,
-                message: 'The simulation can take around five minutes to finish. ' +
-                    'Are you sure that you want to continue?'
+                message: 'Only one simulation can be run at a time. The model run you are about to queue will be ' +
+                         'executed in the order in which it was received.'
             };
         }
 
