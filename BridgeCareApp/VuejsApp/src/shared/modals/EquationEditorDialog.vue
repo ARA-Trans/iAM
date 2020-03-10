@@ -124,8 +124,7 @@
                                                                         </v-edit-dialog>
                                                                     </div>
                                                                     <div v-else>
-                                                                        <v-btn v-if="props.item.timeValue > 0"
-                                                                               icon class="ara-orange"
+                                                                        <v-btn icon class="ara-orange"
                                                                                @click="onRemoveTimeAttributeDataPoint(props.item.id)">
                                                                             <v-icon>fas fa-trash</v-icon>
                                                                         </v-btn>
@@ -138,7 +137,7 @@
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <kendo-chart :data-source="getOrderedDataSource()"
+                                                    <kendo-chart :data-source="orderedDataSource"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
@@ -170,21 +169,11 @@
                                                         <v-data-table :headers="timeInRatingGridHeaders" :items="timeInRatingGridData"
                                                                       hide-actions class="elevation-1 v-table__overflow">
                                                             <template slot="items" slot-scope="props">
-                                                                <td v-for="header in timeInRatingGridHeaders">
-                                                                    <div v-if="header.value !== ''">
-                                                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent>
-                                                                            {{props.item[header.value]}}
-                                                                            <template slot="input">
-                                                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
-                                                                                </v-text-field>
-                                                                            </template>
-                                                                        </v-edit-dialog>
-                                                                    </div>
-                                                                    <div v-else>
-                                                                        <v-btn icon class="ara-orange" @click="onRemoveTimeAttributeDataPoint(props.item.id)">
-                                                                            <v-icon>fas fa-trash</v-icon>
-                                                                        </v-btn>
-                                                                    </div>
+                                                                <td>
+                                                                    {{props.item.attributeValue}}
+                                                                </td>
+                                                                <td>
+                                                                    {{props.item.timeValue}}
                                                                 </td>
                                                             </template>
                                                         </v-data-table>
@@ -193,7 +182,7 @@
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <kendo-chart :data-source="getOrderedDataSource()"
+                                                    <kendo-chart :data-source="orderedDataSource"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
@@ -288,11 +277,11 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {EquationValidation} from '@/shared/models/iAM/equation-validation';
+    import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
     import {http2XX} from '@/shared/utils/http-utils';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {emptyTimeAttributeDataPoint, TimeAttributeDataPoint} from '@/shared/models/iAM/time-attribute-data-point';
-    import {isNil, clone, sortBy, prop, any} from 'ramda';
+    import {isNil, clone, sortBy, prop} from 'ramda';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -321,11 +310,11 @@
         ];
         timeInRatingGridHeaders: DataTableHeader[] = [
             {text: 'Condition', value: 'attributeValue', align: 'left', sortable: false, class: '', width: '10px'},
-            {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'},
-            {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'}
+            {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'}
         ];
         piecewiseGridData: TimeAttributeDataPoint[] = [];
         timeInRatingGridData: TimeAttributeDataPoint[] = [];
+        orderedDataSource: TimeAttributeDataPoint[] = [];
         showAddDataPointPopup: boolean = false;
         newDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
         series: any[] = [{type: 'line', field: 'attributeValue', categoryField: 'timeValue', markers: {visible: false}}];
@@ -376,15 +365,15 @@
          */
         @Watch('piecewiseGridData')
         onPiecewiseGridDataChanged() {
-            this.setDataPointsChartUIProperties();
-        }
+            this.cannotSubmit = true;
 
-        /**
-         * Setter: piecewiseGridData (calculated with timeInRatingGridData values)
-         */
-        @Watch('timeInRatingGridData')
-        onTimeInRatingGridDataChanged() {
-            this.setDataPointsChartUIProperties();
+            this.categoryAxis.max = getPropertyValues('timeValue', this.piecewiseGridData).length;
+
+            if (this.categoryAxis.max <= 10) {
+                this.categoryAxis.labels.step = 1;
+            } else {
+                this.categoryAxis.labels.step = Math.trunc(this.categoryAxis.max / 10);
+            }
         }
 
         /**
@@ -402,7 +391,7 @@
          */
         onParsePiecewiseEquation() {
             const regexSplitter = /(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))/;
-            // var test: string = '(0,10)(1,9.8)(2,9.6)(3,9.4)(4,9.2)(5,9)(6,8.875)(7,8.75)(8,8.625)(9,8.5)(10,8.375)(11,8.25)(12,8.125)(13,8)(14,7.917)(15,7.834)(16,7.751)(17,7.668)(18,7.585)(19,7.502)(20,7.419)(21,7.336)(22,7.253)(23,7.17)(24,7.087)(25,7.004)(26,6.959)(27,6.914)(28,6.869)(29,6.824)(30,6.779)(31,6.734)(32,6.689)(33,6.644)(34,6.599)(35,6.554)(36,6.509)(37,6.464)(38,6.419)(39,6.374)(40,6.329)(41,6.284)(42,6.239)(43,6.194)(44,6.149)(45,6.104)(46,6.059)(47,6.014)(48,5.977)(49,5.94)(50,5.903)(51,5.866)(52,5.829)(53,5.792)(54,5.755)(55,5.718)(56,5.681)(57,5.644)(58,5.607)(59,5.57)(60,5.533)(61,5.496)(62,5.459)(63,5.422)(64,5.385)(65,5.348)(66,5.311)(67,5.274)(68,5.237)(69,5.2)(70,5.163)(71,5.126)(72,5.089)(73,5.052)(74,5.015)(75,4.915)(76,4.815)(77,4.715)(78,4.615)(79,4.515)(80,4.415)(81,4.315)(82,4.215)(83,4.115)(84,4.015)(85,3.815)(86,3.615)(87,3.415)(88,3.215)(89,3.015)(90,2.815)(91,2.615)(92,2.415)(93,2.215)(94,2.015)(95,1.815)(96,1.615)(97,1.415)(98,1.215)(99,1.015)(100,0.815)(101,0.615)(102,0.415)(103,0.215)(104,0)';
+
             const dataPoints: string[] = this.dialogData.equation.split(regexSplitter).filter((timeAttributeDataPoint: string) =>
                 timeAttributeDataPoint !== '' && !isNil(timeAttributeDataPoint) && timeAttributeDataPoint.indexOf(',') !== -1);
 
@@ -422,6 +411,7 @@
             });
 
             this.setTimeInRatingDataWithPiecewiseData();
+            this.setOrderedDataSource();
         }
 
         setTimeInRatingDataWithPiecewiseData() {
@@ -443,36 +433,6 @@
 
                 this.timeInRatingGridData = dataPoints;
             }
-        }
-
-        setPiecewiseDataWithTimeInRatingData() {
-            const dataPoints: TimeAttributeDataPoint[] = [{id: ObjectID.generate(), timeValue: 0, attributeValue: 10}];
-
-            let previousTime: number = 0;
-
-            this.timeInRatingGridData.forEach((dataPoint: TimeAttributeDataPoint, index: number) => {
-                if (index > 0) {
-                    dataPoints.push({
-                        id: ObjectID.generate(),
-                        attributeValue: dataPoint.attributeValue,
-                        timeValue: previousTime + dataPoint.timeValue
-                    });
-                } else {
-                    dataPoints.push(dataPoint);
-                }
-
-                previousTime += dataPoint.timeValue;
-            });
-
-            this.piecewiseGridData = dataPoints;
-        }
-
-        setDataPointsChartUIProperties() {
-            this.cannotSubmit = true;
-            this.categoryAxis.max = this.selectedTab === 1
-                ? getPropertyValues('timeValue', this.piecewiseGridData).length
-                : getPropertyValues('timeValue', this.timeInRatingGridData).length;
-            this.setChartLabelsStep();
         }
 
         /**
@@ -555,21 +515,6 @@
         }
 
         /**
-         * Sets the step value for the chart's category axis values
-         */
-        setChartLabelsStep() {
-            const count = this.selectedTab === 1
-                ? getPropertyValues('timeValue', this.piecewiseGridData).length
-                : getPropertyValues('timeValue', this.timeInRatingGridData).length;
-
-            if (count <= 10) {
-                this.categoryAxis.labels.step = 1;
-            } else {
-                this.categoryAxis.labels.step = Math.trunc(count / 10);
-            }
-        }
-
-        /**
          * Shows the new data point popup
          */
         onAddTimeAttributeDataPoint() {
@@ -587,13 +532,9 @@
             this.showAddDataPointPopup = false;
 
             if (submit) {
-                if (this.selectedTab === 1) {
-                    this.piecewiseGridData.push(this.newDataPoint);
-                    this.setTimeInRatingDataWithPiecewiseData();
-                } else if (this.selectedTab === 2) {
-                    this.timeInRatingGridData.push(this.newDataPoint);
-                    this.setPiecewiseDataWithTimeInRatingData();
-                }
+                this.piecewiseGridData.push(this.newDataPoint);
+                this.setTimeInRatingDataWithPiecewiseData();
+                this.setOrderedDataSource();
             }
 
             this.newDataPoint = clone(emptyTimeAttributeDataPoint);
@@ -617,13 +558,9 @@
                         };
                     });
 
-                    if (this.selectedTab === 1) {
-                        this.piecewiseGridData.push(...dataPoints);
-                        this.setTimeInRatingDataWithPiecewiseData();
-                    } else if (this.selectedTab === 2) {
-                        this.timeInRatingGridData.push(...dataPoints);
-                        this.setPiecewiseDataWithTimeInRatingData();
-                    }
+                    this.piecewiseGridData.push(...dataPoints);
+                    this.setTimeInRatingDataWithPiecewiseData();
+                    this.setOrderedDataSource();
                 }
             }
 
@@ -635,40 +572,37 @@
          * Removes a TimeAttributeDataPoint with the specified id from a data grid list
          */
         onRemoveTimeAttributeDataPoint(id: string) {
-            if (this.selectedTab === 1) {
-                this.piecewiseGridData = this.piecewiseGridData
-                    .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
-                this.setTimeInRatingDataWithPiecewiseData();
-            } else {
-                this.timeInRatingGridData = this.timeInRatingGridData
-                    .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
-                this.setPiecewiseDataWithTimeInRatingData();
-            }
+            this.piecewiseGridData = this.piecewiseGridData
+                .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
+
+            this.setTimeInRatingDataWithPiecewiseData();
+            this.setOrderedDataSource();
         }
 
         /**
          * Sends an HTTP request to the equation validation API then displays the result of the validation check
          */
         onCheckEquation() {
-            const equationValidation: EquationValidation = {
+            const equation: Equation = {
                 equation: this.isPiecewise ? this.onParseTimeAttributeDataPoints() : this.equation,
                 isPiecewise: this.isPiecewise,
                 isFunction: false,
             };
 
-            EquationEditorService.checkEquationValidity(equationValidation)
-                .then((response: AxiosResponse<string>) => {
-                    // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
-                    if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                        this.showValidMessage = true;
-                        this.showInvalidMessage = false;
-                        this.cannotSubmit = false;
-                    } else {
-                        this.invalidMessage = response.data;
-                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
-                        this.showInvalidMessage = true;
-                        this.showValidMessage = false;
-                        this.cannotSubmit = true;
+            EquationEditorService.checkEquationValidity(equation)
+                .then((response: AxiosResponse<EquationValidationResult>) => {
+                    if (hasValue(response, 'data')) {
+                        const validationResult: EquationValidationResult = response.data;
+                        if (validationResult.isValid) {
+                            this.showValidMessage = true;
+                            this.showInvalidMessage = false;
+                            this.cannotSubmit = false;
+                        } else {
+                            this.invalidMessage = validationResult.message;
+                            this.showInvalidMessage = true;
+                            this.showValidMessage = false;
+                            this.cannotSubmit = true;
+                        }
                     }
                 });
         }
@@ -677,15 +611,9 @@
          * Parses a list of TimeAttributeDataPoints objects into a string of (x,y) data points
          */
         onParseTimeAttributeDataPoints() {
-            if (this.selectedTab === 1) {
-                return this.piecewiseGridData.map((timeAttributeDataPoint : TimeAttributeDataPoint) =>
-                    `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.attributeValue})`
-                ).join('');
-            } else {
-                return this.timeInRatingGridData.map((timeAttributeDataPoint : TimeAttributeDataPoint) =>
-                    `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.attributeValue})`
-                ).join('');
-            }
+            return this.piecewiseGridData.map((timeAttributeDataPoint : TimeAttributeDataPoint) =>
+                `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.attributeValue})`
+            ).join('');
         }
 
         /**
@@ -736,14 +664,9 @@
         /**
          * Orders the chart's data source by the 'timeValue' property
          */
-        getOrderedDataSource() {
+        setOrderedDataSource() {
             const sortByTimeValue = sortBy(prop('timeValue'));
-
-            if (this.selectedTab === 1) {
-                return sortByTimeValue(this.piecewiseGridData);
-            } else {
-                return sortByTimeValue(this.timeInRatingGridData);
-            }
+            this.orderedDataSource = sortByTimeValue(this.piecewiseGridData);
         }
     }
 </script>

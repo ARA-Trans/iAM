@@ -29,8 +29,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult ValidateEquation(ValidateEquationModel model)
         {
-            repo.ValidateEquation(model, db);
-            return Ok();
+            return Ok(repo.ValidateEquation(model, db));
         }
 
         /// <summary>
