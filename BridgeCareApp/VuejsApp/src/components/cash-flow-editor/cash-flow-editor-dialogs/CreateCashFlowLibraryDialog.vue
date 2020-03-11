@@ -42,6 +42,7 @@
     } from '@/shared/models/iAM/cash-flow';
     import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import { getUserName } from '../../../shared/utils/get-user-info';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -72,6 +73,7 @@
             }
 
             if (submit) {
+                this.createdCashFlowLibrary.owner = getUserName();
                 this.$emit('submit', this.createdCashFlowLibrary);
             } else {
                 this.$emit('submit', null);

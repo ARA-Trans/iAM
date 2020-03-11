@@ -13,6 +13,8 @@ const deficientSchema = new Schema({
 
 const deficientLibrarySchema = new Schema({
     name: {type: String},
+    owner: {type: String},
+    shared: {type: Boolean},
     description: {type: String},
     deficients: [deficientSchema]
 });

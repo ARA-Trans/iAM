@@ -15,10 +15,10 @@ namespace BridgeCare
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            GlobalConfiguration.Configuration.Filters.Add(
+            System.Web.Http.GlobalConfiguration.Configuration.Filters.Add(
                 new UnhandledExceptionFilterAttribute()
                     .Register<RowNotInTableException>((exception, request) =>
                         request.CreateErrorResponse(HttpStatusCode.BadRequest, exception.Message)
@@ -62,6 +62,11 @@ namespace BridgeCare
                                 HttpStatusCode.InternalServerError,
                                 $"Server error::{exception.Message}"
                             );
+                        }
+                    )
+                    .Register<UnauthorizedAccessException>((exception, request) =>
+                        {
+                            return request.CreateErrorResponse(HttpStatusCode.Unauthorized, exception.Message);
                         }
                     )
             );

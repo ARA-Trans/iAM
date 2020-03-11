@@ -1,9 +1,10 @@
 import {emptyPerformanceLibrary, PerformanceLibrary} from '@/shared/models/iAM/performance';
-import {clone, append, any, propEq, findIndex, equals, update} from 'ramda';
+import {clone, append, any, propEq, findIndex, equals, update, reject} from 'ramda';
 import PerformanceEditorService from '@/services/performance-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     performanceLibraries: [] as PerformanceLibrary[],
@@ -27,6 +28,14 @@ const mutations = {
             updatedPerformanceLibrary,
             state.performanceLibraries
         );
+    },
+    deletedPerformanceLibraryMutator(state: any, deletedPerformanceLibraryId: string) {
+        if (any(propEq('id', deletedPerformanceLibraryId), state.performanceLibraries)) {
+            state.performanceLibraries = reject(
+                (library: PerformanceLibrary) => deletedPerformanceLibraryId === library.id,
+                state.performanceLibraries
+            );
+        }
     },
     scenarioPerformanceLibraryMutator(state: any, scenarioPerformanceLibrary: PerformanceLibrary) {
         state.scenarioPerformanceLibrary = clone(scenarioPerformanceLibrary);
@@ -66,6 +75,15 @@ const actions = {
                     commit('updatedPerformanceLibraryMutator', updatedPerformanceLibrary);
                     commit('selectedPerformanceLibraryMutator', updatedPerformanceLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully updated performance library'});
+                }
+            });
+    },
+    async deletePerformanceLibrary({dispatch, commit}: any, payload: any) {
+        await PerformanceEditorService.deletePerformanceLibrary(payload.performanceLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedPerformanceLibraryMutator', payload.performanceLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted performance library'});
                 }
             });
     },
@@ -109,6 +127,13 @@ const actions = {
                             {message: `Performance library '${performanceLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.performanceLibraries)) {
+                commit('deletedPerformanceLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A performance library has been deleted from another source`}
+                );
             }
         }
     }

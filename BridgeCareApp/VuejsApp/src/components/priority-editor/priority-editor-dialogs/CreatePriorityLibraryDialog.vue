@@ -40,6 +40,7 @@
     } from '@/shared/models/iAM/priority';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {getUserName} from '@/shared/utils/get-user-info';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -71,6 +72,7 @@
                     this.newPriorityLibrary.priorities.push({...emptyPriority, year: moment().year()});
                 }
                 this.setIdsForNewPriorityLibrarySubData();
+                this.newPriorityLibrary.owner = getUserName();
                 this.$emit('submit', this.newPriorityLibrary);
             } else {
                 this.$emit('submit', null);

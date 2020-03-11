@@ -1,4 +1,6 @@
 const debug = require('debug')('app:scenarioController');
+const roles = require('../authorization/roleConfig');
+const logger = require('../config/winston');
 
 function scenarioController(Scenario) {
     function post(req, res) {
@@ -17,7 +19,6 @@ function scenarioController(Scenario) {
     function postMultipleScenarios(req, res) {
         const multipleScenarios = [];
         multipleScenarios.push(...req.body);
-        const resultant = [];
 
         multipleScenarios.forEach(item => {
             const scenario = new Scenario(item);
@@ -38,7 +39,7 @@ function scenarioController(Scenario) {
         });
     }
 
-/**
+    /**
      * PUT Nodejs API endpoint for scenario; returns updates & returns a scenario
      * @param req
      * @param res
@@ -54,13 +55,39 @@ function scenarioController(Scenario) {
         });
     }
 
-    function get(req, res) {
-        Scenario.find((err, scenariostatus) => {
-            if (err) {
-                return res.send(err);
+    function updateScenarioStatus(request, response) {
+        var newStatus = request.body.status;
+        Scenario.findOneAndUpdate({simulationId: request.params.scenarioId}, {status: newStatus}, {new: true}, (error, document) => {
+            if (error) {
+                return response.status(400).json(error);
             }
-            return res.json(scenariostatus);
+            return response.status(200).json(document);
         });
+    }
+
+    function get(req, res) {
+        if (req.user.roles.indexOf(roles.administrator) >= 0 || req.user.roles.indexOf(roles.cwopa) >= 0) {
+            Scenario.find((err, scenariostatus) => {
+                if (err) {
+                    logger.error('Error in get request of scenarioController: ', err);
+                    return res.send(err);
+                }
+                return res.json(scenariostatus);
+            });
+        } else {
+            const query = {
+                $or: [
+                    {owner: [req.user.username, null, undefined]},
+                    {users: { $elemMatch: {username: [req.user.username, null, undefined]}}}
+                ]
+            };
+            Scenario.find(query, (err, scenariostatus) => {
+                if (err) {
+                    return res.send(err);
+                }
+                return res.json(scenariostatus);
+            });
+        }
     }
 
     function deleteScenario(req, res) {
@@ -77,7 +104,7 @@ function scenarioController(Scenario) {
         });
     }
 
-    return { post, get, deleteScenario, put, postMultipleScenarios};
+    return { post, get, deleteScenario, put, updateScenarioStatus, postMultipleScenarios};
 }
 
 module.exports = scenarioController;

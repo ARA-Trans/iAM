@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http.Dependencies;
 using Unity;
+using Unity.Exceptions;
 
 namespace BridgeCare.App_Start
 {

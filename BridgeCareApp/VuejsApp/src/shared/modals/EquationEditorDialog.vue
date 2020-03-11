@@ -1,120 +1,268 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="700px">
-        <v-card class="equation-container-card">
-            <v-card-title class="card-title">
-                <v-layout justify-center>
-                    <h3>Equation Editor</h3>
-                </v-layout>
-            </v-card-title>
-            <v-card-text>
-                <v-layout column>
-                    <v-flex xs12>
-                        <v-layout justify-space-between row>
-                            <v-flex xs5>
-                                <v-card>
-                                    <v-card-title>Attributes: Click once to add</v-card-title>
-                                    <v-card-text class="list-card-text">
-                                        <v-list>
-                                            <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
-                                                         ripple @click="onAddAttributeToEquation(attribute)">
-                                                <v-list-tile-content>
-                                                    <v-list-tile-title>{{attribute}}</v-list-tile-title>
-                                                </v-list-tile-content>
-                                            </v-list-tile>
-                                        </v-list>
-                                    </v-card-text>
-                                </v-card>
-                            </v-flex>
-
-                            <v-flex xs5>
-                                <v-card>
-                                    <v-card-title>Formulas: Click once to add</v-card-title>
-                                    <v-card-text class="list-card-text">
-                                        <v-list>
-                                            <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
-                                                         ripple @click="onAddFormulaToEquation(formula)">
-                                                <v-list-tile-content>
-                                                    <v-list-tile-title>{{formula}}</v-list-tile-title>
-                                                </v-list-tile-content>
-                                            </v-list-tile>
-                                        </v-list>
-                                    </v-card-text>
-                                </v-card>
-                            </v-flex>
-                        </v-layout>
-                    </v-flex>
-                    <v-flex xs12>
-                        <v-layout justify-center>
-                            <v-flex xs6>
-                                <v-layout justify-space-between row>
-                                    <v-btn class="math-button add" fab small @click="onAddStringToEquation('+')">
-                                        <span>+</span>
-                                    </v-btn>
-                                    <v-btn class="math-button subtract" fab small @click="onAddStringToEquation('-')">
-                                        <span>-</span>
-                                    </v-btn>
-                                    <v-btn class="math-button multiply" fab small @click="onAddStringToEquation('*')">
-                                        <span>*</span>
-                                    </v-btn>
-                                    <v-btn class="math-button divide" fab small @click="onAddStringToEquation('/')">
-                                        <span>/</span>
-                                    </v-btn>
-                                    <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation('(')">
-                                        <span>(</span>
-                                    </v-btn>
-                                    <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation(')')">
-                                        <span>)</span>
-                                    </v-btn>
+    <v-layout>
+        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="900px">
+            <v-card class="equation-container-card">
+                <v-card-title>
+                    <v-layout justify-center>
+                        <h3>Equation Editor</h3>
+                    </v-layout>
+                </v-card-title>
+                <v-card-text>
+                    <v-layout column>
+                        <v-flex xs12>
+                            <div class="validation-message-div">
+                                <v-layout justify-center>
+                                    <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
+                                    <p class="valid-message" v-if="showValidMessage">Equation is valid</p>
                                 </v-layout>
-                            </v-flex>
-                        </v-layout>
-                    </v-flex>
-                    <v-flex xs12>
-                        <v-layout justify-center>
-                            <v-flex xs11>
-                                <div>
-                                    <v-layout justify-start>
-                                        <v-flex xs5>
-                                            <v-layout justify-end>
-                                                <v-checkbox v-show="dialogData.canBePiecewise" label="Is piecewise?"
-                                                            v-model="isPiecewise">
-                                                </v-checkbox>
-                                            </v-layout>
-                                        </v-flex>
-                                    </v-layout>
-                                </div>
-                                <v-textarea id="equation_textarea" :rows="dialogData.canBePiecewise ? '5' : '8'" outline full-width no-resize spellcheck="false"
-                                            v-model="equation" @blur="setCursorPosition" @focus="setTextareaCursorPosition">
-                                </v-textarea>
-                                <div class="validation-message-div">
-                                    <v-layout justify-end>
-                                        <p class="invalid-message" v-if="showInvalidMessage">{{invalidMessage}}</p>
-                                        <p class="valid-message" v-if="showValidMessage">Equation is valid</p>
-                                    </v-layout>
-                                </div>
-                            </v-flex>
-                        </v-layout>
-                    </v-flex>
-                </v-layout>
-            </v-card-text>
-            <v-card-actions>
-                <v-layout justify-space-between row>
-                    <v-spacer></v-spacer>
-                    <v-flex xs2>
-                        <v-layout justify-end row>
-                            <v-btn class="ara-blue-bg white--text" @click="onCheckEquation">Check</v-btn>
-                            <v-btn class="ara-blue-bg white--text" @click="onSubmit" :disabled="cannotSubmit">Save</v-btn>
-                        </v-layout>
-                    </v-flex>
-                    <v-spacer></v-spacer>
-                    <v-flex xs1>
-                        <v-btn class="ara-orange-bg white--text" @click="onCancel">Cancel</v-btn>
-                    </v-flex>
-                    <v-spacer></v-spacer>
-                </v-layout>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+                            </div>
+                        </v-flex>
+                        <v-flex xs12>
+                            <v-tabs v-model="selectedTab">
+                                <v-tab :key="0" @click="isPiecewise = false">Equation</v-tab>
+                                <v-tab :key="1" @click="isPiecewise = true">Piecewise</v-tab>
+                                <v-tab :key="2" @click="isPiecewise = true">Time In Rating</v-tab>
+                                <v-tab-item>
+                                    <div class="equation-container-div">
+                                        <v-layout column>
+                                            <div>
+                                                <v-layout justify-space-between row>
+                                                    <div>
+                                                        <v-list>
+                                                            <template>
+                                                                <v-subheader>Attributes: Click to add</v-subheader>
+                                                                <div class="attributes-list-container">
+                                                                    <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
+                                                                                 ripple @click="onAddStringToEquation(`[${attribute}]`)">
+                                                                        <v-list-tile-content>
+                                                                            <v-list-tile-title>{{attribute}}</v-list-tile-title>
+                                                                        </v-list-tile-content>
+                                                                    </v-list-tile>
+                                                                </div>
+                                                            </template>
+                                                        </v-list>
+                                                    </div>
+                                                    <div>
+                                                        <v-list>
+                                                            <template>
+                                                                <v-subheader>Formulas: Click to add</v-subheader>
+                                                                <div class="formulas-list-container">
+                                                                    <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
+                                                                                 ripple @click="onAddFormulaToEquation(formula)">
+                                                                        <v-list-tile-content>
+                                                                            <v-list-tile-title>{{formula}}</v-list-tile-title>
+                                                                        </v-list-tile-content>
+                                                                    </v-list-tile>
+                                                                </div>
+                                                            </template>
+                                                        </v-list>
+                                                    </div>
+                                                </v-layout>
+                                            </div>
+                                            <div>
+                                                <v-layout justify-center>
+                                                    <div class="math-buttons-container">
+                                                        <v-layout justify-space-between row>
+                                                            <v-btn class="math-button add" fab small @click="onAddStringToEquation('+')">
+                                                                <span>+</span>
+                                                            </v-btn>
+                                                            <v-btn class="math-button subtract" fab small @click="onAddStringToEquation('-')">
+                                                                <span>-</span>
+                                                            </v-btn>
+                                                            <v-btn class="math-button multiply" fab small @click="onAddStringToEquation('*')">
+                                                                <span>*</span>
+                                                            </v-btn>
+                                                            <v-btn class="math-button divide" fab small @click="onAddStringToEquation('/')">
+                                                                <span>/</span>
+                                                            </v-btn>
+                                                            <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation('(')">
+                                                                <span>(</span>
+                                                            </v-btn>
+                                                            <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation(')')">
+                                                                <span>)</span>
+                                                            </v-btn>
+                                                        </v-layout>
+                                                    </div>
+                                                </v-layout>
+                                            </div>
+                                            <div>
+                                                <v-layout justify-center>
+                                                    <v-textarea id="equation_textarea" :rows="5" outline full-width no-resize
+                                                                spellcheck="false" v-model="equation" @blur="setCursorPosition"
+                                                                @focus="setTextareaCursorPosition">
+                                                    </v-textarea>
+                                                </v-layout>
+                                            </div>
+                                        </v-layout>
+                                    </div>
+                                </v-tab-item>
+                                <v-tab-item>
+                                    <div class="equation-container-div">
+                                        <v-layout row>
+                                            <v-flex xs4>
+                                                <div>
+                                                    <v-layout justify-space-between row>
+                                                        <v-btn class="ara-blue-bg white--text" @click="onAddTimeAttributeDataPoint">
+                                                            Add
+                                                        </v-btn>
+                                                        <v-btn class="ara-blue-bg white--text" @click="showAddDataPointMultiPopup = true">
+                                                            Add Multi
+                                                        </v-btn>
+                                                    </v-layout>
+                                                    <div class="data-points-grid">
+                                                        <v-data-table :headers="piecewiseGridHeaders" :items="piecewiseGridData"
+                                                                      hide-actions class="elevation-1 v-table__overflow">
+                                                            <template slot="items" slot-scope="props">
+                                                                <td v-for="header in piecewiseGridHeaders">
+                                                                    <div v-if="header.value !== ''">
+                                                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent>
+                                                                            {{props.item[header.value]}}
+                                                                            <template slot="input">
+                                                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
+                                                                                </v-text-field>
+                                                                            </template>
+                                                                        </v-edit-dialog>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <v-btn icon class="ara-orange"
+                                                                               @click="onRemoveTimeAttributeDataPoint(props.item.id)">
+                                                                            <v-icon>fas fa-trash</v-icon>
+                                                                        </v-btn>
+                                                                    </div>
+                                                                </td>
+                                                            </template>
+                                                        </v-data-table>
+                                                    </div>
+                                                </div>
+                                            </v-flex>
+                                            <v-flex xs8>
+                                                <div class="kendo-chart-container">
+                                                    <kendo-chart :data-source="orderedDataSource"
+                                                                 :series="series"
+                                                                 :pannable-lock="'y'"
+                                                                 :zoomable-mousewheel-lock="'y'"
+                                                                 :zoomable-selection-lock="'y'"
+                                                                 :category-axis="categoryAxis"
+                                                                 :theme="'sass'"
+                                                                 :value-axis-title-text="'Condition'"
+                                                                 :tooltip="tooltip">
+                                                    </kendo-chart>
+                                                </div>
+                                            </v-flex>
+                                        </v-layout>
+                                    </div>
+                                </v-tab-item>
+                                <v-tab-item>
+                                    <div class="equation-container-div">
+                                        <v-layout row>
+                                            <v-flex xs4>
+                                                <div>
+                                                    <v-layout justify-space-between row>
+                                                        <v-btn class="ara-blue-bg white--text" @click="onAddTimeAttributeDataPoint">
+                                                            Add
+                                                        </v-btn>
+                                                        <v-btn class="ara-blue-bg white--text" @click="showAddDataPointMultiPopup = true">
+                                                            Add Multi
+                                                        </v-btn>
+                                                    </v-layout>
+                                                    <div class="data-points-grid">
+                                                        <v-data-table :headers="timeInRatingGridHeaders" :items="timeInRatingGridData"
+                                                                      hide-actions class="elevation-1 v-table__overflow">
+                                                            <template slot="items" slot-scope="props">
+                                                                <td>
+                                                                    {{props.item.attributeValue}}
+                                                                </td>
+                                                                <td>
+                                                                    {{props.item.timeValue}}
+                                                                </td>
+                                                            </template>
+                                                        </v-data-table>
+                                                    </div>
+                                                </div>
+                                            </v-flex>
+                                            <v-flex xs8>
+                                                <div class="kendo-chart-container">
+                                                    <kendo-chart :data-source="orderedDataSource"
+                                                                 :series="series"
+                                                                 :pannable-lock="'y'"
+                                                                 :zoomable-mousewheel-lock="'y'"
+                                                                 :zoomable-selection-lock="'y'"
+                                                                 :category-axis="categoryAxis"
+                                                                 :theme="'sass'"
+                                                                 :value-axis-title-text="'Condition'"
+                                                                 :tooltip="tooltip">
+                                                    </kendo-chart>
+                                                </div>
+                                            </v-flex>
+                                        </v-layout>
+                                    </div>
+                                </v-tab-item>
+                            </v-tabs>
+                        </v-flex>
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-layout>
+                        <v-flex xs12>
+                            <div>
+                                <v-layout justify-space-between row>
+                                    <v-btn class="ara-blue-bg white--text" @click="onCheckEquation">Check</v-btn>
+                                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">Save</v-btn>
+                                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                                </v-layout>
+                            </div>
+                        </v-flex>
+                    </v-layout>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="showAddDataPointPopup" persistent max-width="250px">
+            <v-card>
+                <v-card-text>
+                    <v-layout justify-center column>
+                        <div>
+                            <v-text-field outline v-model="newDataPoint.timeValue" label="Time Value"></v-text-field>
+                        </div>
+                        <div>
+                            <v-text-field outline v-model="newDataPoint.attributeValue" label="Attribute Value">
+                            </v-text-field>
+                        </div>
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-layout justify-space-between row>
+                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPoint(true)">Save</v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="submitNewDataPoint(false)">Cancel</v-btn>
+                    </v-layout>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="showAddDataPointMultiPopup" persistent max-width="200px">
+            <v-card>
+                <v-card-text>
+                    <v-layout justify-center column>
+                        <p>Data point entries must follow the format <span class="format-span"><strong>#,#</strong></span> (time,attribute) with each entry on a separate line.</p>
+                        <v-flex xs2>
+                            <v-textarea rows="20" no-resize outline v-model="multiDataPoints">
+                            </v-textarea>
+                        </v-flex>
+
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-layout justify-space-between row>
+                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPointMulti(true)"
+                               :disabled="disableMultiDataPointsSubmit()">
+                            Save
+                        </v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="submitNewDataPointMulti(false)">Cancel</v-btn>
+                    </v-layout>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -129,8 +277,12 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {EquationValidation} from '@/shared/models/iAM/equation-validation';
+    import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
     import {http2XX} from '@/shared/utils/http-utils';
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
+    import {emptyTimeAttributeDataPoint, TimeAttributeDataPoint} from '@/shared/models/iAM/time-attribute-data-point';
+    import {isNil, clone, sortBy, prop} from 'ramda';
+    const ObjectID = require('bson-objectid');
 
     @Component
     export default class EquationEditorDialog extends Vue {
@@ -149,8 +301,28 @@
         cursorPosition: number = 0;
         showInvalidMessage: boolean = false;
         showValidMessage: boolean = false;
-        cannotSubmit: boolean = false;
+        cannotSubmit: boolean = true;
         invalidMessage: string = '';
+        piecewiseGridHeaders: DataTableHeader[] = [
+            {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'},
+            {text: 'Condition', value: 'attributeValue', align: 'left', sortable: false, class: '', width: '10px'},
+            {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'}
+        ];
+        timeInRatingGridHeaders: DataTableHeader[] = [
+            {text: 'Condition', value: 'attributeValue', align: 'left', sortable: false, class: '', width: '10px'},
+            {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'}
+        ];
+        piecewiseGridData: TimeAttributeDataPoint[] = [];
+        timeInRatingGridData: TimeAttributeDataPoint[] = [];
+        orderedDataSource: TimeAttributeDataPoint[] = [];
+        showAddDataPointPopup: boolean = false;
+        newDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
+        series: any[] = [{type: 'line', field: 'attributeValue', categoryField: 'timeValue', markers: {visible: false}}];
+        categoryAxis: any = {min: 0, max: 0, labels: {step: 1}, title: {text: 'Time', visible: true}};
+        tooltip: any = {visible: true, template: '#= category #, #= value #'};
+        showAddDataPointMultiPopup: boolean = false;
+        multiDataPoints: string = '';
+        selectedTab: number = 0;
 
         /**
          * Component mounted event handler
@@ -164,17 +336,7 @@
         }
 
         /**
-         * Sets equation UI properties dialogData has changed
-         */
-        @Watch('dialogData')
-        onDialogDataChanged() {
-            // set the equation and isPiecewise properties with the dialog data equation
-            this.equation = this.dialogData.equation;
-            this.isPiecewise = this.dialogData.isPiecewise;
-        }
-
-        /**
-         * Calls the setBenefitAndWeightingAttributes function if a change to stateNumericAttributes causes it to have a value
+         * Setter: attributesList (function call; conditional)
          */
         @Watch('stateNumericAttributes')
         onStateNumericAttributesChanged() {
@@ -184,37 +346,107 @@
         }
 
         /**
-         * Sets boolean properties to show validated/invalidated equation messages and allow/prevent submitting equation
-         * data
+         * Setter: (multiple) => isPiecewise, piecewiseGridData (function call; conditional), equation (conditional)
          */
-        @Watch('equation')
-        onEquationChanged() {
-            // reset showInvalidMessage & showValidMessage
-            this.showInvalidMessage = false;
-            this.showValidMessage = false;
-            // if equation is an empty string, then allow submission of results
-            this.cannotSubmit = !(this.equation === '' || this.dialogData.equation === this.equation);
+        @Watch('dialogData')
+        onDialogDataChanged() {
+            if ((/(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))+/).test(this.dialogData.equation)) {
+                this.isPiecewise = true;
+                this.onParsePiecewiseEquation();
+                this.selectedTab = 1;
+            } else {
+                this.isPiecewise = false;
+                this.equation = this.dialogData.equation;
+            }
         }
 
         /**
-         * Sets attributesList with the numeric attributes from state
+         * Setter: (multiple) => pagination.totalItems, cannotSubmit
+         */
+        @Watch('piecewiseGridData')
+        onPiecewiseGridDataChanged() {
+            this.cannotSubmit = true;
+
+            this.categoryAxis.max = getPropertyValues('timeValue', this.piecewiseGridData).length;
+
+            if (this.categoryAxis.max <= 10) {
+                this.categoryAxis.labels.step = 1;
+            } else {
+                this.categoryAxis.labels.step = Math.trunc(this.categoryAxis.max / 10);
+            }
+        }
+
+        /**
+         * Setter: (multiple) => showInvalidMessage, showValidMessage, cannotSubmit
+         */
+        @Watch('equation')
+        onEquationChanged() {
+            this.showInvalidMessage = false;
+            this.showValidMessage = false;
+            this.cannotSubmit = !(this.equation === '' && !this.isPiecewise);
+        }
+
+        /**
+         * Parses the equation string of (x,y) data points into a list of TimeAttributeDataPoint objects
+         */
+        onParsePiecewiseEquation() {
+            const regexSplitter = /(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))/;
+
+            const dataPoints: string[] = this.dialogData.equation.split(regexSplitter).filter((timeAttributeDataPoint: string) =>
+                timeAttributeDataPoint !== '' && !isNil(timeAttributeDataPoint) && timeAttributeDataPoint.indexOf(',') !== -1);
+
+            if (this.dialogData.equation.indexOf('(0,10)') === -1) {
+                this.piecewiseGridData.push({id: ObjectID.generate(), timeValue: 0, attributeValue: 10});
+            }
+
+            dataPoints.forEach((dataPoint: string) => {
+                const splitDataPoint = dataPoint
+                    .replace('(', '').replace(')', '').split(',');
+
+                this.piecewiseGridData.push({
+                    id: ObjectID.generate(),
+                    timeValue: parseFloat(splitDataPoint[0]),
+                    attributeValue: parseFloat(splitDataPoint[1])
+                });
+            });
+
+            this.setTimeInRatingDataWithPiecewiseData();
+            this.setOrderedDataSource();
+        }
+
+        setTimeInRatingDataWithPiecewiseData() {
+            if (this.piecewiseGridData.length > 1) {
+                const dataPoints: TimeAttributeDataPoint[] = [];
+
+                for (let index = 1; index < this.piecewiseGridData.length; index++) {
+                    if (this.piecewiseGridData[index].attributeValue > 0 && this.piecewiseGridData[index].timeValue > 0) {
+                        const timeDiff: number = Math.abs(
+                            this.piecewiseGridData[index - 1].timeValue - this.piecewiseGridData[index].timeValue);
+
+                        dataPoints.push({
+                            id: ObjectID.generate(),
+                            timeValue: timeDiff,
+                            attributeValue: this.piecewiseGridData[index].attributeValue
+                        });
+                    }
+                }
+
+                this.timeInRatingGridData = dataPoints;
+            }
+        }
+
+        /**
+         * Setter: attributesList
          */
         setAttributesList() {
             this.attributesList = getPropertyValues('name', this.stateNumericAttributes);
         }
 
         /**
-         * Sets cursor position property when the equation textarea element loses focus
+         * Setter: cursorPosition
          */
         setCursorPosition() {
             this.cursorPosition = this.textareaInput.selectionStart;
-        }
-
-        /**
-         * One of the attribute list items in the list of attributes has been clicked
-         */
-        onAddAttributeToEquation(attribute: string) {
-            this.onAddStringToEquation(`[${attribute}]`);
         }
 
         /**
@@ -227,7 +459,7 @@
                 this.cursorPosition = formula !== 'E' && formula !== 'PI'
                     ? formula.indexOf('(') + 1
                     : formula.length;
-            } else if (this.equation.length === this.cursorPosition) {
+            } else if (this.cursorPosition === this.equation.length) {
                 this.equation = `${this.equation}${formula}`;
                 if (formula !== 'E' && formula !== 'PI') {
                     let i = this.equation.length;
@@ -262,7 +494,7 @@
             if (this.cursorPosition === 0) {
                 this.cursorPosition = value.length;
                 this.equation = `${value}${this.equation}`;
-            } else if (this.equation.length === this.cursorPosition) {
+            } else if (this.cursorPosition === this.equation.length) {
                 this.equation = `${this.equation}${value}`;
                 this.cursorPosition = this.equation.length;
             } else {
@@ -283,55 +515,127 @@
         }
 
         /**
-         * 'Check' button has been clicked
+         * Shows the new data point popup
+         */
+        onAddTimeAttributeDataPoint() {
+            this.newDataPoint = {
+                ...this.newDataPoint,
+                id: ObjectID.generate()
+            };
+            this.showAddDataPointPopup = true;
+        }
+
+        /**
+         * Creates a new data point from the new data point popup
+         */
+        submitNewDataPoint(submit: boolean) {
+            this.showAddDataPointPopup = false;
+
+            if (submit) {
+                this.piecewiseGridData.push(this.newDataPoint);
+                this.setTimeInRatingDataWithPiecewiseData();
+                this.setOrderedDataSource();
+            }
+
+            this.newDataPoint = clone(emptyTimeAttributeDataPoint);
+        }
+
+        /**
+         * Creates new data points from the multiple data points popup result
+         */
+        submitNewDataPointMulti(submit: boolean) {
+            if (submit) {
+                const splitDataPoints: string[] = this.multiDataPoints
+                    .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '');
+
+                if (hasValue(splitDataPoints)) {
+                    const dataPoints: TimeAttributeDataPoint[] = splitDataPoints.map((dataPoints: string) => {
+                        const splitValues: string[] = dataPoints.split(',');
+                        return {
+                            id: ObjectID.generate(),
+                            timeValue: parseFloat(splitValues[0]),
+                            attributeValue: parseFloat(splitValues[1])
+                        };
+                    });
+
+                    this.piecewiseGridData.push(...dataPoints);
+                    this.setTimeInRatingDataWithPiecewiseData();
+                    this.setOrderedDataSource();
+                }
+            }
+
+            this.showAddDataPointMultiPopup = false;
+            this.multiDataPoints = '';
+        }
+
+        /**
+         * Removes a TimeAttributeDataPoint with the specified id from a data grid list
+         */
+        onRemoveTimeAttributeDataPoint(id: string) {
+            this.piecewiseGridData = this.piecewiseGridData
+                .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
+
+            this.setTimeInRatingDataWithPiecewiseData();
+            this.setOrderedDataSource();
+        }
+
+        /**
+         * Sends an HTTP request to the equation validation API then displays the result of the validation check
          */
         onCheckEquation() {
-            const equationValidation: EquationValidation = {
-                equation: this.equation,
+            const equation: Equation = {
+                equation: this.isPiecewise ? this.onParseTimeAttributeDataPoints() : this.equation,
                 isPiecewise: this.isPiecewise,
                 isFunction: false,
             };
-            EquationEditorService.checkEquationValidity(equationValidation)
-                .then((response: AxiosResponse<string>) => {
-                    // if result is true then set showValidMessage = true, cannotSubmit = false, & showInvalidMessage = false
-                    if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                        this.showValidMessage = true;
-                        this.cannotSubmit = false;
-                        this.showInvalidMessage = false;
-                    } else {
-                        this.invalidMessage = response.data;
-                        // if result is false then set showInvalidMessage = true, cannotSubmit = true, & showValidMessage = false
-                        this.showInvalidMessage = true;
-                        this.cannotSubmit = true;
-                        this.showValidMessage = false;
+
+            EquationEditorService.checkEquationValidity(equation)
+                .then((response: AxiosResponse<EquationValidationResult>) => {
+                    if (hasValue(response, 'data')) {
+                        const validationResult: EquationValidationResult = response.data;
+                        if (validationResult.isValid) {
+                            this.showValidMessage = true;
+                            this.showInvalidMessage = false;
+                            this.cannotSubmit = false;
+                        } else {
+                            this.invalidMessage = validationResult.message;
+                            this.showInvalidMessage = true;
+                            this.showValidMessage = false;
+                            this.cannotSubmit = true;
+                        }
                     }
                 });
         }
 
         /**
-         * 'Submit' button has been clicked
+         * Parses a list of TimeAttributeDataPoints objects into a string of (x,y) data points
          */
-        onSubmit() {
-            // reset component's calculated properties
-            this.resetComponentCalculatedProperties();
-            // create equation editor dialog result
-            const result: EquationEditorDialogResult = {
-                equation: this.equation,
-                isPiecewise: this.isPiecewise,
-                isFunction: false
-            };
-            // submit result
-            this.$emit('submit', result);
+        onParseTimeAttributeDataPoints() {
+            return this.piecewiseGridData.map((timeAttributeDataPoint : TimeAttributeDataPoint) =>
+                `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.attributeValue})`
+            ).join('');
         }
 
         /**
-         * 'Cancel' button has been clicked
+         * Submits dialog result or null to the parent component
          */
-        onCancel() {
-            // reset component's calculated properties
+        onSubmit(submit: boolean) {
             this.resetComponentCalculatedProperties();
-            // submit a null result
-            this.$emit('submit', null);
+
+            if (submit) {
+                const result: EquationEditorDialogResult = {
+                    equation: this.isPiecewise ? this.onParseTimeAttributeDataPoints() : this.equation,
+                    isPiecewise: this.isPiecewise,
+                    isFunction: false
+                };
+                this.$emit('submit', result);
+            } else {
+                this.$emit('submit', null);
+            }
+
+            this.piecewiseGridData = [];
+            this.timeInRatingGridData = [];
+            this.selectedTab = 0;
         }
 
         /**
@@ -341,28 +645,51 @@
             this.cursorPosition = 0;
             this.showInvalidMessage = false;
             this.showValidMessage = false;
-            this.cannotSubmit = false;
+        }
+
+        /**
+         * Disables the multiple data points popup 'Save' button if the criteria isn't met
+         */
+        disableMultiDataPointsSubmit() {
+            const eachDataPointIsValid = this.multiDataPoints
+                .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '')
+                .every((dataPoints: string) => {
+                    return (/\d+(\.{1}\d+)*,\d+(\.{1}\d+)*/).test(dataPoints) &&
+                           dataPoints.split(',').every((value: string) => parseFloat(value) !== NaN);
+                });
+
+            return this.multiDataPoints === '' || !eachDataPointIsValid;
+        }
+
+        /**
+         * Orders the chart's data source by the 'timeValue' property
+         */
+        setOrderedDataSource() {
+            const sortByTimeValue = sortBy(prop('timeValue'));
+            this.orderedDataSource = sortByTimeValue(this.piecewiseGridData);
         }
     }
 </script>
 
 <style>
     .equation-container-card {
-        height: 810px;
+        height: 750px;
         overflow-y: auto;
         overflow-x: hidden;
     }
 
-    .card-title {
-        max-height: 60px;
+    .validation-message-div {
+        height: 21px;
     }
 
-    .list-card-text {
-        height: 300px;
-        /*border: 1px solid black !important;*/
-        margin: 10px;
-        overflow-y: auto;
-        overflow-x: hidden;
+    .invalid-message {
+        color: red;
+    }
+
+    .attributes-list-container, .formulas-list-container {
+        width: 205px;
+        height: 250px;
+        overflow: auto;
     }
 
     .list-tile {
@@ -390,19 +717,25 @@
         font-size: 2em;
     }
 
-    .right-checkbox {
-        margin-left: 40px;
-    }
-
-    .validation-message-div {
-        height: 21px;
-    }
-
-    .invalid-message {
-        color: red;
-    }
-
     .valid-message {
         color: green;
+    }
+
+    .data-points-grid {
+        width: 300px;
+        height: 308px;
+        overflow: auto;
+    }
+
+    .rows-per-page-select .v-input__slot {
+        width: 30%;
+    }
+
+    .equation-container-div {
+        height: 505px;
+    }
+
+    .format-span {
+        color: red;
     }
 </style>

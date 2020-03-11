@@ -15,6 +15,8 @@ export interface Priority {
 export interface PriorityLibrary {
     id: string;
     name: string;
+    owner?: string;
+    shared?: boolean;
     description: string;
     priorities: Priority[];
 }

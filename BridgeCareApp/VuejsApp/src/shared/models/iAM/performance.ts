@@ -12,6 +12,8 @@ export interface PerformanceLibraryEquation {
 export interface PerformanceLibrary {
     id: string;
     name: string;
+    owner?: string;
+    shared?: boolean;
     description: string;
     equations: PerformanceLibraryEquation[];
 }

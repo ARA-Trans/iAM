@@ -1,13 +1,16 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
-import {UserInfo, UserTokens} from '@/shared/models/iAM/authentication';
+import {UserTokens, UserInfo} from '@/shared/models/iAM/authentication';
 import {http2XX} from '@/shared/utils/http-utils';
+import {getUserName} from '@/shared/utils/get-user-info';
+import {parseLDAP, checkLDAP, regexCheckLDAP} from '@/shared/utils/parse-ldap';
 
 const state = {
     authenticated: false,
     hasRole: false,
     checkedForRole: false,
     isAdmin: false,
+    isCWOPA: false,
     username: ''
 };
 
@@ -23,6 +26,9 @@ const mutations = {
     },
     isAdminMutator(state: any, status: boolean) {
         state.isAdmin = status;
+    },
+    isCWOPAMutator(state: any, status: boolean) {
+        state.isCWOPA = status;
     },
     usernameMutator(state: any, username: string) {
         state.username = username;
@@ -87,10 +93,11 @@ const actions = {
                     if (http2XX.test(response.status.toString())) {
                         localStorage.setItem('UserInfo', response.data);
                         const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
-                        const username: string = userInfo.sub.split(',')[0].split('=')[1];
-                        commit('hasRoleMutator', userInfo.roles !== undefined);
+                        const username: string = parseLDAP(userInfo.sub)[0];
+                        commit('hasRoleMutator', regexCheckLDAP(userInfo.roles, /PD-BAMS-(Administrator|CWOPA|PlanningPartner|DBEngineer)/));
                         if (state.hasRole) {
-                            commit('isAdminMutator', userInfo.roles.split(',')[0].split('=')[1] === 'PD-BAMS-Administrator');
+                            commit('isAdminMutator', checkLDAP(userInfo.roles, 'PD-BAMS-Administrator'));
+                            commit('isCWOPAMutator', checkLDAP(userInfo.roles, 'PD-BAMS-CWOPA'));
                         }
                         commit('checkedForRoleMutator', true);
                         commit('usernameMutator', username);

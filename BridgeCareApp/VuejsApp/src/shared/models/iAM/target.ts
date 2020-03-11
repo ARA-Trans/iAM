@@ -10,6 +10,8 @@ export interface Target {
 export interface TargetLibrary {
     id: string;
     name: string;
+    owner?: string;
+    shared?: boolean;
     description: string;
     targets: Target[];
 }

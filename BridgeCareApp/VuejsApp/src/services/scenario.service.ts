@@ -1,11 +1,12 @@
 import {AxiosPromise, AxiosResponse} from 'axios';
-import {Scenario} from '@/shared/models/iAM/scenario';
+import {Scenario, ScenarioUser} from '@/shared/models/iAM/scenario';
 import { axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
 import { Simulation } from '@/shared/models/iAM/simulation';
 import { any, propEq } from 'ramda';
 import {http2XX} from '@/shared/utils/http-utils';
+import { convertFromVueToMongo } from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
@@ -109,7 +110,6 @@ export default class ScenarioService {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
                             ...response.data,
-                            shared: false,
                             status: 'New scenario'
                         };
                         nodejsAxiosInstance.post('api/GetMongoScenarios', scenarioToTrackStatus)
@@ -160,6 +160,58 @@ export default class ScenarioService {
         });
     }
 
+    static updateScenarioUsers(scenario: Scenario): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario>>((resolve) => {
+            axiosInstance.post(`/api/SetScenarioUsers/${scenario.simulationId}`, scenario.users)
+                .then((response: AxiosResponse<Scenario>) => {
+                    if (hasValue(response)) {
+                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenario.id}`, convertFromVueToMongo({users: response.data}));
+                    }
+                });
+        });
+    }
+    
+    static updateScenarioStatus(scenarioStatus: String, scenarioId: number): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario>>((resolve) => {
+            nodejsAxiosInstance.put(`api/UpdateMongoScenarioStatus/${scenarioId}`, {status: scenarioStatus})
+                .then((response: AxiosResponse<Scenario>) => {
+                    if (hasValue(response)) {
+                        return resolve(response);
+                    }
+                });
+        });
+    }
+
+    static cloneScenario(scenarioId: number): AxiosPromise {
+        return new Promise<AxiosResponse>((resolve) => {
+            axiosInstance.post(`/api/CloneScenario/${scenarioId}`)
+                .then((response: AxiosResponse) => {
+                    if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                        const newScenario: Scenario = {
+                            ...response.data,
+                            status: 'New scenario'
+                        };
+                        nodejsAxiosInstance.post('api/GetMongoScenarios', newScenario)
+                            .then((res: AxiosResponse<Scenario>) => {
+                                if (hasValue(res)) {
+                                    return resolve(res);
+                                }
+                            })
+                            .catch((error: any) => {
+                                const axiosResponse: AxiosResponse<Scenario> = {
+                                    data: {} as Scenario,
+                                    status: 500,
+                                    statusText: error.toString(),
+                                    headers: {},
+                                    config: {}
+                                };
+                                return resolve(axiosResponse);
+                            });
+                    }
+                });
+        });
+    }
+
     static deleteScenario(scenarioId: number, scenarioMongoId: string): AxiosPromise {
         return new Promise<AxiosResponse>((resolve) => {
             axiosInstance.delete(`/api/DeleteScenario/${scenarioId}`)
@@ -189,5 +241,9 @@ export default class ScenarioService {
      */
     static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
         return axiosInstance.post('/api/RunSimulation', selectedScenario);
+    }
+
+    static setScenarioUsers(scenarioId: number, scenarioUsers: ScenarioUser[]): AxiosPromise {
+        return axiosInstance.post(`/api/SetScenarioUsers/${scenarioId}`, scenarioUsers);
     }
 }

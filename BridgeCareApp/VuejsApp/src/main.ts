@@ -13,12 +13,17 @@ import 'izitoast/dist/css/iziToast.min.css';
 import 'izitoast/dist/js/iziToast.min';
 // @ts-ignore
 import VueWorker from 'vue-worker';
+import '@progress/kendo-ui';
+import '@progress/kendo-theme-default/dist/all.css';
+import {KendoChartInstaller} from '@progress/kendo-charts-vue-wrapper';
 
 Vue.use(Vuetify, {
     iconfont: 'fa'
 });
 
 Vue.use(VueWorker);
+
+Vue.use(KendoChartInstaller);
 
 Vue.config.productionTip = false;
 

@@ -37,6 +37,7 @@
     } from '@/shared/models/iAM/performance';
     import {CreatePerformanceLibraryDialogData} from '@/shared/models/modals/create-performance-library-dialog-data';
     const ObjectID = require('bson-objectid');
+    import {getUserName} from '@/shared/utils/get-user-info';
 
     @Component
     export default class CreatePerformanceLibraryDialog extends Vue {
@@ -53,7 +54,7 @@
                 ...this.newPerformanceLibrary,
                 description: this.dialogData.description,
                 equations: this.dialogData.equations
-            }
+            };
         }
 
         /**
@@ -63,6 +64,7 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
+                this.newPerformanceLibrary.owner = getUserName();
                 this.setIdsForNewPerformanceLibrarySubData();
                 this.$emit('submit', this.newPerformanceLibrary);
             } else {

@@ -20,6 +20,7 @@ import rollup from '../store-modules/rollup.module';
 import polling from '@/store-modules/polling.module';
 import announcement from '@/store-modules/announcement.module';
 import cashFlowEditor from '@/store-modules/cash-flow.module';
+import userCriteria from '@/store-modules/user-criteria.module';
 
 Vue.use(Vuex);
 
@@ -43,6 +44,7 @@ export default new Vuex.Store({
         rollup,
         polling,
         announcement,
-        cashFlowEditor
+        cashFlowEditor,
+        userCriteria
     }
 });

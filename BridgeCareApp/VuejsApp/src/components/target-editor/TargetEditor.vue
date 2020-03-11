@@ -13,10 +13,15 @@
                                   v-model="selectedTargetLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedTargetLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedTargetLibrary.owner ? selectedTargetLibrary.owner : "[ No Owner ]"}}
+                    </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'" 
+                        v-model="selectedTargetLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
             <v-flex xs3 v-show="hasSelectedTargetLibrary">
@@ -99,11 +104,16 @@
                 <v-btn class="ara-blue-bg white--text" @click="onAddAsNewTargetLibrary" :disabled="!hasSelectedTargetLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text" @click="onDeleteTargetLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardTargetLibraryChanges">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreateTargetLibraryDialog :dialogData="createTargetLibraryDialogData" @submit="onCreateNewTargetLibrary" />
 
@@ -137,9 +147,11 @@
     } from '@/shared/models/modals/create-target-library-dialog-data';
     import CreateTargetLibraryDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
 
     @Component({
-        components: {CreateTargetLibraryDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
+        components: {CreateTargetLibraryDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog, Alert}
     })
     export default class TargetEditor extends Vue {
         @State(state => state.target.targetLibraries) stateTargetLibraries: TargetLibrary[];
@@ -152,6 +164,7 @@
         @Action('selectTargetLibrary') selectTargetLibraryAction: any;
         @Action('createTargetLibrary') createTargetLibraryAction: any;
         @Action('updateTargetLibrary') updateTargetLibraryAction: any;
+        @Action('deleteTargetLibrary') deleteTargetLibraryAction: any;
         @Action('getScenarioTargetLibrary') getScenarioTargetLibraryAction: any;
         @Action('saveScenarioTargetLibrary') saveScenarioTargetLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
@@ -179,6 +192,7 @@
         targetCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createTargetLibraryDialogData: CreateTargetLibraryDialogData = clone(emptyCreateTargetLibraryDialogData);
         editDialogResult: string = '';
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * Sets onload component UI properties
@@ -425,6 +439,24 @@
         onUpdateTargetLibrary() {
             this.updateTargetLibraryAction({updatedTargetLibrary: this.selectedTargetLibrary});
         }
+
+        onDeleteTargetLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deleteTargetLibraryAction({targetLibrary: this.selectedTargetLibrary});
+                this.onClearSelectedTargetLibrary();
+            }
+        }
     }
 </script>
 
@@ -437,5 +469,14 @@
 
     .targets-data-table .v-menu--inline, .target-criteria-output {
         width: 100%;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

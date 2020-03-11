@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import {isNil, isEmpty} from 'ramda';
 import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/shared/models/iAM/criteria';
 import {hasValue} from '@/shared/utils/has-value-util';
 
@@ -8,41 +8,62 @@ const operators: string[] = ['<=', '>=', '<>', '=', '<', '>'];
  * Creates a clause string from a given criteria object
  * @param criteria The criteria object used to create the clause string
  */
-export const parseQueryBuilderJson = (criteria: Criteria) => {
+export const parseCriteriaJson = (criteria: Criteria) => {
     // create an empty string list to build the where clause
     const clause: string[] = [];
-    if (!R.isNil(criteria) && !R.isEmpty(criteria.children)) {
-        // set the logical operator
-        const logicalOperator = ` ${criteria.logicalOperator} `;
-        // @ts-ignore
-        // loop over the criteria children and append all rules
-        criteria.children.forEach((child: CriteriaType) => {
-            if (child.type === 'query-builder-rule') {
-                // create a clause rule from the query builder child.query
-                const rule = parseQueryBuilderRule(child.query as CriteriaRule);
-                if (hasValue(rule)) {
-                    // append the logical operator if the string list is not empty
-                    if (hasValue(clause)) {
-                        clause.push(logicalOperator);
+    try {
+        if (!isNil(criteria) && !isEmpty(criteria.children)) {
+            // set the logical operator
+            const logicalOperator = ` ${criteria.logicalOperator} `;
+            // @ts-ignore
+            // loop over the criteria children and append all rules
+            criteria.children.forEach((child: CriteriaType) => {
+                if (child.type === 'query-builder-rule') {
+                    // create a clause rule from the query builder child.query
+                    const rule = parseQueryBuilderRule(child.query as CriteriaRule);
+                    if (hasValue(rule)) {
+                        // append the logical operator if the string list is not empty
+                        if (hasValue(clause)) {
+                            clause.push(logicalOperator);
+                        }
+                        // append rule to string list
+                        clause.push(rule);
                     }
-                    // append rule to string list
-                    clause.push(rule);
-                }
-            } else {
-                const clauseGroup = parseQueryBuilderJson(child.query as Criteria);
-                const clauseGroupVal = clauseGroup.join('');
-                if (hasValue(clauseGroupVal)) {
-                    // append the logical operator if the string list is not empty
-                    if (hasValue(clause)) {
-                        clause.push(logicalOperator);
+                } else {
+                    const clauseGroup = parseCriteriaJson(child.query as Criteria);
+                    if (clauseGroup && hasValue(clauseGroup.join(''))) {
+                        // append the logical operator if the string list is not empty
+                        if (hasValue(clause)) {
+                            clause.push(logicalOperator);
+                        }
+                        // create a rule group
+                        clause.push('(');
+                        clause.push(...clauseGroup);
+                        clause.push(')');
                     }
-                    // recursively call this function to create a rule group
-                    clause.push('(');
-                    clause.push(...clauseGroup);
-                    clause.push(')');
                 }
+            });
+        }
+    } catch (e) {
+        return null;
+    }
+    return clause;
+};
+
+export const parseCriteriaTypeJson = (criteriaType: CriteriaType) => {
+    let clause: string = '';
+    if (!isNil(criteriaType)) {
+        if (criteriaType.type === 'query-builder-rule') {
+            const rule = parseQueryBuilderRule(criteriaType.query as CriteriaRule);
+            if (hasValue(rule)) {
+                clause = rule;
             }
-        });
+        } else {
+            const ruleGroup = parseCriteriaJson(criteriaType.query as Criteria);
+            if (ruleGroup && hasValue(ruleGroup.join(''))) {
+                clause = ruleGroup.join('');
+            }
+        }
     }
     return clause;
 };
@@ -71,22 +92,30 @@ function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
  * @param clause The clause string to parse
  */
 export const parseCriteriaString = (clause: string) => {
-    if (hasValue(clause)) {
-        // create a new criteria object
-        const newCriteria: Criteria = {
-            logicalOperator: '',
-            children: []
-        };
-        // if no open parentheses are present, assume clause string was created in legacy app
-        if ((clause.match(/\(/g) || []).length === 0) {
-            // ensure there are no close parentheses in the string before parsing
-            clause = clause.replace(/\)/g, '');
-            // parse the clause string and return
-            return parseLegacyAppClause(clause, newCriteria);
-        } else {
-            // parse the clause as a query builder string and return
-            return parseQueryBuilderClause(clause, newCriteria);
+    try {
+        if (hasValue(clause)) {
+            var trimmedClause: string = clause.trim();
+            // Whenever any of the following operands (or space) are followed by an extra space, trim away that space
+            trimmedClause = trimmedClause.replace(/ *([ <>=]) */g, (_, group1) => group1);
+            // create a new criteria object
+            const newCriteria: Criteria = {
+                logicalOperator: '',
+                children: []
+            };
+            // if no open parentheses are present, assume clause string was created in legacy app
+            if ((trimmedClause.match(/\(/g) || []).length === 0) {
+                // ensure there are no close parentheses in the string before parsing
+                trimmedClause = trimmedClause.replace(/\)/g, '');
+                // parse the clause string and return
+                return parseLegacyAppClause(trimmedClause, newCriteria);
+            } else {
+                // parse the clause as a query builder string and return
+                return parseQueryBuilderClause(trimmedClause, newCriteria);
+            }
         }
+    }
+    catch (e) {
+        return null;
     }
     return {...emptyCriteria};
 };

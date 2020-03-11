@@ -13,13 +13,14 @@ namespace BridgeCare.DataAccessLayer
     public class Validation : IValidation
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Validation));
-        public void ValidateEquation(ValidateEquationModel model, BridgeCareContext db)
+        public EquationValidationResult ValidateEquation(ValidateEquationModel model, BridgeCareContext db)
         {
             CalculateEvaluate calcEval = new CalculateEvaluate();
 
             if (model.IsPiecewise)
-                checkPiecewise(model.Equation);
-            else
+                return checkPiecewise(model.Equation);
+
+            try
             {
                 string equation = model.Equation.Trim();
                 equation = checkAttributes(equation, model.IsFunction, db);
@@ -31,9 +32,15 @@ namespace BridgeCare.DataAccessLayer
 
                 calcEval.CompileAssembly();
             }
+            catch (Exception e)
+            {
+                return new EquationValidationResult(false, e.Message);
+            }
+
+            return new EquationValidationResult(true, "Success");
         }
 
-        public string ValidateCriteria(string data, BridgeCareContext db)
+        public CriteriaValidationResult ValidateCriteria(string data, BridgeCareContext db)
         {
             string criteria = data.Replace("|", "'").ToUpper();
             criteria = checkAttributes(criteria, true, db);
@@ -85,33 +92,18 @@ namespace BridgeCare.DataAccessLayer
             return target;
         }
 
-        private void checkPiecewise(string piecewise)
+        private EquationValidationResult checkPiecewise(string piecewise)
         {
             Dictionary<int, double> ageValues = new Dictionary<int, double>();
             piecewise = piecewise.Trim();
-            if (piecewise.IndexOf("((") >= 0 || piecewise.IndexOf("))") >= 0)
-            {
-                log.Error("Syntax error, enclose pairs in single parentheses'( )'. ");
-                throw new System.InvalidOperationException("Syntax error, enclose pairs in single parentheses'( )'. ");
-            }
-            if (piecewise.IndexOf(") ") >= 0 ||
-                piecewise.IndexOf(" )") >= 0 ||
-                piecewise.IndexOf(" (") >= 0 ||
-                piecewise.IndexOf("( ") >= 0 ||
-                piecewise.IndexOf(", ") >= 0 ||
-                piecewise.IndexOf(" ,") >= 0)
-            {
-                log.Error("Syntax error, remove spaces within array");
-                throw new System.InvalidOperationException("Syntax error, remove spaces within array");
-            }
+
             string[] pieces = piecewise.Split(new char[] { '(' });
 
             foreach (string piece in pieces)
             {
                 if (piece.Length == 0)
-                {
                     continue;
-                }
+
                 string commaDelimitedPair = piece.TrimEnd(')');
                 string[] AgeValuePair = commaDelimitedPair.Split(',');
                 int age = -1;
@@ -124,14 +116,14 @@ namespace BridgeCare.DataAccessLayer
                 }
                 catch
                 {
-                    log.Error("Failure to convert AGE,VALUE pair to (int,double) :" + commaDelimitedPair);
-                    throw new System.InvalidOperationException("Failure to convert AGE,VALUE pair to (int,double) :" + commaDelimitedPair);
+                    log.Error($"Failure to convert TIME,CONDITION pair to (int,double): {commaDelimitedPair}");
+                    return new EquationValidationResult(false, $"Failure to convert TIME,CONDITION pair to (int,double): {commaDelimitedPair}");
                 }
 
                 if (age < 0)
                 {
-                    log.Error("Values for [AGE] must be 0 or greater.");
-                    throw new System.InvalidOperationException("Values for [AGE] must be 0 or greater.");
+                    log.Error("Values for TIME must be 0 or greater");
+                    return new EquationValidationResult(false, "Values for TIME must be 0 or greater");
                 }
 
                 if (!ageValues.ContainsKey(age))
@@ -140,24 +132,26 @@ namespace BridgeCare.DataAccessLayer
                 }
                 else
                 {
-                    log.Error("Only unique integer values for [AGE] are allowed.");
-                    throw new System.InvalidOperationException("Only unique integer values for [AGE] are allowed.");
+                    log.Error("Only unique integer values for TIME are allowed");
+                    return new EquationValidationResult(false, "Only unique integer values for TIME are allowed");
                 }
             }
+
             if (ageValues.Count < 1)
             {
-                log.Error("At least one Age,Value pair must be entered.");
-                throw new System.InvalidOperationException("At least one Age,Value pair must be entered.");
+                log.Error("At least one TIME,CONDITION pair must be entered");
+                return new EquationValidationResult(false, "At least one TIME,CONDITION pair must be entered");
             }
-            return;
+
+            return new EquationValidationResult(true, "Success");
         }
 
-        public string NumberOfHits(string criteria, BridgeCareContext db)
+        public CriteriaValidationResult NumberOfHits(string criteria, BridgeCareContext db)
         {
             if (criteria == "" || criteria == null)
             {
                 log.Error("There is no criteria created");
-                return "There is no criteria created";
+                return new CriteriaValidationResult(false, 0, "There is no criteria created");
             }
             // create the sql select statement
             var strNetworkID = db.NETWORKS.FirstOrDefault().NETWORKID.ToString();
@@ -190,17 +184,18 @@ namespace BridgeCare.DataAccessLayer
                 // close the connection
                 connection.Close();
                 // return the results
-                return count + " results match query";
+                return new CriteriaValidationResult((int)count > 0, (int)count, (int)count > 0 ? "Success" : "Invalid");
             }
             catch (SqlException e)
             {
-                log.Error($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
-                throw new System.InvalidOperationException($"Failed SQL Query: {strSelect}, Error Message: {e.Message}");
+                var message = $"Failed SQL Query: {strSelect}, Error Message: {e.Message}";
+                log.Error(message);
+                return new CriteriaValidationResult(false, 0, message);
             }
             catch (Exception e2)
             {
                 log.Error(e2.Message);
-                throw new System.InvalidOperationException(e2.Message);
+                return new CriteriaValidationResult(false, 0, e2.Message);
             }
         }
 
@@ -236,8 +231,8 @@ namespace BridgeCare.DataAccessLayer
                     break;
                 }
 
-                if (criteria[index + 1] == '(' || criteria[index + 1] == '[' 
-                    || criteria.Substring(index + 1, 3) == "AND" 
+                if (criteria[index + 1] == '(' || criteria[index + 1] == '['
+                    || criteria.Substring(index + 1, 3) == "AND"
                     || criteria.Substring(index + 1, 2) == "OR")
                 {
                     if (spacedString == 0)

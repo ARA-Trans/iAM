@@ -25,17 +25,29 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Prop} from 'vue-property-decorator';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
     import {
         ScenarioCreationData, emptyCreateScenarioData
     } from '@/shared/models/modals/scenario-creation-data';
     import {clone} from 'ramda';
+    import { getUserName } from '../../../shared/utils/get-user-info';
 
     @Component
     export default class CreateScenarioDialog extends Vue {
         @Prop() showDialog: boolean;
 
         createScenarioData: ScenarioCreationData = clone(emptyCreateScenarioData);
+        public: boolean = false;
+
+        mounted() {
+            this.createScenarioData.creator = getUserName();
+            this.createScenarioData.owner = this.createScenarioData.creator;
+        }
+
+        @Watch('public')
+        onSetPublic() {
+            this.createScenarioData.owner = this.public ? undefined : getUserName();
+        }
 
         /**
          * 'Submit' button has been clicked
@@ -48,6 +60,9 @@
             }
 
             this.createScenarioData = clone(emptyCreateScenarioData);
+            this.createScenarioData.creator = getUserName();
+            this.createScenarioData.owner = this.createScenarioData.creator;
+            this.public = false;
         }
     }
 </script>

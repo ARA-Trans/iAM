@@ -39,14 +39,14 @@
                         <v-list-tile @click="onNavigate('/DeficientEditor/Library/')">
                             <v-list-tile-title>Deficient</v-list-tile-title>
                         </v-list-tile>
-                        <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
+                        <v-list-tile v-if="isAdmin" @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
                             <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
                         </v-list-tile>
                         <v-list-tile @click="onNavigate('/CashFlowEditor/Library/')">
                             <v-list-tile-title>Cash Flow</v-list-tile-title>
                         </v-list-tile>
                     </v-list-group>
-                    <v-list-tile @click="onNavigate('/UnderConstruction/')">
+                    <v-list-tile v-if="isAdmin" @click="onNavigate('/UserCriteria/')">
                         <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>
                         <v-list-tile-title>Security</v-list-tile-title>
                     </v-list-tile>
@@ -63,12 +63,22 @@
                         <v-icon style="padding-right: 12px">fas fa-project-diagram</v-icon>
                         BridgeCare Analysis
                     </v-btn>
+                    <v-btn v-if="isAdmin" round class="ara-blue-bg white--text" @click="onNavigate('/UserCriteria/')">
+                        <v-icon style="padding-right: 12px">fas fa-lock</v-icon>
+                        Security
+                    </v-btn>
                 </v-toolbar-title>
                 <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
                     <span class="font-weight-light">Scenario: </span>
                     <span>{{selectedScenarioName}}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
+                <!-- <v-toolbar-title  class="white--text">
+                    <v-btn round class="pink white--text" @click="onJobQueue()">
+                        Job list
+                        <v-icon right>star</v-icon>
+                    </v-btn>
+                </v-toolbar-title> -->
                 <v-toolbar-title v-if="authenticated" class="white--text">
                     <span class="font-weight-light">Hello, </span>
                     <span>{{username}}</span>
@@ -84,7 +94,7 @@
                     </v-btn>
                 </v-toolbar-title>
             </v-toolbar>
-            <v-container fluid grid-list-xl>
+            <v-container fluid v-bind="container">
                 <router-view></router-view>
             </v-container>
             <v-footer app fixed class="ara-blue-pantone-289-bg white--text">
@@ -113,6 +123,7 @@
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
     import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
     import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
+    import ReportsService from './services/reports.service';
     import {checkStateForUnsavedChanges} from '@/shared/utils/state-checker-helper';
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
@@ -126,6 +137,7 @@
         @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
@@ -143,6 +155,7 @@
         @Action('setInfoMessage') setInfoMessageAction: any;
         @Action('pollEvents') pollEventsAction: any;
         @Action('generatePollingSessionId') generatePollingSessionIdAction: any;
+        @Action('getUserCriteria') getUserCriteriaAction: any;
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
@@ -168,6 +181,32 @@
         alertDialogData: AlertData = clone(emptyAlertData);
         pushRouteUpdate: boolean = false;
         route: any = {};
+
+        get container() {
+            const container: any = {};
+
+            if (this.$vuetify.breakpoint.xs) {
+                container['grid-list-xs'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.sm) {
+                container['grid-list-sm'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.md) {
+                container['grid-list-md'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.lg) {
+                container['grid-list-lg'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.xl) {
+                container['grid-list-xl'] = true;
+            }
+
+            return container;
+        }
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
@@ -321,6 +360,7 @@
             this.$forceUpdate();
             this.getNetworksAction();
             this.getAttributesAction();
+            this.getUserCriteriaAction();
         }
 
         /**
@@ -351,6 +391,16 @@
             if(this.$router.currentRoute.path !== route.path) {
                 this.$router.push(route);
             }
+        }
+        async onJobQueue(){
+            await ReportsService.getJobList()
+                                    .then((response: AxiosResponse<any>) => {
+                                        if(response == undefined){
+                                          this.setErrorMessageAction({message: 'unauthorized access'});
+                                        } else{
+                                          window.open(process.env.VUE_APP_URL + '/hangfire/');
+                                        }
+                                    });
         }
     }
 </script>

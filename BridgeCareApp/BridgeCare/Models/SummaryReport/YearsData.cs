@@ -20,7 +20,7 @@
 
         public string CulvD { get; set; }
 
-        public string MinC { get; set; }
+        public double MinC { get; set; }
 
         public string SD { get; set; }
 
@@ -29,6 +29,12 @@
         // Below will be fetched from REPORT_x_y table
         public string Project { get; set; }
 
-        public double Cost { get; set; }        
+        public double Cost { get; set; }
+
+        //Below data is fetched from inner join of Section_{networkId} and Report_{networkId}_{simulationId} tables
+        public string Budget { get; set; }
+        public string ProjectPick { get; set; }
+        public string Treatment { get; set; }
+        public int ProjectPickType { get; set; }
     }
 }

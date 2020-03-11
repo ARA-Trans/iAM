@@ -14,10 +14,15 @@
                                   label="Treatment Name" v-model="selectedTreatmentLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="onClearSelectedTreatmentLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedTreatmentLibrary.owner ? selectedTreatmentLibrary.owner : "[ No Owner ]"}}
+                    </div>
+                    <v-checkbox class="sharing" v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" 
+                        v-model="selectedTreatmentLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -99,12 +104,17 @@
                 <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedTreatmentLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text" @click="onDeleteTreatmentLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedTreatmentLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreateTreatmentLibraryDialog :dialogData="createTreatmentLibraryDialogData"
                                       @submit="onCreateTreatmentLibrary" />
@@ -140,12 +150,14 @@
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
     import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
     const ObjectID = require('bson-objectid');
 
     @Component({
         components: {
             BudgetsTab,
-            ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentLibraryDialog}
+            ConsequencesTab, CostsTab, FeasibilityTab, CreateTreatmentDialog, CreateTreatmentLibraryDialog, Alert}
     })
     export default class TreatmentEditor extends Vue {
         @State(state => state.treatmentEditor.treatmentLibraries) stateTreatmentLibraries: TreatmentLibrary[];
@@ -159,6 +171,7 @@
         @Action('updateSelectedTreatmentLibrary') updateSelectedTreatmentLibraryAction: any;
         @Action('createTreatmentLibrary') createTreatmentLibraryAction: any;
         @Action('updateTreatmentLibrary') updateTreatmentLibraryAction: any;
+        @Action('deleteTreatmentLibrary') deleteTreatmentLibraryAction: any;
         @Action('saveScenarioTreatmentLibrary') saveScenarioTreatmentLibraryAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
 
@@ -177,6 +190,7 @@
         createTreatmentLibraryDialogData: CreateTreatmentLibraryDialogData = clone(emptyCreateTreatmentLibraryDialogData);
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = clone(emptyTabData);
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * Sets component ui properties that triggers cascading ui updates
@@ -526,6 +540,24 @@
                 });
             }
         }
+
+        onDeleteTreatmentLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+            
+            if (response) {
+                this.deleteTreatmentLibraryAction({treatmentLibrary: this.selectedTreatmentLibrary});
+                this.onClearSelectedTreatmentLibrary();
+            }
+        }
     }
 </script>
 
@@ -548,5 +580,14 @@
 
     .treatment-library-select {
         height: 60px;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

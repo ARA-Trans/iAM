@@ -14,7 +14,7 @@
                                   v-model="selectedRemainingLifeLimitLibrary.name">
                         <template slot="append">
                             <v-btn class="ara-orange" icon @click="selectItemValue = null">
-                                <v-icon>fas fa-times</v-icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
@@ -73,12 +73,17 @@
                        :disabled="!hasSelectedRemainingLifeLimitLibrary">
                     Create as New Library
                 </v-btn>
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text" @click="onDeleteRemainingLifeLimitLibrary">
+                    Delete Library
+                </v-btn>
                 <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardChanges"
                        :disabled="!hasSelectedRemainingLifeLimitLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
+
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
 
         <CreateRemainingLifeLimitLibraryDialog :dialogData="createRemainingLifeLimitLibraryDialogData"
                                                @submit="onCreateLibrary" />
@@ -122,10 +127,12 @@
         CreateRemainingLifeLimitDialogData,
         emptyCreateRemainingLifeLimitDialogData
     } from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     const ObjectID = require('bson-objectid');
     @Component({
-        components: {CreateRemainingLifeLimitLibraryDialog, CreateRemainingLifeLimitDialog, CriteriaEditorDialog}
+        components: {CreateRemainingLifeLimitLibraryDialog, CreateRemainingLifeLimitDialog, CriteriaEditorDialog, Alert}
     })
     export default class RemainingLifeLimitEditor extends Vue {
         @State(state => state.remainingLifeLimitEditor.remainingLifeLimitLibraries) stateRemainingLifeLimitLibraries: RemainingLifeLimitLibrary[];
@@ -136,6 +143,7 @@
         @Action('getRemainingLifeLimitLibraries') getRemainingLifeLimitLibrariesAction: any;
         @Action('createRemainingLifeLimitLibrary') createRemainingLifeLimitLibraryAction: any;
         @Action('updateRemainingLifeLimitLibrary') updateRemainingLifeLimitLibraryAction: any;
+        @Action('deleteRemainingLifeLimitLibrary') deleteRemainingLifeLimitLibraryAction: any;
         @Action('getScenarioRemainingLifeLimitLibrary') getScenarioRemainingLifeLimitLibraryAction: any;
         @Action('saveScenarioRemainingLifeLimitLibrary') saveScenarioRemainingLifeLimitLibraryAction: any;
         @Action('selectRemainingLifeLimitLibrary') selectRemainingLifeLimitLibraryAction: any;
@@ -163,6 +171,7 @@
         createRemainingLifeLimitLibraryDialogData: CreateRemainingLifeLimitLibraryDialogData = clone(
             emptyCreateRemainingLifeLimitLibraryDialogData
         );
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -379,6 +388,31 @@
             setTimeout(() =>
                 this.selectRemainingLifeLimitLibraryAction({selectedRemainingLifeLimitLibrary: this.stateScenarioRemainingLifeLimitLibrary})
             );
+        }
+
+        onDeleteRemainingLifeLimitLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        /**
+         * Clears the selected remaining life limit library and resets the active tab to first tab
+         */
+        onClearSelectedRemainingLifeLimitLibrary() {
+            this.librarySelectItemValue = hasValue(this.librarySelectItemValue) ? '' : '0';
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+
+            if (response) {
+                this.deleteRemainingLifeLimitLibraryAction({remainingLifeLimitLibrary: this.selectedRemainingLifeLimitLibrary});
+                this.onClearSelectedRemainingLifeLimitLibrary();
+            }
         }
     }
 </script>

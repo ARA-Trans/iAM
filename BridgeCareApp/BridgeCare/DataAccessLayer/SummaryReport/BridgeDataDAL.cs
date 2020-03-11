@@ -7,6 +7,7 @@ using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Models.SummaryReport;
 
 namespace BridgeCare.DataAccessLayer.SummaryReport
 {
@@ -19,7 +20,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         /// <param name="brKeys">br keys list</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>BridgeDataModel list</returns>        
-        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, BridgeCareContext db)
+        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, SimulationModel model, BridgeCareContext db)
         {
             var bridgeDataModels = new List<BridgeDataModel>();
 
@@ -38,7 +39,6 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
 
                 var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
-
                 bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow, sdRiskRow));
             }
 
@@ -56,7 +56,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             IQueryable<Section> rawQueryForSectionData = null;
 
             // FACILITY is BRKEY, SECTION is BRIDGE_ID
-            var selectSectionStatement = "SELECT SECTIONID, FACILITY, SECTION " + " FROM SECTION_" + simulationModel.NetworkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
+            var selectSectionStatement = "SELECT SECTIONID, FACILITY, SECTION " + " FROM SECTION_" + simulationModel.networkId + " Rpt WITH(NOLOCK) Order By FACILITY ASC";
             try
             {
                 rawQueryForSectionData = dbContext.Database.SqlQuery<Section>(selectSectionStatement).AsQueryable();
@@ -137,7 +137,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
             var selectSimulationStatement = $"SELECT SECTIONID, {Properties.Resources.DeckSeeded}0, {Properties.Resources.SupSeeded}0, {Properties.Resources.SubSeeded}0, {Properties.Resources.CulvSeeded}0, " +
                                             $"{Properties.Resources.DeckDurationN}0, {Properties.Resources.SupDurationN}0, {Properties.Resources.SubDurationN}0, {Properties.Resources.CulvDurationN}0, " +
-                                            dynamicColumns + $" FROM SIMULATION_{simulationModel.NetworkId}_{simulationModel.SimulationId}_0 WITH (NOLOCK);";
+                                            dynamicColumns + $" FROM SIMULATION_{simulationModel.networkId}_{simulationModel.simulationId}_0 WITH (NOLOCK);";
 
             using (var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString))
             {
@@ -166,11 +166,11 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         {            
             IQueryable<ReportProjectCost> rawQueryForReportData = null;
             var years = string.Join(",", simulationYears);
-            var listOfBudgets = dbContext.CriteriaDrivenBudgets.Where(y => y.SIMULATIONID == simulationModel.SimulationId)
+            var listOfBudgets = dbContext.CriteriaDrivenBudgets.Where(y => y.SIMULATIONID == simulationModel.simulationId)
                 .Select(cri => "'" + cri.BUDGET_NAME + "'").ToList();
 
             var budgets = string.Join(",", listOfBudgets);
-            var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.NetworkId}_{simulationModel.SimulationId} " +
+            var selectReportStatement = $"SELECT SECTIONID, TREATMENT, COST_, YEARS FROM REPORT_{simulationModel.networkId}_{simulationModel.simulationId} " +
                                         $"WITH (NOLOCK) WHERE BUDGET IN (" + budgets + ") AND YEARS IN (" + years + ")";
 
             rawQueryForReportData = dbContext.Database.SqlQuery<ReportProjectCost>(selectReportStatement).AsQueryable();
@@ -182,6 +182,11 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         {
             var treatments = db.Treatments.Where(t => t.SIMULATIONID == simulationId).Select(t => t.TREATMENT).ToList();
             return treatments;
+        }
+        public List<string> GetBudgets(int simulationId, BridgeCareContext db)
+        {
+            var budgets = db.CriteriaDrivenBudgets.Where(t => t.SIMULATIONID == simulationId).Select(cri => cri.BUDGET_NAME).ToList();
+            return budgets;
         }
 
         #region private methods
@@ -200,26 +205,68 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             return dynamicColumns;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "<Pending>")]
         private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
         {
-            bool adtTotalHasValue = Int32.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
+            bool adtTotalHasValue = int.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
             bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
+
+            int.TryParse(penndotBridgeDataRow.BRIDGE_FAMILY_ID, out var familyId);
+            double.TryParse(pennDotReportADataRow.DECK_AREA, out var deckArea);
+            int.TryParse(penndotBridgeDataRow.CONDITION_BASED_AGE, out var age);
+            int.TryParse(pennDotReportADataRow.YEAR_BUILT, out var yearBuilt);
+            int.TryParse(pennDotReportADataRow.StructureLength, out var structureLength);
+            int.TryParse(pennDotReportADataRow.ADTTOTAL, out var ADTTotal);
+            double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
+
             return new BridgeDataModel
             {
                 BRKey = penndotBridgeDataRow.BRKEY,
-                BridgeFamily = penndotBridgeDataRow.BRIDGE_FAMILY_ID,
-                Age = penndotBridgeDataRow.CONDITION_BASED_AGE,
+                BridgeFamily = familyId,
+                Age = age,
+                BridgeCulvert = penndotBridgeDataRow.BridgeCulvert,
+
                 BridgeID = pennDotReportADataRow.BRIDGE_ID,
                 District = pennDotReportADataRow.DISTRICT,
-                DeckArea = pennDotReportADataRow.DECK_AREA,
+                DeckArea = deckArea,
                 BPN = pennDotReportADataRow.BUS_PLAN_NETWORK,
                 FunctionalClass = pennDotReportADataRow.FUNC_CLASS,
                 NHS = pennDotReportADataRow.NHS_IND == "1" ? "Y" : "N",
-                YearBuilt = pennDotReportADataRow.YEAR_BUILT,
+                YearBuilt = yearBuilt,
+                StructureLength = structureLength,
+                PlanningPartner = pennDotReportADataRow.PlanningPartner,
+                StructureType = pennDotReportADataRow.StructureType,
+                Posted = pennDotReportADataRow.Posted.ToLower() == "posted" ? "Y" : "N",
+                AdtTotal = ADTTotal,
+                P3 = pennDotReportADataRow.P3,
+                ParallelBridge = pennDotReportADataRow.ParallelBridge,
+
                 ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
-                RiskScore = Convert.ToDouble(sdRiskRow.SD_RISK)
+                RiskScore = sdRisk
             };
-        }        
+        }
+
+        public List<BudgetsPerBRKey> GetBudgetsPerBRKey(SimulationModel simulationModel, BridgeCareContext dbContext)
+        {
+            var budgetsPerBrKey = new List<BudgetsPerBRKey>();
+            var selectBugetForBrKey = $"select SECTION_13.SECTIONID, SECTION_13.FACILITY as BRKey, SECTION_13.SECTION as BridgeId, BUDGET, YEARS, ISCOMMITTED, TREATMENT, PROJECT_TYPE as ProjectType " +
+                $"from SECTION_{simulationModel.networkId} " +
+                $"INNER JOIN Report_{simulationModel.networkId}_{simulationModel.simulationId} " +
+                $"on SECTION_{simulationModel.networkId}.SECTIONID = Report_{simulationModel.networkId}_{simulationModel.simulationId}.SECTIONID " +
+                $" WHERE BUDGET IS NOT NULL OR ISCOMMITTED != 0 Order By BRKey ASC";
+
+            try
+            {
+                budgetsPerBrKey = dbContext.Database.SqlQuery<BudgetsPerBRKey>(selectBugetForBrKey).ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+            }
+
+            return budgetsPerBrKey;
+        }
         #endregion
     }
 }

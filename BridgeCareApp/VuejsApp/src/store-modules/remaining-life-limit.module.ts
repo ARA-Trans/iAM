@@ -1,9 +1,10 @@
 import {emptyRemainingLifeLimitLibrary, RemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
-import {clone, any, propEq, findIndex, update, append, equals} from 'ramda';
+import {clone, any, propEq, findIndex, update, append, equals, reject} from 'ramda';
 import RemainingLifeLimitService from '@/services/remaining-life-limit.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     remainingLifeLimitLibraries: [] as RemainingLifeLimitLibrary[],
@@ -48,6 +49,14 @@ const mutations = {
             updatedRemainingLifeLimitLibrary,
             state.remainingLifeLimitLibraries
         );
+    },
+    deletedRemainingLifeLimitLibraryMutator(state: any, deletedRemainingLifeLimitLibraryId: string) {
+        if (any(propEq('id', deletedRemainingLifeLimitLibraryId), state.remainingLifeLimitLibraries)) {
+            state.remainingLifeLimitLibraries = reject(
+                (library: RemainingLifeLimitLibrary) => deletedRemainingLifeLimitLibraryId === library.id,
+                state.remainingLifeLimitLibraries
+            );
+        }
     },
     /**
      * Sets state.scenarioRemainingLifeLimitLibrary with a copy of scenarioRemainingLifeLimitLibrary
@@ -95,6 +104,15 @@ const actions = {
                 }
             });
     },
+    async deleteRemainingLifeLimitLibrary({dispatch, commit}: any, payload: any) {
+        await RemainingLifeLimitService.deleteRemainingLifeLimitLibrary(payload.remainingLifeLimitLibrary)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                commit('deletedRemainingLifeLimitLibraryMutator', payload.remainingLifeLimitLibrary.id);
+                dispatch('setSuccessMessage', {message: 'Successfully deleted remaining life limit library'});
+                }
+            });
+    },
     async getScenarioRemainingLifeLimitLibrary({dispatch, commit}: any, payload: any) {
         if (payload.selectedScenarioId > 0) {
             await RemainingLifeLimitService.getScenarioRemainingLifeLimitLibrary(payload.selectedScenarioId)
@@ -119,6 +137,7 @@ const actions = {
             });
     },
     async socket_remainingLifeLimitLibrary({dispatch, state, commit}: any, payload: any) {
+        console.log(payload);
         if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
             const remainingLifeLimitLibrary: RemainingLifeLimitLibrary = convertFromMongoToVue(payload.fullDocument);
             switch (payload.operationType) {
@@ -140,6 +159,13 @@ const actions = {
                             {message: `Remaining life limit library '${remainingLifeLimitLibrary.name}' has been created from another source`}
                         );
                     }
+            }
+        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
+            if (any(propEq('id', payload.documentKey._id), state.remainingLifeLimitLibraries)) {
+                commit('deletedRemainingLifeLimitLibraryMutator', payload.documentKey._id);
+                dispatch('setInfoMessage',
+                    {message: `A remaining life limit library has been deleted from another source`}
+                );
             }
         }
     }

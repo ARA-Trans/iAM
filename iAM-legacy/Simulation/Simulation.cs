@@ -7,6 +7,7 @@ using SimulationDataAccess;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
@@ -171,7 +172,7 @@ namespace Simulation
             m_strNetworkID = strNetworkID;
             m_strSimulationID = strSimulationID;
             _isUpdateOMS = false;
-            cgOMS.Prefix = "cgDE_";
+            cgOMS.Prefix = "";
         }
 
         public Simulation(string simulationID, string sectionID, string action, string treatment, int year, string value, string connectionString)
@@ -188,7 +189,7 @@ namespace Simulation
             _yearOMS = year;
             _valueOMS = value;
             _isUpdateOMS = true;
-            cgOMS.Prefix = "cgDE_";
+            cgOMS.Prefix = "";
         }
 
         public Simulation(string strSimulation, string strNetwork, int simulationID, int networkID, string simulations)
@@ -222,6 +223,7 @@ namespace Simulation
         public void CompileSimulation(object isAPICall)
         {
             APICall = isAPICall;
+            SimulationMessaging.IsDesktop = !isAPICall.Equals(true);
 
             SimulationMessaging.DateTimeStart = DateTime.Now;
             //Get Attribute types
@@ -265,6 +267,7 @@ namespace Simulation
             //Create table for each attribute year pair into the future.
             SimulationMessaging.AddMessage(new SimulationMessage("Compile simulation complete: " + DateTime.Now.ToString("HH:mm:ss")));
             SimulationMessaging.AddMessage(new SimulationMessage("Beginning run simulation: " + DateTime.Now.ToString("HH:mm:ss")));
+            Console.WriteLine("Compile simulation complete: " + DateTime.Now.ToString("HH:mm:ss"));
 
             if (isAPICall.Equals(true))
             {
@@ -546,7 +549,7 @@ namespace Simulation
             m_strJurisdiction = ConvertOMSAttribute(m_strJurisdiction);
 
             m_strWeighting = ds.Tables[0].Rows[0].ItemArray[1].ToString();
-            if (m_strWeighting != "none" && m_strWeighting != "")
+            if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
             {
                 if (!m_listAttributes.Contains(m_strWeighting))
                 {
@@ -879,6 +882,7 @@ namespace Simulation
             //Everything is rolled up to the year of the start date.
             for (int nYear = Investment.StartYear; nYear < Investment.StartYear + Investment.AnalysisPeriod; nYear++)
             {
+                Console.WriteLine("Begin analysis year =" + nYear);
                 //Apply Deteriorate/Performance curves.
                 SimulationMessaging.AddMessage(new SimulationMessage("Applying Performance/Deterioration equations for " + nYear.ToString() + " at " + DateTime.Now.ToString("HH:mm:ss")));
                 if (APICall.Equals(true))
@@ -887,8 +891,8 @@ namespace Simulation
                     .Set(s => s.status, "Applying Performance/Deterioration equations for" + nYear.ToString());
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
+                Console.WriteLine("Apply deterioration");
                 ApplyDeterioration(nYear);
-
                 //Determine Benefit/Cost
                 SimulationMessaging.AddMessage(new SimulationMessage("Determining Treament Feasibilty and calculating benefit/remaining life versus cost ratios for " + nYear.ToString() + " at " + DateTime.Now.ToString("HH:mm:ss")));
                 if (APICall.Equals(true))
@@ -899,8 +903,9 @@ namespace Simulation
                 }
 
                 m_listApplyTreatment.Clear();
+                Console.WriteLine("Determine Benefit/Cost");
                 DetermineBenefitCostIterative(nYear);
-
+                
                 //Load Committed Projects.  These get comitted (and spent) regardless of budget.
                 //Apply committed projects
                 SimulationMessaging.AddMessage(new SimulationMessage("Applying committed projects for " + nYear.ToString() + " at " + DateTime.Now.ToString("HH:mm:ss")));
@@ -910,6 +915,7 @@ namespace Simulation
                     .Set(s => s.status, "Applying committed projects for " + nYear.ToString());
                     Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
                 }
+                Console.WriteLine("Apply committed");
                 ApplyCommitted(nYear);
 
                 //Calculate network averages and deficient base (after committed).
@@ -929,6 +935,7 @@ namespace Simulation
                 }
                 else
                 {
+                    Console.WriteLine("Spend budget "  + Method.TypeBudget);
                     switch (Method.TypeBudget)
                     {
                         case "No Spending":
@@ -986,11 +993,23 @@ namespace Simulation
             {
                 tw.Close();
             }
-            String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+
+            string val = ConfigurationManager.AppSettings["TempFilePath"];
+            string path = "";
+            if (val != null)
+            {
+                path = Environment.ExpandEnvironmentVariables(val);
+            }
+            else
+            {
+                String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+                path = strMyDocumentsFolder;
+            }
+
             for (var j = 0; j < m_dictionarySimulationTables.Count; j++)
             {
-                string sOutFile = strMyDocumentsFolder + "\\" + SimulationMessaging.SimulationTable + "_" + j + ".txt";
+                string sOutFile = path + "\\" + SimulationMessaging.SimulationTable + "_" + j + ".txt";
                 _spanAnalysis += DateTime.Now - _dateTimeLast;
                 _dateTimeLast = DateTime.Now;
 
@@ -1413,7 +1432,7 @@ namespace Simulation
             listColumn.Add(new TableParameters("CHANGEHASH", DataType.VarChar(4000), true));
             listColumn.Add(new TableParameters("AREA", DataType.Float, true));
             listColumn.Add(new TableParameters("RESULT_TYPE", DataType.Int, true));//This stores whether repeat, committed, feasible, selected or not allowed.
-
+            listColumn.Add(new TableParameters("PROJECT_TYPE", DataType.Int, true));//IAM selected (0), Committed(1), Split treatment (2), scheduled (3)
             try
             {
                 DBMgr.CreateTable(strTable, listColumn);
@@ -1992,7 +2011,7 @@ namespace Simulation
             if (!IsUpdateOMS)
             {
                 //Get the Jurisdiction from the simulation table.
-                strQuery = "SELECT JURISDICTION,WEIGHTING FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
+                strQuery = "SELECT JURISDICTION,WEIGHTING,CREATOR FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
                 try
                 {
                     ds = DBMgr.ExecuteQuery(strQuery);
@@ -2009,10 +2028,54 @@ namespace Simulation
                     }
                     return false;
                 }
+                DataSet creatorCriteriaDataSet;
+                string creatorUsername = ds.Tables[0].Rows[0].ItemArray[2]?.ToString();
+                bool creatorHasAccess = true;
+                string creatorCriteria = null;
+                if (!string.IsNullOrEmpty(creatorUsername))
+                {
+                    try
+                    {
+                        creatorCriteriaDataSet = DBMgr.ExecuteQuery($"SELECT HAS_ACCESS,CRITERIA FROM {cgOMS.Prefix}USER_CRITERIA WHERE USERNAME='{creatorUsername}'");
+                    }
+                    catch (Exception exception)
+                    {
+                        SimulationMessaging.AddMessage(new SimulationMessage($"Error: Error in retrieving CRITERIA from USER_CRITERIA table. SQL message - {exception.Message}"));
+
+                        if (APICall.Equals(true))
+                        {
+                            var updateStatus = Builders<SimulationModel>.Update
+                                .Set(s => s.status, $"Error in retrieving CRITERIA from USER_CRITERIA: {exception.Message}");
+                            Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                        }
+
+                        return false;
+                    }
+                    creatorHasAccess = Convert.ToBoolean(creatorCriteriaDataSet.Tables[0].Rows[0].ItemArray[0]);
+                    creatorCriteria = creatorCriteriaDataSet.Tables[0].Rows[0].ItemArray[1]?.ToString();
+                }
+                
+                if (!creatorHasAccess)
+                {
+                    SimulationMessaging.AddMessage(new SimulationMessage($"Error: Simulation owner does not have permission to run simulations on any inventory items."));
+
+                    if (APICall.Equals(true))
+                    {
+                        var updateStatus = Builders<SimulationModel>.Update
+                            .Set(s => s.status, $"Simulation owner does not have permission to run simulations on any inventory items.");
+                        Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                    }
+                    return false;
+                }
+
                 m_strJurisdiction = ds.Tables[0].Rows[0].ItemArray[0].ToString();
+                if (!string.IsNullOrEmpty(creatorCriteria))
+                {
+                    m_strJurisdiction = $"({m_strJurisdiction}) AND ({creatorCriteria})";
+                }
                 m_strJurisdiction = ConvertOMSAttribute(m_strJurisdiction);
                 m_strWeighting = ds.Tables[0].Rows[0].ItemArray[1].ToString();
-                if (m_strWeighting != "none" && m_strWeighting != "")
+                if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
                 {
                     if (!m_listAttributes.Contains(m_strWeighting))
                     {
@@ -3558,7 +3621,7 @@ namespace Simulation
                         double dBCRatio;
 
                         double dWeighting = 1;
-                        if (m_strWeighting != "none" && m_strWeighting != "")
+                        if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
                         {
                             if (section.m_hashNextAttributeValue.Contains(m_strWeighting))
                             {
@@ -4011,7 +4074,7 @@ namespace Simulation
                     double dBCRatio;
 
                     double dWeighting = 1;
-                    if (m_strWeighting != "none" && m_strWeighting != "")
+                    if (m_strWeighting.ToLower() != "none" && m_strWeighting != "")
                     {
                         if (hash.Contains(m_strWeighting))
                         {
@@ -4897,6 +4960,21 @@ namespace Simulation
                     {
                         strOut += "1"; //Committed result type.
                     }
+
+                    //Add PROJECT_TYPE to REPORT)_
+                    if (!string.IsNullOrWhiteSpace(commit.ScheduledTreatmentId))//Scheduled treatment
+                    {
+                        strOut += ":3";
+                    }
+                    else if (!string.IsNullOrWhiteSpace(commit.SplitTreatmentId))//Split treatment
+                    {
+                        strOut += ":2";
+                    }
+                    else //Ordinary committed project
+                    {
+                        strOut += ":1";
+                    }
+
                     switch (DBMgr.NativeConnectionParameters.Provider)
                     {
                         case "MSSQL":
@@ -5361,6 +5439,7 @@ namespace Simulation
 
                 String strChangeHash;
                 float fNewArea;
+                bool isSplitTreatment = false;
                 try
                 {
                     int numberTreatments = 0;
@@ -5409,6 +5488,7 @@ namespace Simulation
                         //Commit split treatment (cash flow).  
                         CommitSplitTreatment(section, nYear, treatment, strBudget, limit, fAmount);
                         strChangeHash = "";
+                        isSplitTreatment = true;
                     }
 
             
@@ -5474,6 +5554,15 @@ namespace Simulation
                                         + strChangeHash + ":"
                                         + fNewArea.ToString() + ":"
                                         + "0";
+                        if(isSplitTreatment)
+                        {
+                            strOut += ":2";//PROJECT_TYPE
+                        }
+                        else
+                        {
+                            strOut += ":0";//PROJECT_TYPE
+                        }
+
                         tw.WriteLine(strOut);
                         break;
 
@@ -5498,7 +5587,14 @@ namespace Simulation
                                         + strChangeHash + ":"
                                         + fNewArea.ToString() + ":"
                                         + "0";
-
+                        if (isSplitTreatment)
+                        {
+                            strOut += ":2";//PROJECT_TYPE
+                        }
+                        else
+                        {
+                            strOut += ":0";//PROJECT_TYPE
+                        }
                         tw.Write(strOut);
                         tw.Write("#ORACLEENDOFLINE#");
 
@@ -5593,6 +5689,7 @@ namespace Simulation
                                                     + section.NumberTreatment.ToString() + ":"
                                                     + strChangeHash + ":"
                                                     + section.Area.ToString() + ":"
+                                                    + "0" + ":"
                                                     + "0";
                             tw.WriteLine(strOut);
 
@@ -5618,6 +5715,7 @@ namespace Simulation
                                                     + section.NumberTreatment.ToString() + ":"
                                                     + strChangeHash + ":"
                                                     + section.Area.ToString() + ":"
+                                                    + "0" + ":"
                                                     + "0";
                             tw.Write(strOut);
                             tw.Write("#ORACLEENDOFLINE#");
@@ -6279,6 +6377,7 @@ namespace Simulation
                             //Apply consequences.
                             String strChangeHash;
                             Hashtable hashOutput;
+                            bool isSplitTreatment = false;
                             if (limit.Percentages.Count == 1)//If project is done in one year
                             {
                                 hashOutput = ApplyConsequences(section.m_hashNextAttributeValue, strTreatmentID,
@@ -6289,6 +6388,7 @@ namespace Simulation
                             }
                             else //If it takes more than one year
                             {
+                                isSplitTreatment = true;
                                 //Consequences are applied in the final year (with no deterioration from start to finish).
                                 hashOutput = ApplyCalculatedFields(section.m_hashNextAttributeValue);
                                 //Commit split treatment (cash flow).  
@@ -6333,6 +6433,15 @@ namespace Simulation
                                                               + strChangeHash + ":"
                                                               + fNewArea.ToString() + ":"
                                                               + "0";
+
+                            if (isSplitTreatment)
+                            {
+                                strOut += ":2";//PROJECT_TYPE
+                            }
+                            else
+                            {
+                                strOut += ":0";//PROJECT_TYPE
+                            }
 
                             switch (DBMgr.NativeConnectionParameters.Provider)
                             {
@@ -7940,219 +8049,6 @@ namespace Simulation
             return true;
         }
 
-        private void ApplyOMSReport(int nYear, List<ReportOMS> omsReports, Sections section)
-        {
-            String strBudget;
-            float fAmount;
-            String sOutFile;
-            //RemoveYearFromTargetsOMS(nYear); //Remove previous targets
-            List<Committed> currentYearCommitted = new List<Committed>();
-            Dictionary<Committed, ReportOMS> committedOMSReport = new Dictionary<Committed, ReportOMS>();
-            List<int> resultOrder = new List<int> { 4, 1, 3, 5, 0 };//(0) Recommended, (1) Committed, (2) Feasible, (3) Repeat, (4) Do not allow , (5) Added
-            foreach (ReportOMS omsReport in omsReports)
-            {
-                foreach (int resultType in resultOrder)
-                {
-                    if (omsReport.Year == nYear && omsReport.ResultType == resultType)
-                    {
-                        Treatments treatment = m_listTreatments.Find(delegate (Treatments t) { return t.Treatment == omsReport.Treatment; });
-                        //Create a committed from OMSReport
-                        Committed commit = new Committed();
-                        commit.Consequence = new Consequences();
-                        commit.Treatment = omsReport.Treatment;
-                        commit.Same = omsReport.YearsSame;
-                        commit.Any = omsReport.YearsAny;
-                        commit.Budget = omsReport.Budget;
-                        commit.ResultType = omsReport.ResultType;
-                        commit.Cost = (float)omsReport.Cost;
-                        commit.CommitOrder = omsReport.CommitOrder.ToString();
-                        //Store the ID to the committed project, perform the select to get the Consequence when needed.  Saves storage space.
-                        commit.ConsequenceID = null;
-                        if (resultType == 3) commit.IsRepeat = true;
-                        else commit.IsRepeat = false;
-                        commit.Year = omsReport.Year;
-
-                        if (resultType == 4) commit.OMSIsNotAllowed = true;
-                        else commit.OMSIsNotAllowed = false;
-
-                        commit.OMSIsExclusive = treatment.OMSIsExclusive;
-                        commit.OMSTreatment = treatment;
-                        commit.Any = commit.OMSTreatment.AnyTreatment;
-                        commit.Same = commit.OMSTreatment.SameTreatment;
-                        commit.Budget = commit.OMSTreatment.Budget;
-
-                        currentYearCommitted.Add(commit);
-                        committedOMSReport.Add(commit, omsReport);
-                    }
-                }
-            }
-
-            if (currentYearCommitted.Count == 0)
-            {
-                Treatments treatment = m_listTreatments.Find(delegate (Treatments t) { return t.Treatment == "No Treatment"; });
-                Committed commit = new Committed();
-                commit.Consequence = new Consequences();
-                commit.Treatment = "No Treatment";
-                commit.OMSTreatment = treatment;
-                commit.Same = 0;
-                commit.Any = 0;
-                commit.Budget = null;
-                commit.ResultType = 0;
-                commit.Cost = (float)0;
-                commit.Year = nYear;
-                commit.IsRepeat = false;
-                commit.IsCommitted = false;
-                commit.OMSIsExclusive = false;
-                commit.OMSIsNotAllowed = false;
-                currentYearCommitted.Add(commit);
-            }
-
-            TextWriter tw = SimulationMessaging.CreateTextWriter("report_" + m_strSimulationID + ".csv", out sOutFile);
-            foreach (Committed commit in currentYearCommitted)
-            {
-                if (currentYearCommitted.Count > 1 && commit.Treatment == "No Treatment") continue;
-
-                if (!section.IsOMSCommitAllowed(commit.Treatment, nYear)) continue;
-
-                String strChangeHash = "";
-                Hashtable hashOutput = section.CommitProject(commit, out strBudget, out fAmount, m_dictionaryCommittedEquations, out strChangeHash);
-                section.OCI.UpdateApparentAge(hashOutput);
-
-                Hashtable hashInput = (Hashtable)section.m_hashNextAttributeValue;
-
-                if (section.m_hashYearAttributeValues.Contains(nYear))
-                {
-                    section.m_hashYearAttributeValues.Remove(nYear);
-                }
-                section.m_hashYearAttributeValues.Add(nYear, hashOutput);
-
-                //Calculate remaining life and incremental BC for the new values.
-                //Calculate new deterioration using the new hashtable
-                double dBenefit = 0;
-                double dRemainingLife = 100;
-                Hashtable hashRL = new Hashtable();
-
-                //Hashtable hash = (Hashtable)section.m_hashYearAttributeValues[nYear];
-                foreach (Deteriorate deteriorate in m_listDeteriorate)
-                {
-                    if (deteriorate.IsCriteriaMet(hashOutput))
-                    {
-                        bool bOutOfRange;
-                        deteriorate.IterateOneYear(hashOutput, out bOutOfRange);
-                        if (Method.IsBenefitCost && Method.BenefitAttribute == deteriorate.Attribute)
-                        {
-                            dBenefit = deteriorate.CalculateBenefit(hashOutput);
-                        }
-                        double dRL = 0;
-                        if (deteriorate.CalculateRemainingLife(hashOutput, hashInput, out dRL))
-                        {
-                            if (!hashRL.Contains(deteriorate.Attribute))
-                            {
-                                hashRL.Add(deteriorate.Attribute, dRL);
-                            }
-                            else
-                            {
-                                double dRLOld = (double)hashRL[deteriorate.Attribute];
-                                if (dRL < dRLOld)
-                                {
-                                    hashRL.Remove(deteriorate.Attribute);
-                                    hashRL.Add(deteriorate.Attribute, dRL);
-                                }
-                            }
-                            if (dRL < dRemainingLife)
-                            {
-                                dRemainingLife = dRL;
-                            }
-                        }
-                    }
-                }
-
-                Investment.SpendBudget(fAmount, strBudget, nYear.ToString());
-
-                float fCost = fAmount / section.Area;
-
-                double deltaBenefit = dBenefit - section.BaseBenefit;
-                double deltaRemainingLife = dRemainingLife - section.RemainingLife;
-
-                String strRLHash = this.CreateRemainingLifeHashString(hashRL);
-                double dBCRatio;
-                if (Method.IsBenefitCost)
-                {
-                    if (fCost > 0)
-                    {
-                        dBCRatio = deltaBenefit / (double)fCost;
-                    }
-                    else
-                    {
-                        dBCRatio = 0;
-                    }
-                }
-                else
-                {
-                    if (fCost > 0)
-                    {
-                        dBCRatio = deltaRemainingLife / (double)fCost;
-                    }
-                    else
-                    {
-                        dBCRatio = 0;
-                    }
-                }
-
-                SameTreatment sameTreatment = new SameTreatment();
-                sameTreatment.strTreatment = commit.Treatment;
-                sameTreatment.nYear = nYear;
-                sameTreatment.isExclusive = commit.OMSIsExclusive;
-                sameTreatment.isNotAllowed = commit.OMSIsNotAllowed;
-                section.m_listSame.Add(sameTreatment);
-
-                // No need to Update targets and update deficiency. They arcalculated after committed
-                //At this point have Benefit/RL, Base Benefit/RL, Cost, ConsquenceID
-                //Calculate B/C or RL/C or both (RL*B)/C
-                //Insert in Report table with Batch  Load.
-                String strOut = "," + section.SectionID + ","
-                                + nYear.ToString() + ","
-                                + commit.Treatment + ","
-                                + commit.Any.ToString() + ","
-                                + commit.Same.ToString() + ","
-                                + strBudget + ","
-                                + fAmount.ToString("f") + ","
-                                + deltaRemainingLife.ToString("f") + ","
-                                + deltaBenefit.ToString("f") + ","
-                                + dBCRatio.ToString("f") + ","
-                                + commit.Consequence.CommitID + ","
-                                + "0" + ","//Priority
-                                + strRLHash + ","
-                                + commit.CommitOrder + ","//Commit order.
-                                + "1" + "," //Committed
-                                + "0" + ","
-                                + strChangeHash + ","  //number viable treatment
-                                + section.Area.ToString() + ","
-                                + commit.ResultType;
-                //if (commit.OMSIsNotAllowed)
-                //{
-                //    strOut += "4";//Not allowed.
-                //}
-                //else if (commit.IsRepeat)
-                //{
-                //    strOut += "3"; //Committed result type.
-                //}
-                //else
-                //{
-                //    strOut += "1"; //Committed result type.
-                //}
-                switch (DBMgr.NativeConnectionParameters.Provider)
-                {
-                    case "MSSQL":
-                        tw.WriteLine(strOut);
-                        break;
-
-                    default:
-                        throw new NotImplementedException("TODO: Implement ANSI version of ApplyCommitted()");
-                        //break;
-                }
-            }
-        }
 
 
         private void CommitOMSActivity(bool isNotAllowed)

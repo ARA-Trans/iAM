@@ -38,11 +38,11 @@
                                 <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
                             </td>
                             <td>
-                                <v-edit-dialog :return-value.sync="props.item.name" large lazy persistent
+                                <v-edit-dialog :return-value="props.item.name" large lazy persistent
                                                @save="onEditBudgetName(props.item.name, props.item.index)">
                                     {{props.item.name}}
                                     <template slot="input">
-                                        <v-text-field v-model="props.item.name" label="Edit" single-line>
+                                        <v-text-field v-model="props.item.name" label="Edit" :rules="[budgetNameRule]" single-line>
                                         </v-text-field>
                                     </template>
                                 </v-edit-dialog>
@@ -77,7 +77,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import { hasValue } from '@/shared/utils/has-value-util';
     import { Action, State } from 'vuex-class';
-    import { any, propEq, clone, isNil } from 'ramda';
+    import { any, propEq, clone, isNil, remove, insert } from 'ramda';
     import { DataTableHeader } from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
@@ -98,6 +98,7 @@
     export default class EditBudgetsDialog extends Vue {
 
         @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         @Prop() dialogData: EditBudgetsDialogData;
 
@@ -109,6 +110,7 @@
         selectedGridRows: EditBudgetsDialogGridData[] = [];
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         selectedCriteriaIndex: number = -1;
+        modifiedName: string = '';
 
         /**
          * Sets the editBudgetsDialogGridData array using the dialogData object's budgets data property
@@ -228,11 +230,23 @@
          * Modifies the budget name at the specified index in the grid data list
          */
         onEditBudgetName(newName: string, index: number) {
-            this.editBudgetsDialogGridData[index].criteriaBudgets.budgetName = newName;
-            this.editBudgetsDialogGridData[index] = {
-                ...this.editBudgetsDialogGridData[index],
-                name: newName
-            };
+            var newGridDataEntry: EditBudgetsDialogGridData = {...this.editBudgetsDialogGridData[index]};
+            const validName: boolean = this.budgetNameIsUnused(newName);
+            if (!validName) {
+                this.setErrorMessageAction({message: 'There is already a budget with that name.'});
+            }
+            const name: string = validName ? newName : newGridDataEntry.criteriaBudgets.budgetName;
+            newGridDataEntry.name = name;
+            newGridDataEntry.criteriaBudgets.budgetName = name;
+            this.editBudgetsDialogGridData = insert(index, newGridDataEntry, remove(index, 1, this.editBudgetsDialogGridData));
+        }
+
+        budgetNameIsUnused(newName: string) {
+            return !any(gridDataEntry => gridDataEntry.criteriaBudgets.budgetName === newName, this.editBudgetsDialogGridData);
+        }
+
+        budgetNameRule(newName: string) {
+            return this.budgetNameIsUnused(newName) || 'There is already a budget with that name.';
         }
 
         /**
@@ -248,7 +262,11 @@
         onDeleteBudget() {
             this.editBudgetsDialogGridData = this.editBudgetsDialogGridData
                 .filter((budget: EditBudgetsDialogGridData) =>
-                    !any(propEq('name', budget.name), this.selectedGridRows)
+                    !any(otherBudget => 
+                        (budget.criteriaBudgets.budgetName === otherBudget.criteriaBudgets.budgetName) &&
+                        (budget.criteriaBudgets.criteria === otherBudget.criteriaBudgets.criteria),
+                        this.selectedGridRows
+                    )
                 )
                 .map((budget: EditBudgetsDialogGridData, index: number) => ({
                     name: budget.name,

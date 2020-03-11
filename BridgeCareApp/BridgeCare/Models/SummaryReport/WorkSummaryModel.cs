@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BridgeCare.Models.SummaryReport;
 
 namespace BridgeCare.Models
 {
@@ -9,5 +10,7 @@ namespace BridgeCare.Models
         public List<BridgeDataModel> BridgeDataModels { get; set; }
 
         public List<string> Treatments { get; set; }
+
+        public List<BudgetsPerBRKey> BudgetsPerBRKeys { get; set; }
     }
 }

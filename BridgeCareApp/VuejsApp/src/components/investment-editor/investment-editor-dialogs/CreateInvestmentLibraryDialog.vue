@@ -44,6 +44,7 @@
         InvestmentLibrary,
         InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
+    import {getUserName} from '../../../shared/utils/get-user-info';
     import {clone} from 'ramda';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     const ObjectID = require('bson-objectid');
@@ -76,6 +77,7 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
+                this.newInvestmentLibrary.owner = getUserName();
                 this.setIdsForNewInvestmentLibrarySubData();
                 this.$emit('submit', this.newInvestmentLibrary);
             } else {
