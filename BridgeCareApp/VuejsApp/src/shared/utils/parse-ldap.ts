@@ -14,3 +14,12 @@ export const parseLDAP = (ldap: string) => {
 export const checkLDAP = (ldap: string, cn: string) => {
     return parseLDAP(ldap).indexOf(cn) >= 0;
 };
+
+/**
+ * Checks whether a provided regex is matched in any of the Common Name fields of an LDAP-formatted string
+ * @param ldap An LDAP-formatted string
+ * @param regex A regexp
+ */
+export const regexCheckLDAP = (ldap: string, regex: RegExp) => {
+    return parseLDAP(ldap).map(s => !!s.match(regex)).reduce((a,b) => a || b);
+};
