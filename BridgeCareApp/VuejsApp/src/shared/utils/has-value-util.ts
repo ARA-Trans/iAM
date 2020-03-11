@@ -6,11 +6,12 @@ import {isNil, isEmpty} from 'ramda';
  * @param itemProp The item's property to check for a value
  */
 export const hasValue = (item: any, itemProp: string = '') => {
-    const itemHasValue = !isNil(item) && !isEmpty(item);
+    const itemHasValue = item !== null && item !== undefined && item !== '' && item !== [];
 
     let itemPropHasValue = true;
     if (itemHasValue && itemProp !== '') {
-        itemPropHasValue = item.hasOwnProperty(itemProp) && !isNil(item[itemProp]) && !isEmpty(item[itemProp]);
+        itemPropHasValue = item.hasOwnProperty(itemProp) && item[itemProp] !== null && item[itemProp] !== undefined &&
+            item[itemProp] !== '' && item[itemProp] !== [];
     }
 
     return itemHasValue && itemPropHasValue;
