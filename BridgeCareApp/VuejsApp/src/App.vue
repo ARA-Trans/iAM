@@ -276,7 +276,7 @@
                 this.route = to;
 
                 if (this.dmlPaths.indexOf(from.path) !== -1) {
-                    if (checkStateForUnsavedChanges(from.path, this.state) && !this.pushRouteUpdate) {
+                    if (!this.pushRouteUpdate && checkStateForUnsavedChanges(from.path, this.state)) {
                         this.alertDialogData = {
                             showDialog: true,
                             heading: 'Unsaved Changes',
@@ -305,6 +305,7 @@
 
         onAlertResult(submit: boolean) {
             this.alertDialogData = clone(emptyAlertData);
+
             if (submit) {
                 this.pushRouteUpdate = true;
                 this.onNavigate(this.route);
