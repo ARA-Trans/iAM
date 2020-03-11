@@ -251,6 +251,7 @@
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         showCreatePerformanceLibraryEquationDialog = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * beforeRouteEnter event handler
@@ -259,6 +260,7 @@
             next((vm: any) => {
                 if (to.path === '/PerformanceEditor/Scenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenario UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -607,7 +609,8 @@
             appliedPerformanceLibrary.id = this.selectedScenarioId;
             appliedPerformanceLibrary.name = this.scenarioPerformanceLibrary.name;
 
-            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary})
+            this.saveScenarioPerformanceLibraryAction({saveScenarioPerformanceLibraryData: appliedPerformanceLibrary,
+            objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario})
                 .then(() => {
                     setTimeout(() => {
                         this.onClearSelectedPerformanceLibrary();

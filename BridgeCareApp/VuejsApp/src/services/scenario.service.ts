@@ -138,7 +138,6 @@ export default class ScenarioService {
             axiosInstance.post('/api/UpdateScenario', scenarioUpdateData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
-
                         nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenarioId}`, scenarioUpdateData)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {

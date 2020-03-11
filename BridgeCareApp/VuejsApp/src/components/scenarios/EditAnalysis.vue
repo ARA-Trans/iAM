@@ -96,6 +96,7 @@
         @Action('setErrorMessage') setErrorMessageAction: any;
 
         selectedScenarioId: number = 0;
+        objectIdMOngoDBForScenario: string = '';
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
         optimizationTypes: string[] = ['Incremental Benefit/Cost', 'Maximum Benefit', 'Remaining Life/Cost',
@@ -115,6 +116,7 @@
             next((vm: any) => {
                 vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
                 vm.simulationName = to.query.simulationName;
+                vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
 
                 if (vm.selectedScenarioId === 0) {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
@@ -188,7 +190,7 @@
          * selected scenario
          */
         onApplyAnalysisToScenario() {
-            this.saveScenarioAnalysisAction({scenarioAnalysisData: this.analysis});
+            this.saveScenarioAnalysisAction({scenarioAnalysisData: this.analysis, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario});
         }
 
         /**

@@ -193,6 +193,7 @@
         createTargetLibraryDialogData: CreateTargetLibraryDialogData = clone(emptyCreateTargetLibraryDialogData);
         editDialogResult: string = '';
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets onload component UI properties
@@ -201,7 +202,7 @@
             next((vm: any) => {
                 if (to.path === '/TargetEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
-
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -407,7 +408,7 @@
             this.saveScenarioTargetLibraryAction({saveScenarioTargetLibraryData: {
                     ...this.selectedTargetLibrary,
                     id: this.selectedScenarioId
-                }
+                }, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardTargetLibraryChanges());
         }
 

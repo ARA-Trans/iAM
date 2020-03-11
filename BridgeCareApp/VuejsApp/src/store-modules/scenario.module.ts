@@ -139,7 +139,7 @@ const actions = {
             });
     },
     async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {
-        await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData)
+        await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     commit('analysisMutator', payload.scenarioAnalysisData);

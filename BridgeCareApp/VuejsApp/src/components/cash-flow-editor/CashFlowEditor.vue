@@ -256,11 +256,13 @@
         createCashFlowLibraryDialogData: CreateCashFlowLibraryDialogData = clone(emptyCreateCashFlowLibraryDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/CashFlowEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -538,7 +540,7 @@
             this.saveScenarioCashFlowLibraryAction({scenarioCashFlowLibrary: clone({
                     ...this.selectedCashFlowLibrary,
                     id: this.stateScenarioCashFlowLibrary.id
-                })
+                }), objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             });
         }
 

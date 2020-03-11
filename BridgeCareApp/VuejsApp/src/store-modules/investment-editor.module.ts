@@ -127,7 +127,7 @@ const actions = {
         }
     },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
-        await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData)
+        await InvestmentEditorService.saveScenarioInvestmentLibrary(payload.saveScenarioInvestmentLibraryData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<InvestmentLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioInvestmentLibraryMutator', response.data);

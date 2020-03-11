@@ -98,7 +98,7 @@ const actions = {
             });
     },
     async saveScenarioDeficientLibrary({dispatch, commit}: any, payload: any) {
-        await DeficientService.saveScenarioDeficientLibrary(payload.saveScenarioDeficientLibraryData)
+        await DeficientService.saveScenarioDeficientLibrary(payload.saveScenarioDeficientLibraryData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<Deficient[]>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioDeficientLibraryMutator', response.data);

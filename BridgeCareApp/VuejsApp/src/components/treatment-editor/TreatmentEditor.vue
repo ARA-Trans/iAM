@@ -191,6 +191,7 @@
         showCreateTreatmentDialog: boolean = false;
         tabData: TabData = clone(emptyTabData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets component ui properties that triggers cascading ui updates
@@ -199,7 +200,7 @@
             next((vm: any) => {
                 if (to.path === '/TreatmentEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
-
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
@@ -512,7 +513,7 @@
                     ...clone(this.selectedTreatmentLibrary),
                     id: this.selectedScenarioId,
                     name: this.scenarioTreatmentLibrary.name
-                }
+                }, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => setTimeout(() => {
                 if (hasValue(this.treatmentLibrarySelectItemValue) && this.treatmentLibrarySelectItemValue !== '0') {
                     this.onDiscardChanges();
