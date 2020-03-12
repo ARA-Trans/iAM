@@ -42,6 +42,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
             #endregion "Compile"
 
             //FillSectionList();
+            var sections = Enumerable.Empty<Section>();
 
             //FillCommittedProjects();
 
@@ -54,6 +55,17 @@ namespace AppliedResearchAssociates.iAM.Simulation
             foreach (var year in Enumerable.Range(InvestmentPlan.FirstYearOfAnalysisPeriod, 1 + InvestmentPlan.NumberOfYearsInAnalysisPeriod))
             {
                 // apply "deteriorate"/performance curves.
+                foreach (var section in sections)
+                {
+                    var projects = Enumerable.Empty<Project>();
+                    foreach (var project in projects)
+                    {
+                        if (project.Section == section && /* project is multi-year && project is in progress re current year */)
+                        {
+
+                        }
+                    }
+                }
 
                 // determine benefit/cost.
 
