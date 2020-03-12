@@ -201,7 +201,7 @@ namespace BridgeCare.Services
                     YearAny = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
                     YearSame = Convert.ToInt32(GetCellValue(worksheet, row, ++column)),
                     Budget = GetCellValue(worksheet, row, ++column),
-                    Cost = Convert.ToInt32(GetCellValue(worksheet, row, ++column))
+                    Cost = double.Parse(GetCellValue(worksheet, row, ++column))
                 };
 
                 var commitConsequences = new List<CommitConsequenceModel>();
