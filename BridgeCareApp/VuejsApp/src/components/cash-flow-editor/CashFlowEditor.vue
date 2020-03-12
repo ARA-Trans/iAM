@@ -218,9 +218,9 @@
         components: {CreateCashFlowLibraryDialog, CriteriaEditorDialog, Alert}
     })
     export default class CashFlowEditor extends Vue {
-        @State(state => state.cashFlow.cashFlowLibraries) stateCashFlowLibraries: CashFlowLibrary[];
-        @State(state => state.cashFlow.selectedCashFlowLibrary) stateSelectedCashFlowLibrary: CashFlowLibrary;
-        @State(state => state.cashFlow.scenarioCashFlowLibrary) stateScenarioCashFlowLibrary: CashFlowLibrary;
+        @State(state => state.cashFlowEditor.cashFlowLibraries) stateCashFlowLibraries: CashFlowLibrary[];
+        @State(state => state.cashFlowEditor.selectedCashFlowLibrary) stateSelectedCashFlowLibrary: CashFlowLibrary;
+        @State(state => state.cashFlowEditor.scenarioCashFlowLibrary) stateScenarioCashFlowLibrary: CashFlowLibrary;
 
         @Action('getCashFlowLibraries') getCashFlowLibrariesAction: any;
         @Action('selectCashFlowLibrary') selectCashFlowLibraryAction: any;

@@ -154,9 +154,9 @@
         components: {CreateDeficientLibraryDialog, CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog, Alert}
     })
     export default class DeficientEditor extends Vue {
-        @State(state => state.deficient.deficientLibraries) stateDeficientLibraries: DeficientLibrary[];
-        @State(state => state.deficient.selectedDeficientLibrary) stateSelectedDeficientLibrary: DeficientLibrary;
-        @State(state => state.deficient.scenarioDeficientLibrary) stateScenarioDeficientLibrary: DeficientLibrary;
+        @State(state => state.deficientEditor.deficientLibraries) stateDeficientLibraries: DeficientLibrary[];
+        @State(state => state.deficientEditor.selectedDeficientLibrary) stateSelectedDeficientLibrary: DeficientLibrary;
+        @State(state => state.deficientEditor.scenarioDeficientLibrary) stateScenarioDeficientLibrary: DeficientLibrary;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;

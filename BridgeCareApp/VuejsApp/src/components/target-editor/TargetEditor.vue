@@ -154,9 +154,9 @@
         components: {CreateTargetLibraryDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog, Alert}
     })
     export default class TargetEditor extends Vue {
-        @State(state => state.target.targetLibraries) stateTargetLibraries: TargetLibrary[];
-        @State(state => state.target.selectedTargetLibrary) stateSelectedTargetLibrary: TargetLibrary;
-        @State(state => state.target.scenarioTargetLibrary) stateScenarioTargetLibrary: TargetLibrary;
+        @State(state => state.targetEditor.targetLibraries) stateTargetLibraries: TargetLibrary[];
+        @State(state => state.targetEditor.selectedTargetLibrary) stateSelectedTargetLibrary: TargetLibrary;
+        @State(state => state.targetEditor.scenarioTargetLibrary) stateScenarioTargetLibrary: TargetLibrary;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
