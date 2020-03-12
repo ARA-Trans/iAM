@@ -137,7 +137,7 @@ namespace Simulation
                 m_listBudgetOrder.Add(strBudget);
             }
 
-            String strSelect = "SELECT YEAR_,BUDGETNAME,AMOUNT FROM " + cgOMS.Prefix + "YEARLYINVESTMENT WHERE SIMULATIONID='" + this.InvestmentID + "' ORDER BY YEAR_";
+            String strSelect = "SELECT YEAR_,BUDGETNAME,AMOUNT FROM YEARLYINVESTMENT WHERE SIMULATIONID='" + this.InvestmentID + "' ORDER BY YEAR_";
             DataSet ds = null;
             try
             {

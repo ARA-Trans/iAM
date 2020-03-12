@@ -149,7 +149,7 @@ namespace Simulation
                     if (_calculate == null)
                     {
                         _calculate = new CalculateEvaluate.CalculateEvaluate();
-                        _calculate.BuildClass(_equation, true, cgOMS.Prefix + _table + "_BINARY_EQUATION_" + _performanceID);
+                        _calculate.BuildClass(_equation, true, _table + "_BINARY_EQUATION_" + _performanceID);
 
 
                         if (_calculate.m_cr == null)
@@ -157,7 +157,7 @@ namespace Simulation
                             _compilerResultsEquation = _calculate.CompileAssembly();
                             if (_table != null)
                             {
-                                SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + _table, "BINARY_EQUATION", _performanceID, _calculate);
+                                SimulationMessaging.SaveSerializedCalculateEvaluate(_table, "BINARY_EQUATION", _performanceID, _calculate);
                             }
                         }
 
@@ -954,9 +954,9 @@ namespace Simulation
                 {
                     if (_evaluate.m_cr == null)
                     {
-                        _evaluate.BuildClass(_evaluate.Expression, false, cgOMS.Prefix + _table + "_" + _column + "_" + _performanceID);
+                        _evaluate.BuildClass(_evaluate.Expression, false,  _table + "_" + _column + "_" + _performanceID);
                         _evaluate.CompileAssembly();
-                        SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + _table, _column, _performanceID, _evaluate);
+                        SimulationMessaging.SaveSerializedCalculateEvaluate( _table, _column, _performanceID, _evaluate);
                     }
                 }
                 bool isMet = (bool)_evaluate.RunMethod(input);
@@ -1048,14 +1048,14 @@ namespace Simulation
                             functionEquation = functionEquation.Replace(oldValue, newValue);
                         }
                     }
-                    _calculate.BuildFunctionClass(functionEquation, "double", cgOMS.Prefix + _table + "_BINARY_EQUATION_" + _performanceID);
+                    _calculate.BuildFunctionClass(functionEquation, "double",  _table + "_BINARY_EQUATION_" + _performanceID);
 
                     if (_calculate.m_cr == null)
                     {
                         _compilerResultsEquation = _calculate.CompileAssembly();
                         if (_table != null)
                         {
-                            SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + _table, "BINARY_EQUATION", _performanceID, _calculate);
+                            SimulationMessaging.SaveSerializedCalculateEvaluate( _table, "BINARY_EQUATION", _performanceID, _calculate);
                         }
                     }
 

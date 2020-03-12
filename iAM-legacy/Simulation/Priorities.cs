@@ -75,7 +75,7 @@ namespace Simulation
         public Priorities(string id)
         {
             m_strPriorityID = id;
-            _table = cgOMS.Prefix + "PRIORITY";
+            _table = "PRIORITY";
             _column = "BINARY_CRITERIA";
             criteria = new Criterias(_table, _column, id);
         }
@@ -84,7 +84,7 @@ namespace Simulation
             IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             //Cleanup unused Budgets
-            String strDelete = "DELETE FROM " + cgOMS.Prefix + "PRIORITYFUND WHERE PRIORITYID='" + this.PriorityID + "'";
+            String strDelete = "DELETE FROM PRIORITYFUND WHERE PRIORITYID='" + this.PriorityID + "'";
             
             if(listBudgets.Count > 0)strDelete += " AND (";
             int nBudget = 0;
@@ -122,7 +122,7 @@ namespace Simulation
             }
             else
             {
-                String strSelect = "SELECT BUDGET, FUNDING FROM " + cgOMS.Prefix + "PRIORITYFUND WHERE PRIORITYID='" + this.PriorityID + "'";
+                String strSelect = "SELECT BUDGET, FUNDING FROM PRIORITYFUND WHERE PRIORITYID='" + this.PriorityID + "'";
                 DataSet ds;
                 try
                 {

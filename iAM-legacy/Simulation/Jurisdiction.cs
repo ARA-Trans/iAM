@@ -16,7 +16,7 @@ namespace Simulation
         public String Table { get; set; }
         public String Column { get; set; }
         
-        public Boolean Default { get; set; }
+        public bool Default { get; set; }
 
         List<String> _attributesCriteria;
         CompilerResults _compilerResultsCriteria;

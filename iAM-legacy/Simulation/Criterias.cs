@@ -153,11 +153,11 @@ namespace Simulation
                 {
                     if (evaluate.m_cr == null)
                     {
-                        evaluate.BuildClass(evaluate.Expression, false, cgOMS.Prefix + _tableName + "_" + _columnName + "_" + _ID);
+                        evaluate.BuildClass(evaluate.Expression, false, _tableName + "_" + _columnName + "_" + _ID);
                         evaluate.CompileAssembly();
                         if (_tableName != null)
                         {
-                            SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + _tableName, _columnName, _ID, evaluate);
+                            SimulationMessaging.SaveSerializedCalculateEvaluate(_tableName, _columnName, _ID, evaluate);
                         }
                     }
                 }

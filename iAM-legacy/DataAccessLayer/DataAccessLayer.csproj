@@ -134,82 +134,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthenticationData.cs" />
-    <Compile Include="CreateScenario.cs" />
-    <Compile Include="DB.cs" />
-    <Compile Include="DecisionEngine.cs" />
-    <Compile Include="DeleteScenario.cs" />
-    <Compile Include="DTOs\ActivityConditionIndex.cs" />
-    <Compile Include="DTOs\ActivityResultStore.cs" />
-    <Compile Include="DTOs\ActivityStore.cs" />
-    <Compile Include="DTOs\AssetLocationStore.cs" />
-    <Compile Include="DTOs\AssetReplyOMSColumnStore.cs" />
-    <Compile Include="DTOs\AssetReplyOMSConditionIndex.cs" />
-    <Compile Include="DTOs\AssetReplyOMSDataStore.cs" />
-    <Compile Include="DTOs\AssetReplyOMSLookupTable.cs" />
-    <Compile Include="DTOs\AssetReplyOMSTableStore.cs" />
-    <Compile Include="DTOs\AssetRequestOMSColumnStore.cs" />
-    <Compile Include="DTOs\AssetRequestOMSDataStore.cs" />
-    <Compile Include="DTOs\AssetRequestOMSTableStore.cs" />
-    <Compile Include="DTOs\AttributeValueDEStore.cs" />
-    <Compile Include="DTOs\CommittedStore.cs" />
-    <Compile Include="DTOs\EditSimulationStore.cs" />
-    <Compile Include="DTOs\JsonTransfer.cs" />
-    <Compile Include="DTOs\OMSFieldValueStore.cs" />
-    <Compile Include="DTOs\AssetTypeStore.cs" />
-    <Compile Include="DTOs\AttributeStore.cs" />
-    <Compile Include="DTOs\BudgetStore.cs" />
-    <Compile Include="DTOs\CategoryBudgetStore.cs" />
-    <Compile Include="DTOs\ConsequenceStore.cs" />
-    <Compile Include="DTOs\CostStore.cs" />
-    <Compile Include="DTOs\CriteriaStore.cs" />
-    <Compile Include="DTOs\InvestmentStore.cs" />
-    <Compile Include="DTOs\NetworkConditionStore.cs" />
-    <Compile Include="DTOs\OCIWeightStore.cs" />
-    <Compile Include="DTOs\OMSActivityStore.cs" />
-    <Compile Include="DTOs\OMSAssetConditionIndexStore.cs" />
-    <Compile Include="DTOs\OMSCategoryPrediction.cs" />
-    <Compile Include="DTOs\OMSConditionIndexStore.cs" />
-    <Compile Include="DTOs\OMSConsequenceStore.cs" />
-    <Compile Include="DTOs\OMSCostStore.cs" />
-    <Compile Include="DTOs\OMSPrediction.cs" />
-    <Compile Include="DTOs\OMSPredictionPoints.cs" />
-    <Compile Include="DTOs\PriorityFundStore.cs" />
-    <Compile Include="DTOs\PriorityStore.cs" />
-    <Compile Include="DTOs\PropertyStore.cs" />
-    <Compile Include="DTOs\SimulationActivityBudgetStore.cs" />
-    <Compile Include="DTOs\TargetResultStore.cs" />
-    <Compile Include="DTOs\TargetStore.cs" />
-    <Compile Include="DTOs\TreatmentStore.cs" />
-    <Compile Include="DTOs\ValidationRuleStore.cs" />
-    <Compile Include="DTOs\ValuesStringStore.cs" />
-    <Compile Include="DTOs\ValueStore.cs" />
-    <Compile Include="DTOs\WorkPlanStore.cs" />
-    <Compile Include="DTOs\WorkPlanYearStore.cs" />
-    <Compile Include="DTOs\YearBudgetAmountStore.cs" />
-    <Compile Include="DTOs\YearBudgetStore.cs" />
-    <Compile Include="DTOs\YearInvestmentStore.cs" />
-    <Compile Include="ErrorStore.cs" />
-    <Compile Include="ImportOMS.cs" />
-    <Compile Include="MSSQL\Column.cs" />
-    <Compile Include="MSSQL\Constraint.cs" />
-    <Compile Include="MSSQL\Database.cs" />
-    <Compile Include="MSSQL\Identity.cs" />
-    <Compile Include="MSSQL\SPHelp.cs" />
-    <Compile Include="OMS.cs" />
-    <Compile Include="OMSCriteria.cs" />
-    <Compile Include="PrepareAnalysis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DTOs\SimulationStore.cs" />
-    <Compile Include="RunSimulation.cs" />
-    <Compile Include="Scenario.cs" />
-    <Compile Include="SelectScenario.cs" />
-    <Compile Include="SessionStore.cs" />
-    <Compile Include="SimulationComponents.cs" />
-    <Compile Include="SQLColumn.cs" />
-    <Compile Include="SchemaBuilder.cs" />
-    <Compile Include="UpdateScenario.cs" />
-    <Compile Include="WorkPlanFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -230,6 +155,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="MSSQL\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

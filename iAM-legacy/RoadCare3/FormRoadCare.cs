@@ -13,8 +13,7 @@ namespace RoadCare3
     using RoadCare3.Properties;
     using RoadCareDatabaseOperations;
     using WeifenLuo.WinFormsUI.Docking;
-    using DataAccessLayer;
-    using DataAccessLayer.DTOs;
+
 
     public partial class FormRoadCare : Form
     {
@@ -331,19 +330,7 @@ namespace RoadCare3
 
         private void importOMSToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataAccessLayer.ImportOMS.GetOMSConnectionString(DBMgr.GetNativeConnection().ConnectionString);
-            List<String> assets = DataAccessLayer.ImportOMS.GetOMSAssets();
-            List<String> additionalAttributes = DataAccessLayer.ImportOMS.GetOMSAdditionalAttributes();
-            List<AttributeStore> attributes = PrepareAnalysis.InitializeRoadCareAttributes(assets,additionalAttributes);
-            ImportOMS.UpdateAttributesForOMS(attributes, DBMgr.NativeConnectionParameters.Server, DBMgr.NativeConnectionParameters.Database,DBMgr.NativeConnectionParameters.IsIntegratedSecurity);
-            FormManager.GetSolutionExplorer().Close();
-            if (!FormManager.IsSolutionExplorerOpen())
-            {
-                m_solutionExplorer = new SolutionExplorer(ref dockPanelMain);
-                m_solutionExplorer.TabText = "RoadCare Explorer";
-                m_solutionExplorer.Show(dockPanelMain, DockState.DockLeft);
-                FormManager.AddSolutionExplorer(m_solutionExplorer);
-            }
+
 
         }
 

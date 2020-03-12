@@ -24,7 +24,7 @@ namespace Simulation
             Criteria = new Criterias("REMAINING_LIFE", "BINARY_CRITERIA", RemainingLifeId.ToString());
             byte[] assemblyCriteria = null;
             string currentCriteria = "";
-            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = Simulation.ConvertOMSAttribute(criteria);
+            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = criteria;
             assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate("REMAINING_LIFE", "BINARY_CRITERIA", RemainingLifeId.ToString(), assemblyCriteria);
             if (assemblyCriteria != null && assemblyCriteria.Length > 0)
             {

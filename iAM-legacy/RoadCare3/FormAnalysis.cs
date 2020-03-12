@@ -12,8 +12,7 @@ using System.Collections;
 using System.Threading;
 using RoadCare3.Properties;
 using RoadCareDatabaseOperations;
-using DataAccessLayer;
-using SimulationDataAccess;
+
 
 namespace RoadCare3
 {
@@ -598,13 +597,6 @@ namespace RoadCare3
 
 		public void RunSimulation()
 		{
-            String omsConnectionString = DataAccessLayer.ImportOMS.GetOMSConnectionString(DBMgr.GetNativeConnection().ConnectionString);
-            if(!String.IsNullOrWhiteSpace(omsConnectionString))
-            {
-                string networkArea = SimulationData.GetNetworkSpecificArea(m_strNetworkID);
-                PrepareAnalysis.SetSimulationArea(m_strSimulationID, networkArea);
-                PrepareAnalysis.Attributes(m_strSimulationID);
-            }
             LockInformation simulationCheck = Global.GetLockInfo(m_strNetworkID, m_strSimulationID);
             if (!simulationCheck.Locked)
             {

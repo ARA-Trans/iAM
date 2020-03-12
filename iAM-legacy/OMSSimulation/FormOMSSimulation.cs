@@ -257,54 +257,9 @@ namespace OMSSimulation
 
         private void buttonUpdate_Click(object sender, EventArgs e)
         {
-            OMSSimulation oms = (OMSSimulation)comboBoxSimulationDescription.SelectedItem;
-            if (oms != null && oms.TabPage == null)
-            {
-
-                tabControlOutput.TabPages.Add(oms.CreateNewTabPage());
-                tabControlOutput.SelectedTab = oms.TabPage;
-                UpdateModel(oms);
-            }
-            else if (oms != null && oms.TabPage != null)
-            {
-                oms.TextBox.Clear();
-                oms.Thread = null;
-                UpdateModel(oms);
-            }
-
 
 
         }
 
-        private void UpdateModel(OMSSimulation oms)
-        {
-            string sectionID = textBoxSectionID.Text;
-            string treatment = comboBoxTreatment.Text;
-            string action = comboBoxAction.Text;
-            if (string.IsNullOrWhiteSpace(sectionID) || string.IsNullOrWhiteSpace(treatment) || string.IsNullOrWhiteSpace(action) || string.IsNullOrWhiteSpace(comboBoxYear.Text))
-            {
-                MessageBox.Show("All fields save for value are mandatory.");
-                return;
-            }
-            int year = Convert.ToInt32(comboBoxYear.Text);
-            string value = textBoxValue.Text;
-
-            try
-            {
-                if (SimulationMessaging.Valid)
-                {
-                    oms.TextBox.Text = "Beginning Update Simulation " + oms.ToString() + " at " + DateTime.Now.ToString();
-                    Simulation.Simulation simulation = new Simulation.Simulation(oms.SimulationID, sectionID, action, treatment, year, value,null);
-                    oms.Thread = new Thread(new ThreadStart(simulation.UpdateSimulation));
-                    oms.Thread.Start();
-                    timerSimulation.Start();
-                }
-            }
-            catch (Exception e)
-            {
-                oms.TextBox.Text = "Error starting Update simulation " + oms.ToString() + ". " + e.Message;
-            }
-
-        }
     }
 }

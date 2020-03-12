@@ -23,7 +23,7 @@ namespace Simulation
             Criteria = new Criterias("BUDGET", "BINARY_CRITERIA", BudgetCriteriaId.ToString());
             byte[] assemblyCriteria = null;
             string currentCriteria = "";
-            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = Simulation.ConvertOMSAttribute(criteria);
+            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = criteria;
             assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate("BUDGET", "BINARY_CRITERIA", BudgetCriteriaId.ToString(), assemblyCriteria);
             if (assemblyCriteria != null && assemblyCriteria.Length > 0)
             {

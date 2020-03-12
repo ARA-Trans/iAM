@@ -402,12 +402,6 @@
     <Compile Include="FormAttributeValidation.Designer.cs">
       <DependentUpon>FormAttributeValidation.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormCompoundTreatment.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormCompoundTreatment.Designer.cs">
-      <DependentUpon>FormCompoundTreatment.cs</DependentUpon>
-    </Compile>
     <Compile Include="SpecialReports\FormConfigurableInputSummary.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -887,9 +881,6 @@
     <EmbeddedResource Include="FormAttributeValidation.resx">
       <DependentUpon>FormAttributeValidation.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormCompoundTreatment.resx">
-      <DependentUpon>FormCompoundTreatment.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SpecialReports\FormConfigurableInputSummary.resx">
       <DependentUpon>FormConfigurableInputSummary.cs</DependentUpon>
     </EmbeddedResource>
@@ -1254,10 +1245,6 @@
     <ProjectReference Include="..\CompileEquationCriteria\CompileEquationCriteria.csproj">
       <Project>{237DC7CC-9D67-4502-B3EE-4D8ACD8FE7AC}</Project>
       <Name>CompileEquationCriteria</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj">
-      <Project>{0f2fa112-cbd1-4f2b-8f4b-8648656af6e0}</Project>
-      <Name>DataAccessLayer</Name>
     </ProjectReference>
     <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj">
       <Project>{0370C578-5D1E-41DC-B0FF-E40DCF942CFF}</Project>

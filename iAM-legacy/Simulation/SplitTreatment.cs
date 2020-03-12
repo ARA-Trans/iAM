@@ -27,7 +27,7 @@ namespace Simulation
             Criteria = new Criterias("SPLIT_TREATMENT", "BINARY_CRITERIA", splitTreamentId);
             byte[] assemblyCriteria = null;
             string currentCriteria = "";
-            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = Simulation.ConvertOMSAttribute(criteria);
+            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = criteria;
             assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate("SPLIT_TREATMENT", "BINARY_CRITERIA", splitTreamentId, assemblyCriteria);
             if (assemblyCriteria != null && assemblyCriteria.Length > 0)
             {

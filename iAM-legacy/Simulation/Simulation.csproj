@@ -317,26 +317,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalysisMethod.cs" />
-    <Compile Include="AnalysisParameters.cs" />
     <Compile Include="SimulationQueue.cs" />
     <Compile Include="AppliedTreatment.cs" />
     <Compile Include="AttributeChange.cs" />
-    <Compile Include="BenefitCost.cs" />
     <Compile Include="BudgetCriteria.cs" />
     <Compile Include="CalculateBenefit.cs" />
     <Compile Include="CalculatedAttribute.cs" />
     <Compile Include="CommitCopy.cs" />
     <Compile Include="CommittedEquation.cs" />
-    <Compile Include="CompoundTreatment.cs" />
-    <Compile Include="CompoundTreatmentElement.cs" />
-    <Compile Include="ConditionalRSL.cs" />
-    <Compile Include="ConditionIndex.cs" />
     <Compile Include="CRS.cs" />
     <Compile Include="Committed.cs" />
     <Compile Include="Consequences.cs" />
     <Compile Include="Costs.cs" />
     <Compile Include="Criterias.cs" />
-    <Compile Include="DataOMS.cs" />
     <Compile Include="Deteriorate.cs" />
     <Compile Include="Interface\IBudgetCriteria.cs" />
     <Compile Include="Interface\IRemainingLife.cs" />
@@ -346,16 +339,10 @@
     <Compile Include="Interface\ISupersede.cs" />
     <Compile Include="Investments.cs" />
     <Compile Include="Jurisdiction.cs" />
-    <Compile Include="LCCAOptimization.cs" />
     <Compile Include="LocationCopy.cs" />
-    <Compile Include="OCIWeight.cs" />
-    <Compile Include="OMS.cs" />
-    <Compile Include="OMSCriteria.cs" />
-    <Compile Include="OverallConditionIndex.cs" />
     <Compile Include="Priorities.cs" />
     <Compile Include="SimulationParameters.cs" />
     <Compile Include="RemainingLife.cs" />
-    <Compile Include="ReportOMS.cs" />
     <Compile Include="Scheduled.cs" />
     <Compile Include="Sections.cs" />
     <Compile Include="Simulation.cs" />

@@ -18,10 +18,7 @@ namespace Simulation
         private Dictionary<string, List<AttributeChange>> CommittedConsequences { get; }
         private Dictionary<string, CommittedEquation> CommittedEquations { get; }
         private List<Deteriorate> CurrentDeteriorate { get; }
-        
         private List<Treatments> SimulationTreatments { get; }
-
-
         private bool IsBenefitAttributeAscending { get; }
         private bool IsBenefitCalculated { get; }
 

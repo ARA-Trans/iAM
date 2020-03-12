@@ -6,56 +6,27 @@ namespace Simulation
 {
     public class AttributeChange
     {
-        private String m_strAttribute;
-        private String m_strChange;
-        private String m_strMinimum;
-        private String m_strMaximum;
-        private String m_strRedirect;
-
         /// <summary>
         /// Attribute to be changed as consequence
         /// </summary>
-        public String Attribute
-        {
-            get { return m_strAttribute; }
-            set { m_strAttribute = value; }
-        }
+        public String Attribute { get; set; }
+
 
         /// <summary>
         /// Change to attribute as part of consequence.
         /// </summary>
-        public String Change
-        {
-            get { return m_strChange; }
-            set { m_strChange = value; }
-        }
-
+        public String Change { get; set; }
         /// <summary>
         /// Minimum value after attribute change
         /// </summary>
-        public String Minimum
-        {
-            get { return m_strMinimum; }
-            set { m_strMinimum = value; }
-        }
+        public String Minimum { get; set; }
+
 
         /// <summary>
         /// Maximum value after attribute change
         /// </summary>
-        public String Maximum
-        {
-            get { return m_strMaximum; }
-            set { m_strMaximum = value; }
-        }
-
-        /// <summary>
-        /// Where this attribute is redirected to.
-        /// </summary>
-        public String RedirectAttribute
-        {
-            get { return m_strRedirect; }
-            set { m_strRedirect = value; }
-        }
+        public String Maximum { get; set; }
+     
 
         public AttributeChange(string attribute, string change)
         {
@@ -66,26 +37,7 @@ namespace Simulation
         {
 
         }
-        /// <summary>
-        /// Calculate change in a NUMBER attribute
-        /// </summary>
-        /// <param name="fValue">Current value of the attribute</param>
-        /// <returns></returns>
-        public float CalculateChange(float fValue)
-        {
-            //TODO Actually calculate the change based upon m_strChange and input value.
 
-            return new float();
-        }
-        /// <summary>
-        /// New value for a STRING attribute as a consequence.
-        /// </summary>
-        /// <param name="strValue"></param>
-        /// <returns></returns>
-        public String CalculateChange(String strValue)
-        {
-            return this.Change;
-        }
 
         public object ApplyChange(object value)
         {

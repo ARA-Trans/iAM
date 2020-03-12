@@ -111,12 +111,12 @@ namespace Simulation
                     if (_calculate == null)
                     {
                         _calculate = new CalculateEvaluate.CalculateEvaluate();
-                        _calculate.BuildClass(_consequenceEquation, true, cgOMS.Prefix + "CONSEQUENCES_BINARY_EQUATION_" + _id);
+                        _calculate.BuildClass(_consequenceEquation, true, "CONSEQUENCES_BINARY_EQUATION_" + _id);
 
                         if (_calculate.m_cr == null)
                         {
                             _compilerResultsEquation = _calculate.CompileAssembly();
-                            SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + "CONSEQUENCES", "BINARY_EQUATION", _id, _calculate);
+                            SimulationMessaging.SaveSerializedCalculateEvaluate("CONSEQUENCES", "BINARY_EQUATION", _id, _calculate);
                         }
                     }
                 }
@@ -138,7 +138,7 @@ namespace Simulation
 
         public Consequences(string id)
         {
-            _table = cgOMS.Prefix + "CONSEQUENCES";
+            _table = "CONSEQUENCES";
             _criteriaColumn = "BINARY_CRITERIA";
             _id = id;
             _criteria = new Criterias(_table, _criteriaColumn, _id);
@@ -165,29 +165,14 @@ namespace Simulation
             _attributes.Add(strAttribute);
             attributeChange.Change = strChange;
 
-            if (strChange.Contains("COMPOUND_TREATMENT"))
-            {
-                _compoundTreatment = strChange;
-                _compoundTreatment = _compoundTreatment.Replace("COMPOUND_TREATMENT(", "");
-                _compoundTreatment = _compoundTreatment.Replace(")", "");
 
-				CompoundTreatment compoundTreatment = Simulation.CompoundTreatments.Find(delegate(CompoundTreatment ct) { return ct.CompoundTreatmentName == _compoundTreatment; });
-				if (compoundTreatment == null)
-				{
-					compoundTreatment = new CompoundTreatment(_compoundTreatment);
-					Simulation.CompoundTreatments.Add(compoundTreatment);
-				}
-            }
-            else
+            if (SimulationMessaging.AttributeMaximum.Contains(strAttribute))
             {
-                if (SimulationMessaging.AttributeMaximum.Contains(strAttribute))
-                {
-                    attributeChange.Maximum = SimulationMessaging.AttributeMaximum[strAttribute].ToString();
-                }
-                if (SimulationMessaging.AttributeMinimum.Contains(strAttribute))
-                {
-                    attributeChange.Minimum = SimulationMessaging.AttributeMinimum[strAttribute].ToString();
-                }
+                attributeChange.Maximum = SimulationMessaging.AttributeMaximum[strAttribute].ToString();
+            }
+            if (SimulationMessaging.AttributeMinimum.Contains(strAttribute))
+            {
+                attributeChange.Minimum = SimulationMessaging.AttributeMinimum[strAttribute].ToString();
             }
             AddAttributeChange(attributeChange);
         }
@@ -249,12 +234,12 @@ namespace Simulation
                     }
                 }
 
-                _calculate.BuildFunctionClass(_consequenceEquation, "double", cgOMS.Prefix + "CONSEQUENCES_BINARY_EQUATION_" + _id);
+                _calculate.BuildFunctionClass(_consequenceEquation, "double", "CONSEQUENCES_BINARY_EQUATION_" + _id);
 
                 if (_calculate.m_cr == null)
                 {
                     _compilerResultsEquation = _calculate.CompileAssembly();
-                    SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + "CONSEQUENCES", "BINARY_EQUATION", _id, _calculate);
+                    SimulationMessaging.SaveSerializedCalculateEvaluate("CONSEQUENCES", "BINARY_EQUATION", _id, _calculate);
                 }
             }
         }

@@ -37,39 +37,6 @@ namespace Simulation
         public Hashtable m_hashNextAttributeValue = new Hashtable(); //Attribute value for current analysis year.
  //       Hashtable m_hashYearCommitted = new Hashtable();
         List<Committed> _yearCommitted = new List<Committed>();
-        bool m_bTreated = false;
-
-
-        //OMS Specific variables
-        OverallConditionIndex _oci;
-        //OMS Roll Forward table
-        private Dictionary<string, List<DataOMS>> _attributeValueYear;
-        //OMS Allows mulitple treatments per year.
-        private List<AppliedTreatment> _appliedTreatments;
-
-        /// <summary>
-        /// The normalized RSL value after deterioration.
-        /// Find the value of each deteriorating variable that matches the lowe
-        /// </summary>
-        public Dictionary<string, double> NormalizedConditionalRSLs { get;  set; }
-        
-        /// <summary>
-        /// The bin each deteriorate attribute falls into.
-        /// </summary>
-        public Dictionary<string, double> ConditionalRSLBins { get; set; }
-
-        public List<AppliedTreatment> AppliedTreatments
-        {
-            get { return _appliedTreatments; }
-            set { _appliedTreatments = value; }
-        }
-        
-        public OverallConditionIndex OCI
-        {
-            get { return _oci; }
-            set { _oci = value; }
-        }
-
 
         public int NumberTreatment
         {
@@ -78,24 +45,10 @@ namespace Simulation
         }
         
         
-        public bool Treated
-        {
-            get { return m_bTreated; }
-            set { m_bTreated = value; }
-        }
+        public bool Treated { get; set; }
 
 
-        public List<Committed> YearCommit
-        {
-            get { return _yearCommitted; }
-            set { _yearCommitted = value; }
-        }
-
-        public Dictionary<string, List<DataOMS>> AttributeValueYear
-        {
-            get { return _attributeValueYear; }
-            set { _attributeValueYear = value; }
-        }
+        public List<Committed> YearCommit { get; set; }
 
         /// <summary>
         /// SectionID from RoadCare SECTION_networkid TABLE
@@ -287,11 +240,9 @@ namespace Simulation
         /// <returns></returns>
         public bool IsTreatmentAllowed(String sTreatment,String sAny,String sSame, int nYear)
         {
-            if (!SimulationMessaging.IsOMS)//OMS allows multiple treatments
-            {
-                //Already treated.
-                if (Treated) return false;
-            }
+
+            //Already treated.
+            if (Treated) return false;
             int nAny = int.Parse(sAny);
             int nSame = int.Parse(sSame);
             // Check if cast shadow on committed.
@@ -316,51 +267,6 @@ namespace Simulation
             return true;
         }
 
-        public bool IsOMSTreatmentAllowed(string treatment, int any, int same, int year)
-        {
-            List<SameTreatment> yearCheck = m_listSame.FindAll(delegate(SameTreatment st) { return st.nYear == year; });
-            List<SameTreatment> sameCheck = m_listSame.FindAll(delegate(SameTreatment st) { return st.strTreatment == treatment && !st.isNotAllowed; });
-
-            if (yearCheck != null) //An exclusive treatment has already been picked for this year.
-            {
-                foreach (SameTreatment sameTreatment in yearCheck)
-                {
-                    if (sameTreatment.isExclusive)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (sameCheck != null) // A treatment of this name is not allowed within a number of years of this treatment.
-            {
-                foreach (SameTreatment sameTreatment in sameCheck)
-                {
-                    if (sameTreatment.nYear + same > year)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        //This prevents a commit and a commit do not allow in the same year.
-        public bool IsOMSCommitAllowed(string treatment, int year)
-        {
-            return true;//No reason to honor one commit over other commit
-            //List<SameTreatment> sameCheck = m_listSame.FindAll(delegate(SameTreatment st) { return st.strTreatment == treatment && st.nYear== year; });
-            //if (sameCheck == null || sameCheck.Count == 0)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
-        }
-
-
 
         public void AddAttributeValue(String strColumn, object value)
         {
@@ -379,222 +285,6 @@ namespace Simulation
                    hash.Add(strYear, value);
                }
         }
-
-        public void OMSRollForward(List<Deteriorate> listDeteriorate, Investments investment)//, DateTime rollForwardDate)
-        {
-			if(this.SectionID == "1037898501")
-			{
-
-			}
-            DataOMS ageData = null;
-            DateTime installDate = DateTime.MinValue;
-            DateTime replaceDate = DateTime.MinValue;
-
-            //Calculate Age from installed date
-            if (_attributeValueYear.ContainsKey("Installed"))
-            {
-                List<DataOMS> replaceInstallData = _attributeValueYear["Installed"];
-                int count = replaceInstallData.Count;
-                if (count > 0)
-                {
-                    if (replaceInstallData[count - 1].Value != null)
-                    {
-                        installDate = Convert.ToDateTime(replaceInstallData[count - 1].Value);
-                        TimeSpan span = investment.StartDate - installDate;
-                        double years = span.TotalDays / 365.2424;
-                        string yearString = years.ToString("f1");
-                        if (ageData == null || Convert.ToDouble(ageData.Value) > years)
-                        {
-                            ageData = new DataOMS(yearString, investment.StartDate);
-                        }
-                    }
-                }
-            }
-
-            //Calculate Age from replace date
-            if (_attributeValueYear.ContainsKey("Replaced"))
-            {
-                List<DataOMS> replaceInstallData = _attributeValueYear["Replaced"];
-                int count = replaceInstallData.Count;
-                if (count > 0)
-                {
-                    if (replaceInstallData[count - 1].Value != null)
-                    {
-                        replaceDate = Convert.ToDateTime(replaceInstallData[count - 1].Value);
-                        TimeSpan span = investment.StartDate - replaceDate;
-                        double years = span.TotalDays / 365.2424;
-                        string yearString = years.ToString("f1");
-                        if (ageData == null || Convert.ToDouble(ageData.Value) > years)
-                        {
-                            ageData = new DataOMS(years, investment.StartDate);
-                        }
-                    }
-                }
-            }
-
-            List<DataOMS> omsData  = null;
-            if (!_attributeValueYear.ContainsKey("AGE"))
-            {
-                omsData = new List<DataOMS>();
-                _attributeValueYear.Add("AGE", omsData);
-            }
-            else
-            {
-                omsData = _attributeValueYear["AGE"];
-            }
-
-            //This value should be set by the time it gets here. If not.  The age is assumed 0.
-            if (ageData == null)
-            {
-                ageData = new DataOMS(0, investment.StartDate);
-            }
-            omsData.Add(ageData);
-
-
-            //Find the start date for missing condition indexes.
-            DateTime defaultDate = DateTime.MinValue;
-            if(installDate == DateTime.MinValue && replaceDate == DateTime.MinValue)
-            {
-                defaultDate = investment.StartDate;
-            }
-            else if (installDate >= replaceDate)//Usually occurs because replace date is MinValue.
-            {
-                defaultDate = installDate;
-            }
-            else //Replace date later than install date
-            {
-                defaultDate = replaceDate;
-            }
-
-
-            Hashtable hashForwarded = GetOMSAsHashtable();
-
-
-			foreach (OCIWeight ociWeight in SimulationMessaging.ConditionCategoryWeight)
-			{
-				if (ociWeight.Evaluate.IsCriteriaMet(hashForwarded) && this.OCI == null)
-				{
-					this.OCI = new OverallConditionIndex(ociWeight.Criteria);
-				}
-			}
-
-
-            //Find any condition index that are not included. Check for case where there is key, but no value added.
-            List<string> misssingConditionIndex = new List<string>();
-            foreach (string key in this.OCI.ConditionIndices.Keys)
-            {
-                if (_attributeValueYear.ContainsKey(key))
-                {
-                    List<DataOMS> omsSingleConditions = _attributeValueYear[key];
-                    if (omsSingleConditions.Count == 0)
-                    {
-                        omsSingleConditions.Add(new DataOMS("100", defaultDate));
-                    }
-                }
-                else
-                {
-                    misssingConditionIndex.Add(key);
-                }
-            }
-
-            //Missing condition indexes assume to start at 100, from install or replace date.  If neither are entered assume start from 100 at investment.StartDate
-            foreach (string key in misssingConditionIndex)
-            {
-                List<DataOMS> omsMissing = new List<DataOMS>();
-                omsMissing.Add(new DataOMS("100", defaultDate));
-                _attributeValueYear.Add(key, omsMissing);
-            }
-
-            Hashtable omsHash = GetOMSAsHashtable();
-            //Loop through remaining.
-            foreach (string key in _attributeValueYear.Keys)
-            {
-                switch (key)//These are special cases handled outside of loop.
-                {
-                    case "Replaced":
-                    case "Installed":
-                    case "AGE":
-                    case "OverallConditionIndex":
-                        continue;
-                }
-                List<DataOMS> omsDataForDeterioration = _attributeValueYear[key];
-                int count = omsDataForDeterioration.Count;
-                DataOMS dataOMSForward = null;
-                if(count > 0)
-                {
-                    dataOMSForward = omsDataForDeterioration[count-1];
-                }
-
-                List<Deteriorate> listPossible = listDeteriorate.FindAll(delegate(Deteriorate d) { return d.Attribute == key; });
-                if (listPossible == null || listPossible.Count == 0) // No deterioration. just roll forward.
-                {
-                    if(dataOMSForward != null)
-                    {
-                        if (dataOMSForward.Value == null)
-                        {
-                            omsDataForDeterioration.Add(new DataOMS(null, investment.StartDate));
-                            //Use a value of zero for null
-                            //omsDataForDeterioration.Add(new DataOMS(0, investment.StartDate));
-                        }
-                        else
-                        { 
-                            omsDataForDeterioration.Add(new DataOMS(dataOMSForward.Value,investment.StartDate));
-                        }
-                    }
-                }
-                else //Deteriorate. Roll forward
-                {
-                    bool isOutOfRange = false;
-                    if(dataOMSForward != null)
-                    {
-                        TimeSpan spanRollForward = investment.StartDate - dataOMSForward.Date;
-                        double yearSpan = spanRollForward.TotalDays / 365.2424;
-                        Deteriorate defaultDeteriorate = listPossible.Find(delegate(Deteriorate d) { return d.Default;});
-                        string value = null;
-                        foreach(Deteriorate deteriorate in listPossible)
-                        {
-                            if(deteriorate.IsCriteriaMet(omsHash))
-                            {
-                                value = deteriorate.IterateSpanPiecewise(omsHash, yearSpan, out isOutOfRange).ToString();
-                            }
-                        }
-                        if(value == null && defaultDeteriorate != null)//Apply default
-                        {
-                            value = defaultDeteriorate.IterateSpanPiecewise(omsHash, yearSpan, out isOutOfRange).ToString();
-                        }
-                        if (value != null)
-                        {
-                            omsDataForDeterioration.Add(new DataOMS(value, investment.StartDate));
-                        }
-                    }
-                }
-            }
-
-            //Calculate OCI
-            List<DataOMS> omsOCIData  = null;
-            if (!_attributeValueYear.ContainsKey("OverallConditionIndex"))
-            {
-                omsOCIData = new List<DataOMS>();
-                _attributeValueYear.Add("OverallConditionIndex", omsOCIData);
-            }
-            else
-            {
-                omsOCIData = _attributeValueYear["OverallConditionIndex"];
-            }
-
-
-
-
-
-            omsOCIData.Add(new DataOMS(GetOCI().ToString(),investment.StartDate));
-            hashForwarded = GetOMSAsHashtable();
-
-            m_hashYearAttributeValues.Add(investment.StartDate.Year, hashForwarded);
-            m_hashYearAttributeValues.Add(0, hashForwarded);
-
-        }
-
-
 
         public void RollForward(List<Deteriorate> listDeteriorate, List<String> listAttribute, List<CalculatedAttribute> listCalculatedAttributes)
         {
@@ -967,134 +657,25 @@ namespace Simulation
                         this.BaseBenefit = dBenefit;
                     }
 
-                    if (SimulationMessaging.Method.IsConditionalRSL)
-                    {
 
-                        List<ConditionalRSL> attributeConditionalRSL = SimulationMessaging.AttributeConditionalRSL.FindAll(delegate(ConditionalRSL c) { return c.Attribute == deteriorate.Attribute; });
-                        if(attributeConditionalRSL != null)
+                    if (SimulationMessaging.Method.IsRemainingLife && SimulationMessaging.GetDeficientLevel(deteriorate.Attribute, hashAttributeValue, out dDeficient))
+                    {
+                        deteriorate.CalculateRemainingLife(m_hashNextAttributeValue, hashAttributeValue, out dRemainingLife);
+                    }
+
+                    if (SimulationMessaging.GetDeficientLevel(deteriorate.Attribute, hashAttributeValue, out dDeficient))
+                    {
+                        hashAttributeRemainingLife.Add(deteriorate.Attribute, dRemainingLife);
+                        this.RemainingLife = 100;
+                        foreach (String key in hashAttributeRemainingLife.Keys)
                         {
-                            foreach (ConditionalRSL conditionalRSL in attributeConditionalRSL)
+                            dRemainingLife = (double)hashAttributeRemainingLife[key];
+                            if (dRemainingLife < RemainingLife)
                             {
-                                if (conditionalRSL.Criteria.IsCriteriaMet(hashAttributeValue))
-                                {
-                                    object value = m_hashNextAttributeValue[deteriorate.Attribute]; //Gets the attribute for which to get an RSL Bin
-                                    int rslBin = conditionalRSL.GetRSL((double)value);//Look up that rslBin 
-                                    
-                                    if(this.ConditionalRSLBins.ContainsKey(deteriorate.Attribute))
-                                    {
-                                        double currentLowestBin = this.ConditionalRSLBins[deteriorate.Attribute];
-                                        if(rslBin < currentLowestBin)
-                                        {
-                                            this.ConditionalRSLBins.Remove(deteriorate.Attribute);
-                                            this.ConditionalRSLBins.Add(deteriorate.Attribute, rslBin);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        this.ConditionalRSLBins.Add(deteriorate.Attribute, rslBin);
-                                    }
-                                    
-                                    //For Conditional RSL analysis all attributes have zero extension to begin with.
-                                    if(hashAttributeRemainingLife.Contains(deteriorate.Attribute))
-                                    { 
-                                        hashAttributeRemainingLife.Add(deteriorate.Attribute, 0); //Add to remain life hash
-                                    }
- 
-                                }
+                                RemainingLife = dRemainingLife;
                             }
                         }
                     }
-                    else
-                    {
-                        if (SimulationMessaging.Method.IsRemainingLife && SimulationMessaging.GetDeficientLevel(deteriorate.Attribute, hashAttributeValue, out dDeficient))
-                        {
-                            deteriorate.CalculateRemainingLife(m_hashNextAttributeValue, hashAttributeValue, out dRemainingLife);
-                        }
-
-                        if (SimulationMessaging.GetDeficientLevel(deteriorate.Attribute, hashAttributeValue, out dDeficient))
-                        {
-                            hashAttributeRemainingLife.Add(deteriorate.Attribute, dRemainingLife);
-                            this.RemainingLife = 100;
-                            foreach (String key in hashAttributeRemainingLife.Keys)
-                            {
-                                dRemainingLife = (double)hashAttributeRemainingLife[key];
-                                if (dRemainingLife < RemainingLife)
-                                {
-                                    RemainingLife = dRemainingLife;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines the current value for a given bin.
-        /// </summary>
-        /// <param name="attribute"></param>
-        /// <param name="nYear"></param>
-        public void NormalizeConditionalRSL(String attribute, int nYear)
-        {
-            int nPreviousYear = nYear - 1;
-            Hashtable hashAttributeValue = null;
-            hashAttributeValue = (Hashtable)m_hashYearAttributeValues[nPreviousYear];
-
-            int limitingBin = int.MaxValue;
-            //Loop through dictionary find the smallest bins.
-            foreach(String key in this.ConditionalRSLBins.Keys)
-            {
-                int bin = (int) this.ConditionalRSLBins[key];
-                
-                if(limitingBin > bin)
-                {
-                    limitingBin = bin;
-                }
-            }
-
-            //Set the limiting value for each attribute.
-            foreach(String key in this.ConditionalRSLBins.Keys)
-            {
-                bool isAscending = SimulationMessaging.GetAttributeAscending(key);
-                double currentLimit = double.MaxValue;
-                if(!isAscending)
-                {
-                    currentLimit = double.MinValue;
-                }
-
-                List<ConditionalRSL> attributeConditionalRSL = SimulationMessaging.AttributeConditionalRSL.FindAll(delegate(ConditionalRSL c) { return c.Attribute == attribute; });
-                if (attributeConditionalRSL != null)
-                {
-                    foreach (ConditionalRSL conditionalRSL in attributeConditionalRSL)
-                    {
-                        if (conditionalRSL.Criteria.IsCriteriaMet(hashAttributeValue))
-                        {
-                            double value = conditionalRSL.Values[limitingBin];
-                            if (isAscending)
-                            {
-                                if (value < currentLimit)
-                                {
-                                    currentLimit = value;
-                                }
-                            }
-                            else
-                            {
-                                if(value > currentLimit)
-                                {
-                                    currentLimit = value;
-                                }
-                            }
-
-                            //We now have the lowest (or highest) limit.
-                            if(!this.NormalizedConditionalRSLs.ContainsKey(attribute))
-                            {
-                                this.NormalizedConditionalRSLs.Add(attribute, currentLimit);
-                            }
-                            
-                        }
-                    }
-
-
                 }
             }
         }
@@ -1106,9 +687,6 @@ namespace Simulation
             m_dRemainingLife = 0;
             m_hashNextAttributeValue.Clear();
             m_nNumberTreatment = 0;
-            _appliedTreatments = null;
-            this.NormalizedConditionalRSLs = new Dictionary<string, double>();
-            this.ConditionalRSLBins = new Dictionary<string, double>();
             this.Treated = false;
         }
 
@@ -1212,67 +790,15 @@ namespace Simulation
             //// Get all of this years deteriorated values.
             foreach (String key in m_hashNextAttributeValue.Keys)
             {
-                object sValue = null;
-                if (commit.OMSIsNotAllowed) //If it is a DO NOT ALLOW COMMIT there is no consequences.
+                if (!hashAttributeValue.ContainsKey(key)) //No consequence, just keep value
                 {
                     hashAttributeValue.Add(key, m_hashNextAttributeValue[key]);
-                }
-                else
-                {
-                    if (commit.OMSTreatment != null)
-                    {
-                        foreach (Consequences consequence in commit.OMSTreatment.ConsequenceList)
-                        {
-                            AttributeChange change = consequence.AttributeChange.Find((delegate(AttributeChange ac)
-                            {
-                                return ac.Attribute == key;
-                            }));
-
-                            if (change != null && change.Attribute == key) //Adds consequence if matches key
-                            {
-                                if (change != null && dictionaryCommittedEquation.ContainsKey(change.Change))
-                                {
-                                    CommittedEquation ce = dictionaryCommittedEquation[change.Change];
-                                    if (!ce.HasErrors)
-                                    {
-                                        sValue = ce.GetConsequence(this.m_hashNextAttributeValue);
-                                        hashAttributeValue.Add(key, sValue);
-                                    }
-                                    else
-                                    {
-                                        hashAttributeValue.Add(key, m_hashNextAttributeValue[key]);
-                                    }
-
-                                }
-                                else if (change != null)
-                                {
-                                    sValue = change.ApplyChange(this.m_hashNextAttributeValue[key]);
-                                    String strPair =
-                                        change.Attribute.ToString() + "\t" + change.Change.ToString() + "\n";
-                                    changeHash += strPair;
-                                    hashAttributeValue.Add(key, sValue);
-                                }
-                            }
-                        }
-                    }
-                    if (!hashAttributeValue.ContainsKey(key)) //No consequence, just keep value
-                    {
-                        hashAttributeValue.Add(key, m_hashNextAttributeValue[key]);
-                    }
                 }
             }
            
 
             this.Treated = true;
 
-            if (SimulationMessaging.IsOMS)
-            {
-                double oci = CalculateOCI(hashAttributeValue);
-                double deltaOCI = oci - Convert.ToDouble(hashAttributeValue["OverallConditionIndex"]);
-                hashAttributeValue["OverallConditionIndex"] = oci;
-                String strPair = "OverallConditionIndex\t" + deltaOCI.ToString()  + "\n";
-                changeHash += strPair;
-            }
             return hashAttributeValue;
         }
 
@@ -1358,86 +884,8 @@ namespace Simulation
             }
             return;
         }
+ 
 
-
-        public double GetOCI()
-        {
-            int sumWeight = 0;
-            double oci = 0;
-            foreach (string key in this.OCI.ConditionIndices.Keys)
-            {
-                if (_attributeValueYear.ContainsKey(key))
-                {
-                    sumWeight += this.OCI.ConditionIndices[key].Weight;
-                    List<DataOMS> values = _attributeValueYear[key];
-                    if (values != null && values.Count > 0)
-                    {
-                        try
-                        {
-                            oci += Convert.ToDouble(values[values.Count - 1].Value) * this.OCI.ConditionIndices[key].Weight;
-                        }
-                        catch { } //Unparsable condition. Do not inclued in OCI.
-                    }
-                }
-            }
-            if (sumWeight > 0)
-            {
-                oci = oci / (double)sumWeight;
-            }
-            else
-            {
-                oci = 100;
-            }
-            return oci;
-        }
-
-        /// <summary>
-        /// Returns the _attributeValueYear as RoadCare hashtable.
-        /// </summary>
-        /// <returns></returns>
-        public Hashtable GetOMSAsHashtable()
-        {
-            Hashtable hashtable = new Hashtable();
-            foreach (string key in _attributeValueYear.Keys)
-            {
-                object value = null;
-                List<DataOMS> omsData = _attributeValueYear[key];
-                int count = omsData.Count;
-                if (count > 0)
-                {
-                    value = SimulationMessaging.ConvertToRoadCareObject(omsData[count - 1].Value,key);
-                }
-                hashtable.Add(key, value);
-            }
-            return hashtable;
-        }
-
-        internal void ApplyOCI()
-        {
-            m_hashNextAttributeValue.Add("OverallConditionIndex",_oci.GetOCI());
-            int nLife = _oci.GetRemainingLife(20);
-        }
-
-        public double CalculateOCI(Hashtable hashAttribute)
-        {
-            double oci = 0;
-            foreach (string key in this.OCI.ConditionIndices.Keys)
-            {
-                if (hashAttribute.ContainsKey(key) && hashAttribute[key] != null)
-                {
-                    oci += Convert.ToDouble(hashAttribute[key]) * (double)this.OCI.ConditionIndices[key].Weight;
-                }
-            }
-            if (OCI.SumWeight > 0)
-            {
-                oci = oci / (double)OCI.SumWeight;
-            }
-            else
-            {
-                oci = 100;
-            }
-            return oci;
-        }
 
         public override string ToString()
         {

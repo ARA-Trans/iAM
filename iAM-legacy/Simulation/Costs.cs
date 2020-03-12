@@ -22,7 +22,7 @@ namespace Simulation
         public Costs(string ID)
         {
             _costID = ID;
-            _criteria = new Criterias(cgOMS.Prefix + "COSTS", "BINARY_CRITERIA", ID);
+            _criteria = new Criterias("COSTS", "BINARY_CRITERIA", ID);
         }
 
         /// <summary>
@@ -69,41 +69,19 @@ namespace Simulation
             get { return _costEquation; }
             set
             {
-                if (value.Contains("COMPOUND_TREATMENT"))
+                _isCompoundTreatment = false;
+                _costEquation = value;
+                // Get list of attributes
+                _attributesEquation = SimulationMessaging.ParseAttribute(_costEquation);
+                if (_calculate == null)
                 {
-                    _compoundTreatment = value;
-                    _compoundTreatment = _compoundTreatment.Replace("COMPOUND_TREATMENT(", "");
-                    _compoundTreatment = _compoundTreatment.Replace(")", "");
-                    _isCompoundTreatment = true;
+                    _calculate = new CalculateEvaluate.CalculateEvaluate();
+                    _calculate.BuildClass(_costEquation, true, "COSTS_BINARY_EQUATION_" + CostID);
 
-                    CompoundTreatment compoundTreatment = Simulation.CompoundTreatments.Find(delegate(CompoundTreatment ct) { return ct.CompoundTreatmentName == _compoundTreatment; });
-                    if (compoundTreatment == null)
+                    if (_calculate.m_cr == null)
                     {
-                        compoundTreatment = new CompoundTreatment(_compoundTreatment);
-						Simulation.CompoundTreatments.Add(compoundTreatment);
-                    }
-                    _attributesEquation = new List<string>();
-                    foreach (String strAttribute in compoundTreatment.Attributes)
-                    {
-                        _attributesEquation.Add(strAttribute);
-                    }
-                }
-                else
-                {
-                    _isCompoundTreatment = false;
-                    _costEquation = value;
-                    // Get list of attributes
-                    _attributesEquation = SimulationMessaging.ParseAttribute(_costEquation);
-                    if (_calculate == null)
-                    {
-                        _calculate = new CalculateEvaluate.CalculateEvaluate();
-                        _calculate.BuildClass(_costEquation, true, cgOMS.Prefix + "COSTS_BINARY_EQUATION_" + CostID);
-
-                        if (_calculate.m_cr == null)
-                        {
-                            _compilerResultsEquation = _calculate.CompileAssembly();
-                            SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + "COSTS", "BINARY_EQUATION", CostID, _calculate);
-                        }
+                        _compilerResultsEquation = _calculate.CompileAssembly();
+                        SimulationMessaging.SaveSerializedCalculateEvaluate("COSTS", "BINARY_EQUATION", CostID, _calculate);
                     }
                 }
             }
@@ -123,32 +101,25 @@ namespace Simulation
 
         public double GetCost(Hashtable hashAttributeValue)
         {
-            if (this._isCompoundTreatment)
+
+            int i = 0;
+            object[] input = new object[_attributesEquation.Count];
+            foreach (String str in _attributesEquation)
             {
-				CompoundTreatment compoundTreatment = Simulation.CompoundTreatments.Find(delegate(CompoundTreatment ct) { return ct.CompoundTreatmentName == _compoundTreatment; });
-                return compoundTreatment.GetCost(hashAttributeValue);
+                if (hashAttributeValue[str] != null) input[i] = hashAttributeValue[str];
+                else input[i] = 0;
+                i++;
             }
-            else
-            {
-                int i = 0;
-                object[] input = new object[_attributesEquation.Count];
-                foreach (String str in _attributesEquation)
-                {
-                    if (hashAttributeValue[str] != null) input[i] = hashAttributeValue[str];
-                    else input[i] = 0;
-                    i++;
-                }
-				try
-				{
-					object result = _calculate.RunMethod(input);
-					return (double)result;
-				}
-				catch(Exception exc)
-				{
-					SimulationMessaging.AddMessage(new SimulationMessage("Error in RunMethod.  " + _calculate.OriginalInput + " " + exc.Message));
-					return 0;
-				}
-            }
+			try
+			{
+				object result = _calculate.RunMethod(input);
+				return (double)result;
+			}
+			catch(Exception exc)
+			{
+				SimulationMessaging.AddMessage(new SimulationMessage("Error in RunMethod.  " + _calculate.OriginalInput + " " + exc.Message));
+				return 0;
+			}
         }
 
 
@@ -188,11 +159,11 @@ namespace Simulation
                     }
                 }
 
-                _calculate.BuildFunctionClass(functionEquation, "double", cgOMS.Prefix + "COSTS_BINARY_EQUATION_" + CostID);
+                _calculate.BuildFunctionClass(functionEquation, "double", "COSTS_BINARY_EQUATION_" + CostID);
                 if (_calculate.m_cr == null)
                 {
                     _compilerResultsEquation = _calculate.CompileAssembly();
-                    SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + "COSTS", "BINARY_EQUATION", CostID, _calculate);
+                    SimulationMessaging.SaveSerializedCalculateEvaluate("COSTS", "BINARY_EQUATION", CostID, _calculate);
                 }
             }
         }

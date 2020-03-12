@@ -65,8 +65,6 @@ namespace Simulation
         static private string _simulationID;
         [ThreadStatic]
         static private string _alternateID;
-		[ThreadStatic]
-		static private List<OCIWeight> _conditionCategoryWeight;
         [ThreadStatic]
         static private bool _isOMS;
         [ThreadStatic]
@@ -79,8 +77,6 @@ namespace Simulation
         static private int _numberAssets;
         [ThreadStatic]
         static private int _analysisPeriod;
-        [ThreadStatic]
-        static private List<ConditionalRSL> _attributeConditionalRSL;
         [ThreadStatic]
         static private Jurisdiction _jurisdiction;
         [ThreadStatic]
@@ -102,17 +98,10 @@ namespace Simulation
             m_hashAttributeFormat.Clear();
             m_hashAttributeOMS.Clear();
             _deteriorates.Clear();
-            _attributeConditionalRSL.Clear();
             _attributeRemainingLife.Clear();
             _noTreatmentRemainingLife.Clear();
         }
 
-
-        public static List<ConditionalRSL> AttributeConditionalRSL
-        {
-            get { return _attributeConditionalRSL; }
-            set {_attributeConditionalRSL = value; }
-        }
 
 
         public static int AnalysisPeriod
@@ -214,7 +203,7 @@ namespace Simulation
             {
                 if (m_fAreaConversionFactor == 0)
                 {
-                    String strQuery = "SELECT OPTION_VALUE FROM OPTIONS WHERE" + cgOMS.Prefix + " OPTION_NAME = 'NETWORK_DEFINITION_UNITS'";
+                    String strQuery = "SELECT OPTION_VALUE FROM OPTIONS WHERE OPTION_NAME = 'NETWORK_DEFINITION_UNITS'";
                     try
                     {
                         DataSet ds = DBMgr.ExecuteQuery(strQuery);
@@ -426,11 +415,6 @@ namespace Simulation
             set { m_Method = value; }
         }
 
-		public static List<OCIWeight> ConditionCategoryWeight
-		{
-			get { return _conditionCategoryWeight; }
-			set { _conditionCategoryWeight = value; }
-		}
 
         public static Jurisdiction Jurisdiction
         {
@@ -533,7 +517,7 @@ namespace Simulation
             string attributesTable = "ATTRIBUTES_";
             if (IsOMS)
             {
-                attributesTable = cgOMS.Prefix + "OMS_ATTRIBUTES";
+                attributesTable = "OMS_ATTRIBUTES";
             }
 
             if (DBMgr.IsTableInDatabase(attributesTable))
@@ -717,7 +701,7 @@ namespace Simulation
         static  public void GetUniqueDeteriorateAttributes(String strSimulationID)
         {
             m_listDeteriorate = new List<string>();
-            String strSelect = "SELECT DISTINCT ATTRIBUTE_ FROM " + cgOMS.Prefix + "PERFORMANCE WHERE SIMULATIONID='" + strSimulationID + "'";
+            String strSelect = "SELECT DISTINCT ATTRIBUTE_ FROM PERFORMANCE WHERE SIMULATIONID='" + strSimulationID + "'";
             DataSet ds = DBMgr.ExecuteQuery(strSelect);
             foreach (DataRow row in ds.Tables[0].Rows)
             {

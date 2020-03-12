@@ -208,8 +208,8 @@ namespace Simulation
         /// </summary>
         public bool LoadFeasibility(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
-            String strSelect = "SELECT CRITERIA,BINARY_CRITERIA,FEASIBILITYID FROM " + cgOMS.Prefix + "FEASIBILITY WHERE TREATMENTID='" + this.TreatmentID + "'";
-            _table = cgOMS.Prefix + "FEASIBILITY";
+            String strSelect = "SELECT CRITERIA,BINARY_CRITERIA,FEASIBILITYID FROM FEASIBILITY WHERE TREATMENTID='" + this.TreatmentID + "'";
+            _table = "FEASIBILITY";
             _column = "BINARY_CRITERIA";
             
             DataSet ds;
@@ -236,7 +236,7 @@ namespace Simulation
                 Criterias criteria = new Criterias(_table,_column,_id);
                 byte[] assemblyCriteria = null;
                 string currentCriteria = ""; 
-                if(row["CRITERIA"] != DBNull.Value) currentCriteria =   Simulation.ConvertOMSAttribute(row["CRITERIA"].ToString());
+                if(row["CRITERIA"] != DBNull.Value) currentCriteria =   row["CRITERIA"].ToString();
                 assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate(_table, _column, _id, assemblyCriteria);
                 if (assemblyCriteria != null && assemblyCriteria.Length > 0)
                 {
@@ -255,7 +255,7 @@ namespace Simulation
                     }
                 }
 
-                criteria.Criteria = Simulation.ConvertOMSAttribute(row["CRITERIA"].ToString());
+                criteria.Criteria = row["CRITERIA"].ToString();
 
                 foreach (String str in criteria.Errors)
                 {
@@ -297,10 +297,10 @@ namespace Simulation
         public bool LoadCost(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             Costs cost;
-            String select = "SELECT COST_,UNIT,CRITERIA,BINARY_CRITERIA,ISFUNCTION, COSTID FROM " + cgOMS.Prefix + "COSTS WHERE TREATMENTID='" + this.TreatmentID + "'";
+            String select = "SELECT COST_,UNIT,CRITERIA,BINARY_CRITERIA,ISFUNCTION, COSTID FROM COSTS WHERE TREATMENTID='" + this.TreatmentID + "'";
             if (SimulationMessaging.IsOMS)
             {
-                select = "SELECT COST_,UNIT,CRITERIA,BINARY_CRITERIA,NULL AS ISFUNCTION, COSTID FROM " + cgOMS.Prefix + "COSTS WHERE TREATMENTID='" + this.TreatmentID + "'";
+                select = "SELECT COST_,UNIT,CRITERIA,BINARY_CRITERIA,NULL AS ISFUNCTION, COSTID FROM COSTS WHERE TREATMENTID='" + this.TreatmentID + "'";
             }
             DataSet ds;
             try
@@ -336,7 +336,7 @@ namespace Simulation
                     cost.Default = false;
                     string criteria = row["CRITERIA"].ToString();
                     byte[] assemblyCriteria = null;
-                    assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate(cgOMS.Prefix + "COSTS", "BINARY_CRITERIA", cost.CostID, assemblyCriteria);
+                    assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate("COSTS", "BINARY_CRITERIA", cost.CostID, assemblyCriteria);
                     if (assemblyCriteria != null && assemblyCriteria.Length > 0)
                     {
 						cost.Criteria.Evaluate = (CalculateEvaluate.CalculateEvaluate)AssemblySerialize.DeSerializeObjectFromByteArray(assemblyCriteria);
@@ -368,13 +368,8 @@ namespace Simulation
 
 
                 byte[] assemblyCost = null;
-                //objectValue = row["BINARY_COST"];
-                //if (objectValue != System.DBNull.Value)
-                //{
-                //    assemblyCost = (byte[])row["BINARY_COST"];
-                //}
                 String strCost = row["COST_"].ToString();
-                assemblyCost = SimulationMessaging.GetSerializedCalculateEvaluate(cgOMS.Prefix + "COSTS", "BINARY_EQUATION", cost.CostID, assemblyCost);
+                assemblyCost = SimulationMessaging.GetSerializedCalculateEvaluate("COSTS", "BINARY_EQUATION", cost.CostID, assemblyCost);
                 if (assemblyCost != null && assemblyCost.Length > 0)
                 {
                     cost.Calculate = (CalculateEvaluate.CalculateEvaluate)AssemblySerialize.DeSerializeObjectFromByteArray(assemblyCost);
@@ -459,11 +454,11 @@ namespace Simulation
         public bool LoadConsequences(object APICall, IMongoCollection<SimulationModel> Simulations, string m_strSimulationID)
         {
             Consequences consequence;
-            String select = "SELECT ATTRIBUTE_,CHANGE_,CRITERIA,EQUATION,ISFUNCTION, CONSEQUENCEID FROM " + cgOMS.Prefix + "CONSEQUENCES WHERE TREATMENTID='" + _treatmentID + "'";
+            String select = "SELECT ATTRIBUTE_,CHANGE_,CRITERIA,EQUATION,ISFUNCTION, CONSEQUENCEID FROM CONSEQUENCES WHERE TREATMENTID='" + _treatmentID + "'";
 
             if(SimulationMessaging.IsOMS)
             {
-                select = "SELECT ATTRIBUTE_,CHANGE_,CRITERIA,EQUATION,NULL AS ISFUNCTION, CONSEQUENCEID FROM " + cgOMS.Prefix + "CONSEQUENCES WHERE TREATMENTID='" + _treatmentID + "'";
+                select = "SELECT ATTRIBUTE_,CHANGE_,CRITERIA,EQUATION,NULL AS ISFUNCTION, CONSEQUENCEID FROM CONSEQUENCES WHERE TREATMENTID='" + _treatmentID + "'";
             }
 
             DataSet ds;
@@ -515,7 +510,7 @@ namespace Simulation
                     consequence.Default = false;
 
                     byte[] assemblyCriteria = null;
-                    assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate(cgOMS.Prefix + "CONSEQUENCES", "BINARY_CRITERIA", id, assemblyCriteria);
+                    assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate("CONSEQUENCES", "BINARY_CRITERIA", id, assemblyCriteria);
                     if (assemblyCriteria != null && assemblyCriteria.Length > 0)
                     {
                         consequence.Criteria.Evaluate = (CalculateEvaluate.CalculateEvaluate)AssemblySerialize.DeSerializeObjectFromByteArray(assemblyCriteria);
@@ -553,7 +548,7 @@ namespace Simulation
                 }
                 else
                 {
-                    byte[] assembly = SimulationMessaging.GetSerializedCalculateEvaluate(cgOMS.Prefix + "CONSEQUENCES", "BINARY_EQUATION", id, null);
+                    byte[] assembly = SimulationMessaging.GetSerializedCalculateEvaluate("CONSEQUENCES", "BINARY_EQUATION", id, null);
                     if (assembly != null && assembly.Length > 0)
                     {
                         consequence._calculate= (CalculateEvaluate.CalculateEvaluate)AssemblySerialize.DeSerializeObjectFromByteArray(assembly);

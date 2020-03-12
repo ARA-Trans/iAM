@@ -1503,51 +1503,8 @@ namespace RoadCare3
 				// Change column index is one.
 				if (dgvConsequences.Columns["Change"].Index == e.ColumnIndex)
 				{
-					if (dgvConsequences["Attribute", e.RowIndex].Value != null)
-					{
-						// Check for a compound treatment strategy
-						string changeText = "";
-						FormCompoundTreatment compoundTreatmentEditor = null;
-						string affectedAttribute = dgvConsequences["Attribute", e.RowIndex].Value.ToString();
 
-						// Change column index is 1 but the value is blank means create a new compound treatment.
-						if (dgvConsequences[e.ColumnIndex, e.RowIndex].Value != null)
-						{
-							// Value was not blank, check to see if we already have a compound treatment statement.
-							changeText = dgvConsequences[e.ColumnIndex, e.RowIndex].Value.ToString();
-							if (changeText.Contains("COMPOUND_TREATMENT"))
-							{
-								// Get teh compound treatment name from the change text box.
-								string compoundTreatmentName = changeText.Replace("COMPOUND_TREATMENT(", "");
-								compoundTreatmentName = compoundTreatmentName.Replace(")", "");
-
-								// Finally, make sure we have a compound treatment called that, otherwise we need to create a new one.
-								CompoundTreatment selectedCompoundTreatment = new CompoundTreatment(compoundTreatmentName);
-								if (selectedCompoundTreatment != null)
-								{
-									compoundTreatmentEditor = new FormCompoundTreatment(selectedCompoundTreatment, affectedAttribute);
-								}
-								else
-								{
-									compoundTreatmentEditor = new FormCompoundTreatment(affectedAttribute);
-								}
-							}
-							else
-							{
-								compoundTreatmentEditor = new FormCompoundTreatment(affectedAttribute);
-							}
-						}
-						else
-						{
-							compoundTreatmentEditor = new FormCompoundTreatment(affectedAttribute);
-						}
-						compoundTreatmentEditor.ShowDialog();
-					}
-					else
-					{
-						Global.WriteOutput("No attribute selected.  Must select an attribute before creating a compound treatment!");
-					}
-				}
+                }
 			}
 		}
 

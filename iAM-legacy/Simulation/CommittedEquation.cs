@@ -10,39 +10,32 @@ namespace Simulation
 {
     public class CommittedEquation
     {
-        string m_strEquation;
+        private string _equation;
         CalculateEvaluate.CalculateEvaluate calculate;
-        List<string> m_listAttributesEquation;
-        CompilerResults m_crEquation;
-        string _id;
+        public string Id { get; private set; } 
 
-        public string Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
 
         /// <summary>
         /// Get/Set Cost equation as String
         /// </summary>
         public String Equation
         {
-            get { return m_strEquation; }
+            get { return _equation; }
             set
             {
-                m_strEquation = value;
+                _equation = value;
                 // Get list of attributes
-                m_listAttributesEquation = SimulationMessaging.ParseAttribute(m_strEquation);
+                CommittedAttributes = SimulationMessaging.ParseAttribute(_equation);
 
 
-                byte [] assembly = SimulationMessaging.GetSerializedCalculateEvaluate(cgOMS.Prefix + "COMMITTED", "BINARY_EQUATION", _id, null);
-                SimulationMessaging.AddMessage(new SimulationMessage("Compiling committed equation " +  m_strEquation));
+                byte [] assembly = SimulationMessaging.GetSerializedCalculateEvaluate("COMMITTED", "BINARY_EQUATION", Id, null);
+                SimulationMessaging.AddMessage(new SimulationMessage("Compiling committed equation " + _equation));
 
 
                 if (assembly != null && assembly.Length > 0)
                 {
                     calculate = (CalculateEvaluate.CalculateEvaluate)AssemblySerialize.DeSerializeObjectFromByteArray(assembly);
-                    if (calculate.OriginalInput != m_strEquation)
+                    if (calculate.OriginalInput != _equation)
                     {
                         calculate = null;
                     }
@@ -52,16 +45,11 @@ namespace Simulation
                 if (calculate == null)
                 {
                     calculate = new CalculateEvaluate.CalculateEvaluate();
-                    calculate.BuildClass(m_strEquation, true, cgOMS.Prefix + "COMMITTED_BINARY_EQUATION_" + _id);
-
-    
-
-
-
+                    calculate.BuildClass(_equation, true, "COMMITTED_BINARY_EQUATION_" + Id);
                     if (calculate.m_cr == null)
                     {
-                        m_crEquation = calculate.CompileAssembly();
-                        SimulationMessaging.SaveSerializedCalculateEvaluate(cgOMS.Prefix + "COMMITTED", "BINARY_EQUATION", _id, calculate);
+                        calculate.CompileAssembly();
+                        SimulationMessaging.SaveSerializedCalculateEvaluate("COMMITTED", "BINARY_EQUATION", Id, calculate);
                     }
                 }
             }
@@ -71,31 +59,27 @@ namespace Simulation
         {
             get
             {
-                if (calculate.m_cr.Errors.Count > 0) return true;
+                if (calculate?.m_cr.Errors.Count > 0) return true;
                 else return false;
             }
 
         }
 
 
+        public List<string> CommittedAttributes { get; private set; }
 
-        public List<string> CommittedAttributes
-        {
-            get { return m_listAttributesEquation; }
-        }
 
         public CommittedEquation(string equation, string id)
         {
-            _id = id;
-            this.Equation = equation;
+            Id = id;
+            Equation = equation;
         }
         
         public double GetConsequence(Hashtable hashAttributeValue)
         {
-
-            int i = 0;
-            object[] input = new object[m_listAttributesEquation.Count];
-            foreach (String str in m_listAttributesEquation)
+            var i = 0;
+            var input = new object[CommittedAttributes.Count];
+            foreach (String str in CommittedAttributes)
             {
                 input[i] = hashAttributeValue[str];
                 i++;
@@ -111,7 +95,5 @@ namespace Simulation
                 return 0;
             }
         }
-
-
     }
 }

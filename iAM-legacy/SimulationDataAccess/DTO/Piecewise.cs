@@ -35,20 +35,10 @@ namespace SimulationDataAccess.DTO
             CreateList(piecewise);
             MakeMonotonic();
             MakeYearlyAgeValue();
+            _isOMS = false;
         }
 
-        /// <summary>
-        /// Stores a list of age value pairs for a given performance equation.
-        /// </summary>
-        /// <param name="piecewise"></param>
-        public Piecewise(string piecewise,bool isOMS)
-        {
-            _isOMS = isOMS;
-            CreateList(piecewise);
-            MakeMonotonic();
-            MakeYearlyAgeValue();
-        }
-
+        
 
         /// <summary>
         /// Turn the input AgeValue pairs into a 100 year record.
@@ -119,7 +109,7 @@ namespace SimulationDataAccess.DTO
             {
                 if (!string.IsNullOrWhiteSpace(pair))
                 {
-                    AgeValue ageValue = new AgeValue(pair,_isOMS);
+                    AgeValue ageValue = new AgeValue(pair);
                     if (ageValue.Error != null)
                     {
                         this.Errors += ageValue.Error;
@@ -549,22 +539,16 @@ namespace SimulationDataAccess.DTO
         /// Stores an age value pair from a piecewise equation
         /// </summary>
         /// <param name="ageValue">Takes string of form (age,value)</param>
-        public AgeValue(string ageValue, bool isOMS)
+        public AgeValue(string ageValue)
         {
             ageValue = ageValue.Replace("(", "").Replace(")", "").Trim(); ;
             try
             {
                 string[] values = ageValue.Split(',');
-                if (isOMS)
-                {
-                    this.Age = Convert.ToDouble(values[1]);
-                    this.Value = Convert.ToDouble(values[0]);
-                }
-                else
-                {
-                    this.Age = Convert.ToDouble(values[0]);
-                    this.Value = Convert.ToDouble(values[1]);
-                }
+                
+                this.Age = Convert.ToDouble(values[0]);
+                this.Value = Convert.ToDouble(values[1]);
+                
                 this.Error = null;
             }
             catch// 

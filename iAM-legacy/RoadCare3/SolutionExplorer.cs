@@ -15,7 +15,7 @@ namespace RoadCare3
     using RoadCare3.Properties;
     using RoadCareDatabaseOperations;
     using WeifenLuo.WinFormsUI.Docking;
-    using DataAccessLayer;
+
 
     public partial class SolutionExplorer : ToolWindow
     {
@@ -2078,19 +2078,6 @@ namespace RoadCare3
 			}
 
 
-            //Load OCI_WEIGHTS
-
-            String omsConnectionString = ImportOMS.GetOMSConnectionString(DBMgr.GetNativeConnection().ConnectionString);
-            if(!String.IsNullOrWhiteSpace(omsConnectionString))
-            {
-                List<String> assets = ImportOMS.GetOMSAssets();
-                PrepareAnalysis.ConditionCategoryWeights(strSimulationID, assets);
-                //CreateScenario.InsertOMSActivities(strSimulationID, assets);
-                foreach (String asset in assets)
-                {
-                    CreateScenario.LoadPerformanceCurvesToDecisionEngine(Convert.ToInt32(strSimulationID), asset, true);
-                }
-            }
 			return strSimulationID;
 		}
 

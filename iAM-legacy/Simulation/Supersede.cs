@@ -23,7 +23,7 @@ namespace Simulation
             Criteria = new Criterias("SUPERSEDE", "BINARY_CRITERIA",SupersedeId.ToString());
             byte[] assemblyCriteria = null;
             string currentCriteria = "";
-            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = Simulation.ConvertOMSAttribute(criteria);
+            if (!string.IsNullOrWhiteSpace(criteria)) currentCriteria = criteria;
             assemblyCriteria = SimulationMessaging.GetSerializedCalculateEvaluate("SUPERSEDE", "BINARY_CRITERIA", SupersedeId.ToString(), assemblyCriteria);
             if (assemblyCriteria != null && assemblyCriteria.Length > 0)
             {

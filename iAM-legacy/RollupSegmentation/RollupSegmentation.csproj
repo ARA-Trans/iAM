@@ -301,10 +301,6 @@
       <Project>{3ba8af00-58ae-4086-8e32-fe302711e899}</Project>
       <Name>CalculateEvaluate</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj">
-      <Project>{0f2fa112-cbd1-4f2b-8f4b-8648656af6e0}</Project>
-      <Name>DataAccessLayer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj">
       <Project>{0370C578-5D1E-41DC-B0FF-E40DCF942CFF}</Project>
       <Name>DatabaseManager</Name>

@@ -1673,19 +1673,6 @@
             }
         }
 
-        public static List<CompoundTreatment> GetCompoundTreatments()
-        {
-            List<CompoundTreatment> toReturn = new List<CompoundTreatment>();
-            string query = "SELECT COMPOUND_TREATMENT_NAME FROM COMPOUND_TREATMENTS";
-            DataSet ds = DBMgr.ExecuteQuery(query);
-            foreach(DataRow row in ds.Tables[0].Rows)
-            {
-                CompoundTreatment toAdd = new CompoundTreatment(row["COMPOUND_TREATMENT_NAME"].ToString());
-                toReturn.Add(toAdd);
-            }
-            return toReturn;
-        }
-
         public static void RenameSimulation(string newName, string simulationID)
         {
             string sqlUpdate = "UPDATE SIMULATIONS SET SIMULATION='" + newName + "' WHERE SIMULATIONID='" + simulationID + "'";
@@ -1957,6 +1944,25 @@
             UpdateRoadCareForSplitTreatmentLimit();
             UpdateRoadcareForSplitTreatmentCascade();
             UpdateRoadCareForInvestmentDescription();
+            UpdateRoadCareForSimulationsCreator();
+        }
+
+        private static void UpdateRoadCareForSimulationsCreator()
+        {
+            var ds = DBMgr.GetTableColumnsWithTypes("SIMULATIONS");
+            bool isCumulativeCost = false;
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                if (row["column_name"].ToString().ToUpper() == "CREATOR")
+                {
+                    isCumulativeCost = true;
+                }
+            }
+            if (!isCumulativeCost)
+            {
+
+                DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD CREATOR VARCHAR(MAX) NULL");
+            }
 
         }
 

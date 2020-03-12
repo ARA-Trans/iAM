@@ -17,8 +17,7 @@ using RoadCareGlobalOperations;
 using DataObjects;
 using System.Text.RegularExpressions;
 using MongoDB.Driver;
-using static Simulation.Simulation;
-using DataAccessLayer;
+
 
 namespace RollupSegmentation
 {
@@ -121,12 +120,6 @@ namespace RollupSegmentation
                 var updateStatus = Builders<RollupModel>.Update
                     .Set(s => s.rollupStatus, "Running rollup");
                 Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
-            }
-            Boolean isOMS = false;
-            String omsConnectionString = DataAccessLayer.ImportOMS.GetOMSConnectionString(DBMgr.GetNativeConnection().ConnectionString);
-            if(!String.IsNullOrWhiteSpace(omsConnectionString))
-            {
-                isOMS = true;
             }
 
             String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -666,18 +659,6 @@ namespace RollupSegmentation
 				{
 					RollupMessaging.AddMessge("Area for Facility: " + dr["FACILITY"].ToString() + " Section: " + dr["SECTION"].ToString() + " could not be parsed.  Value of 1 used.");
 				}
-                //Uses OMS OID as SectionID
-                if (isOMS)
-                {
-                    String omsSection = Convert.ToString(dr["SECTION"]);
-                    if (omsSection.Contains("(") && omsSection.Contains(")"))
-                    {
-                        int nBegin = omsSection.IndexOf('(');
-                        int nEnd = omsSection.IndexOf(')');
-                        string section = omsSection.Substring(nBegin + 1, nEnd - nBegin - 1);
-                        nSection = Convert.ToInt32(section);
-                    }
-                }
 
 				m_sectionIDsToArea.Add(nSection.ToString(), area);
                 m_sectionIDsToLength.Add(nSection.ToString(), 1);
