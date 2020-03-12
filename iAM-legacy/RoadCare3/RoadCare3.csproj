@@ -277,7 +277,7 @@
       <HintPath>..\ImageComboBox.dll</HintPath>
     </Reference>
     <Reference Include="Jace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Jace.0.9.3\lib\netstandard1.6\Jace.dll</HintPath>
+      <HintPath>..\..\BridgeCareApp\packages\Jace.0.9.3\lib\netstandard1.6\Jace.dll</HintPath>
     </Reference>
     <Reference Include="LogicNP.CryptoLicensing, Version=5.1.0.0, Culture=neutral, PublicKeyToken=4a3c0a4c668b48b4">
       <SpecificVersion>False</SpecificVersion>
