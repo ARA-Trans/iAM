@@ -11,6 +11,7 @@ using BridgeCare.Models;
 using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
 using BridgeCare.Security;
+using Simulation;
 
 namespace BridgeCare.Services
 {
@@ -21,6 +22,7 @@ namespace BridgeCare.Services
     {
         readonly ICommitted committedRepo;
         private readonly ISections sectionsRepo;
+        private static readonly SimulationQueue SimulationQueue = SimulationQueue.MainSimulationQueue;
         /// <summary>Maps user roles to methods for fetching committed projects</summary>
         private readonly IReadOnlyDictionary<string, CommittedProjectsGetMethod> CommittedProjectsGetMethods;
         /// <summary>Maps user roles to methods for saving committed projects</summary>
@@ -67,18 +69,23 @@ namespace BridgeCare.Services
             if (httpRequest.Files.Count < 1)
                 throw new ConstraintException("Files Not Found");
 
-            var files = httpRequest.Files;
-            var simulationId = int.Parse(httpRequest.Form.Get("selectedScenarioId"));
-            var networkId = int.Parse(httpRequest.Form.Get("networkId"));
-            var applyNoTreatment = httpRequest.Form.Get("applyNoTreatment") == "1";
-
-            var committedProjectModels = new List<CommittedProjectModel>();
-
-            for (int i = 0; i < files.Count; i++)
+            Action saveCommittedProjectsAction = () =>
             {
-                GetCommittedProjectModels(files[i], simulationId, networkId, applyNoTreatment, committedProjectModels, db);
-                CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
-            }
+                var files = httpRequest.Files;
+                var simulationId = int.Parse(httpRequest.Form.Get("selectedScenarioId"));
+                var networkId = int.Parse(httpRequest.Form.Get("networkId"));
+                var applyNoTreatment = httpRequest.Form.Get("applyNoTreatment") == "1";
+
+                var committedProjectModels = new List<CommittedProjectModel>();
+
+                for (int i = 0; i < files.Count; i++)
+                {
+                    GetCommittedProjectModels(files[i], simulationId, networkId, applyNoTreatment, committedProjectModels, db);
+                    CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
+                }
+            };
+
+            SimulationQueue.Enqueue(saveCommittedProjectsAction);
         }
 
         /// <summary>
@@ -185,6 +192,8 @@ namespace BridgeCare.Services
             var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
             var start = worksheet.Dimension.Start;
             var end = worksheet.Dimension.End;
+            var simulation = db.Simulations.SingleOrDefault(s => s.SIMULATIONID == simulationId);
+
             for (int row = start.Row + 1; row <= end.Row; row++)
             {
                 var column = start.Column + 2;
@@ -217,7 +226,6 @@ namespace BridgeCare.Services
                 committedProjectModel.CommitConsequences = commitConsequences;
                 committedProjectModels.Add(committedProjectModel);
 
-                var simulation = db.Simulations.SingleOrDefault(s => s.SIMULATIONID == simulationId);
                 if (applyNoTreatment && simulation != null)
                 {
                     if (simulation.COMMITTED_START < committedProjectModel.Years)
