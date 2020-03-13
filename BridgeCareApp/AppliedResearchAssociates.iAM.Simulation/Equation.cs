@@ -1,9 +1,11 @@
-﻿namespace AppliedResearchAssociates.iAM.Simulation
+﻿using System;
+
+namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class Equation
     {
         public string Expression { get; }
 
-        public double Value { get; }
+        public Func<double[], double> Calculate { get; }
     }
 }

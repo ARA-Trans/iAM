@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace AppliedResearchAssociates.iAM.Simulation
@@ -8,7 +7,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public AnalysisMethod AnalysisMethod { get; }
 
-        // ???
+        // ??? Some kind of result data, only accessible after a simulation is run.
         public object Committed { get; }
 
         public InvestmentPlan InvestmentPlan { get; }
@@ -17,16 +16,40 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Network Network { get; }
 
-        public List<PerformanceEquation> PerformanceEquations { get; }
+        public List<PerformanceCurve> PerformanceEquations { get; }
 
         public List<SimulationResult> Results { get; }
 
         public List<Treatment> Treatments { get; }
 
-        public void Run()
-        {
-            #region "Compile"
+        public void Run() => CompileSimulation();
 
+        private IEnumerable<Project> Projects { get; }
+
+        private IEnumerable<Section> Sections { get; }
+
+        private void ApplyDeterioration(int year)
+        {
+            foreach (var section in Sections)
+            {
+                var projectsForThisSection = Projects.Where(project => project.Section == section);
+
+                var sectionShouldDeteriorate = projectsForThisSection.All(project => year < project.FirstYear || project.LastYear < year);
+
+                if (sectionShouldDeteriorate)
+                {
+                    foreach (var equation in PerformanceEquations)
+                    {
+                        section.ApplyDeteriorate(equation, year);
+                    }
+                }
+
+                //section.ApplyNonDeteriorate
+            }
+        }
+
+        private void CompileSimulation()
+        {
             // fill OCI weights.
 
             // load attributes.
@@ -39,10 +62,12 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             // get simulation attributes.
 
-            #endregion "Compile"
+            RunSimulation();
+        }
 
+        private void RunSimulation()
+        {
             //FillSectionList();
-            var sections = Enumerable.Empty<Section>();
 
             //FillCommittedProjects();
 
@@ -54,18 +79,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             foreach (var year in Enumerable.Range(InvestmentPlan.FirstYearOfAnalysisPeriod, 1 + InvestmentPlan.NumberOfYearsInAnalysisPeriod))
             {
-                // apply "deteriorate"/performance curves.
-                foreach (var section in sections)
-                {
-                    var projects = Enumerable.Empty<Project>();
-                    foreach (var project in projects)
-                    {
-                        if (project.Section == section && /* project is multi-year && project is in progress re current year */)
-                        {
-
-                        }
-                    }
-                }
+                ApplyDeterioration(year);
 
                 // determine benefit/cost.
 
@@ -85,8 +99,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
             // database bulk load for each "simulation table".
 
             // if multi-year, "solve". (?)
-
-            throw new NotImplementedException();
         }
     }
 }

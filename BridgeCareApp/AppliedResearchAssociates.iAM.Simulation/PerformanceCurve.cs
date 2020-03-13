@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class PerformanceEquation
+    public class PerformanceCurve
     {
         public PerformanceAttribute Attribute { get; }
 

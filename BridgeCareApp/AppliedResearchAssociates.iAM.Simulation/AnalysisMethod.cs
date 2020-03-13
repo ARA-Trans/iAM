@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class AnalysisMethod
     {
-        // ???
-        public object Benefit { get; }
+        public PerformanceAttribute Benefit { get; }
 
-        // ???
-        public int BenefitLimit { get; }
+        public double BenefitLimit { get; }
 
         public List<BudgetPriority> BudgetPriorities { get; }
 
@@ -20,11 +19,13 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public IOptimizationStrategy OptimizationStrategy { get; }
 
+        public List<RemainingLifeLimit> RemainingLifeLimits { get; }
+
         public ISpendingStrategy SpendingStrategy { get; }
 
         public List<TargetConditionGoal> TargetConditionGoals { get; }
 
-        // ???
+        [Obsolete("Deprecated per Gregg's presentation on 2020-03-10.")]
         public object Weighting { get; }
     }
 }
