@@ -31,9 +31,10 @@ namespace BridgeCare.DataAccessLayer
                 db.SaveChanges();
             }
 
-            var entities = committedProjectModels.Select(model => new CommittedEntity(model)).ToList();
+            var projectEntities = committedProjectModels.Select(model => new CommittedEntity(model)).ToList();
 
-            EFBatchOperation.For(db, db.CommittedProjects).InsertAll(entities);
+            db.CommittedProjects.AddRange(projectEntities);
+            db.SaveChanges();
         }
 
         /// <summary>
