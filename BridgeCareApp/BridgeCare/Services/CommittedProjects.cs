@@ -68,19 +68,24 @@ namespace BridgeCare.Services
         {
             if (httpRequest.Files.Count < 1)
                 throw new ConstraintException("Files Not Found");
+            
+            var files = httpRequest.Files;
+            List<ExcelPackage> packages = new List<ExcelPackage>();
 
-            Action saveCommittedProjectsAction = () =>
-            {
-                var files = httpRequest.Files;
+            for (int i = 0; i < files.Count; i++) {
+                packages.Add(new ExcelPackage(files[i].InputStream));
+            }
+
+            Action saveCommittedProjectsAction = () => { 
                 var simulationId = int.Parse(httpRequest.Form.Get("selectedScenarioId"));
                 var networkId = int.Parse(httpRequest.Form.Get("networkId"));
                 var applyNoTreatment = httpRequest.Form.Get("applyNoTreatment") == "1";
 
                 var committedProjectModels = new List<CommittedProjectModel>();
 
-                for (int i = 0; i < files.Count; i++)
+                foreach(var package in packages)
                 {
-                    GetCommittedProjectModels(files[i], simulationId, networkId, applyNoTreatment, committedProjectModels, db);
+                    GetCommittedProjectModels(package, simulationId, networkId, applyNoTreatment, committedProjectModels, db);
                     CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
                 }
             };
@@ -184,10 +189,9 @@ namespace BridgeCare.Services
             }
         }
 
-        private void GetCommittedProjectModels(HttpPostedFile postedFile, int simulationId, int networkId, bool applyNoTreatment,
+        private void GetCommittedProjectModels(ExcelPackage package, int simulationId, int networkId, bool applyNoTreatment,
         List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
-            var package = new ExcelPackage(postedFile.InputStream); //(new FileInfo(postedFile.FileName));
             ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
             var headers = worksheet.Cells.GroupBy(cell => cell.Start.Row).First();
             var start = worksheet.Dimension.Start;
