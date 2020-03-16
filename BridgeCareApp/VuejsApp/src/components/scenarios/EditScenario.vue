@@ -91,7 +91,8 @@
                             tabIcon: 'fas fa-chart-bar',
                             navigation: {
                                 path: '/EditAnalysis/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                 objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -99,7 +100,8 @@
                             tabIcon: 'fas fa-dollar-sign',
                             navigation: {
                                 path: '/InvestmentEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -107,7 +109,8 @@
                             tabIcon: 'fas fa-chart-line',
                             navigation: {
                                 path: '/PerformanceEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -115,7 +118,8 @@
                             tabIcon: 'fas fa-tools',
                             navigation: {
                                 path: '/TreatmentEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -123,7 +127,8 @@
                             tabIcon: 'fas fa-copy',
                             navigation: {
                                 path: '/PriorityEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -131,7 +136,8 @@
                             tabIcon: 'fas fa-bullseye',
                             navigation: {
                                 path: '/TargetEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -139,7 +145,8 @@
                             tabIcon: 'fas fa-level-down-alt',
                             navigation: {
                                 path: '/DeficientEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -148,7 +155,8 @@
                             visible: vm.isAdmin,
                             navigation: {
                                 path: '/RemainingLifeLimitEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         },
                         {
@@ -156,7 +164,8 @@
                             tabIcon: 'fas fa-money-bill-wave',
                             navigation: {
                                 path: '/CashFlowEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName,
+                                objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario}
                             }
                         }
                     ];

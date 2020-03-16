@@ -47,7 +47,9 @@ export default class TargetService {
      * Upserts a scenario's target library data
      * @param scenarioTargetLibraryData Scenario target library upsert data
      */
-    static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary): AxiosPromise {
+    static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData);
     }
 }

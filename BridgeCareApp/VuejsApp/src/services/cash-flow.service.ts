@@ -47,7 +47,9 @@ export default class CashFlowService {
      * Upserts a scenario's cash flow library data
      * @param saveScenarioCashFlowLibraryData Scenario's cash flow library upsert data
      */
-    static saveScenarioCashFlowLibrary(saveScenarioCashFlowLibraryData: CashFlowLibrary): AxiosPromise {
+    static saveScenarioCashFlowLibrary(saveScenarioCashFlowLibraryData: CashFlowLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioCashFlowLibrary', saveScenarioCashFlowLibraryData);
     }
 }

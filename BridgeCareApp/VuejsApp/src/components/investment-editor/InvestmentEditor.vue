@@ -226,6 +226,7 @@
         editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -233,6 +234,7 @@
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/InvestmentEditor/Scenario/') {
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
@@ -697,7 +699,8 @@
                     this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
                 });
 
-            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary })
+            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary, 
+            objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
                 .then(() => {
                     setTimeout(() => {
                         this.onClearSelectedInvestmentLibrary();
