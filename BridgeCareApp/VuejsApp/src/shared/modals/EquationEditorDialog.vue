@@ -137,7 +137,7 @@
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <kendo-chart :data-source="orderedDataSource"
+                                                    <kendo-chart :data-source="piecewiseGridData"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
@@ -182,7 +182,7 @@
                                             </v-flex>
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
-                                                    <kendo-chart :data-source="orderedDataSource"
+                                                    <kendo-chart :data-source="piecewiseGridData"
                                                                  :series="series"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
@@ -222,17 +222,23 @@
                 <v-card-text>
                     <v-layout justify-center column>
                         <div>
-                            <v-text-field outline v-model="newDataPoint.timeValue" label="Time Value"></v-text-field>
+                            <v-text-field outline v-model="newDataPoint.timeValue" label="Time Value"
+                                          type="number" :rules="[timeValueIsNew]">
+                            </v-text-field>
                         </div>
                         <div>
-                            <v-text-field outline v-model="newDataPoint.attributeValue" label="Attribute Value">
+                            <v-text-field outline v-model="newDataPoint.attributeValue" label="Attribute Value"
+                                          type="number" :rules="[conditionValueIsNew]">
                             </v-text-field>
                         </div>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPoint(true)">Save</v-btn>
+                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPoint(true)"
+                               :disabled="disableDataPointSubmit()">
+                            Save
+                        </v-btn>
                         <v-btn class="ara-orange-bg white--text" @click="submitNewDataPoint(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
@@ -245,7 +251,8 @@
                     <v-layout justify-center column>
                         <p>Data point entries must follow the format <span class="format-span"><strong>#,#</strong></span> (time,attribute) with each entry on a separate line.</p>
                         <v-flex xs2>
-                            <v-textarea rows="20" no-resize outline v-model="multiDataPoints">
+                            <v-textarea rows="20" no-resize outline v-model="multiDataPoints"
+                                        :rules="[isCorrectMultiDataPointsFormat, multiDataPointsAreNew]">
                             </v-textarea>
                         </v-flex>
 
@@ -278,10 +285,9 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
-    import {http2XX} from '@/shared/utils/http-utils';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {emptyTimeAttributeDataPoint, TimeAttributeDataPoint} from '@/shared/models/iAM/time-attribute-data-point';
-    import {isNil, clone, sortBy, prop} from 'ramda';
+    import {isNil, clone, sortBy, prop, reverse, isEmpty} from 'ramda';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -410,30 +416,51 @@
                 });
             });
 
+            const sortByCondition = sortBy(prop('attributeValue'));
+            this.piecewiseGridData = reverse(sortByCondition(this.piecewiseGridData));
             this.setTimeInRatingDataWithPiecewiseData();
-            this.setOrderedDataSource();
         }
 
         setTimeInRatingDataWithPiecewiseData() {
             if (this.piecewiseGridData.length > 1) {
-                const dataPoints: TimeAttributeDataPoint[] = [];
+                for (let i = 0; i < this.piecewiseGridData.length; i++) {
+                    const timeDiff: number = i === 0 ? 0
+                        : Math.abs(this.piecewiseGridData[i - 1].timeValue - this.piecewiseGridData[i].timeValue);
 
-                for (let index = 1; index < this.piecewiseGridData.length; index++) {
-                    if (this.piecewiseGridData[index].attributeValue > 0 && this.piecewiseGridData[index].timeValue > 0) {
-                        const timeDiff: number = Math.abs(
-                            this.piecewiseGridData[index - 1].timeValue - this.piecewiseGridData[index].timeValue);
-
-                        dataPoints.push({
-                            id: ObjectID.generate(),
-                            timeValue: timeDiff,
-                            attributeValue: this.piecewiseGridData[index].attributeValue
-                        });
-                    }
+                    this.timeInRatingGridData.push({
+                        ...this.piecewiseGridData[i],
+                        timeValue: timeDiff
+                    });
                 }
-
-                this.timeInRatingGridData = dataPoints;
             }
         }
+
+        /*setPiecewiseDataWithTimeInRatingData() {
+            if (this.timeInRatingGridData.length > 1) {
+                const piecewiseDataPointIds: string[] = getPropertyValues('id', this.piecewiseGridData);
+
+                const tirDataPointIds: string[] = getPropertyValues('id', this.timeInRatingGridData)
+                    .filter((id: string) => !piecewiseDataPointIds.includes(id));
+
+                const tirDataPoints: TimeAttributeDataPoint[] = this.timeInRatingGridData
+                    .filter((dataPoint: TimeAttributeDataPoint) => tirDataPointIds.includes(dataPoint.id))
+
+                let cumulativeTime: number = tirDataPoints[0].timeValue;
+                for (let index = 0; index < tirDataPoints.length; index++) {
+                    if (index === 0) {
+                        this.
+                    }
+                    const cumulativeTime: number = index === 0
+                        ? piecewiseDataPoints[index].timeValue
+                        : Math.abs(piecewiseDataPoints[index - 1].timeValue - piecewiseDataPoints[index].timeValue);
+
+                    this.timeInRatingGridData.push({
+                        ...piecewiseDataPoints[index],
+                        timeValue: timeDiff
+                    });
+                }
+            }
+        }*/
 
         /**
          * Setter: attributesList
@@ -534,7 +561,6 @@
             if (submit) {
                 this.piecewiseGridData.push(this.newDataPoint);
                 this.setTimeInRatingDataWithPiecewiseData();
-                this.setOrderedDataSource();
             }
 
             this.newDataPoint = clone(emptyTimeAttributeDataPoint);
@@ -560,12 +586,31 @@
 
                     this.piecewiseGridData.push(...dataPoints);
                     this.setTimeInRatingDataWithPiecewiseData();
-                    this.setOrderedDataSource();
                 }
             }
 
             this.showAddDataPointMultiPopup = false;
             this.multiDataPoints = '';
+        }
+
+        parseMultiDataPoints() {
+            const splitDataPoints: string[] = this.multiDataPoints
+                .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '');
+
+            if (hasValue(splitDataPoints)) {
+                const dataPoints: TimeAttributeDataPoint[] = splitDataPoints.map((dataPoints: string) => {
+                    const splitValues: string[] = dataPoints.split(',');
+                    return {
+                        id: ObjectID.generate(),
+                        timeValue: parseFloat(splitValues[0]),
+                        attributeValue: parseFloat(splitValues[1])
+                    };
+                });
+                const sortByCondition = sortBy(prop('attributeValue'));
+                return reverse(sortByCondition(dataPoints));
+            }
+
+            return [];
         }
 
         /**
@@ -576,7 +621,6 @@
                 .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
 
             this.setTimeInRatingDataWithPiecewiseData();
-            this.setOrderedDataSource();
         }
 
         /**
@@ -647,26 +691,96 @@
             this.showValidMessage = false;
         }
 
+        disableDataPointSubmit() {
+            return !this.timeValueIsNew(this.newDataPoint.timeValue) ||
+                !this.conditionValueIsNew(this.newDataPoint.attributeValue);
+        }
+
         /**
          * Disables the multiple data points popup 'Save' button if the criteria isn't met
          */
         disableMultiDataPointsSubmit() {
+            return this.multiDataPoints === '' || this.isCorrectMultiDataPointsFormat() !== true;
+        }
+
+        timeValueIsNew(value: number) {
+            if (this.selectedTab === 1) {
+                return !getPropertyValues('timeValue', this.piecewiseGridData).includes(value) ||
+                    'This time value already exists';
+            }
+
+            return true
+        }
+
+        conditionValueIsNew(value: number) {
+            if (this.selectedTab === 1) {
+                return !getPropertyValues('attributeValue', this.piecewiseGridData).includes(value) ||
+                    'This condition value already exists';
+            } else {
+                return !getPropertyValues('attributeValue', this.timeInRatingGridData).includes(value) ||
+                    'This condition value already exists';
+            }
+        }
+
+        isCorrectMultiDataPointsFormat() {
             const eachDataPointIsValid = this.multiDataPoints
                 .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '')
                 .every((dataPoints: string) => {
                     return (/\d+(\.{1}\d+)*,\d+(\.{1}\d+)*/).test(dataPoints) &&
-                           dataPoints.split(',').every((value: string) => parseFloat(value) !== NaN);
+                        dataPoints.split(',').every((value: string) => parseFloat(value) !== NaN);
                 });
 
-            return this.multiDataPoints === '' || !eachDataPointIsValid;
+            return eachDataPointIsValid || 'Incorrect format';
         }
 
-        /**
-         * Orders the chart's data source by the 'timeValue' property
-         */
-        setOrderedDataSource() {
-            const sortByTimeValue = sortBy(prop('timeValue'));
-            this.orderedDataSource = sortByTimeValue(this.piecewiseGridData);
+        multiDataPointsAreNew() {
+            const dataPoints: TimeAttributeDataPoint[] = this.parseMultiDataPoints();
+            const existingConditionValues: number[] = [];
+            const existingTimeValues: number[] = [];
+
+            const eachDataPointIsNew = dataPoints.every((dataPoint: TimeAttributeDataPoint) => {
+                const conditionValueIsNew = this.conditionValueIsNew(dataPoint.attributeValue) === true;
+
+                if (!conditionValueIsNew) {
+                    existingConditionValues.push(dataPoint.attributeValue);
+                }
+
+                if (this.selectedTab === 1) {
+                    const timeValueIsNew: boolean = this.timeValueIsNew(dataPoint.timeValue) === true;
+
+                    if (!timeValueIsNew) {
+                        existingTimeValues.push(dataPoint.timeValue);
+                    }
+
+                    return conditionValueIsNew && timeValueIsNew;
+                } else {
+                    return conditionValueIsNew;
+                }
+            });
+
+            let conditionValuesAlreadyExistsMessage: string = '';
+            if (!isEmpty(existingConditionValues)) {
+                conditionValuesAlreadyExistsMessage = 'The following condition values already exist: ';
+                existingConditionValues.forEach((value: number, index: number) => {
+                    if (index > 0) {
+                        conditionValuesAlreadyExistsMessage += `, ${value}`;
+                    }
+                    conditionValuesAlreadyExistsMessage += `${value}`;
+                });
+            }
+
+            let timeValuesAlreadyExistsMessage: string = '';
+            if (!isEmpty(existingTimeValues)) {
+                timeValuesAlreadyExistsMessage = 'The following time values already exist: ';
+                existingTimeValues.forEach((value: number, index: number) => {
+                    if (index > 0) {
+                        timeValuesAlreadyExistsMessage += `, ${value}`;
+                    }
+                    timeValuesAlreadyExistsMessage += `${value}`;
+                });
+            }
+
+            return eachDataPointIsNew || `${conditionValuesAlreadyExistsMessage}\n${timeValuesAlreadyExistsMessage}`;
         }
     }
 </script>
