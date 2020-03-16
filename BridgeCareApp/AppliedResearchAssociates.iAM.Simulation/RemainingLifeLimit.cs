@@ -2,7 +2,7 @@
 {
     public class RemainingLifeLimit
     {
-        public PerformanceAttribute RemainingLifeAttribute { get; }
+        public RawAttribute RemainingLifeAttribute { get; }
 
         public double Limit { get; }
 

@@ -2,7 +2,7 @@
 {
     public class PerformanceCurve
     {
-        public PerformanceAttribute Attribute { get; }
+        public RawAttribute Attribute { get; }
 
         public ConditionalEquation ConditionalEquation { get; }
 

@@ -2,7 +2,7 @@
 {
     public class TreatmentConsequence
     {
-        public PerformanceAttribute Attribute { get; }
+        public RawAttribute Attribute { get; }
 
         public ValueAdjustment Change { get; }
 

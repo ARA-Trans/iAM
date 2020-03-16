@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class PerformanceAttributeDatum
+    public class RawAttributeDatum
     {
         public string BeginStation { get; }
 
@@ -14,7 +14,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public string Route { get; }
 
-        // May want to use decimal for monetary attributes, if they exist.
         public double Value { get; }
     }
 }

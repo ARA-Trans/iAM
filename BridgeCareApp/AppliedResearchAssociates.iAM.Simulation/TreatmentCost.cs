@@ -4,6 +4,6 @@
     {
         public Criterion Criterion { get; }
 
-        public MonetaryEquation Equation { get; }
+        public Equation Equation { get; }
     }
 }
