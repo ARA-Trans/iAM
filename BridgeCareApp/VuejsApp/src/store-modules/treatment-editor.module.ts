@@ -121,7 +121,7 @@ const actions = {
             });
     },
     async saveScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.saveScenarioTreatmentLibraryData)
+        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.saveScenarioTreatmentLibraryData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<TreatmentLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioTreatmentLibraryMutator', response.data);

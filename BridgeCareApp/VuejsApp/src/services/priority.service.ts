@@ -47,7 +47,9 @@ export default class PriorityService {
      * Upserts a scenario's priority library data
      * @param saveScenarioPriorityLibraryData The scenario priority library upsert data
      */
-    static saveScenarioPriorityLibrary(saveScenarioPriorityLibraryData: PriorityLibrary): AxiosPromise {
+    static saveScenarioPriorityLibrary(saveScenarioPriorityLibraryData: PriorityLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioPriorityLibrary', saveScenarioPriorityLibraryData);
     }
 }

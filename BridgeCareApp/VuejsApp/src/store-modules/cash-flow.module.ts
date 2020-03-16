@@ -96,7 +96,7 @@ const actions = {
             });
     },
     async saveScenarioCashFlowLibrary({dispatch, commit}: any, payload: any) {
-        await CashFlowService.saveScenarioCashFlowLibrary(payload.scenarioCashFlowLibrary)
+        await CashFlowService.saveScenarioCashFlowLibrary(payload.scenarioCashFlowLibrary, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioCashFlowLibraryMutator', response.data);

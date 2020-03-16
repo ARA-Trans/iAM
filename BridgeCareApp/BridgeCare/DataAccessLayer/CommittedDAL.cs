@@ -1,6 +1,7 @@
 ﻿using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using EntityFramework.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,26 +19,21 @@ namespace BridgeCare.DataAccessLayer
         /// <param name="db"></param>
         public void SaveCommittedProjects(List<CommittedProjectModel> committedProjectModels, BridgeCareContext db)
         {
-            // Remove all existing commitments for the scenarios of the new commitments
+            var simulations = new HashSet<int>();
             foreach (var committedProjectModel in committedProjectModels)
             {
-                var oldCommittments = db.CommittedProjects
-                    .Where(c =>
-                        c.SIMULATIONID == committedProjectModel.SimulationId
-                    );
-
-                foreach (var committedEntity in oldCommittments)
-                {
-                    db.CommittedProjects.Remove(committedEntity);
-                }
+                simulations.Add(committedProjectModel.SimulationId);
             }
 
-            // Add the new commitments
-            foreach (var committedProjectModel in committedProjectModels)
+            foreach (var simulationId in simulations)
             {
-                db.CommittedProjects.Add(new CommittedEntity(committedProjectModel));
+                db.CommittedProjects.RemoveRange(db.CommittedProjects.Where(project => project.SIMULATIONID == simulationId));
+                db.SaveChanges();
             }
 
+            var projectEntities = committedProjectModels.Select(model => new CommittedEntity(model)).ToList();
+
+            db.CommittedProjects.AddRange(projectEntities);
             db.SaveChanges();
         }
 

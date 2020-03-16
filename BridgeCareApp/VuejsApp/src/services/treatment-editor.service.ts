@@ -1,7 +1,8 @@
-import {AxiosPromise} from 'axios';
+import {AxiosPromise, AxiosResponse} from 'axios';
 import {TreatmentLibrary} from '@/shared/models/iAM/treatment';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
+import { hasValue } from '@/shared/utils/has-value-util';
 
 export default class TreatmentEditorService {
     /**
@@ -47,7 +48,9 @@ export default class TreatmentEditorService {
      * Saves a scenario's treatment library data
      * @param saveScenarioTreatmentLibraryData The scenario treatment library save data
      */
-    static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
+    static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioTreatmentLibrary', saveScenarioTreatmentLibraryData);
     }
 }
