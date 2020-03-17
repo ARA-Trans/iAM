@@ -4,7 +4,9 @@
  * @param itemProp The item's property to check for a value
  */
 export const hasValue = (item: any, itemProp: string = '') => {
-    const itemHasValue = item !== null && item !== undefined && item !== '' && item !== [];
+    let itemHasValue = item !== null && item !== undefined && item !== '';
+    if (Array.isArray(item)) 
+    {    itemHasValue = itemHasValue && item.length > 0;}
 
     let itemPropHasValue = true;
     if (itemHasValue && itemProp !== '') {
