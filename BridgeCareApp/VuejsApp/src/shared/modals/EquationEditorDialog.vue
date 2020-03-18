@@ -235,7 +235,7 @@
                             </v-text-field>
                         </div>
                         <div>
-                            <v-text-field outline v-model="newDataPoint.attributeValue" label="Attribute Value"
+                            <v-text-field outline v-model="newDataPoint.conditionValue" label="Attribute Value"
                                           type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
                             </v-text-field>
                         </div>
@@ -288,7 +288,7 @@
                             </v-text-field>
                         </div>
                         <div v-else>
-                            <v-text-field outline v-model="editedDataPoint.attributeValue" label="Attribute Value"
+                            <v-text-field outline v-model="editedDataPoint.conditionValue" label="Attribute Value"
                                           type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
                             </v-text-field>
                         </div>
@@ -322,7 +322,7 @@
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {emptyTimeAttributeDataPoint, TimeAttributeDataPoint} from '@/shared/models/iAM/time-attribute-data-point';
+    import {emptyTimeConditionDataPoint, TimeConditionDataPoint} from '@/shared/models/iAM/time-condition-data-point';
     import {clone, reverse, isEmpty, add, insert, findIndex, propEq, update} from 'ramda';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     const ObjectID = require('bson-objectid');
@@ -348,18 +348,18 @@
         invalidMessage: string = '';
         piecewiseGridHeaders: DataTableHeader[] = [
             {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'},
-            {text: 'Condition', value: 'attributeValue', align: 'left', sortable: false, class: '', width: '10px'},
+            {text: 'Condition', value: 'conditionValue', align: 'left', sortable: false, class: '', width: '10px'},
             {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'}
         ];
         timeInRatingGridHeaders: DataTableHeader[] = [
-            {text: 'Condition', value: 'attributeValue', align: 'left', sortable: false, class: '', width: '10px'},
+            {text: 'Condition', value: 'conditionValue', align: 'left', sortable: false, class: '', width: '10px'},
             {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'}
         ];
-        piecewiseGridData: TimeAttributeDataPoint[] = [];
-        timeInRatingGridData: TimeAttributeDataPoint[] = [];
+        piecewiseGridData: TimeConditionDataPoint[] = [];
+        timeInRatingGridData: TimeConditionDataPoint[] = [];
         showAddDataPointPopup: boolean = false;
-        newDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
-        series: any[] = [{type: 'line', field: 'attributeValue', categoryField: 'timeValue', markers: {visible: false}}];
+        newDataPoint: TimeConditionDataPoint = clone(emptyTimeConditionDataPoint);
+        series: any[] = [{type: 'line', field: 'conditionValue', categoryField: 'timeValue', markers: {visible: false}}];
         categoryAxis: any = {min: 0, max: 0, labels: {step: 1}, title: {text: 'Time', visible: true}};
         tooltip: any = {visible: true, template: '#= category #, #= value #'};
         showAddDataPointMultiPopup: boolean = false;
@@ -367,7 +367,7 @@
         selectedTab: number = 0;
         showEditDataPointPopup: boolean = false;
         editedDataPointProperty: string = '';
-        editedDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
+        editedDataPoint: TimeConditionDataPoint = clone(emptyTimeConditionDataPoint);
 
         /**
          * Component mounted event handler
@@ -434,11 +434,11 @@
         }
 
         /**
-         * Parses the equation string of (x,y) data points into a list of TimeAttributeDataPoint objects
+         * Parses the equation string of (x,y) data points into a list of TimeConditionDataPoint objects
          */
         onParsePiecewiseEquation() {
             const regexSplitter = /(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))/;
-            let dataPoints: TimeAttributeDataPoint[] = [];
+            let dataPoints: TimeConditionDataPoint[] = [];
 
             const dataPointStrings: string[] = this.dialogData.equation.split(regexSplitter)
                 .filter((dataPoint: string) => hasValue(dataPoint) && dataPoint.indexOf(',') !== -1);
@@ -452,7 +452,7 @@
                 dataPoints.push({
                     id: ObjectID.generate(),
                     timeValue: parseInt(splitDataPoint[0]),
-                    attributeValue: parseFloat(splitDataPoint[1])
+                    conditionValue: parseFloat(splitDataPoint[1])
                 });
             });
 
@@ -558,28 +558,28 @@
             this.showAddDataPointPopup = false;
 
             if (submit) {
-                const dataPoints: TimeAttributeDataPoint[] = this.selectedTab === 1
+                const dataPoints: TimeConditionDataPoint[] = this.selectedTab === 1
                     ? [...this.piecewiseGridData, this.newDataPoint]
                     : [...this.timeInRatingGridData, this.newDataPoint];
 
                 this.syncDataGridLists(dataPoints);
             }
 
-            this.newDataPoint = clone(emptyTimeAttributeDataPoint);
+            this.newDataPoint = clone(emptyTimeConditionDataPoint);
         }
 
         /**
          * Syncs data between the two data grid lists
          */
-        syncDataGridLists(dataPoints: TimeAttributeDataPoint[]) {
-            let piecewiseData: TimeAttributeDataPoint[] = [];
-            let timeInRatingData: TimeAttributeDataPoint[] = [];
+        syncDataGridLists(dataPoints: TimeConditionDataPoint[]) {
+            let piecewiseData: TimeConditionDataPoint[] = [];
+            let timeInRatingData: TimeConditionDataPoint[] = [];
 
             if (this.selectedTab === 1) {
                 piecewiseData = sortByProperty('timeValue', dataPoints)
-                    .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.timeValue !== 0);
+                    .filter((dataPoint: TimeConditionDataPoint) => dataPoint.timeValue !== 0);
 
-                piecewiseData.forEach((dataPoint: TimeAttributeDataPoint, index: number) => {
+                piecewiseData.forEach((dataPoint: TimeConditionDataPoint, index: number) => {
                     timeInRatingData.push({
                         ...dataPoint,
                         timeValue: index === 0
@@ -588,21 +588,21 @@
                     });
                 });
 
-                timeInRatingData = reverse(sortByProperty('attributeValue', timeInRatingData));
+                timeInRatingData = reverse(sortByProperty('conditionValue', timeInRatingData));
 
                 if (hasValue(timeInRatingData)) {
-                    const n1: TimeAttributeDataPoint = {
+                    const n1: TimeConditionDataPoint = {
                         id: ObjectID.generate(),
                         timeValue: 0,
-                        attributeValue: Math.trunc(add(1, timeInRatingData[0].attributeValue))
+                        conditionValue: Math.trunc(add(1, timeInRatingData[0].conditionValue))
                     };
                     piecewiseData = insert(0, n1, piecewiseData);
                 }
             } else {
-                timeInRatingData = reverse(sortByProperty('attributeValue', dataPoints));
+                timeInRatingData = reverse(sortByProperty('conditionValue', dataPoints));
 
                 let cumulativeTimeValue: number = 0;
-                timeInRatingData.forEach((dataPoint: TimeAttributeDataPoint) => {
+                timeInRatingData.forEach((dataPoint: TimeConditionDataPoint) => {
                     const timeValue: number = add(cumulativeTimeValue, dataPoint.timeValue);
                     cumulativeTimeValue = timeValue;
 
@@ -615,10 +615,10 @@
                 piecewiseData = sortByProperty('timeValue', piecewiseData);
 
                 if (hasValue(timeInRatingData)) {
-                    const n1: TimeAttributeDataPoint = {
+                    const n1: TimeConditionDataPoint = {
                         id: ObjectID.generate(),
                         timeValue: 0,
-                        attributeValue: Math.trunc(add(1, timeInRatingData[0].attributeValue))
+                        conditionValue: Math.trunc(add(1, timeInRatingData[0].conditionValue))
                     };
                     piecewiseData = insert(0, n1, piecewiseData);
                 }
@@ -633,7 +633,7 @@
          */
         submitNewDataPointMulti(submit: boolean) {
             if (submit) {
-                const parsedMultiDataPoints: TimeAttributeDataPoint[] = this.parseMultiDataPoints();
+                const parsedMultiDataPoints: TimeConditionDataPoint[] = this.parseMultiDataPoints();
 
                 const dataPoints = this.selectedTab === 1
                     ? [...this.piecewiseGridData, ...parsedMultiDataPoints]
@@ -647,20 +647,20 @@
         }
 
         /**
-         * Parses the multi data points string into a list of TimeAttributeDataPoint objects
+         * Parses the multi data points string into a list of TimeConditionDataPoint objects
          */
         parseMultiDataPoints() {
             const splitDataPoints: string[] = this.multiDataPoints
                 .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '');
 
             if (hasValue(splitDataPoints)) {
-                const dataPoints: TimeAttributeDataPoint[] = splitDataPoints.map((dataPoints: string) => {
+                const dataPoints: TimeConditionDataPoint[] = splitDataPoints.map((dataPoints: string) => {
                     const splitValues: string[] = dataPoints.split(',');
 
                     return {
                         id: ObjectID.generate(),
                         timeValue: parseInt(splitValues[0]),
-                        attributeValue: parseFloat(splitValues[1])
+                        conditionValue: parseFloat(splitValues[1])
                     };
                 });
 
@@ -670,7 +670,7 @@
             return [];
         }
 
-        onEditDataPoint(dataPoint: TimeAttributeDataPoint, property: string) {
+        onEditDataPoint(dataPoint: TimeConditionDataPoint, property: string) {
             this.editedDataPoint = clone(dataPoint);
             this.editedDataPointProperty = property;
             this.showEditDataPointPopup = true;
@@ -686,18 +686,18 @@
                 this.syncDataGridLists(dataPoints);
             }
 
-            this.editedDataPoint = clone(emptyTimeAttributeDataPoint);
+            this.editedDataPoint = clone(emptyTimeConditionDataPoint);
             this.editedDataPointProperty = '';
             this.showEditDataPointPopup = false;
         }
 
         /**
-         * Removes a TimeAttributeDataPoint with the specified id from a data grid list
+         * Removes a TimeConditionDataPoint with the specified id from a data grid list
          */
         onRemoveTimeAttributeDataPoint(id: string) {
-            const dataPoints: TimeAttributeDataPoint[] = this.selectedTab === 1
-                ? this.piecewiseGridData.filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id)
-                : this.timeInRatingGridData.filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
+            const dataPoints: TimeConditionDataPoint[] = this.selectedTab === 1
+                ? this.piecewiseGridData.filter((dataPoint: TimeConditionDataPoint) => dataPoint.id !== id)
+                : this.timeInRatingGridData.filter((dataPoint: TimeConditionDataPoint) => dataPoint.id !== id);
 
             this.syncDataGridLists(dataPoints);
         }
@@ -734,8 +734,8 @@
          * Parses a list of TimeAttributeDataPoints objects into a string of (x,y) data points
          */
         onParseTimeAttributeDataPoints() {
-            return this.piecewiseGridData.map((timeAttributeDataPoint : TimeAttributeDataPoint) =>
-                `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.attributeValue})`
+            return this.piecewiseGridData.map((timeAttributeDataPoint : TimeConditionDataPoint) =>
+                `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.conditionValue})`
             ).join('');
         }
 
@@ -777,8 +777,8 @@
             return this.timeValueIsNotEmpty(this.newDataPoint.timeValue.toString()) !== true ||
                    this.timeValueIsNotZero(this.newDataPoint.timeValue.toString()) !== true ||
                    this.timeValueIsNew(this.newDataPoint.timeValue.toString()) !== true ||
-                   this.conditionValueIsNotEmpty(this.newDataPoint.attributeValue.toString()) !== true ||
-                   this.conditionValueIsNew(this.newDataPoint.attributeValue.toString()) !== true;
+                   this.conditionValueIsNotEmpty(this.newDataPoint.conditionValue.toString()) !== true ||
+                   this.conditionValueIsNew(this.newDataPoint.conditionValue.toString()) !== true;
         }
 
         /**
@@ -799,8 +799,8 @@
                        this.timeValueIsNotZero(this.editedDataPoint.timeValue.toString()) !== true ||
                        this.timeValueIsNew(this.editedDataPoint.timeValue.toString()) !== true;
             } else {
-                return this.conditionValueIsNotEmpty(this.editedDataPoint.attributeValue.toString()) !== true ||
-                       this.conditionValueIsNew(this.editedDataPoint.attributeValue.toString()) !== true;
+                return this.conditionValueIsNotEmpty(this.editedDataPoint.conditionValue.toString()) !== true ||
+                       this.conditionValueIsNew(this.editedDataPoint.conditionValue.toString()) !== true;
             }
         }
 
@@ -840,8 +840,8 @@
          */
         conditionValueIsNew(value: string) {
             const conditionValues: number[] = this.selectedTab === 1
-                ? getPropertyValues('attributeValue', this.piecewiseGridData)
-                : getPropertyValues('attributeValue', this.timeInRatingGridData);
+                ? getPropertyValues('conditionValue', this.piecewiseGridData)
+                : getPropertyValues('conditionValue', this.timeInRatingGridData);
 
             return conditionValues.indexOf(parseFloat(value)) === -1 || 'Condition value already exists';
         }
@@ -879,16 +879,16 @@
          * Rule: Checks if the multi data point popup textarea data has all new values for times & conditions
          */
         multiDataPointsAreNew() {
-            const dataPoints: TimeAttributeDataPoint[] = this.parseMultiDataPoints();
+            const dataPoints: TimeConditionDataPoint[] = this.parseMultiDataPoints();
             const existingConditionValues: number[] = [];
             const existingTimeValues: number[] = [];
 
-            const eachDataPointIsNew = dataPoints.every((dataPoint: TimeAttributeDataPoint) => {
-                const conditionValueIsNew = this.conditionValueIsNew(dataPoint.attributeValue.toString()) === true;
+            const eachDataPointIsNew = dataPoints.every((dataPoint: TimeConditionDataPoint) => {
+                const conditionValueIsNew = this.conditionValueIsNew(dataPoint.conditionValue.toString()) === true;
                 const timeValueIsNew: boolean = this.timeValueIsNew(dataPoint.timeValue.toString()) === true;
 
                 if (!conditionValueIsNew) {
-                    existingConditionValues.push(dataPoint.attributeValue);
+                    existingConditionValues.push(dataPoint.conditionValue);
                 }
 
                 if (this.selectedTab === 1 && !timeValueIsNew) {
