@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Choice.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Choice.cs</LastGenOutput>
+    </None>
+    <None Update="Zip.ToTuples.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Zip.ToTuples.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Choice.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Choice.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Zip.ToTuples.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Zip.ToTuples.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

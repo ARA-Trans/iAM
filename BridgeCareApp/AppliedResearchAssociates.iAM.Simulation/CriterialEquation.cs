@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class ConditionalEquation
+    public class CriterialEquation
     {
         public Criterion Criterion { get; }
 

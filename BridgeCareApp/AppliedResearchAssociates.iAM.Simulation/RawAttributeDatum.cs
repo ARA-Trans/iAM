@@ -14,6 +14,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public string Route { get; }
 
+        // Can also be a string, according to the UI. Maybe also a date?
         public double Value { get; }
     }
 }

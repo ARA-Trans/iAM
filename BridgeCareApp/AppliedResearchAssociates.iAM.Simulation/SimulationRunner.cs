@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class SimulationRunner
     {
+        public SimulationRunner(Simulation simulation)
+        {
+            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+        }
+
         public void Run() => CompileSimulation();
 
         private readonly Simulation Simulation;
-
-        public SimulationRunner(Simulation simulation)
-        {
-            Simulation = simulation ?? throw new System.ArgumentNullException(nameof(simulation));
-        }
 
         private IEnumerable<Project> Projects { get; }
 
@@ -71,7 +72,14 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod,
                 1 + Simulation.InvestmentPlan.NumberOfYearsInAnalysisPeriod))
             {
-                ApplyDeterioration(year);
+                //ApplyDeterioration(year);
+                //for each section:
+                //  for each performance curve:
+                //    if curve criterion is met:
+                //      if another curve's criterion was met and that curve has the same target attribute:
+                //        ERROR (right?)
+                //      else:
+                //        curve attribute value for current year = curve equation result
 
                 // determine benefit/cost.
 

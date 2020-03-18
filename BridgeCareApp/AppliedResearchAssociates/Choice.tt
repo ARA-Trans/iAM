@@ -1,0 +1,168 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// WARNING: This file was automatically generated from a T4 text template at the
+// following moment in time: <#= DateTimeOffset.Now #>. Any changes you make to
+// this file will be lost when this file is regenerated from the template
+// source.
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+
+namespace AppliedResearchAssociates
+{
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+
+<#
+const int MAXIMUM_ARITY = 8;
+foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
+{
+    var choices = Enumerable.Range(1, numChoices);
+    var lastChoice = choices.Last();
+    var typeParams = choices.ToDictionary(_ => _, _ => $"T{_}");
+    var type = $"Choice<{string.Join(", ", typeParams.Values.OrderBy(_ => _))}>";
+    var subtypes = choices.ToDictionary(_ => _, _ => $"Choice{_}");
+    var handlers = choices.ToDictionary(_ => _, _ => $"handle{_}");
+    var actionParamSeq = string.Join(", ", choices.Select(_ => $"Action<{typeParams[_]}> {handlers[_]}"));
+    var funcParamSeq = string.Join(", ", choices.Select(_ => $"Func<{typeParams[_]}, U> {handlers[_]}"));
+    var subtypeObjects = subtypes.Values.Select(subtype => $"typeof({subtype})");
+    var subtypeSeq = string.Join(", ", subtypeObjects);
+    var nullCheckStatements = choices.Select(_ => $"if ({handlers[_]} == null) throw new ArgumentNullException(nameof({handlers[_]}));");
+    var nullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), nullCheckStatements);
+#>
+    [KnownType(nameof(GetKnownTypes))]
+    public abstract class <#= type #> : IEquatable<<#= type #>>
+    {
+        private static IEnumerable<Type> GetKnownTypes() => new[] { <#= subtypeSeq #> };
+
+        private Choice()
+        {
+        }
+
+<#
+    foreach (var c in choices)
+    {
+#>
+        public static <#= type #> Of(<#= typeParams[c] #> value) => value != null ? new <#= subtypes[c] #>(value) : null;
+
+<#
+    }
+#>
+<#
+    foreach (var c in choices)
+    {
+#>
+        [IgnoreDataMember]
+        public virtual <#= typeParams[c] #> As<#= typeParams[c] #> => default;
+
+<#
+    }
+#>
+<#
+    foreach (var c in choices)
+    {
+#>
+        [IgnoreDataMember]
+        public virtual bool Is<#= typeParams[c] #> => false;
+
+<#
+    }
+#>
+        public abstract object Value { get; }
+
+        public abstract void Match(<#= actionParamSeq #>);
+
+        public abstract U Match<U>(<#= funcParamSeq #>);
+
+        public abstract bool Equals(<#= type #> choice);
+
+        public static bool operator ==(<#= type #> choice1, <#= type #> choice2) => EqualityComparer<<#= type #>>.Default.Equals(choice1, choice2);
+
+        public static bool operator !=(<#= type #> choice1, <#= type #> choice2) => !(choice1 == choice2);
+
+<#
+    foreach (var c in choices)
+    {
+        var matchHandlers = Enumerable.Repeat("_ => throw new InvalidCastException()", numChoices).ToList();
+        matchHandlers[c - 1] = "_ => _";
+#>
+        public static explicit operator <#= typeParams[c] #>(<#= type #> choice) => choice.Match(<#= string.Join(", ", matchHandlers) #>);
+
+<#
+    }
+#>
+<#
+    foreach (var c in choices)
+    {
+#>
+        public static implicit operator <#= type #>(<#= typeParams[c] #> value) => Of(value);
+
+<#
+    }
+#>
+<#
+    foreach (var c in choices)
+    {
+#>
+        private class <#= subtypes[c] #> : <#= type #>
+        {
+            private readonly <#= typeParams[c] #> _value;
+
+            public <#= subtypes[c] #>(<#= typeParams[c] #> value) => _value = value;
+
+            [IgnoreDataMember]
+            public override <#= typeParams[c] #> As<#= typeParams[c] #> => _value;
+
+            [IgnoreDataMember]
+            public override bool Is<#= typeParams[c] #> => true;
+
+            public override object Value => _value;
+
+            public override void Match(<#= actionParamSeq #>)
+            {
+                <#= nullCheckBlock #>
+
+                <#= handlers[c] #>(_value);
+            }
+
+            public override U Match<U>(<#= funcParamSeq #>)
+            {
+                <#= nullCheckBlock #>
+
+                return <#= handlers[c] #>(_value);
+            }
+
+            private bool Equals(<#= subtypes[c] #> choice) => EqualityComparer<<#= typeParams[c] #>>.Default.Equals(_value, choice._value);
+
+            public override bool Equals(<#= type #> choice) => choice is <#= subtypes[c] #> c && Equals(c);
+
+            public override bool Equals(object obj) => obj is <#= subtypes[c] #> c && Equals(c);
+
+            public override int GetHashCode() => _value.GetHashCode();
+
+            public override string ToString() => _value.ToString();
+        }
+<#
+        if (c != lastChoice)
+        { // Blank line between nested types.
+#>
+
+<#
+        }
+    }
+#>
+    }
+<#
+    if (numChoices != MAXIMUM_ARITY)
+    { // Blank line between types.
+#>
+
+<#
+    }
+}
+#>
+}

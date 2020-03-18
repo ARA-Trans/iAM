@@ -6,6 +6,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public string Name { get; }
 
-        public List<RawAttributeDatum> RawData { get; }
+        public List<RawAttributeDatum> Data { get; }
+
+        // other things, too, like min, max, default, etc.
     }
 }

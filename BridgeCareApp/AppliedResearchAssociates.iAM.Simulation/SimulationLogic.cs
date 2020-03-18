@@ -8,7 +8,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
         {
             object[] allValuesFromPreviousYear = null;
 
-            if (curve.ConditionalEquation.Criterion.Evaluate(allValuesFromPreviousYear))
+            if (curve.Criterion.Evaluate(allValuesFromPreviousYear))
             {
                 var value = curve.IterateOneYear(allValuesFromPreviousYear, out var isOutOfRange);
 
