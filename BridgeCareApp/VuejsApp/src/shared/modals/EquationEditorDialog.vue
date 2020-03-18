@@ -115,16 +115,16 @@
                                                             <template slot="items" slot-scope="props">
                                                                 <td v-for="header in piecewiseGridHeaders">
                                                                     <div v-if="header.value !== ''">
-                                                                        <v-edit-dialog :return-value.sync="props.item[header.value]" large lazy persistent>
+                                                                        <div v-if="props.item.timeValue === 0">
                                                                             {{props.item[header.value]}}
-                                                                            <template slot="input">
-                                                                                <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
-                                                                                </v-text-field>
-                                                                            </template>
-                                                                        </v-edit-dialog>
+                                                                        </div>
+                                                                        <div v-else class="edit-data-point-span"
+                                                                              @click="onEditDataPoint(props.item, header.value)">
+                                                                            {{props.item[header.value]}}
+                                                                        </div>
                                                                     </div>
                                                                     <div v-else>
-                                                                        <v-btn icon class="ara-orange"
+                                                                        <v-btn v-if="props.item.timeValue !== 0" icon class="ara-orange"
                                                                                @click="onRemoveTimeAttributeDataPoint(props.item.id)">
                                                                             <v-icon>fas fa-trash</v-icon>
                                                                         </v-btn>
@@ -169,11 +169,19 @@
                                                         <v-data-table :headers="timeInRatingGridHeaders" :items="timeInRatingGridData"
                                                                       hide-actions class="elevation-1 v-table__overflow">
                                                             <template slot="items" slot-scope="props">
-                                                                <td>
-                                                                    {{props.item.attributeValue}}
-                                                                </td>
-                                                                <td>
-                                                                    {{props.item.timeValue}}
+                                                                <td v-for="header in timeInRatingGridHeaders">
+                                                                    <div v-if="header.value !== ''">
+                                                                        <div class="edit-data-point-span"
+                                                                             @click="onEditDataPoint(props.item, header.value)">
+                                                                            {{props.item[header.value]}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <v-btn icon class="ara-orange"
+                                                                               @click="onRemoveTimeAttributeDataPoint(props.item.id)">
+                                                                            <v-icon>fas fa-trash</v-icon>
+                                                                        </v-btn>
+                                                                    </div>
                                                                 </td>
                                                             </template>
                                                         </v-data-table>
@@ -223,12 +231,12 @@
                     <v-layout justify-center column>
                         <div>
                             <v-text-field outline v-model="newDataPoint.timeValue" label="Time Value"
-                                          type="number" :rules="[timeValueIsNew]">
+                                          type="number" :rules="[timeValueIsNotEmpty, timeValueIsNotZero, timeValueIsNew]">
                             </v-text-field>
                         </div>
                         <div>
                             <v-text-field outline v-model="newDataPoint.attributeValue" label="Attribute Value"
-                                          type="number" :rules="[conditionValueIsNew]">
+                                          type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
                             </v-text-field>
                         </div>
                     </v-layout>
@@ -252,7 +260,7 @@
                         <p>Data point entries must follow the format <span class="format-span"><strong>#,#</strong></span> (time,attribute) with each entry on a separate line.</p>
                         <v-flex xs2>
                             <v-textarea rows="20" no-resize outline v-model="multiDataPoints"
-                                        :rules="[isCorrectMultiDataPointsFormat, multiDataPointsAreNew]">
+                                        :rules="[multiDataPointsFormIsNotEmpty, isCorrectMultiDataPointsFormat, timeValueIsNotZero, multiDataPointsAreNew]">
                             </v-textarea>
                         </v-flex>
 
@@ -265,6 +273,34 @@
                             Save
                         </v-btn>
                         <v-btn class="ara-orange-bg white--text" @click="submitNewDataPointMulti(false)">Cancel</v-btn>
+                    </v-layout>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="showEditDataPointPopup" persistent max-width="250px">
+            <v-card>
+                <v-card-text>
+                    <v-layout justify-center>
+                        <div v-if="editedDataPointProperty === 'timeValue'">
+                            <v-text-field outline v-model="editedDataPoint.timeValue" label="Time Value"
+                                          type="number" :rules="[timeValueIsNotEmpty, timeValueIsNotZero, timeValueIsNew]">
+                            </v-text-field>
+                        </div>
+                        <div v-else>
+                            <v-text-field outline v-model="editedDataPoint.attributeValue" label="Attribute Value"
+                                          type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
+                            </v-text-field>
+                        </div>
+                    </v-layout>
+                </v-card-text>
+                <v-card-actions>
+                    <v-layout justify-space-between row>
+                        <v-btn class="ara-blue-bg white--text" @click="onSubmitEditedDataPointValue(true)"
+                               :disabled="disableEditDataPointSubmit()">
+                            Save
+                        </v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="onSubmitEditedDataPointValue(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -287,7 +323,8 @@
     import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {emptyTimeAttributeDataPoint, TimeAttributeDataPoint} from '@/shared/models/iAM/time-attribute-data-point';
-    import {isNil, clone, sortBy, prop, reverse, isEmpty} from 'ramda';
+    import {clone, reverse, isEmpty, add, insert, findIndex, propEq, update} from 'ramda';
+    import {sortByProperty} from '@/shared/utils/sorter-utils';
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -320,7 +357,6 @@
         ];
         piecewiseGridData: TimeAttributeDataPoint[] = [];
         timeInRatingGridData: TimeAttributeDataPoint[] = [];
-        orderedDataSource: TimeAttributeDataPoint[] = [];
         showAddDataPointPopup: boolean = false;
         newDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
         series: any[] = [{type: 'line', field: 'attributeValue', categoryField: 'timeValue', markers: {visible: false}}];
@@ -329,6 +365,9 @@
         showAddDataPointMultiPopup: boolean = false;
         multiDataPoints: string = '';
         selectedTab: number = 0;
+        showEditDataPointPopup: boolean = false;
+        editedDataPointProperty: string = '';
+        editedDataPoint: TimeAttributeDataPoint = clone(emptyTimeAttributeDataPoint);
 
         /**
          * Component mounted event handler
@@ -358,8 +397,8 @@
         onDialogDataChanged() {
             if ((/(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))+/).test(this.dialogData.equation)) {
                 this.isPiecewise = true;
-                this.onParsePiecewiseEquation();
                 this.selectedTab = 1;
+                this.onParsePiecewiseEquation();
             } else {
                 this.isPiecewise = false;
                 this.equation = this.dialogData.equation;
@@ -372,6 +411,8 @@
         @Watch('piecewiseGridData')
         onPiecewiseGridDataChanged() {
             this.cannotSubmit = true;
+            this.showInvalidMessage = false;
+            this.showValidMessage = false;
 
             this.categoryAxis.max = getPropertyValues('timeValue', this.piecewiseGridData).length;
 
@@ -397,70 +438,28 @@
          */
         onParsePiecewiseEquation() {
             const regexSplitter = /(\(\d+(\.{1}\d+)*,\d+(\.{1}\d+)*\))/;
+            let dataPoints: TimeAttributeDataPoint[] = [];
 
-            const dataPoints: string[] = this.dialogData.equation.split(regexSplitter).filter((timeAttributeDataPoint: string) =>
-                timeAttributeDataPoint !== '' && !isNil(timeAttributeDataPoint) && timeAttributeDataPoint.indexOf(',') !== -1);
+            const dataPointStrings: string[] = this.dialogData.equation.split(regexSplitter)
+                .filter((dataPoint: string) => hasValue(dataPoint) && dataPoint.indexOf(',') !== -1);
 
-            if (this.dialogData.equation.indexOf('(0,10)') === -1) {
-                this.piecewiseGridData.push({id: ObjectID.generate(), timeValue: 0, attributeValue: 10});
-            }
-
-            dataPoints.forEach((dataPoint: string) => {
+            dataPointStrings.forEach((dataPoint: string) => {
                 const splitDataPoint = dataPoint
-                    .replace('(', '').replace(')', '').split(',');
+                    .replace('(', '')
+                    .replace(')', '')
+                    .split(',');
 
-                this.piecewiseGridData.push({
+                dataPoints.push({
                     id: ObjectID.generate(),
-                    timeValue: parseFloat(splitDataPoint[0]),
+                    timeValue: parseInt(splitDataPoint[0]),
                     attributeValue: parseFloat(splitDataPoint[1])
                 });
             });
 
-            const sortByCondition = sortBy(prop('attributeValue'));
-            this.piecewiseGridData = reverse(sortByCondition(this.piecewiseGridData));
-            this.setTimeInRatingDataWithPiecewiseData();
+            dataPoints = sortByProperty('timeValue', dataPoints);
+
+            this.syncDataGridLists(dataPoints);
         }
-
-        setTimeInRatingDataWithPiecewiseData() {
-            if (this.piecewiseGridData.length > 1) {
-                for (let i = 0; i < this.piecewiseGridData.length; i++) {
-                    const timeDiff: number = i === 0 ? 0
-                        : Math.abs(this.piecewiseGridData[i - 1].timeValue - this.piecewiseGridData[i].timeValue);
-
-                    this.timeInRatingGridData.push({
-                        ...this.piecewiseGridData[i],
-                        timeValue: timeDiff
-                    });
-                }
-            }
-        }
-
-        /*setPiecewiseDataWithTimeInRatingData() {
-            if (this.timeInRatingGridData.length > 1) {
-                const piecewiseDataPointIds: string[] = getPropertyValues('id', this.piecewiseGridData);
-
-                const tirDataPointIds: string[] = getPropertyValues('id', this.timeInRatingGridData)
-                    .filter((id: string) => !piecewiseDataPointIds.includes(id));
-
-                const tirDataPoints: TimeAttributeDataPoint[] = this.timeInRatingGridData
-                    .filter((dataPoint: TimeAttributeDataPoint) => tirDataPointIds.includes(dataPoint.id))
-
-                let cumulativeTime: number = tirDataPoints[0].timeValue;
-                for (let index = 0; index < tirDataPoints.length; index++) {
-                    if (index === 0) {
-                        this.
-                    }
-                    const cumulativeTime: number = index === 0
-                        ? piecewiseDataPoints[index].timeValue
-                        : Math.abs(piecewiseDataPoints[index - 1].timeValue - piecewiseDataPoints[index].timeValue);
-
-                    this.timeInRatingGridData.push({
-                        ...piecewiseDataPoints[index],
-                        timeValue: timeDiff
-                    });
-                }
-            }
-        }*/
 
         /**
          * Setter: attributesList
@@ -559,11 +558,74 @@
             this.showAddDataPointPopup = false;
 
             if (submit) {
-                this.piecewiseGridData.push(this.newDataPoint);
-                this.setTimeInRatingDataWithPiecewiseData();
+                const dataPoints: TimeAttributeDataPoint[] = this.selectedTab === 1
+                    ? [...this.piecewiseGridData, this.newDataPoint]
+                    : [...this.timeInRatingGridData, this.newDataPoint];
+
+                this.syncDataGridLists(dataPoints);
             }
 
             this.newDataPoint = clone(emptyTimeAttributeDataPoint);
+        }
+
+        /**
+         * Syncs data between the two data grid lists
+         */
+        syncDataGridLists(dataPoints: TimeAttributeDataPoint[]) {
+            let piecewiseData: TimeAttributeDataPoint[] = [];
+            let timeInRatingData: TimeAttributeDataPoint[] = [];
+
+            if (this.selectedTab === 1) {
+                piecewiseData = sortByProperty('timeValue', dataPoints)
+                    .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.timeValue !== 0);
+
+                piecewiseData.forEach((dataPoint: TimeAttributeDataPoint, index: number) => {
+                    timeInRatingData.push({
+                        ...dataPoint,
+                        timeValue: index === 0
+                            ? piecewiseData[index].timeValue
+                            : Math.abs(piecewiseData[index - 1].timeValue - piecewiseData[index].timeValue)
+                    });
+                });
+
+                timeInRatingData = reverse(sortByProperty('attributeValue', timeInRatingData));
+
+                if (hasValue(timeInRatingData)) {
+                    const n1: TimeAttributeDataPoint = {
+                        id: ObjectID.generate(),
+                        timeValue: 0,
+                        attributeValue: Math.trunc(add(1, timeInRatingData[0].attributeValue))
+                    };
+                    piecewiseData = insert(0, n1, piecewiseData);
+                }
+            } else {
+                timeInRatingData = reverse(sortByProperty('attributeValue', dataPoints));
+
+                let cumulativeTimeValue: number = 0;
+                timeInRatingData.forEach((dataPoint: TimeAttributeDataPoint) => {
+                    const timeValue: number = add(cumulativeTimeValue, dataPoint.timeValue);
+                    cumulativeTimeValue = timeValue;
+
+                    piecewiseData.push({
+                        ...dataPoint,
+                        timeValue: timeValue
+                    });
+                });
+
+                piecewiseData = sortByProperty('timeValue', piecewiseData);
+
+                if (hasValue(timeInRatingData)) {
+                    const n1: TimeAttributeDataPoint = {
+                        id: ObjectID.generate(),
+                        timeValue: 0,
+                        attributeValue: Math.trunc(add(1, timeInRatingData[0].attributeValue))
+                    };
+                    piecewiseData = insert(0, n1, piecewiseData);
+                }
+            }
+
+            this.piecewiseGridData = piecewiseData;
+            this.timeInRatingGridData = timeInRatingData;
         }
 
         /**
@@ -571,28 +633,22 @@
          */
         submitNewDataPointMulti(submit: boolean) {
             if (submit) {
-                const splitDataPoints: string[] = this.multiDataPoints
-                    .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '');
+                const parsedMultiDataPoints: TimeAttributeDataPoint[] = this.parseMultiDataPoints();
 
-                if (hasValue(splitDataPoints)) {
-                    const dataPoints: TimeAttributeDataPoint[] = splitDataPoints.map((dataPoints: string) => {
-                        const splitValues: string[] = dataPoints.split(',');
-                        return {
-                            id: ObjectID.generate(),
-                            timeValue: parseFloat(splitValues[0]),
-                            attributeValue: parseFloat(splitValues[1])
-                        };
-                    });
+                const dataPoints = this.selectedTab === 1
+                    ? [...this.piecewiseGridData, ...parsedMultiDataPoints]
+                    : [...this.timeInRatingGridData, ...parsedMultiDataPoints];
 
-                    this.piecewiseGridData.push(...dataPoints);
-                    this.setTimeInRatingDataWithPiecewiseData();
-                }
+                this.syncDataGridLists(dataPoints);
             }
 
             this.showAddDataPointMultiPopup = false;
             this.multiDataPoints = '';
         }
 
+        /**
+         * Parses the multi data points string into a list of TimeAttributeDataPoint objects
+         */
         parseMultiDataPoints() {
             const splitDataPoints: string[] = this.multiDataPoints
                 .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '');
@@ -600,27 +656,50 @@
             if (hasValue(splitDataPoints)) {
                 const dataPoints: TimeAttributeDataPoint[] = splitDataPoints.map((dataPoints: string) => {
                     const splitValues: string[] = dataPoints.split(',');
+
                     return {
                         id: ObjectID.generate(),
-                        timeValue: parseFloat(splitValues[0]),
+                        timeValue: parseInt(splitValues[0]),
                         attributeValue: parseFloat(splitValues[1])
                     };
                 });
-                const sortByCondition = sortBy(prop('attributeValue'));
-                return reverse(sortByCondition(dataPoints));
+
+                return dataPoints;
             }
 
             return [];
+        }
+
+        onEditDataPoint(dataPoint: TimeAttributeDataPoint, property: string) {
+            this.editedDataPoint = clone(dataPoint);
+            this.editedDataPointProperty = property;
+            this.showEditDataPointPopup = true;
+        }
+
+        onSubmitEditedDataPointValue(submit: boolean) {
+            if (submit) {
+                let dataPoints = this.selectedTab === 1 ? clone(this.piecewiseGridData) : clone(this.timeInRatingGridData);
+                dataPoints = update(
+                    findIndex(propEq('id', this.editedDataPoint.id), dataPoints), this.editedDataPoint, dataPoints
+                );
+
+                this.syncDataGridLists(dataPoints);
+            }
+
+            this.editedDataPoint = clone(emptyTimeAttributeDataPoint);
+            this.editedDataPointProperty = '';
+            this.showEditDataPointPopup = false;
         }
 
         /**
          * Removes a TimeAttributeDataPoint with the specified id from a data grid list
          */
         onRemoveTimeAttributeDataPoint(id: string) {
-            this.piecewiseGridData = this.piecewiseGridData
-                .filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
+            const dataPoints: TimeAttributeDataPoint[] = this.selectedTab === 1
+                ? this.piecewiseGridData.filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id)
+                : this.timeInRatingGridData.filter((dataPoint: TimeAttributeDataPoint) => dataPoint.id !== id);
 
-            this.setTimeInRatingDataWithPiecewiseData();
+            this.syncDataGridLists(dataPoints);
         }
 
         /**
@@ -691,92 +770,151 @@
             this.showValidMessage = false;
         }
 
+        /**
+         * Disables the new data point popup 'SAVE' button
+         */
         disableDataPointSubmit() {
-            return !this.timeValueIsNew(this.newDataPoint.timeValue) ||
-                !this.conditionValueIsNew(this.newDataPoint.attributeValue);
+            return this.timeValueIsNotEmpty(this.newDataPoint.timeValue.toString()) !== true ||
+                   this.timeValueIsNotZero(this.newDataPoint.timeValue.toString()) !== true ||
+                   this.timeValueIsNew(this.newDataPoint.timeValue.toString()) !== true ||
+                   this.conditionValueIsNotEmpty(this.newDataPoint.attributeValue.toString()) !== true ||
+                   this.conditionValueIsNew(this.newDataPoint.attributeValue.toString()) !== true;
         }
 
         /**
-         * Disables the multiple data points popup 'Save' button if the criteria isn't met
+         * Disables the multiple data points popup 'SAVE' button
          */
         disableMultiDataPointsSubmit() {
-            return this.multiDataPoints === '' || this.isCorrectMultiDataPointsFormat() !== true;
+            return this.multiDataPoints === '' ||
+                   this.isCorrectMultiDataPointsFormat() !== true ||
+                   this.multiDataPointsAreNew() !== true;
         }
 
-        timeValueIsNew(value: number) {
-            if (this.selectedTab === 1) {
-                return !getPropertyValues('timeValue', this.piecewiseGridData).includes(value) ||
-                    'This time value already exists';
-            }
-
-            return true
-        }
-
-        conditionValueIsNew(value: number) {
-            if (this.selectedTab === 1) {
-                return !getPropertyValues('attributeValue', this.piecewiseGridData).includes(value) ||
-                    'This condition value already exists';
+        /**
+         * Disables the edit data point popup 'SAVE' button
+         */
+        disableEditDataPointSubmit() {
+            if (this.editedDataPointProperty === 'timeValue') {
+                return this.timeValueIsNotEmpty(this.editedDataPoint.timeValue.toString()) !== true ||
+                       this.timeValueIsNotZero(this.editedDataPoint.timeValue.toString()) !== true ||
+                       this.timeValueIsNew(this.editedDataPoint.timeValue.toString()) !== true;
             } else {
-                return !getPropertyValues('attributeValue', this.timeInRatingGridData).includes(value) ||
-                    'This condition value already exists';
+                return this.conditionValueIsNotEmpty(this.editedDataPoint.attributeValue.toString()) !== true ||
+                       this.conditionValueIsNew(this.editedDataPoint.attributeValue.toString()) !== true;
             }
         }
 
+        /**
+         * Rule: Checks if a given time value is 0
+         * @param value
+         */
+        timeValueIsNotZero(value: string) {
+            return parseInt(value) > 0 || 'Time values cannot be less than or equal to 0';
+        }
+
+        /**
+         * Rule: Checks if a given time value is new
+         * @param value
+         */
+        timeValueIsNew(value: string) {
+            if (this.selectedTab === 1) {
+                const timeValues: number[] = getPropertyValues('timeValue', this.piecewiseGridData);
+
+                return timeValues.indexOf(parseInt(value)) === -1 || 'Time value already exists';
+            }
+
+            return true;
+        }
+
+        /**
+         * Rule: Checks if a given time value is not empty
+         * @param value
+         */
+        timeValueIsNotEmpty(value: string) {
+            return hasValue(value) || 'A value must be entered';
+        }
+
+        /**
+         * Rule: Checks if a given condition value is new
+         * @param value
+         */
+        conditionValueIsNew(value: string) {
+            const conditionValues: number[] = this.selectedTab === 1
+                ? getPropertyValues('attributeValue', this.piecewiseGridData)
+                : getPropertyValues('attributeValue', this.timeInRatingGridData);
+
+            return conditionValues.indexOf(parseFloat(value)) === -1 || 'Condition value already exists';
+        }
+
+        /**
+         * Rule: Checks if a given condition value is not empty
+         * @param value
+         */
+        conditionValueIsNotEmpty(value: string) {
+            return hasValue(value) || "A value must be entered";
+        }
+
+        /**
+         * Rule: Checks if the multi data point popup textarea is not empty
+         */
+        multiDataPointsFormIsNotEmpty() {
+            return this.multiDataPoints !== '' || 'Values must be entered';
+        }
+
+        /**
+         * Rule: Checks if the multi data point popup textarea has correctly formatted data
+         */
         isCorrectMultiDataPointsFormat() {
             const eachDataPointIsValid = this.multiDataPoints
                 .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '')
                 .every((dataPoints: string) => {
                     return (/\d+(\.{1}\d+)*,\d+(\.{1}\d+)*/).test(dataPoints) &&
-                        dataPoints.split(',').every((value: string) => parseFloat(value) !== NaN);
+                           dataPoints.split(',').every((value: string) => !isNaN(parseFloat(value)));
                 });
 
             return eachDataPointIsValid || 'Incorrect format';
         }
 
+        /**
+         * Rule: Checks if the multi data point popup textarea data has all new values for times & conditions
+         */
         multiDataPointsAreNew() {
             const dataPoints: TimeAttributeDataPoint[] = this.parseMultiDataPoints();
             const existingConditionValues: number[] = [];
             const existingTimeValues: number[] = [];
 
             const eachDataPointIsNew = dataPoints.every((dataPoint: TimeAttributeDataPoint) => {
-                const conditionValueIsNew = this.conditionValueIsNew(dataPoint.attributeValue) === true;
+                const conditionValueIsNew = this.conditionValueIsNew(dataPoint.attributeValue.toString()) === true;
+                const timeValueIsNew: boolean = this.timeValueIsNew(dataPoint.timeValue.toString()) === true;
 
                 if (!conditionValueIsNew) {
                     existingConditionValues.push(dataPoint.attributeValue);
                 }
 
-                if (this.selectedTab === 1) {
-                    const timeValueIsNew: boolean = this.timeValueIsNew(dataPoint.timeValue) === true;
-
-                    if (!timeValueIsNew) {
-                        existingTimeValues.push(dataPoint.timeValue);
-                    }
-
-                    return conditionValueIsNew && timeValueIsNew;
-                } else {
-                    return conditionValueIsNew;
+                if (this.selectedTab === 1 && !timeValueIsNew) {
+                    existingTimeValues.push(dataPoint.timeValue);
                 }
+
+                return this.selectedTab === 1
+                    ? conditionValueIsNew && timeValueIsNew
+                    : conditionValueIsNew;
             });
 
             let conditionValuesAlreadyExistsMessage: string = '';
             if (!isEmpty(existingConditionValues)) {
                 conditionValuesAlreadyExistsMessage = 'The following condition values already exist: ';
+
                 existingConditionValues.forEach((value: number, index: number) => {
-                    if (index > 0) {
-                        conditionValuesAlreadyExistsMessage += `, ${value}`;
-                    }
-                    conditionValuesAlreadyExistsMessage += `${value}`;
+                    conditionValuesAlreadyExistsMessage += index > 0 ? `, ${value}` : `${value}`;
                 });
             }
 
             let timeValuesAlreadyExistsMessage: string = '';
             if (!isEmpty(existingTimeValues)) {
                 timeValuesAlreadyExistsMessage = 'The following time values already exist: ';
+
                 existingTimeValues.forEach((value: number, index: number) => {
-                    if (index > 0) {
-                        timeValuesAlreadyExistsMessage += `, ${value}`;
-                    }
-                    timeValuesAlreadyExistsMessage += `${value}`;
+                    timeValuesAlreadyExistsMessage += index > 0 ? `, ${value}` : `${value}`;
                 });
             }
 
@@ -851,5 +989,9 @@
 
     .format-span {
         color: red;
+    }
+
+    .edit-data-point-span {
+        cursor: pointer;
     }
 </style>
