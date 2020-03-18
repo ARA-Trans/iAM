@@ -1,17 +1,19 @@
 ﻿using AASHTOWare;
+using ARA.iAM.Analysis.Interfaces;
 
 namespace ARA.iAM.Analysis
 {
-    class AnalysisConfiguration
+    class AnalysisConfiguration: ICriteriaDriven
     {
         /// <summary>
         /// The equation used to calculate the AREA attribute for all assets
         /// </summary>
         private Equation areaEquation;
         /// <summary>
-        /// The criterion for selecting which assets to include in the analysis
+        /// The criterion for selecting which assets to include in the analysis.
+        /// Also called "jurisdiction" in the user interface
         /// </summary>
-        private Criterion jurisdiction;
+        public Criterion Criterion { get; }
         /// <summary>
         /// The first year of the analysis
         /// </summary>
@@ -36,5 +38,9 @@ namespace ARA.iAM.Analysis
         /// The minimum value the benefit variable can have before it is considered to have no benefit
         /// </summary>
         private int benefitLimit;
+        /// <summary>
+        /// The estimated rate of inflation during the analysis years
+        /// </summary>
+        private double inflationRate;
     }
 }

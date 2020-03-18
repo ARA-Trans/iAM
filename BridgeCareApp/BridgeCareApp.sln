@@ -92,7 +92,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PciDistress.Benchmarks", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationConsole", "SimulationConsole\SimulationConsole.csproj", "{38F14B0E-836B-48ED-8CA4-5F3F24095E2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analysis", "Analysis\Analysis.csproj", "{BE03C74E-A35D-400A-9018-940E34943FC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARA.iAM.Analysis", "Analysis\ARA.iAM.Analysis.csproj", "{BE03C74E-A35D-400A-9018-940E34943FC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

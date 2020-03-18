@@ -6,9 +6,6 @@ namespace ARA.iAM.Analysis
     {
         static void Main(string[] args)
         {
-            ScenarioConfiguration configuration = null;
-
-            AnalysisResult result = configuration.Compiled.PerformAnalysis();
 
         }
     } 
