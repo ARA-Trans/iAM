@@ -23,16 +23,33 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 {
     var choices = Enumerable.Range(1, numChoices);
     var lastChoice = choices.Last();
-    var typeParams = choices.ToDictionary(_ => _, _ => $"T{_}");
-    var type = $"Choice<{string.Join(", ", typeParams.Values.OrderBy(_ => _))}>";
+
     var subtypes = choices.ToDictionary(_ => _, _ => $"Choice{_}");
-    var handlers = choices.ToDictionary(_ => _, _ => $"handle{_}");
-    var actionParamSeq = string.Join(", ", choices.Select(_ => $"Action<{typeParams[_]}> {handlers[_]}"));
-    var funcParamSeq = string.Join(", ", choices.Select(_ => $"Func<{typeParams[_]}, U> {handlers[_]}"));
     var subtypeObjects = subtypes.Values.Select(subtype => $"typeof({subtype})");
     var subtypeSeq = string.Join(", ", subtypeObjects);
-    var nullCheckStatements = choices.Select(_ => $"if ({handlers[_]} == null) throw new ArgumentNullException(nameof({handlers[_]}));");
-    var nullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), nullCheckStatements);
+
+    var typeParams = choices.ToDictionary(_ => _, _ => $"T{_}");
+    var mapTypeParams = choices.ToDictionary(_ => _, _ => $"U{_}");
+    
+    var typeGenericParamSeq = $"<{string.Join(", ", typeParams.Values.OrderBy(_ => _))}>";
+    var mapTypeGenericParamSeq = $"<{string.Join(", ", mapTypeParams.Values.OrderBy(_ => _))}>";
+
+    var type = "Choice" + typeGenericParamSeq;
+    var mapType = "Choice" + mapTypeGenericParamSeq;
+
+    var handlerParams = choices.ToDictionary(_ => _, _ => $"handler{_}");
+    var mapperParams = choices.ToDictionary(_ => _, _ => $"mapper{_}");
+    var reducerParams = choices.ToDictionary(_ => _, _ => $"reducer{_}");
+
+    var handlerParamSeq = string.Join(", ", choices.Select(_ => $"Action<{typeParams[_]}> {handlerParams[_]}"));
+    var reducerParamSeq = string.Join(", ", choices.Select(_ => $"Func<{typeParams[_]}, U> {reducerParams[_]}"));
+    var mapperParamSeq = string.Join(", ", choices.Select(_ => $"Func<{typeParams[_]}, {mapTypeParams[_]}> {mapperParams[_]}"));
+
+    Func<Dictionary<int, string>, IEnumerable<string>> getNullChecks = parameters => choices.Select(_ => $"if ({parameters[_]} == null) throw new ArgumentNullException(nameof({parameters[_]}));");
+
+    var handlerNullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), getNullChecks(handlerParams));
+    var reducerNullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), getNullChecks(reducerParams));
+    var mapperNullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), getNullChecks(mapperParams));
 #>
     [KnownType(nameof(GetKnownTypes))]
     public abstract class <#= type #> : IEquatable<<#= type #>>
@@ -74,9 +91,11 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 #>
         public abstract object Value { get; }
 
-        public abstract void Match(<#= actionParamSeq #>);
+        public abstract void Handle(<#= handlerParamSeq #>);
 
-        public abstract U Match<U>(<#= funcParamSeq #>);
+        public abstract <#= mapType #> Map<#= mapTypeGenericParamSeq #>(<#= mapperParamSeq #>);
+
+        public abstract U Reduce<U>(<#= reducerParamSeq #>);
 
         public abstract bool Equals(<#= type #> choice);
 
@@ -87,10 +106,10 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 <#
     foreach (var c in choices)
     {
-        var matchHandlers = Enumerable.Repeat("_ => throw new InvalidCastException()", numChoices).ToList();
-        matchHandlers[c - 1] = "_ => _";
+        var handlerArgs = Enumerable.Repeat("_ => throw new InvalidCastException()", numChoices).ToList();
+        handlerArgs[c - 1] = "_ => _";
 #>
-        public static explicit operator <#= typeParams[c] #>(<#= type #> choice) => choice.Match(<#= string.Join(", ", matchHandlers) #>);
+        public static explicit operator <#= typeParams[c] #>(<#= type #> choice) => choice.Reduce(<#= string.Join(", ", handlerArgs) #>);
 
 <#
     }
@@ -122,18 +141,25 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 
             public override object Value => _value;
 
-            public override void Match(<#= actionParamSeq #>)
+            public override void Handle(<#= handlerParamSeq #>)
             {
-                <#= nullCheckBlock #>
+                <#= handlerNullCheckBlock #>
 
-                <#= handlers[c] #>(_value);
+                <#= handlerParams[c] #>(_value);
             }
 
-            public override U Match<U>(<#= funcParamSeq #>)
+            public override <#= mapType #> Map<#= mapTypeGenericParamSeq #>(<#= mapperParamSeq #>)
             {
-                <#= nullCheckBlock #>
+                <#= mapperNullCheckBlock #>
 
-                return <#= handlers[c] #>(_value);
+                return <#= mapperParams[c] #>(_value);
+            }
+
+            public override U Reduce<U>(<#= reducerParamSeq #>)
+            {
+                <#= reducerNullCheckBlock #>
+
+                return <#= reducerParams[c] #>(_value);
             }
 
             private bool Equals(<#= subtypes[c] #> choice) => EqualityComparer<<#= typeParams[c] #>>.Default.Equals(_value, choice._value);
