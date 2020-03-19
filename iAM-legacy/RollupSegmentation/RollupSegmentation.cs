@@ -19,11 +19,15 @@ using System.Text.RegularExpressions;
 using MongoDB.Driver;
 using static Simulation.Simulation;
 using DataAccessLayer;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace RollupSegmentation
 {
     public class RollupSegmentation
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(RollupSegmentation));
+
         String m_strServer="";
         String m_strDataSource="";
         String m_strUserID="";
@@ -109,11 +113,25 @@ namespace RollupSegmentation
         public IMongoDatabase MongoDatabase;
         public IMongoCollection<RollupModel> Rollup;
 
+        static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            // Log the exception, display it, etc
+            log.Error(e.Exception.Message);
+        }
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // Log the exception, display it, etc
+            log.Error((e.ExceptionObject as Exception).Message);
+        }
+
         public void DoRollup()
 		{
             string error = "";
             if (apiCall == true)
             {
+                Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+                AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
                 MongoClient client = new MongoClient(mongoConnection);
                 MongoDatabase = client.GetDatabase("BridgeCare");
                 Rollup = MongoDatabase.GetCollection<RollupModel>("networks");
@@ -302,10 +320,14 @@ namespace RollupSegmentation
 				catch( Exception exc )
 				{
 					RollupMessaging.AddMessge( "Error: Could not rollup attribute " + str + ". " + exc.Message );
-                    var updateStatus = Builders<RollupModel>.Update
+                    if (apiCall == true)
+                    {
+                        var updateStatus = Builders<RollupModel>.Update
                     .Set(s => s.rollupStatus, "Error: Could not rollup attribute " + str + ". " + exc.Message);
-                    Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
-                    error = "Error: Could not rollup attribute " + str + ". " + exc.Message;
+                        Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                        error = "Error: Could not rollup attribute " + str + ". " + exc.Message;
+                        log.Error(error);
+                    }
                     bRollupError = true;
                 }
 
@@ -366,7 +388,7 @@ namespace RollupSegmentation
 			catch(Exception exc)
 			{
 				RollupMessaging.AddMessge("Exception handled during SECTION_# table creation. " + exc.Message);
-				return;
+                return;
 			}
 			m_listColumnSegment = new List<DatabaseManager.TableParameters>();
 			m_listColumnSegment.Add( new DatabaseManager.TableParameters( "SECTIONID", DataType.Int, false, true ) );
@@ -539,6 +561,7 @@ namespace RollupSegmentation
                                             var updateStatus = Builders<RollupModel>.Update
                                                  .Set(s => s.rollupStatus, "Error processing INESTRING segment");
                                             Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                                            log.Error("Error processing LINESTRING segment. " + exc.Message);
                                         }
                                     }
 								}
@@ -877,10 +900,15 @@ namespace RollupSegmentation
 					catch( Exception exc )
 					{
 						RollupMessaging.AddMessge( "Warning: Could not open attribute table " + attribute + ". " + exc.Message );
-                        var updateStatus = Builders<RollupModel>.Update
+                        if (apiCall == true)
+                        {
+                            var updateStatus = Builders<RollupModel>.Update
                     .Set(s => s.rollupStatus, "Warning: Could not open attribute table " + attribute + ". " + exc.Message);
-                        Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
-                        error = "Warning: Could not open attribute table " + attribute + ". " + exc.Message;
+                            Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                            error = "Warning: Could not open attribute table " + attribute + ". " + exc.Message;
+
+                            log.Error("Error processing LINESTRING segment. " + exc.Message);
+                        }
                         bRollupError = true;
 					}
 					listDP = new List<DataPoint>();
@@ -1191,10 +1219,14 @@ namespace RollupSegmentation
 					catch( Exception exc )
 					{
 						RollupMessaging.AddMessge( "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message );
-                        var updateStatus = Builders<RollupModel>.Update
+                        if(apiCall == true)
+                        {
+                            var updateStatus = Builders<RollupModel>.Update
                     .Set(s => s.rollupStatus, "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message);
-                        Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
-                        error = "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message;
+                            Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
+                            error = "Warning: Could not open SRS attribute table " + attribute + ". " + exc.Message;
+                            log.Error(error);
+                        }
                         bRollupError = true;
 					}
 					
