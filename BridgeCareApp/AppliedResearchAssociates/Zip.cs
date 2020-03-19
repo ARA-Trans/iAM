@@ -49,7 +49,7 @@ namespace AppliedResearchAssociates
             protected abstract bool MoveNext(IEnumerable<IEnumerator<T>> enumerators);
         }
 
-        private class LongZipper<T> : AggregateEnumerator<T>
+        private sealed class LongZipper<T> : AggregateEnumerator<T>
         {
             public LongZipper(T defaultValue) => DefaultValue = defaultValue;
 
@@ -79,7 +79,7 @@ namespace AppliedResearchAssociates
             private readonly List<bool> HasCurrent = new List<bool>();
         }
 
-        private class ShortZipper<T> : AggregateEnumerator<T>
+        private sealed class ShortZipper<T> : AggregateEnumerator<T>
         {
             public static readonly ShortZipper<T> Instance = new ShortZipper<T>();
 
@@ -90,7 +90,7 @@ namespace AppliedResearchAssociates
             }
         }
 
-        private class StrictZipper<T> : AggregateEnumerator<T>
+        private sealed class StrictZipper<T> : AggregateEnumerator<T>
         {
             public static readonly StrictZipper<T> Instance = new StrictZipper<T>();
 

@@ -1,5 +1,5 @@
 ﻿// WARNING: This file was automatically generated from a T4 text template at the
-// following moment in time: 03/19/2020 12:28:24 -05:00. Any changes you make to
+// following moment in time: 03/19/2020 17:13:17 -05:00. Any changes you make to
 // this file will be lost when this file is regenerated from the template
 // source.
 
@@ -59,7 +59,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2>(T2 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2>
+        private sealed class Choice1 : Choice<T1, T2>
         {
             private readonly T1 _value;
 
@@ -108,7 +108,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2>
+        private sealed class Choice2 : Choice<T1, T2>
         {
             private readonly T2 _value;
 
@@ -217,7 +217,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2, T3>(T3 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2, T3>
+        private sealed class Choice1 : Choice<T1, T2, T3>
         {
             private readonly T1 _value;
 
@@ -269,7 +269,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2, T3>
+        private sealed class Choice2 : Choice<T1, T2, T3>
         {
             private readonly T2 _value;
 
@@ -321,7 +321,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice3 : Choice<T1, T2, T3>
+        private sealed class Choice3 : Choice<T1, T2, T3>
         {
             private readonly T3 _value;
 
@@ -445,7 +445,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2, T3, T4>(T4 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2, T3, T4>
+        private sealed class Choice1 : Choice<T1, T2, T3, T4>
         {
             private readonly T1 _value;
 
@@ -500,7 +500,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2, T3, T4>
+        private sealed class Choice2 : Choice<T1, T2, T3, T4>
         {
             private readonly T2 _value;
 
@@ -555,7 +555,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice3 : Choice<T1, T2, T3, T4>
+        private sealed class Choice3 : Choice<T1, T2, T3, T4>
         {
             private readonly T3 _value;
 
@@ -610,7 +610,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice4 : Choice<T1, T2, T3, T4>
+        private sealed class Choice4 : Choice<T1, T2, T3, T4>
         {
             private readonly T4 _value;
 
@@ -749,7 +749,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2, T3, T4, T5>(T5 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2, T3, T4, T5>
+        private sealed class Choice1 : Choice<T1, T2, T3, T4, T5>
         {
             private readonly T1 _value;
 
@@ -807,7 +807,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2, T3, T4, T5>
+        private sealed class Choice2 : Choice<T1, T2, T3, T4, T5>
         {
             private readonly T2 _value;
 
@@ -865,7 +865,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice3 : Choice<T1, T2, T3, T4, T5>
+        private sealed class Choice3 : Choice<T1, T2, T3, T4, T5>
         {
             private readonly T3 _value;
 
@@ -923,7 +923,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice4 : Choice<T1, T2, T3, T4, T5>
+        private sealed class Choice4 : Choice<T1, T2, T3, T4, T5>
         {
             private readonly T4 _value;
 
@@ -981,7 +981,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice5 : Choice<T1, T2, T3, T4, T5>
+        private sealed class Choice5 : Choice<T1, T2, T3, T4, T5>
         {
             private readonly T5 _value;
 
@@ -1135,7 +1135,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2, T3, T4, T5, T6>(T6 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2, T3, T4, T5, T6>
+        private sealed class Choice1 : Choice<T1, T2, T3, T4, T5, T6>
         {
             private readonly T1 _value;
 
@@ -1196,7 +1196,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2, T3, T4, T5, T6>
+        private sealed class Choice2 : Choice<T1, T2, T3, T4, T5, T6>
         {
             private readonly T2 _value;
 
@@ -1257,7 +1257,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice3 : Choice<T1, T2, T3, T4, T5, T6>
+        private sealed class Choice3 : Choice<T1, T2, T3, T4, T5, T6>
         {
             private readonly T3 _value;
 
@@ -1318,7 +1318,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice4 : Choice<T1, T2, T3, T4, T5, T6>
+        private sealed class Choice4 : Choice<T1, T2, T3, T4, T5, T6>
         {
             private readonly T4 _value;
 
@@ -1379,7 +1379,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice5 : Choice<T1, T2, T3, T4, T5, T6>
+        private sealed class Choice5 : Choice<T1, T2, T3, T4, T5, T6>
         {
             private readonly T5 _value;
 
@@ -1440,7 +1440,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice6 : Choice<T1, T2, T3, T4, T5, T6>
+        private sealed class Choice6 : Choice<T1, T2, T3, T4, T5, T6>
         {
             private readonly T6 _value;
 
@@ -1609,7 +1609,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2, T3, T4, T5, T6, T7>(T7 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice1 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T1 _value;
 
@@ -1673,7 +1673,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice2 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T2 _value;
 
@@ -1737,7 +1737,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice3 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice3 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T3 _value;
 
@@ -1801,7 +1801,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice4 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice4 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T4 _value;
 
@@ -1865,7 +1865,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice5 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice5 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T5 _value;
 
@@ -1929,7 +1929,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice6 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice6 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T6 _value;
 
@@ -1993,7 +1993,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice7 : Choice<T1, T2, T3, T4, T5, T6, T7>
+        private sealed class Choice7 : Choice<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly T7 _value;
 
@@ -2177,7 +2177,7 @@ namespace AppliedResearchAssociates
 
         public static implicit operator Choice<T1, T2, T3, T4, T5, T6, T7, T8>(T8 value) => Of(value);
 
-        private class Choice1 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice1 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T1 _value;
 
@@ -2244,7 +2244,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice2 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice2 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T2 _value;
 
@@ -2311,7 +2311,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice3 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice3 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T3 _value;
 
@@ -2378,7 +2378,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice4 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice4 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T4 _value;
 
@@ -2445,7 +2445,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice5 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice5 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T5 _value;
 
@@ -2512,7 +2512,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice6 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice6 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T6 _value;
 
@@ -2579,7 +2579,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice7 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice7 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T7 _value;
 
@@ -2646,7 +2646,7 @@ namespace AppliedResearchAssociates
             public override string ToString() => _value.ToString();
         }
 
-        private class Choice8 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
+        private sealed class Choice8 : Choice<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             private readonly T8 _value;
 

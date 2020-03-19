@@ -127,7 +127,7 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
     foreach (var c in choices)
     {
 #>
-        private class <#= subtypes[c] #> : <#= type #>
+        private sealed class <#= subtypes[c] #> : <#= type #>
         {
             private readonly <#= typeParams[c] #> _value;
 

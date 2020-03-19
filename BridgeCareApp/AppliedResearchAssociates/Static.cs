@@ -15,7 +15,7 @@ namespace AppliedResearchAssociates
 
         public static IEnumerable<IEnumerable<T>> SequenceCast<T>(this IEnumerable<IEnumerable> sequences) => sequences.Select(sequence => sequence.Cast<T>());
 
-        private class AggregateDisposable : IDisposable
+        private sealed class AggregateDisposable : IDisposable
         {
             public AggregateDisposable(IEnumerable<IDisposable> disposables)
             {
