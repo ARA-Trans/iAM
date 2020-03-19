@@ -306,8 +306,9 @@ namespace Simulation
                 {
                     updateStatus = Builders<SimulationModel>.Update
                         .Set(s => s.status, "Simulation failed");
+
+                    log.Error($"An exception occurred during RunSimulation() for simulation {m_strSimulationID}:", ex);
                 }
-                log.Error($"An exception occurred during RunSimulation() for simulation {m_strSimulationID}:", ex);
 
                 SimulationMessaging.AddMessage(new SimulationMessage("ERROR: [" + ex.Message + "]"));
                 SimulationMessaging.AddMessage(new SimulationMessage("Aborting simulation."));

@@ -907,7 +907,7 @@ namespace RollupSegmentation
                             Rollup.UpdateOne(s => s.networkId == Convert.ToInt32(m_strNetworkID), updateStatus);
                             error = "Warning: Could not open attribute table " + attribute + ". " + exc.Message;
 
-                            log.Error("Error processing LINESTRING segment. " + exc.Message);
+                            log.Error(error);
                         }
                         bRollupError = true;
 					}
