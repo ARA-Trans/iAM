@@ -29,7 +29,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
                 if (sectionShouldDeteriorate)
                 {
-                    foreach (var equation in Simulation.PerformancCurves)
+                    foreach (var equation in Simulation.PerformanceCurves)
                     {
                         section.ApplyDeteriorate(equation, year);
                     }
@@ -80,6 +80,17 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 //        ERROR (right?)
                 //      else:
                 //        curve attribute value for current year = curve equation result
+                foreach (var section in Sections)
+                {
+                    foreach (var curve in Simulation.PerformanceCurves)
+                    {
+                        //var evaluationInput = ???
+                        if (curve.Criterion.Evaluate(null))
+                        {
+
+                        }
+                    }
+                }
 
                 // determine benefit/cost.
 

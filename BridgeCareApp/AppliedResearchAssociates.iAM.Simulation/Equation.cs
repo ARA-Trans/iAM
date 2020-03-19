@@ -6,9 +6,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
     //Output: number
     public class Equation
     {
+        //https://github.com/sklose/NCalc2
         public string Expression { get; }
 
-        // Should be able to use Jace for this.
         public double Calculate(double[] values) => throw new NotImplementedException();
     }
 }

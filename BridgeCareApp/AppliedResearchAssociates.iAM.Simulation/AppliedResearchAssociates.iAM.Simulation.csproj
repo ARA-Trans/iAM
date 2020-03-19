@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CoreCLR-NCalc" Version="2.2.70" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AppliedResearchAssociates\AppliedResearchAssociates.csproj" />
   </ItemGroup>
 

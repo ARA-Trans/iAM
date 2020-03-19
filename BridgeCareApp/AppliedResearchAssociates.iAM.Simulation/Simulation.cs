@@ -15,7 +15,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Network Network { get; }
 
-        public List<PerformanceCurve> PerformancCurves { get; }
+        public List<PerformanceCurve> PerformanceCurves { get; }
 
         public List<SimulationResult> Results { get; }
 
