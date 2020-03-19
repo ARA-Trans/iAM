@@ -14,11 +14,14 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Simulation
 {
     public class Simulation
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Simulation));
+
         private String m_strSimulation;// Name of simulation being run.
         private String m_strSimulationID;// SIMID for simulation which is being run.
         private String m_strNetworkID;// NetworkID which simulation is occurring on.
@@ -217,6 +220,17 @@ namespace Simulation
 
         public object APICall;
 
+        static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            // Log the exception, display it, etc
+            log.Error(e.Exception.Message);
+        }
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // Log the exception, display it, etc
+            log.Error((e.ExceptionObject as Exception).Message);
+        }
+
         /// <summary>
         /// Start and run a complete simulation. Creates necessary Simulation Tables.
         /// </summary>
@@ -237,6 +251,9 @@ namespace Simulation
             UpdateDefinition<SimulationModel> updateStatus=null;
             if (isAPICall.Equals(true))
             {
+                Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+                AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
                 MongoClient client = new MongoClient(mongoConnection);
                 MongoDatabase = client.GetDatabase("BridgeCare");
                 Simulations = MongoDatabase.GetCollection<SimulationModel>("scenarios");
@@ -289,8 +306,9 @@ namespace Simulation
                 {
                     updateStatus = Builders<SimulationModel>.Update
                         .Set(s => s.status, "Simulation failed");
-                }
 
+                    log.Error($"An exception occurred during RunSimulation() for simulation {m_strSimulationID}:", ex);
+                }
 
                 SimulationMessaging.AddMessage(new SimulationMessage("ERROR: [" + ex.Message + "]"));
                 SimulationMessaging.AddMessage(new SimulationMessage("Aborting simulation."));
