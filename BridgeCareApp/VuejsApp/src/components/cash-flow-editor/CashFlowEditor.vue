@@ -110,7 +110,9 @@
                                         <td>
                                             <v-edit-dialog :return-value.sync="props.item.amount" large lazy persistent full-width
                                                            @save="onEditSelectedLibraryListData(props.item, 'amount')">
-                                                <input class="output" type="text" readonly :value="formatAsCurrency(props.item.amount)"
+                                                <input v-if="props.item.amount === null || props.item.amount === undefined || props.item.amount === ''"
+                                                       class="output" type="text" readonly :value="props.item.amount" />
+                                                <input v-else class="output" type="text" readonly :value="formatAsCurrency(props.item.amount)"
                                                        :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}" />
                                                 <template slot="input">
                                                     <v-text-field v-model.number="props.item.amount" label="Edit" single-line
@@ -256,11 +258,13 @@
         createCashFlowLibraryDialogData: CreateCashFlowLibraryDialogData = clone(emptyCreateCashFlowLibraryDialogData);
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
                 if (to.path === '/CashFlowEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -424,7 +428,7 @@
                 return clone({
                     ...newSplitTreatmentLimit,
                     rank: newRank,
-                    amount: newSplitTreatmentLimit.amount < newAmount ? newAmount : newSplitTreatmentLimit.amount,
+                    amount: newSplitTreatmentLimit.amount! < newAmount ? newAmount : newSplitTreatmentLimit.amount,
                     percentage: newPercentages
                 });
             }
@@ -517,7 +521,7 @@
                             ...this.selectedSplitTreatment,
                             splitTreatmentLimits: update(
                                 findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
-                                data as SplitTreatmentLimit,
+                                {...data, amount: hasValue(data.amount) ? data.amount : null} as SplitTreatmentLimit,
                                 this.selectedSplitTreatment.splitTreatmentLimits
                             )
                         }),
@@ -532,7 +536,7 @@
             this.saveScenarioCashFlowLibraryAction({scenarioCashFlowLibrary: clone({
                     ...this.selectedCashFlowLibrary,
                     id: this.stateScenarioCashFlowLibrary.id
-                })
+                }), objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             });
         }
 
@@ -609,7 +613,10 @@
         splitTreatmentLimitAmountNotLessThanPreviousAmount(splitTreatmentLimit: SplitTreatmentLimit) {
             const index: number = findIndex(propEq('id', splitTreatmentLimit.id), this.selectedSplitTreatment.splitTreatmentLimits);
             if (index > 0) {
-                return this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount <= splitTreatmentLimit.amount ||
+                return !hasValue(splitTreatmentLimit.amount) ||
+                    (hasValue(splitTreatmentLimit.amount) && !hasValue(this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount)) ||
+                    (hasValue(splitTreatmentLimit.amount) && hasValue(this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount) &&
+                        this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount! <= splitTreatmentLimit.amount!) ||
                     'This split treatment limit amount must be >= to previous amount';
             }
 

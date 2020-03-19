@@ -221,6 +221,7 @@
         editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -230,6 +231,7 @@
                 vm.selectedScenarioId = 0;
 
                 if (to.path === '/InvestmentEditor/Scenario/') {
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                     if (vm.selectedScenarioId === 0) {
                         vm.setErrorMessageAction({ message: 'Found no selected scenario for edit' });
@@ -607,11 +609,11 @@
                 selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria
             }).then(() => {
                 this.saveIntermittentStateToBudgetCriteriaAction({intermittentState: this.intermittentBudgetsCriteria});
+            }).then(() => {
+                this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: {...this.selectedInvestmentLibrary, id: this.selectedScenarioId},
+                    objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
+                    .then(() => this.onDiscardChanges())
             });
-
-            this.saveScenarioInvestmentLibraryAction(
-                {saveScenarioInvestmentLibraryData: {...this.selectedInvestmentLibrary, id: this.selectedScenarioId}
-            }).then(() => this.onDiscardChanges());
         }
 
         /**

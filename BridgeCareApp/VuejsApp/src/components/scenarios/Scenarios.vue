@@ -85,7 +85,7 @@
                                 </v-flex>
                                 <v-flex>
                                     <v-btn icon class="edit-icon"
-                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
+                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName, props.item.id)"
                                         title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
@@ -175,7 +175,7 @@
                                 </v-flex>
                                 <v-flex>
                                     <v-btn flat icon class="edit-icon"
-                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
+                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName, props.item.id)"
                                         title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
@@ -280,11 +280,11 @@ import { getUserName } from '../../shared/utils/get-user-info';
         showCreateScenarioDialog: boolean = false;
         showShareScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
-            {text: 'Scenario Name', align: 'left', sortable: false, value: 'simulationName'},
+            {text: 'Scenario Name', align: 'left', sortable: true, value: 'simulationName'},
             {text: 'Creator', sortable: false, value: 'creator'},
             {text: 'Owner', sortable: false, value: 'owner'},
-            {text: 'Date Created', sortable: false, value: 'createdDate'},
-            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
+            {text: 'Date Created', sortable: true, value: 'createdDate'},
+            {text: 'Date Last Modified', sortable: true, value: 'lastModifiedDate' },
             {text: 'Status', sortable: false, value: 'status' },
             {text: '', sortable: false, value: 'actions'}
         ];
@@ -377,9 +377,9 @@ import { getUserName } from '../../shared/utils/get-user-info';
          * Navigates user to EditScenario page passing in the simulation id of their scenario
          * @param id Scenario simulation id
          */
-        onEditScenario(id: number, simulationName: string) {
+        onEditScenario(id: number, simulationName: string, objectIdMongodb: string) {
             this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: id.toString(), simulationName: simulationName}
+                path: '/EditScenario/', query: {selectedScenarioId: id.toString(), simulationName: simulationName, objectIdMOngoDBForScenario: objectIdMongodb}
             });
         }
 

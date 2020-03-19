@@ -1,7 +1,7 @@
 export interface SplitTreatmentLimit {
     id: string;
     rank: number;
-    amount: number;
+    amount: number | null;
     percentage: string;
 }
 

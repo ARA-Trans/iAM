@@ -19,7 +19,7 @@ namespace BridgeCare.DataAccessLayer
     public class SimulationDAL : ISimulation
     {
         private static readonly log4net.ILog log = LogManager.GetLogger(typeof(SimulationDAL));
-        private static readonly SimulationQueue SimulationQueue = new SimulationQueue(1);
+        private static readonly SimulationQueue SimulationQueue = SimulationQueue.MainSimulationQueue;
         /// <summary>
         /// Fetches all simulations
         /// </summary>
@@ -90,7 +90,7 @@ namespace BridgeCare.DataAccessLayer
         private void DeleteSimulation(int id, BridgeCareContext db)
         {
             var simulation = db.Simulations.Single(b => b.SIMULATIONID == id);
-            db.Entry(simulation).State = EntityState.Deleted;
+            db.Entry(simulation).State = System.Data.Entity.EntityState.Deleted;
             db.SaveChanges();
 
             using (var connection = new SqlConnection(db.Database.Connection.ConnectionString))

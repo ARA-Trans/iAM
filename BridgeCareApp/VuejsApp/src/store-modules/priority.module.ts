@@ -99,7 +99,7 @@ const actions = {
             });
     },
     async saveScenarioPriorityLibrary({dispatch, commit}: any, payload: any) {
-        await PriorityService.saveScenarioPriorityLibrary(payload.saveScenarioPriorityLibraryData)
+        await PriorityService.saveScenarioPriorityLibrary(payload.saveScenarioPriorityLibraryData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<PriorityLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioPriorityLibraryMutator', response.data);

@@ -248,6 +248,7 @@
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         showCreatePerformanceLibraryEquationDialog = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * beforeRouteEnter event handler
@@ -258,6 +259,7 @@
 
                 if (to.path === '/PerformanceEditor/Scenario/') {
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === 0) {
                         vm.setErrorMessageAction({message: 'No scenario has been selected'});
                         vm.$router.push('/Scenarios/');
@@ -507,10 +509,10 @@
          */
         onApplyToScenario() {
             this.saveScenarioPerformanceLibraryAction({
-                saveScenarioPerformanceLibraryData: {...this.selectedPerformanceLibrary, id: this.selectedScenarioId}
+                saveScenarioPerformanceLibraryData: {...this.selectedPerformanceLibrary, id: this.selectedScenarioId},
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardPerformanceLibraryChanges());
         }
-
         /**
          * Resets the component's UI to remove any changes made to a scenario's performance library
          */

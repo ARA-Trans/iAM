@@ -128,7 +128,8 @@ const actions = {
         }
     },
     async saveScenarioRemainingLifeLimitLibrary({dispatch, commit}: any, payload: any) {
-        await RemainingLifeLimitService.saveScenarioRemainingLifeLimitLibrary(payload.saveScenarioRemainingLifeLimitLibraryData)
+        await RemainingLifeLimitService.saveScenarioRemainingLifeLimitLibrary(payload.saveScenarioRemainingLifeLimitLibraryData,
+            payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioRemainingLifeLimitLibraryMutator', response.data);

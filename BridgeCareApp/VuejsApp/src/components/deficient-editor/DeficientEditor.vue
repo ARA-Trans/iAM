@@ -192,6 +192,7 @@
         deficientCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createDeficientLibraryDialogData: CreateDeficientLibraryDialogData = clone(emptyCreateDeficientLibraryDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets onload component UI properties
@@ -200,7 +201,7 @@
             next((vm: any) => {
                 if (to.path === '/DeficientEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
-
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -407,7 +408,7 @@
             this.saveScenarioDeficientLibraryAction({saveScenarioDeficientLibraryData: {
                     ...this.selectedDeficientLibrary,
                     id: this.selectedScenarioId
-                }
+                }, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardDeficientLibraryChanges());
         }
 

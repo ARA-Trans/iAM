@@ -97,7 +97,7 @@ const actions = {
             });
     },
     async saveScenarioPerformanceLibrary({dispatch, commit}: any, payload: any) {
-        await PerformanceEditorService.saveScenarioPerformanceLibrary(payload.saveScenarioPerformanceLibraryData)
+        await PerformanceEditorService.saveScenarioPerformanceLibrary(payload.saveScenarioPerformanceLibraryData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<PerformanceLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioPerformanceLibraryMutator', response.data);

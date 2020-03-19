@@ -210,6 +210,7 @@
             fundingPercent: (value: number) => (value >= 0 && value <= 100) || 'Value range is 0 to 100'
         };
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -218,6 +219,7 @@
             next((vm: any) => {
                 if (to.path === '/PriorityEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -541,7 +543,7 @@
          */
         onApplyPriorityLibraryToScenario() {
             this.saveScenarioPriorityLibraryAction({
-                saveScenarioPriorityLibraryData: {...this.selectedPriorityLibrary, id: this.selectedScenarioId}
+                saveScenarioPriorityLibraryData: {...this.selectedPriorityLibrary, id: this.selectedScenarioId}, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardPriorityLibraryChanges());
         }
 

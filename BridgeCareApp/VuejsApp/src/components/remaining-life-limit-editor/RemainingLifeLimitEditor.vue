@@ -172,6 +172,7 @@
             emptyCreateRemainingLifeLimitLibraryDialogData
         );
         alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -182,6 +183,7 @@
 
                 if (to.path === '/RemainingLifeLimitEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
@@ -369,7 +371,7 @@
          */
         onApplyToScenario() {
             this.saveScenarioRemainingLifeLimitLibraryAction(
-                {saveScenarioRemainingLifeLimitLibraryData: {...this.selectedRemainingLifeLimitLibrary, id: this.selectedScenarioId.toString()}
+                {saveScenarioRemainingLifeLimitLibraryData: {...this.selectedRemainingLifeLimitLibrary, id: this.selectedScenarioId.toString()}, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());
         }
 

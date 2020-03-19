@@ -100,7 +100,7 @@ const actions = {
         }
     },
     async saveScenarioTargetLibrary({dispatch, commit}: any, payload: any) {
-        await TargetService.saveScenarioTargetLibrary(payload.saveScenarioTargetLibraryData)
+        await TargetService.saveScenarioTargetLibrary(payload.saveScenarioTargetLibraryData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse<TargetLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioTargetLibraryMutator', response.data);
