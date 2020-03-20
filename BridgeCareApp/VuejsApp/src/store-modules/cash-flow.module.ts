@@ -1,5 +1,5 @@
 import {CashFlowLibrary, emptyCashFlowLibrary} from '@/shared/models/iAM/cash-flow';
-import {clone, append, update, findIndex, propEq, equals, any, reject} from 'ramda';
+import {clone, append, update, findIndex, propEq, equals, any, reject, find} from 'ramda';
 import CashFlowService from '@/services/cash-flow.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
@@ -16,8 +16,14 @@ const mutations = {
     cashFlowLibrariesMutator(state: any, cashFlowLibraries: CashFlowLibrary[]) {
         state.cashFlowLibraries = clone(cashFlowLibraries);
     },
-    selectedCashFlowLibraryMutator(state: any, selectedCashFlowLibrary: CashFlowLibrary) {
-        state.selectedCashFlowLibrary = clone(selectedCashFlowLibrary);
+    selectedCashFlowLibraryMutator(state: any, cashFlowLibraryId: string) {
+        if (any(propEq('id', cashFlowLibraryId), state.cashFlowLibraries)) {
+            state.selectedCashFlowLibrary = find(propEq('id', cashFlowLibraryId), state.cashFlowLibraries);
+        } else if (state.scenarioCashFlowLibrary.id === cashFlowLibraryId) {
+            state.selectedCashFlowLibrary = clone(state.scenarioCashFlowLibrary);
+        } else {
+            state.selectedCashFlowLibrary = clone(emptyCashFlowLibrary);
+        }
     },
     createdCashFlowLibraryMutator(state: any, createdCashFlowLibrary: CashFlowLibrary) {
         state.cashFlowLibraries = append(createdCashFlowLibrary, state.cashFlowLibraries);
