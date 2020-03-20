@@ -372,7 +372,7 @@
         timeInRatingGridHeaders: DataTableHeader[] = [
             {text: 'Condition', value: 'conditionValue', align: 'left', sortable: false, class: '', width: '10px'},
             {text: 'Time', value: 'timeValue', align: 'left', sortable: false, class: '', width: '10px'},
-            {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'
+            {text: '', value: '', align: 'left', sortable: false, class: '', width: '10px'}
         ];
         piecewiseGridData: TimeConditionDataPoint[] = [];
         timeInRatingGridData: TimeConditionDataPoint[] = [];
