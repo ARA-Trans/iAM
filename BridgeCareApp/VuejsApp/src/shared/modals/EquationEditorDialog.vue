@@ -138,14 +138,23 @@
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
                                                     <kendo-chart :data-source="piecewiseGridData"
-                                                                 :series="series"
+                                                                 :series-defaults-type="'scatterLine'"
+                                                                 :series-defaults-style="'smooth'"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
                                                                  :zoomable-selection-lock="'y'"
-                                                                 :category-axis="categoryAxis"
-                                                                 :theme="'sass'"
-                                                                 :value-axis-title-text="'Condition'"
-                                                                 :tooltip="tooltip">
+                                                                 :x-axis-min="0"
+                                                                 :x-axis-max="xAxisMax"
+                                                                 :x-axis-title-text="'Time'"
+                                                                 :y-axis-min="0"
+                                                                 :y-axis-max="yAxisMax"
+                                                                 :y-axis-title-text="'Condition'"
+                                                                 :tooltip-visible="true"
+                                                                 :tooltip-format="'({0},{1})'"
+                                                                 :theme="'sass'">
+                                                        <kendo-chart-series-item :data="dataPointsSource"
+                                                                                 :markers-visible="false">
+                                                        </kendo-chart-series-item>
                                                     </kendo-chart>
                                                 </div>
                                             </v-flex>
@@ -191,14 +200,23 @@
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
                                                     <kendo-chart :data-source="piecewiseGridData"
-                                                                 :series="series"
+                                                                 :series-defaults-type="'scatterLine'"
+                                                                 :series-defaults-style="'smooth'"
                                                                  :pannable-lock="'y'"
                                                                  :zoomable-mousewheel-lock="'y'"
                                                                  :zoomable-selection-lock="'y'"
-                                                                 :category-axis="categoryAxis"
-                                                                 :theme="'sass'"
-                                                                 :value-axis-title-text="'Condition'"
-                                                                 :tooltip="tooltip">
+                                                                 :x-axis-min="0"
+                                                                 :x-axis-max="xAxisMax"
+                                                                 :x-axis-title-text="'Time'"
+                                                                 :y-axis-min="0"
+                                                                 :y-axis-max="yAxisMax"
+                                                                 :y-axis-title-text="'Condition'"
+                                                                 :tooltip-visible="true"
+                                                                 :tooltip-format="'({0},{1})'"
+                                                                 :theme="'sass'">
+                                                        <kendo-chart-series-item :data="dataPointsSource"
+                                                                                 :markers-visible="false">
+                                                        </kendo-chart-series-item>
                                                     </kendo-chart>
                                                 </div>
                                             </v-flex>
@@ -235,7 +253,7 @@
                             </v-text-field>
                         </div>
                         <div>
-                            <v-text-field outline v-model="newDataPoint.conditionValue" label="Attribute Value"
+                            <v-text-field outline v-model="newDataPoint.conditionValue" label="Condition Value"
                                           type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
                             </v-text-field>
                         </div>
@@ -243,11 +261,11 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPoint(true)"
+                        <v-btn class="ara-blue-bg white--text" @click="onSubmitNewDataPoint(true)"
                                :disabled="disableDataPointSubmit()">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="submitNewDataPoint(false)">Cancel</v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="onSubmitNewDataPoint(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -268,11 +286,11 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="submitNewDataPointMulti(true)"
+                        <v-btn class="ara-blue-bg white--text" @click="onSubmitNewDataPointMulti(true)"
                                :disabled="disableMultiDataPointsSubmit()">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="submitNewDataPointMulti(false)">Cancel</v-btn>
+                        <v-btn class="ara-orange-bg white--text" @click="onSubmitNewDataPointMulti(false)">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -317,13 +335,13 @@
     import EquationEditorService from '@/services/equation-editor.service';
     import {formulas} from '@/shared/utils/formulas';
     import {AxiosResponse} from 'axios';
-    import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {emptyTimeConditionDataPoint, TimeConditionDataPoint} from '@/shared/models/iAM/time-condition-data-point';
-    import {clone, reverse, isEmpty, add, insert, findIndex, propEq, update} from 'ramda';
+    import {clone, reverse, isEmpty, add, insert, findIndex, propEq, update, append} from 'ramda';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
     const ObjectID = require('bson-objectid');
 
@@ -359,9 +377,9 @@
         timeInRatingGridData: TimeConditionDataPoint[] = [];
         showAddDataPointPopup: boolean = false;
         newDataPoint: TimeConditionDataPoint = clone(emptyTimeConditionDataPoint);
-        series: any[] = [{type: 'line', field: 'conditionValue', categoryField: 'timeValue', markers: {visible: false}}];
-        categoryAxis: any = {min: 0, max: 0, labels: {step: 1}, title: {text: 'Time', visible: true}};
-        tooltip: any = {visible: true, template: '#= category #, #= value #'};
+        xAxisMax: number = 0;
+        yAxisMax: number = 0;
+        dataPointsSource: number[][] = [];
         showAddDataPointMultiPopup: boolean = false;
         multiDataPoints: string = '';
         selectedTab: number = 0;
@@ -406,7 +424,7 @@
         }
 
         /**
-         * Setter: (multiple) => pagination.totalItems, cannotSubmit
+         * Setter: (multiple) => cannotSubmit, showInvalidMessage, showValidMessage, xAxisMax, yAxisMax, dataPointsSource
          */
         @Watch('piecewiseGridData')
         onPiecewiseGridDataChanged() {
@@ -414,13 +432,20 @@
             this.showInvalidMessage = false;
             this.showValidMessage = false;
 
-            this.categoryAxis.max = getPropertyValues('timeValue', this.piecewiseGridData).length;
-
-            if (this.categoryAxis.max <= 10) {
-                this.categoryAxis.labels.step = 1;
-            } else {
-                this.categoryAxis.labels.step = Math.trunc(this.categoryAxis.max / 10);
+            let highestTimeValue: number = getLatestPropertyValue('timeValue', this.piecewiseGridData);
+            if (highestTimeValue % 2 !== 0) {
+                highestTimeValue += 1;
             }
+            this.xAxisMax = highestTimeValue;
+
+            let highestConditionValue: number = getLatestPropertyValue('conditionValue', this.piecewiseGridData);
+            if (highestConditionValue % 2 !== 0) {
+                highestConditionValue += 1;
+            }
+            this.yAxisMax = highestConditionValue;
+
+            this.dataPointsSource = this.piecewiseGridData.map((dataPoint: TimeConditionDataPoint) =>
+                [dataPoint.timeValue, dataPoint.conditionValue]);
         }
 
         /**
@@ -554,13 +579,19 @@
         /**
          * Creates a new data point from the new data point popup
          */
-        submitNewDataPoint(submit: boolean) {
+        onSubmitNewDataPoint(submit: boolean) {
             this.showAddDataPointPopup = false;
 
             if (submit) {
+                const parsedNewDataPoint: TimeConditionDataPoint = {
+                    ...this.newDataPoint,
+                    timeValue: parseInt(this.newDataPoint.timeValue.toString()),
+                    conditionValue: parseFloat(this.newDataPoint.conditionValue.toString())
+                };
+
                 const dataPoints: TimeConditionDataPoint[] = this.selectedTab === 1
-                    ? [...this.piecewiseGridData, this.newDataPoint]
-                    : [...this.timeInRatingGridData, this.newDataPoint];
+                    ? [...this.piecewiseGridData, parsedNewDataPoint]
+                    : [...this.timeInRatingGridData, parsedNewDataPoint];
 
                 this.syncDataGridLists(dataPoints);
             }
@@ -631,7 +662,7 @@
         /**
          * Creates new data points from the multiple data points popup result
          */
-        submitNewDataPointMulti(submit: boolean) {
+        onSubmitNewDataPointMulti(submit: boolean) {
             if (submit) {
                 const parsedMultiDataPoints: TimeConditionDataPoint[] = this.parseMultiDataPoints();
 
