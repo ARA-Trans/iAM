@@ -5,8 +5,10 @@
  */
 export const hasValue = (item: any, itemProp: string = '') => {
     let itemHasValue = item !== null && item !== undefined && item !== '';
-    if (Array.isArray(item)) 
-    {    itemHasValue = itemHasValue && item.length > 0;}
+
+    if (Array.isArray(item)) {
+        itemHasValue = itemHasValue && item.length > 0;
+    }
 
     let itemPropHasValue = true;
     if (itemHasValue && itemProp !== '') {
