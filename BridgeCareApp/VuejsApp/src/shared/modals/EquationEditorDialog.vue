@@ -883,7 +883,7 @@
          * @param value
          */
         conditionValueIsNotEmpty(value: string) {
-            return hasValue(value) || "A value must be entered";
+            return hasValue(value) || 'A value must be entered';
         }
 
         /**
