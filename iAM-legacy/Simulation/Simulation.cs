@@ -644,7 +644,7 @@ namespace Simulation
         public bool GetSimulationMethod()
         {
             //Replace with Method information.
-            String strSelect = "SELECT ANALYSIS, BUDGET_CONSTRAINT,BENEFIT_VARIABLE, BENEFIT_LIMIT,RUN_TIME,USE_CUMULATIVE_COST,USE_ACROSS_BUDGET FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
+            String strSelect = "SELECT ANALYSIS, BUDGET_CONSTRAINT,BENEFIT_VARIABLE, BENEFIT_LIMIT,RUN_TIME,USE_CUMULATIVE_COST,USE_ACROSS_BUDGET,USE_REASONS FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
             try
             {
                 DataSet ds = DBMgr.ExecuteQuery(strSelect);
@@ -671,6 +671,7 @@ namespace Simulation
                     if (dr["USE_CUMULATIVE_COST"] != DBNull.Value) Method.UseCumulativeCost = Convert.ToBoolean(dr["USE_CUMULATIVE_COST"]);
                     Method.UseAcrossBudgets = false;
                     if (dr["USE_ACROSS_BUDGET"] != DBNull.Value) Method.UseAcrossBudgets = Convert.ToBoolean(dr["USE_ACROSS_BUDGET"]);
+                    if (dr["USE_REASONS"] != DBNull.Value) Method.IsUseReasons = Convert.ToBoolean(dr["USE_REASONS"]);
                     string str = dr["BENEFIT_LIMIT"].ToString();
                     double dLimit = 0;
                     double.TryParse(str, out dLimit);
@@ -1272,7 +1273,7 @@ namespace Simulation
 
             var numberColumns = m_listAttributes.Count * (Investment.AnalysisPeriod + 1);
 
-            var numberTables = Math.Ceiling(Convert.ToDouble(numberColumns) / 900);
+            var numberTables = Math.Ceiling(Convert.ToDouble(numberColumns) / 750);
             m_dictionarySimulationTables = new Dictionary<string, List<TableParameters>>();
             m_dictionaryAttributeSimulationTable = new Dictionary<string, int>();
 
@@ -5762,19 +5763,21 @@ namespace Simulation
                 throw e;
             }
 
-
-            switch (DBMgr.NativeConnectionParameters.Provider)
+            if (Method.IsUseReasons)
             {
-                case "MSSQL":
-                    DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutfile, ',');
-                    break;
+                switch (DBMgr.NativeConnectionParameters.Provider)
+                {
+                    case "MSSQL":
+                        DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutfile, ',');
+                        break;
 
-                case "ORACLE":
-                    break;
+                    case "ORACLE":
+                        break;
 
-                default:
-                    throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
-                    //break;
+                    default:
+                        throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
+                        //break;
+                }
             }
 
 
@@ -6566,21 +6569,22 @@ namespace Simulation
                     throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
                     //break;
             }
-
-            switch (DBMgr.NativeConnectionParameters.Provider)
+            if (Method.IsUseReasons)
             {
-                case "MSSQL":
-                    DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutFile, ',');
-                    break;
+                switch (DBMgr.NativeConnectionParameters.Provider)
+                {
+                    case "MSSQL":
+                        DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutFile, ',');
+                        break;
 
-                case "ORACLE":
-                    break;
+                    case "ORACLE":
+                        break;
 
-                default:
-                    throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
-                    //break;
+                    default:
+                        throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
+                        //break;
+                }
             }
-
             _spanReport += DateTime.Now - _dateTimeLast;
             _dateTimeLast = DateTime.Now;
         }
