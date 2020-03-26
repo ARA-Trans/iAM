@@ -81,7 +81,7 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {isNil} from 'ramda';
+    import {isNil, equals} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
@@ -96,8 +96,9 @@
         @Action('getScenarioAnalysis') getScenarioAnalysisAction: any;
         @Action('saveScenarioAnalysis') saveScenarioAnalysisAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
-        selectedScenarioId: number = 0;
+        selectedScenarioId: string = '0';
         objectIdMOngoDBForScenario: string = '';
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
@@ -116,18 +117,18 @@
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                vm.selectedScenarioId = isNaN(to.query.selectedScenarioId) ? 0 : parseInt(to.query.selectedScenarioId);
+                vm.selectedScenarioId = to.query.selectedScenarioId;
                 vm.simulationName = to.query.simulationName;
                 vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
 
-                if (vm.selectedScenarioId === 0) {
+                if (vm.selectedScenarioId === '0') {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
                 }
 
                 // get the selected scenario's analysis data
-                vm.getScenarioAnalysisAction({selectedScenarioId: vm.selectedScenarioId});
+                vm.getScenarioAnalysisAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
             });
         }
 
@@ -146,6 +147,13 @@
                 ...this.stateAnalysis,
                 startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
             };
+        }
+
+        @Watch('analysis')
+        onAnalysisChanged() {
+            this.setHasUnsavedChangesAction({
+                value: !equals(this.analysis, emptyAnalysis) && !equals(this.analysis, this.stateAnalysis)
+            });
         }
 
         /**
@@ -182,8 +190,9 @@
          */
         onSubmitScopeCriteria(criteria: string) {
             this.criteriaEditorDialogData = {...emptyCriteriaEditorDialogData};
+
             if (!isNil(criteria)) {
-                this.analysis.criteria = criteria;
+                this.analysis = {...this.analysis, criteria: criteria};
             }
         }
 

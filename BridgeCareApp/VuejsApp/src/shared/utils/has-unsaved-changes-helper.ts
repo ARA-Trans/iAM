@@ -10,8 +10,6 @@ import {emptyCashFlowLibrary} from '@/shared/models/iAM/cash-flow';
 
 export const hasUnsavedChanges = (editor: string, localSelectedLibrary: any, stateSelectedLibrary: any, stateScenarioLibrary: any) => {
     switch (editor) {
-        case '/EditAnalysis/':
-            return false;
         case 'investment':
             return !equals(localSelectedLibrary, emptyInvestmentLibrary) &&
                 !equals(localSelectedLibrary, stateSelectedLibrary) &&
