@@ -3,7 +3,7 @@ import {equals} from 'ramda';
 import {sortByProperty} from '@/shared/utils/sorter-utils';
 import {getPropertyValues} from '@/shared/utils/getter-utils';
 
-export const itemsEqual = (item1: any | any[], item2: any | any[], property?: string, comparePropertyValues: boolean = false) => {
+export const itemsAreEqual = (item1: any | any[], item2: any | any[], property?: string, comparePropertyValues: boolean = false) => {
     if (hasValue(property)) {
         if (comparePropertyValues) {
             item1 = getPropertyValues(property as string, sortByProperty(property as string, item1));

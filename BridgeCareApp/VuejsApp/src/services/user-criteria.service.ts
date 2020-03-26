@@ -7,21 +7,21 @@ export default class UserCriteriaService {
     /**
      * Gets the criteria for the current user
      */
-    static getOwnUserCriteria() : AxiosPromise {
+    static getOwnUserCriteria(): AxiosPromise {
         return axiosInstance.get('/api/GetUserCriteria');
     }
 
     /**
      * Gets the criteria for all users
      */
-    static getAllUserCriteria() : AxiosPromise {
+    static getAllUserCriteria(): AxiosPromise {
         return axiosInstance.get('/api/GetAllUserCriteria');
     }
 
     /**
      * Sets the criteria for a user
      */
-    static setUserCriteria(userCriteria: UserCriteria) : AxiosPromise {
+    static setUserCriteria(userCriteria: UserCriteria): AxiosPromise {
         return axiosInstance.post('/api/SetUserCriteria', userCriteria);
     }
 }

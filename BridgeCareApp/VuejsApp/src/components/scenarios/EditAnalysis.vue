@@ -4,38 +4,40 @@
             <v-layout column>
                 <v-layout justify-center>
                     <v-flex xs2>
-                        <v-text-field v-model="analysis.startYear" label="Start Year" outline :mask="'####'"></v-text-field>
+                        <v-text-field :mask="'####'" label="Start Year" outline
+                                      v-model="analysis.startYear"></v-text-field>
                     </v-flex>
                     <v-flex xs2>
-                        <v-select v-model="analysis.weightingAttribute" :items="weightingAttributes" label="Weighting"
-                                  outline>
+                        <v-select :items="weightingAttributes" label="Weighting" outline
+                                  v-model="analysis.weightingAttribute">
                         </v-select>
                     </v-flex>
                     <v-flex xs2>
-                        <v-select v-model="analysis.optimizationType" :items="optimizationTypes"
-                                  label="Optimization type" outline>
+                        <v-select :items="optimizationTypes" label="Optimization type"
+                                  outline v-model="analysis.optimizationType">
                         </v-select>
                     </v-flex>
                 </v-layout>
                 <v-layout justify-center>
                     <v-flex xs2>
-                        <v-select v-model="analysis.budgetType" :items="budgetTypes" label="Budget type" outline>
+                        <v-select :items="budgetTypes" label="Budget type" outline v-model="analysis.budgetType">
                         </v-select>
                     </v-flex>
                     <v-flex xs2>
-                        <v-select v-model="analysis.benefitAttribute" :items="benefitAttributes" label="Benefit"
-                                  outline>
+                        <v-select :items="benefitAttributes" label="Benefit" outline
+                                  v-model="analysis.benefitAttribute">
                         </v-select>
                     </v-flex>
                     <v-flex xs2>
-                        <v-text-field v-model.number="analysis.benefitLimit" type="number" label="Benefit limit" outline >
+                        <v-text-field label="Benefit limit" outline type="number"
+                                      v-model.number="analysis.benefitLimit">
                         </v-text-field>
                     </v-flex>
                 </v-layout>
                 <v-layout justify-center>
                     <v-spacer></v-spacer>
                     <v-flex xs6>
-                        <v-textarea v-model="analysis.description" rows="5" label="Description" no-resize outline>
+                        <v-textarea label="Description" no-resize outline rows="5" v-model="analysis.description">
                         </v-textarea>
                     </v-flex>
                     <v-spacer></v-spacer>
@@ -43,9 +45,9 @@
                 <v-layout justify-center>
                     <v-spacer></v-spacer>
                     <v-flex xs6>
-                        <v-textarea v-model="analysis.criteria" rows="5" label="Criteria" readonly no-resize outline>
+                        <v-textarea label="Criteria" no-resize outline readonly rows="5" v-model="analysis.criteria">
                             <template slot="append-outer">
-                                <v-btn icon class="edit-icon" @click="onEditScopeCriteria">
+                                <v-btn @click="onEditScopeCriteria" class="edit-icon" icon>
                                     <v-icon>fas fa-edit</v-icon>
                                 </v-btn>
                             </template>
@@ -58,12 +60,12 @@
 
         <v-flex xs12>
             <v-layout justify-end row>
-                <v-btn class="ara-blue-bg white--text" @click="onApplyAnalysisToScenario">Save</v-btn>
-                <v-btn class="ara-orange-bg white--text" @click="onCancelAnalysisEdit">Cancel</v-btn>
+                <v-btn @click="onApplyAnalysisToScenario" class="ara-blue-bg white--text">Save</v-btn>
+                <v-btn @click="onCancelAnalysisEdit" class="ara-orange-bg white--text">Cancel</v-btn>
             </v-layout>
         </v-flex>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitScopeCriteria" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitScopeCriteria"/>
     </v-layout>
 </template>
 
@@ -71,7 +73,7 @@
     import Vue from 'vue';
     import {Watch} from 'vue-property-decorator';
     import Component from 'vue-class-component';
-    import {State, Action} from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import moment from 'moment';
     import {Analysis, emptyAnalysis} from '@/shared/models/iAM/scenario';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
@@ -100,9 +102,9 @@
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
         showDatePicker: boolean = false;
         optimizationTypes: string[] = ['Incremental Benefit/Cost', 'Maximum Benefit', 'Remaining Life/Cost',
-            'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost', 'Multi-year Maximum Benefit', 
+            'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost', 'Multi-year Maximum Benefit',
             'Multi-year Remaining Life/Cost', 'Multi-year Maximum Life'];
-        budgetTypes: string[] =  ['No Spending', 'As Budget Permits', 'Until Targets Met', 'Until Deficient Met',
+        budgetTypes: string[] = ['No Spending', 'As Budget Permits', 'Until Targets Met', 'Until Deficient Met',
             'Targets/Deficient Met', 'Unlimited'];
         benefitAttributes: string[] = [];
         weightingAttributes: string[] = ['None'];
@@ -190,7 +192,10 @@
          * selected scenario
          */
         onApplyAnalysisToScenario() {
-            this.saveScenarioAnalysisAction({scenarioAnalysisData: this.analysis, objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario});
+            this.saveScenarioAnalysisAction({
+                scenarioAnalysisData: this.analysis,
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
+            });
         }
 
         /**

@@ -11,26 +11,27 @@
                     </v-card-text>
                     <v-divider style="margin: 0px"/>
                     <div v-for="user in unassignedUsers">
-                    <v-layout row style="margin: auto; width: 75%;text-align: center">
-                        <v-flex xs4 style="display: flex; flex-direction: column; justify-content: center; font-size: 1.2em; padding-top: 0px; padding-bottom: 0px">
-                        {{user.username}}
-                        </v-flex>
-                        <v-flex xs4 style="padding: 0px">
-                            <v-btn class="ara-blue-bg white--text" @click="onEditCriteria(user)"
-                                title="Give the user limited access to the bridge inventory">
-                                <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-edit</v-icon>
-                                Assign Criteria Filter
-                            </v-btn>
-                        </v-flex>
-                        <v-flex xs4 style="padding: 0px; justify-content: center">
-                            <v-btn class="ara-blue-bg white--text" @click="onGiveUnrestrictedAccess(user)"
-                                title="Allow the user to access the full bridge inventory">
-                                <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-lock-open</v-icon>
-                                Allow All Assets
-                            </v-btn>
-                        </v-flex>
-                    </v-layout>
-                    <v-divider style="margin: 0px"/>
+                        <v-layout row style="margin: auto; width: 75%;text-align: center">
+                            <v-flex style="display: flex; flex-direction: column; justify-content: center; font-size: 1.2em; padding-top: 0px; padding-bottom: 0px"
+                                    xs4>
+                                {{user.username}}
+                            </v-flex>
+                            <v-flex style="padding: 0px" xs4>
+                                <v-btn @click="onEditCriteria(user)" class="ara-blue-bg white--text"
+                                       title="Give the user limited access to the bridge inventory">
+                                    <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-edit</v-icon>
+                                    Assign Criteria Filter
+                                </v-btn>
+                            </v-flex>
+                            <v-flex style="padding: 0px; justify-content: center" xs4>
+                                <v-btn @click="onGiveUnrestrictedAccess(user)" class="ara-blue-bg white--text"
+                                       title="Allow the user to access the full bridge inventory">
+                                    <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-lock-open</v-icon>
+                                    Allow All Assets
+                                </v-btn>
+                            </v-flex>
+                        </v-layout>
+                        <v-divider style="margin: 0px"/>
                     </div>
                 </div>
                 <v-card-title class="userCriteriaTableHeader">
@@ -38,48 +39,52 @@
                 </v-card-title>
                 <div>
                     <v-data-table :headers="userCriteriaGridHeaders"
-                                    :items="assignedUsers"
-                                    :items-per-page="5"
-                                    hide-actions
-                                    class="elevation-1">
+                                  :items="assignedUsers"
+                                  :items-per-page="5"
+                                  class="elevation-1"
+                                  hide-actions>
                         <template slot="items" slot-scope="props">
                             <td style="width: 10%; font-size: 1.2em; padding-top: 0.4em">{{ props.item.username }}</td>
                             <td style="width: 25%">
                                 <v-layout align-center style="flex-wrap:nowrap; margin-left: 0px">
-                                    <v-menu v-if="props.item.hasCriteria"
-                                        bottom min-width="500px" min-height="500px">
+                                    <v-menu bottom
+                                            min-height="500px" min-width="500px" v-if="props.item.hasCriteria">
                                         <template slot="activator">
-                                            <input type="text" class="output" style="width: 25em" readonly
-                                                   :value="props.item.criteria" />
+                                            <input :value="props.item.criteria" class="output" readonly style="width: 25em"
+                                                   type="text"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea rows="5" no-resize readonly full-width outline
-                                                            :value="props.item.criteria">
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
+                                                            rows="5">
                                                 </v-textarea>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <div v-if="!props.item.hasCriteria" style="font-size: 1.2em; font-weight: bold; padding-top: 0.4em; padding-right: 1em">
+                                    <div style="font-size: 1.2em; font-weight: bold; padding-top: 0.4em; padding-right: 1em"
+                                         v-if="!props.item.hasCriteria">
                                         All Assets
                                     </div>
-                                    <v-btn v-if="props.item.hasCriteria" icon class="edit-icon" @click="onEditCriteria(props.item)"
-                                        title="Edit Criteria">
+                                    <v-btn @click="onEditCriteria(props.item)" class="edit-icon" icon
+                                           title="Edit Criteria"
+                                           v-if="props.item.hasCriteria">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-layout>
                             </td>
                             <td>
-                                <v-btn v-if="!props.item.hasCriteria" icon class="ara-blue" @click="onEditCriteria(props.item)"
-                                    title="Restrict Access with Criteria Filter">
+                                <v-btn @click="onEditCriteria(props.item)" class="ara-blue" icon
+                                       title="Restrict Access with Criteria Filter"
+                                       v-if="!props.item.hasCriteria">
                                     <v-icon>fas fa-lock</v-icon>
                                 </v-btn>
-                                <v-btn v-if="props.item.hasCriteria" icon class="ara-blue" @click="onGiveUnrestrictedAccess(props.item)"
-                                    title="Allow All Assets">
+                                <v-btn @click="onGiveUnrestrictedAccess(props.item)" class="ara-blue" icon
+                                       title="Allow All Assets"
+                                       v-if="props.item.hasCriteria">
                                     <v-icon>fas fa-lock-open</v-icon>
                                 </v-btn>
-                                <v-btn icon class="ara-orange" @click="onRevokeAccess(props.item)"
-                                    title="Revoke Access">
+                                <v-btn @click="onRevokeAccess(props.item)" class="ara-orange" icon
+                                       title="Revoke Access">
                                     <v-icon>fas fa-times-circle</v-icon>
                                 </v-btn>
                             </td>
@@ -89,17 +94,14 @@
             </v-card>
         </v-flex>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria"/>
     </v-layout>
 </template>
 
 <script lang="ts">
-        import Vue from 'vue';
+    import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import moment from 'moment';
-    import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
@@ -107,20 +109,19 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {find, propEq, clone, isNil, filter, insert} from 'ramda';
+    import {clone, isNil} from 'ramda';
     import {UserCriteria} from '@/shared/models/iAM/user-criteria';
-
-import { getUserName } from '../../shared/utils/get-user-info';
 
     @Component({
         components: {
-           CriteriaEditorDialog, Alert}
+            CriteriaEditorDialog, Alert
+        }
     })
     export default class UserCriteriaEditor extends Vue {
         @State(state => state.userCriteria.allUserCriteria) allUserCriteria: UserCriteria[];
 
-        @Action('getAllUserCriteria') getAllUserCriteriaAction : any;
-        @Action('setUserCriteria') setUserCriteriaAction : any;
+        @Action('getAllUserCriteria') getAllUserCriteriaAction: any;
+        @Action('setUserCriteria') setUserCriteriaAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
@@ -199,9 +200,9 @@ import { getUserName } from '../../shared/utils/get-user-info';
 </script>
 
 <style>
-.userCriteriaTableHeader {
-    justify-content: center;
-    font-size: 1.5em;
-    font-weight: bold;
-}
+    .userCriteriaTableHeader {
+        justify-content: center;
+        font-size: 1.5em;
+        font-weight: bold;
+    }
 </style>

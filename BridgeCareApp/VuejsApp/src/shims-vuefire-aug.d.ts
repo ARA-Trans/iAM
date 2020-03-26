@@ -1,5 +1,4 @@
-﻿import Vue from 'vue';
-/*
+﻿/*
   Allow any property access on Vue instances.
   VueFire adds properties that Typescript doesnt understand.
   To work around this, add a rule that all keys return 'any' type.

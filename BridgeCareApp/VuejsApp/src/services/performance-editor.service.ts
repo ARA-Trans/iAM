@@ -1,8 +1,7 @@
-import {AxiosPromise, AxiosResponse} from 'axios';
+import {AxiosPromise} from 'axios';
 import {PerformanceLibrary} from '@/shared/models/iAM/performance';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
-import { hasValue } from '@/shared/utils/has-value-util';
 
 
 export default class PerformanceEditorService {

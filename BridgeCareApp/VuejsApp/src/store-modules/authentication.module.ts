@@ -1,9 +1,8 @@
 import AuthenticationService from '../services/authentication.service';
 import {AxiosResponse} from 'axios';
-import {UserTokens, UserInfo} from '@/shared/models/iAM/authentication';
+import {UserInfo, UserTokens} from '@/shared/models/iAM/authentication';
 import {http2XX} from '@/shared/utils/http-utils';
-import {getUserName} from '@/shared/utils/get-user-info';
-import {parseLDAP, checkLDAP, regexCheckLDAP} from '@/shared/utils/parse-ldap';
+import {checkLDAP, parseLDAP, regexCheckLDAP} from '@/shared/utils/parse-ldap';
 
 const state = {
     authenticated: false,
@@ -117,7 +116,7 @@ const actions = {
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
             // ID token is too long to pass as part of the URL, but it will be passed as the parameter
             // of the Authorization header.
-            AuthenticationService.revokeToken('', 'Id').then(()=>
+            AuthenticationService.revokeToken('', 'Id').then(() =>
                 localStorage.removeItem('UserTokens')
             );
             localStorage.removeItem('TokenExpiration');

@@ -1,8 +1,6 @@
-import {AxiosPromise, AxiosResponse} from 'axios';
+import {AxiosPromise} from 'axios';
 import {Analysis} from '@/shared/models/iAM/scenario';
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {hasValue} from '@/shared/utils/has-value-util';
-import {Scenario, ScenarioUser} from '@/shared/models/iAM/scenario';
 
 export default class AnalysisEditorService {
     /**

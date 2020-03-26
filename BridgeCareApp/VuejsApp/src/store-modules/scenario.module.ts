@@ -1,7 +1,7 @@
 import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
-import {clone, any, propEq, findIndex, remove} from 'ramda';
+import {any, clone, findIndex, propEq, remove} from 'ramda';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
@@ -66,7 +66,7 @@ const actions = {
                 }
             });
     },
-    async getLegacyScenarios({ commit }: any, payload: any) {
+    async getLegacyScenarios({commit}: any, payload: any) {
         return await ScenarioService.getLegacyScenarios()
             .then((response: AxiosResponse<Scenario[]>) => {
                 if (hasValue(response, 'data')) {
@@ -105,22 +105,22 @@ const actions = {
                 }
             });
     },
-    async updateScenario({ dispatch, commit }: any, payload: any) {
+    async updateScenario({dispatch, commit}: any, payload: any) {
         return await ScenarioService.updateScenario(payload.updateScenarioData, payload.scenarioId)
             .then((response: AxiosResponse<Scenario>) => {
                 const updatedScenario: Scenario = convertFromMongoToVue(response.data);
                 commit('updatedScenarioMutator', updatedScenario);
-                dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
+                dispatch('setSuccessMessage', {message: 'Successfully updated scenario'});
             });
     },
-    async updateScenarioUsers({ dispatch, commit }: any, payload: any) {
+    async updateScenarioUsers({dispatch, commit}: any, payload: any) {
         return await ScenarioService.updateScenarioUsers(payload.scenario)
             .then(() => {
                 commit('updatedScenarioMutator', payload.scenario);
                 dispatch('setSuccessMessage', {message: 'Successfully updated scenario sharing settings'});
             });
     },
-    async deleteScenario({ dispatch, state, commit }: any, payload: any) {
+    async deleteScenario({dispatch, state, commit}: any, payload: any) {
         return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
@@ -158,7 +158,7 @@ const actions = {
     async clearSummaryReportMissingAttributes({commit}: any) {
         commit('missingSummaryReportAttributesMutator', '');
     },
-    async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
+    async socket_scenarioStatus({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType')) {
             switch (payload.operationType) {
                 case 'update':

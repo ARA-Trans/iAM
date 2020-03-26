@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="250px">
+        <v-dialog max-width="250px" persistent v-model="showDialog">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -9,21 +9,21 @@
                 </v-card-title>
                 <v-card-text>
                     <v-layout column>
-                        <v-text-field label="Name" v-model="newPerformanceLibraryEquation.equationName" outline>
+                        <v-text-field label="Name" outline v-model="newPerformanceLibraryEquation.equationName">
                         </v-text-field>
-                        <v-select label="Select Attribute" :items="attributesSelectListItems"
-                                  v-model="newPerformanceLibraryEquation.attribute" outline>
+                        <v-select :items="attributesSelectListItems" label="Select Attribute"
+                                  outline v-model="newPerformanceLibraryEquation.attribute">
                         </v-select>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)"
-                               :disabled="newPerformanceLibraryEquation.equationName === '' ||
-                                          newPerformanceLibraryEquation.attribute === ''">
+                        <v-btn :disabled="newPerformanceLibraryEquation.equationName === '' ||
+                                          newPerformanceLibraryEquation.attribute === ''" @click="onSubmit(true)"
+                               class="ara-blue-bg white--text">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                        <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -34,12 +34,12 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {State} from 'vuex-class';
     import {emptyEquation, PerformanceLibraryEquation} from '@/shared/models/iAM/performance';
-    import {isEmpty, clone} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
+
     const ObjectID = require('bson-objectid');
 
     @Component

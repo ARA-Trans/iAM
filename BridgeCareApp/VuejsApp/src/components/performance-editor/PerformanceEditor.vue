@@ -3,18 +3,18 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" @click="onNewLibrary">
+                    <v-btn @click="onNewLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === 0">
                         New Library
                     </v-btn>
-                    <v-select v-if="!hasSelectedPerformanceLibrary || selectedScenarioId > 0"
-                              :items="performanceLibrariesSelectListItems"
-                              label="Select a Performance Library" outline
+                    <v-select :items="performanceLibrariesSelectListItems"
+                              label="Select a Performance Library"
+                              outline v-if="!hasSelectedPerformanceLibrary || selectedScenarioId > 0"
                               v-model="selectItemValue">
                     </v-select>
-                    <v-text-field v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0" label="Library Name"
+                    <v-text-field label="Library Name" v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0"
                                   v-model="selectedPerformanceLibrary.name">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="selectItemValue = null">
+                            <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
@@ -22,98 +22,107 @@
                     <div v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0">
                         Owner: {{selectedPerformanceLibrary.owner ? selectedPerformanceLibrary.owner : "[ No Owner ]"}}
                     </div>
-                    <v-checkbox class="sharing" v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0"
-                        v-model="selectedPerformanceLibrary.shared" label="Shared"/>
+                    <v-checkbox class="sharing" label="Shared"
+                                v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0" v-model="selectedPerformanceLibrary.shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
         <v-divider v-show="hasSelectedPerformanceLibrary"></v-divider>
-        <v-flex xs12 v-show="hasSelectedPerformanceLibrary">
-            <v-layout justify-center class="header-height">
+        <v-flex v-show="hasSelectedPerformanceLibrary" xs12>
+            <v-layout class="header-height" justify-center>
                 <v-flex xs8>
-                    <v-btn class="ara-blue-bg white--text" @click="showCreatePerformanceLibraryEquationDialog = true">
+                    <v-btn @click="showCreatePerformanceLibraryEquationDialog = true" class="ara-blue-bg white--text">
                         Add
                     </v-btn>
                 </v-flex>
             </v-layout>
-            <v-layout justify-center class="data-table">
+            <v-layout class="data-table" justify-center>
                 <v-flex xs8>
                     <v-card>
                         <v-card-title>
                             Performance equation
                             <v-spacer></v-spacer>
-                            <v-text-field v-model="searchEquation" append-icon="fas fa-search" lablel="Search" single-line
-                                          hide-details>
+                            <v-text-field append-icon="fas fa-search" hide-details lablel="Search"
+                                          single-line
+                                          v-model="searchEquation">
                             </v-text-field>
                         </v-card-title>
                         <v-data-table :headers="equationsGridHeaders"
                                       :items="equationsGridData"
-                                      item-key="performanceLibraryEquationId"
+                                      :search="searchEquation"
                                       class="elevation-1 fixed-header v-table__overflow"
-                                      :search="searchEquation">
+                                      item-key="performanceLibraryEquationId">
                             <template slot="items" slot-scope="props">
                                 <td class="text-xs-center">
-                                    <v-edit-dialog @save="onEditEquationProperty(props.item.id, 'equationName', props.item.equationName)"
-                                                   :return-value.sync="props.item.equationName"
-                                                   large lazy persistent>
-                                        <v-text-field class="equation-name-text-field-output" readonly :value="props.item.equationName"></v-text-field>
+                                    <v-edit-dialog
+                                            :return-value.sync="props.item.equationName"
+                                            @save="onEditEquationProperty(props.item.id, 'equationName', props.item.equationName)"
+                                            large lazy persistent>
+                                        <v-text-field :value="props.item.equationName" class="equation-name-text-field-output"
+                                                      readonly></v-text-field>
                                         <template slot="input">
-                                            <v-text-field v-model="props.item.equationName"
-                                                          label="Edit" single-line>
+                                            <v-text-field label="Edit"
+                                                          single-line v-model="props.item.equationName">
                                             </v-text-field>
                                         </template>
                                     </v-edit-dialog>
                                 </td>
                                 <td class="text-xs-center">
-                                    <v-edit-dialog @save="onEditEquationProperty(props.item.id, 'attribute', props.item.attribute)"
-                                                   :return-value.sync="props.item.attribute"
-                                                   large lazy persistent>
-                                        <v-text-field class="attribute-text-field-output" readonly :value="props.item.attribute"></v-text-field>
+                                    <v-edit-dialog
+                                            :return-value.sync="props.item.attribute"
+                                            @save="onEditEquationProperty(props.item.id, 'attribute', props.item.attribute)"
+                                            large lazy persistent>
+                                        <v-text-field :value="props.item.attribute" class="attribute-text-field-output"
+                                                      readonly></v-text-field>
                                         <template slot="input">
-                                            <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
-                                                      label="Edit">
+                                            <v-select :items="attributesSelectListItems" label="Edit"
+                                                      v-model="props.item.attribute">
                                             </v-select>
                                         </template>
                                     </v-edit-dialog>
                                 </td>
                                 <td class="text-xs-center">
-                                    <v-menu v-show="props.item.equation !== ''" left min-width="500px"
-                                            min-height="500px">
+                                    <v-menu left min-height="500px" min-width="500px"
+                                            v-show="props.item.equation !== ''">
                                         <template slot="activator">
-                                            <v-btn icon class="ara-blue"><v-icon>fas fa-eye</v-icon></v-btn>
+                                            <v-btn class="ara-blue" icon>
+                                                <v-icon>fas fa-eye</v-icon>
+                                            </v-btn>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea rows="5" no-resize readonly full-width outline
-                                                            :value="props.item.equation">
+                                                <v-textarea :value="props.item.equation" full-width no-resize outline readonly
+                                                            rows="5">
                                                 </v-textarea>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <v-btn icon class="edit-icon" @click="onShowEquationEditorDialog(props.item.id)">
+                                    <v-btn @click="onShowEquationEditorDialog(props.item.id)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </td>
                                 <td class="text-xs-center">
-                                    <v-menu v-show="props.item.criteria !== ''" right min-width="500px"
-                                            min-height="500px">
+                                    <v-menu min-height="500px" min-width="500px" right
+                                            v-show="props.item.criteria !== ''">
                                         <template slot="activator">
-                                            <v-btn flat icon class="ara-blue"><v-icon>fas fa-eye</v-icon></v-btn>
+                                            <v-btn class="ara-blue" flat icon>
+                                                <v-icon>fas fa-eye</v-icon>
+                                            </v-btn>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea rows="5" no-resize readonly full-width outline
-                                                            :value="props.item.criteria">
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
+                                                            rows="5">
                                                 </v-textarea>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <v-btn icon class="edit-icon" @click="onShowCriteriaEditorDialog(props.item.id)">
+                                    <v-btn @click="onShowCriteriaEditorDialog(props.item.id)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </td>
                                 <td class="text-xs-center">
-                                    <v-btn icon class="ara-orange" @click="onDeleteEquation(props.item.id)">
+                                    <v-btn @click="onDeleteEquation(props.item.id)" class="ara-orange" icon>
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </td>
@@ -124,71 +133,76 @@
             </v-layout>
         </v-flex>
         <v-divider v-show="hasSelectedPerformanceLibrary"></v-divider>
-        <v-flex xs12 v-show="hasSelectedPerformanceLibrary && (stateScenarioPerformanceLibrary === null || selectedPerformanceLibrary.id !== stateScenarioPerformanceLibrary.id)">
+        <v-flex v-show="hasSelectedPerformanceLibrary && (stateScenarioPerformanceLibrary === null || selectedPerformanceLibrary.id !== stateScenarioPerformanceLibrary.id)"
+                xs12>
             <v-layout justify-center>
                 <v-flex xs6>
-                    <v-textarea rows="4" no-resize outline label="Description"
+                    <v-textarea label="Description" no-resize outline rows="4"
                                 v-model="selectedPerformanceLibrary.description">
                     </v-textarea>
                 </v-flex>
             </v-layout>
         </v-flex>
         <v-flex xs12>
-            <v-layout v-show="hasSelectedPerformanceLibrary" justify-end row>
-                <v-btn v-show="selectedScenarioId > 0" class="ara-blue-bg white--text" :disabled="!hasSelectedPerformanceLibrary"
-                       @click="onApplyToScenario">
+            <v-layout justify-end row v-show="hasSelectedPerformanceLibrary">
+                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onApplyToScenario"
+                       class="ara-blue-bg white--text"
+                       v-show="selectedScenarioId > 0">
                     Save
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" class="ara-blue-bg white--text" :disabled="!hasSelectedPerformanceLibrary"
-                       @click="onUpdateLibrary">
+                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onUpdateLibrary"
+                       class="ara-blue-bg white--text"
+                       v-show="selectedScenarioId === 0">
                     Update Library
                 </v-btn>
-                <v-btn class="ara-blue-bg white--text" :disabled="!hasSelectedPerformanceLibrary"
-                       @click="onCreateAsNewLibrary">
+                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onCreateAsNewLibrary"
+                       class="ara-blue-bg white--text">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" class="ara-orange-bg white--text" @click="onDeletePerformanceLibrary">
+                <v-btn @click="onDeletePerformanceLibrary" class="ara-orange-bg white--text"
+                       v-show="selectedScenarioId === 0">
                     Delete Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" :disabled="!hasSelectedPerformanceLibrary"
-                       @click="onDiscardPerformanceLibraryChanges">
+                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onDiscardChanges"
+                       class="ara-orange-bg white--text"
+                       v-show="selectedScenarioId > 0">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
 
-        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse"/>
 
         <CreatePerformanceLibraryDialog :dialogData="createPerformanceLibraryDialogData"
-                                        @submit="onCreatePerformanceLibrary" />
+                                        @submit="onCreatePerformanceLibrary"/>
 
         <CreatePerformanceLibraryEquationDialog :showDialog="showCreatePerformanceLibraryEquationDialog"
-                                                @submit="onCreatePerformanceLibraryEquation" />
+                                                @submit="onCreatePerformanceLibraryEquation"/>
 
-        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult" />
+        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult"/>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteriaEditorDialogResult" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteriaEditorDialogResult"/>
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Watch } from 'vue-property-decorator';
+    import {Watch} from 'vue-property-decorator';
     import Component from 'vue-class-component';
-    import {State, Action} from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import CreatePerformanceLibraryDialog from './performance-editor-dialogs/CreatePerformanceLibraryDialog.vue';
     import CreatePerformanceLibraryEquationDialog from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
     import EquationEditorDialog from '../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../shared/modals/CriteriaEditorDialog.vue';
     import {
-        PerformanceLibraryEquation,
-        PerformanceLibrary,
         emptyEquation,
-        emptyPerformanceLibrary
+        emptyPerformanceLibrary,
+        PerformanceLibrary,
+        PerformanceLibraryEquation
     } from '@/shared/models/iAM/performance';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {any, propEq, isNil, findIndex, append, find, update, clone} from 'ramda';
+    import {any, append, clone, find, findIndex, isNil, propEq, update} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {
         CreatePerformanceLibraryDialogData,
@@ -207,10 +221,18 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
+    import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+
     const ObjectID = require('bson-objectid');
 
     @Component({
-        components: {CreatePerformanceLibraryDialog, CreatePerformanceLibraryEquationDialog, EquationEditorDialog, CriteriaEditorDialog, Alert}
+        components: {
+            CreatePerformanceLibraryDialog,
+            CreatePerformanceLibraryEquationDialog,
+            EquationEditorDialog,
+            CriteriaEditorDialog,
+            Alert
+        }
     })
     export default class PerformanceEditor extends Vue {
         @State(state => state.performanceEditor.performanceLibraries) statePerformanceLibraries: PerformanceLibrary[];
@@ -225,11 +247,12 @@
         @Action('deletePerformanceLibrary') deletePerformanceLibraryAction: any;
         @Action('getScenarioPerformanceLibrary') getScenarioPerformanceLibraryAction: any;
         @Action('saveScenarioPerformanceLibrary') saveScenarioPerformanceLibraryAction: any;
+        @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
         searchEquation = '';
         performanceLibraries: PerformanceLibrary[] = [];
         selectedPerformanceLibrary: PerformanceLibrary = clone(emptyPerformanceLibrary);
-        selectedScenarioId: number = 0;
+        selectedScenarioId: string = '0';
         hasSelectedPerformanceLibrary: boolean = false;
         performanceLibrariesSelectListItems: SelectItem[] = [];
         selectItemValue: string | null = '';
@@ -255,10 +278,8 @@
          */
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
-                vm.selectedScenarioId = 0;
-
                 if (to.path === '/PerformanceEditor/Scenario/') {
-                    vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
+                    vm.selectedScenarioId = to.query.selectedScenarioId;
                     vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === 0) {
                         vm.setErrorMessageAction({message: 'No scenario has been selected'});
@@ -267,14 +288,12 @@
                 }
 
                 vm.selectItemValue = null;
-                setTimeout(() => {
-                    vm.getPerformanceLibrariesAction()
-                        .then(() => {
-                            if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioPerformanceLibraryAction({selectedScenarioId: vm.selectedScenarioId});
-                            }
-                        });
-                });
+                vm.getPerformanceLibrariesAction()
+                    .then(() => {
+                        if (vm.selectedScenarioId !== '0') {
+                            vm.getScenarioPerformanceLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                        }
+                    });
             });
         }
 
@@ -302,13 +321,7 @@
          */
         @Watch('selectItemValue')
         onPerformanceLibrariesSelectItemChanged() {
-            const selectedPerformanceLibrary: PerformanceLibrary = find(
-                propEq('id', this.selectItemValue), this.statePerformanceLibraries
-            ) as PerformanceLibrary;
-
-            this.selectPerformanceLibraryAction({
-                selectedPerformanceLibrary: hasValue(selectedPerformanceLibrary) ? selectedPerformanceLibrary : emptyPerformanceLibrary
-            });
+            this.selectPerformanceLibraryAction({selectedLibraryId: this.selectItemValue});
         }
 
         /**
@@ -317,6 +330,15 @@
         @Watch('stateSelectedPerformanceLibrary')
         onStateSelectedPerformanceLibraryChanged() {
             this.selectedPerformanceLibrary = clone(this.stateSelectedPerformanceLibrary);
+        }
+
+        @Watch('selectedPerformanceLibrary')
+        onSelectedPerformanceLibraryChanged() {
+            this.setHasUnsavedChangesAction({
+                value: hasUnsavedChanges(
+                    'performance', this.selectedPerformanceLibrary, this.stateSelectedPerformanceLibrary, this.stateScenarioPerformanceLibrary
+                )
+            });
             this.hasSelectedPerformanceLibrary = this.selectedPerformanceLibrary.id !== '0';
             this.equationsGridData = clone(this.selectedPerformanceLibrary.equations);
         }
@@ -349,18 +371,16 @@
         }
 
         /**
-         * Dispatches an action to append a new performance library equation to the selected performance library's
-         * equations list
+         * Appends new equation to selected performance library's equations list
          */
         onCreatePerformanceLibraryEquation(createdEquation: PerformanceLibraryEquation) {
             this.showCreatePerformanceLibraryEquationDialog = false;
 
             if (!isNil(createdEquation)) {
-                this.selectPerformanceLibraryAction({selectedPerformanceLibrary: {
-                        ...this.selectedPerformanceLibrary,
-                        equations: append(createdEquation, this.selectedPerformanceLibrary.equations)
-                    }
-                });
+                this.selectedPerformanceLibrary = {
+                    ...this.selectedPerformanceLibrary,
+                    equations: append(createdEquation, this.selectedPerformanceLibrary.equations)
+                };
             }
         }
 
@@ -373,15 +393,14 @@
                     propEq('id', id), this.selectedPerformanceLibrary.equations
                 ) as PerformanceLibraryEquation;
 
-                this.selectPerformanceLibraryAction({selectedPerformanceLibrary: {
-                        ...this.selectedPerformanceLibrary,
-                        equations: update(
-                            findIndex(propEq('id', equation.id), this.selectedPerformanceLibrary.equations),
-                            setItemPropertyValue(property, value, equation) as PerformanceLibraryEquation,
-                            this.selectedPerformanceLibrary.equations
-                        )
-                    }
-                });
+                this.selectedPerformanceLibrary = {
+                    ...this.selectedPerformanceLibrary,
+                    equations: update(
+                        findIndex(propEq('id', equation.id), this.selectedPerformanceLibrary.equations),
+                        setItemPropertyValue(property, value, equation) as PerformanceLibraryEquation,
+                        this.selectedPerformanceLibrary.equations
+                    )
+                };
             }
         }
 
@@ -410,21 +429,22 @@
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
 
             if (!isNil(result)) {
-                this.selectPerformanceLibraryAction({selectedPerformanceLibrary: {
-                        ...this.selectedPerformanceLibrary,
-                        equations: update(
-                            findIndex(propEq('id', this.selectedEquation.id), this.selectedPerformanceLibrary.equations),
-                            {
-                                ...this.selectedEquation,
-                                equation: result.equation,
-                                piecewise: result.isPiecewise,
-                                isFunction: result.isFunction
-                            },
-                            this.selectedPerformanceLibrary.equations
-                        )
-                    }
-                }).then(() => this.selectedEquation = clone(emptyEquation));
+                this.selectedPerformanceLibrary = {
+                    ...this.selectedPerformanceLibrary,
+                    equations: update(
+                        findIndex(propEq('id', this.selectedEquation.id), this.selectedPerformanceLibrary.equations),
+                        {
+                            ...this.selectedEquation,
+                            equation: result.equation,
+                            piecewise: result.isPiecewise,
+                            isFunction: result.isFunction
+                        },
+                        this.selectedPerformanceLibrary.equations
+                    )
+                };
             }
+
+            this.selectedEquation = clone(emptyEquation);
         }
 
         /**
@@ -450,28 +470,28 @@
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                this.selectPerformanceLibraryAction({selectedPerformanceLibrary: {
-                        ...this.selectedPerformanceLibrary,
-                        equations: update(
-                            findIndex(propEq('id', this.selectedEquation.id), this.selectedPerformanceLibrary.equations),
-                            setItemPropertyValue('criteria', criteria, this.selectedEquation) as PerformanceLibraryEquation,
-                            this.selectedPerformanceLibrary.equations
-                        )
-                    }
-                }).then(() => this.selectedEquation = clone(emptyEquation));
+                this.selectedPerformanceLibrary = {
+                    ...this.selectedPerformanceLibrary,
+                    equations: update(
+                        findIndex(propEq('id', this.selectedEquation.id), this.selectedPerformanceLibrary.equations),
+                        {...this.selectedEquation, criteria: criteria},
+                        this.selectedPerformanceLibrary.equations
+                    )
+                };
             }
+
+            this.selectedEquation = clone(emptyEquation);
         }
 
         /**
          * Removes a performance library equation from a performance library's equations property
          */
         onDeleteEquation(id: string) {
-            this.selectPerformanceLibraryAction({selectedPerformanceLibrary: {
-                    ...this.selectedPerformanceLibrary,
-                    equations: this.selectedPerformanceLibrary.equations
-                        .filter((equation: PerformanceLibraryEquation) => equation.id !== id)
-                }
-            });
+            this.selectedPerformanceLibrary = {
+                ...this.selectedPerformanceLibrary,
+                equations: this.selectedPerformanceLibrary.equations
+                    .filter((equation: PerformanceLibraryEquation) => equation.id !== id)
+            };
         }
 
         /**
@@ -511,16 +531,15 @@
             this.saveScenarioPerformanceLibraryAction({
                 saveScenarioPerformanceLibraryData: {...this.selectedPerformanceLibrary, id: this.selectedScenarioId},
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
-            }).then(() => this.onDiscardPerformanceLibraryChanges());
+            }).then(() => this.onDiscardChanges());
         }
+
         /**
          * Resets the component's UI to remove any changes made to a scenario's performance library
          */
-        onDiscardPerformanceLibraryChanges() {
+        onDiscardChanges() {
             this.selectItemValue = null;
-            setTimeout(() => {
-                this.selectPerformanceLibraryAction({selectedPerformanceLibrary: this.stateScenarioPerformanceLibrary});
-            });
+            setTimeout(() => this.selectPerformanceLibraryAction({selectedLibraryId: this.stateScenarioPerformanceLibrary.id}));
         }
 
         onDeletePerformanceLibrary() {
@@ -536,8 +555,8 @@
             this.alertBeforeDelete = clone(emptyAlertData);
 
             if (response) {
+                this.selectItemValue = null;
                 this.deletePerformanceLibraryAction({performanceLibrary: this.selectedPerformanceLibrary});
-                this.onClearSelectedPerformanceLibrary();
             }
         }
     }
@@ -558,11 +577,11 @@
         margin-left: 15px;
     }
 
-    .dropdown-height{
+    .dropdown-height {
         height: 75px;
     }
 
-    .header-height{
+    .header-height {
         height: 45px;
     }
 

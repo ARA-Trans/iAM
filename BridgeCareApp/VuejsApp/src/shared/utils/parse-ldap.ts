@@ -21,5 +21,5 @@ export const checkLDAP = (ldap: string, cn: string) => {
  * @param regex A regexp
  */
 export const regexCheckLDAP = (ldap: string, regex: RegExp) => {
-    return parseLDAP(ldap).map(s => !!s.match(regex)).reduce((a,b) => a || b);
+    return parseLDAP(ldap).map(s => !!s.match(regex)).reduce((a, b) => a || b);
 };

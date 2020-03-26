@@ -1,5 +1,5 @@
 import {InvestmentLibraryBudgetYear} from '@/shared/models/iAM/investment';
-import { CriteriaDrivenBudgets } from '../iAM/criteria-driven-budgets';
+import {CriteriaDrivenBudgets} from '../iAM/criteria-driven-budgets';
 
 export interface CreateInvestmentLibraryDialogData {
     showDialog: boolean;

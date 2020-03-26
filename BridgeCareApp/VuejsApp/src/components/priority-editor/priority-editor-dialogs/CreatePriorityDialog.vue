@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,16 +8,17 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Priority" v-model="newPriority.priorityLevel" outline></v-text-field>
-                    <v-autocomplete :items="years" v-model="selectedYear" outline label="Select a Year"></v-autocomplete>
+                    <v-text-field label="Priority" outline v-model="newPriority.priorityLevel"></v-text-field>
+                    <v-autocomplete :items="years" label="Select a Year" outline
+                                    v-model="selectedYear"></v-autocomplete>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
+                    <v-btn :disabled="disableSubmit()" @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">
                         Cancel
                     </v-btn>
                 </v-layout>
@@ -32,6 +33,7 @@
     import {emptyPriority, Priority} from '@/shared/models/iAM/priority';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+
     const ObjectID = require('bson-objectid');
 
     @Component

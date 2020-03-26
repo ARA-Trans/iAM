@@ -1,4 +1,4 @@
-import {isNil, isEmpty} from 'ramda';
+import {isEmpty, isNil} from 'ramda';
 import {Criteria, CriteriaRule, CriteriaType, emptyCriteria} from '@/shared/models/iAM/criteria';
 import {hasValue} from '@/shared/utils/has-value-util';
 
@@ -67,6 +67,7 @@ export const parseCriteriaTypeJson = (criteriaType: CriteriaType) => {
     }
     return clause;
 };
+
 /**
  * Creates a clause rule substring from a given criteria rule object
  * @param criteriaRule The criteria rule object used to create the clause rule substring
@@ -77,8 +78,7 @@ function parseQueryBuilderRule(criteriaRule: CriteriaRule) {
     if (typeof criteriaRule.value != 'undefined' && hasValue(criteriaRule.value)) {
         if (criteriaRule.value[0] != '[') {
             return `[${criteriaRule.selectedOperand}]${criteriaRule.selectedOperator}'${criteriaRule.value}'`;
-        }
-        else {
+        } else {
             return `[${criteriaRule.selectedOperand}]${criteriaRule.selectedOperator}${criteriaRule.value}`;
         }
     } else {
@@ -113,8 +113,7 @@ export const parseCriteriaString = (clause: string) => {
                 return parseQueryBuilderClause(trimmedClause, newCriteria);
             }
         }
-    }
-    catch (e) {
+    } catch (e) {
         return null;
     }
     return {...emptyCriteria};
@@ -164,7 +163,7 @@ function parseLegacyAppClause(clause: string, criteria: Criteria) {
                 spacedString++;
             }
             startingIndex = index + 1;
-            continue;
+
         }
     }
     //const splitVals = clause.split(' ');
@@ -260,7 +259,7 @@ function parseQueryBuilderClause(clause: string, criteria: Criteria) {
                 spacedString++;
             }
             startingIndex = index + 1;
-            continue;
+
         }
     }
     //const splitVals = clause.split(' ');
@@ -320,8 +319,8 @@ function parseQueryBuilderClause(clause: string, criteria: Criteria) {
             continue;
         } else if (splitVal === 'AND' || splitVal === 'OR') {
             //if (!hasValue(criteria.logicalOperator)) {
-                // set logical operator for current criteria
-                criteria.logicalOperator = splitVal;
+            // set logical operator for current criteria
+            criteria.logicalOperator = splitVal;
             //}
         } else {
             // create a new criteria rule by parsing the current substring
@@ -339,6 +338,7 @@ function parseQueryBuilderClause(clause: string, criteria: Criteria) {
     }
     return criteria;
 }
+
 /**
  * Parses a clause substring into a criteria rule object
  * @param criteriaRuleString The clause substring to parse
@@ -362,8 +362,7 @@ function parseCriteriaRule(criteriaRuleString: string): CriteriaRule {
     if (typeof tempSplitfromOperator[1] != 'undefined') {
         if (!tempSplitfromOperator[1].startsWith('[', 0)) {
             criteriaRuleString = criteriaRuleString.replace(/\[/g, '').replace(/]/g, '');
-        }
-        else {
+        } else {
             tempSplitfromOperator[0] = tempSplitfromOperator[0].replace(/\[/g, '').replace(/]/g, '');
             criteriaRuleString = criteriaRuleString.slice(index);
             criteriaRuleString = [tempSplitfromOperator[0], criteriaRuleString].join('');

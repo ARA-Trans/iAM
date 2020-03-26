@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="800px">
+        <v-dialog max-width="800px" persistent scrollable v-model="dialogData.showDialog">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -9,18 +9,18 @@
                 </v-card-title>
                 <v-toolbar>
                     <v-layout justify-center row>
-                        <v-btn v-if="dialogData.canOrderBudgets" class="ara-black" icon @click="onMoveBudgetUp"
-                               :disabled="disableMoveUpButton()">
+                        <v-btn :disabled="disableMoveUpButton()" @click="onMoveBudgetUp" class="ara-black" icon
+                               v-if="dialogData.canOrderBudgets">
                             <v-icon>fas fa-arrow-up</v-icon>
                         </v-btn>
-                        <v-btn v-if="dialogData.canOrderBudgets" class="ara-black" icon @click="onMoveBudgetDown"
-                               :disabled="disableMoveDownButton()">
+                        <v-btn :disabled="disableMoveDownButton()" @click="onMoveBudgetDown" class="ara-black" icon
+                               v-if="dialogData.canOrderBudgets">
                             <v-icon>fas fa-arrow-down</v-icon>
                         </v-btn>
-                        <v-btn icon class="ara-blue" @click="onAddBudget">
+                        <v-btn @click="onAddBudget" class="ara-blue" icon>
                             <v-icon>fas fa-plus</v-icon>
                         </v-btn>
-                        <v-btn icon class="ara-orange" @click="onDeleteBudget" :disabled="disableDeleteButton()">
+                        <v-btn :disabled="disableDeleteButton()" @click="onDeleteBudget" class="ara-orange" icon>
                             <v-icon>fas fa-trash</v-icon>
                         </v-btn>
                     </v-layout>
@@ -28,30 +28,31 @@
                 <v-card-text style="height: 500px;">
                     <v-data-table :headers="editBudgetsDialogGridHeaders"
                                   :items="editBudgetsDialogGridData"
-                                  v-model="selectedGridRows"
-                                  select-all
-                                  item-key="index"
                                   class="elevation-1"
-                                  hide-actions>
+                                  hide-actions
+                                  item-key="index"
+                                  select-all
+                                  v-model="selectedGridRows">
                         <template slot="items" slot-scope="props">
                             <td>
-                                <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                <v-checkbox hide-details primary v-model="props.selected"></v-checkbox>
                             </td>
                             <td>
-                                <v-edit-dialog :return-value="props.item.name" large lazy persistent
-                                               @save="onEditBudgetName(props.item.name, props.item.index)">
+                                <v-edit-dialog :return-value="props.item.name" @save="onEditBudgetName(props.item.name, props.item.index)" large lazy
+                                               persistent>
                                     {{props.item.name}}
                                     <template slot="input">
-                                        <v-text-field v-model="props.item.name" label="Edit" :rules="[budgetNameRule]" single-line>
+                                        <v-text-field :rules="[budgetNameRule]" label="Edit" single-line
+                                                      v-model="props.item.name">
                                         </v-text-field>
                                     </template>
                                 </v-edit-dialog>
                             </td>
                             <td>
-                                <v-text-field readonly :value="props.item.criteriaBudgets.criteria">
+                                <v-text-field :value="props.item.criteriaBudgets.criteria" readonly>
                                     <template slot="append-outer">
-                                        <v-icon class="edit-icon"
-                                                @click="onEditCriteria(props.item.criteriaBudgets.criteria, props.item.index)">
+                                        <v-icon @click="onEditCriteria(props.item.criteriaBudgets.criteria, props.item.index)"
+                                                class="edit-icon">
                                             fas fa-edit
                                         </v-icon>
                                     </template>
@@ -62,30 +63,30 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between>
-                        <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)">Save</v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                        <v-btn @click="onSubmit(true)" class="ara-blue-bg white--text">Save</v-btn>
+                        <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria"/>
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import { hasValue } from '@/shared/utils/has-value-util';
-    import { Action, State } from 'vuex-class';
-    import { any, propEq, clone, isNil, remove, insert } from 'ramda';
-    import { DataTableHeader } from '@/shared/models/vue/data-table-header';
+    import {hasValue} from '@/shared/utils/has-value-util';
+    import {Action} from 'vuex-class';
+    import {any, clone, insert, isNil, remove} from 'ramda';
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
     import {
         EditBudgetsDialogData,
         EditBudgetsDialogGridData,
         EditedBudget
     } from '@/shared/models/modals/edit-budgets-dialog';
-    import { CriteriaDrivenBudgets } from '../models/iAM/criteria-driven-budgets';
+    import {CriteriaDrivenBudgets} from '../models/iAM/criteria-driven-budgets';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -93,7 +94,8 @@
 
     @Component({
         components: {
-            CriteriaEditorDialog}
+            CriteriaEditorDialog
+        }
     })
     export default class EditBudgetsDialog extends Vue {
 
@@ -103,8 +105,8 @@
         @Prop() dialogData: EditBudgetsDialogData;
 
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
-            { text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: '' },
-            { text: 'Criteria', value: 'criteriaHeader', sortable: false, align: 'center', class: '', width: '' }
+            {text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: ''},
+            {text: 'Criteria', value: 'criteriaHeader', sortable: false, align: 'center', class: '', width: ''}
         ];
         editBudgetsDialogGridData: EditBudgetsDialogGridData[] = [];
         selectedGridRows: EditBudgetsDialogGridData[] = [];
@@ -215,7 +217,12 @@
 
             newBudget = `${newBudget} ${unnamedBudgets.length + 1}`;
 
-            let newCriteria: CriteriaDrivenBudgets = { _id: '', budgetName: newBudget, criteria: '', scenarioId: this.dialogData.scenarioId };
+            let newCriteria: CriteriaDrivenBudgets = {
+                _id: '',
+                budgetName: newBudget,
+                criteria: '',
+                scenarioId: this.dialogData.scenarioId
+            };
 
             this.editBudgetsDialogGridData.push({
                 name: newBudget,
@@ -262,7 +269,7 @@
         onDeleteBudget() {
             this.editBudgetsDialogGridData = this.editBudgetsDialogGridData
                 .filter((budget: EditBudgetsDialogGridData) =>
-                    !any(otherBudget => 
+                    !any(otherBudget =>
                         (budget.criteriaBudgets.budgetName === otherBudget.criteriaBudgets.budgetName) &&
                         (budget.criteriaBudgets.criteria === otherBudget.criteriaBudgets.criteria),
                         this.selectedGridRows
@@ -317,6 +324,7 @@
                 criteria: criteria
             };
         }
+
         onSubmitCriteria(criteria: string) {
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
@@ -324,7 +332,7 @@
                 this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets.criteria = criteria;
 
                 this.saveIntermittentCriteriaDrivenBudgetAction(
-                    { updateIntermittentCriteriaDrivenBudget: this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets }
+                    {updateIntermittentCriteriaDrivenBudget: this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets}
                 );
                 this.selectedCriteriaIndex = -1;
             }

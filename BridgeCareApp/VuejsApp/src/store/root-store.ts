@@ -21,6 +21,7 @@ import polling from '@/store-modules/polling.module';
 import announcement from '@/store-modules/announcement.module';
 import cashFlowEditor from '@/store-modules/cash-flow.module';
 import userCriteria from '@/store-modules/user-criteria.module';
+import unsavedChangesFlag from '@/store-modules/unsaved-changes-flag.module';
 
 Vue.use(Vuex);
 
@@ -45,6 +46,7 @@ export default new Vuex.Store({
         polling,
         announcement,
         cashFlowEditor,
-        userCriteria
+        userCriteria,
+        unsavedChangesFlag
     }
 });

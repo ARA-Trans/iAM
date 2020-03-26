@@ -1,4 +1,4 @@
-import { CriteriaDrivenBudgets } from './criteria-driven-budgets';
+import {CriteriaDrivenBudgets} from './criteria-driven-budgets';
 
 export interface InvestmentLibraryBudgetYear {
     id: string;
@@ -21,6 +21,7 @@ export interface InvestmentLibrary {
 
 export interface BudgetYearsGridData {
     year: number;
+
     [budgetName: string]: number;
 }
 

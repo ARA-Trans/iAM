@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="dialogData.showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,19 +8,19 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" v-model="newPerformanceLibrary.name" outline></v-text-field>
-                    <v-textarea rows="3" no-resize outline label="Description"
+                    <v-text-field label="Name" outline v-model="newPerformanceLibrary.name"></v-text-field>
+                    <v-textarea label="Description" no-resize outline rows="3"
                                 v-model="newPerformanceLibrary.description">
                     </v-textarea>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)"
-                           :disabled="newPerformanceLibrary.name === ''">
+                    <v-btn :disabled="newPerformanceLibrary.name === ''" @click="onSubmit(true)"
+                           class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -36,8 +36,9 @@
         PerformanceLibraryEquation
     } from '@/shared/models/iAM/performance';
     import {CreatePerformanceLibraryDialogData} from '@/shared/models/modals/create-performance-library-dialog-data';
-    const ObjectID = require('bson-objectid');
     import {getUserName} from '@/shared/utils/get-user-info';
+
+    const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreatePerformanceLibraryDialog extends Vue {

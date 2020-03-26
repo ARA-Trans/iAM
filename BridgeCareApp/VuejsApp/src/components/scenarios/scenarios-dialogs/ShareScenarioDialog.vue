@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -9,48 +9,48 @@
             <v-card-text>
                 <v-layout column>
                     <v-layout class="sharing-row">
-                        <v-text-field label="User Name" 
-                            class="sharing-username" style="margin-top: 0.5em"
-                            v-model="newUser.username" />
+                        <v-text-field class="sharing-username"
+                                      label="User Name" style="margin-top: 0.5em"
+                                      v-model="newUser.username"/>
                         <v-checkbox
-                            class="sharing-checkbox" 
-                            v-model="newUser.canModify" />
+                                class="sharing-checkbox"
+                                v-model="newUser.canModify"/>
                         <div class="sharing-text">
                             {{newUser.canModify ? "Can Modify" : "Cannot Modify"}}
                         </div>
-                        <v-btn title="Add User"
-                            :disabled="newUser.username==''"
-                            class="ara-blue-bg white--text sharing-button"
-                            @click="onAddUser()">
+                        <v-btn :disabled="newUser.username==''"
+                               @click="onAddUser()"
+                               class="ara-blue-bg white--text sharing-button"
+                               title="Add User">
                             Share
                         </v-btn>
                     </v-layout>
                     <v-layout>
-                        <v-btn class="ara-blue-bg white--text"
-                            title="Share With Everyone"
-                            style="margin: auto"
-                            :disabled="public"
-                            @click="onSetPublic()">
+                        <v-btn :disabled="public"
+                               @click="onSetPublic()"
+                               class="ara-blue-bg white--text"
+                               style="margin: auto"
+                               title="Share With Everyone">
                             Share with everyone
                         </v-btn>
                     </v-layout>
                     <v-layout justify-center style="margin-top: 2em"
-                        v-if="scenarioUsers.length !== 0">
+                              v-if="scenarioUsers.length !== 0">
                         <h4>Currently Shared With:</h4>
                     </v-layout>
                     <v-layout class="sharing-row"
-                        v-for="user in scenarioUsers">
+                              v-for="user in scenarioUsers">
                         <div class="sharing-username">
                             {{user.username === null ? "[All Users]" : user.username}}
                         </div>
-                        <v-switch class="sharing-checkbox" 
-                            v-model="user.canModify" />
+                        <v-switch class="sharing-checkbox"
+                                  v-model="user.canModify"/>
                         <div class="sharing-text">
                             {{user.canModify ? "Can Modify" : "Cannot Modify"}}
                         </div>
-                        <v-btn icon title="Remove User"
-                            class="ara-orange sharing-button"
-                            @click="onRemoveUser(user)">
+                        <v-btn @click="onRemoveUser(user)" class="ara-orange sharing-button"
+                               icon
+                               title="Remove User">
                             <v-icon>fas fa-times</v-icon>
                         </v-btn>
                     </v-layout>
@@ -58,10 +58,10 @@
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)">
+                    <v-btn @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -71,12 +71,8 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {
-        ScenarioCreationData, emptyCreateScenarioData
-    } from '@/shared/models/modals/scenario-creation-data';
-    import {clone, append, reject, any} from 'ramda';
-    import { getUserName } from '../../../shared/utils/get-user-info';
-import { ScenarioUser, Scenario, emptyScenario } from '../../../shared/models/iAM/scenario';
+    import {any, append, clone, reject} from 'ramda';
+    import {Scenario, ScenarioUser} from '../../../shared/models/iAM/scenario';
 
     @Component
     export default class ShareScenarioDialog extends Vue {

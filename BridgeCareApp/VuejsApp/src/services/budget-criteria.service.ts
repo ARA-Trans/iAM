@@ -1,6 +1,6 @@
-import { AxiosPromise } from 'axios';
-import { axiosInstance } from '@/shared/utils/axios-instance';
-import { CriteriaDrivenBudgets } from '@/shared/models/iAM/criteria-driven-budgets';
+import {AxiosPromise} from 'axios';
+import {axiosInstance} from '@/shared/utils/axios-instance';
+import {CriteriaDrivenBudgets} from '@/shared/models/iAM/criteria-driven-budgets';
 
 export default class BudgetCriteriaService {
     /**

@@ -1,6 +1,6 @@
 import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
-import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
+import {any, append, clone, equals, find, findIndex, propEq, reject, update} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
@@ -16,8 +16,14 @@ const mutations = {
     investmentLibrariesMutator(state: any, investmentLibraries: InvestmentLibrary[]) {
         state.investmentLibraries = clone(investmentLibraries);
     },
-    selectedInvestmentLibraryMutator(state: any, selectedInvestmentLibrary: InvestmentLibrary) {
-        state.selectedInvestmentLibrary = clone(selectedInvestmentLibrary);
+    selectedInvestmentLibraryMutator(state: any, libraryId: string) {
+        if (any(propEq('id', libraryId), state.investmentLibraries)) {
+            state.selectedInvestmentLibrary = find(propEq('id', libraryId), state.investmentLibraries);
+        } else if (state.scenarioInvestmentLibrary.id === libraryId) {
+            state.selectedInvestmentLibrary = clone(state.scenarioInvestmentLibrary);
+        } else {
+            state.selectedInvestmentLibrary = clone(emptyInvestmentLibrary);
+        }
     },
     createdInvestmentLibraryMutator(state: any, createdInvestmentLibrary: InvestmentLibrary) {
         state.investmentLibraries = append(createdInvestmentLibrary, state.investmentLibraries);
@@ -44,7 +50,7 @@ const mutations = {
 
 const actions = {
     selectInvestmentLibrary({commit}: any, payload: any) {
-        commit('selectedInvestmentLibraryMutator', payload.selectedInvestmentLibrary);
+        commit('selectedInvestmentLibraryMutator', payload.selectedLibraryId);
     },
     async getInvestmentLibraries({commit}: any) {
         await InvestmentEditorService.getInvestmentLibraries()
@@ -58,17 +64,18 @@ const actions = {
     },
     async createInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.createInvestmentLibrary(payload.createdInvestmentLibrary)
-            .then((response: AxiosResponse<any>) => {
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
                     const createdInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(response.data);
                     commit('createdInvestmentLibraryMutator', createdInvestmentLibrary);
+                    commit('selectedInvestmentLibraryMutator', createdInvestmentLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully created investment library'});
                 }
             });
     },
     async updateInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.updateInvestmentLibrary(payload.updatedInvestmentLibrary)
-            .then((response: AxiosResponse<any>) => {
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
                     const updatedInvestmentLibrary: InvestmentLibrary = convertFromMongoToVue(response.data);
                     commit('updatedInvestmentLibraryMutator', updatedInvestmentLibrary);
@@ -79,10 +86,10 @@ const actions = {
     },
     async deleteInvestmentLibrary({dispatch, commit}: any, payload: any) {
         await InvestmentEditorService.deleteInvestmentLibrary(payload.investmentLibrary)
-            .then((response: AxiosResponse<any>) => {
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedInvestmentLibraryMutator', payload.investmentLibrary.id);
-                dispatch('setSuccessMessage', {message: 'Successfully deleted investment library'});
+                    commit('deletedInvestmentLibraryMutator', payload.investmentLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted investment library'});
                 }
             });
     },
@@ -92,12 +99,12 @@ const actions = {
                 .then((response: AxiosResponse<InvestmentLibrary>) => {
                     if (hasValue(response, 'data')) {
                         commit('scenarioInvestmentLibraryMutator', response.data);
-                        commit('updatedSelectedInvestmentLibraryMutator', response.data);
+                        commit('selectedInvestmentLibraryMutator', response.data.id);
                     }
                 });
         } else {
             commit('scenarioInvestmentLibraryMutator', emptyInvestmentLibrary);
-            commit('updatedSelectedInvestmentLibraryMutator', emptyInvestmentLibrary);
+            commit('selectedInvestmentLibraryMutator', null);
         }
     },
     async saveScenarioInvestmentLibrary({dispatch, commit}: any, payload: any) {
@@ -110,34 +117,44 @@ const actions = {
             });
     },
     async socket_investmentLibrary({dispatch, state, commit}: any, payload: any) {
-        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const investmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
-            switch (payload.operationType) {
-                case 'update':
-                case 'replace':
-                    commit('updatedInvestmentLibraryMutator', investmentLibrary);
-                    if (state.selectedInvestmentLibrary.id === investmentLibrary.id &&
-                        !equals(state.selectedInvestmentLibrary, investmentLibrary)) {
-                        commit('selectedInvestmentLibraryMutator', investmentLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Investment library '${investmentLibrary.name}' has been changed from another source`}
-                        );
+        if (hasValue(payload, 'operationType')) {
+            if (hasValue(payload, 'fullDocument')) {
+                const investmentLibrary: InvestmentLibrary = convertFromMongoToVue(payload.fullDocument);
+                switch (payload.operationType) {
+                    case 'update':
+                    case 'replace':
+                        commit('updatedInvestmentLibraryMutator', investmentLibrary);
+                        if (state.selectedInvestmentLibrary.id === investmentLibrary.id &&
+                            !equals(state.selectedInvestmentLibrary, investmentLibrary)) {
+                            commit('selectedInvestmentLibraryMutator', investmentLibrary);
+                            dispatch('setInfoMessage',
+                                {message: `Investment library '${investmentLibrary.name}' has been changed from another source`}
+                            );
+                        }
+                        break;
+                    case 'insert':
+                        if (!any(propEq('id', investmentLibrary.id), state.investmentLibraries)) {
+                            commit('createdInvestmentLibraryMutator', investmentLibrary);
+                            dispatch('setInfoMessage',
+                                {message: `Investment library '${investmentLibrary.name}' has been created from another source`}
+                            );
+                        }
+                }
+            } else if (hasValue(payload, 'documentKey')) {
+                if (any(propEq('id', payload.documentKey._id), state.investmentLibraries)) {
+                    const deletedInvestmentLibrary: InvestmentLibrary = find(propEq('id', payload.documentKey._id), state.investmentLibraries);
+                    commit('deletedInvestmentLibraryMutator', payload.documentKey._id);
+
+                    if (deletedInvestmentLibrary.id === state.selectedInvestmentLibrary) {
+                        if (!equals(state.scenarioInvestmentLibrary, emptyInvestmentLibrary)) {
+                            commit('selectedInvestmentLibraryMutator', state.scenarioInvestmentLibrary.id);
+                        } else {
+                            commit('selectedInvestmentLibraryMutator', null);
+                        }
                     }
-                    break;
-                case 'insert':
-                    if (!any(propEq('id', investmentLibrary.id), state.investmentLibraries)) {
-                        commit('createdInvestmentLibraryMutator', investmentLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Investment library '${investmentLibrary.name}' has been created from another source`}
-                        );
-                    }
-            }
-        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
-            if (any(propEq('id', payload.documentKey._id), state.investmentLibraries)) {
-                commit('deletedInvestmentLibraryMutator', payload.documentKey._id);
-                dispatch('setInfoMessage',
-                    {message: `An investment library has been deleted from another source`}
-                );
+
+                    dispatch('setInfoMessage', {message: `Investment library ${deletedInvestmentLibrary.name} has been deleted from another source`});
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ const actions = {
     saveIntermittentCriteriaDrivenBudget({commit}: any, payload: any) {
         commit('intermittentBudgetCriteriaMutator', payload.updateIntermittentCriteriaDrivenBudget);
     },
-    async getBudgetCriteria({ commit }: any, payload: any) {
+    async getBudgetCriteria({commit}: any, payload: any) {
         await BudgetCriteriaService.getBudgetCriteria(payload.selectedScenarioId)
             .then((response: AxiosResponse<CriteriaDrivenBudgets[]>) => {
                 if (hasValue(response, 'data')) {
@@ -34,7 +34,7 @@ const actions = {
                 }
             });
     },
-    async saveBudgetCriteria({ dispatch, commit }: any, payload: any) {
+    async saveBudgetCriteria({dispatch, commit}: any, payload: any) {
         await BudgetCriteriaService.saveBudgetCriteria(payload.selectedScenarioId, payload.budgetCriteriaData)
             .then((response: AxiosResponse<CriteriaDrivenBudgets[]>) => {
                 if (hasValue(response, 'data')) {

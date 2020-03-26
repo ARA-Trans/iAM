@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="dialogData.showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -9,18 +9,18 @@
             <v-card-text>
                 <v-layout column>
                     <v-text-field label="Name" outline v-model="newRemainingLifeLimitLibrary.name"></v-text-field>
-                    <v-textarea rows="3" label="Description" no-resize outline
+                    <v-textarea label="Description" no-resize outline rows="3"
                                 v-model="newRemainingLifeLimitLibrary.description">
                     </v-textarea>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)"
-                           :disabled="newRemainingLifeLimitLibrary.name === ''">
+                    <v-btn :disabled="newRemainingLifeLimitLibrary.name === ''" @click="onSubmit(true)"
+                           class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -36,14 +36,17 @@
         RemainingLifeLimit,
         RemainingLifeLimitLibrary
     } from '@/shared/models/iAM/remaining-life-limit';
-    import {hasValue} from '@/shared/utils/has-value-util';
+
     const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateRemainingLifeLimitLibraryDialog extends Vue {
         @Prop() dialogData: CreateRemainingLifeLimitLibraryDialogData;
 
-        newRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = {...emptyRemainingLifeLimitLibrary, id: ObjectID.generate()};
+        newRemainingLifeLimitLibrary: RemainingLifeLimitLibrary = {
+            ...emptyRemainingLifeLimitLibrary,
+            id: ObjectID.generate()
+        };
 
         /**
          * Instantiates a newRemainingLifeLimitLibrary object with the description and remainingLifeLimits data in
