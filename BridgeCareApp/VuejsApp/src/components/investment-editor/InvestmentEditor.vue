@@ -506,14 +506,23 @@
                                     id: ObjectID.generate(),
                                     year: year,
                                     budgetName: editedBudget.name,
-                                    budgetAmount: 0,
+                                    budgetAmount: 0
                                 });
                             } else {
                                 const editedBudgetYear = currentYearBudgetYears
                                     .find((budgetYear: InvestmentLibraryBudgetYear) =>
                                         budgetYear.budgetName === editedBudget.previousName
                                     ) as InvestmentLibraryBudgetYear;
+                                var defaultBudgetYear = {};
+                                if (editedBudgetYear === undefined) {
+                                    defaultBudgetYear = {
+                                        year: year,
+                                        budgetAmount: 0,
+                                        id: ObjectID.generate()
+                                    };
+                                }
                                 editedBudgetYears.push({
+                                    ...defaultBudgetYear,
                                     ...editedBudgetYear,
                                     budgetName: editedBudget.name
                                 });

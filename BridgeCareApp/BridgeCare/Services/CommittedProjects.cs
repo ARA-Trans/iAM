@@ -12,6 +12,9 @@ using BridgeCare.ApplicationLog;
 using BridgeCare.EntityClasses;
 using BridgeCare.Security;
 using Simulation;
+using System.Net.Mail;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace BridgeCare.Services
 {
@@ -27,6 +30,7 @@ namespace BridgeCare.Services
         private readonly IReadOnlyDictionary<string, CommittedProjectsGetMethod> CommittedProjectsGetMethods;
         /// <summary>Maps user roles to methods for saving committed projects</summary>
         private readonly IReadOnlyDictionary<string, CommittedProjectsSaveMethod> CommittedProjectsSaveMethods;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CommittedProjects));
 
         public CommittedProjects(ICommitted committedRepo, ISections sectionsRepo)
         {
@@ -76,21 +80,77 @@ namespace BridgeCare.Services
                 packages.Add(new ExcelPackage(files[i].InputStream));
             }
 
-            Action saveCommittedProjectsAction = () => { 
+            Action saveCommittedProjectsAction = () => {
+                var mail = CreateAlertEmail();
                 var simulationId = int.Parse(httpRequest.Form.Get("selectedScenarioId"));
-                var networkId = int.Parse(httpRequest.Form.Get("networkId"));
-                var applyNoTreatment = httpRequest.Form.Get("applyNoTreatment") == "1";
-
-                var committedProjectModels = new List<CommittedProjectModel>();
-
-                foreach(var package in packages)
+                try
                 {
-                    GetCommittedProjectModels(package, simulationId, networkId, applyNoTreatment, committedProjectModels, db);
-                    CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
+                    var networkId = int.Parse(httpRequest.Form.Get("networkId"));
+                    var applyNoTreatment = httpRequest.Form.Get("applyNoTreatment") == "1";
+
+                    var committedProjectModels = new List<CommittedProjectModel>();
+
+                    foreach (var package in packages)
+                    {
+                        GetCommittedProjectModels(package, simulationId, networkId, applyNoTreatment, committedProjectModels, db);
+                        CommittedProjectsSaveMethods[userInformation.Role](committedProjectModels, db, userInformation);
+                    }
+
+                    SetAlertMessage(mail, simulationId);
+                }
+                catch (Exception exception)
+                {
+                    SetAlertMessage(mail, simulationId, exception);
+                    log.Error(exception);
+                    throw exception;
+                }
+                finally
+                {
+                    SendAlertEmail(mail, userInformation);
                 }
             };
 
             SimulationQueue.Enqueue(saveCommittedProjectsAction);
+        }
+
+        private void SetAlertMessage(MailMessage mail, int simulationId, Exception exception = null)
+        {
+            if (exception == null)
+            {
+                mail.Subject += "Completed";
+                mail.Body = $"Committed Projects have finished uploading for scenario {simulationId}.";
+            }
+            else
+            {
+                mail.Subject += "Failed";
+                mail.Body = $"Committed Projects failed to upload for scenario {simulationId}, due to the following exception:\n\n{exception.GetType().Name}: {exception.Message}\n\nThe details of this error have been logged.";
+            }
+        }
+
+        private MailMessage CreateAlertEmail()
+        {
+            var emailConfig = (NameValueCollection)ConfigurationManager.GetSection("emailConfig");
+            var mail = new MailMessage();
+            mail.From = new MailAddress(emailConfig["alertEmailAddress"]);
+            mail.Subject = "BridgeCare - Committed Project Upload ";
+            return mail;
+        }
+
+        private void SendAlertEmail(MailMessage message, UserInformationModel userInformation)
+        {
+            var emailConfig = (NameValueCollection)ConfigurationManager.GetSection("emailConfig");
+            if (string.IsNullOrEmpty(userInformation.Email) || emailConfig["sendAlertEmails"] != "true")
+            {
+                return;
+            }
+            message.To.Add(userInformation.Email);
+            System.Diagnostics.Debug.WriteLine(userInformation.Email);
+            var SmtpServer = new SmtpClient(emailConfig["smtpServerAddress"]);
+            SmtpServer.Port = int.Parse(emailConfig["smtpServerPort"]);
+            SmtpServer.Credentials = new NetworkCredential(emailConfig["alertEmailAddress"], emailConfig["alertEmailPassword"]);
+            SmtpServer.EnableSsl = true;
+            SmtpServer.Send(message);
+            SmtpServer.Dispose();
         }
 
         /// <summary>

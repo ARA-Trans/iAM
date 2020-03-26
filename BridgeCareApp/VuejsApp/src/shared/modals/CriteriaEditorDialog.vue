@@ -465,6 +465,7 @@
                                 setTimeout(() => {
                                     if (validationResult.numberOfResults === 0) {
                                         this.invalidCriteriaMessage = message;
+                                        this.cannotSubmit = false;
                                     } else {
                                         this.invalidCriteriaMessage = validationResult.message;
                                     }
@@ -512,6 +513,13 @@
                         } else {
                             if (validationResult.numberOfResults === 0) {
                                 this.invalidSubCriteriaMessage = message;
+                                this.subCriteriaClauses = update(
+                                this.selectedSubCriteriaClauseIndex,
+                                criteria,
+                                this.subCriteriaClauses
+                            );
+                                this.resetComponentCriteriaUIProperties();
+                                this.checkOutput = true;
                             } else {
                                 this.invalidSubCriteriaMessage = validationResult.message;
                             }

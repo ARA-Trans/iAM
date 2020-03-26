@@ -235,7 +235,7 @@
                 CommittedProjectsService
                     .saveCommittedProjectsFiles(result.files, result.applyNoTreatment, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
                     .then((response: AxiosResponse<any>) => {
-                        this.setSuccessMessageAction({message: 'Successfully saved file(s)'});
+                        this.setSuccessMessageAction({message: 'Successfully uploaded committed projects. You will receive an email when the projects have been fully processed.'});
                     });
             }
             if (isExport) {
