@@ -67,7 +67,8 @@ namespace BridgeCare.Security
             JwtSecurityToken decodedToken = DecodeToken(idToken);
             string role = ParseLDAP(decodedToken.GetClaimValue("roles")).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
             string name = ParseLDAP(decodedToken.GetClaimValue("sub"))[0];
-            return new Models.UserInformationModel(name, role);
+            string email = decodedToken.GetClaimValue("email");
+            return new Models.UserInformationModel(name, role, email);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace BridgeCare.Security
         /// <returns></returns>
         private static string GetClaimValue(this JwtSecurityToken jwt, string type)
         {
-            return jwt.Claims.First(claim => claim.Type == type).Value;
+            return jwt.Claims.FirstOrDefault(claim => claim.Type == type).Value;
         }
 
         /// <summary>

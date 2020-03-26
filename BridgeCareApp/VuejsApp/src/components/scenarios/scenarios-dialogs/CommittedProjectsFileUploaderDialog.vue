@@ -44,6 +44,7 @@
                     </div>
                 </v-layout row>
                     Warning: Uploading new committed projects will override ALL previous commitments.
+                    Committed projects may take a few minutes to process. You will receive an email when this process is complete.
                 <v-layout>
                 </v-layout>
             </v-card-text>
