@@ -402,7 +402,7 @@
             this.saveScenarioTargetLibraryAction({
                 saveScenarioTargetLibraryData: {
                     ...this.selectedTargetLibrary,
-                    id: this.selectedScenarioId
+                    id: this.stateScenarioTargetLibrary.id
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             });

@@ -3,14 +3,14 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn @click="onNewLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === 0">
+                    <v-btn @click="onNewLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === '0'">
                         New Library
                     </v-btn>
                     <v-select :items="investmentLibrariesSelectListItems"
                               label="Select an Investment library"
-                              outline v-if="!hasSelectedInvestmentLibrary || selectedScenarioId > 0" v-model="selectItemValue">
+                              outline v-if="!hasSelectedInvestmentLibrary || selectedScenarioId !== '0'" v-model="selectItemValue">
                     </v-select>
-                    <v-text-field label="Library Name" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0"
+                    <v-text-field label="Library Name" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'"
                                   v-model="selectedInvestmentLibrary.name">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
@@ -18,11 +18,11 @@
                             </v-btn>
                         </template>
                     </v-text-field>
-                    <div v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0">
+                    <div v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'">
                         Owner: {{selectedInvestmentLibrary.owner ? selectedInvestmentLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0" v-model="selectedInvestmentLibrary.shared"/>
+                                v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'" v-model="selectedInvestmentLibrary.shared"/>
                 </v-flex>
             </v-layout>
             <v-layout justify-center v-show="hasSelectedInvestmentLibrary">
@@ -108,11 +108,11 @@
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedInvestmentLibrary">
                 <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onApplyToScenario" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId > 0">
+                       v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
                 <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onUpdateLibrary" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId === 0">
+                       v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
                 <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onCreateAsNewLibrary"
@@ -120,11 +120,11 @@
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeleteInvestmentLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === 0">
+                       v-show="selectedScenarioId === '0'">
                     Delete Library
                 </v-btn>
                 <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onDiscardChanges" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId > 0">
+                       v-show="selectedScenarioId !== '0'">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -204,9 +204,6 @@
         @Action('saveIntermittentStateToBudgetCriteria') saveIntermittentStateToBudgetCriteriaAction: any;
         @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
-        tabs: string[] = ['investments', 'budget criteria'];
-        activeTab: number = 0;
-
         selectedInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
         selectedScenarioId: string = '0';
         hasSelectedInvestmentLibrary: boolean = false;
@@ -214,10 +211,6 @@
         selectItemValue: string | null = '';
         budgetYearsGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
-        ];
-        budgetCriteriaHeaders: DataTableHeader[] = [
-            {text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: ''},
-            {text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: ''}
         ];
         intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
         budgetYearsGridData: BudgetYearsGridData[] = [];
@@ -247,8 +240,8 @@
                 vm.getInvestmentLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
-                            vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId});
-                            vm.getBudgetCriteriaAction({selectedScenarioId: vm.selectedScenarioId});
+                            vm.getScenarioInvestmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+                            vm.getBudgetCriteriaAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
                     });
             });
@@ -513,8 +506,8 @@
                                     .find((budgetYear: InvestmentLibraryBudgetYear) =>
                                         budgetYear.budgetName === editedBudget.previousName
                                     ) as InvestmentLibraryBudgetYear;
-                                var defaultBudgetYear = {};
-                                if (editedBudgetYear === undefined) {
+                                let defaultBudgetYear = {};
+                                if (!hasValue(editedBudgetYear)) {
                                     defaultBudgetYear = {
                                         year: year,
                                         budgetAmount: 0,
@@ -610,17 +603,14 @@
          * Dispatches an action to modify a scenario's InvestmentLibrary data in the sql server database
          */
         onApplyToScenario() {
-            this.saveBudgetCriteriaAction({
-                selectedScenarioId: this.selectedScenarioId,
-                budgetCriteriaData: this.intermittentBudgetsCriteria
-            })
+            this.saveBudgetCriteriaAction({selectedScenarioId: parseInt(this.selectedScenarioId), budgetCriteriaData: this.intermittentBudgetsCriteria})
                 .then(() =>
                     this.saveIntermittentStateToBudgetCriteriaAction({intermittentState: this.intermittentBudgetsCriteria})
                         .then(() =>
                             this.saveScenarioInvestmentLibraryAction({
                                 saveScenarioInvestmentLibraryData: {
                                     ...this.selectedInvestmentLibrary,
-                                    id: this.selectedScenarioId
+                                    id: this.stateScenarioInvestmentLibrary.id
                                 },
                                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
                             }).then(() => this.onDiscardChanges())
@@ -665,12 +655,6 @@
 </script>
 
 <style>
-    .investment-editor-container {
-        height: 730px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-
     .sharing label {
         padding-top: 0.5em;
     }

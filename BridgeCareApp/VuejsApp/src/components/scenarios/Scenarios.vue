@@ -246,10 +246,9 @@
     import ShareScenarioDialog from '@/components/scenarios/scenarios-dialogs/ShareScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
     import {any, clone} from 'ramda';
-    import {Simulation} from '../../shared/models/iAM/simulation';
-    import {emptyRollup, Rollup} from '../../shared/models/iAM/rollup';
-
-    import {getUserName} from '../../shared/utils/get-user-info';
+    import {Simulation} from '@/shared/models/iAM/simulation';
+    import {emptyRollup, Rollup} from '@/shared/models/iAM/rollup';
+    import {getUserName} from '@/shared/utils/get-user-info';
 
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog, ShareScenarioDialog}

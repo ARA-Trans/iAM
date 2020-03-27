@@ -243,9 +243,7 @@
                 vm.getPriorityLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
-                            vm.getScenarioPriorityLibraryAction({
-                                selectedScenarioId: parseInt(vm.selectedScenarioId)
-                            });
+                            vm.getScenarioPriorityLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
                     });
             });
@@ -542,7 +540,7 @@
             this.saveScenarioPriorityLibraryAction({
                 saveScenarioPriorityLibraryData: {
                     ...this.selectedPriorityLibrary,
-                    id: this.selectedScenarioId
+                    id: this.stateScenarioPriorityLibrary.id
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

@@ -297,7 +297,7 @@
                 vm.cashFlowLibrarySelectItemValue = null;
                 vm.getCashFlowLibrariesAction().then(() => {
                     if (vm.selectedScenarioId !== '0') {
-                        vm.getScenarioCashFlowLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                        vm.getScenarioCashFlowLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                     }
                 });
             });

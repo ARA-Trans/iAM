@@ -215,12 +215,10 @@
                 vm.getTreatmentLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
-                            vm.getScenarioTreatmentLibraryAction({selectedScenarioId: vm.selectedScenarioId})
+                            vm.getScenarioTreatmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
                                 .then(() => {
                                     if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
-                                        vm.getScenarioInvestmentLibraryAction({
-                                            selectedScenarioId: vm.selectedScenarioId
-                                        });
+                                        vm.getScenarioInvestmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                                     }
                                 });
                         }
@@ -386,7 +384,7 @@
             this.saveScenarioTreatmentLibraryAction({
                 saveScenarioTreatmentLibraryData: {
                     ...this.selectedTreatmentLibrary,
-                    id: this.selectedScenarioId
+                    id: this.stateScenarioTreatmentLibrary.id
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

@@ -3,15 +3,15 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn @click="onNewLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === 0">
+                    <v-btn @click="onNewLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === '0'">
                         New Library
                     </v-btn>
                     <v-select :items="performanceLibrariesSelectListItems"
                               label="Select a Performance Library"
-                              outline v-if="!hasSelectedPerformanceLibrary || selectedScenarioId > 0"
+                              outline v-if="!hasSelectedPerformanceLibrary || selectedScenarioId !== '0'"
                               v-model="selectItemValue">
                     </v-select>
-                    <v-text-field label="Library Name" v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0"
+                    <v-text-field label="Library Name" v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'"
                                   v-model="selectedPerformanceLibrary.name">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
@@ -19,11 +19,11 @@
                             </v-btn>
                         </template>
                     </v-text-field>
-                    <div v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0">
+                    <div v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'">
                         Owner: {{selectedPerformanceLibrary.owner ? selectedPerformanceLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedPerformanceLibrary && selectedScenarioId === 0" v-model="selectedPerformanceLibrary.shared"/>
+                                v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'" v-model="selectedPerformanceLibrary.shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -147,12 +147,12 @@
             <v-layout justify-end row v-show="hasSelectedPerformanceLibrary">
                 <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onApplyToScenario"
                        class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId > 0">
+                       v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
                 <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onUpdateLibrary"
                        class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId === 0">
+                       v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
                 <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onCreateAsNewLibrary"
@@ -160,12 +160,12 @@
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeletePerformanceLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === 0">
+                       v-show="selectedScenarioId === '0'">
                     Delete Library
                 </v-btn>
                 <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onDiscardChanges"
                        class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId > 0">
+                       v-show="selectedScenarioId !== '0'">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -291,7 +291,7 @@
                 vm.getPerformanceLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
-                            vm.getScenarioPerformanceLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                            vm.getScenarioPerformanceLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
                     });
             });
@@ -529,7 +529,10 @@
          */
         onApplyToScenario() {
             this.saveScenarioPerformanceLibraryAction({
-                saveScenarioPerformanceLibraryData: {...this.selectedPerformanceLibrary, id: this.selectedScenarioId},
+                saveScenarioPerformanceLibraryData: {
+                    ...this.selectedPerformanceLibrary,
+                    id: this.stateScenarioPerformanceLibrary.id
+                },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());
         }

@@ -203,9 +203,7 @@
                 vm.getRemainingLifeLimitLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
-                            vm.getScenarioRemainingLifeLimitLibraryAction({
-                                selectedScenarioId: parseInt(vm.selectedScenarioId)
-                            });
+                            vm.getScenarioRemainingLifeLimitLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
                     });
             });
@@ -377,7 +375,7 @@
             this.saveScenarioRemainingLifeLimitLibraryAction({
                 saveScenarioRemainingLifeLimitLibraryData: {
                     ...this.selectedRemainingLifeLimitLibrary,
-                    id: this.selectedScenarioId.toString()
+                    id: this.stateScenarioRemainingLifeLimitLibrary.id
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

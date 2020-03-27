@@ -409,7 +409,7 @@
             this.saveScenarioDeficientLibraryAction({
                 saveScenarioDeficientLibraryData: {
                     ...this.selectedDeficientLibrary,
-                    id: this.selectedScenarioId
+                    id: this.stateScenarioDeficientLibrary.id
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());
