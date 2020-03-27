@@ -271,12 +271,17 @@
         onStateSelectedInvestmentLibraryChanged() {
             let selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
             if (!hasValue(selectedInvestmentLibrary.budgetOrder) && hasValue(selectedInvestmentLibrary.budgetYears)) {
-                selectedInvestmentLibrary = {
-                    ...selectedInvestmentLibrary,
-                    budgetOrder: sorter(
-                        getPropertyValues('budgetName', selectedInvestmentLibrary.budgetYears)
-                    ) as string[]
-                }
+                selectedInvestmentLibrary.budgetOrder = sorter(
+                    getPropertyValues('budgetName', selectedInvestmentLibrary.budgetYears)) as string[];
+            }
+
+            if (!hasValue(selectedInvestmentLibrary.budgetCriteria) && hasValue(selectedInvestmentLibrary.budgetOrder)) {
+                selectedInvestmentLibrary.budgetCriteria = selectedInvestmentLibrary.budgetOrder.map((budget: string) =>({
+                    scenarioId: parseInt(this.selectedScenarioId),
+                    _id: ObjectID.generate(),
+                    budgetName: budget,
+                    criteria: ''
+                }));
             }
 
             this.selectedInvestmentLibrary = selectedInvestmentLibrary;
@@ -295,9 +300,11 @@
             this.setGridHeaders();
             this.setGridData();
 
-            this.saveIntermittentCriteriaDrivenBudgetAction({
-                updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria
-            });
+            if (!equals(this.stateIntermittentBudgetCriteria, this.selectedInvestmentLibrary.budgetCriteria)) {
+                this.saveIntermittentCriteriaDrivenBudgetAction({
+                    updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria
+                });
+            }
         }
 
         /**
@@ -603,7 +610,12 @@
                             this.saveScenarioInvestmentLibraryAction({
                                 saveScenarioInvestmentLibraryData: {
                                     ...this.selectedInvestmentLibrary,
-                                    id: this.stateScenarioInvestmentLibrary.id
+                                    id: this.selectedScenarioId,
+                                    budgetCriteria: this.selectedInvestmentLibrary.budgetCriteria
+                                        .map((budgetCriteria: CriteriaDrivenBudgets) => ({
+                                            ...budgetCriteria,
+                                            scenarioId: parseInt(this.selectedScenarioId)
+                                        }))
                                 },
                                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
                             }).then(() => this.onDiscardChanges())

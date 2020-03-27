@@ -384,7 +384,7 @@
             this.saveScenarioTreatmentLibraryAction({
                 saveScenarioTreatmentLibraryData: {
                     ...this.selectedTreatmentLibrary,
-                    id: this.stateScenarioTreatmentLibrary.id
+                    id: this.selectedScenarioId
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

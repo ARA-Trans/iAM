@@ -375,7 +375,7 @@
             this.saveScenarioRemainingLifeLimitLibraryAction({
                 saveScenarioRemainingLifeLimitLibraryData: {
                     ...this.selectedRemainingLifeLimitLibrary,
-                    id: this.stateScenarioRemainingLifeLimitLibrary.id
+                    id: this.selectedScenarioId
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

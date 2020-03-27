@@ -73,7 +73,7 @@
 
         <v-flex xs12>
             <v-layout justify-end row>
-                <v-btn @click="onApplyAnalysisToScenario" class="ara-blue-bg white--text">Save</v-btn>
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text">Save</v-btn>
                 <v-btn @click="onCancelAnalysisEdit" class="ara-orange-bg white--text">Cancel</v-btn>
             </v-layout>
         </v-flex>
@@ -214,7 +214,7 @@
          * Dispatch an action that sends the current analysis data to the server to apply the analysis data to the
          * selected scenario
          */
-        onApplyAnalysisToScenario() {
+        onApplyToScenario() {
             this.saveScenarioAnalysisAction({
                 scenarioAnalysisData: this.analysis,
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario

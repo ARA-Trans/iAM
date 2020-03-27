@@ -554,7 +554,7 @@
             this.saveScenarioCashFlowLibraryAction({
                 scenarioCashFlowLibrary: {
                     ...this.selectedCashFlowLibrary,
-                    id: this.stateScenarioCashFlowLibrary.id
+                    id: this.selectedScenarioId
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

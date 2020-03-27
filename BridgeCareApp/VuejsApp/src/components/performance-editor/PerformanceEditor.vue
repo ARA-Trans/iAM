@@ -531,7 +531,7 @@
             this.saveScenarioPerformanceLibraryAction({
                 saveScenarioPerformanceLibraryData: {
                     ...this.selectedPerformanceLibrary,
-                    id: this.stateScenarioPerformanceLibrary.id
+                    id: this.selectedScenarioId
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

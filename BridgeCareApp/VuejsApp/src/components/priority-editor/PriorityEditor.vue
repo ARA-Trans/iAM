@@ -107,7 +107,7 @@
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedPriorityLibrary">
-                <v-btn @click="onApplyPriorityLibraryToScenario" class="ara-blue-bg white--text"
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
@@ -536,11 +536,11 @@
         /**
          * Dispatches an action to update the scenario's priority library data in the sql server database
          */
-        onApplyPriorityLibraryToScenario() {
+        onApplyToScenario() {
             this.saveScenarioPriorityLibraryAction({
                 saveScenarioPriorityLibraryData: {
                     ...this.selectedPriorityLibrary,
-                    id: this.stateScenarioPriorityLibrary.id
+                    id: this.selectedScenarioId
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());

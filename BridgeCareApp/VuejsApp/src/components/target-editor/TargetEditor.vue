@@ -102,7 +102,7 @@
         </v-flex>
         <v-flex v-show="hasSelectedTargetLibrary" xs12>
             <v-layout justify-end row>
-                <v-btn @click="onApplyTargetLibraryToScenario" class="ara-blue-bg white--text"
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
@@ -398,7 +398,7 @@
         /**
          * Dispatches an action to update the scenario's target library data in the sql server database
          */
-        onApplyTargetLibraryToScenario() {
+        onApplyToScenario() {
             this.saveScenarioTargetLibraryAction({
                 saveScenarioTargetLibraryData: {
                     ...this.selectedTargetLibrary,

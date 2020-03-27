@@ -103,7 +103,7 @@
         </v-flex>
         <v-flex v-show="hasSelectedDeficientLibrary" xs12>
             <v-layout justify-end row>
-                <v-btn @click="onApplyDeficientLibraryToScenario" class="ara-blue-bg white--text"
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
@@ -405,11 +405,11 @@
         /**
          * Dispatches an action to update the scenario's deficient library data in the sql server database
          */
-        onApplyDeficientLibraryToScenario() {
+        onApplyToScenario() {
             this.saveScenarioDeficientLibraryAction({
                 saveScenarioDeficientLibraryData: {
                     ...this.selectedDeficientLibrary,
-                    id: this.stateScenarioDeficientLibrary.id
+                    id: this.selectedScenarioId
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             }).then(() => this.onDiscardChanges());
