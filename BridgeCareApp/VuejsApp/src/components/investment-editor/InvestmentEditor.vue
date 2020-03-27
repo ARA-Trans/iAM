@@ -156,7 +156,7 @@
         InvestmentLibrary,
         InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
-    import {any, clone, contains, groupBy, isEmpty, isNil, keys, propEq} from 'ramda';
+    import {any, clone, contains, groupBy, isEmpty, isNil, keys, propEq, equals} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
@@ -269,7 +269,17 @@
 
         @Watch('stateSelectedInvestmentLibrary')
         onStateSelectedInvestmentLibraryChanged() {
-            this.selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
+            let selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
+            if (!hasValue(selectedInvestmentLibrary.budgetOrder) && hasValue(selectedInvestmentLibrary.budgetYears)) {
+                selectedInvestmentLibrary = {
+                    ...selectedInvestmentLibrary,
+                    budgetOrder: sorter(
+                        getPropertyValues('budgetName', selectedInvestmentLibrary.budgetYears)
+                    ) as string[]
+                }
+            }
+
+            this.selectedInvestmentLibrary = selectedInvestmentLibrary;
         }
 
         @Watch('selectedInvestmentLibrary')
@@ -282,13 +292,8 @@
             this.selectedGridRows = [];
             this.hasSelectedInvestmentLibrary = this.selectedInvestmentLibrary.id !== '0';
 
-            if (!hasValue(this.selectedInvestmentLibrary.budgetOrder) &&
-                hasValue(this.selectedInvestmentLibrary.budgetYears)) {
-                this.setSelectedInvestmentLibraryBudgetOrder();
-            } else {
-                this.setGridHeaders();
-                this.setGridData();
-            }
+            this.setGridHeaders();
+            this.setGridData();
 
             this.saveIntermittentCriteriaDrivenBudgetAction({
                 updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria
@@ -309,18 +314,6 @@
         @Watch('stateIntermittentBudgetCriteria')
         onStateIntermittentBudgetCriteriaChanged() {
             this.intermittentBudgetsCriteria = clone(this.stateIntermittentBudgetCriteria);
-        }
-
-        /**
-         * Sorts the selected investment library's budgetOrder property
-         */
-        setSelectedInvestmentLibraryBudgetOrder() {
-            this.selectedInvestmentLibrary = {
-                ...this.selectedInvestmentLibrary,
-                budgetOrder: sorter(
-                    getPropertyValues('budgetName', this.selectedInvestmentLibrary.budgetYears)
-                ) as string[]
-            };
         }
 
         /**
