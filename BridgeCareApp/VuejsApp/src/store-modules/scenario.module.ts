@@ -8,6 +8,7 @@ import prepend from 'ramda/es/prepend';
 import AnalysisEditorService from '@/services/analysis-editor.service';
 import ReportsService from '@/services/reports.service';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import moment from 'moment';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -135,7 +136,13 @@ const actions = {
     async getScenarioAnalysis({commit}: any, payload: any) {
         await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
             .then((response: AxiosResponse<any>) => {
-                commit('analysisMutator', hasValue(response, 'data') ? response.data : emptyAnalysis);
+                if (hasValue(response, 'data')) {
+                    const analysis: Analysis = {
+                        ...response.data,
+                        startYear: response.data.startYear > 0 ? response.data.startYear : moment().year
+                    };
+                    commit('analysisMutator', analysis);
+                }
             });
     },
     async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {

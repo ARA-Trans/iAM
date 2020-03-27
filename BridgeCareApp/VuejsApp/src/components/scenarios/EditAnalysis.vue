@@ -4,40 +4,53 @@
             <v-layout column>
                 <v-layout justify-center>
                     <v-flex xs2>
-                        <v-text-field :mask="'####'" label="Start Year" outline
-                                      v-model="analysis.startYear"></v-text-field>
+                        <v-text-field :mask="'####'" @input="onSetAnalysisProperty('startYear', $event)"
+                                      label="Start Year"
+                                      outline
+                                      :value="analysis.startYear"></v-text-field>
                     </v-flex>
                     <v-flex xs2>
-                        <v-select :items="weightingAttributes" label="Weighting" outline
-                                  v-model="analysis.weightingAttribute">
+                        <v-select :items="weightingAttributes"
+                                  @change="onSetAnalysisProperty('weightingAttribute', $event)" label="Weighting"
+                                  outline
+                                  :value="analysis.weightingAttribute">
                         </v-select>
                     </v-flex>
                     <v-flex xs2>
-                        <v-select :items="optimizationTypes" label="Optimization type"
-                                  outline v-model="analysis.optimizationType">
+                        <v-select :items="optimizationTypes" @change="onSetAnalysisProperty('optimizationType', $event)"
+                                  label="Optimization type" outline
+                                  :value="analysis.optimizationType">
                         </v-select>
                     </v-flex>
                 </v-layout>
                 <v-layout justify-center>
                     <v-flex xs2>
-                        <v-select :items="budgetTypes" label="Budget type" outline v-model="analysis.budgetType">
+                        <v-select :items="budgetTypes" @change="onSetAnalysisProperty('budgetType', $event)"
+                                  label="Budget type" outline
+                                  :value="analysis.budgetType">
                         </v-select>
                     </v-flex>
                     <v-flex xs2>
-                        <v-select :items="benefitAttributes" label="Benefit" outline
-                                  v-model="analysis.benefitAttribute">
+                        <v-select :items="benefitAttributes" @change="onSetAnalysisProperty('benefitAttribute', $event)"
+                                  label="Benefit"
+                                  outline
+                                  :value="analysis.benefitAttribute">
                         </v-select>
                     </v-flex>
                     <v-flex xs2>
-                        <v-text-field label="Benefit limit" outline type="number"
-                                      v-model.number="analysis.benefitLimit">
+                        <v-text-field @input="onSetAnalysisProperty('benefitLimit', $event)" label="Benefit limit"
+                                      outline
+                                      type="number"
+                                      :value.number="analysis.benefitLimit">
                         </v-text-field>
                     </v-flex>
                 </v-layout>
                 <v-layout justify-center>
                     <v-spacer></v-spacer>
                     <v-flex xs6>
-                        <v-textarea label="Description" no-resize outline rows="5" v-model="analysis.description">
+                        <v-textarea @input="onSetAnalysisProperty('description', $event)" label="Description" no-resize
+                                    outline rows="5"
+                                    :value="analysis.description">
                         </v-textarea>
                     </v-flex>
                     <v-spacer></v-spacer>
@@ -81,10 +94,11 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {isNil, equals} from 'ramda';
+    import {clone, equals, isNil} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import {setItemPropertyValue} from '@/shared/utils/setter-utils';
 
     @Component({
         components: {CriteriaEditorDialog}
@@ -101,7 +115,6 @@
         selectedScenarioId: string = '0';
         objectIdMOngoDBForScenario: string = '';
         analysis: Analysis = {...emptyAnalysis, startYear: moment().year()};
-        showDatePicker: boolean = false;
         optimizationTypes: string[] = ['Incremental Benefit/Cost', 'Maximum Benefit', 'Remaining Life/Cost',
             'Maximum Remaining Life', 'Multi-year Incremental Benefit/Cost', 'Multi-year Maximum Benefit',
             'Multi-year Remaining Life/Cost', 'Multi-year Maximum Life'];
@@ -143,10 +156,7 @@
 
         @Watch('stateAnalysis')
         onStateAnalysisChanged() {
-            this.analysis = {
-                ...this.stateAnalysis,
-                startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
-            };
+            this.analysis = clone(this.stateAnalysis);
         }
 
         @Watch('analysis')
@@ -164,6 +174,10 @@
             if (hasValue(this.stateNumericAttributes)) {
                 this.setBenefitAndWeightingAttributes();
             }
+        }
+
+        onSetAnalysisProperty(property: string, value: any) {
+            this.analysis = setItemPropertyValue(property, value, this.analysis);
         }
 
         /**
@@ -211,10 +225,7 @@
          * Resets the analysis object with a copy of the analysis object found in state
          */
         onCancelAnalysisEdit() {
-            this.analysis = {
-                ...this.stateAnalysis,
-                startYear: this.stateAnalysis.startYear > 0 ? this.stateAnalysis.startYear : moment().year()
-            };
+            this.analysis = clone(this.stateAnalysis);
         }
     }
 </script>
