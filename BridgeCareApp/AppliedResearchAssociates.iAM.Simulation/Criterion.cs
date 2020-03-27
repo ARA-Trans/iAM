@@ -1,14 +1,30 @@
 ﻿using System;
+using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
-    //Input: any mix of numbers, strings, and/or dates
-    //Output: true/false
     public class Criterion
     {
-        //https://github.com/sklose/NCalc2
-        public string Expression { get; }
+        public Criterion(CalculateEvaluateCompiler compiler) => Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
 
-        public bool Evaluate(object[] values) => throw new NotImplementedException();
+        public string Expression
+        {
+            get => _Expression;
+            set
+            {
+                if (_Expression != value)
+                {
+                    Evaluator = Compiler.GetEvaluator(_Expression = value);
+                }
+            }
+        }
+
+        public bool Evaluate(EvaluationArguments arguments) => Evaluator(arguments);
+
+        private readonly CalculateEvaluateCompiler Compiler;
+
+        private string _Expression;
+
+        private Func<EvaluationArguments, bool> Evaluator;
     }
 }

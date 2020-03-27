@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AppliedResearchAssociates.CalculateEvaluate\AppliedResearchAssociates.CalculateEvaluate.csproj" />
     <ProjectReference Include="..\AppliedResearchAssociates\AppliedResearchAssociates.csproj" />
   </ItemGroup>
 

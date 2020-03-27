@@ -6,12 +6,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 {
     internal class CalculateEvaluateCompilerListener : CalculateEvaluateBaseListener
     {
-        public CalculateEvaluateCompilerListener(Dictionary<string, ParameterType> parameters) => Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+        public CalculateEvaluateCompilerListener(Dictionary<string, Type> parameters) => Parameters = new Dictionary<string, Type>(parameters, parameters.Comparer);
 
-        public Expression<Func<CalculationArguments, double>> CalculatorExpression { get; private set; }
+        public Func<CalculationArguments, double> Calculator { get; private set; }
 
-        public Expression<Func<EvaluationArguments, bool>> EvaluatorExpression { get; private set; }
+        public Func<EvaluationArguments, bool> Evaluator { get; private set; }
 
-        private readonly Dictionary<string, ParameterType> Parameters;
+        private readonly IReadOnlyDictionary<string, Type> Parameters;
     }
 }

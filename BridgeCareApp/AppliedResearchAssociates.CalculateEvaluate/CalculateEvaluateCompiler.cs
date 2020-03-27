@@ -1,53 +1,40 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    public class CalculatorCompiler : ICompiler
-    {
-        public void Compile(string expression, Dictionary<string, ParameterType> parameters)
-        {
-
-        }
-
-        public Func<CalculationArguments, double> Calculator { get; private set; }
-    }
-    public interface ICompiler
-    {
-        void Compile(string expression, Dictionary<string, ParameterType> parameters);
-    }
-    public enum ParameterType
-    {
-        Number,
-        String,
-        Date,
-    }
     public class CalculateEvaluateCompiler
     {
-        public static Func<CalculationArguments, double> GetCalculator(string calculationExpression)
+        public Dictionary<string, Type> Parameters { get; } = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+
+        // Maps a canonical lexed representation of an expression to its post-walk listener. Is this really necessary? Does it actually boost performance?
+        private readonly ConcurrentDictionary<string, WeakReference<CalculateEvaluateCompilerListener>> Cache = new ConcurrentDictionary<string, WeakReference<CalculateEvaluateCompilerListener>>();
+
+        public Func<CalculationArguments, double> GetCalculator(string expression)
         {
-            var compiler = GetCompiler(calculationExpression, parser => parser.r());
-            return compiler.Calculator;
+            var listener = GetListener(expression, parser => parser.r());
+            return listener.Calculator;
         }
 
-        public static Func<EvaluationArguments, bool> GetEvaluator(string evaluationExpression)
+        public Func<EvaluationArguments, bool> GetEvaluator(string expression)
         {
-            var compiler = GetCompiler(evaluationExpression, parser => parser.r());
-            return compiler.Evaluator;
+            var listener = GetListener(expression, parser => parser.r());
+            return listener.Evaluator;
         }
 
-        private static CalculateEvaluateCompilerListener GetCompiler(string expression, Func<CalculateEvaluateParser, IParseTree> getParseTree)
+        private CalculateEvaluateCompilerListener GetListener(string expression, Func<CalculateEvaluateParser, IParseTree> getParseTree)
         {
             var input = new AntlrInputStream(expression);
             var lexer = new CalculateEvaluateLexer(input);
             var tokens = new CommonTokenStream(lexer);
             var parser = new CalculateEvaluateParser(tokens);
             var tree = getParseTree(parser);
-            var compiler = new CalculateEvaluateCompilerListener();
-            ParseTreeWalker.Default.Walk(compiler, tree);
-            return compiler;
+            var listener = new CalculateEvaluateCompilerListener(Parameters);
+            ParseTreeWalker.Default.Walk(listener, tree);
+            return listener;
         }
     }
 }
