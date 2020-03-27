@@ -7,7 +7,7 @@ export interface PriorityFund {
 export interface Priority {
     id: string;
     priorityLevel: number;
-    year?: number;
+    year: number | null;
     criteria: string;
     priorityFunds: PriorityFund[];
 }

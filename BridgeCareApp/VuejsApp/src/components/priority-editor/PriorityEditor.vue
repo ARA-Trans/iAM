@@ -218,7 +218,6 @@
         showCreatePriorityDialog: boolean = false;
         prioritiesCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createPriorityLibraryDialogData: CreatePriorityLibraryDialogData = clone(emptyCreatePriorityLibraryDialogData);
-        editBudgetsDialogData: EditBudgetsDialogData = clone(emptyEditBudgetsDialogData);
         rule: any = {
             fundingPercent: (value: number) => (value >= 0 && value <= 100) || 'Value range is 0 to 100'
         };
@@ -433,15 +432,21 @@
          */
         onEditPriorityProperty(priorityRow: PrioritiesDataTableRow, property: string, value: any) {
             if (any(propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities)) {
-                const priority: Priority = find(
+                let priority: Priority = find(
                     propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities
                 ) as Priority;
+
+                if (property === 'year' && (!hasValue(value) || parseInt(value) === 0)) {
+                    priority.year = null;
+                } else {
+                    priority = setItemPropertyValue(property, value, priority);
+                }
 
                 this.selectedPriorityLibrary = {
                     ...this.selectedPriorityLibrary,
                     priorities: update(
-                        findIndex(propEq('id', priorityRow.id), this.selectedPriorityLibrary.priorities),
-                        setItemPropertyValue(property, value, priority) as Priority,
+                        findIndex(propEq('id', priority.id), this.selectedPriorityLibrary.priorities),
+                        priority,
                         this.selectedPriorityLibrary.priorities
                     )
                 };

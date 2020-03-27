@@ -269,22 +269,7 @@
 
         @Watch('stateSelectedInvestmentLibrary')
         onStateSelectedInvestmentLibraryChanged() {
-            let selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
-            if (!hasValue(selectedInvestmentLibrary.budgetOrder) && hasValue(selectedInvestmentLibrary.budgetYears)) {
-                selectedInvestmentLibrary.budgetOrder = sorter(
-                    getPropertyValues('budgetName', selectedInvestmentLibrary.budgetYears)) as string[];
-            }
-
-            if (!hasValue(selectedInvestmentLibrary.budgetCriteria) && hasValue(selectedInvestmentLibrary.budgetOrder)) {
-                selectedInvestmentLibrary.budgetCriteria = selectedInvestmentLibrary.budgetOrder.map((budget: string) =>({
-                    scenarioId: parseInt(this.selectedScenarioId),
-                    _id: ObjectID.generate(),
-                    budgetName: budget,
-                    criteria: ''
-                }));
-            }
-
-            this.selectedInvestmentLibrary = selectedInvestmentLibrary;
+            this.selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
         }
 
         @Watch('selectedInvestmentLibrary')
