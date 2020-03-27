@@ -5,9 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="HashCode.Combine.tt">
+      <LastGenOutput>HashCode.Combine.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="Choice.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Choice.cs</LastGenOutput>
+      <LastGenOutput>HashCode.Combine.cs</LastGenOutput>
     </None>
     <None Update="Zip.ToTuples.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -20,10 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Choice.cs">
+    <Compile Update="Choice - Copy.cs">
+      <DependentUpon>Choice.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Choice.tt</DependentUpon>
+    </Compile>
+    <Compile Update="HashCode.Combine.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HashCode.Combine.tt</DependentUpon>
     </Compile>
     <Compile Update="Zip.ToTuples.cs">
       <DesignTime>True</DesignTime>
