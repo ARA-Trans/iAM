@@ -82,7 +82,7 @@ namespace BridgeCare.DataAccessLayer
             {
                 simulation.CriteriaDrivenBudgets.ToList().ForEach(budget =>
                 {
-                    simulation.CriteriaDrivenBudgets.Remove(budget);
+                    db.Entry(budget).State = System.Data.Entity.EntityState.Deleted;
                 });
             }
 

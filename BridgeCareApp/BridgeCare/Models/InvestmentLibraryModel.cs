@@ -36,7 +36,7 @@ namespace BridgeCare.Models
             BudgetOrder = entity.INVESTMENTS?.BUDGETORDER?.Split(',').ToList();
             BudgetYears = entity.YEARLYINVESTMENTS
                 .Select(yi => new InvestmentLibraryBudgetYearModel(yi)).ToList();
-            BudgetCriteria = entity.CriteriaDrivenBudgets.Select(); // TODO FINISH THIS LINE
+            BudgetCriteria = entity.CriteriaDrivenBudgets.Select(budget => new CriteriaDrivenBudgetsModel(budget)).ToList();
         }
 
         public void UpdateInvestment(InvestmentsEntity entity)
