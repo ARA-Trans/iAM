@@ -24,9 +24,17 @@ namespace AppliedResearchAssociates
 
         public static IEnumerable<T> Distinct<T>(params T[] values) => values.Distinct();
 
-        public static IEqualityComparer<KeyValuePair<TKey, TValue>> GetEqualityComparer<TKey, TValue>(this KeyValuePair<TKey, TValue> keyValuePair, IEqualityComparer<TKey> keyEqualityComparer = null, IEqualityComparer<TValue> valueEqualityComparer = null) => new KeyValuePairEqualityComparer<TKey, TValue>(keyEqualityComparer, valueEqualityComparer);
+        public static IEqualityComparer<KeyValuePair<TKey, TValue>> GetEqualityComparer<TKey, TValue>(this KeyValuePair<TKey, TValue> _, IEqualityComparer<TKey> keyEqualityComparer = null, IEqualityComparer<TValue> valueEqualityComparer = null) => new KeyValuePairEqualityComparer<TKey, TValue>(keyEqualityComparer, valueEqualityComparer);
 
-        public static IEqualityComparer<KeyValuePair<TKey, TValue>> GetKeyValuePairEqualityComparer<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs, IEqualityComparer<TKey> keyEqualityComparer = null, IEqualityComparer<TValue> valueEqualityComparer = null) => new KeyValuePairEqualityComparer<TKey, TValue>(keyEqualityComparer, valueEqualityComparer);
+        public static IEqualityComparer<T> GetEqualityComparerDefault<T>(this T _) => EqualityComparer<T>.Default;
+
+        public static IEqualityComparer<TKey> GetKeyEqualityComparerDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> _) => EqualityComparer<TKey>.Default;
+
+        public static IEqualityComparer<KeyValuePair<TKey, TValue>> GetKeyValuePairEqualityComparer<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> _, IEqualityComparer<TKey> keyEqualityComparer = null, IEqualityComparer<TValue> valueEqualityComparer = null) => new KeyValuePairEqualityComparer<TKey, TValue>(keyEqualityComparer, valueEqualityComparer);
+
+        public static IEqualityComparer<TValue> GetValueEqualityComparerDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> _) => EqualityComparer<TValue>.Default;
+
+        public static WeakReference<T> GetWeakReference<T>(this T reference) where T : class => new WeakReference<T>(reference);
 
         public static T Identity<T>(T value) => value;
 
