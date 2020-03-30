@@ -78,9 +78,9 @@
                                                        @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
                                             {{formatAsCurrency(props.item[header.value])}}
                                             <template slot="input">
-                                                <v-text-field v-model="props.item[header.value]"
+                                                <currency-input v-model="props.item[header.value]"
                                                               label="Edit" single-line>
-                                                </v-text-field>
+                                                </currency-input>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
