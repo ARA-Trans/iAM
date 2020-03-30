@@ -86,11 +86,11 @@
         EditBudgetsDialogGridData,
         EditedBudget
     } from '@/shared/models/modals/edit-budgets-dialog';
-    import {CriteriaDrivenBudgets} from '../models/iAM/criteria-driven-budgets';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
+    import {CriteriaDrivenBudgets} from '@/shared/models/iAM/investment';
 
     @Component({
         components: {

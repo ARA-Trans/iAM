@@ -154,7 +154,8 @@
         BudgetYearsGridData,
         emptyInvestmentLibrary,
         InvestmentLibrary,
-        InvestmentLibraryBudgetYear
+        InvestmentLibraryBudgetYear,
+        CriteriaDrivenBudgets
     } from '@/shared/models/iAM/investment';
     import {any, clone, contains, groupBy, isEmpty, isNil, keys, propEq, equals} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
@@ -171,8 +172,6 @@
         emptyEditBudgetsDialogData
     } from '@/shared/models/modals/edit-budgets-dialog';
     import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
-    import {sorter} from '@/shared/utils/sorter-utils';
-    import {CriteriaDrivenBudgets} from '@/shared/models/iAM/criteria-driven-budgets';
     import {formatAsCurrency} from '@/shared/utils/currency-formatter';
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
@@ -188,7 +187,6 @@
         @State(state => state.investmentEditor.selectedInvestmentLibrary) stateSelectedInvestmentLibrary: InvestmentLibrary;
         @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
         @State(state => state.criteriaDrivenBudgets.budgetCriteria) stateBudgetCriteria: CriteriaDrivenBudgets[];
-        @State(state => state.criteriaDrivenBudgets.intermittentBudgetCriteria) stateIntermittentBudgetCriteria: CriteriaDrivenBudgets[];
 
         @Action('getInvestmentLibraries') getInvestmentLibrariesAction: any;
         @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
@@ -198,10 +196,6 @@
         @Action('deleteInvestmentLibrary') deleteInvestmentLibraryAction: any;
         @Action('saveScenarioInvestmentLibrary') saveScenarioInvestmentLibraryAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
-        @Action('getBudgetCriteria') getBudgetCriteriaAction: any;
-        @Action('saveBudgetCriteria') saveBudgetCriteriaAction: any;
-        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
-        @Action('saveIntermittentStateToBudgetCriteria') saveIntermittentStateToBudgetCriteriaAction: any;
         @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
         selectedInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
@@ -212,7 +206,6 @@
         budgetYearsGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
-        intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
         budgetYearsGridData: BudgetYearsGridData[] = [];
         selectedGridRows: BudgetYearsGridData[] = [];
         selectedBudgetYears: number[] = [];
@@ -241,7 +234,6 @@
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
                             vm.getScenarioInvestmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
-                            vm.getBudgetCriteriaAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
                     });
             });
@@ -279,17 +271,12 @@
                     'investment', this.selectedInvestmentLibrary, this.stateSelectedInvestmentLibrary, this.stateScenarioInvestmentLibrary
                 )
             });
+
             this.selectedGridRows = [];
             this.hasSelectedInvestmentLibrary = this.selectedInvestmentLibrary.id !== '0';
 
             this.setGridHeaders();
             this.setGridData();
-
-            if (!equals(this.stateIntermittentBudgetCriteria, this.selectedInvestmentLibrary.budgetCriteria)) {
-                this.saveIntermittentCriteriaDrivenBudgetAction({
-                    updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria
-                });
-            }
         }
 
         /**
@@ -298,14 +285,6 @@
         @Watch('selectedGridRows')
         onSelectedGridRowsChanged() {
             this.selectedBudgetYears = getPropertyValues('year', this.selectedGridRows) as number[];
-        }
-
-        /**
-         * Setter for the stateIntermittentBudgetCriteria object
-         */
-        @Watch('stateIntermittentBudgetCriteria')
-        onStateIntermittentBudgetCriteriaChanged() {
-            this.intermittentBudgetsCriteria = clone(this.stateIntermittentBudgetCriteria);
         }
 
         /**
@@ -440,7 +419,7 @@
                 showDialog: true,
                 budgets: this.selectedInvestmentLibrary.budgetOrder,
                 canOrderBudgets: true,
-                criteriaBudgets: this.intermittentBudgetsCriteria,
+                criteriaBudgets: this.selectedInvestmentLibrary.budgetCriteria,
                 scenarioId: parseInt(this.selectedScenarioId)
             };
         }
@@ -519,8 +498,6 @@
                     budgetYears: editedBudgetYears,
                     budgetCriteria: intermittentCriteria
                 };
-
-                this.saveIntermittentCriteriaDrivenBudgetAction({updateIntermittentCriteriaDrivenBudget: intermittentCriteria});
             }
         }
 
@@ -551,10 +528,6 @@
          * data
          */
         onCreateAsNewLibrary() {
-            if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
-                this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
-            }
-
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
                 inflationRate: this.selectedInvestmentLibrary.inflationRate,
@@ -588,31 +561,24 @@
          * Dispatches an action to modify a scenario's InvestmentLibrary data in the sql server database
          */
         onApplyToScenario() {
-            this.saveBudgetCriteriaAction({selectedScenarioId: parseInt(this.selectedScenarioId), budgetCriteriaData: this.intermittentBudgetsCriteria})
-                .then(() =>
-                    this.saveIntermittentStateToBudgetCriteriaAction({intermittentState: this.intermittentBudgetsCriteria})
-                        .then(() =>
-                            this.saveScenarioInvestmentLibraryAction({
-                                saveScenarioInvestmentLibraryData: {
-                                    ...this.selectedInvestmentLibrary,
-                                    id: this.selectedScenarioId,
-                                    budgetCriteria: this.selectedInvestmentLibrary.budgetCriteria
-                                        .map((budgetCriteria: CriteriaDrivenBudgets) => ({
-                                            ...budgetCriteria,
-                                            scenarioId: parseInt(this.selectedScenarioId)
-                                        }))
-                                },
-                                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
-                            }).then(() => this.onDiscardChanges())
-                        )
-                );
+            this.saveScenarioInvestmentLibraryAction({
+                saveScenarioInvestmentLibraryData: {
+                    ...this.selectedInvestmentLibrary,
+                    id: this.selectedScenarioId,
+                    budgetCriteria: this.selectedInvestmentLibrary.budgetCriteria
+                        .map((budgetCriteria: CriteriaDrivenBudgets) => ({
+                            ...budgetCriteria,
+                            scenarioId: parseInt(this.selectedScenarioId)
+                        }))
+                },
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
+            }).then(() => this.onDiscardChanges())
         }
 
         /**
          * Dispatches an action to reset the selectedInvestmentLibrary with the current stateScenarioInvestmentLibrary
          */
         onDiscardChanges() {
-            this.saveIntermittentCriteriaDrivenBudgetAction({updateIntermittentCriteriaDrivenBudget: this.stateBudgetCriteria});
             this.selectItemValue = null;
             setTimeout(() => this.selectInvestmentLibraryAction({selectedLibraryId: this.stateScenarioInvestmentLibrary.id}));
         }
