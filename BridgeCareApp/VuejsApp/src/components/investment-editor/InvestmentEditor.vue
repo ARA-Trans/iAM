@@ -249,7 +249,7 @@
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
                                 vm.getScenarioInvestmentLibraryAction({ selectedScenarioId: vm.selectedScenarioId });
-                                vm.getBudgetCriteriaAction({ selectedScenarioId: vm.selectedScenarioId });
+                                //vm.getBudgetCriteriaAction({ selectedScenarioId: vm.selectedScenarioId });
                             }
                         });
                 });
@@ -519,7 +519,7 @@
                 showDialog: true,
                 budgets: this.selectedInvestmentLibrary.budgetOrder,
                 canOrderBudgets: true,
-                criteriaBudgets: this.intermittentBudgetsCriteria,
+                criteriaBudgets: this.selectedInvestmentLibrary.budgetCriteria,
                 scenarioId: this.selectedScenarioId
             };
         }
@@ -702,10 +702,10 @@
             appliedInvestmentLibrary.id = this.selectedScenarioId;
             appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
 
-            this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
-                .then(() => {
+            //this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
+            //    .then(() => {
                     this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
-                });
+            //    });
 
             this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary, 
             objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
