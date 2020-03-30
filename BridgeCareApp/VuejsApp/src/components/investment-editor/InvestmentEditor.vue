@@ -701,11 +701,7 @@
             const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
             appliedInvestmentLibrary.id = this.selectedScenarioId;
             appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
-
-            //this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
-            //    .then(() => {
-                    this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
-            //    });
+            this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
 
             this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary, 
             objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
