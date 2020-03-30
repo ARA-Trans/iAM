@@ -31,7 +31,7 @@ namespace BridgeCare.Services.SummaryReport
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel)
+        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, int simulationYearsCount)
         {
             var simulationId = simulationModel.simulationId;
             var investmentPeriod = analysisData.GetAnySimulationAnalysis(simulationId, db);
@@ -51,7 +51,7 @@ namespace BridgeCare.Services.SummaryReport
 
             FillStaticData(worksheet);
 
-            FillSimulationDetails(worksheet, investmentPeriod, inflationAndInvestments.InflationRate, inflationAndInvestments.BudgetYears.Count);
+            FillSimulationDetails(worksheet, investmentPeriod, inflationAndInvestments.InflationRate, simulationYearsCount);
             FillAnalysisDetails(worksheet, investmentPeriod);
             FillJurisdictionCriteria(worksheet, investmentPeriod.Criteria);
             FillPriorities(worksheet, priorities);

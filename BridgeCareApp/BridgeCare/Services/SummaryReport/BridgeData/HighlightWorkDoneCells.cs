@@ -16,9 +16,9 @@ namespace BridgeCare.Services.SummaryReport.BridgeData
             this.excelHelper = excelHelper;
         }
         internal void CheckConditions(int parallelBridge, string treatment, ExcelRange range,
-            Dictionary<int, int> projectPickByYear, int year, int index)
+            Dictionary<int, int> projectPickByYear, int year, int index, string project)
         {
-            if (treatment.Length > 0)
+            if (treatment.Length > 0 && project.ToLower() != "no treatment")
             {
                 ParallelBridgeBAMs(parallelBridge, projectPickByYear[year], range);
                 ParallelBridgeMPMS(parallelBridge, projectPickByYear[year], range);

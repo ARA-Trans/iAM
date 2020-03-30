@@ -89,7 +89,7 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Simulation parameters TAB
                 var parametersWorksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
-                summaryReportParameters.Fill(parametersWorksheet, simulationModel);
+                summaryReportParameters.Fill(parametersWorksheet, simulationModel, simulationYearsCount);
 
                 // Bridge Data tab
                 var bridgeDataModels = new List<BridgeDataModel>();
