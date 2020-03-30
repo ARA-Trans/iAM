@@ -292,6 +292,9 @@ namespace BridgeCare.Services
 
                 if (applyNoTreatment && simulation != null)
                 {
+                    var noTreatmentConsequences = commitConsequences
+                        .Select(consequence => new CommitConsequenceModel() { Attribute_ = consequence.Attribute_, Change_ = "+0" })
+                        .ToList();
                     if (simulation.COMMITTED_START < committedProjectModel.Years)
                     {
                         var year = committedProjectModel.Years - 1;
@@ -307,7 +310,7 @@ namespace BridgeCare.Services
                                 YearSame = committedProjectModel.YearSame,
                                 Budget = committedProjectModel.Budget,
                                 Cost = 0,
-                                CommitConsequences = committedProjectModel.CommitConsequences
+                                CommitConsequences = noTreatmentConsequences
                             });
                             year--;
                         }
