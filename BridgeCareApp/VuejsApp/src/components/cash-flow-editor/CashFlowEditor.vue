@@ -114,10 +114,14 @@
                                                        class="output" type="text" readonly :value="props.item.amount" />
                                                 <input v-else class="output" type="text" readonly :value="formatAsCurrency(props.item.amount)"
                                                        :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}" />
+                                                <!--<input v-else class="output" type="text" readonly v-model="props.item.amount" v-currency="{currency: {prefix: '$', suffix: ''}, locale: 'en'}"
+                                                       :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}" />-->
                                                 <template slot="input">
-                                                    <v-text-field v-model.number="props.item.amount" label="Edit" single-line
+                                                    <!--<v-text-field v-model.number="props.item.amount" label="Edit" single-line v-currency="{currency: {prefix: '$', suffix: ''}, locale: 'en'}"
                                                                   :rules="[splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)]">
-                                                    </v-text-field>
+                                                    </v-text-field>-->
+                                                    <currency-input v-model.number="props.item.amount" label="Edit" prefix="$" locale="en" single-line
+                                                                    :rules="[splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)]" />
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
