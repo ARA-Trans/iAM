@@ -83,7 +83,19 @@ namespace AppliedResearchAssociates
         {
             public static readonly ShortZipper<T> Instance = new ShortZipper<T>();
 
-            protected override bool MoveNext(IEnumerable<IEnumerator<T>> enumerators) => enumerators.Any() && enumerators.All(enumerator => enumerator.MoveNext());
+            protected override bool MoveNext(IEnumerable<IEnumerator<T>> enumerators)
+            {
+                var any = false;
+                var moveNext = true;
+
+                foreach (var enumerator in enumerators)
+                {
+                    any = true;
+                    moveNext &= enumerator.MoveNext();
+                }
+
+                return any && moveNext;
+            }
 
             private ShortZipper()
             {
@@ -94,7 +106,7 @@ namespace AppliedResearchAssociates
         {
             public static readonly StrictZipper<T> Instance = new StrictZipper<T>();
 
-            protected override bool MoveNext(IEnumerable<IEnumerator<T>> enumerators) => enumerators.Select(enumerator => enumerator.MoveNext()).Distinct().Single();
+            protected override bool MoveNext(IEnumerable<IEnumerator<T>> enumerators) => enumerators.Select(enumerator => enumerator.MoveNext()).Distinct().SingleOrDefault();
 
             private StrictZipper()
             {
