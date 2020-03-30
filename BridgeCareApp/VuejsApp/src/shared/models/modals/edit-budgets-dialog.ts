@@ -1,4 +1,4 @@
-import {CriteriaDrivenBudgets} from '../iAM/criteria-driven-budgets';
+import {CriteriaDrivenBudgets} from '@/shared/models/iAM/investment';
 
 export interface EditBudgetsDialogData {
     showDialog: boolean;

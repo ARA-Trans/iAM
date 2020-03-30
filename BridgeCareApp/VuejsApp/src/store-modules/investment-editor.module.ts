@@ -5,9 +5,6 @@ import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 import {http2XX} from '@/shared/utils/http-utils';
-import {sorter} from '@/shared/utils/sorter-utils';
-import {getPropertyValues} from '@/shared/utils/getter-utils';
-const ObjectID = require('bson-objectid');
 
 const state = {
     investmentLibraries: [] as InvestmentLibrary[],
@@ -20,29 +17,13 @@ const mutations = {
         state.investmentLibraries = clone(investmentLibraries);
     },
     selectedInvestmentLibraryMutator(state: any, libraryId: string) {
-        let selectedInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
-
         if (any(propEq('id', libraryId), state.investmentLibraries)) {
-            selectedInvestmentLibrary = find(propEq('id', libraryId), state.investmentLibraries);
+            state.selectedInvestmentLibrary = find(propEq('id', libraryId), state.investmentLibraries);
         } else if (state.scenarioInvestmentLibrary.id === libraryId) {
-            selectedInvestmentLibrary = clone(state.scenarioInvestmentLibrary);
+            state.selectedInvestmentLibrary = clone(state.scenarioInvestmentLibrary);
+        } else {
+            state.selectedInvestmentLibrary = clone(emptyInvestmentLibrary);
         }
-
-        if (!hasValue(selectedInvestmentLibrary.budgetOrder) && hasValue(selectedInvestmentLibrary.budgetYears)) {
-            selectedInvestmentLibrary.budgetOrder = sorter(
-                getPropertyValues('budgetName', selectedInvestmentLibrary.budgetYears)) as string[];
-        }
-
-        if (!hasValue(selectedInvestmentLibrary.budgetCriteria) && hasValue(selectedInvestmentLibrary.budgetOrder)) {
-            selectedInvestmentLibrary.budgetCriteria = selectedInvestmentLibrary.budgetOrder.map((budget: string) =>({
-                scenarioId: parseInt(selectedInvestmentLibrary.id),
-                _id: ObjectID.generate(),
-                budgetName: budget,
-                criteria: ''
-            }));
-        }
-
-        state.selectedInvestmentLibrary = selectedInvestmentLibrary;
     },
     createdInvestmentLibraryMutator(state: any, createdInvestmentLibrary: InvestmentLibrary) {
         state.investmentLibraries = append(createdInvestmentLibrary, state.investmentLibraries);

@@ -15,7 +15,6 @@ import deficientEditor from '@/store-modules/deficient.module';
 import priorityEditor from '@/store-modules/priority.module';
 import targetEditor from '@/store-modules/target.module';
 import remainingLifeLimitEditor from '@/store-modules/remaining-life-limit.module';
-import criteriaDrivenBudgets from '@/store-modules/budget-criteria.module';
 import rollup from '../store-modules/rollup.module';
 import polling from '@/store-modules/polling.module';
 import announcement from '@/store-modules/announcement.module';
@@ -41,7 +40,6 @@ export default new Vuex.Store({
         priorityEditor,
         targetEditor,
         remainingLifeLimitEditor,
-        criteriaDrivenBudgets,
         rollup,
         polling,
         announcement,

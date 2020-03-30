@@ -1,10 +1,15 @@
-import {CriteriaDrivenBudgets} from './criteria-driven-budgets';
-
 export interface InvestmentLibraryBudgetYear {
     id: string;
     year: number;
     budgetName: string;
     budgetAmount: number;
+}
+
+export interface CriteriaDrivenBudgets {
+    scenarioId: number;
+    _id: number | string;
+    budgetName: string;
+    criteria: string;
 }
 
 export interface InvestmentLibrary {
