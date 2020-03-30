@@ -44,7 +44,7 @@ namespace BridgeCare.Services
 
         private int FillCostOfCommittedWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<WorkSummaryByBudgetModel> comittedProjectsData)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Committed Work");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work");
             var committedTotalRow = AddCostsOfCommittedWork(worksheet, simulationYears, currentCell, comittedProjectsData);
             return committedTotalRow;
         }
@@ -72,7 +72,7 @@ namespace BridgeCare.Services
 
         private void FillRemainingBudgetSection(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, int committedTotalRow, int culvertTotalRow, int bridgeTotalRow, int budgetTotalRow)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Remaining Budget");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Budget Analysis");
             AddDetailsForRemainingBudget(worksheet, simulationYears, currentCell, committedTotalRow, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
@@ -150,7 +150,7 @@ namespace BridgeCare.Services
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
             int budgetTotalRow = 0;
             worksheet.Cells[row++, column].Value = Properties.Resources.TotalSpent;
-            worksheet.Cells[row++, column].Value = Properties.Resources.TotalBudget;
+            worksheet.Cells[row++, column].Value = Properties.Resources.TotalBridgeCareBudget;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
@@ -173,7 +173,7 @@ namespace BridgeCare.Services
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[row++, column].Value = Properties.Resources.Total;
+            worksheet.Cells[row++, column].Value = Properties.Resources.RemainingBudget;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
