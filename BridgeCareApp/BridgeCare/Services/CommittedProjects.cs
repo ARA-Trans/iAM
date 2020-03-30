@@ -258,6 +258,21 @@ namespace BridgeCare.Services
             var end = worksheet.Dimension.End;
             var simulation = db.Simulations.SingleOrDefault(s => s.SIMULATIONID == simulationId);
 
+            var committedProjectYearsByBrKey = new Dictionary<int, List<int>>();
+
+            for (int row = start.Row + 1; row <= end.Row; row++)
+            {
+                var brKey = Convert.ToInt32(GetCellValue(worksheet, row, 1));
+                var year = Convert.ToInt32(GetCellValue(worksheet, row, start.Column + 3));
+                if (committedProjectYearsByBrKey.ContainsKey(brKey))
+                {
+                    committedProjectYearsByBrKey[brKey].Add(year);
+                } else
+                {
+                    committedProjectYearsByBrKey[brKey] = new List<int>() { year };
+                }
+            }
+
             for (int row = start.Row + 1; row <= end.Row; row++)
             {
                 var column = start.Column + 2;
@@ -298,7 +313,7 @@ namespace BridgeCare.Services
                     if (simulation.COMMITTED_START < committedProjectModel.Years)
                     {
                         var year = committedProjectModel.Years - 1;
-                        while (year >= simulation.COMMITTED_START)
+                        while (year >= simulation.COMMITTED_START && !committedProjectYearsByBrKey[brKey].Contains(year))
                         {
                             committedProjectModels.Add(new CommittedProjectModel()
                             {
