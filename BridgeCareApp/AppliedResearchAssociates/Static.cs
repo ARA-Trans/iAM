@@ -113,35 +113,13 @@ namespace AppliedResearchAssociates
 
         private sealed class AggregateDisposable : IDisposable
         {
-            public AggregateDisposable(IEnumerable<IDisposable> disposables)
-            {
-                Disposables = disposables.ToList() ?? new List<IDisposable>();
-            }
+            public AggregateDisposable(IEnumerable<IDisposable> disposables) => Disposables = disposables.ToList() ?? new List<IDisposable>();
 
             public void Dispose()
             {
-                List<Exception> exceptions = null;
-
                 foreach (var disposable in Disposables)
                 {
-                    try
-                    {
-                        disposable?.Dispose();
-                    }
-                    catch (Exception e)
-                    {
-                        if (exceptions == null)
-                        {
-                            exceptions = new List<Exception>();
-                        }
-
-                        exceptions.Add(e);
-                    }
-                }
-
-                if (exceptions != null)
-                {
-                    throw new AggregateException(exceptions);
+                    disposable?.Dispose();
                 }
             }
 

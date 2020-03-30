@@ -4,20 +4,11 @@ using System.Collections.Generic;
 namespace AppliedResearchAssociates
 {
     /// <summary>
-    ///     Represents the presence or absence of an object in a way that
-    ///     prevents access to <see langword="null"/>.
+    ///     Represents the presence or absence of an object in a way that prevents access to <see langword="null"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public struct Option<T> : IEquatable<Option<T>>, IEquatable<T>
     {
-        private readonly T _Value;
-
-        internal Option(T value)
-        {
-            _Value = value;
-            HasValue = true;
-        }
-
         /// <summary>
         ///     Get whether this option has a value.
         /// </summary>
@@ -47,7 +38,7 @@ namespace AppliedResearchAssociates
 
         public bool Equals(T other) => HasValue && EqualityComparer<T>.Default.Equals(_Value, other);
 
-        public override int GetHashCode() => HasValue ? _Value.GetHashCode() : 0;
+        public override int GetHashCode() => HashCode.Combine(_Value);
 
         /// <summary>
         ///     Handle the presence or absence of a value in this option.
@@ -81,12 +72,8 @@ namespace AppliedResearchAssociates
         /// </summary>
         /// <typeparam name="U"></typeparam>
         /// <param name="map"></param>
-        /// <param name="_">
-        ///     never required; only declared to disambiguate this overload
-        /// </param>
-        /// <returns>
-        ///     a new option with the result of the transformation
-        /// </returns>
+        /// <param name="_">never required; only declared to disambiguate this overload</param>
+        /// <returns>a new option with the result of the transformation</returns>
         public Option<U> Map<U>(Func<T, U> map, RequireClass<U> _ = null) where U : class
         {
             if (map is null)
@@ -102,12 +89,8 @@ namespace AppliedResearchAssociates
         /// </summary>
         /// <typeparam name="U"></typeparam>
         /// <param name="map"></param>
-        /// <param name="_">
-        ///     never required; only declared to disambiguate this overload
-        /// </param>
-        /// <returns>
-        ///     a new option with the result of the transformation
-        /// </returns>
+        /// <param name="_">never required; only declared to disambiguate this overload</param>
+        /// <returns>a new option with the result of the transformation</returns>
         public Option<U> Map<U>(Func<T, U> map, RequireStruct<U> _ = null) where U : struct
         {
             if (map is null)
@@ -123,9 +106,7 @@ namespace AppliedResearchAssociates
         /// </summary>
         /// <typeparam name="U"></typeparam>
         /// <param name="map"></param>
-        /// <returns>
-        ///     a new option with the result of the transformation
-        /// </returns>
+        /// <returns>a new option with the result of the transformation</returns>
         public Option<U> Map<U>(Func<T, U?> map) where U : struct
         {
             if (map is null)
@@ -137,17 +118,15 @@ namespace AppliedResearchAssociates
         }
 
         /// <summary>
-        ///     Get the value if there is one, otherwise get the given default
-        ///     value.
+        ///     Get the value if there is one, otherwise get the given default value.
         /// </summary>
         /// <param name="defaultValue"></param>
         /// <returns>the value or a default value</returns>
         public T Reduce(T defaultValue = default) => HasValue ? _Value : defaultValue;
 
         /// <summary>
-        ///     Get the value if there is one, otherwise get a default value
-        ///     from the given factory function. A null factory function yields
-        ///     the type's default value.
+        ///     Get the value if there is one, otherwise get a default value from the given factory
+        ///     function. A null factory function yields the type's default value.
         /// </summary>
         /// <param name="getDefaultValue"></param>
         /// <returns>the value or a default value</returns>
@@ -166,11 +145,18 @@ namespace AppliedResearchAssociates
                 return getDefaultValue();
             }
         }
+
+        internal Option(T value)
+        {
+            _Value = value;
+            HasValue = true;
+        }
+
+        private readonly T _Value;
     }
 
     /// <summary>
-    ///     Methods for using type inference when creating
-    ///     <see cref="Option{T}"/> objects.
+    ///     Methods for using type inference when creating <see cref="Option{T}"/> objects.
     /// </summary>
     public static class Option
     {
@@ -179,9 +165,7 @@ namespace AppliedResearchAssociates
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
-        /// <param name="_">
-        ///     never required; only declared to disambiguate overloads
-        /// </param>
+        /// <param name="_">never required; only declared to disambiguate overloads</param>
         /// <returns>an optional reference</returns>
         public static Option<T> Of<T>(T value, RequireClass<T> _ = null) where T : class => value is null ? new Option<T>() : new Option<T>(value);
 
@@ -190,9 +174,7 @@ namespace AppliedResearchAssociates
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
-        /// <param name="_">
-        ///     never required; only declared to disambiguate overloads
-        /// </param>
+        /// <param name="_">never required; only declared to disambiguate overloads</param>
         /// <returns>an optional value</returns>
         public static Option<T> Of<T>(T value, RequireStruct<T> _ = null) where T : struct => new Option<T>(value);
 
