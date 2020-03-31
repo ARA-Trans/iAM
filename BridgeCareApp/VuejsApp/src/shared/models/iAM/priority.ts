@@ -30,6 +30,7 @@ export const emptyPriorityFund: PriorityFund = {
 export const emptyPriority: Priority = {
     id: '0',
     priorityLevel: 1,
+    year: null,
     criteria: '',
     priorityFunds: []
 };

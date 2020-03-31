@@ -216,11 +216,9 @@
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
                             vm.getScenarioTreatmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
-                                .then(() => {
-                                    if (vm.scenarioInvestmentLibrary.id !== vm.selectedScenarioId) {
-                                        vm.getScenarioInvestmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
-                                    }
-                                });
+                                .then(() =>
+                                    vm.getScenarioInvestmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
+                                );
                         }
                     });
             });
@@ -304,12 +302,14 @@
 
         @Watch('selectedTreatment')
         onSelectedTreatmentChanged() {
-            this.tabData = {
-                tabTreatmentLibraries: clone(this.stateTreatmentLibraries),
-                tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
-                tabSelectedTreatment: clone(this.selectedTreatment),
-                tabScenarioInvestmentLibrary: clone(this.stateScenarioInvestmentLibrary)
-            };
+            if (this.selectedTreatment.id !== '0') {
+                this.tabData = {
+                    tabTreatmentLibraries: clone(this.stateTreatmentLibraries),
+                    tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
+                    tabSelectedTreatment: clone(this.selectedTreatment),
+                    tabScenarioInvestmentLibrary: clone(this.stateScenarioInvestmentLibrary)
+                };
+            }
         }
 
         getTreatmentBudgets() {

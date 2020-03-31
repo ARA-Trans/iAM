@@ -56,8 +56,8 @@
 
         @Watch('selectedYear')
         onSelectedYearChanged() {
-            if (this.selectedYear === '') {
-                this.newPriority.year = undefined;
+            if (!hasValue(this.selectedYear)) {
+                this.newPriority.year = null;
                 return;
             }
             this.newPriority.year = parseInt(this.selectedYear);

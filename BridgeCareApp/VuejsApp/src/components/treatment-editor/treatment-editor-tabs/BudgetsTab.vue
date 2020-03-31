@@ -38,7 +38,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {clone, findIndex, isEmpty, propEq, update} from 'ramda';
+    import {clone, findIndex, equals, propEq, update} from 'ramda';
     import {TabData} from '@/shared/models/child-components/tab-data';
     import {
         BudgetGridRow,
@@ -51,7 +51,7 @@
     import {sorter} from '@/shared/utils/sorter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {itemsAreEqual} from '@/shared/utils/equals-utils';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
     @Component
     export default class BudgetsTab extends Vue {
@@ -70,16 +70,16 @@
         onBudgetsTabDataChanged() {
             this.budgetsTabSelectedTreatmentLibrary = this.budgetsTabData.tabSelectedTreatmentLibrary;
             this.budgetsTabSelectedTreatment = this.budgetsTabData.tabSelectedTreatment;
-            this.selectedBudgets = this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}));
             this.budgetsTabScenarioInvestmentLibrary = this.budgetsTabData.tabScenarioInvestmentLibrary;
+            this.selectedBudgets = this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}));
         }
 
         @Watch('budgetsTabScenarioInvestmentLibrary')
         onScenarioInvestmentLibraryChanged() {
-            if (!isEmpty(this.budgetsTabScenarioInvestmentLibrary.budgetOrder)) {
+            if (hasValue(this.budgetsTabScenarioInvestmentLibrary.budgetOrder)) {
                 this.budgets = this.budgetsTabScenarioInvestmentLibrary.budgetOrder
                     .map((name: string) => ({budget: name}));
-            } else if (!isEmpty(this.budgetsTabScenarioInvestmentLibrary.budgetYears)) {
+            } else if (hasValue(this.budgetsTabScenarioInvestmentLibrary.budgetYears)) {
                 this.budgets = (sorter(
                     getPropertyValues('budgetName', this.budgetsTabScenarioInvestmentLibrary.budgetYears)
                 ) as string[]).map((name: string) => ({budget: name}));
@@ -90,10 +90,9 @@
 
         @Watch('selectedBudgets')
         onSelectedBudgetsChanged() {
-            const selectedTreatmentBudgets: BudgetGridRow[] = this.budgetsTabSelectedTreatment
-                .budgets.map((name: string) => ({budget: name}));
+            const selectedBudgets: string[] = this.selectedBudgets.map((budgetGridRow: BudgetGridRow) => budgetGridRow.budget);
 
-            if (!itemsAreEqual(this.selectedBudgets, selectedTreatmentBudgets, 'budget', true)) {
+            if (!equals(this.budgetsTabSelectedTreatment.budgets, selectedBudgets)) {
                 this.budgetsTabSelectedTreatmentLibrary = {
                     ...this.budgetsTabSelectedTreatmentLibrary,
                     treatments: update(
