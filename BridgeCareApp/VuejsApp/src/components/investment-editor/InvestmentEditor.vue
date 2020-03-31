@@ -157,7 +157,7 @@
         InvestmentLibraryBudgetYear,
         CriteriaDrivenBudgets
     } from '@/shared/models/iAM/investment';
-    import {any, clone, contains, groupBy, isEmpty, isNil, keys, propEq, equals} from 'ramda';
+    import {any, clone, contains, groupBy, isEmpty, isNil, keys, propEq, find} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
@@ -237,6 +237,10 @@
                         }
                     });
             });
+        }
+
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
         }
 
         /**

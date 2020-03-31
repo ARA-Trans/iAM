@@ -232,6 +232,10 @@
             });
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         /**
          * Sets the component's targetLibrariesSelectListItems array with the target libraries data in state
          */

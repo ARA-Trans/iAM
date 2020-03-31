@@ -248,6 +248,10 @@
             });
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         /**
          * Sets the component's priorityLibrariesSelectListItems array using the priority libraries data in state
          */

@@ -226,6 +226,10 @@
             });
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         /**
          * Sets treatmentLibraries with the treatmentLibraries state data
          */

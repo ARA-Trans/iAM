@@ -245,6 +245,10 @@
             });
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         /**
          * Sets the component's deficientLibrariesSelectListItems array using the deficient libraries data in state
          */

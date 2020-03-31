@@ -303,6 +303,10 @@
             });
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         @Watch('stateCashFlowLibraries')
         onStateCashFlowLibrariesChanged() {
             this.cashFlowLibrariesSelectListItems = this.stateCashFlowLibraries.map((cashFlowLibrary: CashFlowLibrary) => ({

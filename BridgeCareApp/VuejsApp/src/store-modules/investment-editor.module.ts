@@ -1,10 +1,13 @@
-import {emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
+import {CriteriaDrivenBudgets, emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
 import {any, append, clone, equals, find, findIndex, propEq, reject, update} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 import {http2XX} from '@/shared/utils/http-utils';
+import {getPropertyValues} from '@/shared/utils/getter-utils';
+import {sorter} from '@/shared/utils/sorter-utils';
+import ObjectID from 'bson-objectid';
 
 const state = {
     investmentLibraries: [] as InvestmentLibrary[],
@@ -17,13 +20,42 @@ const mutations = {
         state.investmentLibraries = clone(investmentLibraries);
     },
     selectedInvestmentLibraryMutator(state: any, libraryId: string) {
+        let selectedInvestmentLibrary: InvestmentLibrary = clone(emptyInvestmentLibrary);
+
         if (any(propEq('id', libraryId), state.investmentLibraries)) {
-            state.selectedInvestmentLibrary = find(propEq('id', libraryId), state.investmentLibraries);
+            selectedInvestmentLibrary = find(propEq('id', libraryId), state.investmentLibraries);
         } else if (state.scenarioInvestmentLibrary.id === libraryId) {
-            state.selectedInvestmentLibrary = clone(state.scenarioInvestmentLibrary);
-        } else {
-            state.selectedInvestmentLibrary = clone(emptyInvestmentLibrary);
+            selectedInvestmentLibrary = clone(state.scenarioInvestmentLibrary);
         }
+
+        if (!hasValue(selectedInvestmentLibrary.budgetOrder) && hasValue(selectedInvestmentLibrary.budgetYears)) {
+            selectedInvestmentLibrary.budgetOrder = sorter(
+                getPropertyValues('budgetName', selectedInvestmentLibrary.budgetYears)
+            ) as string[];
+        }
+
+        if (hasValue(selectedInvestmentLibrary.budgetOrder)) {
+            const orderedBudgetCriteria: CriteriaDrivenBudgets[] = [];
+
+            selectedInvestmentLibrary.budgetOrder.forEach((budget: string) => {
+                if (hasValue(selectedInvestmentLibrary.budgetCriteria)) {
+                    const criteriaBudget: CriteriaDrivenBudgets = find(
+                        propEq('budgetName', budget), selectedInvestmentLibrary.budgetCriteria) as CriteriaDrivenBudgets;
+                    orderedBudgetCriteria.push(criteriaBudget);
+                } else {
+                    orderedBudgetCriteria.push({
+                        scenarioId: isNaN(parseInt(selectedInvestmentLibrary.id)) ? 0 : parseInt(selectedInvestmentLibrary.id),
+                        _id: ObjectID.generate(),
+                        budgetName: budget,
+                        criteria: ''
+                    });
+                }
+            });
+
+            selectedInvestmentLibrary.budgetCriteria =  orderedBudgetCriteria;
+        }
+
+        state.selectedInvestmentLibrary = selectedInvestmentLibrary;
     },
     createdInvestmentLibraryMutator(state: any, createdInvestmentLibrary: InvestmentLibrary) {
         state.investmentLibraries = append(createdInvestmentLibrary, state.investmentLibraries);

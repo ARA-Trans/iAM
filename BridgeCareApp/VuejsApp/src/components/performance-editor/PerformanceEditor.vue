@@ -304,6 +304,10 @@
             this.setAttributesSelectListItems();
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         /**
          * Setter for the performanceLibrariesSelectListItems object
          */

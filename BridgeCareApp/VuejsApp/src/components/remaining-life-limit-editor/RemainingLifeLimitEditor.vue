@@ -209,6 +209,10 @@
             });
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         /**
          * Sets remainingLifeLimitLibraries with a copy of stateRemainingLifeLimitLibraries
          */
