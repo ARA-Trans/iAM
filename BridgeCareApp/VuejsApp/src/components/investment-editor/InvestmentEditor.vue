@@ -78,9 +78,10 @@
                                                        @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
                                             {{formatAsCurrency(props.item[header.value])}}
                                             <template slot="input">
-                                                <currency-input v-model="props.item[header.value]"
+                                                <v-text-field v-currency="currencyInputConfig" :value="formatAsCurrency(props.item[header.value])"
+                                                              v-model="props.item[header.value]"
                                                               label="Edit" single-line>
-                                                </currency-input>
+                                                </v-text-field>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
@@ -227,6 +228,7 @@
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        currencyInputConfig: any = {currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false};
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -606,16 +608,17 @@
         /**
          * Updates the selected investment library's specified budget year's budget's amount
          */
-        onEditBudgetYearAmount(year: number, budgetName: string, amount: number) {
+        onEditBudgetYearAmount(year: number, budgetName: string, amount: string) {
             if (any(propEq('year', year), this.selectedInvestmentLibrary.budgetYears) &&
                 any(propEq('budgetName', budgetName), this.selectedInvestmentLibrary.budgetYears)) {
+                const parsedAmount: number = parseFloat(amount.replace(/([$,])/g,''));
 
                 this.selectedInvestmentLibrary.budgetYears = this.selectedInvestmentLibrary.budgetYears
                     .map((budgetYear: InvestmentLibraryBudgetYear) => {
                         if (budgetYear.year === year && budgetYear.budgetName === budgetName) {
                             return {
                                 ...budgetYear,
-                                budgetAmount: amount
+                                budgetAmount: parsedAmount
                             };
                         }
                         return budgetYear;

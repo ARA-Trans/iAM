@@ -128,7 +128,8 @@
                                                        :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}"/>
                                                 <template slot="input">
                                                     <v-text-field v-currency="currencyInputConfig"
-                                                                  v-model.number="props.item.amount" label="Edit"
+                                                                  :value="formatAsCurrency(props.item.amount)" label="Edit"
+                                                                  v-model="props.item.amount"
                                                                   single-line
                                                                   :rules="[splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)]"/>
                                                 </template>
@@ -549,13 +550,20 @@
                 case 'rank':
                 case 'amount':
                 case 'percentage':
+                    const parsedAmount: any = hasValue(data.amount)
+                        ? parseFloat(data.amount.replace(/([$,])/g,''))
+                        : null;
+
                     cashFlowLibrary.splitTreatments = update(
                         findIndex(propEq('id', this.selectedSplitTreatment.id), cashFlowLibrary.splitTreatments),
                         clone({
                             ...this.selectedSplitTreatment,
                             splitTreatmentLimits: update(
                                 findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
-                                {...data, amount: hasValue(data.amount) ? data.amount : null} as SplitTreatmentLimit,
+                                {
+                                    ...data,
+                                    amount: parsedAmount
+                                } as SplitTreatmentLimit,
                                 this.selectedSplitTreatment.splitTreatmentLimits
                             )
                         }),
