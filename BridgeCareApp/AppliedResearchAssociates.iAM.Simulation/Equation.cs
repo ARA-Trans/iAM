@@ -14,7 +14,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
             {
                 if (_Expression != value)
                 {
-                    Calculator = Compiler.GetCalculator(_Expression = value);
+                    _Expression = value;
+
+                    Calculator = Compiler.GetCalculator(_Expression);
                 }
             }
         }

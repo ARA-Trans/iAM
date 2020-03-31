@@ -37,18 +37,20 @@ public partial class CalculateEvaluateParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		T__0=1, ID=2, WS=3;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
+		ID=10, NUMBER=11, WS=12;
 	public const int
-		RULE_r = 0;
+		RULE_root = 0, RULE_calc = 1, RULE_eval = 2, RULE_args = 3;
 	public static readonly string[] ruleNames = {
-		"r"
+		"root", "calc", "eval", "args"
 	};
 
 	private static readonly string[] _LiteralNames = {
-		null, "'hello'"
+		null, "'('", "')'", "'-'", "'*'", "'/'", "'+'", "'['", "']'", "','"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, null, "ID", "WS"
+		null, null, null, null, null, null, null, null, null, null, "ID", "NUMBER", 
+		"WS"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -82,32 +84,69 @@ public partial class CalculateEvaluateParser : Parser {
 		Interpreter = new ParserATNSimulator(this, _ATN, decisionToDFA, sharedContextCache);
 	}
 
-	public partial class RContext : ParserRuleContext {
-		public ITerminalNode ID() { return GetToken(CalculateEvaluateParser.ID, 0); }
-		public RContext(ParserRuleContext parent, int invokingState)
+	public partial class RootContext : ParserRuleContext {
+		public RootContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_r; } }
-		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
-			if (typedListener != null) typedListener.EnterR(this);
+		public override int RuleIndex { get { return RULE_root; } }
+	 
+		public RootContext() { }
+		public virtual void CopyFrom(RootContext context) {
+			base.CopyFrom(context);
 		}
-		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
-			if (typedListener != null) typedListener.ExitR(this);
+	}
+	public partial class EvaluationContext : RootContext {
+		public EvalContext eval() {
+			return GetRuleContext<EvalContext>(0);
+		}
+		public EvaluationContext(RootContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitEvaluation(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class CalculationContext : RootContext {
+		public CalcContext calc() {
+			return GetRuleContext<CalcContext>(0);
+		}
+		public CalculationContext(RootContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCalculation(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public RContext r() {
-		RContext _localctx = new RContext(Context, State);
-		EnterRule(_localctx, 0, RULE_r);
+	public RootContext root() {
+		RootContext _localctx = new RootContext(Context, State);
+		EnterRule(_localctx, 0, RULE_root);
 		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 2; Match(T__0);
-			State = 3; Match(ID);
+			State = 10;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case T__0:
+			case T__2:
+			case T__6:
+			case ID:
+			case NUMBER:
+				_localctx = new CalculationContext(_localctx);
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 8; calc(0);
+				}
+				break;
+			case Eof:
+				_localctx = new EvaluationContext(_localctx);
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 9; eval();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -121,13 +160,437 @@ public partial class CalculateEvaluateParser : Parser {
 		return _localctx;
 	}
 
+	public partial class CalcContext : ParserRuleContext {
+		public CalcContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_calc; } }
+	 
+		public CalcContext() { }
+		public virtual void CopyFrom(CalcContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class MultiplicationContext : CalcContext {
+		public CalcContext[] calc() {
+			return GetRuleContexts<CalcContext>();
+		}
+		public CalcContext calc(int i) {
+			return GetRuleContext<CalcContext>(i);
+		}
+		public MultiplicationContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitMultiplication(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class AdditionContext : CalcContext {
+		public CalcContext[] calc() {
+			return GetRuleContexts<CalcContext>();
+		}
+		public CalcContext calc(int i) {
+			return GetRuleContext<CalcContext>(i);
+		}
+		public AdditionContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAddition(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class SubtractionContext : CalcContext {
+		public CalcContext[] calc() {
+			return GetRuleContexts<CalcContext>();
+		}
+		public CalcContext calc(int i) {
+			return GetRuleContext<CalcContext>(i);
+		}
+		public SubtractionContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitSubtraction(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class InvocationContext : CalcContext {
+		public ITerminalNode ID() { return GetToken(CalculateEvaluateParser.ID, 0); }
+		public ArgsContext args() {
+			return GetRuleContext<ArgsContext>(0);
+		}
+		public InvocationContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitInvocation(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NegationContext : CalcContext {
+		public CalcContext calc() {
+			return GetRuleContext<CalcContext>(0);
+		}
+		public NegationContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNegation(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class NumericLiteralContext : CalcContext {
+		public ITerminalNode NUMBER() { return GetToken(CalculateEvaluateParser.NUMBER, 0); }
+		public NumericLiteralContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitNumericLiteral(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ParameterReferenceContext : CalcContext {
+		public ITerminalNode ID() { return GetToken(CalculateEvaluateParser.ID, 0); }
+		public ParameterReferenceContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitParameterReference(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class GroupingContext : CalcContext {
+		public CalcContext calc() {
+			return GetRuleContext<CalcContext>(0);
+		}
+		public GroupingContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitGrouping(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class DivisionContext : CalcContext {
+		public CalcContext[] calc() {
+			return GetRuleContexts<CalcContext>();
+		}
+		public CalcContext calc(int i) {
+			return GetRuleContext<CalcContext>(i);
+		}
+		public DivisionContext(CalcContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDivision(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public CalcContext calc() {
+		return calc(0);
+	}
+
+	private CalcContext calc(int _p) {
+		ParserRuleContext _parentctx = Context;
+		int _parentState = State;
+		CalcContext _localctx = new CalcContext(Context, _parentState);
+		CalcContext _prevctx = _localctx;
+		int _startState = 2;
+		EnterRecursionRule(_localctx, 2, RULE_calc, _p);
+		int _la;
+		try {
+			int _alt;
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 29;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case ID:
+				{
+				_localctx = new InvocationContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+
+				State = 13; Match(ID);
+				State = 14; Match(T__0);
+				State = 16;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << T__6) | (1L << ID) | (1L << NUMBER))) != 0)) {
+					{
+					State = 15; args();
+					}
+				}
+
+				State = 18; Match(T__1);
+				}
+				break;
+			case T__2:
+				{
+				_localctx = new NegationContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 19; Match(T__2);
+				State = 20; calc(8);
+				}
+				break;
+			case T__6:
+				{
+				_localctx = new ParameterReferenceContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 21; Match(T__6);
+				State = 22; Match(ID);
+				State = 23; Match(T__7);
+				}
+				break;
+			case NUMBER:
+				{
+				_localctx = new NumericLiteralContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 24; Match(NUMBER);
+				}
+				break;
+			case T__0:
+				{
+				_localctx = new GroupingContext(_localctx);
+				Context = _localctx;
+				_prevctx = _localctx;
+				State = 25; Match(T__0);
+				State = 26; calc(0);
+				State = 27; Match(T__1);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+			Context.Stop = TokenStream.LT(-1);
+			State = 45;
+			ErrorHandler.Sync(this);
+			_alt = Interpreter.AdaptivePredict(TokenStream,4,Context);
+			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					if ( ParseListeners!=null )
+						TriggerExitRuleEvent();
+					_prevctx = _localctx;
+					{
+					State = 43;
+					ErrorHandler.Sync(this);
+					switch ( Interpreter.AdaptivePredict(TokenStream,3,Context) ) {
+					case 1:
+						{
+						_localctx = new MultiplicationContext(new CalcContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_calc);
+						State = 31;
+						if (!(Precpred(Context, 7))) throw new FailedPredicateException(this, "Precpred(Context, 7)");
+						State = 32; Match(T__3);
+						State = 33; calc(8);
+						}
+						break;
+					case 2:
+						{
+						_localctx = new DivisionContext(new CalcContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_calc);
+						State = 34;
+						if (!(Precpred(Context, 6))) throw new FailedPredicateException(this, "Precpred(Context, 6)");
+						State = 35; Match(T__4);
+						State = 36; calc(7);
+						}
+						break;
+					case 3:
+						{
+						_localctx = new AdditionContext(new CalcContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_calc);
+						State = 37;
+						if (!(Precpred(Context, 5))) throw new FailedPredicateException(this, "Precpred(Context, 5)");
+						State = 38; Match(T__5);
+						State = 39; calc(6);
+						}
+						break;
+					case 4:
+						{
+						_localctx = new SubtractionContext(new CalcContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_calc);
+						State = 40;
+						if (!(Precpred(Context, 4))) throw new FailedPredicateException(this, "Precpred(Context, 4)");
+						State = 41; Match(T__2);
+						State = 42; calc(5);
+						}
+						break;
+					}
+					} 
+				}
+				State = 47;
+				ErrorHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(TokenStream,4,Context);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			UnrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public partial class EvalContext : ParserRuleContext {
+		public EvalContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_eval; } }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitEval(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public EvalContext eval() {
+		EvalContext _localctx = new EvalContext(Context, State);
+		EnterRule(_localctx, 4, RULE_eval);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ArgsContext : ParserRuleContext {
+		public CalcContext[] calc() {
+			return GetRuleContexts<CalcContext>();
+		}
+		public CalcContext calc(int i) {
+			return GetRuleContext<CalcContext>(i);
+		}
+		public ArgsContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_args; } }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitArgs(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public ArgsContext args() {
+		ArgsContext _localctx = new ArgsContext(Context, State);
+		EnterRule(_localctx, 6, RULE_args);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 50; calc(0);
+			State = 55;
+			ErrorHandler.Sync(this);
+			_la = TokenStream.LA(1);
+			while (_la==T__8) {
+				{
+				{
+				State = 51; Match(T__8);
+				State = 52; calc(0);
+				}
+				}
+				State = 57;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public override bool Sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+		switch (ruleIndex) {
+		case 1: return calc_sempred((CalcContext)_localctx, predIndex);
+		}
+		return true;
+	}
+	private bool calc_sempred(CalcContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 0: return Precpred(Context, 7);
+		case 1: return Precpred(Context, 6);
+		case 2: return Precpred(Context, 5);
+		case 3: return Precpred(Context, 4);
+		}
+		return true;
+	}
+
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '\x5', '\b', '\x4', '\x2', '\t', '\x2', '\x3', '\x2', 
-		'\x3', '\x2', '\x3', '\x2', '\x3', '\x2', '\x2', '\x2', '\x3', '\x2', 
-		'\x2', '\x2', '\x2', '\x6', '\x2', '\x4', '\x3', '\x2', '\x2', '\x2', 
-		'\x4', '\x5', '\a', '\x3', '\x2', '\x2', '\x5', '\x6', '\a', '\x4', '\x2', 
-		'\x2', '\x6', '\x3', '\x3', '\x2', '\x2', '\x2', '\x2',
+		'\x5964', '\x3', '\xE', '=', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x3', 
+		'\x2', '\x3', '\x2', '\x5', '\x2', '\r', '\n', '\x2', '\x3', '\x3', '\x3', 
+		'\x3', '\x3', '\x3', '\x3', '\x3', '\x5', '\x3', '\x13', '\n', '\x3', 
+		'\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
+		'\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
+		'\x3', '\x3', '\x5', '\x3', ' ', '\n', '\x3', '\x3', '\x3', '\x3', '\x3', 
+		'\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
+		'\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
+		'\a', '\x3', '.', '\n', '\x3', '\f', '\x3', '\xE', '\x3', '\x31', '\v', 
+		'\x3', '\x3', '\x4', '\x3', '\x4', '\x3', '\x5', '\x3', '\x5', '\x3', 
+		'\x5', '\a', '\x5', '\x38', '\n', '\x5', '\f', '\x5', '\xE', '\x5', ';', 
+		'\v', '\x5', '\x3', '\x5', '\x2', '\x3', '\x4', '\x6', '\x2', '\x4', '\x6', 
+		'\b', '\x2', '\x2', '\x2', '\x43', '\x2', '\f', '\x3', '\x2', '\x2', '\x2', 
+		'\x4', '\x1F', '\x3', '\x2', '\x2', '\x2', '\x6', '\x32', '\x3', '\x2', 
+		'\x2', '\x2', '\b', '\x34', '\x3', '\x2', '\x2', '\x2', '\n', '\r', '\x5', 
+		'\x4', '\x3', '\x2', '\v', '\r', '\x5', '\x6', '\x4', '\x2', '\f', '\n', 
+		'\x3', '\x2', '\x2', '\x2', '\f', '\v', '\x3', '\x2', '\x2', '\x2', '\r', 
+		'\x3', '\x3', '\x2', '\x2', '\x2', '\xE', '\xF', '\b', '\x3', '\x1', '\x2', 
+		'\xF', '\x10', '\a', '\f', '\x2', '\x2', '\x10', '\x12', '\a', '\x3', 
+		'\x2', '\x2', '\x11', '\x13', '\x5', '\b', '\x5', '\x2', '\x12', '\x11', 
+		'\x3', '\x2', '\x2', '\x2', '\x12', '\x13', '\x3', '\x2', '\x2', '\x2', 
+		'\x13', '\x14', '\x3', '\x2', '\x2', '\x2', '\x14', ' ', '\a', '\x4', 
+		'\x2', '\x2', '\x15', '\x16', '\a', '\x5', '\x2', '\x2', '\x16', ' ', 
+		'\x5', '\x4', '\x3', '\n', '\x17', '\x18', '\a', '\t', '\x2', '\x2', '\x18', 
+		'\x19', '\a', '\f', '\x2', '\x2', '\x19', ' ', '\a', '\n', '\x2', '\x2', 
+		'\x1A', ' ', '\a', '\r', '\x2', '\x2', '\x1B', '\x1C', '\a', '\x3', '\x2', 
+		'\x2', '\x1C', '\x1D', '\x5', '\x4', '\x3', '\x2', '\x1D', '\x1E', '\a', 
+		'\x4', '\x2', '\x2', '\x1E', ' ', '\x3', '\x2', '\x2', '\x2', '\x1F', 
+		'\xE', '\x3', '\x2', '\x2', '\x2', '\x1F', '\x15', '\x3', '\x2', '\x2', 
+		'\x2', '\x1F', '\x17', '\x3', '\x2', '\x2', '\x2', '\x1F', '\x1A', '\x3', 
+		'\x2', '\x2', '\x2', '\x1F', '\x1B', '\x3', '\x2', '\x2', '\x2', ' ', 
+		'/', '\x3', '\x2', '\x2', '\x2', '!', '\"', '\f', '\t', '\x2', '\x2', 
+		'\"', '#', '\a', '\x6', '\x2', '\x2', '#', '.', '\x5', '\x4', '\x3', '\n', 
+		'$', '%', '\f', '\b', '\x2', '\x2', '%', '&', '\a', '\a', '\x2', '\x2', 
+		'&', '.', '\x5', '\x4', '\x3', '\t', '\'', '(', '\f', '\a', '\x2', '\x2', 
+		'(', ')', '\a', '\b', '\x2', '\x2', ')', '.', '\x5', '\x4', '\x3', '\b', 
+		'*', '+', '\f', '\x6', '\x2', '\x2', '+', ',', '\a', '\x5', '\x2', '\x2', 
+		',', '.', '\x5', '\x4', '\x3', '\a', '-', '!', '\x3', '\x2', '\x2', '\x2', 
+		'-', '$', '\x3', '\x2', '\x2', '\x2', '-', '\'', '\x3', '\x2', '\x2', 
+		'\x2', '-', '*', '\x3', '\x2', '\x2', '\x2', '.', '\x31', '\x3', '\x2', 
+		'\x2', '\x2', '/', '-', '\x3', '\x2', '\x2', '\x2', '/', '\x30', '\x3', 
+		'\x2', '\x2', '\x2', '\x30', '\x5', '\x3', '\x2', '\x2', '\x2', '\x31', 
+		'/', '\x3', '\x2', '\x2', '\x2', '\x32', '\x33', '\x3', '\x2', '\x2', 
+		'\x2', '\x33', '\a', '\x3', '\x2', '\x2', '\x2', '\x34', '\x39', '\x5', 
+		'\x4', '\x3', '\x2', '\x35', '\x36', '\a', '\v', '\x2', '\x2', '\x36', 
+		'\x38', '\x5', '\x4', '\x3', '\x2', '\x37', '\x35', '\x3', '\x2', '\x2', 
+		'\x2', '\x38', ';', '\x3', '\x2', '\x2', '\x2', '\x39', '\x37', '\x3', 
+		'\x2', '\x2', '\x2', '\x39', ':', '\x3', '\x2', '\x2', '\x2', ':', '\t', 
+		'\x3', '\x2', '\x2', '\x2', ';', '\x39', '\x3', '\x2', '\x2', '\x2', '\b', 
+		'\f', '\x12', '\x1F', '-', '/', '\x39',
 	};
 
 	public static readonly ATN _ATN =

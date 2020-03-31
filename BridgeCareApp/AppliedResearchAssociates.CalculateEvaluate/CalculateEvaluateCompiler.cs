@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
@@ -9,32 +10,33 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 {
     public class CalculateEvaluateCompiler
     {
-        public Dictionary<string, Type> Parameters { get; } = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, ParameterType> Parameters { get; } = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
 
-        public Func<CalculationArguments, double> GetCalculator(string expression)
+        public Func<CalculationArguments, double> GetCalculator(string expressionText)
         {
-            var listener = GetListener(expression, parser => parser.r());
-            return listener.Calculator;
+            var calculator = Compile<Func<CalculationArguments, double>>(expressionText);
+            return calculator;
         }
 
-        public Func<EvaluationArguments, bool> GetEvaluator(string expression)
+        public Func<EvaluationArguments, bool> GetEvaluator(string expressionText)
         {
-            var listener = GetListener(expression, parser => parser.r());
-            return listener.Evaluator;
+            var evaluator = Compile<Func<EvaluationArguments, bool>>(expressionText);
+            return evaluator;
         }
 
-        private readonly ConcurrentDictionary<TokenKey[], WeakReference<CalculateEvaluateCompilerListener>> Cache = new ConcurrentDictionary<TokenKey[], WeakReference<CalculateEvaluateCompilerListener>>(SequenceEqualityComparer<TokenKey>.Instance);
+        // Cache-maintenance logic needs work.
+        private readonly ConcurrentDictionary<TokenKey[], WeakReference<Delegate>> Cache = new ConcurrentDictionary<TokenKey[], WeakReference<Delegate>>(SequenceEqualityComparer<TokenKey>.Instance);
 
         private readonly ConcurrentBag<TokenKey[]> InvalidatedKeys = new ConcurrentBag<TokenKey[]>();
 
-        private CalculateEvaluateCompilerListener GetListener(string expression, Func<CalculateEvaluateParser, IParseTree> getParseTree)
+        private T Compile<T>(string expressionText) where T : Delegate
         {
-            var input = new AntlrInputStream(expression);
+            var input = new AntlrInputStream(expressionText);
             var lexer = new CalculateEvaluateLexer(input);
-            var tokens = lexer.GetAllTokens();
+            // query cache
 
-            var tokenKeys = tokens.Select(TokenKey.Of).ToArray();
-
+            //var tokens = lexer.GetAllTokens();
+            //var tokenKeys = tokens.Select(TokenKey.Of).ToArray();
             //var containsKey = false;
             //if (Cache.TryGetValue(tokenKeys, out var value))
             //{
@@ -43,17 +45,24 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             //        return listener;
             //    }
             //}
+            //var tokenSource = new ListTokenSource(tokens);
+            //var tokenStream = new CommonTokenStream(tokenSource);
 
-            var tokenSource = new ListTokenSource(tokens);
-            var tokenStream = new CommonTokenStream(tokenSource);
+            var tokenStream = new CommonTokenStream(lexer);
             var parser = new CalculateEvaluateParser(tokenStream);
-            var tree = getParseTree(parser);
-            var listener = new CalculateEvaluateCompilerListener(Parameters);
-            ParseTreeWalker.Default.Walk(listener, tree);
+            var tree = parser.root();
+            var visitor = new CalculateEvaluateCompilerVisitor(Parameters);
+            var expression = (LambdaExpression)visitor.Visit(tree);
+
+            //var listener = new CalculateEvaluateCompilerListener(Parameters);
+            //ParseTreeWalker.Default.Walk(listener, tree);
+
+            var compiledExpression = (T)expression.Compile();
+            // update cache
 
             //Cache[tokenKeys] = listener.GetWeakReference();
 
-            return listener;
+            return compiledExpression;
         }
 
         private struct TokenKey : IEquatable<TokenKey>

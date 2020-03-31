@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace AppliedResearchAssociates.iAM.Simulation
@@ -12,13 +13,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
             {
                 if (_Expression != value)
                 {
-                    Data.Clear();
+                    _Expression = value;
 
-                    foreach (Match match in CoordinatePattern.Matches(_Expression = value))
+                    Data.Clear();
+                    var match = Pattern.Match(_Expression);
+                    foreach (var group in match.Groups.Cast<Group>().Skip(1))
                     {
-                        var coordinate = match.Groups[1].Value.Split(',');
-                        var input = int.Parse(coordinate[0]);
-                        var output = double.Parse(coordinate[1]);
+                        var datum = group.Value.Split(',');
+                        var input = int.Parse(datum[0]);
+                        var output = double.Parse(datum[1]);
                         Data.Add(input, output);
                     }
                 }
@@ -27,7 +30,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public double this[int index] => Data[index];
 
-        private static readonly Regex CoordinatePattern = new Regex(@"\((.*?)\)");
+        private static readonly Regex Pattern = new Regex(@"\A(?:\((.*?)\))*\z");
 
         private readonly Dictionary<int, double> Data = new Dictionary<int, double>();
 
