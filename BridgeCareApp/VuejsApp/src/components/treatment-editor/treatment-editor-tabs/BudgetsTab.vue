@@ -65,13 +65,13 @@
         ];
         budgets: BudgetGridRow[] = [];
         selectedBudgets: BudgetGridRow[] = [];
+        selectedBudgetsTimeout: any | null = null;
 
         @Watch('budgetsTabData')
         onBudgetsTabDataChanged() {
+            this.budgetsTabScenarioInvestmentLibrary = this.budgetsTabData.tabScenarioInvestmentLibrary;
             this.budgetsTabSelectedTreatmentLibrary = this.budgetsTabData.tabSelectedTreatmentLibrary;
             this.budgetsTabSelectedTreatment = this.budgetsTabData.tabSelectedTreatment;
-            this.budgetsTabScenarioInvestmentLibrary = this.budgetsTabData.tabScenarioInvestmentLibrary;
-            this.selectedBudgets = this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}));
         }
 
         @Watch('budgetsTabScenarioInvestmentLibrary')
@@ -86,6 +86,13 @@
             } else {
                 this.budgets = [];
             }
+        }
+
+        @Watch('budgetsTabSelectedTreatment')
+        onBudgetsTabSelectedTreatmentChanged() {
+            this.selectedBudgets = hasValue(this.budgetsTabSelectedTreatment.budgets)
+                ? this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}))
+                : [];
         }
 
         @Watch('selectedBudgets')
