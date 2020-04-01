@@ -7,7 +7,8 @@ import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils
 import {http2XX} from '@/shared/utils/http-utils';
 import {getPropertyValues} from '@/shared/utils/getter-utils';
 import {sorter} from '@/shared/utils/sorter-utils';
-import ObjectID from 'bson-objectid';
+
+const ObjectID = require('bson-objectid');
 
 const state = {
     investmentLibraries: [] as InvestmentLibrary[],
