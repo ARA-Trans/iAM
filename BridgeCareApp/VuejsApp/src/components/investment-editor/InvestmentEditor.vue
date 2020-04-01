@@ -576,7 +576,7 @@
                         }))
                 },
                 objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
-            }).then(() => this.onDiscardChanges())
+            }).then(() => this.onDiscardChanges());
         }
 
         /**

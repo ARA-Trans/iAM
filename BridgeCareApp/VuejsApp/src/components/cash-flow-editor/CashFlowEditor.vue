@@ -412,7 +412,7 @@
                 ...this.selectedCashFlowLibrary,
                 splitTreatments: this.selectedCashFlowLibrary.splitTreatments
                     .filter((splitTreatment: SplitTreatment) => splitTreatment.id !== deletedSplitTreatment.id)
-            }
+            };
         }
 
         onAddSplitTreatmentLimit() {
