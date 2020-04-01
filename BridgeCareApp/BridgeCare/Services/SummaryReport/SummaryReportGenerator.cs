@@ -106,7 +106,7 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, (int)simulationId, workSummaryModel.Treatments);
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationModel, workSummaryModel.Treatments);
 
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - work summary TAB");

@@ -10,5 +10,6 @@ namespace BridgeCare.Interfaces.SummaryReport
     {
         List<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel model, BridgeCareContext db);
         List<WorkSummaryByBudgetModel> GetCommittedProjectsBudget(SimulationModel simulationModel, BridgeCareContext dbContext);
+        List<WorkSummaryByBudgetModel> GetAllCommittedProjects(SimulationModel simulationModel, BridgeCareContext dbContext);
     }
 }

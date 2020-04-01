@@ -18,11 +18,12 @@ namespace BridgeCare.Services
         private readonly PostedClosedBridgeWorkSummary postedClosedBridgeWorkSummary;
         private readonly DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary;
         private readonly IWorkSummaryByBudget workSummaryByBudgetData;
+        private readonly IBridgeData bridgeData;
 
         public BridgeWorkSummary(CostBudgetsWorkSummary costBudgetsWorkSummary, BridgesCulvertsWorkSummary bridgesCulvertsWorkSummary,
             BridgeRateDeckAreaWorkSummary bridgeRateDeckAreaWorkSummary, IBridgeWorkSummaryData bridgeWorkSummaryData,
             NHSBridgeDeckAreaWorkSummary nhsBridgeDeckAreaWorkSummary, PostedClosedBridgeWorkSummary postedClosedBridgeWorkSummary,
-            DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary, IWorkSummaryByBudget summaryByBudget)
+            DeckAreaBridgeWorkSummary deckAreaBridgeWorkSummary, IWorkSummaryByBudget summaryByBudget, IBridgeData bridgeData)
         {
             this.costBudgetsWorkSummary = costBudgetsWorkSummary ?? throw new ArgumentNullException(nameof(costBudgetsWorkSummary));
             this.bridgesCulvertsWorkSummary = bridgesCulvertsWorkSummary ?? throw new ArgumentNullException(nameof(bridgesCulvertsWorkSummary));
@@ -32,6 +33,7 @@ namespace BridgeCare.Services
             this.postedClosedBridgeWorkSummary = postedClosedBridgeWorkSummary ?? throw new ArgumentNullException(nameof(postedClosedBridgeWorkSummary));
             this.deckAreaBridgeWorkSummary = deckAreaBridgeWorkSummary ?? throw new ArgumentNullException(nameof(deckAreaBridgeWorkSummary));
             workSummaryByBudgetData = summaryByBudget ?? throw new ArgumentNullException(nameof(summaryByBudget));
+            this.bridgeData = bridgeData ?? throw new ArgumentNullException(nameof(bridgeData));
         }
 
         /// <summary>
@@ -44,11 +46,12 @@ namespace BridgeCare.Services
         /// <param name="dbContext"></param>
         /// <param name="simulationId"></param>        
         /// <returns>ChartRowsModel object for usage in other tab reports.</returns>
-        public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, List<int> simulationYears, BridgeCareContext dbContext, int simulationId, List<string> treatments)
+        public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, List<int> simulationYears, BridgeCareContext dbContext, SimulationModel simulationModel, List<string> treatments)
         {
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
-            var yearlyBudgetModels = bridgeWorkSummaryData.GetYearlyBudgetModels(simulationId, dbContext);
-            var comittedProjectsData = workSummaryByBudgetData.GetCommittedProjectsBudget(new SimulationModel { simulationId = simulationId }, dbContext);
+            var yearlyBudgetModels = bridgeWorkSummaryData.GetYearlyBudgetModels(simulationModel.simulationId, dbContext);
+
+            var comittedProjectsData = workSummaryByBudgetData.GetAllCommittedProjects(simulationModel, dbContext);
 
             costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetModels, treatments, comittedProjectsData);
 
