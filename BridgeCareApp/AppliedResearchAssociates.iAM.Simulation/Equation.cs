@@ -21,12 +21,12 @@ namespace AppliedResearchAssociates.iAM.Simulation
             }
         }
 
-        public double Calculate(CalculationArguments arguments) => Calculator(arguments);
+        public double Calculate(CalculatorArgument arguments) => Calculator(arguments);
 
         private readonly CalculateEvaluateCompiler Compiler;
 
         private string _Expression;
 
-        private Func<CalculationArguments, double> Calculator;
+        private Func<CalculatorArgument, double> Calculator;
     }
 }

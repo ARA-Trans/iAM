@@ -21,12 +21,12 @@ namespace AppliedResearchAssociates.iAM.Simulation
             }
         }
 
-        public bool Evaluate(EvaluationArguments arguments) => Evaluator(arguments);
+        public bool Evaluate(EvaluatorArgument arguments) => Evaluator(arguments);
 
         private readonly CalculateEvaluateCompiler Compiler;
 
         private string _Expression;
 
-        private Func<EvaluationArguments, bool> Evaluator;
+        private Func<EvaluatorArgument, bool> Evaluator;
     }
 }

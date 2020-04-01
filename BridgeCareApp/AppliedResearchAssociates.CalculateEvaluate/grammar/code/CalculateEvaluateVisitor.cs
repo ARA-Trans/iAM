@@ -47,6 +47,13 @@ public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitEvaluation([NotNull] CalculateEvaluateParser.EvaluationContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>ConstantReference</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>Multiplication</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
 	/// </summary>

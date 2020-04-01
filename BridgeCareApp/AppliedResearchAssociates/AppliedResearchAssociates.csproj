@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,13 +9,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="HashCode.Combine.tt">
-      <LastGenOutput>HashCode.Combine.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
     <None Update="Choice.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>HashCode.Combine.cs</LastGenOutput>
+      <LastGenOutput>Choice.cs</LastGenOutput>
+    </None>
+    <None Update="ValueTupleEqualityComparer.tt">
+      <LastGenOutput>ValueTupleEqualityComparer.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
     </None>
     <None Update="Zip.ToTuples.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -28,20 +28,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Choice - Copy.cs">
+    <Compile Update="Choice.cs">
       <DependentUpon>Choice.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="HashCode.Combine.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>HashCode.Combine.tt</DependentUpon>
-    </Compile>
     <Compile Update="Zip.ToTuples.cs">
+      <DependentUpon>Zip.ToTuples.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Zip.ToTuples.tt</DependentUpon>
+    </Compile>
+    <Compile Update="ValueTupleEqualityComparer.cs">
+      <DependentUpon>ValueTupleEqualityComparer.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
   </ItemGroup>
 

@@ -1,0 +1,29 @@
+{
+    "antlr4.format": {
+        "alignTrailingComments": true,
+        "allowShortBlocksOnASingleLine": true,
+        "breakBeforeBraces": false,
+        "columnLimit": 100,
+        "continuationIndentWidth": 3,
+        "indentWidth": 3,
+        "keepEmptyLinesAtTheStartOfBlocks": false,
+        "maxEmptyLinesToKeep": 1,
+        "reflowComments": true,
+        "spaceBeforeAssignmentOperators": true,
+        "tabWidth": 3,
+        "useTab": false,
+        "alignColons": "hanging",
+        "singleLineOverrulesHangingColon": true,
+        "allowShortRulesOnASingleLine": false,
+        "alignSemicolons": "hanging",
+        "breakBeforeParens": false,
+        "ruleInternalsOnSingleLine": false,
+        "minEmptyLines": 1,
+        "groupedAlignments": true,
+        "alignFirstTokens": true,
+        "alignLexerCommands": true,
+        "alignActions": true,
+        "alignLabels": true,
+        "alignTrailers": true
+    }
+}

@@ -1,0 +1,64 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// WARNING: This file was automatically generated from a T4 text template at the
+// following moment in time: <#= DateTimeOffset.Now #>. Any changes you make to
+// this file will be lost when this file is regenerated from the template
+// source.
+
+using System;
+using System.Collections.Generic;
+
+namespace AppliedResearchAssociates
+{
+    public static class ValueTupleEqualityComparer
+    {
+<#
+foreach (var arity in Enumerable.Range(2, 7))
+{
+    var labelNumbers = Enumerable.Range(1, arity).ToList();
+    var typeParams = string.Join(", ", labelNumbers.Select(n => $"T{n}"));
+    var tupleType = $"({typeParams})";
+    var factoryParams = string.Join(", ", labelNumbers.Select(n => $"IEqualityComparer<T{n}> t{n} = null"));
+    var ctorArgs = string.Join(", ", labelNumbers.Select(n => $"t{n}"));
+    var ctorParams = string.Join(", ", labelNumbers.Select(n => $"IEqualityComparer<T{n}> comparer{n}"));
+    var equalsBody = string.Join(" && ", labelNumbers.Select(n => $"Comparer{n}.Equals(x.Item{n}, y.Item{n})"));
+    var hashArgs = string.Join(", ", labelNumbers.Select(n => $"Comparer{n}.GetHashCode(obj.Item{n})"));
+#>
+        public static IEqualityComparer<<#= tupleType #>> Create<<#= typeParams #>>(<#= factoryParams #>) => new _ValueTupleEqualityComparer<<#= typeParams #>>(<#= ctorArgs #>);
+
+        private sealed class _ValueTupleEqualityComparer<<#= typeParams #>> : EqualityComparer<<#= tupleType #>>
+        {
+            public _ValueTupleEqualityComparer(<#= ctorParams #>)
+            {
+<#
+    foreach (var n in labelNumbers)
+    {
+#>
+                Comparer<#= n #> = comparer<#= n #> ?? EqualityComparer<T<#= n #>>.Default;
+<#
+    }
+#>
+            }
+
+            public override bool Equals(<#= tupleType #> x, <#= tupleType #> y) => <#= equalsBody #>;
+
+            public override int GetHashCode(<#= tupleType #> obj) => HashCode.Combine(<#= hashArgs #>);
+
+<#
+    foreach (var n in labelNumbers)
+    {
+#>
+            private readonly IEqualityComparer<T<#= n #>> Comparer<#= n #>;
+<#
+    }
+#>
+        }
+
+<#
+}
+#>
+    }
+}

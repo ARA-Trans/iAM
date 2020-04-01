@@ -4,80 +4,64 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
+    public delegate T Calculator<T>(CalculatorArgument<T> argument);
+
+    public delegate T Evaluator<T>(EvaluatorArgument<T> argument);
+
     public class CalculateEvaluateCompiler
     {
-        public Dictionary<string, ParameterType> Parameters { get; } = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
+        public IDictionary<string, ParameterType> Parameters => _Parameters;
 
-        public Func<CalculationArguments, double> GetCalculator(string expressionText)
+        public Calculator<double> GetCalculator(string expression) => (Calculator<double>)Compile(expression, double.Parse);
+
+        public Evaluator<double> GetEvaluator(string expression) => (Evaluator<double>)Compile(expression, double.Parse);
+
+        public Calculator<decimal> GetMonetaryCalculator(string expression) => (Calculator<decimal>)Compile(expression, decimal.Parse);
+
+        public Evaluator<decimal> GetMonetaryEvaluator(string expression) => (Evaluator<decimal>)Compile(expression, decimal.Parse);
+
+        private readonly ConcurrentDictionary<string, ParameterType> _Parameters = new ConcurrentDictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly ConcurrentDictionary<(string, int)[], WeakReference<Delegate>> Cache = new ConcurrentDictionary<(string, int)[], WeakReference<Delegate>>(SequenceEqualityComparer.With(ValueTupleEqualityComparer.Create<string, int>(StringComparer.OrdinalIgnoreCase)));
+
+        private readonly ConcurrentBag<(string, int)[]> InvalidatedKeys = new ConcurrentBag<(string, int)[]>(); // TODO: supercat's "finasposer"
+
+        private Delegate Compile<T>(string expression, Func<string, T> parseNumber)
         {
-            var calculator = Compile<Func<CalculationArguments, double>>(expressionText);
-            return calculator;
-        }
+            // allow cache toggle on/off, then benchmark.
 
-        public Func<EvaluationArguments, bool> GetEvaluator(string expressionText)
-        {
-            var evaluator = Compile<Func<EvaluationArguments, bool>>(expressionText);
-            return evaluator;
-        }
+            while (InvalidatedKeys.TryTake(out var invalidatedKey))
+            {
+                _ = Cache.TryRemove(invalidatedKey, out _);
+            }
 
-        // Cache-maintenance logic needs work.
-        private readonly ConcurrentDictionary<TokenKey[], WeakReference<Delegate>> Cache = new ConcurrentDictionary<TokenKey[], WeakReference<Delegate>>(SequenceEqualityComparer<TokenKey>.Instance);
-
-        private readonly ConcurrentBag<TokenKey[]> InvalidatedKeys = new ConcurrentBag<TokenKey[]>();
-
-        private T Compile<T>(string expressionText) where T : Delegate
-        {
-            var input = new AntlrInputStream(expressionText);
+            var input = new AntlrInputStream(expression);
             var lexer = new CalculateEvaluateLexer(input);
-            // query cache
+            var tokens = lexer.GetAllTokens();
 
-            //var tokens = lexer.GetAllTokens();
-            //var tokenKeys = tokens.Select(TokenKey.Of).ToArray();
-            //var containsKey = false;
-            //if (Cache.TryGetValue(tokenKeys, out var value))
-            //{
-            //    if (value.TryGetTarget(out var listener))
-            //    {
-            //        return listener;
-            //    }
-            //}
-            //var tokenSource = new ListTokenSource(tokens);
-            //var tokenStream = new CommonTokenStream(tokenSource);
+            var key = tokens.Select(token => (token.Text, token.Type)).ToArray();
+            if (Cache.TryGetValue(key, out var weakReference))
+            {
+                if (weakReference.TryGetTarget(out var cachedLambda))
+                {
+                    return cachedLambda;
+                }
+            }
 
-            var tokenStream = new CommonTokenStream(lexer);
+            var tokenSource = new ListTokenSource(tokens);
+            var tokenStream = new CommonTokenStream(tokenSource);
             var parser = new CalculateEvaluateParser(tokenStream);
             var tree = parser.root();
-            var visitor = new CalculateEvaluateCompilerVisitor(Parameters);
-            var expression = (LambdaExpression)visitor.Visit(tree);
+            var visitor = new CalculateEvaluateCompilerVisitor<T>(_Parameters, parseNumber);
+            var lambdaExpression = (LambdaExpression)visitor.Visit(tree);
+            var lambda = lambdaExpression.Compile();
 
-            //var listener = new CalculateEvaluateCompilerListener(Parameters);
-            //ParseTreeWalker.Default.Walk(listener, tree);
+            _ = Cache.TryAdd(key, lambda.GetWeakReference());
 
-            var compiledExpression = (T)expression.Compile();
-            // update cache
-
-            //Cache[tokenKeys] = listener.GetWeakReference();
-
-            return compiledExpression;
-        }
-
-        private struct TokenKey : IEquatable<TokenKey>
-        {
-            public string Text { get; private set; }
-
-            public int Type { get; private set; }
-
-            public static TokenKey Of(IToken token) => new TokenKey { Text = token.Text, Type = token.Type };
-
-            public bool Equals(TokenKey other) => Text == other.Text && Type == other.Type;
-
-            public override bool Equals(object obj) => obj is TokenKey key && Equals(key);
-
-            public override int GetHashCode() => HashCode.Combine(Text, Type);
+            return lambda;
         }
     }
 }

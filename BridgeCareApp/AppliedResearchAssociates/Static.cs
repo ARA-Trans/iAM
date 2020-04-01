@@ -9,20 +9,22 @@ namespace AppliedResearchAssociates
     {
         public static IDisposable AsDisposable(this IEnumerable<IDisposable> source) => new AggregateDisposable(source);
 
-        public static int CombineHashCodes(this IEnumerable values) => values.Cast<object>().CombineHashCodes();
+        public static int CombineHashCodes(this IEnumerable values, IEqualityComparer equalityComparer = null) => values.Cast<object>().CombineHashCodes(equalityComparer);
 
-        public static int CombineHashCodes<T>(this IEnumerable<T> values)
+        public static int CombineHashCodes<T>(this IEnumerable<T> values, IEqualityComparer<T> equalityComparer = null)
         {
             var result = new HashCode();
             foreach (var value in values)
             {
-                result.Add(value);
+                result.Add(value, equalityComparer);
             }
 
             return result.ToHashCode();
         }
 
         public static IEnumerable<T> Distinct<T>(params T[] values) => values.Distinct();
+
+        public static IEnumerable<T> Distinct<T>(IEqualityComparer<T> equalityComparer, params T[] values) => values.Distinct(equalityComparer);
 
         public static IEqualityComparer<KeyValuePair<TKey, TValue>> GetEqualityComparer<TKey, TValue>(this KeyValuePair<TKey, TValue> _, IEqualityComparer<TKey> keyEqualityComparer = null, IEqualityComparer<TValue> valueEqualityComparer = null) => new KeyValuePairEqualityComparer<TKey, TValue>(keyEqualityComparer, valueEqualityComparer);
 
