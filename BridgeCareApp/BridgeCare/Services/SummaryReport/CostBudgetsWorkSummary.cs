@@ -33,7 +33,8 @@ namespace BridgeCare.Services
         /// <param name="simulationYears"></param>
         /// <param name="simulationDataModels"></param>
         public void FillCostBudgetWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
-            List<SimulationDataModel> simulationDataModels, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels, List<string> treatments, List<WorkSummaryByBudgetModel> comittedProjectsData)
+            List<SimulationDataModel> simulationDataModels, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels, List<string> treatments,
+            List<WorkSummaryByBudgetModel> comittedProjectsData)
         {
             var committedTotalRow = FillCostOfCommittedWorkSection(worksheet, currentCell, simulationYears, comittedProjectsData);
             var culvertTotalRow = FillCostOfCulvertWorkSection(worksheet, currentCell, simulationYears, simulationDataModels, treatments);
@@ -42,7 +43,8 @@ namespace BridgeCare.Services
             FillRemainingBudgetSection(worksheet, simulationYears, currentCell, committedTotalRow, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
-        private int FillCostOfCommittedWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<WorkSummaryByBudgetModel> comittedProjectsData)
+        private int FillCostOfCommittedWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
+            List<WorkSummaryByBudgetModel> comittedProjectsData)
         {
             bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work");
             var committedTotalRow = AddCostsOfCommittedWork(worksheet, simulationYears, currentCell, comittedProjectsData);
@@ -76,20 +78,49 @@ namespace BridgeCare.Services
             AddDetailsForRemainingBudget(worksheet, simulationYears, currentCell, committedTotalRow, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
-        private int AddCostsOfCommittedWork(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, List<WorkSummaryByBudgetModel> comittedProjectsData)
+        private int AddCostsOfCommittedWork(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell,
+            List<WorkSummaryByBudgetModel> comittedProjectsData)
         {
+            var startYear = simulationYears[0];
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
+            currentCell.Column = column;
             var committedTotalRow = 0;
 
-            worksheet.Cells[row++, column].Value = Properties.Resources.CommittedTotal;
+            var uniqueTreatments = new Dictionary<string, int>();
+            var costForTreatments = new Dictionary<string, double>();
+            foreach (var data in comittedProjectsData)
+            {
+                if (data.YEARS < startYear || data.TREATMENT.ToLower() == "no treatment")
+                {
+                    continue;
+                }
+                if (!uniqueTreatments.ContainsKey(data.TREATMENT))
+                {
+                    uniqueTreatments.Add(data.TREATMENT, currentCell.Row);
+                    worksheet.Cells[currentCell.Row, currentCell.Column].Value = data.TREATMENT;
+                    var cellToEnterCost = data.YEARS - startYear;
+                    worksheet.Cells[uniqueTreatments[data.TREATMENT], currentCell.Column + cellToEnterCost + 2].Value = data.CostPerTreatmentPerYear;
+                    costForTreatments.Add(data.TREATMENT, data.CostPerTreatmentPerYear);
+                    currentCell.Row += 1;
+                }
+                else
+                {
+                    var cellToEnterCost = data.YEARS - startYear;
+                    //var cost = costForTreatments[data.TREATMENT] + data.CostPerTreatmentPerYear;
+                    //costForTreatments[data.TREATMENT] = cost;
+                    worksheet.Cells[uniqueTreatments[data.TREATMENT], currentCell.Column + cellToEnterCost + 2].Value = data.CostPerTreatmentPerYear;
+                }
+            }
+            row = currentCell.Row;
+            column = currentCell.Column;
+            worksheet.Cells[row, column].Value = Properties.Resources.CommittedTotal;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
             {
                 var yearlyBudget = comittedProjectsData.FindAll(_ => _.YEARS == year);
                 var aggregateAmountPerYear = yearlyBudget.Sum(s => s.CostPerTreatmentPerYear);
-                row = startRow;
                 column = ++column;
 
                 worksheet.Cells[row, column].Value = aggregateAmountPerYear;
