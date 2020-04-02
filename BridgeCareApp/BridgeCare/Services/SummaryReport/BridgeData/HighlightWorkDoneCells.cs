@@ -15,19 +15,22 @@ namespace BridgeCare.Services.SummaryReport.BridgeData
         {
             this.excelHelper = excelHelper;
         }
-        internal void CheckConditions(int parallelBridge, string treatment, ExcelRange range,
-            Dictionary<int, int> projectPickByYear, int year, int index, string project)
+        internal void CheckConditions(int parallelBridge, string treatment,
+            Dictionary<int, int> projectPickByYear, int year, int index, string project, ExcelWorksheet worksheet, int row, int column)
         {
             if (treatment.Length > 0 && project.ToLower() != "no treatment")
             {
+                var range = worksheet.Cells[row, column];
                 ParallelBridgeBAMs(parallelBridge, projectPickByYear[year], range);
-                ParallelBridgeMPMS(parallelBridge, projectPickByYear[year], range);
-                ParallelBridgeCashFlow(parallelBridge, projectPickByYear[year], range);
                 CashFlowedBridge(projectPickByYear[year], range);
                 if (index != 1 && (projectPickByYear[year] == 1 && projectPickByYear[year - 1] == 1))
                 {
+                    var rangeWithPreviousColumn = worksheet.Cells[row, column - 1];
+                    CommittedForConsecutiveYears(rangeWithPreviousColumn);
                     CommittedForConsecutiveYears(range);
                 }
+                ParallelBridgeMPMS(parallelBridge, projectPickByYear[year], range);
+                ParallelBridgeCashFlow(parallelBridge, projectPickByYear[year], range);
             }
         }
 
