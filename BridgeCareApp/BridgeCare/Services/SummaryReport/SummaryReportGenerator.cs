@@ -100,8 +100,8 @@ namespace BridgeCare.Services.SummaryReport
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
-                // Simulation ShortName TAB
-                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("ShortName");
+                // Simulation Legend TAB
+                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("Legend");
                 summaryReportGlossary.Fill(shortNameWorksheet);
 
                 updateStatus = Builders<SimulationModel>.Update
