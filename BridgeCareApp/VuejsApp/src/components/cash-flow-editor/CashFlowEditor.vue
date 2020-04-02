@@ -121,17 +121,27 @@
                                             <v-edit-dialog :return-value.sync="props.item.amount" large lazy persistent
                                                            full-width
                                                            @save="onEditSelectedLibraryListData(props.item, 'amount')">
-                                                <!--<input v-if="props.item.amount === null || props.item.amount === undefined || props.item.amount === ''"
-                                                       class="output" type="text" readonly :value="props.item.amount" />-->
                                                 <input class="output" type="text"
                                                        readonly :value="formatAsCurrency(props.item.amount)"
                                                        :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}"/>
                                                 <template slot="input">
-                                                    <v-text-field v-currency="currencyInputConfig"
-                                                                  :value="formatAsCurrency(props.item.amount)" label="Edit"
-                                                                  v-model="props.item.amount"
-                                                                  single-line
-                                                                  :rules="[splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)]"/>
+                                                    <div class="amount-div">
+                                                        <v-layout justify-center column>
+                                                            <div>
+                                                                <currency-input
+                                                                        class="split-treatment-limit-currency-input"
+                                                                        v-model="props.item.amount"
+                                                                        :currency="{prefix: '$', suffix: ''}"
+                                                                        :locale="'en-US'"
+                                                                        :distractionFree="false"/>
+                                                            </div>
+                                                            <div v-if="splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true">
+                                                                <span class="invalid-input split-treatment-limit-amount-rule-span">
+                                                                    {{splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)}}
+                                                                </span>
+                                                            </div>
+                                                        </v-layout>
+                                                    </div>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
@@ -210,7 +220,7 @@
     import {Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import {SelectItem} from '@/shared/models/vue/select-item';
-    import {any, append, clone, find, findIndex, isNil, prepend, propEq, update} from 'ramda';
+    import {any, append, clone, find, findIndex, isNil, prepend, propEq, update, add} from 'ramda';
     import {
         CashFlowLibrary,
         emptyCashFlowLibrary,
@@ -431,17 +441,17 @@
             const newSplitTreatmentLimit: SplitTreatmentLimit = this.modifyNewSplitTreatmentLimitDefaultValues();
 
             this.selectCashFlowLibraryAction({
-                selectedCashFlowLibrary: clone({
+                selectedCashFlowLibrary: {
                     ...this.selectedCashFlowLibrary,
                     splitTreatments: update(
                         findIndex(propEq('id', this.selectedSplitTreatment.id), this.selectedCashFlowLibrary.splitTreatments),
-                        clone({
+                        {
                             ...this.selectedSplitTreatment,
                             splitTreatmentLimits: append(newSplitTreatmentLimit, this.selectedSplitTreatment.splitTreatmentLimits)
-                        }),
+                        },
                         this.selectedCashFlowLibrary.splitTreatments
                     )
-                })
+                }
             });
         }
 
@@ -458,12 +468,12 @@
                 const newAmount: number = getLatestPropertyValue('amount', this.selectedSplitTreatment.splitTreatmentLimits);
                 const newPercentages = this.getNewSplitTreatmentLimitPercentages(newRank);
 
-                return clone({
+                return {
                     ...newSplitTreatmentLimit,
                     rank: newRank,
                     amount: newSplitTreatmentLimit.amount! < newAmount ? newAmount : newSplitTreatmentLimit.amount,
                     percentage: newPercentages
-                });
+                };
             }
         }
 
@@ -550,10 +560,6 @@
                 case 'rank':
                 case 'amount':
                 case 'percentage':
-                    const parsedAmount: any = hasValue(data.amount)
-                        ? parseFloat(data.amount.replace(/([$,])/g,''))
-                        : null;
-
                     cashFlowLibrary.splitTreatments = update(
                         findIndex(propEq('id', this.selectedSplitTreatment.id), cashFlowLibrary.splitTreatments),
                         clone({
@@ -562,7 +568,7 @@
                                 findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
                                 {
                                     ...data,
-                                    amount: parsedAmount
+                                    amount: hasValue(data.amount) ? data.amount : null
                                 } as SplitTreatmentLimit,
                                 this.selectedSplitTreatment.splitTreatmentLimits
                             )
@@ -604,7 +610,10 @@
          * @param value Value to format
          */
         formatAsCurrency(value: any) {
-            return formatAsCurrency(value);
+            if (hasValue(value)) {
+                return formatAsCurrency(value);
+            }
+            return null;
         }
 
         disableSubmitButtons() {
@@ -657,17 +666,16 @@
             const index: number = findIndex(propEq('id', splitTreatmentLimit.id), this.selectedSplitTreatment.splitTreatmentLimits);
             if (index > 0) {
                 const currentAmount: number | null = hasValue(splitTreatmentLimit.amount)
-                    ? parseFloat(splitTreatmentLimit.amount!.toString().slice(splitTreatmentLimit.amount!.toString().indexOf('$') + 1))
+                    ? splitTreatmentLimit.amount!
                     : null;
 
                 const previousAmount: number | null = hasValue(this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount)
-                    ? parseFloat(this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount!.toString()
-                        .slice(this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount!.toString().indexOf('$') + 1))
+                    ? this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount!
                     : null;
 
                 return !hasValue(currentAmount) || (hasValue(currentAmount) && !hasValue(previousAmount)) ||
-                       (hasValue(currentAmount) && hasValue(previousAmount) && previousAmount! <= currentAmount!) ||
-                       'This split treatment limit amount must be >= to previous amount';
+                    (hasValue(currentAmount) && hasValue(previousAmount) && previousAmount! <= currentAmount!) ||
+                    'This split treatment limit amount must be >= to previous amount';
             }
 
             return true;
@@ -733,6 +741,19 @@
 
     .invalid-input {
         color: red;
+    }
+
+    .amount-div {
+        width: 208px;
+    }
+
+    .split-treatment-limit-currency-input {
+        border: 1px solid;
+        width: 100%;
+    }
+
+    .split-treatment-limit-amount-rule-span {
+        font-size: 0.8em;
     }
 
     .sharing label {

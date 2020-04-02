@@ -21,8 +21,8 @@
                     <div v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0">
                         Owner: {{selectedInvestmentLibrary.owner ? selectedInvestmentLibrary.owner : "[ No Owner ]"}}
                     </div>
-                    <v-checkbox class="sharing" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0" 
-                        v-model="selectedInvestmentLibrary.shared" label="Shared"/>
+                    <v-checkbox class="sharing" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === 0"
+                                v-model="selectedInvestmentLibrary.shared" label="Shared"/>
                 </v-flex>
             </v-layout>
             <v-layout v-show="hasSelectedInvestmentLibrary" justify-center>
@@ -78,10 +78,9 @@
                                                        @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
                                             {{formatAsCurrency(props.item[header.value])}}
                                             <template slot="input">
-                                                <v-text-field v-currency="currencyInputConfig" :value="formatAsCurrency(props.item[header.value])"
-                                                              v-model="props.item[header.value]"
-                                                              label="Edit" single-line>
-                                                </v-text-field>
+                                                <currency-input v-model="props.item[header.value]"
+                                                                :currency="{prefix: '$', suffix: ''}" :locale="'en-US'"
+                                                                :distractionFree="false"/>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
@@ -96,7 +95,8 @@
             </v-layout>
         </v-flex>
         <v-divider v-show="hasSelectedInvestmentLibrary"></v-divider>
-        <v-flex xs12 v-show="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
+        <v-flex xs12
+                v-show="hasSelectedInvestmentLibrary && (scenarioInvestmentLibrary === null || selectedInvestmentLibrary.id !== scenarioInvestmentLibrary.id)">
             <v-layout justify-center>
                 <v-flex xs6>
                     <v-textarea rows="4" no-resize outline label="Description"
@@ -115,10 +115,12 @@
                        :disabled="!hasSelectedInvestmentLibrary">
                     Update Library
                 </v-btn>
-                <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary" :disabled="!hasSelectedInvestmentLibrary">
+                <v-btn class="ara-blue-bg white--text" @click="onCreateAsNewLibrary"
+                       :disabled="!hasSelectedInvestmentLibrary">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === 0" class="ara-orange-bg white--text" @click="onDeleteInvestmentLibrary">
+                <v-btn v-show="selectedScenarioId === 0" class="ara-orange-bg white--text"
+                       @click="onDeleteInvestmentLibrary">
                     Delete Library
                 </v-btn>
                 <v-btn v-show="selectedScenarioId > 0" class="ara-orange-bg white--text" @click="onDiscardChanges"
@@ -128,23 +130,23 @@
             </v-layout>
         </v-flex>
 
-        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse" />
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse"/>
 
         <CreateInvestmentLibraryDialog :dialogData="createInvestmentLibraryDialogData"
-                                       @submit="onCreateInvestmentLibrary" />
+                                       @submit="onCreateInvestmentLibrary"/>
 
         <SetRangeForAddingBudgetYearsDialog :showDialog="showSetRangeForAddingBudgetYearsDialog"
-                                            @submit="onSubmitBudgetYearRange" />
+                                            @submit="onSubmitBudgetYearRange"/>
 
-        <EditBudgetsDialog :dialogData="editBudgetsDialogData" @submit="onSubmitEditedBudgets" />
+        <EditBudgetsDialog :dialogData="editBudgetsDialogData" @submit="onSubmitEditedBudgets"/>
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Watch } from 'vue-property-decorator';
+    import {Watch} from 'vue-property-decorator';
     import Component from 'vue-class-component';
-    import { Action, State } from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import CreateInvestmentLibraryDialog from './investment-editor-dialogs/CreateInvestmentLibraryDialog.vue';
     import SetRangeForAddingBudgetYearsDialog from './investment-editor-dialogs/SetRangeForAddingBudgetYearsDialog.vue';
     import EditBudgetsDialog from '../../shared/modals/EditBudgetsDialog.vue';
@@ -154,10 +156,10 @@
         InvestmentLibrary,
         InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
-    import { any, clone, groupBy, isEmpty, isNil, keys, propEq, contains } from 'ramda';
-    import { SelectItem } from '@/shared/models/vue/select-item';
-    import { DataTableHeader } from '@/shared/models/vue/data-table-header';
-    import { hasValue } from '@/shared/utils/has-value-util';
+    import {any, clone, groupBy, isEmpty, isNil, keys, propEq, contains} from 'ramda';
+    import {SelectItem} from '@/shared/models/vue/select-item';
+    import {DataTableHeader} from '@/shared/models/vue/data-table-header';
+    import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
     import {
         CreateInvestmentLibraryDialogData,
@@ -167,17 +169,18 @@
         EditBudgetsDialogData,
         emptyEditBudgetsDialogData
     } from '@/shared/models/modals/edit-budgets-dialog';
-    import { getLatestPropertyValue, getPropertyValues } from '@/shared/utils/getter-utils';
-    import { sortByProperty, sorter } from '@/shared/utils/sorter-utils';
-    import { EditedBudget } from '@/shared/models/modals/edit-budgets-dialog';
-    import { CriteriaDrivenBudgets } from '@/shared/models/iAM/criteria-driven-budgets';
+    import {getLatestPropertyValue, getPropertyValues} from '@/shared/utils/getter-utils';
+    import {sortByProperty, sorter} from '@/shared/utils/sorter-utils';
+    import {EditedBudget} from '@/shared/models/modals/edit-budgets-dialog';
+    import {CriteriaDrivenBudgets} from '@/shared/models/iAM/criteria-driven-budgets';
     import {formatAsCurrency} from '@/shared/utils/currency-formatter';
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+
     const ObjectID = require('bson-objectid');
 
     @Component({
-        components: { CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, Alert }
+        components: {CreateInvestmentLibraryDialog, SetRangeForAddingBudgetYearsDialog, EditBudgetsDialog, Alert}
     })
     export default class InvestmentEditor extends Vue {
         @State(state => state.investmentEditor.investmentLibraries) stateInvestmentLibraries: InvestmentLibrary[];
@@ -212,11 +215,11 @@
         investmentLibrariesSelectListItems: SelectItem[] = [];
         selectItemValue: string = '';
         budgetYearsGridHeaders: DataTableHeader[] = [
-            { text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: '' }
+            {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
         budgetCriteriaHeaders: DataTableHeader[] = [
-            { text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: '' },
-            { text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: '' }
+            {text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: ''},
+            {text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: ''}
         ];
         intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
 
@@ -240,7 +243,7 @@
                     vm.selectedScenarioId = isNaN(parseInt(to.query.selectedScenarioId)) ? 0 : parseInt(to.query.selectedScenarioId);
                     if (vm.selectedScenarioId === 0) {
                         // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                        vm.setErrorMessageAction({ message: 'Found no selected scenario for edit' });
+                        vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
                 }
@@ -250,8 +253,8 @@
                     vm.getInvestmentLibrariesAction()
                         .then(() => {
                             if (vm.selectedScenarioId > 0) {
-                                vm.getScenarioInvestmentLibraryAction({ selectedScenarioId: vm.selectedScenarioId });
-                                vm.getBudgetCriteriaAction({ selectedScenarioId: vm.selectedScenarioId });
+                                vm.getScenarioInvestmentLibraryAction({selectedScenarioId: vm.selectedScenarioId});
+                                vm.getBudgetCriteriaAction({selectedScenarioId: vm.selectedScenarioId});
                             }
                         });
                 });
@@ -284,7 +287,7 @@
         onStateSelectedInvestmentLibraryChanged() {
             this.selectedInvestmentLibrary = clone(this.stateSelectedInvestmentLibrary);
             if (this.selectItemValue != '') {
-            this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria });
+                this.saveIntermittentCriteriaDrivenBudgetAction({updateIntermittentCriteriaDrivenBudget: this.selectedInvestmentLibrary.budgetCriteria});
             }
         }
 
@@ -313,7 +316,7 @@
          */
         @Watch('selectItemValue')
         onInvestmentLibrariesSelectItemChanged() {
-            this.selectInvestmentLibraryAction({ investmentLibraryId: this.selectItemValue });
+            this.selectInvestmentLibraryAction({investmentLibraryId: this.selectItemValue});
         }
 
         /**
@@ -456,7 +459,7 @@
 
             this.selectedInvestmentLibrary.budgetYears = [...this.selectedInvestmentLibrary.budgetYears, ...newBudgetYears];
 
-            this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+            this.updateSelectedInvestmentLibraryAction({updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary});
         }
 
         /**
@@ -495,7 +498,7 @@
                     ...this.selectedInvestmentLibrary.budgetYears, ...newBudgetYears
                 ];
 
-                this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+                this.updateSelectedInvestmentLibraryAction({updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary});
             }
         }
 
@@ -509,7 +512,7 @@
                     !contains(budgetYear.year, this.selectedBudgetYears)
                 );
 
-            this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+            this.updateSelectedInvestmentLibraryAction({updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary});
         }
 
         /**
@@ -599,32 +602,32 @@
                 this.selectedInvestmentLibrary.budgetYears = editedBudgetYears;
                 this.selectedInvestmentLibrary.budgetCriteria = intermittentCriteria;
 
-                this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+                this.updateSelectedInvestmentLibraryAction({updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary});
 
-                this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: intermittentCriteria });
+                this.saveIntermittentCriteriaDrivenBudgetAction({updateIntermittentCriteriaDrivenBudget: intermittentCriteria});
             }
         }
 
         /**
          * Updates the selected investment library's specified budget year's budget's amount
          */
-        onEditBudgetYearAmount(year: number, budgetName: string, amount: string) {
+        onEditBudgetYearAmount(year: number, budgetName: string, amount: number) {
             if (any(propEq('year', year), this.selectedInvestmentLibrary.budgetYears) &&
                 any(propEq('budgetName', budgetName), this.selectedInvestmentLibrary.budgetYears)) {
-                const parsedAmount: number = parseFloat(amount.replace(/([$,])/g,''));
+                // const parsedAmount: number = parseFloat(amount.replace(/([$,])/g,''));
 
                 this.selectedInvestmentLibrary.budgetYears = this.selectedInvestmentLibrary.budgetYears
                     .map((budgetYear: InvestmentLibraryBudgetYear) => {
                         if (budgetYear.year === year && budgetYear.budgetName === budgetName) {
                             return {
                                 ...budgetYear,
-                                budgetAmount: parsedAmount
+                                budgetAmount: amount
                             };
                         }
                         return budgetYear;
                     });
 
-                this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+                this.updateSelectedInvestmentLibraryAction({updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary});
             }
         }
 
@@ -635,7 +638,7 @@
          */
         onCreateAsNewLibrary() {
             if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
-               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
+                this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
             }
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
@@ -659,7 +662,7 @@
                 createdInvestmentLibrary.id = ObjectID.generate();
                 createdInvestmentLibrary = this.setIdsForNewInvestmentLibraryRelatedData(createdInvestmentLibrary);
 
-                this.createInvestmentLibraryAction({ createdInvestmentLibrary: createdInvestmentLibrary })
+                this.createInvestmentLibraryAction({createdInvestmentLibrary: createdInvestmentLibrary})
                     .then(() => {
                         setTimeout(() => {
                             this.onClearSelectedInvestmentLibrary();
@@ -693,7 +696,7 @@
          * library on the server
          */
         onUpdateLibrary() {
-            this.updateInvestmentLibraryAction({ updatedInvestmentLibrary: this.selectedInvestmentLibrary });
+            this.updateInvestmentLibraryAction({updatedInvestmentLibrary: this.selectedInvestmentLibrary});
         }
 
         /**
@@ -705,13 +708,18 @@
             appliedInvestmentLibrary.id = this.selectedScenarioId;
             appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
 
-            this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
+            this.saveBudgetCriteriaAction({
+                selectedScenarioId: this.selectedScenarioId,
+                budgetCriteriaData: this.intermittentBudgetsCriteria
+            })
                 .then(() => {
-                    this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
+                    this.saveIntermittentStateToBudgetCriteriaAction({intermittentState: this.intermittentBudgetsCriteria});
                 });
 
-            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary, 
-            objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
+            this.saveScenarioInvestmentLibraryAction({
+                saveScenarioInvestmentLibraryData: appliedInvestmentLibrary,
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
+            })
                 .then(() => {
                     setTimeout(() => {
                         this.onClearSelectedInvestmentLibrary();
@@ -730,7 +738,7 @@
          * scenario investment library from the server to update the selected investment library in state
          */
         onDiscardChanges() {
-            this.saveIntermittentCriteriaDrivenBudgetAction({ updateIntermittentCriteriaDrivenBudget: this.stateBudgetCriteria });
+            this.saveIntermittentCriteriaDrivenBudgetAction({updateIntermittentCriteriaDrivenBudget: this.stateBudgetCriteria});
             this.onClearSelectedInvestmentLibrary();
 
             if (this.scenarioInvestmentLibrary.id > 0) {
@@ -741,7 +749,7 @@
                 });
             } else {
                 setTimeout(() => {
-                    this.getScenarioInvestmentLibraryAction({ selectedScenarioId: this.selectedScenarioId });
+                    this.getScenarioInvestmentLibraryAction({selectedScenarioId: this.selectedScenarioId});
                 });
             }
         }
