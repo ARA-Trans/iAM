@@ -111,16 +111,16 @@ namespace BridgeCare.Services
                     var cost = yearsData[index].Cost;
                     var range = worksheet.Cells[row, ++column];
                     projectPickByYear.Add(yearsData[index].Year, yearsData[index].ProjectPickType);
-                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index);
+                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index, yearsData[index].Project);
                     if (abbreviatedTreatmentNames.ContainsKey(yearsData[index].Treatment))
                     {
-                        range.Value = cost > 0 ? abbreviatedTreatmentNames[yearsData[index].Treatment] : "--";
+                        range.Value = string.IsNullOrEmpty(abbreviatedTreatmentNames[yearsData[index].Treatment]) ? "--" : abbreviatedTreatmentNames[yearsData[index].Treatment];
                     }
                     else
                     {
-                        range.Value = cost > 0 ? yearsData[index].Treatment : "--";
+                        range.Value = string.IsNullOrEmpty(yearsData[index].Treatment) ? "--" : yearsData[index].Treatment;
                     }
-                    workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
+                    workDoneMoreThanOnce = !range.Value.Equals("--") ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
                 worksheet.Cells[row, ++column].Value = workDoneMoreThanOnce > 1 ? "Yes" : "--";
                 totalColumnValue = workDoneMoreThanOnce > 1 ? totalColumnValue + 1 : totalColumnValue;
@@ -162,9 +162,9 @@ namespace BridgeCare.Services
         }
 
         private void setColor(int parallelBridge, string treatment, ExcelRange range,
-            Dictionary<int, int> projectPickByYear, int year, int index)
+            Dictionary<int, int> projectPickByYear, int year, int index, string project)
         {
-            highlightWorkDoneCells.CheckConditions(parallelBridge, treatment, range, projectPickByYear, year, index);
+            highlightWorkDoneCells.CheckConditions(parallelBridge, treatment, range, projectPickByYear, year, index, project);
         }
 
         private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, int familyId,

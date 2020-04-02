@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Models;
 using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -34,8 +35,45 @@ namespace BridgeCare.Services
             chartRowsModel.TotalPoorBridgesCountSectionYearsRow = FillTotalPoorBridgesCountSection(worksheet, currentCell, simulationYears, simulationDataModels);
             chartRowsModel.TotalPoorBridgesDeckAreaSectionYearsRow = FillTotalPoorBridgesDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels);
             chartRowsModel.TotalBridgeCountSectionYearsRow = FillTotalBridgeCountSection(worksheet, currentCell, simulationYears, simulationDataModels);
+            chartRowsModel.TotalBridgeCountPercentYearsRow = FillTotalBridgeCountPercent(worksheet, currentCell, simulationYears,
+                chartRowsModel.TotalBridgeCountSectionYearsRow + 1);
             chartRowsModel.TotalDeckAreaSectionYearsRow = FillTotalDeckAreaSection(worksheet, currentCell, simulationYears, simulationDataModels);
+            chartRowsModel.TotalDeckAreaPercentYearsRow = FillTotalDeckAreaPercent(worksheet, currentCell, simulationYears,
+                chartRowsModel.TotalDeckAreaSectionYearsRow + 1);
             return chartRowsModel;
+        }
+
+        private int FillTotalDeckAreaPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow)
+        {
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Deck Area %", true);
+            var totalDeckAreaPercentYearsRow = currentCell.Row;
+            AddDetailsForTotalBridgeAndDeckPercent(worksheet, currentCell, simulationYears, dataStartRow);
+            return totalDeckAreaPercentYearsRow;
+        }
+
+        private int FillTotalBridgeCountPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow)
+        {
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Bridge Count %", true);
+            var totalBridgeCountPercentYearsRow = currentCell.Row;
+            AddDetailsForTotalBridgeAndDeckPercent(worksheet, currentCell, simulationYears, dataStartRow);
+            return totalBridgeCountPercentYearsRow;
+        }
+
+        private void AddDetailsForTotalBridgeAndDeckPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow)
+        {
+            int startRow, startColumn, row, column;
+            bridgeWorkSummaryCommon.InitializeLabelCells(worksheet, currentCell, out startRow, out startColumn, out row, out column);
+            for (var index = 0; index <= simulationYears.Count; index++)
+            {
+                var sumFormula = "SUM(" + worksheet.Cells[dataStartRow, column, dataStartRow + 2, column] + ")";
+                worksheet.Cells[startRow, column].Formula = worksheet.Cells[dataStartRow, column] + "/" + sumFormula;
+                worksheet.Cells[startRow + 1, column].Formula = worksheet.Cells[dataStartRow + 1, column] + "/" + sumFormula;
+                worksheet.Cells[startRow + 2, column].Formula = worksheet.Cells[dataStartRow + 2, column] + "/" + sumFormula;
+                column++;
+            }
+            excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, startRow + 2, column - 1]);
+            excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, startRow + 2, column], "Percentage");
+            bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row, column - 1);
         }
 
         private int FillTotalDeckAreaSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels)

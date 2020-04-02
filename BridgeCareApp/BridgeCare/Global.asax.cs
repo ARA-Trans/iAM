@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using BridgeCare.ExceptionHandling;
+using log4net.Config;
 
 namespace BridgeCare
 {
@@ -18,6 +21,9 @@ namespace BridgeCare
             System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            XmlConfigurator.Configure(new FileInfo(ConfigurationManager.AppSettings["log4net-config-file"]));
+
             System.Web.Http.GlobalConfiguration.Configuration.Filters.Add(
                 new UnhandledExceptionFilterAttribute()
                     .Register<RowNotInTableException>((exception, request) =>

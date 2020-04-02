@@ -12,7 +12,16 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
     {
         public List<WorkSummaryByBudgetModel> GetCommittedProjectsBudget(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            var selectQuery = $"select YEARS, treatmentname as TREATMENT, BUDGET, sum(cost_) as CostPerTreatmentPerYear from COMMITTED_ where simulationid = { simulationModel.simulationId } group by budget, TREATMENTNAME, years";
+            var selectQuery = $"select YEARS, TREATMENT, Budget, sum(cost_) as CostPerTreatmentPerYear from REPORT_{simulationModel.networkId}_{simulationModel.simulationId} where BUDGET IS NOT NULL " +
+                $" and Project_Type = 1 group by TREATMENT, years, Budget";
+            var committedProjectsBudget = dbContext.Database.SqlQuery<WorkSummaryByBudgetModel>(selectQuery).ToList();
+            return committedProjectsBudget;
+        }
+
+        public List<WorkSummaryByBudgetModel> GetAllCommittedProjects(SimulationModel simulationModel, BridgeCareContext dbContext)
+        {
+            var selectQuery = $"select YEARS, TREATMENT, sum(cost_) as CostPerTreatmentPerYear from REPORT_{simulationModel.networkId}_{simulationModel.simulationId} where BUDGET IS NOT NULL " +
+                $" and Project_Type = 1 group by TREATMENT, years";
             var committedProjectsBudget = dbContext.Database.SqlQuery<WorkSummaryByBudgetModel>(selectQuery).ToList();
             return committedProjectsBudget;
         }
@@ -20,7 +29,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
         public List<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
             var selectReportStatement = $"SELECT YEARS, TREATMENT, BUDGET, SUM(COST_) AS CostPerTreatmentPerYear FROM REPORT_{simulationModel.networkId}_{simulationModel.simulationId} " +
-                                        $"WITH (NOLOCK) WHERE BUDGET IS NOT NULL " +
+                                        $" WHERE BUDGET IS NOT NULL and (Project_Type IN (0, 2)) " +
                                         $"GROUP BY TREATMENT, YEARS, BUDGET";
 
             var budgetsPerTreatmentPerYear = dbContext.Database.SqlQuery<WorkSummaryByBudgetModel>(selectReportStatement).ToList();
