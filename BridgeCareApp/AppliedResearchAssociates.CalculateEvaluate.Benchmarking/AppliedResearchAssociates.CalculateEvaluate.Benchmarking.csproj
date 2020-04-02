@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\iAM-legacy\CalculateEvaluate\CalculateEvaluate.csproj" />
     <ProjectReference Include="..\AppliedResearchAssociates.CalculateEvaluate\AppliedResearchAssociates.CalculateEvaluate.csproj" />
   </ItemGroup>
 

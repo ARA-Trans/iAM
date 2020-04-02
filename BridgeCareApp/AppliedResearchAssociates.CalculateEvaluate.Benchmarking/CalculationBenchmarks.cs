@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
+using LegacyCalculateEvaluate = CalculateEvaluate.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
 {
-    public class CalculationBenchmark
+    public class CalculationBenchmarks
     {
         public IEnumerable<string> CalculationExpressions
         {
@@ -11,6 +13,14 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
             {
                 yield return "250*[DECK_AREA]";
             }
+        }
+
+        [Benchmark(Baseline = true)]
+        [ArgumentsSource(nameof(CalculationExpressions))]
+        public CompilerResults CompileAssembly(string expression)
+        {
+            LegacyCompiler.BuildClass(expression, true);
+            return LegacyCompiler.CompileAssembly();
         }
 
         [Benchmark]
@@ -22,8 +32,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         {
             Compiler = new CalculateEvaluateCompiler();
             Compiler.Parameters["deck_area"] = ParameterType.Number;
+
+            LegacyCompiler = new LegacyCalculateEvaluate();
         }
 
         private CalculateEvaluateCompiler Compiler;
+        private LegacyCalculateEvaluate LegacyCompiler;
     }
 }
