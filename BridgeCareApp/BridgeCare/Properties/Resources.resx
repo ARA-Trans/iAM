@@ -208,7 +208,7 @@
     <value>Total</value>
   </data>
   <data name="ConditionByBridgeCount" xml:space="preserve">
-    <value>Condition By Bridge Count</value>
+    <value>Non-NHS Condition By Bridge Count</value>
   </data>
   <data name="Fair" xml:space="preserve">
     <value>Fair</value>
@@ -220,7 +220,7 @@
     <value>Poor</value>
   </data>
   <data name="ConditionByDeckArea" xml:space="preserve">
-    <value>Condition By Deck Area</value>
+    <value>Non-NHS Condition By Deck Area</value>
   </data>
   <data name="PoorBridgeCompareBridgeCount" xml:space="preserve">
     <value>Poor Bridge Compare Bridge Count</value>
@@ -293,5 +293,12 @@
   </data>
   <data name="CommittedTotal" xml:space="preserve">
     <value>Committed Total</value>
+  </data>
+  <data name="CombineNHSNonNHSConditionByBridgeCount" xml:space="preserve">
+    <value>Combine NHS and Non-NHS Condition By Bridge Count</value>
+  </data>
+  <data name="CombineNHSNonNHSConditionByDeckArea" xml:space="preserve">
+    <value>Combine NHS and Non-NHS Without Committed Projects
+Condition By Deck Area</value>
   </data>
 </root>

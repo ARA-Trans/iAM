@@ -25,11 +25,11 @@ namespace BridgeCare.Services
         public void Fill(ExcelWorksheet worksheet, ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalBridgeCountSectionYearsRow, int count)
         {
             stackedColumnChartCommon.SetWorksheetProperties(worksheet);
-            var title = Properties.Resources.ConditionByBridgeCount;
+            var title = Properties.Resources.CombineNHSNonNHSConditionByBridgeCount;
             var chart = worksheet.Drawings.AddChart(title, eChartType.ColumnStacked);
             stackedColumnChartCommon.SetChartProperties(chart, title, 950, 700, 6, 7);
 
-            stackedColumnChartCommon.SetChartAxes(chart);
+            SetChartAxes(chart);
             AddSeries(bridgeWorkSummaryWorkSheet, totalBridgeCountSectionYearsRow, count, chart);
 
             chart.AdjustPositionAndSize();
@@ -52,6 +52,13 @@ namespace BridgeCare.Services
             var excelChartSerie = chart.Series.Add(serie, xSerie);
             excelChartSerie.Header = header;
             excelChartSerie.Fill.Color = color;
+        }
+
+        private void SetChartAxes(ExcelChart chart)
+        {
+            stackedColumnChartCommon.SetChartAxes(chart);
+            chart.YAxis.Format = "#0%";
+            chart.YAxis.MaxValue = 1;
         }
     }
 }
