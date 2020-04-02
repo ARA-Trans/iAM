@@ -203,19 +203,33 @@ namespace BridgeCare.Services
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
             worksheet.Cells[row++, column].Value = Properties.Resources.RemainingBudget;
+            worksheet.Cells[row++, column].Value = Properties.Resources.PercentBudgetSpentMPMS;
+            worksheet.Cells[row++, column].Value = Properties.Resources.PercentBudgetSpentBAMS;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
             {
                 row = startRow;
                 column = ++column;
-                
-                worksheet.Cells[row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) -
-                    (Convert.ToDouble(worksheet.Cells[culvertTotalRow, column].Value) + Convert.ToDouble(worksheet.Cells[bridgeTotalRow, column].Value) +
-                    Convert.ToDouble(worksheet.Cells[committedTotalRow, column].Value));
+                var totalSpent = Convert.ToDouble(worksheet.Cells[culvertTotalRow, column].Value) +
+                    Convert.ToDouble(worksheet.Cells[bridgeTotalRow, column].Value) +
+                    Convert.ToDouble(worksheet.Cells[committedTotalRow, column].Value);
+
+                worksheet.Cells[row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) - totalSpent;
+                //excelHelper.SetCustomFormat(worksheet.Cells[row, fromColumn, row, column], "NegativeCurrency");
+                row++;
+
+                worksheet.Cells[row, column].Formula = worksheet.Cells[committedTotalRow, column] + "/" + totalSpent;
+                row++;
+
+                worksheet.Cells[row, column].Formula = 1 + "-" + worksheet.Cells[row - 1, column];
+                //excelHelper.SetCustomFormat(worksheet.Cells[row - 1, startColumn + 1, row, column], "Percentage");
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
-            excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
+
+            excelHelper.SetCustomFormat(worksheet.Cells[row - 2, fromColumn, row - 2, column], "NegativeCurrency");
+            excelHelper.SetCustomFormat(worksheet.Cells[row - 1, fromColumn, row, column], "Percentage");
+
             excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(248, 203, 173));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
             excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn, row + 2, column], Color.DimGray);

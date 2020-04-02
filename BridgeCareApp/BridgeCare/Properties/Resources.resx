@@ -301,4 +301,10 @@
     <value>Combine NHS and Non-NHS Without Committed Projects
 Condition By Deck Area</value>
   </data>
+  <data name="PercentBudgetSpentBAMS" xml:space="preserve">
+    <value>% of Budget Spent - BAMS</value>
+  </data>
+  <data name="PercentBudgetSpentMPMS" xml:space="preserve">
+    <value>% of Budget Spent - MPMS</value>
+  </data>
 </root>
