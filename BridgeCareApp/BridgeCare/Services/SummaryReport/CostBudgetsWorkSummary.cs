@@ -107,8 +107,6 @@ namespace BridgeCare.Services
                 else
                 {
                     var cellToEnterCost = data.YEARS - startYear;
-                    //var cost = costForTreatments[data.TREATMENT] + data.CostPerTreatmentPerYear;
-                    //costForTreatments[data.TREATMENT] = cost;
                     worksheet.Cells[uniqueTreatments[data.TREATMENT], currentCell.Column + cellToEnterCost + 2].Value = data.CostPerTreatmentPerYear;
                 }
             }
@@ -129,7 +127,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.DarkSeaGreen);
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return committedTotalRow;
         }
@@ -170,7 +168,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.DarkSeaGreen);            
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));            
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return culvertTotalRow;
         }              
@@ -195,7 +193,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.OliveDrab);
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(84, 130, 53));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return budgetTotalRow;
         }
@@ -218,7 +216,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.LightSalmon);
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(248, 203, 173));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
             excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn, row + 2, column], Color.DimGray);
         }
@@ -260,7 +258,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.DarkSeaGreen);
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return bridgeTotalRow;
         }
