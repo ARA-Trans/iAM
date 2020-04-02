@@ -119,16 +119,24 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 }
 
                 worksheet.Cells[currentCell.Row, currentCell.Column].Value = Properties.Resources.MPMSTotal;
+                worksheet.Cells[currentCell.Row + 1, currentCell.Column].Value = Properties.Resources.PercentBudgetSpentMPMS;
+                worksheet.Cells[currentCell.Row + 2, currentCell.Column].Value = Properties.Resources.PercentBudgetSpentBAMS;
 
                 foreach (var totalMPMSBudget in totalBudgetPerYearForMPMS)
                 {
                     var cellToEnterTotalMPMSCost = totalMPMSBudget.Key - startYear;
                     worksheet.Cells[currentCell.Row, currentCell.Column + cellToEnterTotalMPMSCost + 2].Value = totalMPMSBudget.Value;
+
+                    // These are representing that 100% of the budget is used in MPMS and 0% in BAMs
+                    worksheet.Cells[++currentCell.Row, currentCell.Column + cellToEnterTotalMPMSCost + 2].Value = 1;
+                    worksheet.Cells[++currentCell.Row, currentCell.Column + cellToEnterTotalMPMSCost + 2].Value = 0;
                 }
 
                 excelHelper.ApplyBorder(worksheet.Cells[startOfMPMSBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
-                excelHelper.SetCustomFormat(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
-                excelHelper.ApplyColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.DarkSeaGreen);
+                excelHelper.SetCustomFormat(worksheet.Cells[currentCell.Row - 1, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "Percentage");
+                excelHelper.SetCustomFormat(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], "NegativeCurrency");
+                excelHelper.ApplyColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], Color.DarkSeaGreen);
+                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row - 1, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.FromArgb(248, 203, 173));
             }
         }
     }

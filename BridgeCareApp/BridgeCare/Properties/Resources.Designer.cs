@@ -404,6 +404,24 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to % of Budget Spent - BAMS.
+        /// </summary>
+        internal static string PercentBudgetSpentBAMS {
+            get {
+                return ResourceManager.GetString("PercentBudgetSpentBAMS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to % of Budget Spent - MPMS.
+        /// </summary>
+        internal static string PercentBudgetSpentMPMS {
+            get {
+                return ResourceManager.GetString("PercentBudgetSpentMPMS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Poor.
         /// </summary>
         internal static string Poor {
