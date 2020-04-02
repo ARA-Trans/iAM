@@ -11,7 +11,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
     public delegate T Evaluator<T>(EvaluatorArgument<T> argument);
 
-    public class CalculateEvaluateCompiler
+    public sealed class CalculateEvaluateCompiler
     {
         public IDictionary<string, ParameterType> Parameters => _Parameters;
 

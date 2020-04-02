@@ -7,7 +7,7 @@ using Antlr4.Runtime.Misc;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    internal class CalculateEvaluateCompilerVisitor<T> : CalculateEvaluateBaseVisitor<Expression>
+    internal sealed class CalculateEvaluateCompilerVisitor<T> : CalculateEvaluateBaseVisitor<Expression>
     {
         public CalculateEvaluateCompilerVisitor(IReadOnlyDictionary<string, ParameterType> parameters, Func<string, T> parseNumber)
         {
