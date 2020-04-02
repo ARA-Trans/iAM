@@ -81,7 +81,9 @@
                                                 <currency-input class="budget-year-amount-input"
                                                                 v-model="props.item[header.value]"
                                                                 :currency="{prefix: '$', suffix: ''}" :locale="'en-US'"
-                                                                :distractionFree="false"/>
+                                                                :distractionFree="false"
+                                                                @keydown.enter.stop
+                                                                @keyup.enter.stop/>
                                             </template>
                                         </v-edit-dialog>
                                     </div>

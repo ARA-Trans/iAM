@@ -130,10 +130,13 @@
                                                             <div>
                                                                 <currency-input
                                                                         class="split-treatment-limit-currency-input"
-                                                                        v-model="props.item.amount"
+                                                                        :value="props.item.amount"
+                                                                        @change="props.item.amount = $event"
                                                                         :currency="{prefix: '$', suffix: ''}"
                                                                         :locale="'en-US'"
-                                                                        :distractionFree="false"/>
+                                                                        :distractionFree="false"
+                                                                        @keydown.enter.stop
+                                                                        @keyup.enter.stop/>
                                                             </div>
                                                             <div v-if="splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true">
                                                                 <span class="invalid-input split-treatment-limit-amount-rule-span">
@@ -546,6 +549,10 @@
             }
         }
 
+        onCurrencyInputKeyPress(event: any) {
+            event.preventDefault();
+        }
+
         onEditSelectedLibraryListData(data: any, property: string) {
             const cashFlowLibrary: CashFlowLibrary = clone(this.selectedCashFlowLibrary);
 
@@ -568,7 +575,7 @@
                                 findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
                                 {
                                     ...data,
-                                    amount: hasValue(data.amount) ? data.amount : null
+                                    amount: hasValue(data.amount) ? parseFloat(data.amount) : null
                                 } as SplitTreatmentLimit,
                                 this.selectedSplitTreatment.splitTreatmentLimits
                             )
