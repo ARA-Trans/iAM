@@ -492,6 +492,8 @@
     <Compile Include="Services\InventoryItemDetailModelGenerator.cs" />
     <Compile Include="DataAccessLayer\NetworkDAL.cs" />
     <Compile Include="Services\SummaryReport\BridgeData\HighlightWorkDoneCells.cs" />
+    <Compile Include="Services\SummaryReport\Charts\NonNHSConditionBridgeCount.cs" />
+    <Compile Include="Services\SummaryReport\Charts\NonNHSConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\ShortNameGlossary\SummaryReportGlossary.cs" />
     <Compile Include="Services\SummaryReport\ShortNamesForTreatments.cs" />
     <Compile Include="Services\SummaryReport\WorkSummary\BridgeRateDeckAreaWorkSummary.cs" />

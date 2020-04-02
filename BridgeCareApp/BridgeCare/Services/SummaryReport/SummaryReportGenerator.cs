@@ -33,6 +33,8 @@ namespace BridgeCare.Services.SummaryReport
         private readonly BridgeWorkSummaryByBudget bridgeWorkSummaryByBudget;
         private readonly BridgeWorkSummaryCharts bridgeWorkSummaryCharts;
         private readonly SummaryReportGlossary summaryReportGlossary;
+        private readonly NonNHSConditionBridgeCount nonNHSconditionBridgeCount;
+        private readonly NonNHSConditionDeckArea nonNHSConditionDeckArea;
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportGenerator));
 
@@ -40,7 +42,7 @@ namespace BridgeCare.Services.SummaryReport
             BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
             PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount, SummaryReportParameters summaryReportParameters,
             BridgeWorkSummaryByBudget workSummaryByBudget, BridgeWorkSummaryCharts bridgeWorkSummaryCharts,
-            SummaryReportGlossary summaryReportGlossary)
+            SummaryReportGlossary summaryReportGlossary, NonNHSConditionBridgeCount nonNHSconditionBridgeCount, NonNHSConditionDeckArea nonNHSConditionDeckArea)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
@@ -54,6 +56,8 @@ namespace BridgeCare.Services.SummaryReport
             bridgeWorkSummaryByBudget = workSummaryByBudget ?? throw new ArgumentNullException(nameof(workSummaryByBudget));
             this.bridgeWorkSummaryCharts = bridgeWorkSummaryCharts ?? throw new ArgumentNullException(nameof(bridgeWorkSummaryCharts));
             this.summaryReportGlossary = summaryReportGlossary ?? throw new ArgumentNullException(nameof(summaryReportGlossary));
+            this.nonNHSconditionBridgeCount = nonNHSconditionBridgeCount ?? throw new ArgumentNullException(nameof(nonNHSconditionBridgeCount));
+            this.nonNHSConditionDeckArea = nonNHSConditionDeckArea ?? throw new ArgumentNullException(nameof(nonNHSConditionDeckArea));
         }
 
         /// <summary>
@@ -89,24 +93,24 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Simulation parameters TAB
                 var parametersWorksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
-                summaryReportParameters.Fill(parametersWorksheet, simulationModel);
+                summaryReportParameters.Fill(parametersWorksheet, simulationModel, simulationYearsCount);
 
                 // Bridge Data tab
                 var bridgeDataModels = new List<BridgeDataModel>();
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
+                // Simulation Legend TAB
+                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("Legend");
+                summaryReportGlossary.Fill(shortNameWorksheet);
+
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - Bridge data TAB");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
-                // Simulation ShortName TAB
-                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("ShortName");
-                summaryReportGlossary.Fill(shortNameWorksheet);
-
                 // Bridge Work Summary tab
                 var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, (int)simulationId, workSummaryModel.Treatments);
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationModel, workSummaryModel.Treatments);
 
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - work summary TAB");
@@ -132,17 +136,25 @@ namespace BridgeCare.Services.SummaryReport
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition DA");
                 nhsConditionChart.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NHSBridgeDeckAreaPercentSectionYearsRow, Properties.Resources.NHSConditionByDeckAreaLLCC, simulationYearsCount);
 
+                // Non-NHS Condition Bridge Count
+                worksheet = excelPackage.Workbook.Worksheets.Add("Non-NHS Condition Bridge Cnt");
+                nonNHSconditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NonNHSBridgeCountPercentSectionYearsRow, simulationYearsCount);
+
+                // Non-NHS Condition DA
+                worksheet = excelPackage.Workbook.Worksheets.Add("Non-NHS Condition DA");
+                nonNHSConditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.NonNHSDeckAreaPercentSectionYearsRow, simulationYearsCount);
+
                 // Condition Bridge Cnt tab
-                worksheet = excelPackage.Workbook.Worksheets.Add("Condition Bridge Cnt");
-                conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountSectionYearsRow, simulationYearsCount);
+                worksheet = excelPackage.Workbook.Worksheets.Add("Combined Condition Bridge Cnt");
+                conditionBridgeCount.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalBridgeCountPercentYearsRow, simulationYearsCount);
 
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - condition bridge count TAB");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // Condition DA tab
-                worksheet = excelPackage.Workbook.Worksheets.Add("Condition DA");
-                conditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalDeckAreaSectionYearsRow, simulationYearsCount);
+                worksheet = excelPackage.Workbook.Worksheets.Add("Combined Condition DA");
+                conditionDeckArea.Fill(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalDeckAreaPercentYearsRow, simulationYearsCount);
 
                 // Poor Bridge Cnt tab 
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge Cnt");
