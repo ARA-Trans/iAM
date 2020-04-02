@@ -78,7 +78,8 @@
                                                        @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])">
                                             {{formatAsCurrency(props.item[header.value])}}
                                             <template slot="input">
-                                                <currency-input v-model="props.item[header.value]"
+                                                <currency-input class="budget-year-amount-input"
+                                                                v-model="props.item[header.value]"
                                                                 :currency="{prefix: '$', suffix: ''}" :locale="'en-US'"
                                                                 :distractionFree="false"/>
                                             </template>
@@ -783,12 +784,6 @@
 </script>
 
 <style>
-    .investment-editor-container {
-        height: 730px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-
     .sharing label {
         padding-top: 0.5em;
     }
@@ -796,5 +791,10 @@
     .sharing {
         padding-top: 0;
         margin: 0;
+    }
+
+    .budget-year-amount-input {
+        border: 1px solid;
+        width: 100%;
     }
 </style>
