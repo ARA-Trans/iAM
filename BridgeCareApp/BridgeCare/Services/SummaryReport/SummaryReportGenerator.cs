@@ -100,6 +100,10 @@ namespace BridgeCare.Services.SummaryReport
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
 
+                // Simulation ShortName TAB
+                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("ShortName");
+                summaryReportGlossary.Fill(shortNameWorksheet);
+
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Report generation - Bridge data TAB");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
@@ -171,10 +175,6 @@ namespace BridgeCare.Services.SummaryReport
                 // Poor Bridge DA By BPN TAB
                 worksheet = excelPackage.Workbook.Worksheets.Add("Poor Bridge DA By BPN");
                 bridgeWorkSummaryCharts.FillPoorDeckAreaByBPN(worksheet, bridgeWorkSummaryWorkSheet, chartRowsModel.TotalPoorDeckAreaByBPNSectionYearsRow, simulationYearsCount);
-
-                // Simulation ShortName TAB
-                var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("ShortName");
-                summaryReportGlossary.Fill(shortNameWorksheet);
 
                 // Posted By BPN Bridge Count TAB
                 //worksheet = excelPackage.Workbook.Worksheets.Add("Posted By BPN Bridge Count");

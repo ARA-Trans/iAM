@@ -126,9 +126,11 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                     var cellFortotalSpentAmount = spentAmount.year - startYear;
                     worksheet.Cells[currentCell.Row, currentCell.Column + cellFortotalSpentAmount + 2].Value = spentAmount.amount;
                 }
+                excelHelper.ApplyColor(worksheet.Cells[startOfTotalBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2],
+                    Color.FromArgb(84, 130, 53));
 
                 var totalBridgeCareBudget = yearlyBudgetModels.FindAll(_ => _.BudgetName.Equals(budget.Replace("'", ""))).OrderBy(_ => _.Year).ToList();
-                currentCell.Row += 1;
+                currentCell.Row += 2;
                 currentCell.Column = 1;
                 worksheet.Cells[currentCell.Row, currentCell.Column].Value = Properties.Resources.TotalBridgeCareBudget;
 
@@ -139,7 +141,8 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 }
                 excelHelper.ApplyBorder(worksheet.Cells[startOfTotalBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
                 excelHelper.SetCustomFormat(worksheet.Cells[startOfTotalBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
-                excelHelper.ApplyColor(worksheet.Cells[startOfTotalBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.DarkOliveGreen);
+                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2],
+                    Color.FromArgb(255, 255, 0));
 
                 currentCell.Row += 1;
                 bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Budget Analysis");
@@ -155,7 +158,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 }
                 excelHelper.ApplyBorder(worksheet.Cells[currentCell.Row, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
                 excelHelper.SetCustomFormat(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
-                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.IndianRed);
+                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.FromArgb(248, 203, 173));
 
             }
             worksheet.Cells.AutoFitColumns();
