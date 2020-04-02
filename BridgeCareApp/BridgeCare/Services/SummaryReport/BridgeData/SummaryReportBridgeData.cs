@@ -114,13 +114,13 @@ namespace BridgeCare.Services
                     setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index, yearsData[index].Project);
                     if (abbreviatedTreatmentNames.ContainsKey(yearsData[index].Treatment))
                     {
-                        range.Value = cost > 0 ? abbreviatedTreatmentNames[yearsData[index].Treatment] : "--";
+                        range.Value = string.IsNullOrEmpty(abbreviatedTreatmentNames[yearsData[index].Treatment]) ? "--" : abbreviatedTreatmentNames[yearsData[index].Treatment];
                     }
                     else
                     {
-                        range.Value = cost > 0 ? yearsData[index].Treatment : "--";
+                        range.Value = string.IsNullOrEmpty(yearsData[index].Treatment) ? "--" : yearsData[index].Treatment;
                     }
-                    workDoneMoreThanOnce = cost > 0 ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
+                    workDoneMoreThanOnce = !range.Value.Equals("--") ? workDoneMoreThanOnce + 1 : workDoneMoreThanOnce;
                 }
                 worksheet.Cells[row, ++column].Value = workDoneMoreThanOnce > 1 ? "Yes" : "--";
                 totalColumnValue = workDoneMoreThanOnce > 1 ? totalColumnValue + 1 : totalColumnValue;
