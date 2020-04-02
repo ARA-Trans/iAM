@@ -3,7 +3,6 @@ using BenchmarkDotNet.Attributes;
 
 namespace AppliedResearchAssociates.PciDistress.Benchmarks
 {
-    [LegacyJitX86Job]
     public class CharacterizationTestInputs // For now, only a small sample of all characterization test inputs.
     {
         #region ComputePCIValue
