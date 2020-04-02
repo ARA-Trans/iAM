@@ -90,23 +90,36 @@
 
         @Watch('budgetsTabSelectedTreatment')
         onBudgetsTabSelectedTreatmentChanged() {
-            this.selectedBudgets = hasValue(this.budgetsTabSelectedTreatment.budgets)
-                ? this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}))
-                : [];
+            const selectedBudgets: string[] = sorter(
+                this.selectedBudgets.map((budgetGridRow: BudgetGridRow) => budgetGridRow.budget)) as string[];
+
+            const selectedTreatmentBudgets: string[] = sorter(this.budgetsTabSelectedTreatment.budgets) as string[];
+
+            if (!equals(selectedTreatmentBudgets, selectedBudgets)) {
+                this.selectedBudgets = hasValue(this.budgetsTabSelectedTreatment.budgets)
+                    ? this.budgetsTabSelectedTreatment.budgets.map((name: string) => ({budget: name}))
+                    : [];
+            }
         }
 
         @Watch('selectedBudgets')
         onSelectedBudgetsChanged() {
-            const selectedBudgets: string[] = this.selectedBudgets.map((budgetGridRow: BudgetGridRow) => budgetGridRow.budget);
+            setTimeout(() => {
 
-            if (!equals(this.budgetsTabSelectedTreatment.budgets, selectedBudgets)) {
+            });
+            const selectedBudgets: string[] = sorter(
+                this.selectedBudgets.map((budgetGridRow: BudgetGridRow) => budgetGridRow.budget)) as string[];
+
+            const selectedTreatmentBudgets: string[] = sorter(this.budgetsTabSelectedTreatment.budgets) as string[];
+
+            if (!equals(selectedTreatmentBudgets, selectedBudgets)) {
                 this.budgetsTabSelectedTreatmentLibrary = {
                     ...this.budgetsTabSelectedTreatmentLibrary,
                     treatments: update(
-                        findIndex(propEq('id', this.budgetsTabSelectedTreatment), this.budgetsTabSelectedTreatmentLibrary.treatments),
+                        findIndex(propEq('id', this.budgetsTabSelectedTreatment.id), this.budgetsTabSelectedTreatmentLibrary.treatments),
                         {
                             ...this.budgetsTabSelectedTreatment,
-                            budgets: getPropertyValues('budget', this.selectedBudgets)
+                            budgets: this.selectedBudgets.map((budgetGridRow: BudgetGridRow) => budgetGridRow.budget)
                         },
                         this.budgetsTabSelectedTreatmentLibrary.treatments
                     )

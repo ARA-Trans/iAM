@@ -290,10 +290,8 @@
             let selectedTreatment: Treatment = clone(emptyTreatment);
 
             if (any(propEq('id', this.treatmentSelectItemValue), this.selectedTreatmentLibrary.treatments)) {
-                selectedTreatment = {
-                    ...find(propEq('id', this.treatmentSelectItemValue), this.selectedTreatmentLibrary.treatments) as Treatment,
-                    budgets: this.getTreatmentBudgets()
-                };
+                selectedTreatment = find(
+                    propEq('id', this.treatmentSelectItemValue), this.selectedTreatmentLibrary.treatments) as Treatment;
             }
 
             this.activeTab = 0;
@@ -310,19 +308,6 @@
                     tabScenarioInvestmentLibrary: clone(this.stateScenarioInvestmentLibrary)
                 };
             }
-        }
-
-        getTreatmentBudgets() {
-            let budgets: string[] = [];
-
-            if (hasValue(this.stateScenarioInvestmentLibrary.budgetOrder)) {
-                budgets = clone(this.stateScenarioInvestmentLibrary.budgetOrder);
-            } else if (hasValue(this.stateScenarioInvestmentLibrary.budgetYears)) {
-                budgets = sorter(
-                    getPropertyValues('budgetName', this.stateScenarioInvestmentLibrary.budgetYears)) as string[];
-            }
-
-            return budgets;
         }
 
         /**
