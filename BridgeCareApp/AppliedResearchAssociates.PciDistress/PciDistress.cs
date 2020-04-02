@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.PciDistress
 {
     public static class PciDistress
     {
-        #region Transliteration of public members (IPciDistress)
+        #region Transliteration of public members
 
         /// <summary>
         ///     A reduced version of the original ComputeVCIValues from DSS which computes only the VCI.
