@@ -96,33 +96,38 @@ namespace BridgeCare.Services.SummaryReport
                 summaryReportParameters.Fill(parametersWorksheet, simulationModel, simulationYearsCount);
 
                 // Bridge Data tab
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Begin Bridge Data TAB Generation");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
                 var bridgeDataModels = new List<BridgeDataModel>();
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Bridge Data");
                 var workSummaryModel = summaryReportBridgeData.Fill(worksheet, simulationModel, simulationYears, dbContext);
+
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "End of Bridge Data TAB Generation");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // Simulation Legend TAB
                 var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("Legend");
                 summaryReportGlossary.Fill(shortNameWorksheet);
 
-                updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Report generation - Bridge data TAB");
-                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
-
                 // Bridge Work Summary tab
-                var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
-                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels, workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationModel, workSummaryModel.Treatments);
-
                 updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Report generation - work summary TAB");
+                    .Set(s => s.status, "Begin Work summary TAB");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
-                // Bridge work summary by Budget TAB 
+                var bridgeWorkSummaryWorkSheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary");
+                var chartRowsModel = bridgeWorkSummary.Fill(bridgeWorkSummaryWorkSheet, workSummaryModel.SimulationDataModels,
+                    workSummaryModel.BridgeDataModels, simulationYears, dbContext, simulationModel, workSummaryModel.Treatments);
+
+                // Bridge work summary by Budget TAB
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(s => s.status, "Begin Work Summary By Budget TAB");
+                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
                 var summaryByBudgetWorksheet = excelPackage.Workbook.Worksheets.Add("Bridge Work Summary By Budget");
                 bridgeWorkSummaryByBudget.Fill(summaryByBudgetWorksheet, simulationModel, simulationYears);
-
-                updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Report generation - Work Summary By Budget");
-                simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
 
                 // NHS Condition Bridge Cnt tab
                 worksheet = excelPackage.Workbook.Worksheets.Add("NHS Condition Bridge Cnt");
