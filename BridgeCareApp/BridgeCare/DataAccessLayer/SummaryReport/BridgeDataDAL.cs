@@ -212,14 +212,13 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             bool adtTotalHasValue = int.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
             bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
 
-            //int.TryParse(penndotBridgeDataRow.BRIDGE_FAMILY_ID, out var familyId);
+            int.TryParse(penndotBridgeDataRow.BRIDGE_FAMILY_ID, out var familyId);
             double.TryParse(pennDotReportADataRow.DECK_AREA, out var deckArea);
             int.TryParse(pennDotReportADataRow.YEAR_BUILT, out var yearBuilt);
             int.TryParse(pennDotReportADataRow.StructureLength, out var structureLength);
             int.TryParse(pennDotReportADataRow.ADTTOTAL, out var ADTTotal);
             double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
             var age = DateTime.Today.Year - yearBuilt;
-            var familyId = penndotBridgeDataRow.BRIDGE_FAMILY_ID;
 
             return new BridgeDataModel
             {
