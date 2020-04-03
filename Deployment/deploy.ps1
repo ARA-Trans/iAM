@@ -27,8 +27,7 @@ If ($cSharpBuiltConfirmation -ne 'confirm') {
 
 $version = Read-Host -Prompt 'Input the version name for this deployment. (Ex. "12192019")';
 
-$startTimeSeconds = (Get-Date).Second;
-$startTimeMinutes = (Get-Date).Minute;
+$timer = [System.Diagnostics.Stopwatch]::StartNew();
 
 $versionPath = "$deploymentOutputPath\$version"
 $devPath = "$versionPath\$version-DEV";
@@ -297,7 +296,6 @@ Compress-Archive -Path $prodPath -DestinationPath "$prodPath.zip" -CompressionLe
 
 # Done
 
-$endTimeSeconds = (Get-Date).Second;
-$endTimeMinutes = (Get-Date).Minute;
+$timer.Stop();
 
-Read-Host -Prompt "Finished in $(($endTimeMinutes - $startTimeMinutes + 60) % 60) minutes $(($endTimeSeconds - $startTimeSeconds + 60) % 60) seconds.";
+Read-Host -Prompt "Finished in $($timer.Elapsed.Minutes) minutes $($timer.Elapsed.Seconds) seconds.";
