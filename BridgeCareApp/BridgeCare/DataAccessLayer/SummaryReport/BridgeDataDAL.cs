@@ -214,11 +214,11 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
             int.TryParse(penndotBridgeDataRow.BRIDGE_FAMILY_ID, out var familyId);
             double.TryParse(pennDotReportADataRow.DECK_AREA, out var deckArea);
-            int.TryParse(penndotBridgeDataRow.CONDITION_BASED_AGE, out var age);
             int.TryParse(pennDotReportADataRow.YEAR_BUILT, out var yearBuilt);
             int.TryParse(pennDotReportADataRow.StructureLength, out var structureLength);
             int.TryParse(pennDotReportADataRow.ADTTOTAL, out var ADTTotal);
             double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
+            var age = DateTime.Today.Year - yearBuilt;
 
             return new BridgeDataModel
             {

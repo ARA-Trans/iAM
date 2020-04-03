@@ -78,9 +78,12 @@
                                                        persistent>
                                             {{formatAsCurrency(props.item[header.value])}}
                                             <template slot="input">
-                                                <v-text-field label="Edit"
-                                                              single-line v-model="props.item[header.value]">
-                                                </v-text-field>
+                                                <currency-input class="budget-year-amount-input"
+                                                                v-model="props.item[header.value]"
+                                                                :currency="{prefix: '$', suffix: ''}" :locale="'en-US'"
+                                                                :distractionFree="false"
+                                                                @keydown.enter.stop
+                                                                @keyup.enter.stop/>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
@@ -176,7 +179,6 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
-
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -206,6 +208,12 @@
         budgetYearsGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
+        budgetCriteriaHeaders: DataTableHeader[] = [
+            { text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: '' },
+            { text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: '' }
+        ];
+        intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
+
         budgetYearsGridData: BudgetYearsGridData[] = [];
         selectedGridRows: BudgetYearsGridData[] = [];
         selectedBudgetYears: number[] = [];
@@ -214,6 +222,7 @@
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        currencyInputConfig: any = {currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false};
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -511,19 +520,19 @@
         onEditBudgetYearAmount(year: number, budgetName: string, amount: number) {
             if (any(propEq('year', year), this.selectedInvestmentLibrary.budgetYears) &&
                 any(propEq('budgetName', budgetName), this.selectedInvestmentLibrary.budgetYears)) {
-                this.selectedInvestmentLibrary = {
-                    ...this.selectedInvestmentLibrary,
-                    budgetYears: this.selectedInvestmentLibrary.budgetYears
-                        .map((budgetYear: InvestmentLibraryBudgetYear) => {
-                            if (budgetYear.year === year && budgetYear.budgetName === budgetName) {
-                                return {
-                                    ...budgetYear,
-                                    budgetAmount: amount
-                                };
-                            }
-                            return budgetYear;
-                        })
-                };
+
+                this.selectedInvestmentLibrary.budgetYears = this.selectedInvestmentLibrary.budgetYears
+                    .map((budgetYear: InvestmentLibraryBudgetYear) => {
+                        if (budgetYear.year === year && budgetYear.budgetName === budgetName) {
+                            return {
+                                ...budgetYear,
+                                budgetAmount: amount
+                            };
+                        }
+                        return budgetYear;
+                    });
+
+                this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
             }
         }
 
@@ -532,6 +541,9 @@
          * data
          */
         onCreateAsNewLibrary() {
+            if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
+               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
+            }
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
                 inflationRate: this.selectedInvestmentLibrary.inflationRate,
@@ -565,18 +577,27 @@
          * Dispatches an action to modify a scenario's InvestmentLibrary data in the sql server database
          */
         onApplyToScenario() {
-            this.saveScenarioInvestmentLibraryAction({
-                saveScenarioInvestmentLibraryData: {
-                    ...this.selectedInvestmentLibrary,
-                    id: this.selectedScenarioId,
-                    budgetCriteria: this.selectedInvestmentLibrary.budgetCriteria
-                        .map((budgetCriteria: CriteriaDrivenBudgets) => ({
-                            ...budgetCriteria,
-                            scenarioId: parseInt(this.selectedScenarioId)
-                        }))
-                },
-                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
-            }).then(() => this.onDiscardChanges());
+            const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
+            appliedInvestmentLibrary.id = this.selectedScenarioId;
+            appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
+
+            this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
+                .then(() => {
+                    this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
+                });
+
+            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary, 
+            objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
+                .then(() => {
+                    setTimeout(() => {
+                        this.onClearSelectedInvestmentLibrary();
+                        setTimeout(() => {
+                            this.updateSelectedInvestmentLibraryAction({
+                                updatedSelectedInvestmentLibrary: this.scenarioInvestmentLibrary
+                            });
+                        });
+                    });
+                });
         }
 
         /**
@@ -622,5 +643,10 @@
     .sharing {
         padding-top: 0;
         margin: 0;
+    }
+
+    .budget-year-amount-input {
+        border: 1px solid;
+        width: 100%;
     }
 </style>

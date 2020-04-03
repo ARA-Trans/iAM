@@ -16,6 +16,7 @@ import VueWorker from 'vue-worker';
 import '@progress/kendo-ui';
 import '@progress/kendo-theme-default/dist/all.css';
 import {KendoChartInstaller} from '@progress/kendo-charts-vue-wrapper';
+import VueCurrencyInput from 'vue-currency-input';
 
 Vue.use(Vuetify, {
     iconfont: 'fa'
@@ -24,6 +25,8 @@ Vue.use(Vuetify, {
 Vue.use(VueWorker);
 
 Vue.use(KendoChartInstaller);
+
+Vue.use(VueCurrencyInput);
 
 Vue.config.productionTip = false;
 

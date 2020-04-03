@@ -111,7 +111,8 @@ namespace BridgeCare.Services
                     var cost = yearsData[index].Cost;
                     var range = worksheet.Cells[row, ++column];
                     projectPickByYear.Add(yearsData[index].Year, yearsData[index].ProjectPickType);
-                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, range, projectPickByYear, yearsData[index].Year, index, yearsData[index].Project);
+                    setColor(bridgeDataModel.ParallelBridge, yearsData[index].Treatment, projectPickByYear,
+                        yearsData[index].Year, index, yearsData[index].Project, worksheet, row, column);
                     if (abbreviatedTreatmentNames.ContainsKey(yearsData[index].Treatment))
                     {
                         range.Value = string.IsNullOrEmpty(abbreviatedTreatmentNames[yearsData[index].Treatment]) ? "--" : abbreviatedTreatmentNames[yearsData[index].Treatment];
@@ -161,10 +162,10 @@ namespace BridgeCare.Services
             currentCell.Column = column - 1;            
         }
 
-        private void setColor(int parallelBridge, string treatment, ExcelRange range,
-            Dictionary<int, int> projectPickByYear, int year, int index, string project)
+        private void setColor(int parallelBridge, string treatment,
+            Dictionary<int, int> projectPickByYear, int year, int index, string project, ExcelWorksheet worksheet, int row, int column)
         {
-            highlightWorkDoneCells.CheckConditions(parallelBridge, treatment, range, projectPickByYear, year, index, project);
+            highlightWorkDoneCells.CheckConditions(parallelBridge, treatment, projectPickByYear, year, index, project, worksheet, row, column);
         }
 
         private int AddSimulationYearData(ExcelWorksheet worksheet, int row, int column, YearsData yearData, int familyId,
