@@ -9,6 +9,8 @@ namespace AppliedResearchAssociates
     {
         public static IDisposable AsDisposable(this IEnumerable<IDisposable> source) => new AggregateDisposable(source);
 
+        public static T? AsNullable<T>(this T value) where T : struct => value;
+
         public static int CombineHashCodes(this IEnumerable values, IEqualityComparer equalityComparer = null) => values.Cast<object>().CombineHashCodes(equalityComparer);
 
         public static int CombineHashCodes<T>(this IEnumerable<T> values, IEqualityComparer<T> equalityComparer = null)

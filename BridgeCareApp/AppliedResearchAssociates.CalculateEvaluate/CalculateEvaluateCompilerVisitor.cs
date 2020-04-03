@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Antlr4.Runtime.Misc;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
@@ -15,7 +14,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             ParseNumber = parseNumber ?? throw new ArgumentNullException(nameof(parseNumber));
         }
 
-        public override Expression VisitAddition([NotNull] CalculateEvaluateParser.AdditionContext context)
+        public override Expression VisitAddition(CalculateEvaluateParser.AdditionContext context)
         {
             var leftOperand = Visit(context.left);
             var rightOperand = Visit(context.right);
@@ -23,7 +22,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitCalculation([NotNull] CalculateEvaluateParser.CalculationContext context)
+        public override Expression VisitCalculation(CalculateEvaluateParser.CalculationContext context)
         {
             var parameter = Expression.Parameter(typeof(CalculatorArgument<T>));
             Numbers = ArgumentInfo.Of(parameter, nameof(CalculatorArgument<T>.Numbers));
@@ -32,7 +31,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return lambda;
         }
 
-        public override Expression VisitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context)
+        public override Expression VisitConstantReference(CalculateEvaluateParser.ConstantReferenceContext context)
         {
             var idText = context.ID().GetText();
             var constant = Constants[idText];
@@ -40,7 +39,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitDivision([NotNull] CalculateEvaluateParser.DivisionContext context)
+        public override Expression VisitDivision(CalculateEvaluateParser.DivisionContext context)
         {
             var leftOperand = Visit(context.left);
             var rightOperand = Visit(context.right);
@@ -48,18 +47,24 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitEvaluation([NotNull] CalculateEvaluateParser.EvaluationContext context)
+        public override Expression VisitEvaluation(CalculateEvaluateParser.EvaluationContext context)
         {
-            throw new NotImplementedException();
+            var parameter = Expression.Parameter(typeof(EvaluatorArgument<T>));
+            Numbers = ArgumentInfo.Of(parameter, nameof(EvaluatorArgument<T>.Numbers));
+            Strings = ArgumentInfo.Of(parameter, nameof(EvaluatorArgument<T>.Strings));
+            Dates = ArgumentInfo.Of(parameter, nameof(EvaluatorArgument<T>.Dates));
+            var body = Visit(context.eval());
+            var lambda = Expression.Lambda<Evaluator<T>>(body, parameter);
+            return lambda;
         }
 
-        public override Expression VisitGrouping([NotNull] CalculateEvaluateParser.GroupingContext context)
+        public override Expression VisitGrouping(CalculateEvaluateParser.GroupingContext context)
         {
             var result = Visit(context.calc());
             return result;
         }
 
-        public override Expression VisitInvocation([NotNull] CalculateEvaluateParser.InvocationContext context)
+        public override Expression VisitInvocation(CalculateEvaluateParser.InvocationContext context)
         {
             var idText = context.ID().GetText();
             var arguments = context.args().calc();
@@ -68,7 +73,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitMultiplication([NotNull] CalculateEvaluateParser.MultiplicationContext context)
+        public override Expression VisitMultiplication(CalculateEvaluateParser.MultiplicationContext context)
         {
             var leftOperand = Visit(context.left);
             var rightOperand = Visit(context.right);
@@ -76,14 +81,14 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitNegation([NotNull] CalculateEvaluateParser.NegationContext context)
+        public override Expression VisitNegation(CalculateEvaluateParser.NegationContext context)
         {
             var operand = Visit(context.calc());
             var result = Expression.NegateChecked(operand);
             return result;
         }
 
-        public override Expression VisitNumericLiteral([NotNull] CalculateEvaluateParser.NumericLiteralContext context)
+        public override Expression VisitNumericLiteral(CalculateEvaluateParser.NumericLiteralContext context)
         {
             var numberText = context.NUMBER().GetText();
             var number = ParseNumber(numberText);
@@ -91,7 +96,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context)
+        public override Expression VisitParameterReference(CalculateEvaluateParser.ParameterReferenceContext context)
         {
             var idText = context.ID().GetText();
 
@@ -119,7 +124,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitSubtraction([NotNull] CalculateEvaluateParser.SubtractionContext context)
+        public override Expression VisitSubtraction(CalculateEvaluateParser.SubtractionContext context)
         {
             var leftOperand = Visit(context.left);
             var rightOperand = Visit(context.right);
