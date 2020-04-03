@@ -39,7 +39,7 @@
                         <h4>Currently Shared With:</h4>
                     </v-layout>
                     <v-layout class="sharing-row"
-                              v-for="user in scenarioUsers">
+                              v-for="user in scenarioUsers" :key="user.id">
                         <div class="sharing-username">
                             {{user.username === null ? "[All Users]" : user.username}}
                         </div>
