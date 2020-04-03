@@ -1,9 +1,10 @@
 ﻿<template>
     <v-layout>
-        <v-dialog v-model="loading" persistent content content-class="centered-dialog">
+        <v-dialog content content-class="centered-dialog" persistent v-model="loading">
             <v-container>
-                <v-layout align-center justify-center column>
-                    <v-progress-circular class="ara-blue-pantone-281" indeterminate :size="70" :width="7"></v-progress-circular>
+                <v-layout align-center column justify-center>
+                    <v-progress-circular :size="70" :width="7" class="ara-blue-pantone-281"
+                                         indeterminate></v-progress-circular>
                     <h1>Please wait</h1>
                 </v-layout>
             </v-container>

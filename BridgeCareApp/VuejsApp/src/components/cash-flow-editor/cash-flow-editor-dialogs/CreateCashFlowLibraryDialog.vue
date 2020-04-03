@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="dialogData.showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,19 +8,20 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" v-model="createdCashFlowLibrary.name" outline></v-text-field>
+                    <v-text-field label="Name" outline v-model="createdCashFlowLibrary.name"></v-text-field>
 
-                    <v-textarea rows="3" no-resize outline label="Description" v-model="createdCashFlowLibrary.description">
+                    <v-textarea label="Description" no-resize outline rows="3"
+                                v-model="createdCashFlowLibrary.description">
                     </v-textarea>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)"
-                           :disabled="createdCashFlowLibrary.name === ''">
+                    <v-btn :disabled="createdCashFlowLibrary.name === ''" @click="onSubmit(true)"
+                           class="ara-blue-bg white--text">
                         Submit
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">
                         Cancel
                     </v-btn>
                 </v-layout>
@@ -42,7 +43,8 @@
     } from '@/shared/models/iAM/cash-flow';
     import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import { getUserName } from '../../../shared/utils/get-user-info';
+    import {getUserName} from '../../../shared/utils/get-user-info';
+
     const ObjectID = require('bson-objectid');
 
     @Component

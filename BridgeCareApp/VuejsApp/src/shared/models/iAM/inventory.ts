@@ -1,6 +1,4 @@
-import concat from 'ramda/es/concat';
-
-export interface InventoryItem {        
+export interface InventoryItem {
     bmsId: string;
     brKey: number;
 }
@@ -80,7 +78,7 @@ export const emptyInventoryItemDetail: InventoryItemDetail = {
             value: ''
         }
     },
-    nbiLoadRatings: [{ nbiLoadRatingRow: [] }],
+    nbiLoadRatings: [{nbiLoadRatingRow: []}],
     posting: [],
     roadwayInfo: []
 };

@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="1000px">
+    <v-dialog max-width="1000px" persistent scrollable v-model="dialogData.showDialog">
         <v-card>
             <v-card-text class="criteria-editor-card-text">
                 <v-layout justify-space-between row>
@@ -11,25 +11,29 @@
                             <div class="conjunction-and-messages-container">
                                 <v-layout justify-space-between>
                                     <div class="conjunction-select-list-container">
-                                        <v-select class="conjunction-select-list" :items="conjunctionSelectListItems"
-                                                  v-model="selectedConjunction" lablel="Select a Conjunction">
+                                        <v-select :items="conjunctionSelectListItems" class="conjunction-select-list"
+                                                  lablel="Select a Conjunction" v-model="selectedConjunction">
                                         </v-select>
                                     </div>
-                                    <v-btn class="ara-blue-bg white--text" @click="onAddSubCriteria">Add Criteria</v-btn>
+                                    <v-btn @click="onAddSubCriteria" class="ara-blue-bg white--text">Add Criteria
+                                    </v-btn>
                                 </v-layout>
                             </div>
                             <v-card-text class="clauses-card">
                                 <div v-for="(clause, index) in subCriteriaClauses">
                                     <v-layout column>
-                                        <v-textarea class="clause-textarea" rows="3" no-resize box :class="{'textarea-focused': index === selectedSubCriteriaClauseIndex}"
-                                                    readonly full-width :value="clause" @click="onClickSubCriteriaClauseTextarea(clause, index)">
+                                        <v-textarea :class="{'textarea-focused': index === selectedSubCriteriaClauseIndex}" :value="clause" @click="onClickSubCriteriaClauseTextarea(clause, index)" box
+                                                    class="clause-textarea"
+                                                    full-width no-resize readonly
+                                                    rows="3">
                                             <template slot="append">
-                                                <v-btn class="ara-orange" icon @click="onRemoveSubCriteria(index)">
+                                                <v-btn @click="onRemoveSubCriteria(index)" class="ara-orange" icon>
                                                     <v-icon>fas fa-times</v-icon>
                                                 </v-btn>
                                             </template>
                                         </v-textarea>
-                                        <v-layout justify-center v-if="subCriteriaClauses.length > 1 && index !== subCriteriaClauses.length - 1">
+                                        <v-layout justify-center
+                                                  v-if="subCriteriaClauses.length > 1 && index !== subCriteriaClauses.length - 1">
                                             <p>{{selectedConjunction}}</p>
                                         </v-layout>
                                     </v-layout>
@@ -43,21 +47,23 @@
                                 <v-layout justify-center><h3>Criteria Editor</h3></v-layout>
                             </v-card-title>
                             <v-card-text class="criteria-editor-container">
-                                <v-tabs v-if="selectedSubCriteriaClauseIndex !== -1" centered>
-                                    <v-tab ripple @click="onParseRawSubCriteria">
+                                <v-tabs centered v-if="selectedSubCriteriaClauseIndex !== -1">
+                                    <v-tab @click="onParseRawSubCriteria" ripple>
                                         Tree View
                                     </v-tab>
-                                    <v-tab ripple @click="onParseSubCriteriaJson">
+                                    <v-tab @click="onParseSubCriteriaJson" ripple>
                                         Raw Criteria
                                     </v-tab>
                                     <v-tab-item>
-                                        <vue-query-builder v-if="queryBuilderRules.length > 0" :labels="queryBuilderLabels"
-                                                           :rules="queryBuilderRules" :maxDepth="25" :styled="true"
+                                        <vue-query-builder :labels="queryBuilderLabels"
+                                                           :maxDepth="25"
+                                                           :rules="queryBuilderRules" :styled="true" v-if="queryBuilderRules.length > 0"
                                                            v-model="selectedSubCriteriaClause">
                                         </vue-query-builder>
                                     </v-tab-item>
                                     <v-tab-item>
-                                        <v-textarea rows="20" no-resize outline v-model="selectedRawSubCriteriaClause"></v-textarea>
+                                        <v-textarea no-resize outline rows="20"
+                                                    v-model="selectedRawSubCriteriaClause"></v-textarea>
                                     </v-tab-item>
                                 </v-tabs>
                             </v-card-text>
@@ -72,9 +78,9 @@
                             <v-layout v-bind="layout">
                                 <div :style="checkBtnDiv">
                                     <v-layout row wrap>
-                                        <v-flex xs5 sm6 md4 lg4 xl4>
-                                            <v-btn class="ara-blue-bg white--text" @click="onCheckCriteria"
-                                                   :disabled="onDisableCriteriaCheck()">
+                                        <v-flex lg4 md4 sm6 xl4 xs5>
+                                            <v-btn :disabled="onDisableCriteriaCheck()" @click="onCheckCriteria"
+                                                   class="ara-blue-bg white--text">
                                                 Check Output
                                             </v-btn>
                                         </v-flex>
@@ -91,9 +97,9 @@
                                 </div>
                                 <div :style="checkBtnDiv">
                                     <v-layout row wrap>
-                                        <v-flex xs5 sm6 md4 lg4 xl4>
-                                            <v-btn class="ara-blue-bg white--text" @click="onCheckSubCriteria"
-                                                   :disabled="onDisableSubCriteriaCheck()">
+                                        <v-flex lg4 md4 sm6 xl4 xs5>
+                                            <v-btn :disabled="onDisableSubCriteriaCheck()" @click="onCheckSubCriteria"
+                                                   class="ara-blue-bg white--text">
                                                 Check Criteria
                                             </v-btn>
                                         </v-flex>
@@ -112,10 +118,10 @@
                         <v-divider></v-divider>
                         <v-flex class="save-cancel-flex">
                             <v-layout justify-center row wrap>
-                                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">
+                                <v-btn :disabled="cannotSubmit" @click="onSubmit(true)" class="ara-blue-bg white--text">
                                     Save
                                 </v-btn>
-                                <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                                <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                             </v-layout>
                         </v-flex>
                     </v-layout>
@@ -128,13 +134,13 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
     import {Criteria, CriteriaType, CriteriaValidationResult, emptyCriteria} from '../models/iAM/criteria';
-    import {parseCriteriaString, parseCriteriaJson, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
+    import {parseCriteriaJson, parseCriteriaString, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
     import {CriteriaEditorDialogData} from '../models/modals/criteria-editor-dialog-data';
-    import {isEmpty, clone, update, remove, findIndex, isNil, equals} from 'ramda';
+    import {clone, equals, findIndex, isEmpty, isNil, remove, update} from 'ramda';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import CriteriaEditorService from '@/services/criteria-editor.service';
     import {AxiosResponse} from 'axios';
@@ -150,7 +156,6 @@
 
         @Action('getAttributes') getAttributesAction: any;
 
-        mainCriteria: Criteria = clone(emptyCriteria);
         queryBuilderRules: any[] = [];
         queryBuilderLabels: object = {
             'matchType': '',
@@ -180,15 +185,6 @@
         selectedRawSubCriteriaClause: string = '';
         activeTab = 'tree-view';
         checkOutput: boolean = false;
-
-        /**
-         * Component mounted event handler
-         */
-        mounted() {
-            if (hasValue(this.stateAttributes)) {
-                this.setQueryBuilderRules();
-            }
-        }
 
         get container() {
             const container: any = {};
@@ -220,7 +216,7 @@
             const layout: any = {};
 
             if (this.$vuetify.breakpoint.xs) {
-                layout.column= true;
+                layout.column = true;
             }
 
             if (this.$vuetify.breakpoint.smAndUp) {
@@ -244,6 +240,15 @@
             }
 
             return checkBtnDiv;
+        }
+
+        /**
+         * Component mounted event handler
+         */
+        mounted() {
+            if (hasValue(this.stateAttributes)) {
+                this.setQueryBuilderRules();
+            }
         }
 
         /**
@@ -273,15 +278,6 @@
                 this.setQueryBuilderRules();
             }
         }
-
-        /**
-         * Calls the setter for the subCriteriaClauses property and sets related component UI properties
-         */
-        /*@Watch('mainCriteria')
-        onCriteriaChanged() {
-            this.setSubCriteriaClauses();
-            this.resetComponentCriteriaUIProperties();
-        }*/
 
         /**
          * Setter: selectedConjunction property
@@ -577,8 +573,8 @@
                 .every((subCriteriaClause: string) => isEmpty(subCriteriaClause));
 
             return !mainCriteria || (equals(mainCriteria, emptyCriteria) && subCriteriaClausesAreEmpty) ||
-                   (!hasValue(mainCriteria.children) && subCriteriaClausesAreEmpty) ||
-                   isEmpty(parseCriteriaJson(mainCriteria));
+                (!hasValue(mainCriteria.children) && subCriteriaClausesAreEmpty) ||
+                isEmpty(parseCriteriaJson(mainCriteria));
         }
 
         /**
@@ -588,22 +584,22 @@
             const parsedSelectedSubCriteriaClause = parseCriteriaJson(this.selectedSubCriteriaClause as Criteria);
             const parsedSelectedRawSubCriteriaClause = parseCriteriaJson(parseCriteriaString(this.selectedRawSubCriteriaClause) as Criteria);
             return this.selectedSubCriteriaClauseIndex === -1 ||
-                   (
-                       this.activeTab === 'tree-view' &&
-                       (
-                           parsedSelectedSubCriteriaClause === null ||
-                           equals(this.selectedSubCriteriaClause, emptyCriteria)) ||
-                           (parsedSelectedSubCriteriaClause && isEmpty(parsedSelectedSubCriteriaClause.join(''))
-                       )
-                   ) ||
-                   (
-                       this.activeTab === 'raw-criteria' &&
-                       (
-                           isEmpty(this.selectedRawSubCriteriaClause) ||
-                           parsedSelectedRawSubCriteriaClause === null ||
-                           (parsedSelectedRawSubCriteriaClause && isEmpty(parsedSelectedRawSubCriteriaClause.join('')))
-                       )
-                   );
+                (
+                    this.activeTab === 'tree-view' &&
+                    (
+                        parsedSelectedSubCriteriaClause === null ||
+                        equals(this.selectedSubCriteriaClause, emptyCriteria)) ||
+                    (parsedSelectedSubCriteriaClause && isEmpty(parsedSelectedSubCriteriaClause.join(''))
+                    )
+                ) ||
+                (
+                    this.activeTab === 'raw-criteria' &&
+                    (
+                        isEmpty(this.selectedRawSubCriteriaClause) ||
+                        parsedSelectedRawSubCriteriaClause === null ||
+                        (parsedSelectedRawSubCriteriaClause && isEmpty(parsedSelectedRawSubCriteriaClause.join('')))
+                    )
+                );
         }
 
         /**

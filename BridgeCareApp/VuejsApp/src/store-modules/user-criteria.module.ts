@@ -1,5 +1,5 @@
 import {UserCriteria} from '@/shared/models/iAM/user-criteria';
-import {propEq, clone, reject, insert} from 'ramda';
+import {clone, insert, propEq, reject} from 'ramda';
 import UserCriteriaService from '@/services/user-criteria.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';

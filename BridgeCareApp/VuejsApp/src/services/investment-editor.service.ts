@@ -1,9 +1,7 @@
 import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {AxiosPromise, AxiosResponse} from 'axios';
+import {AxiosPromise} from 'axios';
 import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
-import { Scenario } from '@/shared/models/iAM/scenario';
-import { hasValue } from '@/shared/utils/has-value-util';
 
 export default class InvestmentEditorService {
     /**

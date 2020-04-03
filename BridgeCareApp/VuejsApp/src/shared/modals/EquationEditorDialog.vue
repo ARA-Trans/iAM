@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="dialogData.showDialog" persistent scrollable max-width="900px">
+        <v-dialog max-width="900px" persistent scrollable v-model="dialogData.showDialog">
             <v-card class="equation-container-card">
                 <v-card-title>
                     <v-layout justify-center>
@@ -32,10 +32,13 @@
                                                             <template>
                                                                 <v-subheader>Attributes: Click to add</v-subheader>
                                                                 <div class="attributes-list-container">
-                                                                    <v-list-tile v-for="attribute in attributesList" :key="attribute" class="list-tile"
-                                                                                 ripple @click="onAddStringToEquation(`[${attribute}]`)">
+                                                                    <v-list-tile :key="attribute"
+                                                                                 @click="onAddStringToEquation(`[${attribute}]`)" class="list-tile"
+                                                                                 ripple
+                                                                                 v-for="attribute in attributesList">
                                                                         <v-list-tile-content>
-                                                                            <v-list-tile-title>{{attribute}}</v-list-tile-title>
+                                                                            <v-list-tile-title>{{attribute}}
+                                                                            </v-list-tile-title>
                                                                         </v-list-tile-content>
                                                                     </v-list-tile>
                                                                 </div>
@@ -47,10 +50,13 @@
                                                             <template>
                                                                 <v-subheader>Formulas: Click to add</v-subheader>
                                                                 <div class="formulas-list-container">
-                                                                    <v-list-tile v-for="formula in formulasList" :key="formula" class="list-tile"
-                                                                                 ripple @click="onAddFormulaToEquation(formula)">
+                                                                    <v-list-tile :key="formula"
+                                                                                 @click="onAddFormulaToEquation(formula)" class="list-tile"
+                                                                                 ripple
+                                                                                 v-for="formula in formulasList">
                                                                         <v-list-tile-content>
-                                                                            <v-list-tile-title>{{formula}}</v-list-tile-title>
+                                                                            <v-list-tile-title>{{formula}}
+                                                                            </v-list-tile-title>
                                                                         </v-list-tile-content>
                                                                     </v-list-tile>
                                                                 </div>
@@ -63,22 +69,28 @@
                                                 <v-layout justify-center>
                                                     <div class="math-buttons-container">
                                                         <v-layout justify-space-between row>
-                                                            <v-btn class="math-button add" fab small @click="onAddStringToEquation('+')">
+                                                            <v-btn @click="onAddStringToEquation('+')" class="math-button add" fab
+                                                                   small>
                                                                 <span>+</span>
                                                             </v-btn>
-                                                            <v-btn class="math-button subtract" fab small @click="onAddStringToEquation('-')">
+                                                            <v-btn @click="onAddStringToEquation('-')" class="math-button subtract" fab
+                                                                   small>
                                                                 <span>-</span>
                                                             </v-btn>
-                                                            <v-btn class="math-button multiply" fab small @click="onAddStringToEquation('*')">
+                                                            <v-btn @click="onAddStringToEquation('*')" class="math-button multiply" fab
+                                                                   small>
                                                                 <span>*</span>
                                                             </v-btn>
-                                                            <v-btn class="math-button divide" fab small @click="onAddStringToEquation('/')">
+                                                            <v-btn @click="onAddStringToEquation('/')" class="math-button divide" fab
+                                                                   small>
                                                                 <span>/</span>
                                                             </v-btn>
-                                                            <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation('(')">
+                                                            <v-btn @click="onAddStringToEquation('(')" class="math-button parentheses" fab
+                                                                   small>
                                                                 <span>(</span>
                                                             </v-btn>
-                                                            <v-btn class="math-button parentheses" fab small @click="onAddStringToEquation(')')">
+                                                            <v-btn @click="onAddStringToEquation(')')" class="math-button parentheses" fab
+                                                                   small>
                                                                 <span>)</span>
                                                             </v-btn>
                                                         </v-layout>
@@ -87,9 +99,11 @@
                                             </div>
                                             <div>
                                                 <v-layout justify-center>
-                                                    <v-textarea id="equation_textarea" :rows="5" outline full-width no-resize
-                                                                spellcheck="false" v-model="equation" @blur="setCursorPosition"
-                                                                @focus="setTextareaCursorPosition">
+                                                    <v-textarea :rows="5" @blur="setCursorPosition" @focus="setTextareaCursorPosition" full-width
+                                                                id="equation_textarea"
+                                                                no-resize outline
+                                                                spellcheck="false"
+                                                                v-model="equation">
                                                     </v-textarea>
                                                 </v-layout>
                                             </div>
@@ -102,30 +116,35 @@
                                             <v-flex xs4>
                                                 <div>
                                                     <v-layout justify-space-between row>
-                                                        <v-btn class="ara-blue-bg white--text" @click="onAddTimeAttributeDataPoint">
+                                                        <v-btn @click="onAddTimeAttributeDataPoint"
+                                                               class="ara-blue-bg white--text">
                                                             Add
                                                         </v-btn>
-                                                        <v-btn class="ara-blue-bg white--text" @click="showAddDataPointMultiPopup = true">
+                                                        <v-btn @click="showAddDataPointMultiPopup = true"
+                                                               class="ara-blue-bg white--text">
                                                             Add Multi
                                                         </v-btn>
                                                     </v-layout>
                                                     <div class="data-points-grid">
-                                                        <v-data-table :headers="piecewiseGridHeaders" :items="piecewiseGridData"
-                                                                      hide-actions class="elevation-1 v-table__overflow">
+                                                        <v-data-table :headers="piecewiseGridHeaders"
+                                                                      :items="piecewiseGridData"
+                                                                      class="elevation-1 v-table__overflow"
+                                                                      hide-actions>
                                                             <template slot="items" slot-scope="props">
                                                                 <td v-for="header in piecewiseGridHeaders">
                                                                     <div v-if="header.value !== ''">
                                                                         <div v-if="props.item.timeValue === 0">
                                                                             {{props.item[header.value]}}
                                                                         </div>
-                                                                        <div v-else class="edit-data-point-span"
-                                                                              @click="onEditDataPoint(props.item, header.value)">
+                                                                        <div @click="onEditDataPoint(props.item, header.value)" class="edit-data-point-span"
+                                                                             v-else>
                                                                             {{props.item[header.value]}}
                                                                         </div>
                                                                     </div>
                                                                     <div v-else>
-                                                                        <v-btn v-if="props.item.timeValue !== 0" icon class="ara-orange"
-                                                                               @click="onRemoveTimeAttributeDataPoint(props.item.id)">
+                                                                        <v-btn @click="onRemoveTimeAttributeDataPoint(props.item.id)" class="ara-orange"
+                                                                               icon
+                                                                               v-if="props.item.timeValue !== 0">
                                                                             <v-icon>fas fa-trash</v-icon>
                                                                         </v-btn>
                                                                     </div>
@@ -138,20 +157,20 @@
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
                                                     <kendo-chart :data-source="piecewiseGridData"
-                                                                 :series-defaults-type="'scatterLine'"
-                                                                 :series-defaults-style="'smooth'"
                                                                  :pannable-lock="'y'"
-                                                                 :zoomable-mousewheel-lock="'y'"
-                                                                 :zoomable-selection-lock="'y'"
-                                                                 :x-axis-min="0"
-                                                                 :x-axis-max="xAxisMax"
-                                                                 :x-axis-title-text="'Time'"
-                                                                 :y-axis-min="0"
-                                                                 :y-axis-max="yAxisMax"
-                                                                 :y-axis-title-text="'Condition'"
-                                                                 :tooltip-visible="true"
+                                                                 :series-defaults-style="'smooth'"
+                                                                 :series-defaults-type="'scatterLine'"
+                                                                 :theme="'sass'"
                                                                  :tooltip-format="'({0},{1})'"
-                                                                 :theme="'sass'">
+                                                                 :tooltip-visible="true"
+                                                                 :x-axis-max="xAxisMax"
+                                                                 :x-axis-min="0"
+                                                                 :x-axis-title-text="'Time'"
+                                                                 :y-axis-max="yAxisMax"
+                                                                 :y-axis-min="0"
+                                                                 :y-axis-title-text="'Condition'"
+                                                                 :zoomable-mousewheel-lock="'y'"
+                                                                 :zoomable-selection-lock="'y'">
                                                         <kendo-chart-series-item :data="dataPointsSource"
                                                                                  :markers-visible="false">
                                                         </kendo-chart-series-item>
@@ -167,27 +186,31 @@
                                             <v-flex xs4>
                                                 <div>
                                                     <v-layout justify-space-between row>
-                                                        <v-btn class="ara-blue-bg white--text" @click="onAddTimeAttributeDataPoint">
+                                                        <v-btn @click="onAddTimeAttributeDataPoint"
+                                                               class="ara-blue-bg white--text">
                                                             Add
                                                         </v-btn>
-                                                        <v-btn class="ara-blue-bg white--text" @click="showAddDataPointMultiPopup = true">
+                                                        <v-btn @click="showAddDataPointMultiPopup = true"
+                                                               class="ara-blue-bg white--text">
                                                             Add Multi
                                                         </v-btn>
                                                     </v-layout>
                                                     <div class="data-points-grid">
-                                                        <v-data-table :headers="timeInRatingGridHeaders" :items="timeInRatingGridData"
-                                                                      hide-actions class="elevation-1 v-table__overflow">
+                                                        <v-data-table :headers="timeInRatingGridHeaders"
+                                                                      :items="timeInRatingGridData"
+                                                                      class="elevation-1 v-table__overflow"
+                                                                      hide-actions>
                                                             <template slot="items" slot-scope="props">
                                                                 <td v-for="header in timeInRatingGridHeaders">
                                                                     <div v-if="header.value !== ''">
-                                                                        <div class="edit-data-point-span"
-                                                                             @click="onEditDataPoint(props.item, header.value)">
+                                                                        <div @click="onEditDataPoint(props.item, header.value)"
+                                                                             class="edit-data-point-span">
                                                                             {{props.item[header.value]}}
                                                                         </div>
                                                                     </div>
                                                                     <div v-else>
-                                                                        <v-btn icon class="ara-orange"
-                                                                               @click="onRemoveTimeAttributeDataPoint(props.item.id)">
+                                                                        <v-btn @click="onRemoveTimeAttributeDataPoint(props.item.id)" class="ara-orange"
+                                                                               icon>
                                                                             <v-icon>fas fa-trash</v-icon>
                                                                         </v-btn>
                                                                     </div>
@@ -200,20 +223,20 @@
                                             <v-flex xs8>
                                                 <div class="kendo-chart-container">
                                                     <kendo-chart :data-source="piecewiseGridData"
-                                                                 :series-defaults-type="'scatterLine'"
-                                                                 :series-defaults-style="'smooth'"
                                                                  :pannable-lock="'y'"
-                                                                 :zoomable-mousewheel-lock="'y'"
-                                                                 :zoomable-selection-lock="'y'"
-                                                                 :x-axis-min="0"
-                                                                 :x-axis-max="xAxisMax"
-                                                                 :x-axis-title-text="'Time'"
-                                                                 :y-axis-min="0"
-                                                                 :y-axis-max="yAxisMax"
-                                                                 :y-axis-title-text="'Condition'"
-                                                                 :tooltip-visible="true"
+                                                                 :series-defaults-style="'smooth'"
+                                                                 :series-defaults-type="'scatterLine'"
+                                                                 :theme="'sass'"
                                                                  :tooltip-format="'({0},{1})'"
-                                                                 :theme="'sass'">
+                                                                 :tooltip-visible="true"
+                                                                 :x-axis-max="xAxisMax"
+                                                                 :x-axis-min="0"
+                                                                 :x-axis-title-text="'Time'"
+                                                                 :y-axis-max="yAxisMax"
+                                                                 :y-axis-min="0"
+                                                                 :y-axis-title-text="'Condition'"
+                                                                 :zoomable-mousewheel-lock="'y'"
+                                                                 :zoomable-selection-lock="'y'">
                                                         <kendo-chart-series-item :data="dataPointsSource"
                                                                                  :markers-visible="false">
                                                         </kendo-chart-series-item>
@@ -232,9 +255,11 @@
                         <v-flex xs12>
                             <div>
                                 <v-layout justify-space-between row>
-                                    <v-btn class="ara-blue-bg white--text" @click="onCheckEquation">Check</v-btn>
-                                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="cannotSubmit">Save</v-btn>
-                                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                                    <v-btn @click="onCheckEquation" class="ara-blue-bg white--text">Check</v-btn>
+                                    <v-btn :disabled="cannotSubmit" @click="onSubmit(true)"
+                                           class="ara-blue-bg white--text">Save
+                                    </v-btn>
+                                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                                 </v-layout>
                             </div>
                         </v-flex>
@@ -243,42 +268,45 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="showAddDataPointPopup" persistent max-width="250px">
+        <v-dialog max-width="250px" persistent v-model="showAddDataPointPopup">
             <v-card>
                 <v-card-text>
-                    <v-layout justify-center column>
+                    <v-layout column justify-center>
                         <div>
-                            <v-text-field outline v-model="newDataPoint.timeValue" label="Time Value"
-                                          type="number" :rules="[timeValueIsNotEmpty, timeValueIsNotZero, timeValueIsNew]">
+                            <v-text-field :rules="[timeValueIsNotEmpty, timeValueIsNotZero, timeValueIsNew]" label="Time Value" outline
+                                          type="number"
+                                          v-model="newDataPoint.timeValue">
                             </v-text-field>
                         </div>
                         <div>
-                            <v-text-field outline v-model="newDataPoint.conditionValue" label="Condition Value"
-                                          type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
+                            <v-text-field :rules="[conditionValueIsNotEmpty, conditionValueIsNew]" label="Condition Value" outline
+                                          type="number" v-model="newDataPoint.conditionValue">
                             </v-text-field>
                         </div>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="onSubmitNewDataPoint(true)"
-                               :disabled="disableDataPointSubmit()">
+                        <v-btn :disabled="disableDataPointSubmit()" @click="onSubmitNewDataPoint(true)"
+                               class="ara-blue-bg white--text">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onSubmitNewDataPoint(false)">Cancel</v-btn>
+                        <v-btn @click="onSubmitNewDataPoint(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="showAddDataPointMultiPopup" persistent max-width="200px">
+        <v-dialog max-width="200px" persistent v-model="showAddDataPointMultiPopup">
             <v-card>
                 <v-card-text>
-                    <v-layout justify-center column>
-                        <p>Data point entries must follow the format <span class="format-span"><strong>#,#</strong></span> (time,attribute) with each entry on a separate line.</p>
+                    <v-layout column justify-center>
+                        <p>Data point entries must follow the format <span
+                                class="format-span"><strong>#,#</strong></span> (time,attribute) with each entry on a
+                            separate line.</p>
                         <v-flex xs2>
-                            <v-textarea rows="20" no-resize outline v-model="multiDataPoints"
-                                        :rules="[multiDataPointsFormIsNotEmpty, isCorrectMultiDataPointsFormat, timeValueIsNotZero, multiDataPointsAreNew]">
+                            <v-textarea :rules="[multiDataPointsFormIsNotEmpty, isCorrectMultiDataPointsFormat, timeValueIsNotZero, multiDataPointsAreNew]" no-resize outline rows="20"
+                                        v-model="multiDataPoints">
                             </v-textarea>
                         </v-flex>
 
@@ -286,39 +314,42 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="onSubmitNewDataPointMulti(true)"
-                               :disabled="disableMultiDataPointsSubmit()">
+                        <v-btn :disabled="disableMultiDataPointsSubmit()" @click="onSubmitNewDataPointMulti(true)"
+                               class="ara-blue-bg white--text">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onSubmitNewDataPointMulti(false)">Cancel</v-btn>
+                        <v-btn @click="onSubmitNewDataPointMulti(false)" class="ara-orange-bg white--text">Cancel
+                        </v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="showEditDataPointPopup" persistent max-width="250px">
+        <v-dialog max-width="250px" persistent v-model="showEditDataPointPopup">
             <v-card>
                 <v-card-text>
                     <v-layout justify-center>
                         <div v-if="editedDataPointProperty === 'timeValue'">
-                            <v-text-field outline v-model="editedDataPoint.timeValue" label="Time Value"
-                                          type="number" :rules="[timeValueIsNotEmpty, timeValueIsNotZero, timeValueIsNew]">
+                            <v-text-field :rules="[timeValueIsNotEmpty, timeValueIsNotZero, timeValueIsNew]" label="Time Value" outline
+                                          type="number"
+                                          v-model="editedDataPoint.timeValue">
                             </v-text-field>
                         </div>
                         <div v-else>
-                            <v-text-field outline v-model="editedDataPoint.conditionValue" label="Attribute Value"
-                                          type="number" :rules="[conditionValueIsNotEmpty, conditionValueIsNew]">
+                            <v-text-field :rules="[conditionValueIsNotEmpty, conditionValueIsNew]" label="Attribute Value" outline
+                                          type="number" v-model="editedDataPoint.conditionValue">
                             </v-text-field>
                         </div>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="onSubmitEditedDataPointValue(true)"
-                               :disabled="disableEditDataPointSubmit()">
+                        <v-btn :disabled="disableEditDataPointSubmit()" @click="onSubmitEditedDataPointValue(true)"
+                               class="ara-blue-bg white--text">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onSubmitEditedDataPointValue(false)">Cancel</v-btn>
+                        <v-btn @click="onSubmitEditedDataPointValue(false)" class="ara-orange-bg white--text">Cancel
+                        </v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -329,7 +360,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import {EquationEditorDialogData} from '@/shared/models/modals/equation-editor-dialog-data';
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import EquationEditorService from '@/services/equation-editor.service';
@@ -341,8 +372,9 @@
     import {Equation, EquationValidationResult} from '@/shared/models/iAM/equation';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {emptyTimeConditionDataPoint, TimeConditionDataPoint} from '@/shared/models/iAM/time-condition-data-point';
-    import {clone, reverse, isEmpty, add, insert, findIndex, propEq, update, append} from 'ramda';
+    import {add, clone, findIndex, insert, isEmpty, propEq, reverse, update} from 'ramda';
     import {sortByProperty} from '@/shared/utils/sorter-utils';
+
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -766,7 +798,7 @@
          * Parses a list of TimeAttributeDataPoints objects into a string of (x,y) data points
          */
         onParseTimeAttributeDataPoints() {
-            return this.piecewiseGridData.map((timeAttributeDataPoint : TimeConditionDataPoint) =>
+            return this.piecewiseGridData.map((timeAttributeDataPoint: TimeConditionDataPoint) =>
                 `(${timeAttributeDataPoint.timeValue},${timeAttributeDataPoint.conditionValue})`
             ).join('');
         }
@@ -807,10 +839,10 @@
          */
         disableDataPointSubmit() {
             return this.timeValueIsNotEmpty(this.newDataPoint.timeValue.toString()) !== true ||
-                   this.timeValueIsNotZero(this.newDataPoint.timeValue.toString()) !== true ||
-                   this.timeValueIsNew(this.newDataPoint.timeValue.toString()) !== true ||
-                   this.conditionValueIsNotEmpty(this.newDataPoint.conditionValue.toString()) !== true ||
-                   this.conditionValueIsNew(this.newDataPoint.conditionValue.toString()) !== true;
+                this.timeValueIsNotZero(this.newDataPoint.timeValue.toString()) !== true ||
+                this.timeValueIsNew(this.newDataPoint.timeValue.toString()) !== true ||
+                this.conditionValueIsNotEmpty(this.newDataPoint.conditionValue.toString()) !== true ||
+                this.conditionValueIsNew(this.newDataPoint.conditionValue.toString()) !== true;
         }
 
         /**
@@ -818,8 +850,8 @@
          */
         disableMultiDataPointsSubmit() {
             return this.multiDataPoints === '' ||
-                   this.isCorrectMultiDataPointsFormat() !== true ||
-                   this.multiDataPointsAreNew() !== true;
+                this.isCorrectMultiDataPointsFormat() !== true ||
+                this.multiDataPointsAreNew() !== true;
         }
 
         /**
@@ -828,11 +860,11 @@
         disableEditDataPointSubmit() {
             if (this.editedDataPointProperty === 'timeValue') {
                 return this.timeValueIsNotEmpty(this.editedDataPoint.timeValue.toString()) !== true ||
-                       this.timeValueIsNotZero(this.editedDataPoint.timeValue.toString()) !== true ||
-                       this.timeValueIsNew(this.editedDataPoint.timeValue.toString()) !== true;
+                    this.timeValueIsNotZero(this.editedDataPoint.timeValue.toString()) !== true ||
+                    this.timeValueIsNew(this.editedDataPoint.timeValue.toString()) !== true;
             } else {
                 return this.conditionValueIsNotEmpty(this.editedDataPoint.conditionValue.toString()) !== true ||
-                       this.conditionValueIsNew(this.editedDataPoint.conditionValue.toString()) !== true;
+                    this.conditionValueIsNew(this.editedDataPoint.conditionValue.toString()) !== true;
             }
         }
 
@@ -901,7 +933,7 @@
                 .split(/\r?\n/).filter((dataPoints: string) => dataPoints !== '')
                 .every((dataPoints: string) => {
                     return (/\d+(\.{1}\d+)*,\d+(\.{1}\d+)*/).test(dataPoints) &&
-                           dataPoints.split(',').every((value: string) => !isNaN(parseFloat(value)));
+                        dataPoints.split(',').every((value: string) => !isNaN(parseFloat(value)));
                 });
 
             return eachDataPointIsValid || 'Incorrect format';

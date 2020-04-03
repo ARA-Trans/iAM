@@ -1,5 +1,5 @@
 export interface PerformanceLibraryEquation {
-    id: number | string;
+    id: string;
     attribute: string;
     equationName: string;
     equation: string;
@@ -10,7 +10,7 @@ export interface PerformanceLibraryEquation {
 }
 
 export interface PerformanceLibrary {
-    id: number | string;
+    id: string;
     name: string;
     owner?: string;
     shared?: boolean;
@@ -19,7 +19,7 @@ export interface PerformanceLibrary {
 }
 
 export const emptyEquation: PerformanceLibraryEquation = {
-    id: 0,
+    id: '0',
     attribute: '',
     equationName: '',
     equation: '',
@@ -30,7 +30,7 @@ export const emptyEquation: PerformanceLibraryEquation = {
 };
 
 export const emptyPerformanceLibrary: PerformanceLibrary = {
-    id: 0,
+    id: '0',
     name: '',
     description: '',
     equations: []

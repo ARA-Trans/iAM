@@ -1,5 +1,5 @@
 import {emptyTargetLibrary, TargetLibrary} from '@/shared/models/iAM/target';
-import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
+import {any, append, clone, equals, find, findIndex, propEq, reject, update} from 'ramda';
 import TargetService from '@/services/target.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
@@ -16,8 +16,14 @@ const mutations = {
     targetLibrariesMutator(state: any, targetLibraries: TargetLibrary[]) {
         state.targetLibraries = clone(targetLibraries);
     },
-    selectedTargetLibraryMutator(state: any, selectedTargetLibrary: TargetLibrary) {
-        state.selectedTargetLibrary = clone(selectedTargetLibrary);
+    selectedTargetLibraryMutator(state: any, libraryId: string) {
+        if (any(propEq('id', libraryId), state.targetLibraries)) {
+            state.selectedTargetLibrary = find(propEq('id', libraryId), state.targetLibraries);
+        } else if (state.scenarioTargetLibrary.id === libraryId) {
+            state.selectedTargetLibrary = clone(state.scenarioTargetLibrary);
+        } else {
+            state.selectedTargetLibrary = clone(emptyTargetLibrary);
+        }
     },
     createdTargetLibraryMutator(state: any, createdTargetLibrary: TargetLibrary) {
         state.targetLibraries = append(createdTargetLibrary, state.targetLibraries);
@@ -46,7 +52,7 @@ const mutations = {
 
 const actions = {
     selectTargetLibrary({commit}: any, payload: any) {
-        commit('selectedTargetLibraryMutator', payload.selectedTargetLibrary);
+        commit('selectedTargetLibraryMutator', payload.selectedLibraryId);
     },
     async getTargetLibraries({commit}: any) {
         await TargetService.getTargetLibraries()
@@ -74,7 +80,7 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const updatedTargetLibrary: TargetLibrary = convertFromMongoToVue(response.data);
                     commit('updatedTargetLibraryMutator', updatedTargetLibrary);
-                    commit('selectedTargetLibraryMutator', updatedTargetLibrary);
+                    commit('selectedTargetLibraryMutator', updatedTargetLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated target library'});
                 }
             });
@@ -83,8 +89,8 @@ const actions = {
         await TargetService.deleteTargetLibrary(payload.targetLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedTargetLibraryMutator', payload.targetLibrary.id);
-                dispatch('setSuccessMessage', {message: 'Successfully deleted target library'});
+                    commit('deletedTargetLibraryMutator', payload.targetLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted target library'});
                 }
             });
     },
@@ -94,7 +100,7 @@ const actions = {
                 .then((response: AxiosResponse<TargetLibrary>) => {
                     if (hasValue(response, 'data')) {
                         commit('scenarioTargetLibraryMutator', response.data);
-                        commit('selectedTargetLibraryMutator', response.data);
+                        commit('selectedTargetLibraryMutator', response.data.id);
                     }
                 });
         }
@@ -109,34 +115,47 @@ const actions = {
             });
     },
     async socket_targetLibrary({dispatch, state, commit}: any, payload: any) {
-        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const targetLibrary: TargetLibrary = convertFromMongoToVue(payload.fullDocument);
-            switch (payload.operationType) {
-                case 'update':
-                case 'replace':
-                    commit('updatedTargetLibraryMutator', targetLibrary);
-                    if (state.selectedTargetLibrary.id === targetLibrary.id &&
-                        !equals(state.selectedTargetLibrary, targetLibrary)) {
-                        commit('selectedTargetLibrary', targetLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Target library '${targetLibrary.name}' has been changed from another source`}
-                        );
+        if (hasValue(payload, 'operationType')) {
+            if (hasValue(payload, 'fullDocument')) {
+                const targetLibrary: TargetLibrary = convertFromMongoToVue(payload.fullDocument);
+                switch (payload.operationType) {
+                    case 'update':
+                    case 'replace':
+                        commit('updatedTargetLibraryMutator', targetLibrary);
+                        if (state.selectedTargetLibrary.id === targetLibrary.id &&
+                            !equals(state.selectedTargetLibrary, targetLibrary)) {
+                            commit('selectedTargetLibrary', targetLibrary);
+                            dispatch('setInfoMessage',
+                                {message: `Target library '${targetLibrary.name}' has been changed from another source`}
+                            );
+                        }
+                        break;
+                    case 'insert':
+                        if (!any(propEq('id', targetLibrary.id), state.targetLibraries)) {
+                            commit('createdTargetLibraryMutator', targetLibrary);
+                            dispatch('setInfoMessage',
+                                {message: `Target library '${targetLibrary.name}' has been created from another source`}
+                            );
+                        }
+                }
+            } else if (hasValue(payload, 'documentKey')) {
+                if (any(propEq('id', payload.documentKey._id), state.targetLibraries)) {
+                    const deletedTargetLibrary: TargetLibrary = find(
+                        propEq('id', payload.documentKey._id), state.targetLibraries);
+                    commit('deletedTargetLibraryMutator', payload.documentKey._id);
+
+                    if (deletedTargetLibrary.id === state.selectedTargetLibrary) {
+                        if (!equals(state.scenarioTargetLibrary, emptyTargetLibrary)) {
+                            commit('selectedTargetLibraryMutator', state.scenarioTargetLibrary.id);
+                        } else {
+                            commit('selectedTargetLibraryMutator', null);
+                        }
                     }
-                    break;
-                case 'insert':
-                    if (!any(propEq('id', targetLibrary.id), state.targetLibraries)) {
-                        commit('createdTargetLibraryMutator', targetLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Target library '${targetLibrary.name}' has been created from another source`}
-                        );
-                    }
-            }
-        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
-            if (any(propEq('id', payload.documentKey._id), state.targetLibraries)) {
-                commit('deletedTargetLibraryMutator', payload.documentKey._id);
-                dispatch('setInfoMessage',
-                    {message: `A target library has been deleted from another source`}
-                );
+
+                    dispatch('setInfoMessage',
+                        {message: `Target library ${deletedTargetLibrary.name} has been deleted from another source`}
+                    );
+                }
             }
         }
     }

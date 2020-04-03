@@ -1,5 +1,5 @@
 import {emptyPriorityLibrary, PriorityLibrary} from '@/shared/models/iAM/priority';
-import {clone, any, propEq, append, findIndex, equals, update, reject} from 'ramda';
+import {any, append, clone, equals, find, findIndex, propEq, reject, update} from 'ramda';
 import PriorityService from '@/services/priority.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
@@ -16,8 +16,14 @@ const mutations = {
     priorityLibrariesMutator(state: any, priorityLibraries: PriorityLibrary[]) {
         state.priorityLibraries = clone(priorityLibraries);
     },
-    selectedPriorityLibraryMutator(state: any, selectedPriorityLibrary: PriorityLibrary) {
-        state.selectedPriorityLibrary = clone(selectedPriorityLibrary);
+    selectedPriorityLibraryMutator(state: any, libraryId: string) {
+        if (any(propEq('id', libraryId), state.priorityLibraries)) {
+            state.selectedPriorityLibrary = find(propEq('id', libraryId), state.priorityLibraries);
+        } else if (state.scenarioPriorityLibrary.id === libraryId) {
+            state.selectedPriorityLibrary = clone(state.scenarioPriorityLibrary);
+        } else {
+            state.selectedPriorityLibrary = clone(emptyPriorityLibrary);
+        }
     },
     createdPriorityLibraryMutator(state: any, createdPriorityLibrary: PriorityLibrary) {
         state.priorityLibraries = append(createdPriorityLibrary, state.priorityLibraries);
@@ -46,7 +52,7 @@ const mutations = {
 
 const actions = {
     selectPriorityLibrary({commit}: any, payload: any) {
-        commit('selectedPriorityLibraryMutator', payload.selectedPriorityLibrary);
+        commit('selectedPriorityLibraryMutator', payload.selectedLibraryId);
     },
     async getPriorityLibraries({commit}: any) {
         await PriorityService.getPriorityLibraries()
@@ -64,7 +70,6 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const createdPriorityLibrary: PriorityLibrary = convertFromMongoToVue(response.data);
                     commit('createdPriorityLibraryMutator', createdPriorityLibrary);
-                    commit('selectedPriorityLibraryMutator', createdPriorityLibrary);
                     dispatch('setSuccessMessage', {message: 'Successfully created priority library'});
                 }
             });
@@ -75,7 +80,7 @@ const actions = {
                 if (hasValue(response, 'data')) {
                     const updatedPriorityLibrary: PriorityLibrary = convertFromMongoToVue(response.data);
                     commit('updatedPriorityLibraryMutator', updatedPriorityLibrary);
-                    commit('selectedPriorityLibraryMutator', updatedPriorityLibrary);
+                    commit('selectedPriorityLibraryMutator', updatedPriorityLibrary.id);
                     dispatch('setSuccessMessage', {message: 'Successfully updated priority library'});
                 }
             });
@@ -84,8 +89,8 @@ const actions = {
         await PriorityService.deletePriorityLibrary(payload.priorityLibrary)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
-                commit('deletedPriorityLibraryMutator', payload.priorityLibrary.id);
-                dispatch('setSuccessMessage', {message: 'Successfully deleted priority library'});
+                    commit('deletedPriorityLibraryMutator', payload.priorityLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted priority library'});
                 }
             });
     },
@@ -94,7 +99,7 @@ const actions = {
             .then((response: AxiosResponse<PriorityLibrary>) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioPriorityLibraryMutator', response.data);
-                    commit('selectedPriorityLibraryMutator', response.data);
+                    commit('selectedPriorityLibraryMutator', response.data.id);
                 }
             });
     },
@@ -108,35 +113,47 @@ const actions = {
             });
     },
     async socket_priorityLibrary({dispatch, state, commit}: any, payload: any) {
-        console.log(payload);
-        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            const priorityLibrary: PriorityLibrary = convertFromMongoToVue(payload.fullDocument);
-            switch (payload.operationType) {
-                case 'update':
-                case 'replace':
-                    commit('updatedPriorityLibraryMutator', priorityLibrary);
-                    if (state.selectedPriorityLibrary.id === priorityLibrary.id &&
-                        !equals(state.selectedPriorityLibrary, priorityLibrary)) {
-                        commit('selectedPriorityLibraryMutator', priorityLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Priority library '${priorityLibrary.name}' has been changed from another source`}
-                        );
+        if (hasValue(payload, 'operationType')) {
+            if (hasValue(payload, 'fullDocument')) {
+                const priorityLibrary: PriorityLibrary = convertFromMongoToVue(payload.fullDocument);
+                switch (payload.operationType) {
+                    case 'update':
+                    case 'replace':
+                        commit('updatedPriorityLibraryMutator', priorityLibrary);
+                        if (state.selectedPriorityLibrary.id === priorityLibrary.id &&
+                            !equals(state.selectedPriorityLibrary, priorityLibrary)) {
+                            commit('selectedPriorityLibraryMutator', priorityLibrary.id);
+                            dispatch('setInfoMessage',
+                                {message: `Priority library '${priorityLibrary.name}' has been changed from another source`}
+                            );
+                        }
+                        break;
+                    case 'insert':
+                        if (!any(propEq('id', priorityLibrary.id), state.priorityLibraries)) {
+                            commit('createdPriorityLibraryMutator', priorityLibrary);
+                            dispatch('setInfoMessage',
+                                {message: `Priority library '${priorityLibrary.name}' has been created from another source`}
+                            );
+                        }
+                }
+            } else if (hasValue(payload, 'documentKey')) {
+                if (any(propEq('id', payload.documentKey._id), state.priorityLibraries)) {
+                    const deletedPriorityLibrary: PriorityLibrary = find(
+                        propEq('id', payload.documentKey._id), state.priorityLibraries);
+                    commit('deletedPriorityLibraryMutator', payload.documentKey._id);
+
+                    if (deletedPriorityLibrary.id === state.selectedPriorityLibrary) {
+                        if (!equals(state.scenarioPriorityLibrary, emptyPriorityLibrary)) {
+                            commit('selectedPriorityLibraryMutator', state.scenarioPriorityLibrary.id);
+                        } else {
+                            commit('selectedPriorityLibraryMutator', null);
+                        }
                     }
-                    break;
-                case 'insert':
-                    if (!any(propEq('id', priorityLibrary.id), state.priorityLibraries)) {
-                        commit('createdPriorityLibraryMutator', priorityLibrary);
-                        dispatch('setInfoMessage',
-                            {message: `Priority library '${priorityLibrary.name}' has been created from another source`}
-                        );
-                    }
-            }
-        } else if (hasValue(payload, 'operationType') && payload.operationType === 'delete') {
-            if (any(propEq('id', payload.documentKey._id), state.priorityLibraries)) {
-                commit('deletedPriorityLibraryMutator', payload.documentKey._id);
-                dispatch('setInfoMessage',
-                    {message: `A priority library has been deleted from another source`}
-                );
+
+                    dispatch('setInfoMessage',
+                        {message: `Priority library ${deletedPriorityLibrary.name} has been deleted from another source`}
+                    );
+                }
             }
         }
     }

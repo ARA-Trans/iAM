@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,15 +8,16 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" v-model="createScenarioData.name" outline></v-text-field>
+                    <v-text-field label="Name" outline v-model="createScenarioData.name"></v-text-field>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="createScenarioData.name === ''">
+                    <v-btn :disabled="createScenarioData.name === ''" @click="onSubmit(true)"
+                           class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -26,11 +27,9 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {
-        ScenarioCreationData, emptyCreateScenarioData
-    } from '@/shared/models/modals/scenario-creation-data';
+    import {emptyCreateScenarioData, ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
     import {clone} from 'ramda';
-    import { getUserName } from '../../../shared/utils/get-user-info';
+    import {getUserName} from '../../../shared/utils/get-user-info';
 
     @Component
     export default class CreateScenarioDialog extends Vue {

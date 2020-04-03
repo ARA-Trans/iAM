@@ -26,7 +26,7 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import {Component} from 'vue-property-decorator';
 
     @Component
     export default class NoRole extends Vue {
@@ -48,6 +48,6 @@
     .bridgecare-logo-img {
         width: 100%;
         border-bottom-style: solid;
-        border-color:#008FCA;
+        border-color: #008FCA;
     }
 </style>

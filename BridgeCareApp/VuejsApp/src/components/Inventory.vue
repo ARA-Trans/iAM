@@ -4,8 +4,9 @@
             <v-layout justify-space-between row>
                 <v-spacer></v-spacer>
                 <v-flex xs2>
-                    <v-autocomplete :items="bmsIdsSelectList" label="Select by BMS Id" outline v-model="selectedBmsId"
-                                    @change="onSelectInventoryItemByBMSId" item-text="identifier" item-value="identifier">
+                    <v-autocomplete :items="bmsIdsSelectList" @change="onSelectInventoryItemByBMSId" item-text="identifier" item-value="identifier"
+                                    label="Select by BMS Id" outline
+                                    v-model="selectedBmsId">
                         <template slot="item" slot-scope="data">
                             <template v-if="typeof data.item !== 'object'">
                                 <v-list-tile-content v-text="data.item"></v-list-tile-content>
@@ -19,8 +20,9 @@
                     </v-autocomplete>
                 </v-flex>
                 <v-flex xs2>
-                    <v-autocomplete :items="brKeysSelectList" label="Select by BR Key" outline v-model="selectedBrKey"
-                                    @change="onSelectInventoryItemsByBRKey" item-text="identifier" item-value="identifier">
+                    <v-autocomplete :items="brKeysSelectList" @change="onSelectInventoryItemsByBRKey" item-text="identifier" item-value="identifier"
+                                    label="Select by BR Key" outline
+                                    v-model="selectedBrKey">
                         <template slot="item" slot-scope="data">
                             <template v-if="typeof data.item !== 'object'">
                                 <v-list-tile-content v-text="data.item"></v-list-tile-content>
@@ -40,25 +42,27 @@
                 <v-flex xs12>
                     <v-layout justify-space-between row>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Location</h3>
                                 </v-layout>
-                                <div v-for="locationGrouping in inventoryItemDetail.location"
-                                     class="text-field-div">
-                                    <v-text-field :label="locationGrouping.label" :value="locationGrouping.value" readonly outline>
+                                <div class="text-field-div"
+                                     v-for="locationGrouping in inventoryItemDetail.location">
+                                    <v-text-field :label="locationGrouping.label" :value="locationGrouping.value"
+                                                  outline readonly>
                                     </v-text-field>
                                 </div>
                             </v-layout>
                         </div>
                         <div class="grouping-div">
-                            <v-layout justify-center column class="text-field-div">
+                            <v-layout class="text-field-div" column justify-center>
                                 <v-layout justify-center>
                                     <h3>Age and Service</h3>
                                 </v-layout>
-                                <div v-for="ageAndServiceGrouping in inventoryItemDetail.ageAndService"
-                                     class="text-field-div">
-                                    <v-text-field :label="ageAndServiceGrouping.label" :value="ageAndServiceGrouping.value" readonly outline>
+                                <div class="text-field-div"
+                                     v-for="ageAndServiceGrouping in inventoryItemDetail.ageAndService">
+                                    <v-text-field :label="ageAndServiceGrouping.label"
+                                                  :value="ageAndServiceGrouping.value" outline readonly>
                                     </v-text-field>
                                 </div>
                             </v-layout>
@@ -72,17 +76,19 @@
                     <v-layout justify-space-between row>
                         <div class="grouping-div">
                             <v-layout align-center fill-height>
-                                <iframe class="gmap_canvas" :src="getGMapsUrl()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                                <iframe :src="getGMapsUrl()" class="gmap_canvas" frameborder="0" marginheight="0"
+                                        marginwidth="0" scrolling="no"></iframe>
                             </v-layout>
                         </div>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Management</h3>
                                 </v-layout>
-                                <div v-for="managementGrouping in inventoryItemDetail.management"
-                                     class="text-field-div">
-                                    <v-text-field :label="managementGrouping.label" :value="managementGrouping.value" readonly outline>
+                                <div class="text-field-div"
+                                     v-for="managementGrouping in inventoryItemDetail.management">
+                                    <v-text-field :label="managementGrouping.label" :value="managementGrouping.value"
+                                                  outline readonly>
                                     </v-text-field>
                                 </div>
                             </v-layout>
@@ -95,25 +101,27 @@
                 <v-flex xs12>
                     <v-layout justify-space-between row>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Deck Information</h3>
                                 </v-layout>
-                                <div v-for="deckInformationGrouping in inventoryItemDetail.deckInformation"
-                                     class="text-field-div">
-                                    <v-text-field :label="deckInformationGrouping.label" :value="deckInformationGrouping.value" readonly outline>
+                                <div class="text-field-div"
+                                     v-for="deckInformationGrouping in inventoryItemDetail.deckInformation">
+                                    <v-text-field :label="deckInformationGrouping.label"
+                                                  :value="deckInformationGrouping.value" outline readonly>
                                     </v-text-field>
                                 </div>
                             </v-layout>
                         </div>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Span Information</h3>
                                 </v-layout>
-                                <div v-for="spanInformationGrouping in inventoryItemDetail.spanInformation"
-                                     class="text-field-div">
-                                    <v-text-field :label="spanInformationGrouping.label" :value="spanInformationGrouping.value" readonly outline>
+                                <div class="text-field-div"
+                                     v-for="spanInformationGrouping in inventoryItemDetail.spanInformation">
+                                    <v-text-field :label="spanInformationGrouping.label"
+                                                  :value="spanInformationGrouping.value" outline readonly>
                                     </v-text-field>
                                 </div>
                             </v-layout>
@@ -126,7 +134,7 @@
                 <v-flex xs12>
                     <v-layout justify-space-between row>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Current</h3>
                                 </v-layout>
@@ -142,7 +150,7 @@
                             </v-layout>
                         </div>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Previous</h3>
                                 </v-layout>
@@ -171,9 +179,11 @@
                                 </v-layout>
                                 <div>
                                     <v-layout justify-space-between row>
-                                        <v-text-field label="New Risk Score" :value="inventoryItemDetail.riskScores.new" readonly outline>
+                                        <v-text-field :value="inventoryItemDetail.riskScores.new" label="New Risk Score"
+                                                      outline readonly>
                                         </v-text-field>
-                                        <v-text-field label="Old Risk Score" :value="inventoryItemDetail.riskScores.old" readonly outline>
+                                        <v-text-field :value="inventoryItemDetail.riskScores.old" label="Old Risk Score"
+                                                      outline readonly>
                                         </v-text-field>
                                     </v-layout>
                                 </div>
@@ -195,15 +205,18 @@
                                     <div v-for="ratingRow in inventoryItemDetail.operatingRatingInventoryRatingGrouping.ratingRows">
                                         <v-layout justify-space-between row>
                                             <div class="small-text-field-div">
-                                                <v-text-field :label="ratingRow.operatingRating.label" :value="ratingRow.operatingRating.value" readonly outline>
+                                                <v-text-field :label="ratingRow.operatingRating.label"
+                                                              :value="ratingRow.operatingRating.value" outline readonly>
                                                 </v-text-field>
                                             </div>
                                             <div class="small-text-field-div">
-                                                <v-text-field :label="ratingRow.inventoryRating.label" :value="ratingRow.inventoryRating.value" readonly outline>
+                                                <v-text-field :label="ratingRow.inventoryRating.label"
+                                                              :value="ratingRow.inventoryRating.value" outline readonly>
                                                 </v-text-field>
                                             </div>
                                             <div class="small-text-field-div">
-                                                <v-text-field :label="ratingRow.ratioLegalLoad.label" :value="ratingRow.ratioLegalLoad.value" readonly outline>
+                                                <v-text-field :label="ratingRow.ratioLegalLoad.label"
+                                                              :value="ratingRow.ratioLegalLoad.value" outline readonly>
                                                 </v-text-field>
                                             </div>
                                         </v-layout>
@@ -211,8 +224,10 @@
                                 </v-layout>
                                 <v-layout justify-center>
                                     <div class="small-text-field-div">
-                                        <v-text-field :label="inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.label"
-                                                      :value="inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.value" readonly outline>
+                                        <v-text-field
+                                                :label="inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.label"
+                                                :value="inventoryItemDetail.operatingRatingInventoryRatingGrouping.minRatioLegalLoad.value"
+                                                outline readonly>
                                         </v-text-field>
                                     </div>
                                 </v-layout>
@@ -229,11 +244,11 @@
                             <v-layout justify-center>
                                 <h3>NBI Load Rating</h3>
                             </v-layout>
-                            <v-data-table :items="nbiLoadRatingTableRows"
-                                          :headers="nbiLoadRatingTableHeaders"
+                            <v-data-table :headers="nbiLoadRatingTableHeaders"
+                                          :items="nbiLoadRatingTableRows"
                                           class="elevation-1">
                                 <template slot="items" slot-scope="props">
-                                    <td v-for="header in nbiLoadRatingTableHeaders" class="text-align-center">
+                                    <td class="text-align-center" v-for="header in nbiLoadRatingTableHeaders">
                                         {{props.item[header.value]}}
                                     </td>
                                 </template>
@@ -250,11 +265,11 @@
                             <v-layout justify-center>
                                 <h3>Posting</h3>
                             </v-layout>
-                            <v-data-table :items="postingTableRows"
-                                          :headers="postingTableHeaders"
+                            <v-data-table :headers="postingTableHeaders"
+                                          :items="postingTableRows"
                                           class="elevation-1">
                                 <template slot="items" slot-scope="props">
-                                    <td v-for="header in postingTableHeaders" class="text-align-center">
+                                    <td class="text-align-center" v-for="header in postingTableHeaders">
                                         {{props.item[header.value]}}
                                     </td>
                                 </template>
@@ -268,13 +283,14 @@
                 <v-flex xs12>
                     <v-layout justify-center>
                         <div class="grouping-div">
-                            <v-layout justify-center column>
+                            <v-layout column justify-center>
                                 <v-layout justify-center>
                                     <h3>Roadway Info</h3>
                                 </v-layout>
-                                <div v-for="roadwayInfoGrouping in inventoryItemDetail.roadwayInfo"
-                                     class="text-field-div">
-                                    <v-text-field :label="roadwayInfoGrouping.label" :value="roadwayInfoGrouping.value" readonly outline>
+                                <div class="text-field-div"
+                                     v-for="roadwayInfoGrouping in inventoryItemDetail.roadwayInfo">
+                                    <v-text-field :label="roadwayInfoGrouping.label" :value="roadwayInfoGrouping.value"
+                                                  outline readonly>
                                     </v-text-field>
                                 </div>
                             </v-layout>
@@ -292,7 +308,7 @@
     import {Component, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import {InventoryItem, InventoryItemDetail, LabelValue, NbiLoadRating} from '@/shared/models/iAM/inventory';
-    import {uniq, groupBy, find, propEq} from 'ramda';
+    import {find, groupBy, propEq, uniq} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {DataTableRow} from '@/shared/models/vue/data-table-row';
@@ -388,8 +404,7 @@
                 }) as DataTableHeader);
                 // set the nbiLoadRatingTableRows
                 this.nbiLoadRatingTableRows = this.createDataTableRowFromNbiLoadRatingGrouping(inventoryItemDetail.nbiLoadRatings);
-            }
-            else {
+            } else {
                 this.nbiLoadRatingTableRows = [];
             }
 
@@ -417,9 +432,9 @@
         created() {
             this.inventorySelectListsWorker = this.$worker.create(
                 [
-                    {message: 'setInventorySelectLists', func: (data: any) =>
-                        {
-                            if(data) {
+                    {
+                        message: 'setInventorySelectLists', func: (data: any) => {
+                            if (data) {
                                 const inventoryItems = data.inventoryItems;
                                 const stateLastFiveBmsIdSearches = data.stateLastFiveBmsIdSearches;
                                 const stateLastFiveBrKeySearches = data.stateLastFiveBrKeySearches;
@@ -477,10 +492,10 @@
                 lastFiveBrKeySearches: this.lastFiveBrKeySearches,
             };
             this.inventorySelectListsWorker.postMessage('setInventorySelectLists', [data])
-            .then((result: any) => {
-                this.bmsIdsSelectList = result.bmsIdsSelectList;
-                this.brKeysSelectList = result.brKeysSelectList;
-            });
+                .then((result: any) => {
+                    this.bmsIdsSelectList = result.bmsIdsSelectList;
+                    this.brKeysSelectList = result.brKeysSelectList;
+                });
         }
 
         setLastFiveSearchesForInventorySelectList(searchData: any[]) {
@@ -576,7 +591,7 @@
                     this.appendBrKeySearchNumberAction({brKey: brKey});
                 }));
         }
-                
+
         getGMapsUrl() {
             var url = `https://maps.google.com/maps?q=${this.inventoryItemDetail.name}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
             return encodeURI(url);
@@ -611,7 +626,7 @@
         text-align: center;
     }
 
-    .slider{
+    .slider {
         width: 150px;
     }
 </style>

@@ -27,7 +27,8 @@
     import {Component} from 'vue-property-decorator';
 
     @Component
-    export default class UnderConstruction extends Vue { }
+    export default class UnderConstruction extends Vue {
+    }
 </script>
 
 <style>

@@ -1,6 +1,6 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-import { Scenario } from '@/shared/models/iAM/scenario';
+import {Scenario} from '@/shared/models/iAM/scenario';
 
 export default class CommittedProjectsService {
     /**
@@ -21,7 +21,7 @@ export default class CommittedProjectsService {
         formData.append('applyNoTreatment', applyNoTreatment ? '1' : '0');
         formData.append('selectedScenarioId', selectedScenarioId);
         formData.append('networkId', networkId);
-        
+
         // Make the request to the API      
         return axiosInstance.post('/api/SaveCommittedProjectsFiles', formData,
             {headers: {'Content-Type': 'multipart/form-data'}});

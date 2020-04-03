@@ -1,4 +1,3 @@
-import {clone, append, any, propEq, update, findIndex, equals} from 'ramda';
 import PollingService from '@/services/polling.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';

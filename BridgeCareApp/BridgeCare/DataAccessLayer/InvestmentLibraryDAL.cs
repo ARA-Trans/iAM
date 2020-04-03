@@ -1,4 +1,5 @@
 ﻿using BridgeCare.EntityClasses;
+using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using System;
@@ -23,6 +24,7 @@ namespace BridgeCare.DataAccessLayer
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
                 .Include(s => s.YEARLYINVESTMENTS)
+                .Include(s => s.CriteriaDrivenBudgets)
                 .Single(s => s.SIMULATIONID == id);
             return new InvestmentLibraryModel(simulation);
         }
@@ -72,8 +74,22 @@ namespace BridgeCare.DataAccessLayer
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
                 .Include(s => s.YEARLYINVESTMENTS)
+                .Include(s => s.CriteriaDrivenBudgets)
                 .Include(s => s.PRIORITIES).Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
                 .Single(s => s.SIMULATIONID == id);
+
+            if (simulation.CriteriaDrivenBudgets.Any())
+            {
+                simulation.CriteriaDrivenBudgets.ToList().ForEach(budget =>
+                {
+                    db.Entry(budget).State = System.Data.Entity.EntityState.Deleted;
+                });
+            }
+
+            model.BudgetCriteria.ForEach(budgetModel =>
+            {
+                simulation.CriteriaDrivenBudgets.Add(new CriteriaDrivenBudgetsEntity(id, budgetModel));
+            });
 
             if (simulation.INVESTMENTS != null)
                 model.UpdateInvestment(simulation.INVESTMENTS);
