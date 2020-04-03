@@ -2,31 +2,75 @@ grammar CalculateEvaluate
    ;
 
 root
-   : calc # Calculation
-   | eval # Evaluation
+   : calc # calculation
+   | eval # evaluation
    ;
 
 calc
-   : ID '(' args? ')'             # Invocation
-   | '-' calc                     # Negation
-   | left = calc '*' right = calc # Multiplication
-   | left = calc '/' right = calc # Division
-   | left = calc '+' right = calc # Addition
-   | left = calc '-' right = calc # Subtraction
-   | '[' ID ']'                   # ParameterReference
-   | ID                           # ConstantReference
-   | NUMBER                       # NumericLiteral
-   | '(' calc ')'                 # Grouping
-   ;
-
-// seems to have odd syntax with pipes delimiting both strings and numbers. define this before
-// implementing calc, since we probably want to use visitor but should suss everything out first.
-eval
-   :
+   : ID '(' args ')'              # invocation
+   | '-' calc                     # negation
+   | left = calc '*' right = calc # multiplication
+   | left = calc '/' right = calc # division
+   | left = calc '+' right = calc # addition
+   | left = calc '-' right = calc # subtraction
+   | '[' ID ']'                   # parameterReference
+   | ID                           # constantReference
+   | (NUMBER | '|' NUMBER '|')    # numericLiteral
+   | '(' calc ')'                 # calculationGrouping
    ;
 
 args
    : calc (',' calc)*
+   ;
+
+eval
+   : left = eval AND right = eval # and
+   | left = eval OR right = eval  # or
+   | numCmp        # numberComparison
+   | strCmp        # stringComparison
+   | '(' eval ')'  # evaluationGrouping
+   ;
+
+numCmp
+   : left = calc '=' right = calc  # equal
+   | left = calc '<>' right = calc # notEqual
+   | left = calc '<' right = calc  # lessThan
+   | left = calc '<=' right = calc # lessThanOrEqual
+   | left = calc '>=' right = calc # greaterThanOrEqual
+   | left = calc '>' right = calc  # greaterThan
+   ;
+
+strCmp
+   : left = str '=' right = str  # equal
+   | left = str '<>' right = str # notEqual
+   ;
+
+dateCmp
+   : left = calc '=' right = calc  # equal
+   | left = calc '<>' right = calc # notEqual
+   | left = calc '<' right = calc  # lessThan
+   | left = calc '<=' right = calc # lessThanOrEqual
+   | left = calc '>=' right = calc # greaterThanOrEqual
+   | left = calc '>' right = calc  # greaterThan
+   ;
+
+str
+   :
+   ;
+
+date
+   :
+   ;
+
+eqOp
+   : calc
+   | str
+   | date
+   ;
+
+cmpOp
+   : calc
+   | date
    ;
 
 ID
@@ -35,6 +79,14 @@ ID
 
 NUMBER
    : MANTISSA_PART EXPONENT_PART?
+   ;
+
+AND
+   : [aA] [nN] [dD]
+   ;
+
+OR
+   : [oO] [rR]
    ;
 
 WS
