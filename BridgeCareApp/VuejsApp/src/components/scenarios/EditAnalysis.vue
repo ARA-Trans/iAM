@@ -154,6 +154,10 @@
             }
         }
 
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
+        }
+
         @Watch('stateAnalysis')
         onStateAnalysisChanged() {
             this.analysis = clone(this.stateAnalysis);
