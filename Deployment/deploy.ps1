@@ -30,10 +30,11 @@ $version = Read-Host -Prompt 'Input the version name for this deployment. (Ex. "
 $startTimeSeconds = (Get-Date).Second;
 $startTimeMinutes = (Get-Date).Minute;
 
-$devPath = "$deploymentOutputPath\dev\$version\";
-$systPath = "$deploymentOutputPath\syst\$version\";
-$prodPath = "$deploymentOutputPath\prod\$version\";
-$iamDeployPath = "$deploymentOutputPath\iam-deploy\$version\";
+$versionPath = "$deploymentOutputPath\$version"
+$devPath = "$versionPath\$version-DEV";
+$systPath = "$versionPath\$version-SYST";
+$prodPath = "$versionPath\$version-PROD";
+$iamDeployPath = "$versionPath\$version-iAMDeploy";
 
 # === Make sure npm log folder exists === #
 
@@ -47,17 +48,8 @@ New-Item -Path $npmLogPath -ItemType Directory *>$null;
 If (-Not (Test-Path "$deploymentOutputPath")) {
     New-Item -Path "$deploymentOutputPath" -ItemType Directory *>$null;
 }
-If (-Not (Test-Path "$deploymentOutputPath\dev")) {
-    New-Item -Path "$deploymentOutputPath\dev" -ItemType Directory *>$null;
-}
-If (-Not (Test-Path "$deploymentOutputPath\syst")) {
-    New-Item -Path "$deploymentOutputPath\syst" -ItemType Directory *>$null;
-}
-If (-Not (Test-Path "$deploymentOutputPath\prod")) {
-    New-Item -Path "$deploymentOutputPath\prod" -ItemType Directory *>$null;
-}
-If (-Not (Test-Path "$deploymentOutputPath\iam-deploy")) {
-    New-Item -Path "$deploymentOutputPath\iam-deploy" -ItemType Directory *>$null;
+if (-Not (Test-Path "$versionPath")) {
+    New-Item -Path "$versionPath" -ItemType Directory *>$null;
 }
 
 # === Remove any duplicate deployment, create folders for new deployment === #
@@ -217,6 +209,25 @@ Write-Host '===== Beginning VueJS Deployments =====' -ForegroundColor White;
 
 Set-Location "$iamRepoPath\BridgeCareApp\VuejsApp";
 
+# === iAM-deploy ===
+Write-Host 'Beginning "iAM-deploy" VueJS Deployment...' -ForegroundColor Yellow;
+
+# iam-deploy build does not require a change to .env.production, as it uses .env.staging
+Copy-Item "$configurations\iam-deploy\oidc-config.ts" `
+    -Destination ".\src\oidc-config.ts";
+
+Write-Host "Building app... Build log can be found at`n$npmLogPath\iam-deploy.txt" -ForegroundColor Yellow;
+npm run stage *> $npmLogPath\iam-deploy.txt;
+
+Copy-Item -Path ".\dist\*" `
+    -Destination "$iamDeployPath\VueJS" `
+    -Recurse;
+
+Write-Host "Compressing deployment..." -ForegroundColor Yellow;
+Compress-Archive -Path $iamDeployPath -DestinationPath "$iamDeployPath.zip" -CompressionLevel Optimal;
+
+Write-Host 'Completed "iAM-deploy" VueJS Deployment...' -ForegroundColor Green;
+
 # === bamsdev ===
 Write-Host 'Beginning "bamsdev" VueJS Deployment...' -ForegroundColor Yellow;
 
@@ -268,25 +279,25 @@ Copy-Item -Path ".\dist\*" `
 
 Write-Host 'Completed "bams" [PROD] VueJS Deployment...' -ForegroundColor Green;
 
-# === iAM-deploy ===
-Write-Host 'Beginning "iAM-deploy" VueJS Deployment...' -ForegroundColor Yellow;
+Write-Host "VueJS Deployments Completed`n" -ForegroundColor Green;
 
-# iam-deploy build does not require a change to .env.production, as it uses .env.staging
+# Reset configuration to the iam-deploy version
 Copy-Item "$configurations\iam-deploy\oidc-config.ts" `
     -Destination ".\src\oidc-config.ts";
 
-Write-Host "Building app... Build log can be found at`n$npmLogPath\iam-deploy.txt" -ForegroundColor Yellow;
-npm run stage *> $npmLogPath\iam-deploy.txt;
 
-Copy-Item -Path ".\dist\*" `
-    -Destination "$iamDeployPath\VueJS" `
-    -Recurse;
+Write-Host 'Compressing "DEV" deployment...' -ForegroundColor Yellow;
+Compress-Archive -Path $devPath -DestinationPath "$devPath.zip" -CompressionLevel Optimal;
 
-Write-Host 'Completed "iAM-deploy" VueJS Deployment...' -ForegroundColor Green;
+Write-Host 'Compressing "SYST" deployment...' -ForegroundColor Yellow;
+Compress-Archive -Path $systPath -DestinationPath "$systPath.zip" -CompressionLevel Optimal;
 
-Write-Host "VueJS Deployments Completed`n" -ForegroundColor Green;
+Write-Host 'Compressing "PROD" deployment...' -ForegroundColor Yellow;
+Compress-Archive -Path $prodPath -DestinationPath "$prodPath.zip" -CompressionLevel Optimal;
+
+# Done
 
 $endTimeSeconds = (Get-Date).Second;
 $endTimeMinutes = (Get-Date).Minute;
 
-Read-Host -Prompt "Finished in $($endTimeMinutes - $startTimeMinutes) minutes $($endTimeSeconds - $startTimeSeconds) seconds.";
+Read-Host -Prompt "Finished in $(($endTimeMinutes - $startTimeMinutes + 60) % 60) minutes $(($endTimeSeconds - $startTimeSeconds + 60) % 60) seconds.";
