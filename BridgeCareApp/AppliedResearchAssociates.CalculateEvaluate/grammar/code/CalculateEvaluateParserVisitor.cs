@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from CalculateEvaluate.g4 by ANTLR 4.8
+// Generated from CalculateEvaluateParser.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -31,7 +31,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.8")]
 [System.CLSCompliant(false)]
-public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
+public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by the <c>calculationRoot</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
@@ -117,12 +117,6 @@ public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// </summary>
@@ -186,16 +180,22 @@ public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
+	Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate

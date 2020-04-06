@@ -37,7 +37,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         }
 
         [Benchmark]
-        [BenchmarkCategory(CATEGORY_ANNOTATION)]
         [ArgumentsSource(nameof(EvaluationExpressions))]
         public string AnnotateParameterReferenceTypes(string expression) => Compiler.AnnotateParameterReferenceTypes(expression);
 
@@ -70,7 +69,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         [ArgumentsSource(nameof(EvaluationExpressions))]
         public Evaluator GetEvaluator(string expression) => Compiler.GetEvaluator(expression);
 
-        private const string CATEGORY_ANNOTATION = "Annotation";
         private const string CATEGORY_CALCULATE = "Calculate";
         private const string CATEGORY_EVALUATE = "Evaluate";
         private CalculateEvaluateCompiler Compiler;

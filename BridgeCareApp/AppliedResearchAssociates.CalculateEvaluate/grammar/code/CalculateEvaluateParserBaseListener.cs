@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from CalculateEvaluate.g4 by ANTLR 4.8
+// Generated from CalculateEvaluateParser.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -28,13 +28,13 @@ using IToken = Antlr4.Runtime.IToken;
 using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
 /// <summary>
-/// This class provides an empty implementation of <see cref="ICalculateEvaluateListener"/>,
+/// This class provides an empty implementation of <see cref="ICalculateEvaluateParserListener"/>,
 /// which can be extended to create a listener which only needs to handle a subset
 /// of the available methods.
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.8")]
 [System.CLSCompliant(false)]
-public partial class CalculateEvaluateBaseListener : ICalculateEvaluateListener {
+public partial class CalculateEvaluateParserBaseListener : ICalculateEvaluateParserListener {
 	/// <summary>
 	/// Enter a parse tree produced by the <c>calculationRoot</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
@@ -204,18 +204,6 @@ public partial class CalculateEvaluateBaseListener : ICalculateEvaluateListener 
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitAddition([NotNull] CalculateEvaluateParser.AdditionContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -342,17 +330,17 @@ public partial class CalculateEvaluateBaseListener : ICalculateEvaluateListener 
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { }
+	public virtual void EnterArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { }
+	public virtual void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -365,6 +353,18 @@ public partial class CalculateEvaluateBaseListener : ICalculateEvaluateListener 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from CalculateEvaluate.g4 by ANTLR 4.8
+// Generated from CalculateEvaluateParser.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -30,7 +30,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.8")]
 [System.CLSCompliant(false)]
-public interface ICalculateEvaluateListener : IParseTreeListener {
+public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// <summary>
 	/// Enter a parse tree produced by the <c>calculationRoot</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
@@ -176,16 +176,6 @@ public interface ICalculateEvaluateListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// </summary>
@@ -294,15 +284,15 @@ public interface ICalculateEvaluateListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
+	void EnterArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
+	void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// </summary>
@@ -313,5 +303,15 @@ public interface ICalculateEvaluateListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate

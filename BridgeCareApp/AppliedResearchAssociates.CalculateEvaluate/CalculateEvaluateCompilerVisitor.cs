@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    internal sealed class CalculateEvaluateCompilerVisitor : CalculateEvaluateBaseVisitor<Expression>
+    internal sealed class CalculateEvaluateCompilerVisitor : CalculateEvaluateParserBaseVisitor<Expression>
     {
         public CalculateEvaluateCompilerVisitor(IReadOnlyDictionary<string, ParameterType> parameterTypes) => ParameterTypes = parameterTypes ?? throw new ArgumentNullException(nameof(parameterTypes));
 
@@ -223,7 +223,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             var identifierString = Expression.Constant(identifierText);
             var reference = Expression.Property(argumentInfo.DictionaryExpression, argumentInfo.IndexerInfo, identifierString);
 
-            var literalText = evaluationLiteral.content.Text;
+            var literalText = evaluationLiteral.EVALUATION_LITERAL_CONTENT()?.GetText() ?? "";
             var literal = argumentInfo.ParseLiteral(literalText);
 
             var result = getComparison(reference, literal);
@@ -232,7 +232,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         #endregion "Evaluate"
 
-        private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument));
+        private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument), "arg");
 
         private static readonly ArgumentInfo Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Dates), Convert.ToDateTime);
 

@@ -50,7 +50,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             }
         }
 
-        private sealed class ParameterReferenceTypeAnnotatorListener : CalculateEvaluateBaseListener
+        private sealed class ParameterReferenceTypeAnnotatorListener : CalculateEvaluateParserBaseListener
         {
             public ParameterReferenceTypeAnnotatorListener(IReadOnlyDictionary<string, ParameterType> parameterTypes, ITokenStream tokens)
             {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from CalculateEvaluate.g4 by ANTLR 4.8
+// Generated from CalculateEvaluateParser.g4 by ANTLR 4.8
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -37,24 +37,30 @@ public partial class CalculateEvaluateParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
-		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, NUMBER=17, 
-		AND=18, OR=19, IDENTIFIER=20, WHITESPACE=21;
+		IDENTIFIER=1, NUMBER=2, LEFT_PAREN=3, RIGHT_PAREN=4, TIMES=5, DIVIDED_BY=6, 
+		PLUS=7, MINUS=8, AND=9, OR=10, EQUAL=11, NOT_EQUAL=12, LESS_THAN=13, LESS_THAN_OR_EQUAL=14, 
+		GREATER_THAN_OR_EQUAL=15, GREATER_THAN=16, COMMA=17, LEFT_BRACKET=18, 
+		RIGHT_BRACKET=19, WHITESPACE=20, EMPTY_EVALUATION_LITERAL=21, EVALUATION_LITERAL_OPENING_DELIMITER=22, 
+		EVALUATION_LITERAL_CONTENT=23, EVALUATION_LITERAL_CLOSING_DELIMITER=24;
 	public const int
-		RULE_root = 0, RULE_calculation = 1, RULE_arguments = 2, RULE_evaluation = 3, 
-		RULE_evaluationLiteral = 4, RULE_parameterReference = 5;
+		RULE_root = 0, RULE_calculation = 1, RULE_evaluation = 2, RULE_arguments = 3, 
+		RULE_parameterReference = 4, RULE_evaluationLiteral = 5;
 	public static readonly string[] ruleNames = {
-		"root", "calculation", "arguments", "evaluation", "evaluationLiteral", 
-		"parameterReference"
+		"root", "calculation", "evaluation", "arguments", "parameterReference", 
+		"evaluationLiteral"
 	};
 
 	private static readonly string[] _LiteralNames = {
-		null, "'('", "')'", "'-'", "'*'", "'/'", "'+'", "','", "'='", "'<>'", 
-		"'<'", "'<='", "'>='", "'>'", "'|'", "'['", "']'"
+		null, null, null, "'('", "')'", "'*'", "'/'", "'+'", "'-'", null, null, 
+		"'='", "'<>'", "'<'", "'<='", "'>='", "'>'", "','", "'['", "']'", null, 
+		"'||'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, null, null, null, "NUMBER", "AND", "OR", "IDENTIFIER", "WHITESPACE"
+		null, "IDENTIFIER", "NUMBER", "LEFT_PAREN", "RIGHT_PAREN", "TIMES", "DIVIDED_BY", 
+		"PLUS", "MINUS", "AND", "OR", "EQUAL", "NOT_EQUAL", "LESS_THAN", "LESS_THAN_OR_EQUAL", 
+		"GREATER_THAN_OR_EQUAL", "GREATER_THAN", "COMMA", "LEFT_BRACKET", "RIGHT_BRACKET", 
+		"WHITESPACE", "EMPTY_EVALUATION_LITERAL", "EVALUATION_LITERAL_OPENING_DELIMITER", 
+		"EVALUATION_LITERAL_CONTENT", "EVALUATION_LITERAL_CLOSING_DELIMITER"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -67,7 +73,7 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 	}
 
-	public override string GrammarFileName { get { return "CalculateEvaluate.g4"; } }
+	public override string GrammarFileName { get { return "CalculateEvaluateParser.g4"; } }
 
 	public override string[] RuleNames { get { return ruleNames; } }
 
@@ -106,15 +112,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public CalculationRootContext(RootContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterCalculationRoot(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitCalculationRoot(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitCalculationRoot(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -125,15 +131,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public EvaluationRootContext(RootContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterEvaluationRoot(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitEvaluationRoot(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitEvaluationRoot(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -189,6 +195,7 @@ public partial class CalculateEvaluateParser : Parser {
 	public partial class DivisionContext : CalculationContext {
 		public CalculationContext left;
 		public CalculationContext right;
+		public ITerminalNode DIVIDED_BY() { return GetToken(CalculateEvaluateParser.DIVIDED_BY, 0); }
 		public CalculationContext[] calculation() {
 			return GetRuleContexts<CalculationContext>();
 		}
@@ -197,54 +204,57 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public DivisionContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterDivision(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitDivision(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitDivision(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 	public partial class InvocationContext : CalculationContext {
 		public ITerminalNode IDENTIFIER() { return GetToken(CalculateEvaluateParser.IDENTIFIER, 0); }
+		public ITerminalNode LEFT_PAREN() { return GetToken(CalculateEvaluateParser.LEFT_PAREN, 0); }
 		public ArgumentsContext arguments() {
 			return GetRuleContext<ArgumentsContext>(0);
 		}
+		public ITerminalNode RIGHT_PAREN() { return GetToken(CalculateEvaluateParser.RIGHT_PAREN, 0); }
 		public InvocationContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterInvocation(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitInvocation(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitInvocation(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 	public partial class NegationContext : CalculationContext {
+		public ITerminalNode MINUS() { return GetToken(CalculateEvaluateParser.MINUS, 0); }
 		public CalculationContext calculation() {
 			return GetRuleContext<CalculationContext>(0);
 		}
 		public NegationContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterNegation(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitNegation(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitNegation(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -253,15 +263,15 @@ public partial class CalculateEvaluateParser : Parser {
 		public ITerminalNode IDENTIFIER() { return GetToken(CalculateEvaluateParser.IDENTIFIER, 0); }
 		public ConstantReferenceContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterConstantReference(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitConstantReference(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitConstantReference(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -269,6 +279,7 @@ public partial class CalculateEvaluateParser : Parser {
 	public partial class SubtractionContext : CalculationContext {
 		public CalculationContext left;
 		public CalculationContext right;
+		public ITerminalNode MINUS() { return GetToken(CalculateEvaluateParser.MINUS, 0); }
 		public CalculationContext[] calculation() {
 			return GetRuleContexts<CalculationContext>();
 		}
@@ -277,15 +288,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public SubtractionContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterSubtraction(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitSubtraction(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitSubtraction(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -293,6 +304,7 @@ public partial class CalculateEvaluateParser : Parser {
 	public partial class MultiplicationContext : CalculationContext {
 		public CalculationContext left;
 		public CalculationContext right;
+		public ITerminalNode TIMES() { return GetToken(CalculateEvaluateParser.TIMES, 0); }
 		public CalculationContext[] calculation() {
 			return GetRuleContexts<CalculationContext>();
 		}
@@ -301,34 +313,36 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public MultiplicationContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterMultiplication(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitMultiplication(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitMultiplication(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 	public partial class CalculationGroupingContext : CalculationContext {
+		public ITerminalNode LEFT_PAREN() { return GetToken(CalculateEvaluateParser.LEFT_PAREN, 0); }
 		public CalculationContext calculation() {
 			return GetRuleContext<CalculationContext>(0);
 		}
+		public ITerminalNode RIGHT_PAREN() { return GetToken(CalculateEvaluateParser.RIGHT_PAREN, 0); }
 		public CalculationGroupingContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterCalculationGrouping(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitCalculationGrouping(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitCalculationGrouping(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -339,15 +353,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public NumberParameterReferenceContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterNumberParameterReference(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitNumberParameterReference(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitNumberParameterReference(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -356,15 +370,15 @@ public partial class CalculateEvaluateParser : Parser {
 		public ITerminalNode NUMBER() { return GetToken(CalculateEvaluateParser.NUMBER, 0); }
 		public NumberLiteralContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterNumberLiteral(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitNumberLiteral(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitNumberLiteral(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -372,6 +386,7 @@ public partial class CalculateEvaluateParser : Parser {
 	public partial class AdditionContext : CalculationContext {
 		public CalculationContext left;
 		public CalculationContext right;
+		public ITerminalNode PLUS() { return GetToken(CalculateEvaluateParser.PLUS, 0); }
 		public CalculationContext[] calculation() {
 			return GetRuleContexts<CalculationContext>();
 		}
@@ -380,15 +395,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public AdditionContext(CalculationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterAddition(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitAddition(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitAddition(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -420,9 +435,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_prevctx = _localctx;
 
 				State = 17; Match(IDENTIFIER);
-				State = 18; Match(T__0);
+				State = 18; Match(LEFT_PAREN);
 				State = 19; arguments();
-				State = 20; Match(T__1);
+				State = 20; Match(RIGHT_PAREN);
 				}
 				break;
 			case 2:
@@ -430,7 +445,7 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new NegationContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 22; Match(T__2);
+				State = 22; Match(MINUS);
 				State = 23; calculation(9);
 				}
 				break;
@@ -463,9 +478,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new CalculationGroupingContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 27; Match(T__0);
+				State = 27; Match(LEFT_PAREN);
 				State = 28; calculation(0);
-				State = 29; Match(T__1);
+				State = 29; Match(RIGHT_PAREN);
 				}
 				break;
 			}
@@ -489,7 +504,7 @@ public partial class CalculateEvaluateParser : Parser {
 						PushNewRecursionContext(_localctx, _startState, RULE_calculation);
 						State = 33;
 						if (!(Precpred(Context, 8))) throw new FailedPredicateException(this, "Precpred(Context, 8)");
-						State = 34; Match(T__3);
+						State = 34; Match(TIMES);
 						State = 35; ((MultiplicationContext)_localctx).right = calculation(9);
 						}
 						break;
@@ -500,7 +515,7 @@ public partial class CalculateEvaluateParser : Parser {
 						PushNewRecursionContext(_localctx, _startState, RULE_calculation);
 						State = 36;
 						if (!(Precpred(Context, 7))) throw new FailedPredicateException(this, "Precpred(Context, 7)");
-						State = 37; Match(T__4);
+						State = 37; Match(DIVIDED_BY);
 						State = 38; ((DivisionContext)_localctx).right = calculation(8);
 						}
 						break;
@@ -511,7 +526,7 @@ public partial class CalculateEvaluateParser : Parser {
 						PushNewRecursionContext(_localctx, _startState, RULE_calculation);
 						State = 39;
 						if (!(Precpred(Context, 6))) throw new FailedPredicateException(this, "Precpred(Context, 6)");
-						State = 40; Match(T__5);
+						State = 40; Match(PLUS);
 						State = 41; ((AdditionContext)_localctx).right = calculation(7);
 						}
 						break;
@@ -522,7 +537,7 @@ public partial class CalculateEvaluateParser : Parser {
 						PushNewRecursionContext(_localctx, _startState, RULE_calculation);
 						State = 42;
 						if (!(Precpred(Context, 5))) throw new FailedPredicateException(this, "Precpred(Context, 5)");
-						State = 43; Match(T__2);
+						State = 43; Match(MINUS);
 						State = 44; ((SubtractionContext)_localctx).right = calculation(6);
 						}
 						break;
@@ -546,69 +561,6 @@ public partial class CalculateEvaluateParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ArgumentsContext : ParserRuleContext {
-		public CalculationContext[] calculation() {
-			return GetRuleContexts<CalculationContext>();
-		}
-		public CalculationContext calculation(int i) {
-			return GetRuleContext<CalculationContext>(i);
-		}
-		public ArgumentsContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_arguments; } }
-		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
-			if (typedListener != null) typedListener.EnterArguments(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
-			if (typedListener != null) typedListener.ExitArguments(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitArguments(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-
-	[RuleVersion(0)]
-	public ArgumentsContext arguments() {
-		ArgumentsContext _localctx = new ArgumentsContext(Context, State);
-		EnterRule(_localctx, 4, RULE_arguments);
-		int _la;
-		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 50; calculation(0);
-			State = 55;
-			ErrorHandler.Sync(this);
-			_la = TokenStream.LA(1);
-			while (_la==T__6) {
-				{
-				{
-				State = 51; Match(T__6);
-				State = 52; calculation(0);
-				}
-				}
-				State = 57;
-				ErrorHandler.Sync(this);
-				_la = TokenStream.LA(1);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			ErrorHandler.ReportError(this, re);
-			ErrorHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
 	public partial class EvaluationContext : ParserRuleContext {
 		public EvaluationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -625,20 +577,21 @@ public partial class CalculateEvaluateParser : Parser {
 		public ParameterReferenceContext parameterReference() {
 			return GetRuleContext<ParameterReferenceContext>(0);
 		}
+		public ITerminalNode EQUAL() { return GetToken(CalculateEvaluateParser.EQUAL, 0); }
 		public EvaluationLiteralContext evaluationLiteral() {
 			return GetRuleContext<EvaluationLiteralContext>(0);
 		}
 		public EqualContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterEqual(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitEqual(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitEqual(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -655,15 +608,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public LogicalConjunctionContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterLogicalConjunction(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitLogicalConjunction(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitLogicalConjunction(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -672,20 +625,21 @@ public partial class CalculateEvaluateParser : Parser {
 		public ParameterReferenceContext parameterReference() {
 			return GetRuleContext<ParameterReferenceContext>(0);
 		}
+		public ITerminalNode LESS_THAN() { return GetToken(CalculateEvaluateParser.LESS_THAN, 0); }
 		public EvaluationLiteralContext evaluationLiteral() {
 			return GetRuleContext<EvaluationLiteralContext>(0);
 		}
 		public LessThanContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterLessThan(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitLessThan(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitLessThan(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -694,39 +648,42 @@ public partial class CalculateEvaluateParser : Parser {
 		public ParameterReferenceContext parameterReference() {
 			return GetRuleContext<ParameterReferenceContext>(0);
 		}
+		public ITerminalNode LESS_THAN_OR_EQUAL() { return GetToken(CalculateEvaluateParser.LESS_THAN_OR_EQUAL, 0); }
 		public EvaluationLiteralContext evaluationLiteral() {
 			return GetRuleContext<EvaluationLiteralContext>(0);
 		}
 		public LessThanOrEqualContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterLessThanOrEqual(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitLessThanOrEqual(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitLessThanOrEqual(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 	public partial class EvaluationGroupingContext : EvaluationContext {
+		public ITerminalNode LEFT_PAREN() { return GetToken(CalculateEvaluateParser.LEFT_PAREN, 0); }
 		public EvaluationContext evaluation() {
 			return GetRuleContext<EvaluationContext>(0);
 		}
+		public ITerminalNode RIGHT_PAREN() { return GetToken(CalculateEvaluateParser.RIGHT_PAREN, 0); }
 		public EvaluationGroupingContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterEvaluationGrouping(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitEvaluationGrouping(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitEvaluationGrouping(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -743,15 +700,15 @@ public partial class CalculateEvaluateParser : Parser {
 		}
 		public LogicalDisjunctionContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterLogicalDisjunction(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitLogicalDisjunction(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitLogicalDisjunction(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -760,20 +717,21 @@ public partial class CalculateEvaluateParser : Parser {
 		public ParameterReferenceContext parameterReference() {
 			return GetRuleContext<ParameterReferenceContext>(0);
 		}
+		public ITerminalNode NOT_EQUAL() { return GetToken(CalculateEvaluateParser.NOT_EQUAL, 0); }
 		public EvaluationLiteralContext evaluationLiteral() {
 			return GetRuleContext<EvaluationLiteralContext>(0);
 		}
 		public NotEqualContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterNotEqual(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitNotEqual(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitNotEqual(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -782,20 +740,21 @@ public partial class CalculateEvaluateParser : Parser {
 		public ParameterReferenceContext parameterReference() {
 			return GetRuleContext<ParameterReferenceContext>(0);
 		}
+		public ITerminalNode GREATER_THAN_OR_EQUAL() { return GetToken(CalculateEvaluateParser.GREATER_THAN_OR_EQUAL, 0); }
 		public EvaluationLiteralContext evaluationLiteral() {
 			return GetRuleContext<EvaluationLiteralContext>(0);
 		}
 		public GreaterThanOrEqualContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterGreaterThanOrEqual(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitGreaterThanOrEqual(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitGreaterThanOrEqual(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -804,20 +763,21 @@ public partial class CalculateEvaluateParser : Parser {
 		public ParameterReferenceContext parameterReference() {
 			return GetRuleContext<ParameterReferenceContext>(0);
 		}
+		public ITerminalNode GREATER_THAN() { return GetToken(CalculateEvaluateParser.GREATER_THAN, 0); }
 		public EvaluationLiteralContext evaluationLiteral() {
 			return GetRuleContext<EvaluationLiteralContext>(0);
 		}
 		public GreaterThanContext(EvaluationContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterGreaterThan(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitGreaterThan(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitGreaterThan(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -833,24 +793,24 @@ public partial class CalculateEvaluateParser : Parser {
 		int _parentState = State;
 		EvaluationContext _localctx = new EvaluationContext(Context, _parentState);
 		EvaluationContext _prevctx = _localctx;
-		int _startState = 6;
-		EnterRecursionRule(_localctx, 6, RULE_evaluation, _p);
+		int _startState = 4;
+		EnterRecursionRule(_localctx, 4, RULE_evaluation, _p);
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 87;
+			State = 79;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,5,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,4,Context) ) {
 			case 1:
 				{
 				_localctx = new EqualContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 59; parameterReference();
-				State = 60; Match(T__7);
-				State = 61; evaluationLiteral();
+				State = 51; parameterReference();
+				State = 52; Match(EQUAL);
+				State = 53; evaluationLiteral();
 				}
 				break;
 			case 2:
@@ -858,9 +818,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new NotEqualContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 63; parameterReference();
-				State = 64; Match(T__8);
-				State = 65; evaluationLiteral();
+				State = 55; parameterReference();
+				State = 56; Match(NOT_EQUAL);
+				State = 57; evaluationLiteral();
 				}
 				break;
 			case 3:
@@ -868,9 +828,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new LessThanContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 67; parameterReference();
-				State = 68; Match(T__9);
-				State = 69; evaluationLiteral();
+				State = 59; parameterReference();
+				State = 60; Match(LESS_THAN);
+				State = 61; evaluationLiteral();
 				}
 				break;
 			case 4:
@@ -878,9 +838,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new LessThanOrEqualContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 71; parameterReference();
-				State = 72; Match(T__10);
-				State = 73; evaluationLiteral();
+				State = 63; parameterReference();
+				State = 64; Match(LESS_THAN_OR_EQUAL);
+				State = 65; evaluationLiteral();
 				}
 				break;
 			case 5:
@@ -888,9 +848,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new GreaterThanOrEqualContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 75; parameterReference();
-				State = 76; Match(T__11);
-				State = 77; evaluationLiteral();
+				State = 67; parameterReference();
+				State = 68; Match(GREATER_THAN_OR_EQUAL);
+				State = 69; evaluationLiteral();
 				}
 				break;
 			case 6:
@@ -898,9 +858,9 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new GreaterThanContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 79; parameterReference();
-				State = 80; Match(T__12);
-				State = 81; evaluationLiteral();
+				State = 71; parameterReference();
+				State = 72; Match(GREATER_THAN);
+				State = 73; evaluationLiteral();
 				}
 				break;
 			case 7:
@@ -908,34 +868,34 @@ public partial class CalculateEvaluateParser : Parser {
 				_localctx = new EvaluationGroupingContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 83; Match(T__0);
-				State = 84; evaluation(0);
-				State = 85; Match(T__1);
+				State = 75; Match(LEFT_PAREN);
+				State = 76; evaluation(0);
+				State = 77; Match(RIGHT_PAREN);
 				}
 				break;
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 97;
+			State = 89;
 			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,7,Context);
+			_alt = Interpreter.AdaptivePredict(TokenStream,6,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( ParseListeners!=null )
 						TriggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					State = 95;
+					State = 87;
 					ErrorHandler.Sync(this);
-					switch ( Interpreter.AdaptivePredict(TokenStream,6,Context) ) {
+					switch ( Interpreter.AdaptivePredict(TokenStream,5,Context) ) {
 					case 1:
 						{
 						_localctx = new LogicalConjunctionContext(new EvaluationContext(_parentctx, _parentState));
 						((LogicalConjunctionContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_evaluation);
-						State = 89;
+						State = 81;
 						if (!(Precpred(Context, 9))) throw new FailedPredicateException(this, "Precpred(Context, 9)");
-						State = 90; Match(AND);
-						State = 91; ((LogicalConjunctionContext)_localctx).right = evaluation(10);
+						State = 82; Match(AND);
+						State = 83; ((LogicalConjunctionContext)_localctx).right = evaluation(10);
 						}
 						break;
 					case 2:
@@ -943,18 +903,18 @@ public partial class CalculateEvaluateParser : Parser {
 						_localctx = new LogicalDisjunctionContext(new EvaluationContext(_parentctx, _parentState));
 						((LogicalDisjunctionContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_evaluation);
-						State = 92;
+						State = 84;
 						if (!(Precpred(Context, 8))) throw new FailedPredicateException(this, "Precpred(Context, 8)");
-						State = 93; Match(OR);
-						State = 94; ((LogicalDisjunctionContext)_localctx).right = evaluation(9);
+						State = 85; Match(OR);
+						State = 86; ((LogicalDisjunctionContext)_localctx).right = evaluation(9);
 						}
 						break;
 					}
 					} 
 				}
-				State = 99;
+				State = 91;
 				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,7,Context);
+				_alt = Interpreter.AdaptivePredict(TokenStream,6,Context);
 			}
 			}
 		}
@@ -969,60 +929,60 @@ public partial class CalculateEvaluateParser : Parser {
 		return _localctx;
 	}
 
-	public partial class EvaluationLiteralContext : ParserRuleContext {
-		public IToken content;
-		public EvaluationLiteralContext(ParserRuleContext parent, int invokingState)
+	public partial class ArgumentsContext : ParserRuleContext {
+		public CalculationContext[] calculation() {
+			return GetRuleContexts<CalculationContext>();
+		}
+		public CalculationContext calculation(int i) {
+			return GetRuleContext<CalculationContext>(i);
+		}
+		public ITerminalNode[] COMMA() { return GetTokens(CalculateEvaluateParser.COMMA); }
+		public ITerminalNode COMMA(int i) {
+			return GetToken(CalculateEvaluateParser.COMMA, i);
+		}
+		public ArgumentsContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_evaluationLiteral; } }
+		public override int RuleIndex { get { return RULE_arguments; } }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
-			if (typedListener != null) typedListener.EnterEvaluationLiteral(this);
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
+			if (typedListener != null) typedListener.EnterArguments(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
-			if (typedListener != null) typedListener.ExitEvaluationLiteral(this);
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
+			if (typedListener != null) typedListener.ExitArguments(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitEvaluationLiteral(this);
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitArguments(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public EvaluationLiteralContext evaluationLiteral() {
-		EvaluationLiteralContext _localctx = new EvaluationLiteralContext(Context, State);
-		EnterRule(_localctx, 8, RULE_evaluationLiteral);
+	public ArgumentsContext arguments() {
+		ArgumentsContext _localctx = new ArgumentsContext(Context, State);
+		EnterRule(_localctx, 6, RULE_arguments);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 100; Match(T__13);
-			State = 104;
+			State = 92; calculation(0);
+			State = 97;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__6) | (1L << T__7) | (1L << T__8) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__12) | (1L << T__14) | (1L << T__15) | (1L << NUMBER) | (1L << AND) | (1L << OR) | (1L << IDENTIFIER) | (1L << WHITESPACE))) != 0)) {
+			while (_la==COMMA) {
 				{
 				{
-				State = 101;
-				_localctx.content = TokenStream.LT(1);
-				_la = TokenStream.LA(1);
-				if ( _la <= 0 || (_la==T__13) ) {
-					_localctx.content = ErrorHandler.RecoverInline(this);
-				}
-				else {
-					ErrorHandler.ReportMatch(this);
-				    Consume();
+				State = 93; Match(COMMA);
+				State = 94; calculation(0);
 				}
 				}
-				}
-				State = 106;
+				State = 99;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 107; Match(T__13);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1037,22 +997,24 @@ public partial class CalculateEvaluateParser : Parser {
 	}
 
 	public partial class ParameterReferenceContext : ParserRuleContext {
+		public ITerminalNode LEFT_BRACKET() { return GetToken(CalculateEvaluateParser.LEFT_BRACKET, 0); }
 		public ITerminalNode IDENTIFIER() { return GetToken(CalculateEvaluateParser.IDENTIFIER, 0); }
+		public ITerminalNode RIGHT_BRACKET() { return GetToken(CalculateEvaluateParser.RIGHT_BRACKET, 0); }
 		public ParameterReferenceContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
 		public override int RuleIndex { get { return RULE_parameterReference; } }
 		public override void EnterRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.EnterParameterReference(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
-			ICalculateEvaluateListener typedListener = listener as ICalculateEvaluateListener;
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
 			if (typedListener != null) typedListener.ExitParameterReference(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			ICalculateEvaluateVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateVisitor<TResult>;
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitParameterReference(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -1061,13 +1023,75 @@ public partial class CalculateEvaluateParser : Parser {
 	[RuleVersion(0)]
 	public ParameterReferenceContext parameterReference() {
 		ParameterReferenceContext _localctx = new ParameterReferenceContext(Context, State);
-		EnterRule(_localctx, 10, RULE_parameterReference);
+		EnterRule(_localctx, 8, RULE_parameterReference);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 109; Match(T__14);
-			State = 110; Match(IDENTIFIER);
-			State = 111; Match(T__15);
+			State = 100; Match(LEFT_BRACKET);
+			State = 101; Match(IDENTIFIER);
+			State = 102; Match(RIGHT_BRACKET);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class EvaluationLiteralContext : ParserRuleContext {
+		public ITerminalNode EMPTY_EVALUATION_LITERAL() { return GetToken(CalculateEvaluateParser.EMPTY_EVALUATION_LITERAL, 0); }
+		public ITerminalNode EVALUATION_LITERAL_OPENING_DELIMITER() { return GetToken(CalculateEvaluateParser.EVALUATION_LITERAL_OPENING_DELIMITER, 0); }
+		public ITerminalNode EVALUATION_LITERAL_CONTENT() { return GetToken(CalculateEvaluateParser.EVALUATION_LITERAL_CONTENT, 0); }
+		public ITerminalNode EVALUATION_LITERAL_CLOSING_DELIMITER() { return GetToken(CalculateEvaluateParser.EVALUATION_LITERAL_CLOSING_DELIMITER, 0); }
+		public EvaluationLiteralContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_evaluationLiteral; } }
+		public override void EnterRule(IParseTreeListener listener) {
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
+			if (typedListener != null) typedListener.EnterEvaluationLiteral(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			ICalculateEvaluateParserListener typedListener = listener as ICalculateEvaluateParserListener;
+			if (typedListener != null) typedListener.ExitEvaluationLiteral(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			ICalculateEvaluateParserVisitor<TResult> typedVisitor = visitor as ICalculateEvaluateParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitEvaluationLiteral(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public EvaluationLiteralContext evaluationLiteral() {
+		EvaluationLiteralContext _localctx = new EvaluationLiteralContext(Context, State);
+		EnterRule(_localctx, 10, RULE_evaluationLiteral);
+		try {
+			State = 108;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case EMPTY_EVALUATION_LITERAL:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 104; Match(EMPTY_EVALUATION_LITERAL);
+				}
+				break;
+			case EVALUATION_LITERAL_OPENING_DELIMITER:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 105; Match(EVALUATION_LITERAL_OPENING_DELIMITER);
+				State = 106; Match(EVALUATION_LITERAL_CONTENT);
+				State = 107; Match(EVALUATION_LITERAL_CLOSING_DELIMITER);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1084,7 +1108,7 @@ public partial class CalculateEvaluateParser : Parser {
 	public override bool Sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
 		case 1: return calculation_sempred((CalculationContext)_localctx, predIndex);
-		case 3: return evaluation_sempred((EvaluationContext)_localctx, predIndex);
+		case 2: return evaluation_sempred((EvaluationContext)_localctx, predIndex);
 		}
 		return true;
 	}
@@ -1107,7 +1131,7 @@ public partial class CalculateEvaluateParser : Parser {
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '\x17', 't', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', '\x1A', 'q', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x3', '\x2', '\x3', '\x2', 
 		'\x5', '\x2', '\x11', '\n', '\x2', '\x3', '\x3', '\x3', '\x3', '\x3', 
@@ -1118,91 +1142,88 @@ public partial class CalculateEvaluateParser : Parser {
 		'\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', '\x3', 
 		'\x3', '\x3', '\x3', '\a', '\x3', '\x30', '\n', '\x3', '\f', '\x3', '\xE', 
 		'\x3', '\x33', '\v', '\x3', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', 
-		'\a', '\x4', '\x38', '\n', '\x4', '\f', '\x4', '\xE', '\x4', ';', '\v', 
-		'\x4', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', 
-		'\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', 
-		'\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', 
-		'\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', 
-		'\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', 
-		'\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x5', 
-		'\x5', 'Z', '\n', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', '\x5', '\x3', 
-		'\x5', '\x3', '\x5', '\x3', '\x5', '\a', '\x5', '\x62', '\n', '\x5', '\f', 
-		'\x5', '\xE', '\x5', '\x65', '\v', '\x5', '\x3', '\x6', '\x3', '\x6', 
-		'\a', '\x6', 'i', '\n', '\x6', '\f', '\x6', '\xE', '\x6', 'l', '\v', '\x6', 
-		'\x3', '\x6', '\x3', '\x6', '\x3', '\a', '\x3', '\a', '\x3', '\a', '\x3', 
-		'\a', '\x3', '\a', '\x2', '\x4', '\x4', '\b', '\b', '\x2', '\x4', '\x6', 
-		'\b', '\n', '\f', '\x2', '\x3', '\x3', '\x2', '\x10', '\x10', '\x2', '\x81', 
+		'\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', 
+		'\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', 
+		'\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', 
+		'\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', 
+		'\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', 
+		'\x3', '\x4', '\x5', '\x4', 'R', '\n', '\x4', '\x3', '\x4', '\x3', '\x4', 
+		'\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\x3', '\x4', '\a', '\x4', 'Z', 
+		'\n', '\x4', '\f', '\x4', '\xE', '\x4', ']', '\v', '\x4', '\x3', '\x5', 
+		'\x3', '\x5', '\x3', '\x5', '\a', '\x5', '\x62', '\n', '\x5', '\f', '\x5', 
+		'\xE', '\x5', '\x65', '\v', '\x5', '\x3', '\x6', '\x3', '\x6', '\x3', 
+		'\x6', '\x3', '\x6', '\x3', '\a', '\x3', '\a', '\x3', '\a', '\x3', '\a', 
+		'\x5', '\a', 'o', '\n', '\a', '\x3', '\a', '\x2', '\x4', '\x4', '\x6', 
+		'\b', '\x2', '\x4', '\x6', '\b', '\n', '\f', '\x2', '\x2', '\x2', '~', 
 		'\x2', '\x10', '\x3', '\x2', '\x2', '\x2', '\x4', '!', '\x3', '\x2', '\x2', 
-		'\x2', '\x6', '\x34', '\x3', '\x2', '\x2', '\x2', '\b', 'Y', '\x3', '\x2', 
-		'\x2', '\x2', '\n', '\x66', '\x3', '\x2', '\x2', '\x2', '\f', 'o', '\x3', 
+		'\x2', '\x6', 'Q', '\x3', '\x2', '\x2', '\x2', '\b', '^', '\x3', '\x2', 
+		'\x2', '\x2', '\n', '\x66', '\x3', '\x2', '\x2', '\x2', '\f', 'n', '\x3', 
 		'\x2', '\x2', '\x2', '\xE', '\x11', '\x5', '\x4', '\x3', '\x2', '\xF', 
-		'\x11', '\x5', '\b', '\x5', '\x2', '\x10', '\xE', '\x3', '\x2', '\x2', 
+		'\x11', '\x5', '\x6', '\x4', '\x2', '\x10', '\xE', '\x3', '\x2', '\x2', 
 		'\x2', '\x10', '\xF', '\x3', '\x2', '\x2', '\x2', '\x11', '\x3', '\x3', 
 		'\x2', '\x2', '\x2', '\x12', '\x13', '\b', '\x3', '\x1', '\x2', '\x13', 
-		'\x14', '\a', '\x16', '\x2', '\x2', '\x14', '\x15', '\a', '\x3', '\x2', 
-		'\x2', '\x15', '\x16', '\x5', '\x6', '\x4', '\x2', '\x16', '\x17', '\a', 
-		'\x4', '\x2', '\x2', '\x17', '\"', '\x3', '\x2', '\x2', '\x2', '\x18', 
-		'\x19', '\a', '\x5', '\x2', '\x2', '\x19', '\"', '\x5', '\x4', '\x3', 
-		'\v', '\x1A', '\"', '\a', '\x13', '\x2', '\x2', '\x1B', '\"', '\a', '\x16', 
-		'\x2', '\x2', '\x1C', '\"', '\x5', '\f', '\a', '\x2', '\x1D', '\x1E', 
-		'\a', '\x3', '\x2', '\x2', '\x1E', '\x1F', '\x5', '\x4', '\x3', '\x2', 
-		'\x1F', ' ', '\a', '\x4', '\x2', '\x2', ' ', '\"', '\x3', '\x2', '\x2', 
-		'\x2', '!', '\x12', '\x3', '\x2', '\x2', '\x2', '!', '\x18', '\x3', '\x2', 
-		'\x2', '\x2', '!', '\x1A', '\x3', '\x2', '\x2', '\x2', '!', '\x1B', '\x3', 
-		'\x2', '\x2', '\x2', '!', '\x1C', '\x3', '\x2', '\x2', '\x2', '!', '\x1D', 
-		'\x3', '\x2', '\x2', '\x2', '\"', '\x31', '\x3', '\x2', '\x2', '\x2', 
-		'#', '$', '\f', '\n', '\x2', '\x2', '$', '%', '\a', '\x6', '\x2', '\x2', 
-		'%', '\x30', '\x5', '\x4', '\x3', '\v', '&', '\'', '\f', '\t', '\x2', 
-		'\x2', '\'', '(', '\a', '\a', '\x2', '\x2', '(', '\x30', '\x5', '\x4', 
-		'\x3', '\n', ')', '*', '\f', '\b', '\x2', '\x2', '*', '+', '\a', '\b', 
-		'\x2', '\x2', '+', '\x30', '\x5', '\x4', '\x3', '\t', ',', '-', '\f', 
-		'\a', '\x2', '\x2', '-', '.', '\a', '\x5', '\x2', '\x2', '.', '\x30', 
-		'\x5', '\x4', '\x3', '\b', '/', '#', '\x3', '\x2', '\x2', '\x2', '/', 
-		'&', '\x3', '\x2', '\x2', '\x2', '/', ')', '\x3', '\x2', '\x2', '\x2', 
-		'/', ',', '\x3', '\x2', '\x2', '\x2', '\x30', '\x33', '\x3', '\x2', '\x2', 
-		'\x2', '\x31', '/', '\x3', '\x2', '\x2', '\x2', '\x31', '\x32', '\x3', 
-		'\x2', '\x2', '\x2', '\x32', '\x5', '\x3', '\x2', '\x2', '\x2', '\x33', 
-		'\x31', '\x3', '\x2', '\x2', '\x2', '\x34', '\x39', '\x5', '\x4', '\x3', 
-		'\x2', '\x35', '\x36', '\a', '\t', '\x2', '\x2', '\x36', '\x38', '\x5', 
-		'\x4', '\x3', '\x2', '\x37', '\x35', '\x3', '\x2', '\x2', '\x2', '\x38', 
-		';', '\x3', '\x2', '\x2', '\x2', '\x39', '\x37', '\x3', '\x2', '\x2', 
-		'\x2', '\x39', ':', '\x3', '\x2', '\x2', '\x2', ':', '\a', '\x3', '\x2', 
-		'\x2', '\x2', ';', '\x39', '\x3', '\x2', '\x2', '\x2', '<', '=', '\b', 
-		'\x5', '\x1', '\x2', '=', '>', '\x5', '\f', '\a', '\x2', '>', '?', '\a', 
-		'\n', '\x2', '\x2', '?', '@', '\x5', '\n', '\x6', '\x2', '@', 'Z', '\x3', 
-		'\x2', '\x2', '\x2', '\x41', '\x42', '\x5', '\f', '\a', '\x2', '\x42', 
-		'\x43', '\a', '\v', '\x2', '\x2', '\x43', '\x44', '\x5', '\n', '\x6', 
-		'\x2', '\x44', 'Z', '\x3', '\x2', '\x2', '\x2', '\x45', '\x46', '\x5', 
-		'\f', '\a', '\x2', '\x46', 'G', '\a', '\f', '\x2', '\x2', 'G', 'H', '\x5', 
-		'\n', '\x6', '\x2', 'H', 'Z', '\x3', '\x2', '\x2', '\x2', 'I', 'J', '\x5', 
-		'\f', '\a', '\x2', 'J', 'K', '\a', '\r', '\x2', '\x2', 'K', 'L', '\x5', 
-		'\n', '\x6', '\x2', 'L', 'Z', '\x3', '\x2', '\x2', '\x2', 'M', 'N', '\x5', 
-		'\f', '\a', '\x2', 'N', 'O', '\a', '\xE', '\x2', '\x2', 'O', 'P', '\x5', 
-		'\n', '\x6', '\x2', 'P', 'Z', '\x3', '\x2', '\x2', '\x2', 'Q', 'R', '\x5', 
-		'\f', '\a', '\x2', 'R', 'S', '\a', '\xF', '\x2', '\x2', 'S', 'T', '\x5', 
-		'\n', '\x6', '\x2', 'T', 'Z', '\x3', '\x2', '\x2', '\x2', 'U', 'V', '\a', 
-		'\x3', '\x2', '\x2', 'V', 'W', '\x5', '\b', '\x5', '\x2', 'W', 'X', '\a', 
-		'\x4', '\x2', '\x2', 'X', 'Z', '\x3', '\x2', '\x2', '\x2', 'Y', '<', '\x3', 
-		'\x2', '\x2', '\x2', 'Y', '\x41', '\x3', '\x2', '\x2', '\x2', 'Y', '\x45', 
-		'\x3', '\x2', '\x2', '\x2', 'Y', 'I', '\x3', '\x2', '\x2', '\x2', 'Y', 
-		'M', '\x3', '\x2', '\x2', '\x2', 'Y', 'Q', '\x3', '\x2', '\x2', '\x2', 
-		'Y', 'U', '\x3', '\x2', '\x2', '\x2', 'Z', '\x63', '\x3', '\x2', '\x2', 
-		'\x2', '[', '\\', '\f', '\v', '\x2', '\x2', '\\', ']', '\a', '\x14', '\x2', 
-		'\x2', ']', '\x62', '\x5', '\b', '\x5', '\f', '^', '_', '\f', '\n', '\x2', 
-		'\x2', '_', '`', '\a', '\x15', '\x2', '\x2', '`', '\x62', '\x5', '\b', 
-		'\x5', '\v', '\x61', '[', '\x3', '\x2', '\x2', '\x2', '\x61', '^', '\x3', 
-		'\x2', '\x2', '\x2', '\x62', '\x65', '\x3', '\x2', '\x2', '\x2', '\x63', 
-		'\x61', '\x3', '\x2', '\x2', '\x2', '\x63', '\x64', '\x3', '\x2', '\x2', 
-		'\x2', '\x64', '\t', '\x3', '\x2', '\x2', '\x2', '\x65', '\x63', '\x3', 
-		'\x2', '\x2', '\x2', '\x66', 'j', '\a', '\x10', '\x2', '\x2', 'g', 'i', 
-		'\n', '\x2', '\x2', '\x2', 'h', 'g', '\x3', '\x2', '\x2', '\x2', 'i', 
-		'l', '\x3', '\x2', '\x2', '\x2', 'j', 'h', '\x3', '\x2', '\x2', '\x2', 
-		'j', 'k', '\x3', '\x2', '\x2', '\x2', 'k', 'm', '\x3', '\x2', '\x2', '\x2', 
-		'l', 'j', '\x3', '\x2', '\x2', '\x2', 'm', 'n', '\a', '\x10', '\x2', '\x2', 
-		'n', '\v', '\x3', '\x2', '\x2', '\x2', 'o', 'p', '\a', '\x11', '\x2', 
-		'\x2', 'p', 'q', '\a', '\x16', '\x2', '\x2', 'q', 'r', '\a', '\x12', '\x2', 
-		'\x2', 'r', '\r', '\x3', '\x2', '\x2', '\x2', '\v', '\x10', '!', '/', 
-		'\x31', '\x39', 'Y', '\x61', '\x63', 'j',
+		'\x14', '\a', '\x3', '\x2', '\x2', '\x14', '\x15', '\a', '\x5', '\x2', 
+		'\x2', '\x15', '\x16', '\x5', '\b', '\x5', '\x2', '\x16', '\x17', '\a', 
+		'\x6', '\x2', '\x2', '\x17', '\"', '\x3', '\x2', '\x2', '\x2', '\x18', 
+		'\x19', '\a', '\n', '\x2', '\x2', '\x19', '\"', '\x5', '\x4', '\x3', '\v', 
+		'\x1A', '\"', '\a', '\x4', '\x2', '\x2', '\x1B', '\"', '\a', '\x3', '\x2', 
+		'\x2', '\x1C', '\"', '\x5', '\n', '\x6', '\x2', '\x1D', '\x1E', '\a', 
+		'\x5', '\x2', '\x2', '\x1E', '\x1F', '\x5', '\x4', '\x3', '\x2', '\x1F', 
+		' ', '\a', '\x6', '\x2', '\x2', ' ', '\"', '\x3', '\x2', '\x2', '\x2', 
+		'!', '\x12', '\x3', '\x2', '\x2', '\x2', '!', '\x18', '\x3', '\x2', '\x2', 
+		'\x2', '!', '\x1A', '\x3', '\x2', '\x2', '\x2', '!', '\x1B', '\x3', '\x2', 
+		'\x2', '\x2', '!', '\x1C', '\x3', '\x2', '\x2', '\x2', '!', '\x1D', '\x3', 
+		'\x2', '\x2', '\x2', '\"', '\x31', '\x3', '\x2', '\x2', '\x2', '#', '$', 
+		'\f', '\n', '\x2', '\x2', '$', '%', '\a', '\a', '\x2', '\x2', '%', '\x30', 
+		'\x5', '\x4', '\x3', '\v', '&', '\'', '\f', '\t', '\x2', '\x2', '\'', 
+		'(', '\a', '\b', '\x2', '\x2', '(', '\x30', '\x5', '\x4', '\x3', '\n', 
+		')', '*', '\f', '\b', '\x2', '\x2', '*', '+', '\a', '\t', '\x2', '\x2', 
+		'+', '\x30', '\x5', '\x4', '\x3', '\t', ',', '-', '\f', '\a', '\x2', '\x2', 
+		'-', '.', '\a', '\n', '\x2', '\x2', '.', '\x30', '\x5', '\x4', '\x3', 
+		'\b', '/', '#', '\x3', '\x2', '\x2', '\x2', '/', '&', '\x3', '\x2', '\x2', 
+		'\x2', '/', ')', '\x3', '\x2', '\x2', '\x2', '/', ',', '\x3', '\x2', '\x2', 
+		'\x2', '\x30', '\x33', '\x3', '\x2', '\x2', '\x2', '\x31', '/', '\x3', 
+		'\x2', '\x2', '\x2', '\x31', '\x32', '\x3', '\x2', '\x2', '\x2', '\x32', 
+		'\x5', '\x3', '\x2', '\x2', '\x2', '\x33', '\x31', '\x3', '\x2', '\x2', 
+		'\x2', '\x34', '\x35', '\b', '\x4', '\x1', '\x2', '\x35', '\x36', '\x5', 
+		'\n', '\x6', '\x2', '\x36', '\x37', '\a', '\r', '\x2', '\x2', '\x37', 
+		'\x38', '\x5', '\f', '\a', '\x2', '\x38', 'R', '\x3', '\x2', '\x2', '\x2', 
+		'\x39', ':', '\x5', '\n', '\x6', '\x2', ':', ';', '\a', '\xE', '\x2', 
+		'\x2', ';', '<', '\x5', '\f', '\a', '\x2', '<', 'R', '\x3', '\x2', '\x2', 
+		'\x2', '=', '>', '\x5', '\n', '\x6', '\x2', '>', '?', '\a', '\xF', '\x2', 
+		'\x2', '?', '@', '\x5', '\f', '\a', '\x2', '@', 'R', '\x3', '\x2', '\x2', 
+		'\x2', '\x41', '\x42', '\x5', '\n', '\x6', '\x2', '\x42', '\x43', '\a', 
+		'\x10', '\x2', '\x2', '\x43', '\x44', '\x5', '\f', '\a', '\x2', '\x44', 
+		'R', '\x3', '\x2', '\x2', '\x2', '\x45', '\x46', '\x5', '\n', '\x6', '\x2', 
+		'\x46', 'G', '\a', '\x11', '\x2', '\x2', 'G', 'H', '\x5', '\f', '\a', 
+		'\x2', 'H', 'R', '\x3', '\x2', '\x2', '\x2', 'I', 'J', '\x5', '\n', '\x6', 
+		'\x2', 'J', 'K', '\a', '\x12', '\x2', '\x2', 'K', 'L', '\x5', '\f', '\a', 
+		'\x2', 'L', 'R', '\x3', '\x2', '\x2', '\x2', 'M', 'N', '\a', '\x5', '\x2', 
+		'\x2', 'N', 'O', '\x5', '\x6', '\x4', '\x2', 'O', 'P', '\a', '\x6', '\x2', 
+		'\x2', 'P', 'R', '\x3', '\x2', '\x2', '\x2', 'Q', '\x34', '\x3', '\x2', 
+		'\x2', '\x2', 'Q', '\x39', '\x3', '\x2', '\x2', '\x2', 'Q', '=', '\x3', 
+		'\x2', '\x2', '\x2', 'Q', '\x41', '\x3', '\x2', '\x2', '\x2', 'Q', '\x45', 
+		'\x3', '\x2', '\x2', '\x2', 'Q', 'I', '\x3', '\x2', '\x2', '\x2', 'Q', 
+		'M', '\x3', '\x2', '\x2', '\x2', 'R', '[', '\x3', '\x2', '\x2', '\x2', 
+		'S', 'T', '\f', '\v', '\x2', '\x2', 'T', 'U', '\a', '\v', '\x2', '\x2', 
+		'U', 'Z', '\x5', '\x6', '\x4', '\f', 'V', 'W', '\f', '\n', '\x2', '\x2', 
+		'W', 'X', '\a', '\f', '\x2', '\x2', 'X', 'Z', '\x5', '\x6', '\x4', '\v', 
+		'Y', 'S', '\x3', '\x2', '\x2', '\x2', 'Y', 'V', '\x3', '\x2', '\x2', '\x2', 
+		'Z', ']', '\x3', '\x2', '\x2', '\x2', '[', 'Y', '\x3', '\x2', '\x2', '\x2', 
+		'[', '\\', '\x3', '\x2', '\x2', '\x2', '\\', '\a', '\x3', '\x2', '\x2', 
+		'\x2', ']', '[', '\x3', '\x2', '\x2', '\x2', '^', '\x63', '\x5', '\x4', 
+		'\x3', '\x2', '_', '`', '\a', '\x13', '\x2', '\x2', '`', '\x62', '\x5', 
+		'\x4', '\x3', '\x2', '\x61', '_', '\x3', '\x2', '\x2', '\x2', '\x62', 
+		'\x65', '\x3', '\x2', '\x2', '\x2', '\x63', '\x61', '\x3', '\x2', '\x2', 
+		'\x2', '\x63', '\x64', '\x3', '\x2', '\x2', '\x2', '\x64', '\t', '\x3', 
+		'\x2', '\x2', '\x2', '\x65', '\x63', '\x3', '\x2', '\x2', '\x2', '\x66', 
+		'g', '\a', '\x14', '\x2', '\x2', 'g', 'h', '\a', '\x3', '\x2', '\x2', 
+		'h', 'i', '\a', '\x15', '\x2', '\x2', 'i', '\v', '\x3', '\x2', '\x2', 
+		'\x2', 'j', 'o', '\a', '\x17', '\x2', '\x2', 'k', 'l', '\a', '\x18', '\x2', 
+		'\x2', 'l', 'm', '\a', '\x19', '\x2', '\x2', 'm', 'o', '\a', '\x1A', '\x2', 
+		'\x2', 'n', 'j', '\x3', '\x2', '\x2', '\x2', 'n', 'k', '\x3', '\x2', '\x2', 
+		'\x2', 'o', '\r', '\x3', '\x2', '\x2', '\x2', '\v', '\x10', '!', '/', 
+		'\x31', 'Q', 'Y', '[', '\x63', 'n',
 	};
 
 	public static readonly ATN _ATN =
