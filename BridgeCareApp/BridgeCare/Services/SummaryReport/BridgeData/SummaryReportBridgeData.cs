@@ -231,8 +231,9 @@ namespace BridgeCare.Services
             //worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
 
             if (yearData.Year != 0)
-            {   
+            {
                 //worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted == "Y" ? getPostedType(yearData.Project) : "N"; // Posted
+                worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N"; //poor
                 worksheet.Cells[row, ++column].Value = yearData.ProjectPick; // Project Pick
                 worksheet.Cells[row, ++column].Value = yearData.Budget; // Budget
                 worksheet.Cells[row, ++column].Value = yearData.Project;
@@ -248,7 +249,7 @@ namespace BridgeCare.Services
             else
             {
                 worksheet.Cells[row, ++column].Value = yearData.SD;
-                worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N";
+                worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N"; //poor
                 worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted; // Posted
             }
             // Empty column
@@ -326,7 +327,7 @@ namespace BridgeCare.Services
             // Empty column
             currentCell.Column = ++column;
             var yearHeaderColumn = currentCell.Column;
-            simulationHeaderTexts.RemoveAll(_ => _.Equals("SD") || _.Equals("Poor") || _.Equals("Posted"));
+            simulationHeaderTexts.RemoveAll(_ => _.Equals("SD") || _.Equals("Posted"));
             foreach (var simulationYear in simulationYears)
             {
                 worksheet.Cells[row, ++column].Value = simulationYear;
