@@ -35,7 +35,8 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 [System.CLSCompliant(false)]
 public partial class CalculateEvaluateBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, ICalculateEvaluateVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.calculationRoot"/>.
+	/// Visit a parse tree produced by the <c>calculationRoot</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -44,6 +45,17 @@ public partial class CalculateEvaluateBaseVisitor<Result> : AbstractParseTreeVis
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitCalculationRoot([NotNull] CalculateEvaluateParser.CalculationRootContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>evaluationRoot</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>division</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
@@ -165,16 +177,6 @@ public partial class CalculateEvaluateBaseVisitor<Result> : AbstractParseTreeVis
 	/// <return>The visitor result.</return>
 	public virtual Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationRoot"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context) { return VisitChildren(context); }
-	/// <summary>
 	/// Visit a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// <para>
@@ -274,7 +276,7 @@ public partial class CalculateEvaluateBaseVisitor<Result> : AbstractParseTreeVis
 	/// <return>The visitor result.</return>
 	public virtual Result VisitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -282,7 +284,7 @@ public partial class CalculateEvaluateBaseVisitor<Result> : AbstractParseTreeVis
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitLiteral([NotNull] CalculateEvaluateParser.LiteralContext context) { return VisitChildren(context); }
+	public virtual Result VisitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// <para>

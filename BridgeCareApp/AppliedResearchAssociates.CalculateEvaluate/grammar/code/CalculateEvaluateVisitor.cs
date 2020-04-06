@@ -33,11 +33,19 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.calculationRoot"/>.
+	/// Visit a parse tree produced by the <c>calculationRoot</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCalculationRoot([NotNull] CalculateEvaluateParser.CalculationRootContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>evaluationRoot</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>division</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
@@ -115,12 +123,6 @@ public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationRoot"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// </summary>
@@ -184,11 +186,11 @@ public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLiteral([NotNull] CalculateEvaluateParser.LiteralContext context);
+	Result VisitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// </summary>

@@ -3,8 +3,9 @@ grammar CalculateEvaluate
 
 // "Calculate" grammar
 
-calculationRoot
-   : calculation
+root
+   : calculation # calculationRoot
+   | evaluation  # evaluationRoot
    ;
 
 calculation
@@ -48,24 +49,19 @@ fragment NATURAL_NUMBER
 
 // "Evaluate" sub-grammar
 
-evaluationRoot
-   : evaluation
-   ;
-
-// the param type determines how to interpret the literal (i.e. number, string, or date) and whether the operation is valid ("string < string" is invalid).
 evaluation
-   : left = evaluation AND right = evaluation # logicalConjunction
-   | left = evaluation OR right = evaluation  # logicalDisjunction
-   | parameterReference '=' literal           # equal
-   | parameterReference '<>' literal          # notEqual
-   | parameterReference '<' literal           # lessThan
-   | parameterReference '<=' literal          # lessThanOrEqual
-   | parameterReference '>=' literal          # greaterThanOrEqual
-   | parameterReference '>' literal           # greaterThan
-   | '(' evaluation ')'                       # evaluationGrouping
+   : left = evaluation AND right = evaluation  # logicalConjunction
+   | left = evaluation OR right = evaluation   # logicalDisjunction
+   | parameterReference '=' evaluationLiteral  # equal
+   | parameterReference '<>' evaluationLiteral # notEqual
+   | parameterReference '<' evaluationLiteral  # lessThan
+   | parameterReference '<=' evaluationLiteral # lessThanOrEqual
+   | parameterReference '>=' evaluationLiteral # greaterThanOrEqual
+   | parameterReference '>' evaluationLiteral  # greaterThan
+   | '(' evaluation ')'                        # evaluationGrouping
    ;
 
-literal
+evaluationLiteral
    : '|' content = ~'|'* '|'
    ;
 
@@ -88,7 +84,7 @@ IDENTIFIER
    ;
 
 WHITESPACE
-   : [ \t\r\n]+ -> skip
+   : [ \t\r\n]+ -> channel(HIDDEN)
    ;
 
 fragment DIGIT

@@ -76,35 +76,16 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         public override Expression VisitNumberLiteral(CalculateEvaluateParser.NumberLiteralContext context)
         {
             var numberText = context.NUMBER().GetText();
-            var number = Numbers.Parse(numberText);
-            var result = Expression.Constant(number);
+            var result = Numbers.ParseLiteral(numberText);
             return result;
         }
 
         public override Expression VisitNumberParameterReference(CalculateEvaluateParser.NumberParameterReferenceContext context)
         {
             var identifierText = context.parameterReference().IDENTIFIER().GetText();
+            var parameterType = ParameterTypes[identifierText];
 
-            //ArgumentInfo argumentInfo;
-            //switch (ParameterTypes[identifierText])
-            //{
-            //case ParameterType.Number:
-            //    argumentInfo = Numbers;
-            //    break;
-
-            //case ParameterType.String:
-            //    argumentInfo = Strings;
-            //    break;
-
-            //case ParameterType.Date:
-            //    argumentInfo = Dates;
-            //    break;
-
-            //default:
-            //    throw new InvalidOperationException("Invalid parameter type.");
-            //}
-
-            if (ParameterTypes[identifierText] != ParameterType.Number)
+            if (parameterType != ParameterType.Number)
             {
                 throw new InvalidOperationException("Parameter is not a number.");
             }
@@ -146,6 +127,18 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         #region "Evaluate"
 
+        public override Expression VisitEqual(CalculateEvaluateParser.EqualContext context)
+        {
+            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.Equal, true);
+            return result;
+        }
+
+        public override Expression VisitEvaluationGrouping(CalculateEvaluateParser.EvaluationGroupingContext context)
+        {
+            var result = Visit(context.evaluation());
+            return result;
+        }
+
         public override Expression VisitEvaluationRoot(CalculateEvaluateParser.EvaluationRootContext context)
         {
             var body = Visit(context.evaluation());
@@ -153,39 +146,123 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return lambda;
         }
 
+        public override Expression VisitGreaterThan(CalculateEvaluateParser.GreaterThanContext context)
+        {
+            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.GreaterThan, false);
+            return result;
+        }
+
+        public override Expression VisitGreaterThanOrEqual(CalculateEvaluateParser.GreaterThanOrEqualContext context)
+        {
+            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.GreaterThanOrEqual, false);
+            return result;
+        }
+
+        public override Expression VisitLessThan(CalculateEvaluateParser.LessThanContext context)
+        {
+            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.LessThan, false);
+            return result;
+        }
+
+        public override Expression VisitLessThanOrEqual(CalculateEvaluateParser.LessThanOrEqualContext context)
+        {
+            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.LessThanOrEqual, false);
+            return result;
+        }
+
+        public override Expression VisitLogicalConjunction(CalculateEvaluateParser.LogicalConjunctionContext context)
+        {
+            var leftOperand = Visit(context.left);
+            var rightOperand = Visit(context.right);
+            var result = Expression.AndAlso(leftOperand, rightOperand);
+            return result;
+        }
+
+        public override Expression VisitLogicalDisjunction(CalculateEvaluateParser.LogicalDisjunctionContext context)
+        {
+            var leftOperand = Visit(context.left);
+            var rightOperand = Visit(context.right);
+            var result = Expression.OrElse(leftOperand, rightOperand);
+            return result;
+        }
+
+        public override Expression VisitNotEqual(CalculateEvaluateParser.NotEqualContext context)
+        {
+            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.NotEqual, true);
+            return result;
+        }
+
+        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, CalculateEvaluateParser.EvaluationLiteralContext evaluationLiteral, Func<IndexExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
+        {
+            var identifierText = parameterReference.IDENTIFIER().GetText();
+            var parameterType = ParameterTypes[identifierText];
+
+            ArgumentInfo argumentInfo;
+            switch (parameterType)
+            {
+            case ParameterType.Number:
+                argumentInfo = Numbers;
+                break;
+
+            case ParameterType.String:
+                if (!allowStrings)
+                {
+                    goto default;
+                }
+                argumentInfo = Strings;
+                break;
+
+            case ParameterType.Date:
+                argumentInfo = Dates;
+                break;
+
+            default:
+                throw new InvalidOperationException("Invalid parameter type.");
+            }
+
+            var identifierString = Expression.Constant(identifierText);
+            var reference = Expression.Property(argumentInfo.DictionaryExpression, argumentInfo.IndexerInfo, identifierString);
+
+            var literalText = evaluationLiteral.content.Text;
+            var literal = argumentInfo.ParseLiteral(literalText);
+
+            var result = getComparison(reference, literal);
+            return result;
+        }
+
         #endregion "Evaluate"
 
         private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument));
 
-        private static readonly ArgumentInfo<DateTime> Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Dates), Convert.ToDateTime);
+        private static readonly ArgumentInfo Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Dates), Convert.ToDateTime);
 
-        private static readonly ArgumentInfo<double> Numbers = GetArgumentInfo(nameof(CalculateEvaluateArgument.Numbers), double.Parse);
+        private static readonly ArgumentInfo Numbers = GetArgumentInfo(nameof(CalculateEvaluateArgument.Numbers), double.Parse);
 
-        private static readonly ArgumentInfo<string> Strings = GetArgumentInfo(nameof(CalculateEvaluateArgument.Strings), Static.Identity);
+        private static readonly ArgumentInfo Strings = GetArgumentInfo(nameof(CalculateEvaluateArgument.Strings), Static.Identity);
 
         private readonly IReadOnlyDictionary<string, ParameterType> ParameterTypes;
 
-        private static ArgumentInfo<T> GetArgumentInfo<T>(string argumentPropertyName, Func<string, T> parse)
+        private static ArgumentInfo GetArgumentInfo<T>(string argumentPropertyName, Func<string, T> parse)
         {
             var dictionaryExpression = Expression.Property(ArgumentParameter, argumentPropertyName);
             var indexerInfo = (PropertyInfo)dictionaryExpression.Type.GetDefaultMembers().Single();
-            return new ArgumentInfo<T>(dictionaryExpression, indexerInfo, parse);
+            return new ArgumentInfo(dictionaryExpression, indexerInfo, literal => Expression.Constant(parse(literal)));
         }
 
-        private class ArgumentInfo<T>
+        private class ArgumentInfo
         {
-            public ArgumentInfo(Expression dictionaryExpression, PropertyInfo indexerInfo, Func<string, T> parse)
+            public ArgumentInfo(Expression dictionaryExpression, PropertyInfo indexerInfo, Func<string, ConstantExpression> parseLiteral)
             {
                 DictionaryExpression = dictionaryExpression;
                 IndexerInfo = indexerInfo;
-                Parse = parse;
+                ParseLiteral = parseLiteral;
             }
 
             public Expression DictionaryExpression { get; }
 
             public PropertyInfo IndexerInfo { get; }
 
-            public Func<string, T> Parse { get; }
+            public Func<string, ConstantExpression> ParseLiteral { get; }
         }
     }
 }
