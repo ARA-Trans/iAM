@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using static AppliedResearchAssociates.Static;
 
 namespace AppliedResearchAssociates
 {
@@ -71,7 +70,7 @@ namespace AppliedResearchAssociates
                 HasCurrent.Clear();
                 HasCurrent.AddRange(enumerators.Select(enumerator => enumerator.MoveNext()));
 
-                return HasCurrent.Any(Identity);
+                return HasCurrent.Any(Static.Identity);
             }
 
             private readonly T DefaultValue;

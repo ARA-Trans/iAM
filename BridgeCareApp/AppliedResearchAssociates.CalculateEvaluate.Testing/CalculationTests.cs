@@ -71,7 +71,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         }
 
         [Test]
-        public void NumericLiteral()
+        public void NumberLiteral()
         {
             var compiler = new CalculateEvaluateCompiler();
             var calculator = compiler.GetCalculator($"{A}");
@@ -80,12 +80,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         }
 
         [Test]
-        public void ParameterReference()
+        public void NumberParameterReference()
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.Parameters["PARAM"] = ParameterType.Number;
+            compiler.ParameterTypes["PARAM"] = ParameterType.Number;
             var calculator = compiler.GetCalculator("[param]");
-            var argument = new CalculatorArgument<double>();
+            var argument = new CalculateEvaluateArgument();
             argument.Numbers["PaRaM"] = A;
             var result = calculator(argument);
             Assert.That(result, Is.EqualTo(argument.Numbers["pArAm"]));

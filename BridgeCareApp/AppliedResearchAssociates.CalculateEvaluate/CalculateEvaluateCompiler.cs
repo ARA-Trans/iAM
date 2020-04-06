@@ -2,38 +2,31 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Antlr4.Runtime;
-using MonetaryCalculator = AppliedResearchAssociates.CalculateEvaluate.Calculator<decimal?>;
-using MonetaryEvaluator = AppliedResearchAssociates.CalculateEvaluate.Evaluator<decimal?>;
-using NumericCalculator = AppliedResearchAssociates.CalculateEvaluate.Calculator<double?>;
-using NumericEvaluator = AppliedResearchAssociates.CalculateEvaluate.Evaluator<double?>;
+using Antlr4.Runtime.Tree;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    public delegate T Calculator<T>(CalculatorArgument<T> argument);
+    public delegate double Calculator(CalculateEvaluateArgument argument);
 
-    public delegate T Evaluator<T>(EvaluatorArgument<T> argument);
+    public delegate bool Evaluator(CalculateEvaluateArgument argument);
 
     public sealed class CalculateEvaluateCompiler
     {
-        public Dictionary<string, ParameterType> Parameters { get; } = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, ParameterType> ParameterTypes { get; } = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
 
-        public NumericCalculator GetCalculator(string expression) => (NumericCalculator)Compile(expression, _ => double.Parse(_).AsNullable());
+        public Calculator GetCalculator(string expression) => Compile<Calculator>(expression, parser => parser.calculationRoot());
 
-        public NumericEvaluator GetEvaluator(string expression) => (NumericEvaluator)Compile(expression, _ => double.Parse(_).AsNullable());
+        public Evaluator GetEvaluator(string expression) => Compile<Evaluator>(expression, parser => parser.evaluationRoot());
 
-        public MonetaryCalculator GetMonetaryCalculator(string expression) => (MonetaryCalculator)Compile(expression, _ => decimal.Parse(_).AsNullable());
-
-        public MonetaryEvaluator GetMonetaryEvaluator(string expression) => (MonetaryEvaluator)Compile(expression, _ => decimal.Parse(_).AsNullable());
-
-        private Delegate Compile<T>(string expression, Func<string, T> parseNumber)
+        private T Compile<T>(string expression, Func<CalculateEvaluateParser, IParseTree> getParseTree) where T : Delegate
         {
             var input = new AntlrInputStream(expression);
             var lexer = new CalculateEvaluateLexer(input);
             var tokens = new CommonTokenStream(lexer);
             var parser = new CalculateEvaluateParser(tokens);
-            var tree = parser.root();
-            var visitor = new CalculateEvaluateCompilerVisitor<T>(Parameters, parseNumber);
-            var lambdaExpression = (LambdaExpression)visitor.Visit(tree);
+            var tree = getParseTree(parser);
+            var visitor = new CalculateEvaluateCompilerVisitor(ParameterTypes);
+            var lambdaExpression = (Expression<T>)visitor.Visit(tree);
             var lambda = lambdaExpression.Compile();
             return lambda;
         }

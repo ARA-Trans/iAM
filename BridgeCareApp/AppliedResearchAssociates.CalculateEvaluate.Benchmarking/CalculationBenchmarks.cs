@@ -19,19 +19,19 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         [ArgumentsSource(nameof(CalculationExpressions))]
         public CompilerResults CompileAssembly(string expression)
         {
-            LegacyCompiler.BuildClass(expression, true);
+            LegacyCompiler.BuildTemporaryClass(expression, true);
             return LegacyCompiler.CompileAssembly();
         }
 
         [Benchmark]
         [ArgumentsSource(nameof(CalculationExpressions))]
-        public Calculator<double> GetCalculator(string expression) => Compiler.GetCalculator(expression);
+        public Calculator GetCalculator(string expression) => Compiler.GetCalculator(expression);
 
         [GlobalSetup]
         public void Setup()
         {
             Compiler = new CalculateEvaluateCompiler();
-            Compiler.Parameters["deck_area"] = ParameterType.Number;
+            Compiler.ParameterTypes["deck_area"] = ParameterType.Number;
 
             LegacyCompiler = new LegacyCalculateEvaluate();
         }

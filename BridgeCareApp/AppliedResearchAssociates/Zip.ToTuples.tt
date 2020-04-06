@@ -10,7 +10,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using static AppliedResearchAssociates.Static;
 
 namespace AppliedResearchAssociates
 {
@@ -79,7 +78,7 @@ foreach (var arity in Enumerable.Range(2, 7))
     }
 #>
             {
-                while (Distinct(<#= moveNextExprsStrict #>).Single())
+                while (Static.Distinct(<#= moveNextExprsStrict #>).Single())
                 {
                     yield return (<#= currentExprs #>);
                 }

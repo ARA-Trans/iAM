@@ -6,13 +6,11 @@ using System.Reflection;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    internal sealed class CalculateEvaluateCompilerVisitor<T> : CalculateEvaluateBaseVisitor<Expression>
+    internal sealed class CalculateEvaluateCompilerVisitor : CalculateEvaluateBaseVisitor<Expression>
     {
-        public CalculateEvaluateCompilerVisitor(IReadOnlyDictionary<string, ParameterType> parameters, Func<string, T> parseNumber)
-        {
-            Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-            ParseNumber = parseNumber ?? throw new ArgumentNullException(nameof(parseNumber));
-        }
+        public CalculateEvaluateCompilerVisitor(IReadOnlyDictionary<string, ParameterType> parameterTypes) => ParameterTypes = parameterTypes ?? throw new ArgumentNullException(nameof(parameterTypes));
+
+        #region "Calculate"
 
         public override Expression VisitAddition(CalculateEvaluateParser.AdditionContext context)
         {
@@ -22,19 +20,23 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitCalculation(CalculateEvaluateParser.CalculationContext context)
+        public override Expression VisitCalculationGrouping(CalculateEvaluateParser.CalculationGroupingContext context)
         {
-            var parameter = Expression.Parameter(typeof(CalculatorArgument<T>));
-            Numbers = ArgumentInfo.Of(parameter, nameof(CalculatorArgument<T>.Numbers));
-            var body = Visit(context.calc());
-            var lambda = Expression.Lambda<Calculator<T>>(body, parameter);
+            var result = Visit(context.calculation());
+            return result;
+        }
+
+        public override Expression VisitCalculationRoot(CalculateEvaluateParser.CalculationRootContext context)
+        {
+            var body = Visit(context.calculation());
+            var lambda = Expression.Lambda<Calculator>(body, ArgumentParameter);
             return lambda;
         }
 
         public override Expression VisitConstantReference(CalculateEvaluateParser.ConstantReferenceContext context)
         {
-            var idText = context.ID().GetText();
-            var constant = Constants[idText];
+            var identifierText = context.IDENTIFIER().GetText();
+            var constant = MathConstants[identifierText];
             var result = Expression.Constant(constant);
             return result;
         }
@@ -47,28 +49,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitEvaluation(CalculateEvaluateParser.EvaluationContext context)
-        {
-            var parameter = Expression.Parameter(typeof(EvaluatorArgument<T>));
-            Numbers = ArgumentInfo.Of(parameter, nameof(EvaluatorArgument<T>.Numbers));
-            Strings = ArgumentInfo.Of(parameter, nameof(EvaluatorArgument<T>.Strings));
-            Dates = ArgumentInfo.Of(parameter, nameof(EvaluatorArgument<T>.Dates));
-            var body = Visit(context.eval());
-            var lambda = Expression.Lambda<Evaluator<T>>(body, parameter);
-            return lambda;
-        }
-
-        public override Expression VisitGrouping(CalculateEvaluateParser.GroupingContext context)
-        {
-            var result = Visit(context.calc());
-            return result;
-        }
-
         public override Expression VisitInvocation(CalculateEvaluateParser.InvocationContext context)
         {
-            var idText = context.ID().GetText();
-            var arguments = context.args().calc();
-            var method = Functions[(idText, arguments.Length)];
+            var identifierText = context.IDENTIFIER().GetText();
+            var arguments = context.arguments().calculation();
+            var method = MathFunctions[(identifierText, arguments.Length)];
             var result = Expression.Call(method, arguments.Select(Visit));
             return result;
         }
@@ -83,44 +68,49 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNegation(CalculateEvaluateParser.NegationContext context)
         {
-            var operand = Visit(context.calc());
+            var operand = Visit(context.calculation());
             var result = Expression.NegateChecked(operand);
             return result;
         }
 
-        public override Expression VisitNumericLiteral(CalculateEvaluateParser.NumericLiteralContext context)
+        public override Expression VisitNumberLiteral(CalculateEvaluateParser.NumberLiteralContext context)
         {
             var numberText = context.NUMBER().GetText();
-            var number = ParseNumber(numberText);
+            var number = Numbers.Parse(numberText);
             var result = Expression.Constant(number);
             return result;
         }
 
-        public override Expression VisitParameterReference(CalculateEvaluateParser.ParameterReferenceContext context)
+        public override Expression VisitNumberParameterReference(CalculateEvaluateParser.NumberParameterReferenceContext context)
         {
-            var idText = context.ID().GetText();
+            var identifierText = context.parameterReference().IDENTIFIER().GetText();
 
-            ArgumentInfo argumentInfo;
-            switch (Parameters[idText])
+            //ArgumentInfo argumentInfo;
+            //switch (ParameterTypes[identifierText])
+            //{
+            //case ParameterType.Number:
+            //    argumentInfo = Numbers;
+            //    break;
+
+            //case ParameterType.String:
+            //    argumentInfo = Strings;
+            //    break;
+
+            //case ParameterType.Date:
+            //    argumentInfo = Dates;
+            //    break;
+
+            //default:
+            //    throw new InvalidOperationException("Invalid parameter type.");
+            //}
+
+            if (ParameterTypes[identifierText] != ParameterType.Number)
             {
-            case ParameterType.Number:
-                argumentInfo = Numbers;
-                break;
-
-            case ParameterType.String:
-                argumentInfo = Strings;
-                break;
-
-            case ParameterType.Date:
-                argumentInfo = Dates;
-                break;
-
-            default:
-                throw new InvalidOperationException("Invalid parameter type.");
+                throw new InvalidOperationException("Parameter is not a number.");
             }
 
-            var id = Expression.Constant(idText);
-            var result = Expression.Property(argumentInfo.DictionaryExpression, argumentInfo.IndexerInfo, id);
+            var identifierString = Expression.Constant(identifierText);
+            var result = Expression.Property(Numbers.DictionaryExpression, Numbers.IndexerInfo, identifierString);
             return result;
         }
 
@@ -132,44 +122,70 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        private static readonly IReadOnlyDictionary<string, T> Constants =
-            typeof(Math).GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.FieldType == typeof(T))
-            .ToDictionary(field => field.Name, field => (T)field.GetValue(null), StringComparer.OrdinalIgnoreCase);
+        private static readonly IReadOnlyDictionary<string, double> MathConstants = GetMathConstants();
 
-        private static readonly IReadOnlyDictionary<(string, int), MethodInfo> Functions =
-            typeof(Math).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(method => method.ReturnType == typeof(T) && method.GetParameters().All(parameter => parameter.ParameterType == typeof(T)))
-            .ToDictionary(method => (method.Name, method.GetParameters().Length), ValueTupleEqualityComparer.Create<string, int>(StringComparer.OrdinalIgnoreCase));
+        private static readonly IReadOnlyDictionary<(string, int), MethodInfo> MathFunctions = GetMathFunctions();
 
-        private readonly IReadOnlyDictionary<string, ParameterType> Parameters;
-
-        private readonly Func<string, T> ParseNumber;
-
-        private ArgumentInfo Dates;
-
-        private ArgumentInfo Numbers;
-
-        private ArgumentInfo Strings;
-
-        private class ArgumentInfo
+        private static IReadOnlyDictionary<string, double> GetMathConstants()
         {
+            var fields = typeof(Math).GetFields(BindingFlags.Public | BindingFlags.Static);
+            var numberFields = fields.Where(field => field.FieldType == typeof(double));
+            var result = numberFields.ToDictionary(field => field.Name, field => (double)field.GetValue(null), StringComparer.OrdinalIgnoreCase);
+            return result;
+        }
+
+        private static IReadOnlyDictionary<(string, int), MethodInfo> GetMathFunctions()
+        {
+            var methods = typeof(Math).GetMethods(BindingFlags.Public | BindingFlags.Static);
+            var numberMethods = methods.Where(method => method.ReturnType == typeof(double) && method.GetParameters().All(parameter => parameter.ParameterType == typeof(double)));
+            var result = numberMethods.ToDictionary(method => (method.Name, method.GetParameters().Length), ValueTupleEqualityComparer.Create<string, int>(StringComparer.OrdinalIgnoreCase));
+            return result;
+        }
+
+        #endregion "Calculate"
+
+        #region "Evaluate"
+
+        public override Expression VisitEvaluationRoot(CalculateEvaluateParser.EvaluationRootContext context)
+        {
+            var body = Visit(context.evaluation());
+            var lambda = Expression.Lambda<Evaluator>(body, ArgumentParameter);
+            return lambda;
+        }
+
+        #endregion "Evaluate"
+
+        private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument));
+
+        private static readonly ArgumentInfo<DateTime> Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Dates), Convert.ToDateTime);
+
+        private static readonly ArgumentInfo<double> Numbers = GetArgumentInfo(nameof(CalculateEvaluateArgument.Numbers), double.Parse);
+
+        private static readonly ArgumentInfo<string> Strings = GetArgumentInfo(nameof(CalculateEvaluateArgument.Strings), Static.Identity);
+
+        private readonly IReadOnlyDictionary<string, ParameterType> ParameterTypes;
+
+        private static ArgumentInfo<T> GetArgumentInfo<T>(string argumentPropertyName, Func<string, T> parse)
+        {
+            var dictionaryExpression = Expression.Property(ArgumentParameter, argumentPropertyName);
+            var indexerInfo = (PropertyInfo)dictionaryExpression.Type.GetDefaultMembers().Single();
+            return new ArgumentInfo<T>(dictionaryExpression, indexerInfo, parse);
+        }
+
+        private class ArgumentInfo<T>
+        {
+            public ArgumentInfo(Expression dictionaryExpression, PropertyInfo indexerInfo, Func<string, T> parse)
+            {
+                DictionaryExpression = dictionaryExpression;
+                IndexerInfo = indexerInfo;
+                Parse = parse;
+            }
+
             public Expression DictionaryExpression { get; }
 
             public PropertyInfo IndexerInfo { get; }
 
-            public static ArgumentInfo Of(Expression argumentParameter, string argumentPropertyName)
-            {
-                var dictionaryExpression = Expression.Property(argumentParameter, argumentPropertyName);
-                var indexerInfo = (PropertyInfo)dictionaryExpression.Type.GetDefaultMembers().Single();
-                return new ArgumentInfo(dictionaryExpression, indexerInfo);
-            }
-
-            private ArgumentInfo(Expression dictionaryExpression, PropertyInfo indexerInfo)
-            {
-                DictionaryExpression = dictionaryExpression ?? throw new ArgumentNullException(nameof(dictionaryExpression));
-                IndexerInfo = indexerInfo ?? throw new ArgumentNullException(nameof(indexerInfo));
-            }
+            public Func<string, T> Parse { get; }
         }
     }
 }

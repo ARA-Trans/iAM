@@ -33,100 +33,167 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface ICalculateEvaluateVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Calculation</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.calculationRoot"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitCalculation([NotNull] CalculateEvaluateParser.CalculationContext context);
+	Result VisitCalculationRoot([NotNull] CalculateEvaluateParser.CalculationRootContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Evaluation</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.root"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEvaluation([NotNull] CalculateEvaluateParser.EvaluationContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>ConstantReference</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Multiplication</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitMultiplication([NotNull] CalculateEvaluateParser.MultiplicationContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Addition</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Subtraction</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitSubtraction([NotNull] CalculateEvaluateParser.SubtractionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Invocation</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInvocation([NotNull] CalculateEvaluateParser.InvocationContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Negation</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitNegation([NotNull] CalculateEvaluateParser.NegationContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>NumericLiteral</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitNumericLiteral([NotNull] CalculateEvaluateParser.NumericLiteralContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>ParameterReference</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Grouping</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitGrouping([NotNull] CalculateEvaluateParser.GroupingContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Division</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calc"/>.
+	/// Visit a parse tree produced by the <c>division</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitDivision([NotNull] CalculateEvaluateParser.DivisionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.eval"/>.
+	/// Visit a parse tree produced by the <c>invocation</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEval([NotNull] CalculateEvaluateParser.EvalContext context);
+	Result VisitInvocation([NotNull] CalculateEvaluateParser.InvocationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.args"/>.
+	/// Visit a parse tree produced by the <c>negation</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArgs([NotNull] CalculateEvaluateParser.ArgsContext context);
+	Result VisitNegation([NotNull] CalculateEvaluateParser.NegationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>constantReference</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>subtraction</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSubtraction([NotNull] CalculateEvaluateParser.SubtractionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>multiplication</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitMultiplication([NotNull] CalculateEvaluateParser.MultiplicationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>calculationGrouping</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCalculationGrouping([NotNull] CalculateEvaluateParser.CalculationGroupingContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>numberParameterReference</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNumberParameterReference([NotNull] CalculateEvaluateParser.NumberParameterReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>numberLiteral</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNumberLiteral([NotNull] CalculateEvaluateParser.NumberLiteralContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>addition</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationRoot"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>equal</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEqual([NotNull] CalculateEvaluateParser.EqualContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>logicalConjunction</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLogicalConjunction([NotNull] CalculateEvaluateParser.LogicalConjunctionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>lessThan</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLessThan([NotNull] CalculateEvaluateParser.LessThanContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>lessThanOrEqual</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLessThanOrEqual([NotNull] CalculateEvaluateParser.LessThanOrEqualContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>evaluationGrouping</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEvaluationGrouping([NotNull] CalculateEvaluateParser.EvaluationGroupingContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>logicalDisjunction</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLogicalDisjunction([NotNull] CalculateEvaluateParser.LogicalDisjunctionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>notEqual</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNotEqual([NotNull] CalculateEvaluateParser.NotEqualContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>greaterThanOrEqual</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitGreaterThanOrEqual([NotNull] CalculateEvaluateParser.GreaterThanOrEqualContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>greaterThan</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLiteral([NotNull] CalculateEvaluateParser.LiteralContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate
