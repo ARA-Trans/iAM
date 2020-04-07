@@ -98,11 +98,9 @@
         }
     })
     export default class EditBudgetsDialog extends Vue {
-
-        @Action('saveIntermittentCriteriaDrivenBudget') saveIntermittentCriteriaDrivenBudgetAction: any;
-        @Action('setErrorMessage') setErrorMessageAction: any;
-
         @Prop() dialogData: EditBudgetsDialogData;
+
+        @Action('setErrorMessage') setErrorMessageAction: any;
 
         editBudgetsDialogGridHeaders: DataTableHeader[] = [
             {text: 'Budget', value: 'name', sortable: false, align: 'center', class: '', width: ''},
@@ -330,10 +328,6 @@
 
             if (!isNil(criteria)) {
                 this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets.criteria = criteria;
-
-                this.saveIntermittentCriteriaDrivenBudgetAction(
-                    {updateIntermittentCriteriaDrivenBudget: this.editBudgetsDialogGridData[this.selectedCriteriaIndex].criteriaBudgets}
-                );
                 this.selectedCriteriaIndex = -1;
             }
         }
