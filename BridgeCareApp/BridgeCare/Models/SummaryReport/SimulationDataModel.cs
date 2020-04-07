@@ -12,5 +12,7 @@ namespace BridgeCare.Models
         public double DeckArea { get; set; }
                 
         public int BRKey { get; set; }
+
+        public double RiskScore { get; set; }
     }
 }
