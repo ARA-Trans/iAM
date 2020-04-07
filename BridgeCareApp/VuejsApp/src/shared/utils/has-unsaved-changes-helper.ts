@@ -8,6 +8,7 @@ import {emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
 import {emptyRemainingLifeLimitLibrary} from '@/shared/models/iAM/remaining-life-limit';
 import {emptyCashFlowLibrary} from '@/shared/models/iAM/cash-flow';
 import {sorter} from '@/shared/utils/sorter-utils';
+import {emptyCriteriaLibrary} from '@/shared/models/iAM/criteria';
 
 export const hasUnsavedChanges = (editor: string, localSelectedLibrary: any, stateSelectedLibrary: any, stateScenarioLibrary: any) => {
     switch (editor) {
@@ -64,6 +65,9 @@ export const hasUnsavedChanges = (editor: string, localSelectedLibrary: any, sta
             return !equals(localSelectedLibrary, emptyCashFlowLibrary) &&
                 !equals(localSelectedLibrary, stateSelectedLibrary) &&
                 !equals(localSelectedLibrary, stateScenarioLibrary);
+        case 'criteria':
+            return !equals(localSelectedLibrary, emptyCriteriaLibrary) &&
+                !equals(localSelectedLibrary, stateSelectedLibrary);
         default:
             return false;
     }

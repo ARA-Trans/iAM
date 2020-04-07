@@ -26,7 +26,23 @@ export interface CriteriaValidationResult {
     message: string;
 }
 
+export interface CriteriaLibrary {
+    id: string;
+    name: string;
+    description: string;
+    criteria: string;
+    owner?: string;
+    shared?: boolean;
+}
+
 export const emptyCriteria: Criteria = {
     logicalOperator: 'AND',
     children: []
+};
+
+export const emptyCriteriaLibrary: CriteriaLibrary = {
+    id: '0',
+    name: '',
+    description: '',
+    criteria: ''
 };

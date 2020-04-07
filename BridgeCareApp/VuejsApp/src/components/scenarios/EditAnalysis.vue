@@ -78,7 +78,8 @@
             </v-layout>
         </v-flex>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitScopeCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogData="onSubmitScopeCriteria"/>
     </v-layout>
 </template>
 
