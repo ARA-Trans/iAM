@@ -37,8 +37,5 @@
 
         //Computed
         public string ADTOverTenThousand { get; set; }
-
-        //Below data fetched from table SD_RISK
-        public double RiskScore { get; set; }
     }
 }

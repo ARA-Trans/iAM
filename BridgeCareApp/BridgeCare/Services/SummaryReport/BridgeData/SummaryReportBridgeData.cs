@@ -63,8 +63,8 @@ namespace BridgeCare.Services
                 autoFilterCells.AutoFilter = true;
             }
 
-            AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
-            AddDynamicDataCells(worksheet, sectionsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell);
+            var columnForRiskScore = AddBridgeDataModelsCells(worksheet, bridgeDataModels, currentCell);
+            AddDynamicDataCells(worksheet, sectionsForSummaryReport, simulationDataModels, bridgeDataModels, currentCell, columnForRiskScore);
             // TODO The line below currently hangs Postman in testing. It will be required for final production.
             // ExcelHelper.ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
@@ -73,7 +73,8 @@ namespace BridgeCare.Services
             return workSummaryModel;
         }
 
-        private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
+        private void AddDynamicDataCells(ExcelWorksheet worksheet, List<Section> sectionsForSummaryReport, List<SimulationDataModel> simulationDataModels,
+            List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell, int columnForRiskScore)
         {
             var row = 4; // Data starts here
             var column = currentCell.Column;
@@ -103,6 +104,8 @@ namespace BridgeCare.Services
                 // Save DeckArea for further use
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 simulationDataModel.BRKey = brKey;
+                //bridgeDataModel.RiskScore = simulationDataModel.RiskScore;
+                worksheet.Cells[row, columnForRiskScore].Value = simulationDataModel.RiskScore;
                 var yearsData = simulationDataModel.YearsData;
                 var projectPickByYear = new Dictionary<int, int>();
                 // Add work done cells
@@ -383,7 +386,7 @@ namespace BridgeCare.Services
             };
         }
                 
-        private void AddBridgeDataModelsCells(ExcelWorksheet worksheet, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
+        private int AddBridgeDataModelsCells(ExcelWorksheet worksheet, List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
         {
             var rowNo = currentCell.Row;
             var columnNo = currentCell.Column;
@@ -407,11 +410,13 @@ namespace BridgeCare.Services
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.Age;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.AdtTotal;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.ADTOverTenThousand;
-                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.RiskScore;
+                columnNo++;
+                //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.RiskScore; // We fill this data in the next function call "AddDynamicDataCells"
                 worksheet.Cells[rowNo, columnNo].Value = bridgeDataModel.P3 > 0 ? "Y" : "N";
             }
             currentCell.Row = rowNo;
             currentCell.Column = columnNo;
+            return columnNo - 1; // This is the column number for RiskScore. We do not have RiskScore information at this point.
         }
 
         private List<string> GetHeaders()

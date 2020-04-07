@@ -307,4 +307,7 @@ Condition By Deck Area</value>
   <data name="PercentBudgetSpentMPMS" xml:space="preserve">
     <value>% of Budget Spent - MPMS</value>
   </data>
+  <data name="RiskScore" xml:space="preserve">
+    <value>RISK_SCORE_</value>
+  </data>
 </root>

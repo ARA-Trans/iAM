@@ -28,7 +28,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
             var pennDotReportAData = db.PennDotReportAData.Where(p => brKeys.Contains(p.BRKEY)).ToList();
 
-            var sdRisk = db.SdRisks.Where(s => brKeys.Contains(s.BRKEY)).ToList();
+            //var sdRisk = db.SdRisks.Where(s => brKeys.Contains(s.BRKEY)).ToList();
 
             brKeys = brKeys.OrderBy(b => b).ToList();
 
@@ -38,8 +38,8 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
                 var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
 
-                var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
-                bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow, sdRiskRow));
+                //var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
+                bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow));
             }
 
             return bridgeDataModels;
@@ -136,7 +136,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             var dynamicColumns = GetDynamicColumns(simulationYears);
 
             var selectSimulationStatement = $"SELECT SECTIONID, {Properties.Resources.DeckSeeded}0, {Properties.Resources.SupSeeded}0, {Properties.Resources.SubSeeded}0, {Properties.Resources.CulvSeeded}0, " +
-                                            $"{Properties.Resources.DeckDurationN}0, {Properties.Resources.SupDurationN}0, {Properties.Resources.SubDurationN}0, {Properties.Resources.CulvDurationN}0, " +
+                                            $"{Properties.Resources.DeckDurationN}0, {Properties.Resources.SupDurationN}0, {Properties.Resources.SubDurationN}0, {Properties.Resources.CulvDurationN}0, {Properties.Resources.RiskScore}0, " +
                                             dynamicColumns + $" FROM SIMULATION_{simulationModel.networkId}_{simulationModel.simulationId}_0 WITH (NOLOCK);";
 
             using (var connection = new SqlConnection(dbContext.Database.Connection.ConnectionString))
@@ -207,7 +207,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "<Pending>")]
-        private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow, SdRisk sdRiskRow)
+        private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow)
         {
             bool adtTotalHasValue = int.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
             bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
@@ -217,7 +217,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             int.TryParse(pennDotReportADataRow.YEAR_BUILT, out var yearBuilt);
             int.TryParse(pennDotReportADataRow.StructureLength, out var structureLength);
             int.TryParse(pennDotReportADataRow.ADTTOTAL, out var ADTTotal);
-            double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
+            //double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
             var age = DateTime.Today.Year - yearBuilt;
 
             return new BridgeDataModel
@@ -242,8 +242,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
                 P3 = pennDotReportADataRow.P3,
                 ParallelBridge = pennDotReportADataRow.ParallelBridge,
 
-                ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N",
-                RiskScore = sdRisk
+                ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N"
             };
         }
 

@@ -530,6 +530,15 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RISK_SCORE_.
+        /// </summary>
+        internal static string RiskScore {
+            get {
+                return ResourceManager.GetString("RiskScore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SUB_DURATION_N_.
         /// </summary>
         internal static string SubDurationN {
