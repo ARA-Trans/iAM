@@ -155,12 +155,12 @@
     import EditBudgetsDialog from '../../shared/modals/EditBudgetsDialog.vue';
     import {
         BudgetYearsGridData,
+        CriteriaDrivenBudgets,
         emptyInvestmentLibrary,
         InvestmentLibrary,
-        InvestmentLibraryBudgetYear,
-        CriteriaDrivenBudgets
+        InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
-    import {any, clone, contains, groupBy, isEmpty, isNil, keys, propEq, find} from 'ramda';
+    import {any, clone, contains, find, findIndex, groupBy, isEmpty, isNil, keys, propEq, update} from 'ramda';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
@@ -179,6 +179,7 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -208,10 +209,6 @@
         budgetYearsGridHeaders: DataTableHeader[] = [
             {text: 'Year', value: 'year', sortable: true, align: 'left', class: '', width: ''}
         ];
-        budgetCriteriaHeaders: DataTableHeader[] = [
-            { text: 'Multi select', value: 'multiselect', sortable: true, align: 'left', class: '', width: '' },
-            { text: 'Edit', value: 'edit', sortable: true, align: 'left', class: '', width: '' }
-        ];
         intermittentBudgetsCriteria: CriteriaDrivenBudgets[] = [];
 
         budgetYearsGridData: BudgetYearsGridData[] = [];
@@ -222,7 +219,6 @@
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
-        currencyInputConfig: any = {currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false};
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -520,19 +516,19 @@
         onEditBudgetYearAmount(year: number, budgetName: string, amount: number) {
             if (any(propEq('year', year), this.selectedInvestmentLibrary.budgetYears) &&
                 any(propEq('budgetName', budgetName), this.selectedInvestmentLibrary.budgetYears)) {
+                const budgetYear: InvestmentLibraryBudgetYear = find(
+                    (budgetYear: InvestmentLibraryBudgetYear) => budgetYear.year === year && budgetYear.budgetName === budgetName,
+                    this.selectedInvestmentLibrary.budgetYears
+                ) as InvestmentLibraryBudgetYear;
 
-                this.selectedInvestmentLibrary.budgetYears = this.selectedInvestmentLibrary.budgetYears
-                    .map((budgetYear: InvestmentLibraryBudgetYear) => {
-                        if (budgetYear.year === year && budgetYear.budgetName === budgetName) {
-                            return {
-                                ...budgetYear,
-                                budgetAmount: amount
-                            };
-                        }
-                        return budgetYear;
-                    });
-
-                this.updateSelectedInvestmentLibraryAction({ updatedSelectedInvestmentLibrary: this.selectedInvestmentLibrary });
+                this.selectedInvestmentLibrary = {
+                    ...this.selectedInvestmentLibrary,
+                    budgetYears: update(
+                        findIndex(propEq('id', budgetYear.id), this.selectedInvestmentLibrary.budgetYears),
+                        {...budgetYear, budgetAmount: amount},
+                        this.selectedInvestmentLibrary.budgetYears
+                    )
+                };
             }
         }
 
@@ -577,27 +573,13 @@
          * Dispatches an action to modify a scenario's InvestmentLibrary data in the sql server database
          */
         onApplyToScenario() {
-            const appliedInvestmentLibrary: InvestmentLibrary = clone(this.selectedInvestmentLibrary);
-            appliedInvestmentLibrary.id = this.selectedScenarioId;
-            appliedInvestmentLibrary.name = this.scenarioInvestmentLibrary.name;
-
-            this.saveBudgetCriteriaAction({ selectedScenarioId: this.selectedScenarioId, budgetCriteriaData: this.intermittentBudgetsCriteria })
-                .then(() => {
-                    this.saveIntermittentStateToBudgetCriteriaAction({ intermittentState: this.intermittentBudgetsCriteria });
-                });
-
-            this.saveScenarioInvestmentLibraryAction({ saveScenarioInvestmentLibraryData: appliedInvestmentLibrary, 
-            objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario })
-                .then(() => {
-                    setTimeout(() => {
-                        this.onClearSelectedInvestmentLibrary();
-                        setTimeout(() => {
-                            this.updateSelectedInvestmentLibraryAction({
-                                updatedSelectedInvestmentLibrary: this.scenarioInvestmentLibrary
-                            });
-                        });
-                    });
-                });
+            this.saveScenarioInvestmentLibraryAction({
+                saveScenarioInvestmentLibraryData: {
+                    ...this.selectedInvestmentLibrary,
+                    id: this.selectedScenarioId
+                },
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
+            }).then(() => this.onDiscardChanges());
         }
 
         /**
