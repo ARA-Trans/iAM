@@ -56,18 +56,6 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>division</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterDivision([NotNull] CalculateEvaluateParser.DivisionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>division</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitDivision([NotNull] CalculateEvaluateParser.DivisionContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>invocation</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
@@ -104,29 +92,29 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>subtraction</c>
+	/// Enter a parse tree produced by the <c>multiplicationOrDivision</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterSubtraction([NotNull] CalculateEvaluateParser.SubtractionContext context);
+	void EnterMultiplicationOrDivision([NotNull] CalculateEvaluateParser.MultiplicationOrDivisionContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>subtraction</c>
+	/// Exit a parse tree produced by the <c>multiplicationOrDivision</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitSubtraction([NotNull] CalculateEvaluateParser.SubtractionContext context);
+	void ExitMultiplicationOrDivision([NotNull] CalculateEvaluateParser.MultiplicationOrDivisionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>multiplication</c>
+	/// Enter a parse tree produced by the <c>additionOrSubtraction</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterMultiplication([NotNull] CalculateEvaluateParser.MultiplicationContext context);
+	void EnterAdditionOrSubtraction([NotNull] CalculateEvaluateParser.AdditionOrSubtractionContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>multiplication</c>
+	/// Exit a parse tree produced by the <c>additionOrSubtraction</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitMultiplication([NotNull] CalculateEvaluateParser.MultiplicationContext context);
+	void ExitAdditionOrSubtraction([NotNull] CalculateEvaluateParser.AdditionOrSubtractionContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>calculationGrouping</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
@@ -163,18 +151,6 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitNumberLiteral([NotNull] CalculateEvaluateParser.NumberLiteralContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>addition</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>addition</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.

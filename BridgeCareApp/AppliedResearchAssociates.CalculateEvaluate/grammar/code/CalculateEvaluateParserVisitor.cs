@@ -47,13 +47,6 @@ public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Res
 	/// <return>The visitor result.</return>
 	Result VisitEvaluationRoot([NotNull] CalculateEvaluateParser.EvaluationRootContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>division</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDivision([NotNull] CalculateEvaluateParser.DivisionContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>invocation</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
@@ -75,19 +68,19 @@ public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Res
 	/// <return>The visitor result.</return>
 	Result VisitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>subtraction</c>
+	/// Visit a parse tree produced by the <c>multiplicationOrDivision</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitSubtraction([NotNull] CalculateEvaluateParser.SubtractionContext context);
+	Result VisitMultiplicationOrDivision([NotNull] CalculateEvaluateParser.MultiplicationOrDivisionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>multiplication</c>
+	/// Visit a parse tree produced by the <c>additionOrSubtraction</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitMultiplication([NotNull] CalculateEvaluateParser.MultiplicationContext context);
+	Result VisitAdditionOrSubtraction([NotNull] CalculateEvaluateParser.AdditionOrSubtractionContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>calculationGrouping</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
@@ -109,13 +102,6 @@ public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Res
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitNumberLiteral([NotNull] CalculateEvaluateParser.NumberLiteralContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>addition</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAddition([NotNull] CalculateEvaluateParser.AdditionContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.

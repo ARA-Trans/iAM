@@ -1,0 +1,1 @@
+[param1]=|1| and ([param2]<>|| or [param3]<|2000-01-01|)

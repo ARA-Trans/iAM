@@ -12,16 +12,14 @@ root
    ;
 
 calculation
-   : IDENTIFIER LEFT_PAREN arguments RIGHT_PAREN       # invocation
-   | MINUS calculation                                 # negation
-   | left = calculation TIMES right = calculation      # multiplication
-   | left = calculation DIVIDED_BY right = calculation # division
-   | left = calculation PLUS right = calculation       # addition
-   | left = calculation MINUS right = calculation      # subtraction
-   | NUMBER                                            # numberLiteral
-   | IDENTIFIER                                        # constantReference
-   | parameterReference                                # numberParameterReference
-   | LEFT_PAREN calculation RIGHT_PAREN                # calculationGrouping
+   : IDENTIFIER LEFT_PAREN arguments RIGHT_PAREN                             # invocation
+   | MINUS calculation                                                       # negation
+   | left = calculation operation = (TIMES | DIVIDED_BY) right = calculation # multiplicationOrDivision
+   | left = calculation operation = (PLUS | MINUS) right = calculation       # additionOrSubtraction
+   | NUMBER                                                                  # numberLiteral
+   | IDENTIFIER                                                              # constantReference
+   | parameterReference                                                      # numberParameterReference
+   | LEFT_PAREN calculation RIGHT_PAREN                                      # calculationGrouping
    ;
 
 evaluation

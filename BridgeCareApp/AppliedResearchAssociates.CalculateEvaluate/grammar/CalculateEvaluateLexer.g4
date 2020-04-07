@@ -1,13 +1,21 @@
 lexer grammar CalculateEvaluateLexer
    ;
 
-IDENTIFIER
-   : NON_DIGIT (NON_DIGIT | DIGIT)*
+WHITESPACE
+   : [ \t\r\n]+ -> channel(HIDDEN)
    ;
 
-NUMBER
-   : MANTISSA_PART EXPONENT_PART?
+// Keywords
+
+AND
+   : [aA] [nN] [dD]
    ;
+
+OR
+   : [oO] [rR]
+   ;
+
+// Fixed literals
 
 LEFT_PAREN
    : '('
@@ -31,14 +39,6 @@ PLUS
 
 MINUS
    : '-'
-   ;
-
-AND
-   : [aA] [nN] [dD]
-   ;
-
-OR
-   : [oO] [rR]
    ;
 
 EQUAL
@@ -77,25 +77,27 @@ RIGHT_BRACKET
    : ']'
    ;
 
-WHITESPACE
-   : [ \t\r\n]+ -> channel(HIDDEN)
+// Custom literals
+
+IDENTIFIER
+   : LETTER (LETTER | DIGIT)*
+   ;
+
+NUMBER
+   : MANTISSA_PART EXPONENT_PART?
+   ;
+
+fragment LETTER
+   : [a-zA-Z_]
    ;
 
 fragment DIGIT
    : [0-9]
    ;
 
-fragment NON_DIGIT
-   : [a-zA-Z_]
-   ;
-
 fragment MANTISSA_PART
    : NATURAL_NUMBER DECIMAL_PART?
    | DECIMAL_PART
-   ;
-
-fragment DECIMAL_PART
-   : '.' DIGIT+
    ;
 
 fragment EXPONENT_PART
@@ -106,6 +108,12 @@ fragment NATURAL_NUMBER
    : '0'
    | [1-9] DIGIT*
    ;
+
+fragment DECIMAL_PART
+   : '.' DIGIT+
+   ;
+
+// Evaluation literal
 
 EMPTY_EVALUATION_LITERAL
    : '||'

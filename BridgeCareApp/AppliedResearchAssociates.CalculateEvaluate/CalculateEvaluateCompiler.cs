@@ -16,18 +16,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public string AnnotateParameterReferenceTypes(string expression)
         {
-            try
-            {
-                var parsingInfo = new ParsingInfo(expression);
-                var listener = new ParameterReferenceTypeAnnotatorListener(ParameterTypes, parsingInfo.Tokens);
-                ParseTreeWalker.Default.Walk(listener, parsingInfo.Tree);
-                var annotatedExpression = listener.Rewriter.GetText();
-                return annotatedExpression;
-            }
-            catch (Exception e)
-            {
-                throw new CalculateEvaluateException("Error during annotation of expression.", e);
-            }
+            var parsingInfo = new ParsingInfo(expression);
+            var listener = new ParameterReferenceTypeAnnotatorListener(ParameterTypes, parsingInfo.Tokens);
+            ParseTreeWalker.Default.Walk(listener, parsingInfo.Tree);
+            var annotatedExpression = listener.Rewriter.GetText();
+            return annotatedExpression;
         }
 
         public Calculator GetCalculator(string expression) => Compile<Calculator>(expression);
@@ -36,18 +29,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         private T Compile<T>(string expression) where T : Delegate
         {
-            try
-            {
-                var parsingInfo = new ParsingInfo(expression);
-                var visitor = new CalculateEvaluateCompilerVisitor(ParameterTypes);
-                var lambdaExpression = (Expression<T>)visitor.Visit(parsingInfo.Tree);
-                var lambda = lambdaExpression.Compile();
-                return lambda;
-            }
-            catch (Exception e)
-            {
-                throw new CalculateEvaluateException("Error during compilation of expression.", e);
-            }
+            var parsingInfo = new ParsingInfo(expression);
+            var visitor = new CalculateEvaluateCompilerVisitor(ParameterTypes);
+            var lambdaExpression = (Expression<T>)visitor.Visit(parsingInfo.Tree);
+            var lambda = lambdaExpression.Compile();
+            return lambda;
         }
 
         private sealed class ParameterReferenceTypeAnnotatorListener : CalculateEvaluateParserBaseListener

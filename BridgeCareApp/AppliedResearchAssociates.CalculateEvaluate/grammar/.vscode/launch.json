@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "configurations": [
+        {
+            "type": "antlr-debug",
+            "request": "launch",
+            "name": "Debug CalculateEvaluate Grammar",
+            "input": "antlr-debugger-input.txt",
+            "visualParseTree": true,
+            "printParseTree": true,
+            "grammar": "CalculateEvaluateParser.g4",
+            "startRule": "root"
+        }
+    ]
+}

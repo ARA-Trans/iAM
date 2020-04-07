@@ -13,10 +13,10 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             compiler.ParameterTypes["param2"] = ParameterType.String;
             compiler.ParameterTypes["param3"] = ParameterType.Date;
 
-            var expression = "[param1]=|1| and [param2]<>|foo| or [param3]<|2000-01-01|";
+            var expression = "[param1]=|1| and ([param2]<>|| or [param3]<|2000-01-01|)";
             var annotatedExpression = compiler.AnnotateParameterReferenceTypes(expression);
 
-            Assert.That(annotatedExpression, Is.EqualTo("[param1]=|1| and [@param2]<>|foo| or [$param3]<|2000-01-01|"));
+            Assert.That(annotatedExpression, Is.EqualTo("[param1]=|1| and ([@param2]<>|| or [$param3]<|2000-01-01|)"));
         }
 
         #region "Calculate"

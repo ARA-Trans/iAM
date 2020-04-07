@@ -12,11 +12,24 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         #region "Calculate"
 
-        public override Expression VisitAddition(CalculateEvaluateParser.AdditionContext context)
+        public override Expression VisitAdditionOrSubtraction(CalculateEvaluateParser.AdditionOrSubtractionContext context)
         {
             var leftOperand = Visit(context.left);
             var rightOperand = Visit(context.right);
-            var result = Expression.AddChecked(leftOperand, rightOperand);
+
+            Expression result;
+            switch (context.operation.Type)
+            {
+            case CalculateEvaluateLexer.PLUS:
+                result = Expression.AddChecked(leftOperand, rightOperand);
+                break;
+            case CalculateEvaluateLexer.MINUS:
+                result = Expression.SubtractChecked(leftOperand, rightOperand);
+                break;
+            default:
+                throw new InvalidOperationException("Operation is neither addition nor subtraction.");
+            }
+
             return result;
         }
 
@@ -41,14 +54,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitDivision(CalculateEvaluateParser.DivisionContext context)
-        {
-            var leftOperand = Visit(context.left);
-            var rightOperand = Visit(context.right);
-            var result = Expression.Divide(leftOperand, rightOperand);
-            return result;
-        }
-
         public override Expression VisitInvocation(CalculateEvaluateParser.InvocationContext context)
         {
             var identifierText = context.IDENTIFIER().GetText();
@@ -58,11 +63,24 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        public override Expression VisitMultiplication(CalculateEvaluateParser.MultiplicationContext context)
+        public override Expression VisitMultiplicationOrDivision(CalculateEvaluateParser.MultiplicationOrDivisionContext context)
         {
             var leftOperand = Visit(context.left);
             var rightOperand = Visit(context.right);
-            var result = Expression.MultiplyChecked(leftOperand, rightOperand);
+
+            Expression result;
+            switch (context.operation.Type)
+            {
+            case CalculateEvaluateLexer.TIMES:
+                result = Expression.MultiplyChecked(leftOperand, rightOperand);
+                break;
+            case CalculateEvaluateLexer.DIVIDED_BY:
+                result = Expression.Divide(leftOperand, rightOperand);
+                break;
+            default:
+                throw new InvalidOperationException("Operation is neither multiplication nor division.");
+            }
+
             return result;
         }
 
@@ -92,14 +110,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
             var identifierString = Expression.Constant(identifierText);
             var result = Expression.Property(Numbers.DictionaryExpression, Numbers.IndexerInfo, identifierString);
-            return result;
-        }
-
-        public override Expression VisitSubtraction(CalculateEvaluateParser.SubtractionContext context)
-        {
-            var leftOperand = Visit(context.left);
-            var rightOperand = Visit(context.right);
-            var result = Expression.SubtractChecked(leftOperand, rightOperand);
             return result;
         }
 
