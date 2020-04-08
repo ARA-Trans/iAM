@@ -65,6 +65,10 @@
 
     import {clone} from 'ramda';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {
+        CreateCriteriaLibraryDialogData,
+        emptyCreateCriteriaLibraryDialogData
+    } from '@/shared/models/modals/create-criteria-library-dialog-data';
 
     @Component({
         components: {CriteriaEditor}
@@ -83,6 +87,7 @@
         criteriaLibrarySelectListItems: SelectItem[] = [];
         selectItemValue: string | null = null;
         selectedCriteriaLibrary: CriteriaLibrary = clone(emptyCriteriaLibrary);
+        createCriteriaLibraryDialogData: CreateCriteriaLibraryDialogData = clone(emptyCreateCriteriaLibraryDialogData);
 
         @Watch('stateCriteriaLibraries')
         onStateCriteriaLibrariesChanged() {
@@ -109,7 +114,10 @@
         }
 
         onNewLibrary() {
-
+            this.createCriteriaLibraryDialogData = {
+                ...this.createCriteriaLibraryDialogData,
+                showDialog: true
+            };
         }
 
         onSubmitCriteria(criteria: string) {
@@ -120,11 +128,15 @@
         }
 
         onUpdateLibrary() {
-
+            this.updateCriteriaLibraryAction({modifiedCriteriaLibrary: this.selectedCriteriaLibrary});
         }
 
         onCreateAsNewLibrary() {
-
+            this.createCriteriaLibraryDialogData = {
+                showDialog: true,
+                criteria: this.selectedCriteriaLibrary.criteria,
+                description: this.selectedCriteriaLibrary.description
+            };
         }
 
         onCreateLibrary() {

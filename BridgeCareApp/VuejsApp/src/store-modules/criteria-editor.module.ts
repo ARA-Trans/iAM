@@ -1,5 +1,5 @@
 import {CriteriaLibrary, emptyCriteriaLibrary} from '@/shared/models/iAM/criteria';
-import {any, clone, find, propEq} from 'ramda';
+import {any, append, clone, equals, find, findIndex, propEq, update} from 'ramda';
 import CriteriaEditorService from '@/services/criteria-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
@@ -20,6 +20,19 @@ const mutations = {
         } else {
             state.selectedCriteriaLibrary = clone(emptyCriteriaLibrary);
         }
+    },
+    createdCriteriaLibraryMutator(state: any, createdCriteriaLibrary: CriteriaLibrary) {
+        state.criteriaLibraries = append(createdCriteriaLibrary, state.criteriaLibraries);
+    },
+    updatedCriteriaLibraryMutator(state: any, updatedCriteriaLibrary: CriteriaLibrary) {
+        state.criteriaLibraries = update(
+            findIndex(propEq('id', updatedCriteriaLibrary.id), state.criteriaLibraries),
+            updatedCriteriaLibrary,
+            state.criteriaLibraries
+        );
+    },
+    deletedCriteriaLibraryMutator(state: any, deletedCriteriaLibraryId: string) {
+
     }
 };
 
@@ -37,6 +50,53 @@ const actions = {
                     commit('criteriaLibrariesMutator', criteriaLibraries);
                 }
             });
+    },
+    async createCriteriaLibrary({commit, dispatch}: any, payload: any) {
+        await CriteriaEditorService.createCriteriaLibrary(payload.newCriteriaLibrary)
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'data')) {
+                    const createdCriteriaLibrary: CriteriaLibrary = convertFromMongoToVue(response.data);
+                    commit('createdCriteriaLibraryMutator', createdCriteriaLibrary);
+                    dispatch('setSuccessMessage', {message: 'Successfully created criteria library'});
+                }
+            });
+    },
+    async updateCriteriaLibrary({commit, dispatch}: any, payload: any) {
+        await CriteriaEditorService.updateCriteriaLibrary(payload.modifiedCriteriaLibrary)
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'data')) {
+                    const updatedCriteriaLibrary: CriteriaLibrary = convertFromMongoToVue(response.data);
+                    commit('updatedCriteriaLibraryMutator', updatedCriteriaLibrary);
+                    dispatch('setSuccessMessage', {message: 'Successfully updated criteria library'});
+                }
+            });
+    },
+    async deleteCriteriaLibrary({commit, dispatch}: any, payload: any) {
+        await CriteriaEditorService.deleteCriteriaLibrary(payload.criteriaLibraryId)
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'data')) {
+                    commit('deletedCriteriaLibraryMutator', payload.criteriaLibraryId);
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted criteria library'});
+                }
+            });
+    },
+    async socket_criteriaLibrary({dispatch, state, commit}: any, payload: any) {
+        if (hasValue(payload, 'operationType')) {
+            if (hasValue(payload, 'fullDocument')) {
+                const criteriaLibrary: CriteriaLibrary = convertFromMongoToVue(payload.fullDocument);
+                switch (payload.operationType) {
+                    case 'update':
+                    case 'replace':
+                        commit('updatedCriteriaLibraryMutator', criteriaLibrary);
+                        if (state.selectedCriteriaLibrary.id === criteriaLibrary.id &&
+                            !equals(state.selectedCriteriaLibrary, criteriaLibrary)) {
+
+                        }
+                        break;
+                    case 'insert':
+                }
+            }
+        }
     }
 };
 
