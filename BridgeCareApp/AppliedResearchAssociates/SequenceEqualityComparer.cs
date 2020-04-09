@@ -8,9 +8,9 @@ namespace AppliedResearchAssociates
     {
         new public static SequenceEqualityComparer Default { get; } = new SequenceEqualityComparer(EqualityComparer<object>.Default);
 
-        public static SequenceEqualityComparer With(IEqualityComparer equalityComparer) => new SequenceEqualityComparer(equalityComparer ?? throw new ArgumentNullException(nameof(equalityComparer)));
+        public static SequenceEqualityComparer Create(IEqualityComparer equalityComparer) => new SequenceEqualityComparer(equalityComparer ?? throw new ArgumentNullException(nameof(equalityComparer)));
 
-        public static SequenceEqualityComparer<T> With<T>(IEqualityComparer<T> equalityComparer) => new SequenceEqualityComparer<T>(equalityComparer ?? throw new ArgumentNullException(nameof(equalityComparer)));
+        public static SequenceEqualityComparer<T> Create<T>(IEqualityComparer<T> equalityComparer) => new SequenceEqualityComparer<T>(equalityComparer ?? throw new ArgumentNullException(nameof(equalityComparer)));
 
         public override bool Equals(IEnumerable x, IEnumerable y) => Static.SequenceEquals(x, y, EqualityComparer);
 

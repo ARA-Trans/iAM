@@ -5,12 +5,16 @@ namespace AppliedResearchAssociates
 {
     public static class SelectionEqualityComparer<TSource>
     {
-        public static SelectionEqualityComparer<TSource, TSelection> By<TSelection>(Func<TSource, TSelection> selector) => new SelectionEqualityComparer<TSource, TSelection>(selector);
+        public static SelectionEqualityComparer<TSource, TSelection> Create<TSelection>(Func<TSource, TSelection> selector, IEqualityComparer<TSelection> equalityComparer = null) => new SelectionEqualityComparer<TSource, TSelection>(selector, equalityComparer);
     }
 
     public sealed class SelectionEqualityComparer<TSource, TSelection> : EqualityComparer<TSource>
     {
-        public SelectionEqualityComparer(Func<TSource, TSelection> selector) => Selector = selector ?? throw new ArgumentNullException(nameof(selector));
+        public SelectionEqualityComparer(Func<TSource, TSelection> selector, IEqualityComparer<TSelection> equalityComparer)
+        {
+            Selector = selector ?? throw new ArgumentNullException(nameof(selector));
+            EqualityComparer = equalityComparer ?? EqualityComparer<TSelection>.Default;
+        }
 
         public override bool Equals(TSource x, TSource y)
         {
@@ -27,10 +31,22 @@ namespace AppliedResearchAssociates
                 }
             }
 
-            return EqualityComparer<TSelection>.Default.Equals(Selector(x), Selector(y));
+            return EqualityComparer.Equals(Selector(x), Selector(y));
         }
 
-        public override int GetHashCode(TSource obj) => HashCode.Combine(Selector(obj));
+        public override int GetHashCode(TSource obj)
+        {
+            var selection = Selector(obj);
+
+            if (!typeof(TSelection).IsValueType && selection == null)
+            {
+                return HashCode.Combine(selection);
+            }
+
+            return HashCode.Combine(EqualityComparer.GetHashCode(selection));
+        }
+
+        private readonly IEqualityComparer<TSelection> EqualityComparer;
 
         private readonly Func<TSource, TSelection> Selector;
     }
