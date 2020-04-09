@@ -1,77 +1,52 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Generic;
+﻿using System;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using LegacyCalculateEvaluate = CalculateEvaluate.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
 {
-    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-    [CategoriesColumn]
     public class CalculateEvaluateCompilerBenchmarks
     {
         public CalculateEvaluateCompilerBenchmarks()
         {
-            Compiler = new CalculateEvaluateCompiler();
             Compiler.ParameterTypes["deck_area"] = ParameterType.Number;
             Compiler.ParameterTypes["district"] = ParameterType.String;
             Compiler.ParameterTypes["family_id"] = ParameterType.String;
-
-            LegacyCompiler = new LegacyCalculateEvaluate();
         }
 
-        public IEnumerable<string> CalculationExpressions
+        [Params(.2, .5, .8)]
+        public double ProbabilityOfDuplicate { get; set; }
+
+        [Benchmark]
+        public Calculator GetCalculator()
         {
-            get
+            var expression = GetCalculationExpression();
+            return Compiler.GetCalculator(expression);
+        }
+
+        [Benchmark]
+        public Evaluator GetEvaluator()
+        {
+            var expression = GetEvaluationExpression();
+            return Compiler.GetEvaluator(expression);
+        }
+
+        private const string FIXED_CALCULATION = "0*[DECK_AREA]";
+        private const string FIXED_EVALUATION = "[DISTRICT]=|03| AND [FAMILY_ID]=|0|";
+
+        private readonly CalculateEvaluateCompiler Compiler = new CalculateEvaluateCompiler();
+        private readonly Random Random = new Random(56245299);
+
+        private int Constant = 1;
+
+        private string GetCalculationExpression() => Random.NextDouble() < ProbabilityOfDuplicate ? FIXED_CALCULATION : $"{NextConstant()}*[DECK_AREA]";
+
+        private string GetEvaluationExpression() => Random.NextDouble() < ProbabilityOfDuplicate ? FIXED_EVALUATION : $"[DISTRICT]=|03| AND [FAMILY_ID]=|{NextConstant()}|";
+
+        private int NextConstant()
+        {
+            unchecked
             {
-                yield return "250*[DECK_AREA]";
+                return Constant++;
             }
         }
-
-        public IEnumerable<string> EvaluationExpressions
-        {
-            get
-            {
-                yield return "[DISTRICT]=|03| AND [FAMILY_ID]=|1|";
-            }
-        }
-
-        [Benchmark]
-        [ArgumentsSource(nameof(EvaluationExpressions))]
-        public string AnnotateParameterReferenceTypes(string expression) => Compiler.AnnotateParameterReferenceTypes(expression);
-
-        [Benchmark(Baseline = true)]
-        [BenchmarkCategory(CATEGORY_CALCULATE)]
-        [ArgumentsSource(nameof(CalculationExpressions))]
-        public CompilerResults CompileAssembly_Calculation(string expression)
-        {
-            LegacyCompiler.BuildTemporaryClass(expression, true);
-            return LegacyCompiler.CompileAssembly();
-        }
-
-        [Benchmark(Baseline = true)]
-        [BenchmarkCategory(CATEGORY_EVALUATE)]
-        [ArgumentsSource(nameof(EvaluationExpressions))]
-        public CompilerResults CompileAssembly_Evaluation(string expression)
-        {
-            var annotatedExpression = Compiler.AnnotateParameterReferenceTypes(expression);
-            LegacyCompiler.BuildTemporaryClass(annotatedExpression, false);
-            return LegacyCompiler.CompileAssembly();
-        }
-
-        [Benchmark]
-        [BenchmarkCategory(CATEGORY_CALCULATE)]
-        [ArgumentsSource(nameof(CalculationExpressions))]
-        public Calculator GetCalculator(string expression) => Compiler.GetCalculator(expression);
-
-        [Benchmark]
-        [BenchmarkCategory(CATEGORY_EVALUATE)]
-        [ArgumentsSource(nameof(EvaluationExpressions))]
-        public Evaluator GetEvaluator(string expression) => Compiler.GetEvaluator(expression);
-
-        private const string CATEGORY_CALCULATE = "Calculate";
-        private const string CATEGORY_EVALUATE = "Evaluate";
-        private CalculateEvaluateCompiler Compiler;
-        private LegacyCalculateEvaluate LegacyCompiler;
     }
 }
