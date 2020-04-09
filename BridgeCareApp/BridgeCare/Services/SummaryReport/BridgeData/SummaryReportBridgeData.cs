@@ -3,6 +3,7 @@ using BridgeCare.Models;
 using BridgeCare.Services.SummaryReport;
 using BridgeCare.Services.SummaryReport.BridgeData;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -77,6 +78,7 @@ namespace BridgeCare.Services
             List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell, int columnForRiskScore)
         {
             var row = 4; // Data starts here
+            var startingRow = row;
             var column = currentCell.Column;
             int totalColumn = 0;
             int totalColumnValue = 0;
@@ -145,6 +147,9 @@ namespace BridgeCare.Services
 
                 // Empty column
                 column++;
+                excelHelper.ApplyColor(worksheet.Cells[row- 2, column], Color.Gray);
+                excelHelper.ApplyColor(worksheet.Cells[row - 1, column], Color.Gray);
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
 
                 // Last Year simulation data
                 var lastYearData = yearsData.FirstOrDefault();
@@ -223,20 +228,20 @@ namespace BridgeCare.Services
             }
             column += 4;
 
-            column = valueForMinC[minCActionCallDecider](worksheet, row, column, yearData);
+            column = valueForMinC[minCActionCallDecider](worksheet, row, column, yearData); // It returns the column number where MinC value is written
 
-            if(bridgeDataModel.P3 > 0 && yearData.MinC < 5)
+            if (bridgeDataModel.P3 > 0 && yearData.MinC < 5)
             {
                 excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Yellow);
                 excelHelper.SetTextColor(worksheet.Cells[row, column], Color.Black);
             }
             //worksheet.Cells[row, ++column].Value = yearData.SD;
             //worksheet.Cells[row, ++column].Value = Convert.ToDouble(yearData.MinC) < 5 ? "Y" : "N" ;
+            worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N"; //poor
 
             if (yearData.Year != 0)
             {
                 //worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted == "Y" ? getPostedType(yearData.Project) : "N"; // Posted
-                worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N"; //poor
                 worksheet.Cells[row, ++column].Value = yearData.ProjectPick; // Project Pick
                 worksheet.Cells[row, ++column].Value = yearData.Budget; // Budget
                 worksheet.Cells[row, ++column].Value = yearData.Project;
@@ -249,14 +254,10 @@ namespace BridgeCare.Services
                 excelHelper.SetCurrencyFormat(worksheet.Cells[row, column]);
                 worksheet.Cells[row, ++column].Value = ""; // District Remarks
             }
-            else
-            {
-                worksheet.Cells[row, ++column].Value = yearData.SD;
-                worksheet.Cells[row, ++column].Value = yearData.MinC < 5 ? "Y" : "N"; //poor
-                worksheet.Cells[row, ++column].Value = bridgeDataModel.Posted; // Posted
-            }
             // Empty column
             column++;
+            excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
+            worksheet.Column(column).Width = 20;
             return column;
         }
 
@@ -297,7 +298,7 @@ namespace BridgeCare.Services
                 worksheet.Cells[row, ++column].Value = HeaderConstText + year;
                 worksheet.Cells[row + 2, column].Value = year;
                 excelHelper.ApplyStyle(worksheet.Cells[row + 2, column]);
-                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.IndianRed);
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.FromArgb(244, 176, 132));
             }
             worksheet.Cells[row, ++column].Value = "Work Done more than once";
             worksheet.Cells[row, ++column].Value = "Total";
@@ -329,6 +330,10 @@ namespace BridgeCare.Services
 
             // Empty column
             currentCell.Column = ++column;
+            excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
+            excelHelper.ApplyColor(worksheet.Cells[row + 1, column], Color.Gray);
+            excelHelper.ApplyColor(worksheet.Cells[row + 2, column], Color.Gray);
+            worksheet.Column(column).Width = 20;
             var yearHeaderColumn = currentCell.Column;
             simulationHeaderTexts.RemoveAll(_ => _.Equals("SD") || _.Equals("Posted"));
             foreach (var simulationYear in simulationYears)
@@ -345,6 +350,11 @@ namespace BridgeCare.Services
                 {
                     excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column + 1, row, column], Color.LightGray);
                 }
+                excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column], Color.Gray);
+                excelHelper.ApplyColor(worksheet.Cells[row, column + 1], Color.Gray);
+                excelHelper.ApplyColor(worksheet.Cells[row + 1, column + 1], Color.Gray);
+                excelHelper.ApplyColor(worksheet.Cells[row + 2, column + 1], Color.Gray);
+                worksheet.Column(column + 1).Width = 20;
                 currentCell.Column = ++column;
             }
             excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, row + 1, worksheet.Dimension.Columns]);
@@ -353,6 +363,7 @@ namespace BridgeCare.Services
 
         private int AddSimulationHeaderTexts(ExcelWorksheet worksheet, int column, int row, List<string> simulationHeaderTexts, int length)
         {
+            excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
             for (var index = 0; index < length; index++)
             {
                 worksheet.Cells[row + 1, ++column].Value = simulationHeaderTexts[index];
@@ -366,18 +377,18 @@ namespace BridgeCare.Services
         {
             return new List<string>
             {
-                "Deck",
-                "Super",
-                "Sub",
-                "Culv",
-                "Deck D",
-                "Super D",
-                "Sub D",
-                "Culv D",
-                "Min C",
-                "SD",
+                "Deck Cond",
+                "Super Cond",
+                "Sub Cond",
+                "Culv Cond",
+                "Deck Dur",
+                "Super Dur",
+                "Sub Dur",
+                "Culv Dur",
+                "Min Cond",
+                //"SD",
                 "Poor",
-                "Posted",
+                //"Posted",
                 "Project Pick",
                 "Budget",
                 "Project",
@@ -455,6 +466,11 @@ namespace BridgeCare.Services
         {
             yearData.MinC = Convert.ToDouble(yearData.Culv);
             worksheet.Cells[row, ++column].Value = yearData.MinC;
+            if(yearData.MinC <= 3.5)
+            {
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.FromArgb(112, 48, 160));
+                excelHelper.SetTextColor(worksheet.Cells[row, column], Color.White);
+            }
             return column;
         }
         private int EnterMinDeckSuperSub(ExcelWorksheet worksheet, int row, int column, YearsData yearData)
@@ -462,11 +478,21 @@ namespace BridgeCare.Services
             var minValue = Math.Min(Convert.ToDouble(yearData.Deck), Math.Min(Convert.ToDouble(yearData.Super), Convert.ToDouble(yearData.Sub)));
             worksheet.Cells[row, ++column].Value = minValue;
             yearData.MinC = minValue;
+            if (yearData.MinC <= 3.5)
+            {
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.FromArgb(112, 48, 160));
+                excelHelper.SetTextColor(worksheet.Cells[row, column], Color.White);
+            }
             return column;
         }
         private int EnterMinDeckSuperSubCulv(ExcelWorksheet worksheet, int row, int column, YearsData yearData)
         {
             worksheet.Cells[row, ++column].Value = yearData.MinC;
+            if (yearData.MinC <= 3.5)
+            {
+                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.FromArgb(112, 48, 160));
+                excelHelper.SetTextColor(worksheet.Cells[row, column], Color.White);
+            }
             return column;
         }
         private enum MinCValue

@@ -22,7 +22,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
         internal void FillCostOfCulvert(ExcelWorksheet worksheet, CurrentCell currentCell, List<WorkSummaryByBudgetModel> costForCulvertBudget, Dictionary<int, double> totalBudgetPerYearForCulvert, List<int> simulationYears)
         {
             var startYear = simulationYears[0];
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Culvert Work");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of BAMS Culvert Work", "BAMS Culvert Work Type");
 
             currentCell.Row += 1;
             var startOfCulvertBudget = currentCell.Row += 1;
@@ -56,6 +56,9 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
             excelHelper.ApplyBorder(worksheet.Cells[startOfCulvertBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
             excelHelper.SetCustomFormat(worksheet.Cells[startOfCulvertBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
             excelHelper.ApplyColor(worksheet.Cells[startOfCulvertBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.DarkSeaGreen);
+
+            excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.FromArgb(84, 130, 53));
+            excelHelper.SetTextColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.White);
         }
     }
 }

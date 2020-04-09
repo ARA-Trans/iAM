@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using BridgeCare.Models;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace BridgeCare.Services.SummaryReport.WorkSummary
 {
@@ -67,6 +68,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.InitializeBPNLabels(worksheet, currentCell, out startRow, out startColumn, out row, out column);
             worksheet.Cells[startRow + 4, column - 1].Value = "Annualized Amount";
+            worksheet.Cells[startRow + 4, column - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             var totalMoney = 0.0;
             foreach (var year in simulationYears)
             {
@@ -81,6 +83,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 4, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn, row + 4, column], "NegativeCurrency");
+            excelHelper.ApplyColor(worksheet.Cells[startRow, startColumn + 2, row + 4, column], Color.FromArgb(198, 224, 180));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 4, column);
         }
         private void AddDetailsForTotalBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels)

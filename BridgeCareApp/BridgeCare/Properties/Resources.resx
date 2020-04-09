@@ -229,10 +229,10 @@
     <value>Poor Bridge Compare Deck Area</value>
   </data>
   <data name="NHSConditionByBridgeCountLLCC" xml:space="preserve">
-    <value>NHS Condition By Bridge Count LLCC</value>
+    <value>NHS Condition By Bridge Count</value>
   </data>
   <data name="NHSConditionByDeckAreaLLCC" xml:space="preserve">
-    <value>NHS Condition By Deck Area LLCC</value>
+    <value>NHS Condition By Deck Area</value>
   </data>
   <data name="TotalSpent" xml:space="preserve">
     <value>Total Spent</value>
@@ -302,10 +302,10 @@
 Condition By Deck Area</value>
   </data>
   <data name="PercentBudgetSpentBAMS" xml:space="preserve">
-    <value>% of Budget Spent - BAMS</value>
+    <value>Percentage of Budget Spent - BAMS</value>
   </data>
   <data name="PercentBudgetSpentMPMS" xml:space="preserve">
-    <value>% of Budget Spent - MPMS</value>
+    <value>Percentage of Budget Spent - MPMS</value>
   </data>
   <data name="RiskScore" xml:space="preserve">
     <value>RISK_SCORE_</value>

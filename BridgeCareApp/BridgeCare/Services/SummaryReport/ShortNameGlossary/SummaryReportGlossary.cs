@@ -96,6 +96,14 @@ namespace BridgeCare.Services.SummaryReport.ShortNameGlossary
             excelHelper.MergeCells(worksheet, row, 1, row, 2);
             excelHelper.ApplyColor(worksheet.Cells[row, 1, row, 2], Color.FromArgb(255, 255, 0));
             excelHelper.SetTextColor(worksheet.Cells[row, 1, row, 2], Color.Black);
+            row++;
+
+            worksheet.Cells[row, 1].Value = "Min Condition is less than or equal to 3.5";
+            excelHelper.ApplyBorder(worksheet.Cells[row, 1, row, 2]);
+            excelHelper.MergeCells(worksheet, row, 1, row, 2);
+            excelHelper.ApplyColor(worksheet.Cells[row, 1, row, 2], Color.FromArgb(112, 48, 160));
+            excelHelper.SetTextColor(worksheet.Cells[row, 1, row, 2], Color.White);
+
             row += 3;
 
             worksheet.Cells[row, 1].Value = "Example: ";
@@ -119,7 +127,7 @@ namespace BridgeCare.Services.SummaryReport.ShortNameGlossary
             row++;
             excelHelper.ApplyBorder(worksheet.Cells[row - 1, 2, row - 1, 4]);
 
-            worksheet.Cells.AutoFitColumns(50);
+            worksheet.Cells.AutoFitColumns(70);
             worksheet.Cells[row, 2].Value = "(Bridge being replaced also has a parallel bridge.  Bridge replacement is cash flowed over 3 years.)";
         }
     }

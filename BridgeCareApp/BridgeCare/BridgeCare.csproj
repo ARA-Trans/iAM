@@ -362,7 +362,6 @@
     <Compile Include="EntityClasses\ScheduledEntity.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotBridgeData.cs" />
     <Compile Include="EntityClasses\SummaryReport\PennDotReportAData.cs" />
-    <Compile Include="EntityClasses\SummaryReport\SdRisk.cs" />
     <Compile Include="EntityClasses\SimulationEntity.cs" />
     <Compile Include="EntityClasses\TargetsEntity.cs" />
     <Compile Include="EntityClasses\TargetDeficientEntity.cs" />
