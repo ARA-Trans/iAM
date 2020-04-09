@@ -74,7 +74,10 @@ namespace RoadCareSecurityOperations
 
 		private AccessLevel GetPermissions( Dictionary<String, String> actionSpecifier )
 		{
-			AccessLevel grantedLevel = AccessLevel.Default;
+            return AccessLevel.CreateDestroy;
+
+
+            AccessLevel grantedLevel = AccessLevel.Default;
 			if( !securityEngine.ActionExists( actionSpecifier ) )
 			{
 				securityEngine.AddAction( actionSpecifier, m_currentUser.ToSecurityUser );

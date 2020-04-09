@@ -1470,7 +1470,7 @@ namespace Simulation
             listColumn.Add(new TableParameters("SECTIONID", DataType.Int, false, true, false));
             listColumn.Add(new TableParameters("YEARS", DataType.Int, true));
             listColumn.Add(new TableParameters("TREATMENT", DataType.VarChar(50), true));
-            listColumn.Add(new TableParameters("REASON", DataType.VarChar(50), true));
+            listColumn.Add(new TableParameters("REASON", DataType.VarCharMax, true));
             listColumn.Add(new TableParameters("BUDGET", DataType.VarChar(50), true));
             listColumn.Add(new TableParameters("BENEFIT_ORDER", DataType.Int, true));
             listColumn.Add(new TableParameters("PRIORITY", DataType.Int, true));
@@ -5334,6 +5334,7 @@ namespace Simulation
                     throw e;
                 }
                 ISplitTreatmentLimit limit = null;
+                string reasonNoBudget = null;
                 float fAmount = section.Area * fCost * fInflationMultiplier;
                 try
                 {
@@ -5349,7 +5350,7 @@ namespace Simulation
                     {
                         if (strBudget == null)
                         {
-                            strBudget = Investment.IsBudgetAvailable(fAmount, strMultipleBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority,limits, "", out budgetHash,out limit);
+                            strBudget = Investment.IsBudgetAvailable(fAmount, strMultipleBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority,limits, "", out budgetHash,out limit,out reasonNoBudget);
                         }
                     }
                 }
@@ -6074,7 +6075,8 @@ namespace Simulation
 
                         float fAmount = section.Area * float.Parse(sCost) * fInflationMultiplier;
                         List<ISplitTreatmentLimit> limits = GetSplitTreatmentLimits(section.m_hashNextAttributeValue);
-                        string budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority, limits,"", out budgetHash, out ISplitTreatmentLimit limit);
+                        string reasonNoBudget = null;
+                        string budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority, limits,"", out budgetHash, out ISplitTreatmentLimit limit,out reasonNoBudget);
                         if (string.IsNullOrWhiteSpace(budgetSelected)) continue;
                         appliedTreatment.Budget = budgetSelected;
 
@@ -6316,6 +6318,8 @@ namespace Simulation
                             //Checks budget and priorities
                             var limits = GetSplitTreatmentLimits(section.m_hashNextAttributeValue);
                             ISplitTreatmentLimit limit = null;
+                            string reasonNoBudget = null;
+
                             if (strBudgetLimit == "None") //No treatments can be spent
                             {
                                 reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "None selected for analysis budget", strBudget, "", nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
@@ -6324,21 +6328,21 @@ namespace Simulation
                             else if (strBudgetLimit == "") // Check and see if money is available
                             {
                             budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(),
-                                    section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash,out limit);
+                                    section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash,out limit,out reasonNoBudget);
                                 if (string.IsNullOrWhiteSpace(budgetSelected))
                                 {
-                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget", strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
+                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget " + reasonNoBudget, strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
                                     continue;
                                 }
                             }
                             else //if strBudgetLimit == "Unlimited" there is always budget.
                             {
                                 budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(),
-                                        section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash, out limit);
+                                        section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash, out limit,out reasonNoBudget);
 
                                 if (string.IsNullOrWhiteSpace(budgetSelected))
                                 {
-                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget", strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
+                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget " + reasonNoBudget, strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
                                     continue;
                                 }
                             }

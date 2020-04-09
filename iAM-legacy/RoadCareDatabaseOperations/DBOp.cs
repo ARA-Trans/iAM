@@ -1742,7 +1742,7 @@
                 {
                     string length = row["Character_maximum_length"].ToString();
                     int nLength = Convert.ToInt32(length);
-                    if (nLength < 513)
+                    if (nLength != -1 && nLength < 513)
                     {
                         if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
                         {
