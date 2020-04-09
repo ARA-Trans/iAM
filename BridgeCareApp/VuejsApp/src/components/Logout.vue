@@ -65,6 +65,6 @@
     .bridgecare-logo-img {
         width: 100%;
         border-bottom-style: solid;
-        border-color:#008FCA;
+        border-color: #008FCA;
     }
 </style>

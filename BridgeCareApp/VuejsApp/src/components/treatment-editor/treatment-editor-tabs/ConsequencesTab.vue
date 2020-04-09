@@ -1,44 +1,45 @@
 <template>
     <v-layout class="consequences-tab-content">
         <v-flex xs12>
-            <v-btn class="ara-blue-bg white--text" @click="onAddConsequence">Add Consequence</v-btn>
+            <v-btn @click="onAddConsequence" class="ara-blue-bg white--text">Add Consequence</v-btn>
             <div class="consequences-data-table">
-                <v-data-table :headers="consequencesGridHeaders" :items="consequencesGridData" hide-actions
-                              class="elevation-1 fixed-header v-table__overflow">
+                <v-data-table :headers="consequencesGridHeaders" :items="consequencesGridData" class="elevation-1 fixed-header v-table__overflow"
+                              hide-actions>
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog @save="onEditConsequenceProperty(props.item, 'attribute', props.item.attribute)"
-                                           :return-value.sync="props.item.attribute" large lazy persistent>
-                                <v-text-field readonly :value="props.item.attribute"></v-text-field>
+                            <v-edit-dialog
+                                    :return-value.sync="props.item.attribute"
+                                    @save="onEditConsequenceProperty(props.item, 'attribute', props.item.attribute)" large lazy persistent>
+                                <v-text-field :value="props.item.attribute" readonly></v-text-field>
                                 <template slot="input">
-                                    <v-select :items="attributesSelectListItems" v-model="props.item.attribute"
-                                              label="Edit">
+                                    <v-select :items="attributesSelectListItems" label="Edit"
+                                              v-model="props.item.attribute">
                                     </v-select>
                                 </template>
                             </v-edit-dialog>
                         </td>
                         <td>
-                            <v-edit-dialog @save="onEditConsequenceProperty(props.item, 'change', props.item.change)"
-                                           :return-value.sync="props.item.change" large lazy persistent>
-                                <v-text-field readonly :value="props.item.change"></v-text-field>
+                            <v-edit-dialog :return-value.sync="props.item.change"
+                                           @save="onEditConsequenceProperty(props.item, 'change', props.item.change)" large lazy persistent>
+                                <v-text-field :value="props.item.change" readonly></v-text-field>
                                 <template slot="input">
-                                    <v-text-field v-model="props.item.change" label="Edit"></v-text-field>
+                                    <v-text-field label="Edit" v-model="props.item.change"></v-text-field>
                                 </template>
                             </v-edit-dialog>
                         </td>
                         <td>
-                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.equation">
+                            <v-textarea full-width no-resize outline readonly rows="3" v-model="props.item.equation">
                                 <template slot="append-outer">
-                                    <v-btn class="edit-icon" icon @click="onEditConsequenceEquation(props.item)">
+                                    <v-btn @click="onEditConsequenceEquation(props.item)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </template>
                             </v-textarea>
                         </td>
                         <td>
-                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.criteria">
+                            <v-textarea full-width no-resize outline readonly rows="3" v-model="props.item.criteria">
                                 <template slot="append-outer">
-                                    <v-btn class="edit-icon" icon @click="onEditConsequenceCriteria(props.item)">
+                                    <v-btn @click="onEditConsequenceCriteria(props.item)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </template>
@@ -46,7 +47,7 @@
                         </td>
                         <td>
                             <v-layout align-start>
-                                <v-btn class="ara-orange" icon @click="onDeleteConsequence(props.item)">
+                                <v-btn @click="onDeleteConsequence(props.item.id)" class="ara-orange" icon>
                                     <v-icon>fas fa-trash</v-icon>
                                 </v-btn>
                             </v-layout>
@@ -56,7 +57,7 @@
             </div>
         </v-flex>
 
-        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedConsequenceEquation" />
+        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedConsequenceEquation"/>
 
         <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedConsequenceCriteria"/>
     </v-layout>
@@ -66,7 +67,7 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State} from 'vuex-class';
-    import {isNil, findIndex, clone, append} from 'ramda';
+    import {append, clone, findIndex, isNil, propEq, update} from 'ramda';
     import EquationEditorDialog from '../../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
     import {TabData} from '@/shared/models/child-components/tab-data';
@@ -91,6 +92,8 @@
     import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {setItemPropertyValue} from '@/shared/utils/setter-utils';
+
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -171,11 +174,22 @@
          * Creates a new Consequence object to add to the selected treatment
          */
         onAddConsequence() {
-            const newConsequence: Consequence = {
-                ...clone(emptyConsequence),
-                id: ObjectID.generate()
+            const newConsequence: Consequence = {...clone(emptyConsequence), id: ObjectID.generate()};
+
+            this.consequencesTabSelectedTreatmentLibrary = {
+                ...this.consequencesTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(
+                        propEq('id', this.consequencesTabSelectedTreatment.id), this.consequencesTabSelectedTreatmentLibrary.treatments),
+                    {
+                        ...this.consequencesTabSelectedTreatment,
+                        consequences: append(newConsequence, this.consequencesTabSelectedTreatment.consequences)
+                    },
+                    this.consequencesTabSelectedTreatmentLibrary.treatments
+                )
             };
-            this.submitChanges(newConsequence, false);
+
+            this.$emit('submit', this.consequencesTabSelectedTreatmentLibrary);
         }
 
         /**
@@ -185,10 +199,24 @@
          * @param value The value to modify with
          */
         onEditConsequenceProperty(consequence: Consequence, property: string, value: any) {
-                const updatedConsequence: Consequence = clone(consequence);
-                // @ts-ignore
-                updatedConsequence[property] = value;
-                this.submitChanges(updatedConsequence, false);
+            this.consequencesTabSelectedTreatmentLibrary = {
+                ...this.consequencesTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(
+                        propEq('id', this.consequencesTabSelectedTreatment.id), this.consequencesTabSelectedTreatmentLibrary.treatments),
+                    {
+                        ...this.consequencesTabSelectedTreatment,
+                        consequences: update(
+                            findIndex(propEq('id', consequence.id), this.consequencesTabSelectedTreatment.consequences),
+                            setItemPropertyValue(property, value, consequence),
+                            this.consequencesTabSelectedTreatment.consequences
+                        )
+                    },
+                    this.consequencesTabSelectedTreatmentLibrary.treatments
+                )
+            };
+
+            this.$emit('submit', this.consequencesTabSelectedTreatmentLibrary);
         }
 
         /**
@@ -214,14 +242,27 @@
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
 
             if (!isNil(result)) {
-                const updatedConsequence: Consequence = clone(this.selectedConsequence);
-                this.selectedConsequence = clone(emptyConsequence);
+                this.consequencesTabSelectedTreatmentLibrary = {
+                    ...this.consequencesTabSelectedTreatmentLibrary,
+                    treatments: update(
+                        findIndex(
+                            propEq('id', this.consequencesTabSelectedTreatment.id), this.consequencesTabSelectedTreatmentLibrary.treatments),
+                        {
+                            ...this.consequencesTabSelectedTreatment,
+                            consequences: update(
+                                findIndex(propEq('id', this.selectedConsequence.id), this.consequencesTabSelectedTreatment.consequences),
+                                {...this.selectedConsequence, equation: result.equation, isFunction: result.isFunction},
+                                this.consequencesTabSelectedTreatment.consequences
+                            )
+                        },
+                        this.consequencesTabSelectedTreatmentLibrary.treatments
+                    )
+                };
 
-                updatedConsequence.equation = result.equation;
-                updatedConsequence.isFunction = result.isFunction;
-
-                this.submitChanges(updatedConsequence, false);
+                this.$emit('submit', this.consequencesTabSelectedTreatmentLibrary);
             }
+
+            this.selectedConsequence = clone(emptyConsequence);
         }
 
         /**
@@ -245,51 +286,46 @@
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                const updatedConsequence: Consequence = clone(this.selectedConsequence);
-                this.selectedConsequence = clone(emptyConsequence);
+                this.consequencesTabSelectedTreatmentLibrary = {
+                    ...this.consequencesTabSelectedTreatmentLibrary,
+                    treatments: update(
+                        findIndex(
+                            propEq('id', this.consequencesTabSelectedTreatment.id), this.consequencesTabSelectedTreatmentLibrary.treatments),
+                        {
+                            ...this.consequencesTabSelectedTreatment,
+                            consequences: update(
+                                findIndex(propEq('id', this.selectedConsequence.id), this.consequencesTabSelectedTreatment.consequences),
+                                {...this.selectedConsequence, criteria: criteria},
+                                this.consequencesTabSelectedTreatment.consequences
+                            )
+                        },
+                        this.consequencesTabSelectedTreatmentLibrary.treatments
+                    )
+                };
 
-                updatedConsequence.criteria = criteria;
-
-                this.submitChanges(updatedConsequence, false);
+                this.$emit('submit', this.consequencesTabSelectedTreatmentLibrary);
             }
+
+            this.selectedConsequence = clone(emptyConsequence);
         }
 
         /**
          * Sends a Consequence object that has been marked for deletion to the submitChanges function
          */
-        onDeleteConsequence(consequence: Consequence) {
-            this.submitChanges(consequence, true);
-        }
-
-        /**
-         * Modifies the selected treatment & selected treatment library with a Consequence object's data changes and
-         * emits the modified objects to the parent component
-         * @param consequenceData The Consequence object's data to modify the selected treatment library with
-         * @param forDelete Whether or not the Consequence object's data is marked for deletion
-         */
-        submitChanges(consequenceData: Consequence, forDelete: boolean) {
-            if (forDelete) {
-                this.consequencesTabSelectedTreatment.consequences = this.consequencesTabSelectedTreatment.consequences
-                    .filter((consequence: Consequence) => consequence.id !== consequenceData.id);
-            } else {
-                const updatedConsequenceIndex: number = findIndex((consequence: Consequence) =>
-                    consequence.id === consequenceData.id, this.consequencesTabSelectedTreatment.consequences
-                );
-                if (updatedConsequenceIndex === -1) {
-                    this.consequencesTabSelectedTreatment.consequences = append(
-                        consequenceData, this.consequencesTabSelectedTreatment.consequences
-                    );
-                } else {
-                    this.consequencesTabSelectedTreatment.consequences[updatedConsequenceIndex] = consequenceData;
-                }
-            }
-
-            const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
-                treatment.id === this.consequencesTabSelectedTreatment.id,
-                this.consequencesTabSelectedTreatmentLibrary.treatments
-            );
-            this.consequencesTabSelectedTreatmentLibrary
-                .treatments[updatedTreatmentIndex] = this.consequencesTabSelectedTreatment;
+        onDeleteConsequence(consequenceId: string) {
+            this.consequencesTabSelectedTreatmentLibrary = {
+                ...this.consequencesTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(
+                        propEq('id', this.consequencesTabSelectedTreatment.id), this.consequencesTabSelectedTreatmentLibrary.treatments),
+                    {
+                        ...this.consequencesTabSelectedTreatment,
+                        consequences: this.consequencesTabSelectedTreatment.consequences
+                            .filter((consequence: Consequence) => consequence.id !== consequenceId)
+                    },
+                    this.consequencesTabSelectedTreatmentLibrary.treatments
+                )
+            };
 
             this.$emit('submit', this.consequencesTabSelectedTreatmentLibrary);
         }

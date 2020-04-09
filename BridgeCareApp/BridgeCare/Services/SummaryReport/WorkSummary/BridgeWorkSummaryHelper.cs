@@ -65,12 +65,12 @@ namespace BridgeCare.Services
 
         public int CalculateTotalBridgeGoodCount(List<SimulationDataModel> simulationDataModels, int year)
         {
-            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) >= 7)).Count;
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC >= 7)).Count;
         }
 
         public int CalculateTotalBridgePoorCount(List<SimulationDataModel> simulationDataModels, int year)
         {
-            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) < 5)).Count;
+            return simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC < 5)).Count;
         }
 
         public double CalculateTotalGoodDeckArea(List<SimulationDataModel> simulationDataModels, int year)
@@ -78,7 +78,7 @@ namespace BridgeCare.Services
             double sum = 0;
             foreach (var simulationDataModel in simulationDataModels)
             {
-                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) >= 7);
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC >= 7);
                 sum += (yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0);
             }
 
@@ -90,7 +90,7 @@ namespace BridgeCare.Services
             double sum = 0;
             foreach (var simulationDataModel in simulationDataModels)
             {
-                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) < 5);
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC < 5);
                 sum += (yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0);
             }
 
@@ -115,7 +115,7 @@ namespace BridgeCare.Services
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => filteredBridgeDataModels.Exists(b => b.BRKey == s.BRKey));
             foreach (var simulationDataModel in filteredSimulationDataModels)
             {
-                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) < 5);
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC < 5);
                 sum += (yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0);
             }
             return sum;
@@ -128,7 +128,7 @@ namespace BridgeCare.Services
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => filteredBridgeDataModels.Exists(b => b.BRKey == s.BRKey));
             foreach (var simulationDataModel in filteredSimulationDataModels)
             {
-                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) >= 7);
+                var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC >= 7);
                 sum += (yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0);
             }
             return sum;
@@ -137,14 +137,14 @@ namespace BridgeCare.Services
         public int CalculateNHSBridgeGoodCount(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year)
         {
             var filteredBridgeDataModels = bridgeDataModels.FindAll(b => b.NHS == "Y");
-            var goodCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) >= 7) && filteredBridgeDataModels.Exists(b => b.BRKey == s.BRKey)).Count;
+            var goodCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC >= 7) && filteredBridgeDataModels.Exists(b => b.BRKey == s.BRKey)).Count;
             return goodCount;
         }
 
         public int CalculateNHSBridgePoorCount(List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, int year)
         {
             var filteredBridgeDataModels = bridgeDataModels.FindAll(b => b.NHS == "Y");
-            var poorCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) < 5) && filteredBridgeDataModels.Exists(b => b.BRKey == s.BRKey)).Count;
+            var poorCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC < 5) && filteredBridgeDataModels.Exists(b => b.BRKey == s.BRKey)).Count;
             return poorCount;
         }
 
@@ -155,11 +155,11 @@ namespace BridgeCare.Services
             var postedBridges = bridgeDataModels.FindAll(b => b.BPN == bpn);
             if (posted == "Y")
             {
-                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
+                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC <= 4.75 && y.MinC > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             else
             {
-                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
+                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             return postedCount;
         }
@@ -169,11 +169,11 @@ namespace BridgeCare.Services
             var postedBridges = bridgeDataModels.FindAll(b => b.BPN == "2" || b.BPN == "H");
             if (posted == "Y")
             {
-                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
+                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC <= 4.75 && y.MinC > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             else
             {
-                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
+                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             return postedCount;
         }
@@ -183,11 +183,11 @@ namespace BridgeCare.Services
             var postedBridges = bridgeDataModels.FindAll(b => b.BPN != "2" && b.BPN != "H" && b.BPN != "1" && b.BPN != "3");
             if (posted == "Y")
             {
-                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
+                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC <= 4.75 && y.MinC > 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             else
             {
-                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
+                postedCount = simulationDataModels.FindAll(s => s.YearsData.Exists(y => y.Year == year && y.MinC <= 3.25) && postedBridges.Exists(b => b.BRKey == s.BRKey)).Count;
             }
             return postedCount;
         }
@@ -203,7 +203,7 @@ namespace BridgeCare.Services
             {
                 foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
-                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
+                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC <= 4.75 && y.MinC > 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
             }
@@ -211,7 +211,7 @@ namespace BridgeCare.Services
             {
                 foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
-                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25);
+                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC <= 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
             }
@@ -226,7 +226,7 @@ namespace BridgeCare.Services
             {
                 foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
-                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
+                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
             }
@@ -234,7 +234,7 @@ namespace BridgeCare.Services
             {
                 foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
-                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25);
+                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC <= 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
             }
@@ -249,7 +249,7 @@ namespace BridgeCare.Services
             {
                 foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
-                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
+                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC <= 4.75 && Convert.ToDouble(y.MinC) > 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
             }
@@ -257,7 +257,7 @@ namespace BridgeCare.Services
             {
                 foreach (var simulationDataModel in filteredSimulationDataModels)
                 {
-                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) <= 3.25);
+                    var yearData = simulationDataModel.YearsData.Find(y => y.Year == year && y.MinC <= 3.25);
                     sum += yearData != null ? Convert.ToDouble(simulationDataModel.DeckArea) : 0;
                 }
             }
@@ -310,7 +310,7 @@ namespace BridgeCare.Services
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
             foreach (var model in filteredSimulationDataModels)
             {
-                var yearData = model.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) < 5);
+                var yearData = model.YearsData.Find(y => y.Year == year && y.MinC < 5);
                 sum += yearData != null ? Convert.ToDouble(model.DeckArea) : 0;
             }
             return sum;
@@ -323,7 +323,7 @@ namespace BridgeCare.Services
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
             foreach (var model in filteredSimulationDataModels)
             {
-                var yearData = model.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) < 5);
+                var yearData = model.YearsData.Find(y => y.Year == year && y.MinC < 5);
                 sum += yearData != null ? Convert.ToDouble(model.DeckArea) : 0;
             }
             return sum;
@@ -336,7 +336,7 @@ namespace BridgeCare.Services
             var filteredSimulationDataModels = simulationDataModels.FindAll(s => postedBridges.Exists(b => b.BRKey == s.BRKey));
             foreach (var model in filteredSimulationDataModels)
             {
-                var yearData = model.YearsData.Find(y => y.Year == year && Convert.ToDouble(y.MinC) < 5);
+                var yearData = model.YearsData.Find(y => y.Year == year && y.MinC < 5);
                 sum += yearData != null ? Convert.ToDouble(model.DeckArea) : 0;
             }
             return sum;

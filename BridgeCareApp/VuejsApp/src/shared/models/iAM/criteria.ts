@@ -20,6 +20,12 @@ export interface CriteriaRule {
     value?: string;
 }
 
+export interface CriteriaValidationResult {
+    isValid: boolean;
+    numberOfResults: number;
+    message: string;
+}
+
 export const emptyCriteria: Criteria = {
     logicalOperator: 'AND',
     children: []

@@ -169,6 +169,25 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Combine NHS and Non-NHS Condition By Bridge Count.
+        /// </summary>
+        internal static string CombineNHSNonNHSConditionByBridgeCount {
+            get {
+                return ResourceManager.GetString("CombineNHSNonNHSConditionByBridgeCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Combine NHS and Non-NHS Without Committed Projects
+        ///Condition By Deck Area.
+        /// </summary>
+        internal static string CombineNHSNonNHSConditionByDeckArea {
+            get {
+                return ResourceManager.GetString("CombineNHSNonNHSConditionByDeckArea", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Committed Total.
         /// </summary>
         internal static string CommittedTotal {
@@ -178,7 +197,7 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Condition By Bridge Count.
+        ///   Looks up a localized string similar to Non-NHS Condition By Bridge Count.
         /// </summary>
         internal static string ConditionByBridgeCount {
             get {
@@ -187,7 +206,7 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Condition By Deck Area.
+        ///   Looks up a localized string similar to Non-NHS Condition By Deck Area.
         /// </summary>
         internal static string ConditionByDeckArea {
             get {
@@ -385,6 +404,24 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to % of Budget Spent - BAMS.
+        /// </summary>
+        internal static string PercentBudgetSpentBAMS {
+            get {
+                return ResourceManager.GetString("PercentBudgetSpentBAMS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to % of Budget Spent - MPMS.
+        /// </summary>
+        internal static string PercentBudgetSpentMPMS {
+            get {
+                return ResourceManager.GetString("PercentBudgetSpentMPMS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Poor.
         /// </summary>
         internal static string Poor {
@@ -489,6 +526,15 @@ namespace BridgeCare.Properties {
         internal static string Replacement {
             get {
                 return ResourceManager.GetString("Replacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RISK_SCORE_.
+        /// </summary>
+        internal static string RiskScore {
+            get {
+                return ResourceManager.GetString("RiskScore", resourceCulture);
             }
         }
         

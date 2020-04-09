@@ -4,6 +4,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
 using BridgeCare.EntityClasses;
+using BridgeCare.Models.CriteriaDrivenBudgets;
+using BridgeCare.EntityClasses.CriteriaDrivenBudgets;
 
 namespace BridgeCare.Models
 {
@@ -18,6 +20,7 @@ namespace BridgeCare.Models
         public string Description { get; set; }
         public List<string> BudgetOrder { get; set; }
         public List<InvestmentLibraryBudgetYearModel> BudgetYears { get; set; }
+        public List<CriteriaDrivenBudgetsModel> BudgetCriteria { get; set; }
 
         public InvestmentLibraryModel()
         {
@@ -33,6 +36,7 @@ namespace BridgeCare.Models
             BudgetOrder = entity.INVESTMENTS?.BUDGETORDER?.Split(',').ToList();
             BudgetYears = entity.YEARLYINVESTMENTS
                 .Select(yi => new InvestmentLibraryBudgetYearModel(yi)).ToList();
+            BudgetCriteria = entity.CriteriaDrivenBudgets.Select(budget => new CriteriaDrivenBudgetsModel(budget)).ToList();
         }
 
         public void UpdateInvestment(InvestmentsEntity entity)

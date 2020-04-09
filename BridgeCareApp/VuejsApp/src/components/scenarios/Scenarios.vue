@@ -8,8 +8,8 @@
                             <v-data-table :headers="rollupGridHeader"
                                           :items="adminRollup"
                                           :items-per-page="5"
-                                          hide-actions
-                                          class="elevation-1">
+                                          class="elevation-1"
+                                          hide-actions>
                                 <template slot="items" slot-scope="props">
                                     <td>{{ props.item.networkName }}</td>
                                     <td>{{ props.item.createdDate }}</td>
@@ -18,7 +18,8 @@
                                     <td>
                                         <v-layout row wrap>
                                             <v-flex>
-                                                <v-btn icon class="green--text darken-2" @click="onShowRunRollupAlert(props.item)">
+                                                <v-btn @click="onShowRunRollupAlert(props.item)" class="green--text darken-2"
+                                                       icon>
                                                     <v-icon>fas fa-play</v-icon>
                                                 </v-btn>
                                             </v-flex>
@@ -28,7 +29,8 @@
                             </v-data-table>
                         </div>
                         <div class="pad-button">
-                            <v-btn round color="green darken-2 white--text" @click="onLoadNetworks()">Load networks</v-btn>
+                            <v-btn @click="onLoadNetworks()" color="green darken-2 white--text" round>Load networks
+                            </v-btn>
                         </div>
                     </v-layout>
                 </v-flex>
@@ -41,11 +43,12 @@
                         </v-chip>
                     </v-flex>
                     <v-flex xs6>
-                        <v-text-field v-model="searchMine" append-icon="fas fa-search" lablel="Search" single-line hide-details>
+                        <v-text-field append-icon="fas fa-search" hide-details lablel="Search" single-line
+                                      v-model="searchMine">
                         </v-text-field>
                     </v-flex>
                     <v-flex xs2>
-                        <v-btn round class="ara-blue-bg white--text" @click="onUpdateScenarioList()">
+                        <v-btn @click="onUpdateScenarioList()" class="ara-blue-bg white--text" round>
                             Load legacy scenarios
                         </v-btn>
                     </v-flex>
@@ -54,13 +57,13 @@
                     <template slot="items" slot-scope="props">
                         <td>
                             <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                           large lazy persistent
-                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)">
+                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
+                                           persistent>
                                 {{props.item.simulationName}}
                                 <template slot="input">
-                                    <v-text-field v-model="props.item.simulationName"
-                                                  label="Edit"
-                                                  single-line></v-text-field>
+                                    <v-text-field label="Edit"
+                                                  single-line
+                                                  v-model="props.item.simulationName"></v-text-field>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -70,50 +73,57 @@
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
                         <td>
-                            <v-layout row nowrap>
+                            <v-layout nowrap row>
                                 <v-flex>
-                                    <v-btn icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
-                                        title="Run Scenario">
+                                    <v-btn @click="onShowRunSimulationAlert(props.item)" class="ara-blue" icon
+                                           title="Run Analysis">
                                         <v-icon>fas fa-play</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)"
-                                        title="Download Reports">
+                                    <v-btn @click="onShowReportsDownloaderDialog(props.item)" class="ara-blue" icon
+                                           title="Reports">
                                         <v-icon>fas fa-chart-line</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="edit-icon"
-                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
-                                        title="Edit Scenario">
+                                    <v-btn @click="onEditScenario(props.item.simulationId, props.item.simulationName, props.item.id)" class="edit-icon"
+                                           icon
+                                           title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="ara-blue"
-                                        @click="onShareScenario(props.item)"
-                                        title="Share Scenario">
+                                    <v-btn @click="onShareScenario(props.item)" class="ara-blue"
+                                           icon
+                                           title="Share">
                                         <v-icon>fas fa-users</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="ara-orange"
-                                        @click="onDeleteScenario(props.item.simulationId, props.item.id)"
-                                        title="Delete Scenario">
+                                    <v-btn @click="onCloneScenario(props.item.simulationId)" class="ara-blue"
+                                           icon
+                                           title="Clone">
+                                        <v-icon>fas fa-paste</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn @click="onDeleteScenario(props.item.simulationId, props.item.id)" class="ara-orange"
+                                           icon
+                                           title="Delete">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
                             </v-layout>
                         </td>
                     </template>
-                    <v-alert class="ara-orange-bg" slot="no-results" :value="true" icon="fas fa-exclamation">
+                    <v-alert :value="true" class="ara-orange-bg" icon="fas fa-exclamation" slot="no-results">
                         Your search for "{{searchMine}}" found no results.
                     </v-alert>
                 </v-data-table>
                 <v-card-actions>
                     <div style="width:2em"/>
-                    <v-btn color="ara-blue-bg white--text" @click="onCreateScenario">Create new</v-btn>
+                    <v-btn @click="onCreateScenario" color="ara-blue-bg white--text">Create new</v-btn>
                 </v-card-actions>
             </v-card>
         </v-flex>
@@ -128,22 +138,22 @@
                     </v-flex>
                     <v-spacer/>
                     <v-flex xs6>
-                    <v-text-field v-model="searchShared" append-icon="fas fa-search" lablel="Search" single-line
-                                  hide-details>
-                    </v-text-field>
+                        <v-text-field append-icon="fas fa-search" hide-details lablel="Search" single-line
+                                      v-model="searchShared">
+                        </v-text-field>
                     </v-flex>
                 </v-card-title>
                 <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                     <template slot="items" slot-scope="props">
                         <td>
                             <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                           large lazy persistent
-                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)">
+                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
+                                           persistent>
                                 {{props.item.simulationName}}
                                 <template slot="input">
-                                    <v-text-field v-model="props.item.simulationName"
-                                                  label="Edit"
-                                                  single-line></v-text-field>
+                                    <v-text-field label="Edit"
+                                                  single-line
+                                                  v-model="props.item.simulationName"></v-text-field>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -153,59 +163,67 @@
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{props.item.status}}</td>
                         <td>
-                            <v-layout row nowrap>
+                            <v-layout nowrap row>
                                 <v-flex>
-                                    <v-btn flat icon class="ara-blue" @click="onShowRunSimulationAlert(props.item)"
-                                        title="Run Scenario">
+                                    <v-btn @click="onShowRunSimulationAlert(props.item)" class="ara-blue" flat icon
+                                           title="Run Analysis">
                                         <v-icon>fas fa-play</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn flat icon class="ara-blue" @click="onShowReportsDownloaderDialog(props.item)"
-                                        title="Download Reports">
+                                    <v-btn @click="onShowReportsDownloaderDialog(props.item)" class="ara-blue" flat icon
+                                           title="Reports">
                                         <v-icon>fas fa-chart-line</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn flat icon class="edit-icon"
-                                        @click="onEditScenario(props.item.simulationId, props.item.simulationName)"
-                                        title="Edit Scenario">
+                                    <v-btn @click="onEditScenario(props.item.simulationId, props.item.simulationName, props.item.id)" class="edit-icon" flat
+                                           icon
+                                           title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn flat icon class="ara-blue" @click="onShareScenario(props.item)"
-                                        title="Share Scenario">
+                                    <v-btn @click="onShareScenario(props.item)" class="ara-blue" flat icon
+                                           title="Share">
                                         <v-icon>fas fa-users</v-icon>
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
-                                    <v-btn icon class="ara-orange"
-                                        @click="onDeleteScenario(props.item.simulationId, props.item.id)"
-                                        title="Delete Scenario">
+                                    <v-btn @click="onCloneScenario(props.item.simulationId)" class="ara-blue"
+                                           icon
+                                           title="Clone">
+                                        <v-icon>fas fa-paste</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn @click="onDeleteScenario(props.item.simulationId, props.item.id)" class="ara-orange"
+                                           icon
+                                           title="Delete">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-flex>
                             </v-layout>
                         </td>
                     </template>
-                    <v-alert class="ara-orange-bg" slot="no-results" :value="true" icon="fas fa-exclamation">
+                    <v-alert :value="true" class="ara-orange-bg" icon="fas fa-exclamation" slot="no-results">
                         Your search for "{{searchShared}}" found no results.
                     </v-alert>
                 </v-data-table>
             </v-card>
         </v-flex>
 
-        <Alert :dialogData="alertData" @submit="onSubmitAlertResult" />
+        <Alert :dialogData="alertData" @submit="onSubmitAlertResult"/>
 
-        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitResponse" />
-        <Alert :dialogData="alertBeforeRunRollup" @submit="onSubmitRollupDecision" />
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitResponse"/>
+        <Alert :dialogData="alertBeforeRunRollup" @submit="onSubmitRollupDecision"/>
 
-        <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario" />
+        <CreateScenarioDialog :showDialog="showCreateScenarioDialog" @submit="onSubmitNewScenario"/>
 
-        <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData" />
+        <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData"/>
 
-        <ShareScenarioDialog :showDialog="showShareScenarioDialog" @submit="onSubmitShareScenario" :scenario="sharingScenario"/>
+        <ShareScenarioDialog :scenario="sharingScenario" :showDialog="showShareScenarioDialog"
+                             @submit="onSubmitShareScenario"/>
     </v-layout>
 </template>
 
@@ -227,11 +245,10 @@
     import CreateScenarioDialog from '@/components/scenarios/scenarios-dialogs/CreateScenarioDialog.vue';
     import ShareScenarioDialog from '@/components/scenarios/scenarios-dialogs/ShareScenarioDialog.vue';
     import {Network} from '@/shared/models/iAM/network';
-    import { clone, any } from 'ramda';
-    import { Simulation } from '../../shared/models/iAM/simulation';
-    import { Rollup, emptyRollup } from '../../shared/models/iAM/rollup';
-
-import { getUserName } from '../../shared/utils/get-user-info';
+    import {any, clone} from 'ramda';
+    import {Simulation} from '@/shared/models/iAM/simulation';
+    import {emptyRollup, Rollup} from '@/shared/models/iAM/rollup';
+    import {getUserName} from '@/shared/utils/get-user-info';
 
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog, ShareScenarioDialog}
@@ -245,7 +262,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @State(state => state.rollup.rollups) rollups: Rollup[];
         @State(state => state.authentication.isAdmin) isAdmin: boolean;
         @State(state => state.authentication.isCWOPA) isCWOPA: boolean;
-        
+
         @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('getLegacyScenarios') getLegacyScenariosAction: any;
         @Action('runSimulation') runSimulationAction: any;
@@ -257,6 +274,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @Action('getMongoRollups') getMongoRollupsAction: any;
         @Action('rollupNetwork') rollupNetworkAction: any;
         @Action('getLegacyNetworks') getLegacyNetworksAction: any;
+        @Action('cloneScenario') cloneScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
@@ -265,19 +283,19 @@ import { getUserName } from '../../shared/utils/get-user-info';
         showCreateScenarioDialog: boolean = false;
         showShareScenarioDialog: boolean = false;
         scenarioGridHeaders: object[] = [
-            {text: 'Scenario Name', align: 'left', sortable: false, value: 'simulationName'},
+            {text: 'Scenario Name', align: 'left', sortable: true, value: 'simulationName'},
             {text: 'Creator', sortable: false, value: 'creator'},
             {text: 'Owner', sortable: false, value: 'owner'},
-            {text: 'Date Created', sortable: false, value: 'createdDate'},
-            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
-            {text: 'Status', sortable: false, value: 'status' },
+            {text: 'Date Created', sortable: true, value: 'createdDate'},
+            {text: 'Date Last Modified', sortable: true, value: 'lastModifiedDate'},
+            {text: 'Status', sortable: false, value: 'status'},
             {text: '', sortable: false, value: 'actions'}
         ];
         rollupGridHeader: object[] = [
             {text: 'Network name', align: 'left', sortable: false, value: 'rollupName'},
             {text: 'Date Created', sortable: false, value: 'createdDate'},
-            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate' },
-            {text: 'Status', sortable: false, value: 'rollupStatus' },
+            {text: 'Date Last Modified', sortable: false, value: 'lastModifiedDate'},
+            {text: 'Status', sortable: false, value: 'rollupStatus'},
             {text: '', sortable: false, value: 'actions'}
         ];
         userScenarios: Scenario[] = [];
@@ -297,17 +315,16 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @Watch('scenarios')
         onScenariosChanged() {
             if (hasValue(this.scenarios)) {
-                const username: string = getUserName(); 
+                const username: string = getUserName();
                 // filter scenarios that are the user's
                 this.userScenarios = this.scenarios.filter((simulation: Scenario) => simulation.owner === username);
                 // filter scenarios that are shared with the user
-                const scenarioUserMatch = (user: ScenarioUser) => 
+                const scenarioUserMatch = (user: ScenarioUser) =>
                     user.username === username || user.username === null || user.username === undefined;
                 const sharedScenarioFilter = (simulation: Scenario) => simulation.owner !== username &&
                     (this.isAdmin || this.isCWOPA || any(scenarioUserMatch, simulation.users));
                 this.sharedScenarios = this.scenarios.filter(sharedScenarioFilter);
-            }
-            else {
+            } else {
                 this.userScenarios = [];
             }
 
@@ -317,8 +334,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         onRollupsChanged() {
             if (hasValue(this.rollups)) {
                 this.adminRollup = this.rollups;
-            }
-            else {
+            } else {
                 this.adminRollup = [];
             }
 
@@ -327,8 +343,8 @@ import { getUserName } from '../../shared/utils/get-user-info';
         @Watch('authenticated')
         onAuthenticated() {
             if (this.authenticated) {
-                this.getMongoScenariosAction({ userId: this.userId });
-                this.getMongoRollupsAction({ });
+                this.getMongoScenariosAction({userId: this.userId});
+                this.getMongoRollupsAction({});
             }
         }
 
@@ -337,8 +353,8 @@ import { getUserName } from '../../shared/utils/get-user-info';
          */
         mounted() {
             if (this.authenticated) {
-                this.getMongoScenariosAction({ userId: this.userId });
-                this.getMongoRollupsAction({ });
+                this.getMongoScenariosAction({userId: this.userId});
+                this.getMongoRollupsAction({});
             }
         }
 
@@ -347,7 +363,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         }
 
         onLoadNetworks() {
-            this.getLegacyNetworksAction({networks: this.adminRollup });
+            this.getLegacyNetworksAction({networks: this.adminRollup});
         }
 
         /**
@@ -362,9 +378,14 @@ import { getUserName } from '../../shared/utils/get-user-info';
          * Navigates user to EditScenario page passing in the simulation id of their scenario
          * @param id Scenario simulation id
          */
-        onEditScenario(id: number, simulationName: string) {
+        onEditScenario(id: number, simulationName: string, objectIdMongodb: string) {
             this.$router.push({
-                path: '/EditScenario/', query: {selectedScenarioId: id.toString(), simulationName: simulationName}
+                path: '/EditScenario/',
+                query: {
+                    selectedScenarioId: id.toString(),
+                    simulationName: simulationName,
+                    objectIdMOngoDBForScenario: objectIdMongodb
+                }
             });
         }
 
@@ -383,7 +404,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
 
         onSubmitResponse(response: boolean) {
             this.alertBeforeDelete = clone(emptyAlertData);
-            
+
             if (response) {
                 this.deleteScenario();
             }
@@ -395,7 +416,11 @@ import { getUserName } from '../../shared/utils/get-user-info';
                 scenarioId: this.scenarioId
             });
         }
-        
+
+        onCloneScenario(scenarioId: number) {
+            this.cloneScenarioAction({scenarioId});
+        }
+
         /**
          * Navigates user to EditScenario page passing in the simulation id of a shared scenario
          * @param id Scenario simulation id
@@ -411,13 +436,13 @@ import { getUserName } from '../../shared/utils/get-user-info';
          */
         onShowRunSimulationAlert(scenario: Scenario) {
             this.currentScenario = scenario;
-            
+
             this.alertData = {
                 showDialog: true,
                 heading: 'Warning',
                 choice: true,
-                message: 'The simulation can take around five minutes to finish. ' +
-                    'Are you sure that you want to continue?'
+                message: 'Only one simulation can be run at a time. The model run you are about to queue will be ' +
+                    'executed in the order in which it was received.'
             };
         }
 
@@ -437,7 +462,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
 
         onSubmitRollupDecision(response: boolean) {
             this.alertBeforeRunRollup = clone(emptyAlertData);
-            
+
             if (response) {
                 this.rollupNetwork();
             }
@@ -449,7 +474,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
          */
         onSubmitAlertResult(runScenarioSimulation: boolean) {
             this.alertData = clone(emptyAlertData);
-            
+
             if (runScenarioSimulation) {
                 this.runScenarioSimulation();
             }
@@ -477,7 +502,8 @@ import { getUserName } from '../../shared/utils/get-user-info';
          */
         onShowReportsDownloaderDialog(scenario: Scenario) {
             this.getSummaryReportMissingAttributesAction({
-                selectedScenarioId: scenario.simulationId, selectedNetworkId: this.networks[0].networkId}
+                    selectedScenarioId: scenario.simulationId, selectedNetworkId: this.networks[0].networkId
+                }
             ).then(() => {
                 setTimeout(() => {
                     this.reportsDownloaderDialogData = {
@@ -498,7 +524,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
         }
 
         onEditScenarioName(scenarioName: string, id: string, simulationId: any) {
-            var scenarioData : Simulation = {
+            var scenarioData: Simulation = {
                 simulationId: simulationId,
                 simulationName: scenarioName,
                 networkId: this.networks[0].networkId,
@@ -531,7 +557,7 @@ import { getUserName } from '../../shared/utils/get-user-info';
                     scenario: this.sharingScenario
                 });
             }
-            
+
             this.sharingScenario = clone(emptyScenario);
         }
     }
@@ -539,6 +565,6 @@ import { getUserName } from '../../shared/utils/get-user-info';
 
 <style>
     .pad-button {
-        padding-top:33px;
+        padding-top: 33px;
     }
 </style>

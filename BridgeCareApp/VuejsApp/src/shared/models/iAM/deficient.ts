@@ -11,6 +11,7 @@ export interface DeficientLibrary {
     id: string;
     name: string;
     owner?: string;
+    shared?: boolean;
     description: string;
     deficients: Deficient[];
 }

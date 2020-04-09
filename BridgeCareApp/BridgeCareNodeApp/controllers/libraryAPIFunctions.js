@@ -6,13 +6,13 @@ module.exports = {
      */
     getDeletionFunction: (model) => {
         return (request, response) => {
-            ownerRestriction = request.user.role === roles.administrator ? {} : {owner: [request.user.username]};
+            ownerRestriction = request.user.roles.indexOf(roles.administrator) >= 0 ? {} : {$or:[{owner: [request.user.username]}, {shared: true}]};
             model.findOneAndDelete({_id: request.params.libraryId, ...ownerRestriction}, (error, deleted) => {
                 if (error)
-                    return response.status(400).json(error);
+                    return response.status(400).json({message: error});
                 if (deleted)
                     return response.status(204).json(deleted);
-                return response.status(400).json({error: `User ${request.user.username} has no library with id ${request.params.libraryId}`});
+                return response.status(400).json({message: `You do not have permission to delete this library`});
             });
         }
     },
@@ -22,13 +22,14 @@ module.exports = {
      */
     getUpdateFunction: (model) => {
         return (request, response) => {
-            ownerRestriction = request.user.role === roles.administrator ? {} : {owner: [request.user.username]};
+            ownerRestriction = request.user.roles.indexOf(roles.administrator) >= 0 ? 
+                {} : {$or:[{owner: [request.user.username]}, {shared: true}]};
             model.findOneAndUpdate({_id: request.body._id, ...ownerRestriction}, request.body, {new: true}, (error, updated) => {
                 if (error)
-                    return response.status(400).json(error);
+                    return response.status(400).json({message: error});
                 if (updated)
                     return response.status(200).json(updated);
-                return response.status(400).json({error: `User ${request.user.username} has no library with id ${request.params.libraryId}`})
+                return response.status(400).json({message: `You do not have permission to modify this library`})
             });
         }
     }

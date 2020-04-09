@@ -1,6 +1,6 @@
 import {emptyInventoryItemDetail, InventoryItem, InventoryItemDetail} from '@/shared/models/iAM/inventory';
 import InventoryService from '@/services/inventory.service';
-import {clone, append, contains} from 'ramda';
+import {append, clone, contains} from 'ramda';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 

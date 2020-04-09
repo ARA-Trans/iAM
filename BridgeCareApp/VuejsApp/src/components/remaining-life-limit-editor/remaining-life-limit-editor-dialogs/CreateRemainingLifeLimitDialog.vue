@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="dialogData.showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,19 +8,19 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-select label="Select an Attribute" :items="dialogData.numericAttributesSelectListItems"
+                    <v-select :items="dialogData.numericAttributesSelectListItems" label="Select an Attribute"
                               outline v-model="newRemainingLifeLimit.attribute">
 
                     </v-select>
-                    <v-text-field label="Limit" v-model="newRemainingLifeLimit.limit" outline></v-text-field>
+                    <v-text-field label="Limit" outline v-model="newRemainingLifeLimit.limit"></v-text-field>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
+                    <v-btn :disabled="disableSubmit()" @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -33,6 +33,7 @@
     import {emptyRemainingLifeLimit, RemainingLifeLimit} from '@/shared/models/iAM/remaining-life-limit';
     import {CreateRemainingLifeLimitDialogData} from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
     import {hasValue} from '@/shared/utils/has-value-util';
+
     var ObjectID = require('bson-objectid');
 
     @Component

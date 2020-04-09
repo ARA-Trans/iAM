@@ -47,7 +47,9 @@ export default class TreatmentEditorService {
      * Saves a scenario's treatment library data
      * @param saveScenarioTreatmentLibraryData The scenario treatment library save data
      */
-    static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary): AxiosPromise {
+    static saveScenarioTreatmentLibrary(saveScenarioTreatmentLibraryData: TreatmentLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioTreatmentLibrary', saveScenarioTreatmentLibraryData);
     }
 }

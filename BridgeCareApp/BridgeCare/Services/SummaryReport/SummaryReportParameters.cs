@@ -31,15 +31,13 @@ namespace BridgeCare.Services.SummaryReport
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel)
+        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, int simulationYearsCount)
         {
             var simulationId = simulationModel.simulationId;
             var investmentPeriod = analysisData.GetAnySimulationAnalysis(simulationId, db);
             var inflationAndInvestments = getInflationRate.GetAnySimulationInvestmentLibrary(simulationId, db);
             var priorities = getPriorities.GetAnySimulationPriorityLibrary(simulationId, db).Priorities;
             var criterias = budgetCriteria.GetAnyCriteriaDrivenBudgets(simulationId, db);
-
-            var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
 
             // Simulation Name format
             excelHelper.MergeCells(worksheet, 1, 1, 1, 2);
@@ -53,7 +51,7 @@ namespace BridgeCare.Services.SummaryReport
 
             FillStaticData(worksheet);
 
-            FillSimulationDetails(worksheet, investmentPeriod, inflationAndInvestments.InflationRate);
+            FillSimulationDetails(worksheet, investmentPeriod, inflationAndInvestments.InflationRate, simulationYearsCount);
             FillAnalysisDetails(worksheet, investmentPeriod);
             FillJurisdictionCriteria(worksheet, investmentPeriod.Criteria);
             FillPriorities(worksheet, priorities);
@@ -425,7 +423,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[14, 8, 31, 10]);
         }
 
-        private void FillSimulationDetails(ExcelWorksheet worksheet, SimulationAnalysisModel investmentPeriod, double? inflationRate)
+        private void FillSimulationDetails(ExcelWorksheet worksheet, SimulationAnalysisModel investmentPeriod, double? inflationRate, int yearCount)
         {
             excelHelper.MergeCells(worksheet, 6, 6, 6, 8);
             excelHelper.MergeCells(worksheet, 8, 6, 8, 7);
@@ -442,7 +440,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[6, 6, 12, 8]);
 
             worksheet.Cells["H8"].Value = investmentPeriod.StartYear;
-            worksheet.Cells["H10"].Value = investmentPeriod.AnalysisPeriod;
+            worksheet.Cells["H10"].Value = yearCount;
             worksheet.Cells["H12"].Value = inflationRate;
 
             excelHelper.ApplyBorder(worksheet.Cells[8, 8, 12, 8]);

@@ -19,7 +19,7 @@ namespace BridgeCare.DataAccessLayer
     public class SimulationDAL : ISimulation
     {
         private static readonly log4net.ILog log = LogManager.GetLogger(typeof(SimulationDAL));
-        private static readonly SimulationQueue SimulationQueue = new SimulationQueue(1);
+        private static readonly SimulationQueue SimulationQueue = SimulationQueue.MainSimulationQueue;
         /// <summary>
         /// Fetches all simulations
         /// </summary>
@@ -90,7 +90,7 @@ namespace BridgeCare.DataAccessLayer
         private void DeleteSimulation(int id, BridgeCareContext db)
         {
             var simulation = db.Simulations.Single(b => b.SIMULATIONID == id);
-            db.Entry(simulation).State = EntityState.Deleted;
+            db.Entry(simulation).State = System.Data.Entity.EntityState.Deleted;
             db.SaveChanges();
 
             using (var connection = new SqlConnection(db.Database.Connection.ConnectionString))
@@ -144,6 +144,32 @@ namespace BridgeCare.DataAccessLayer
             simulation = db.Simulations.Include(s => s.NETWORK)
                 .Single(s => s.SIMULATIONID == simulation.SIMULATIONID);
 
+            return new SimulationModel(simulation);
+        }
+
+        public SimulationModel CloneSimulation(int simulationId, BridgeCareContext db, string username)
+        {
+            var simulation = db.Simulations.AsNoTracking()
+                .Include(s => s.INVESTMENTS)
+                .Include(s => s.PERFORMANCES)
+                .Include(s => s.TREATMENTS.Select(t => t.CONSEQUENCES))
+                .Include(s => s.TREATMENTS.Select(t => t.COSTS))
+                .Include(s => s.TREATMENTS.Select(t => t.FEASIBILITIES))
+                .Include(s => s.TREATMENTS.Select(t => t.SCHEDULEDS))
+                .Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
+                .Include(s => s.TARGETS)
+                .Include(s => s.DEFICIENTS)
+                .Include(s => s.REMAINING_LIFE_LIMITS)
+                .Include(s => s.SPLIT_TREATMENTS.Select(st => st.SPLIT_TREATMENT_LIMITS))
+                .Include(s => s.COMMITTEDPROJECTS.Select(c => c.COMMIT_CONSEQUENCES))
+                .Include(s => s.YEARLYINVESTMENTS)
+                .Include(s => s.PRIORITIZEDNEEDS)
+                .Include(s => s.TARGET_DEFICIENTS)
+                .Include(s => s.CriteriaDrivenBudgets)
+                .First(entity => entity.SIMULATIONID == simulationId);
+            simulation.OWNER = username;
+            db.Simulations.Add(simulation); // Primary key will automatically be changed
+            db.SaveChanges();
             return new SimulationModel(simulation);
         }
 

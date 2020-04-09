@@ -16,11 +16,8 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
-    import AuthenticationService from '@/services/authentication.service';
-    import {AxiosResponse} from 'axios';
-    import {http2XX} from '@/shared/utils/http-utils';
+    import {Component} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
 
     @Component
     export default class Authentication extends Vue {
@@ -37,7 +34,7 @@
         mounted() {
             const code: string = this.$route.query.code as string;
             const state: string = this.$route.query.state as string;
-            
+
             // The ESEC login will always redirect the browser to the iam-deploy site.
             // If the state is set, we know the authentication was started by a local client,
             // and so we should send the browser back to that client.
@@ -60,7 +57,7 @@
                 }
             });
         }
-        
+
         onAuthenticationSuccess() {
             this.setSuccessMessageAction({message: 'Authentication successful.'});
             this.$router.push('/News/');

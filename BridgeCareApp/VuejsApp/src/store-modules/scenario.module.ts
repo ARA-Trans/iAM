@@ -1,13 +1,14 @@
 import {Analysis, emptyAnalysis, Scenario} from '@/shared/models/iAM/scenario';
 import ScenarioService from '@/services/scenario.service';
 import {AxiosResponse} from 'axios';
-import {clone, any, propEq, findIndex, remove} from 'ramda';
+import {any, clone, findIndex, propEq, remove} from 'ramda';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {http2XX} from '@/shared/utils/http-utils';
 import prepend from 'ramda/es/prepend';
 import AnalysisEditorService from '@/services/analysis-editor.service';
 import ReportsService from '@/services/reports.service';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import moment from 'moment';
 
 const state = {
     scenarios: [] as Scenario[],
@@ -66,7 +67,7 @@ const actions = {
                 }
             });
     },
-    async getLegacyScenarios({ commit }: any, payload: any) {
+    async getLegacyScenarios({commit}: any, payload: any) {
         return await ScenarioService.getLegacyScenarios()
             .then((response: AxiosResponse<Scenario[]>) => {
                 if (hasValue(response, 'data')) {
@@ -77,11 +78,11 @@ const actions = {
             });
     },
     async runSimulation({dispatch, commit}: any, payload: any) {
+        await ScenarioService.updateScenarioStatus('Queued', payload.selectedScenario.simulationId);
         await ScenarioService.runScenarioSimulation(payload.selectedScenario, payload.userId)
             .then((response: AxiosResponse) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     dispatch('setSuccessMessage', {message: 'Simulation queued'});
-                    ScenarioService.updateScenarioStatus('Queued', payload.selectedScenario.simulationId);
                 }
             });
     },
@@ -95,22 +96,32 @@ const actions = {
                 }
             });
     },
-    async updateScenario({ dispatch, commit }: any, payload: any) {
+    async cloneScenario({dispatch, commit}: any, payload: any) {
+        return await ScenarioService.cloneScenario(payload.scenarioId)
+            .then((response: AxiosResponse<any>) => {
+                if (hasValue(response, 'data')) {
+                    const newScenario: Scenario = convertFromMongoToVue(response.data);
+                    commit('createdScenarioMutator', newScenario);
+                    dispatch('setSuccessMessage', {message: 'Successfully cloned scenario'});
+                }
+            });
+    },
+    async updateScenario({dispatch, commit}: any, payload: any) {
         return await ScenarioService.updateScenario(payload.updateScenarioData, payload.scenarioId)
             .then((response: AxiosResponse<Scenario>) => {
                 const updatedScenario: Scenario = convertFromMongoToVue(response.data);
                 commit('updatedScenarioMutator', updatedScenario);
-                dispatch('setSuccessMessage', { message: 'Successfully updated scenario' });
+                dispatch('setSuccessMessage', {message: 'Successfully updated scenario'});
             });
     },
-    async updateScenarioUsers({ dispatch, commit }: any, payload: any) {
+    async updateScenarioUsers({dispatch, commit}: any, payload: any) {
         return await ScenarioService.updateScenarioUsers(payload.scenario)
             .then(() => {
                 commit('updatedScenarioMutator', payload.scenario);
                 dispatch('setSuccessMessage', {message: 'Successfully updated scenario sharing settings'});
             });
     },
-    async deleteScenario({ dispatch, state, commit }: any, payload: any) {
+    async deleteScenario({dispatch, state, commit}: any, payload: any) {
         return await ScenarioService.deleteScenario(payload.simulationId, payload.scenarioId)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
@@ -125,11 +136,17 @@ const actions = {
     async getScenarioAnalysis({commit}: any, payload: any) {
         await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
             .then((response: AxiosResponse<any>) => {
-                commit('analysisMutator', hasValue(response, 'data') ? response.data : emptyAnalysis);
+                if (hasValue(response, 'data')) {
+                    const analysis: Analysis = {
+                        ...response.data,
+                        startYear: response.data.startYear > 0 ? response.data.startYear : moment().year
+                    };
+                    commit('analysisMutator', analysis);
+                }
             });
     },
     async saveScenarioAnalysis({dispatch, commit}: any, payload: any) {
-        await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData)
+        await AnalysisEditorService.saveScenarioAnalysisData(payload.scenarioAnalysisData, payload.objectIdMOngoDBForScenario)
             .then((response: AxiosResponse) => {
                 if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     commit('analysisMutator', payload.scenarioAnalysisData);
@@ -148,7 +165,7 @@ const actions = {
     async clearSummaryReportMissingAttributes({commit}: any) {
         commit('missingSummaryReportAttributesMutator', '');
     },
-    async socket_scenarioStatus({ dispatch, state, commit }: any, payload: any) {
+    async socket_scenarioStatus({dispatch, state, commit}: any, payload: any) {
         if (hasValue(payload, 'operationType')) {
             switch (payload.operationType) {
                 case 'update':

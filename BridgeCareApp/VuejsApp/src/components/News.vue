@@ -9,68 +9,73 @@
                                    class="bridgecare-logo-img">
                             </v-img>
                         </div>
-                        <div class="announcement" v-if="isAdmin" style="padding-bottom: 0px; margin-bottom: 0px">
+                        <div class="announcement" style="padding-bottom: 0px; margin-bottom: 0px" v-if="isAdmin">
                             <v-card style="margin-bottom: 0px; padding-bottom: 0px">
                                 <v-card-title style="padding-top: 0px; padding-bottom: 0px">
-                                    <v-icon class="ara-orange" style="padding-right: 1em" 
-                                        v-if="isEditingAnnouncement()"
-                                        @click="onStopEditing()"
-                                        title="Stop Editing">
+                                    <v-icon @click="onStopEditing()" class="ara-orange"
+                                            style="padding-right: 1em"
+                                            title="Stop Editing"
+                                            v-if="isEditingAnnouncement()">
                                         fas fa-times-circle
                                     </v-icon>
-                                    <v-text-field class="announcement-title" label="Title" single-line v-model="newAnnouncementTitle" tabindex="1"/>
+                                    <v-text-field class="announcement-title" label="Title" single-line
+                                                  tabindex="1" v-model="newAnnouncementTitle"/>
                                     <v-spacer/>
-                                    <v-btn icon class="ara-blue" title="Send Announcement" 
-                                        @click="onSendAnnouncement" tabindex="3">
+                                    <v-btn @click="onSendAnnouncement" class="ara-blue" icon
+                                           tabindex="3" title="Send Announcement">
                                         <v-icon>fas fa-paper-plane</v-icon>
                                     </v-btn>
                                 </v-card-title>
-                                <v-card-text style="padding-top: 0px; padding-bottom: 0px">{{formatDate(Date.now())}}</v-card-text>
-                                <v-textarea 
-                                    style="padding-left: 1em; padding-right: 1em; padding-top: 0.2em" 
-                                    class="announcement-content" 
-                                    auto-grow single-line dense rows=1 label="Announcement Text (HTML tags can be used for detailed formatting.)"
-                                    v-model="newAnnouncementContent"
-                                    tabindex="2"/>
+                                <v-card-text style="padding-top: 0px; padding-bottom: 0px">{{formatDate(Date.now())}}
+                                </v-card-text>
+                                <v-textarea
+                                        auto-grow
+                                        class="announcement-content"
+                                        dense label="Announcement Text (HTML tags can be used for detailed formatting.)" rows=1 single-line
+                                        style="padding-left: 1em; padding-right: 1em; padding-top: 0.2em"
+                                        tabindex="2"
+                                        v-model="newAnnouncementContent"/>
                             </v-card>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center">
-                            <v-btn round class="ara-blue-bg white--text" style="margin-top: 10px; margin-bottom: 0px"
-                                v-if="announcementListOffset > 0" 
-                                @click="seeNewerAnnouncements()">
+                            <v-btn @click="seeNewerAnnouncements()" class="ara-blue-bg white--text" round
+                                   style="margin-top: 10px; margin-bottom: 0px"
+                                   v-if="announcementListOffset > 0">
                                 See Newer Announcements
                             </v-btn>
                         </div>
                         <div class="announcement" v-for="announcement in visibleAnnouncements()">
                             <v-card>
                                 <v-card-title class="announcement-title">
-                                    <v-icon class="ara-orange" style="padding-right: 1em" 
-                                        v-if="isEditingAnnouncement(announcement)"
-                                        @click="onStopEditing()"
-                                        title="Stop Editing">
+                                    <v-icon @click="onStopEditing()" class="ara-orange"
+                                            style="padding-right: 1em"
+                                            title="Stop Editing"
+                                            v-if="isEditingAnnouncement(announcement)">
                                         fas fa-times-circle
                                     </v-icon>
                                     {{announcement.title}}
                                     <v-spacer/>
-                                    <v-btn icon class="ara-blue" 
-                                        @click="onSetEditAnnouncement(announcement)" 
-                                        title="Edit Announcement" v-if="isAdmin">
+                                    <v-btn @click="onSetEditAnnouncement(announcement)" class="ara-blue"
+                                           icon
+                                           title="Edit Announcement" v-if="isAdmin">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
-                                    <v-btn icon class="ara-orange" 
-                                        @click="onDeleteAnnouncement(announcement)" 
-                                        title="Delete Announcement" v-if="isAdmin">
+                                    <v-btn @click="onDeleteAnnouncement(announcement)" class="ara-orange"
+                                           icon
+                                           title="Delete Announcement" v-if="isAdmin">
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </v-card-title>
-                                <v-card-text class="announcement-date">{{formatDate(announcement.creationDate)}}</v-card-text>
-                                <v-card-text class="announcement-content" v-html="announcement.content.replace(/(\r)*\n/g, '<br/>')"></v-card-text>
+                                <v-card-text class="announcement-date">{{formatDate(announcement.creationDate)}}
+                                </v-card-text>
+                                <v-card-text class="announcement-content"
+                                             v-html="announcement.content.replace(/(\r)*\n/g, '<br/>')"></v-card-text>
                             </v-card>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center;">
-                            <v-btn round class="ara-blue-bg white--text" style="margin-top: 0px; margin-bottom: 10px"
-                                v-if="announcementListOffset < announcements.length - (isAdmin ? 2 : 3)" 
-                                @click="seeOlderAnnouncements()">
+                            <v-btn @click="seeOlderAnnouncements()" class="ara-blue-bg white--text" round
+                                   style="margin-top: 0px; margin-bottom: 10px"
+                                   v-if="announcementListOffset < announcements.length - (isAdmin ? 2 : 3)">
                                 See Older Announcements
                             </v-btn>
                         </div>
@@ -88,10 +93,11 @@
     import {Announcement, emptyAnnouncement} from '@/shared/models/iAM/announcement';
     import {clone} from 'ramda';
     import moment from 'moment';
+
     const ObjectID = require('bson-objectid');
 
     @Component
-    export default class News extends Vue { 
+    export default class News extends Vue {
         @State(state => state.announcement.announcements) announcements: Announcement[];
         @State(state => state.authentication.isAdmin) isAdmin: boolean;
 
@@ -108,7 +114,7 @@
         editing?: Announcement = undefined;
 
         visibleAnnouncements() {
-            return this.announcements.slice(this.announcementListOffset,this.announcementListOffset + (this.isAdmin ? 2 : 3));
+            return this.announcements.slice(this.announcementListOffset, this.announcementListOffset + (this.isAdmin ? 2 : 3));
         }
 
         formatDate(announcementDate: Date) {
@@ -143,7 +149,9 @@
         }
 
         onEditAnnouncement() {
-            if (this.editing === undefined) {return;}
+            if (this.editing === undefined) {
+                return;
+            }
             this.editing.title = this.newAnnouncementTitle;
             this.editing.content = this.newAnnouncementContent;
             this.updateAnnouncementAction({updatedAnnouncement: this.editing});
@@ -163,7 +171,9 @@
         }
 
         isEditingAnnouncement(announcement?: Announcement) {
-            if (announcement === undefined) { return this.editing !== undefined; }
+            if (announcement === undefined) {
+                return this.editing !== undefined;
+            }
             return this.editing !== undefined && this.editing.id === announcement.id;
         }
 
@@ -200,7 +210,7 @@
     .bridgecare-logo-img {
         width: 100%;
         border-bottom-style: solid;
-        border-color:#008FCA;
+        border-color: #008FCA;
     }
 
     .announcement {
@@ -212,7 +222,7 @@
 
     .announcement-title {
         font-size: 2em;
-        font-weight:bold;
+        font-weight: bold;
         padding-bottom: 0px;
     }
 

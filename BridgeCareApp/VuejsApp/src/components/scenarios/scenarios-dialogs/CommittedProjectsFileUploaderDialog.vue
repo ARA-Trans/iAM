@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="500px">
+    <v-dialog max-width="500px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -9,8 +9,10 @@
             <v-card-text>
                 <v-layout column>
                     <v-layout column>
-                        <form v-show="dragAndDropCapable" class="ara-light-gray-bg" id="file-form">
-                            <v-layout align-center justify-center fill-height><div>Drag & Drop Files Here</div></v-layout>
+                        <form class="ara-light-gray-bg" id="file-form" v-show="dragAndDropCapable">
+                            <v-layout align-center fill-height justify-center>
+                                <div>Drag & Drop Files Here</div>
+                            </v-layout>
                         </form>
                         <v-flex xs12>
                             <v-layout justify-start>
@@ -19,23 +21,23 @@
                         </v-flex>
                         <v-flex xs12>
                             <v-layout justify-start>
-                                <v-btn class="ara-blue-bg white--text" @click="fileSelect.click()">
+                                <v-btn @click="fileSelect.click()" class="ara-blue-bg white--text">
                                     Select File(s)
                                 </v-btn>
                             </v-layout>
                         </v-flex>
                         <div v-show="false">
-                            <input id="file-select" type="file" multiple @change="onSelect($event.target.files)" />
+                            <input @change="onSelect($event.target.files)" id="file-select" multiple type="file"/>
                         </div>
                     </v-layout>
                     <div class="files-table">
-                        <v-data-table :headers="filesTableHeaders" :items="files" hide-actions
-                                      class="elevation-1 fixed-header v-table__overflow">
+                        <v-data-table :headers="filesTableHeaders" :items="files" class="elevation-1 fixed-header v-table__overflow"
+                                      hide-actions>
                             <template slot="items" slot-scope="props">
                                 <td>{{props.item.name}}</td>
                                 <td>{{convertBytesToMegabytes(props.item.size)}}</td>
                                 <td>
-                                    <v-btn icon class="ara-orange" @click="onRemoveFile(props.item.name)">
+                                    <v-btn @click="onRemoveFile(props.item.name)" class="ara-orange" icon>
                                         <v-icon>fas fa-trash</v-icon>
                                     </v-btn>
                                 </td>
@@ -43,15 +45,16 @@
                         </v-data-table>
                     </div>
                 </v-layout row>
-                    Warning: Uploading new committed projects will override ALL previous commitments.
+                Warning: Uploading new committed projects will override ALL previous commitments.
+                    Committed projects may take a few minutes to process. You will receive an email when this process is complete.
                 <v-layout>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onUpload">Upload</v-btn>
-                    <v-btn class="ara-blue-bg white--text" @click="onExport">Export</v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onCancel">Cancel</v-btn>
+                    <v-btn @click="onUpload" class="ara-blue-bg white--text">Upload</v-btn>
+                    <v-btn @click="onExport" class="ara-blue-bg white--text">Export</v-btn>
+                    <v-btn @click="onCancel" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -64,7 +67,7 @@
     import {Action} from 'vuex-class';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import {last, any, propEq, clone} from 'ramda';
+    import {any, clone, last, propEq} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {bytesToMegabytes} from '@/shared/utils/math-utils.ts';
     import {CommittedProjectsDialogResult} from '@/shared/models/modals/committed-projects-dialog-result';
@@ -80,7 +83,7 @@
         dragEvents: string[] = ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'];
         fileSelect: HTMLInputElement = {} as HTMLInputElement;
         fileForm: HTMLFormElement = {} as HTMLFormElement;
-        files: File[] = [];        
+        files: File[] = [];
         filesTableHeaders: DataTableHeader[] = [
             {text: 'Name', value: 'name', align: 'left', sortable: true, class: '', width: '100px'},
             {text: 'Size', value: 'size', align: 'left', sortable: true, class: '', width: '50px'},
@@ -120,9 +123,9 @@
         isBrowserDragAndDropCapable() {
             const div = document.createElement('div');
 
-            return ('draggable' in div || ('ondragstart' in div && 'ondrop' in div) ) &&
-                    'FormData' in window &&
-                    'FileReader' in window;
+            return ('draggable' in div || ('ondragstart' in div && 'ondrop' in div)) &&
+                'FormData' in window &&
+                'FileReader' in window;
         }
 
         /**

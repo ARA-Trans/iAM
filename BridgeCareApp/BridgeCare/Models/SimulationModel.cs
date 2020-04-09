@@ -34,7 +34,7 @@ namespace BridgeCare.Models
             networkId = entity.NETWORKID ?? 0;
             Created = entity.DATE_CREATED;
             LastRun = entity.DATE_LAST_RUN ?? DateTime.Now;
-            networkName = entity.NETWORK.NETWORK_NAME;
+            networkName = entity.NETWORK?.NETWORK_NAME;
         }
     }
 }

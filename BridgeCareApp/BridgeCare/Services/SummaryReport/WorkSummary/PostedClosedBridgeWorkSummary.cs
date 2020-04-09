@@ -27,7 +27,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
         internal ChartRowsModel FillPostedBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
             List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
-            excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
+            //excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Posted Bridges - Count", true);
             chartRowsModel.TotalBridgePostedCountByBPNYearsRow = currentCell.Row;
             AddDetailsForPostedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
@@ -36,7 +36,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
 
         internal ChartRowsModel FillClosedBridgeCount(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
-            excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
+            //excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Closed Bridges - Count", true);
             chartRowsModel.TotalClosedBridgeCountByBPNYearsRow = currentCell.Row;
             AddDetailsForClosedBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
@@ -46,7 +46,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
         internal ChartRowsModel FillBridgeCountTotal(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
             List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
-            excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
+            //excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Posted Bridges - Count", true);
             chartRowsModel.TotalPostedAndClosedByBPNYearsRow = currentCell.Row;
             AddDetailsForTotalBridgeCount(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
@@ -55,7 +55,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
         internal ChartRowsModel FillMoneyNeededByBPN(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
             List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
-            excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
+            //excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
             bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Dollar Needs By BPN", true);
             chartRowsModel.TotalCashNeededByBPNYearsRow = currentCell.Row;
             AddDetailsForMoneyNeededByBPN(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
@@ -66,7 +66,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.InitializeBPNLabels(worksheet, currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[startRow + 4, column - 1].Value = "Average Amount";
+            worksheet.Cells[startRow + 4, column - 1].Value = "Annualized Amount";
             var totalMoney = 0.0;
             foreach (var year in simulationYears)
             {

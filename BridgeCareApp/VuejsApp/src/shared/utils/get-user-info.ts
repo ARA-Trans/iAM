@@ -6,9 +6,9 @@ export const getUserInfo = () => {
 };
 
 export const getUserName = () => {
-    return parseLDAP(getUserInfo().sub);
+    return parseLDAP(getUserInfo().sub)[0];
 };
 
-export const getUserRole = () => {
+export const getUserRoles = () => {
     return parseLDAP(getUserInfo().roles);
 };

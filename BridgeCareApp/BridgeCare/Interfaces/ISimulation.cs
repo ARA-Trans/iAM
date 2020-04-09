@@ -9,6 +9,7 @@ namespace BridgeCare.Interfaces
         List<SimulationModel> GetSimulations(BridgeCareContext db);
         List<SimulationModel> GetPermittedSimulations(BridgeCareContext db, string username);
         SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db);
+        SimulationModel CloneSimulation(int simulationId, BridgeCareContext db, string username);
         void UpdateAnySimulation(SimulationModel model, BridgeCareContext db);
         void UpdatePermittedSimulation(SimulationModel model, BridgeCareContext db, string username);
         void DeleteAnySimulation(int id, BridgeCareContext db);

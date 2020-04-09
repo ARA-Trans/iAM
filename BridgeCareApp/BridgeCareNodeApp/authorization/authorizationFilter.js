@@ -15,16 +15,16 @@ function authorizationFilter(permittedRoles) {
     };
 
     function verify(jwtPayload, done) {
-        role = jwtPayload.roles.split(',')[0].split('=')[1];
+        roles = jwtPayload.roles.split('^').map(segment => segment.split(',')[0].split('=')[1]);
         username = jwtPayload.sub.split(',')[0].split('=')[1];
         if (!Array.isArray(permittedRoles) || permittedRoles.length === 0) {
-            return done(null, { username, role });
+            return done(null, { username, roles });
         }
-        if (permittedRoles.some(permittedRole => permittedRole === role)){
-            return done(null, { username, role });
+        if (permittedRoles.some(permittedRole => roles.some(role => permittedRole === role))){
+            return done(null, { username, roles });
         }
         logger.error('User unauthorized');
-        return done(null, false);
+        return done(null, false, {message: 'You are not authorized to perform that action'});
     }
 
     const strategy = new jwtStrategy(jwtStrategyOptions, verify);
@@ -32,7 +32,22 @@ function authorizationFilter(permittedRoles) {
     const strategyName = permittedRoles === undefined ? 'all' : permittedRoles.join(',');
     
     passport.use(strategyName, strategy);
-    return passport.authenticate(strategyName, { session: false });
+
+    const authenticationHandler = (request, response, next) => {
+        passport.authenticate(strategyName, {session: false}, 
+            (error, user, info) => {
+                if (error) {
+                    return next(error);
+                }
+                if (!user) {
+                    return response.status(401).json({message: info.message || 'Authentication failed'});
+                }
+                request.user = user;
+                return next(null, request, response);
+            })(request, response, next);
+    };
+
+    return authenticationHandler;
 }
 
 module.exports = authorizationFilter;

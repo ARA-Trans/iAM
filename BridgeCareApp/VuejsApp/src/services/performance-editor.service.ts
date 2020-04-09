@@ -48,7 +48,9 @@ export default class PerformanceEditorService {
      * Saves a scenario performance library
      * @param saveScenarioPerformanceLibraryData The scenario performance library upsert data
      */
-    static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary): AxiosPromise {
+    static saveScenarioPerformanceLibrary(saveScenarioPerformanceLibraryData: PerformanceLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioPerformanceLibrary', saveScenarioPerformanceLibraryData);
     }
 }

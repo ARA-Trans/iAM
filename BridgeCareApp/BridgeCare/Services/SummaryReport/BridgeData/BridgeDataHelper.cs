@@ -16,7 +16,8 @@ namespace BridgeCare.Services
             foreach (DataRow simulationRow in simulationDataTable.Rows)
             {
                 var bridgeDataPerSection = budgetsPerBrKey.Where(b => b.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).ToList();
-                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);                
+                var simulationDM = CreatePrevYearSimulationMdel(simulationRow);
+                simulationDM.RiskScore = Convert.ToDouble(simulationRow["RISK_SCORE_" + 0]);
                 var projectCostEntries = projectCostsList.Where(pc => pc.SECTIONID == Convert.ToUInt32(simulationRow["SECTIONID"])).ToList();
                 AddAllYearsData(simulationRow, simulationYears, projectCostEntries, simulationDM, bridgeDataPerSection);
                 simulationDataModels.Add(simulationDM);
@@ -66,15 +67,28 @@ namespace BridgeCare.Services
                 CulvD = simulationRow["CULV_DURATION_N_" + year].ToString(),
                 Year = year
             };
-            yearsData.MinC = Math.Min(Convert.ToDouble(yearsData.Deck),Math.Min(Convert.ToDouble(yearsData.Culv), Math.Min(Convert.ToDouble(yearsData.Super), Convert.ToDouble(yearsData.Sub)))).ToString();
-            yearsData.SD = Convert.ToDouble(yearsData.MinC) < 5 ? "Y" : "N";
+            var isDeckConverted = double.TryParse(yearsData.Deck, out var deck);
+            var isCulvConverted = double.TryParse(yearsData.Culv, out var culv);
+            var isSuperConverted = double.TryParse(yearsData.Super, out var super);
+            var isSubConverted = double.TryParse(yearsData.Sub, out var sub);
+            if(isDeckConverted && isCulvConverted && isSuperConverted && isSubConverted)
+            {
+                yearsData.MinC = Math.Min(deck, Math.Min(culv, Math.Min(super, sub)));
+            }
+            yearsData.SD = yearsData.MinC < 5 ? "Y" : "N";
 
             yearsData.Project = year != 0 ? projectCostEntry?.TREATMENT : string.Empty;
             yearsData.Cost = year != 0 ? (projectCostEntry == null ? 0 : projectCostEntry.COST_) : 0;
-            yearsData.Project = yearsData.Cost == 0 ? "No Treatment" : yearsData.Project;
+            //yearsData.Project = yearsData.Cost == 0 ? "No Treatment" : yearsData.Project;
+            yearsData.Project = yearsData.Project == null ? "No Treatment" : yearsData.Project;
             yearsData.Budget = budgetPerBrKey != null ? budgetPerBrKey.Budget : "";
-            yearsData.ProjectPick = budgetPerBrKey != null ? (budgetPerBrKey.IsCommitted ? "Committed Pick" : "BAMs Pick") : "BAMs Pick";
-            yearsData.ProjectPickType = budgetPerBrKey != null ? (budgetPerBrKey.IsCommitted ? 1 : 0) : 0;
+            yearsData.ProjectPick = budgetPerBrKey != null ?
+                (budgetPerBrKey.ProjectType == 0 ? "BAMs Pick" :
+                (budgetPerBrKey.ProjectType == 1 ? "Committed Pick" :
+                (budgetPerBrKey.ProjectType == 2 ? "Cash Flow" : "Scheduled")
+                )) :
+                "BAMs Pick";
+            yearsData.ProjectPickType = budgetPerBrKey != null ? budgetPerBrKey.ProjectType : 0;
             yearsData.Treatment = budgetPerBrKey != null ? budgetPerBrKey.Treatment : "";
             return yearsData;
         }        
