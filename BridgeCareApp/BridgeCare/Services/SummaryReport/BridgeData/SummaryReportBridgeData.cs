@@ -19,6 +19,7 @@ namespace BridgeCare.Services
         private readonly ExcelHelper excelHelper;
         private readonly HighlightWorkDoneCells highlightWorkDoneCells;
         private Dictionary<MinCValue, Func<ExcelWorksheet, int, int, YearsData, int>> valueForMinC;
+        private List<int> SpacerColumnNumbers;
 
         public SummaryReportBridgeData(IBridgeData bridgeData, BridgeDataHelper bridgeDataHelper, ExcelHelper excelHelper,
             HighlightWorkDoneCells highlightWorkDoneCells)
@@ -69,7 +70,14 @@ namespace BridgeCare.Services
             // TODO The line below currently hangs Postman in testing. It will be required for final production.
             // ExcelHelper.ApplyBorder(worksheet.Cells[1, 1, currentCell.Row, currentCell.Column]);
             worksheet.Cells.AutoFitColumns();
-
+            var spacerBeforeFirstYear = SpacerColumnNumbers[0] - 11;
+            worksheet.Column(spacerBeforeFirstYear).Width = 3;
+            foreach(var spacerNumber in SpacerColumnNumbers)
+            {
+                worksheet.Column(spacerNumber).Width = 3;
+            }
+            var lastColumn = worksheet.Dimension.Columns + 1;
+            worksheet.Column(lastColumn).Width = 3;
             var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey };            
             return workSummaryModel;
         }
@@ -147,14 +155,15 @@ namespace BridgeCare.Services
 
                 // Empty column
                 column++;
-                excelHelper.ApplyColor(worksheet.Cells[row- 2, column], Color.Gray);
-                excelHelper.ApplyColor(worksheet.Cells[row - 1, column], Color.Gray);
-                excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
+
+                worksheet.Column(column).Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Column(column).Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                
 
                 // Last Year simulation data
                 var lastYearData = yearsData.FirstOrDefault();
                 column = AddSimulationYearData(worksheet, row, column, lastYearData, familyId, bridgeDataModel, projectPickByYear);
-
+                
                 // Add all yrs from current year simulation data
                 for (var index = 1; index < yearsData.Count(); index++)
                 {
@@ -256,8 +265,9 @@ namespace BridgeCare.Services
             }
             // Empty column
             column++;
-            excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
-            worksheet.Column(column).Width = 20;
+            worksheet.Column(column).Style.Fill.PatternType = ExcelFillStyle.Solid;
+            worksheet.Column(column).Style.Fill.BackgroundColor.SetColor(Color.Gray);
+
             return column;
         }
 
@@ -330,19 +340,21 @@ namespace BridgeCare.Services
 
             // Empty column
             currentCell.Column = ++column;
-            excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
-            excelHelper.ApplyColor(worksheet.Cells[row + 1, column], Color.Gray);
-            excelHelper.ApplyColor(worksheet.Cells[row + 2, column], Color.Gray);
-            worksheet.Column(column).Width = 20;
+
+            worksheet.Column(column).Style.Fill.PatternType = ExcelFillStyle.Solid;
+            worksheet.Column(column).Style.Fill.BackgroundColor.SetColor(Color.Gray);
+
             var yearHeaderColumn = currentCell.Column;
             simulationHeaderTexts.RemoveAll(_ => _.Equals("SD") || _.Equals("Posted"));
+            SpacerColumnNumbers = new List<int>();
+
             foreach (var simulationYear in simulationYears)
             {
                 worksheet.Cells[row, ++column].Value = simulationYear;
                 column = currentCell.Column;
                 column = AddSimulationHeaderTexts(worksheet, column, row, simulationHeaderTexts, simulationHeaderTexts.Count);
                 excelHelper.MergeCells(worksheet, row, currentCell.Column + 1, row, column);
-                if(simulationYear % 2 != 0)
+                if (simulationYear % 2 != 0)
                 {
                     excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column + 1, row, column], Color.Gray);
                 }
@@ -350,11 +362,11 @@ namespace BridgeCare.Services
                 {
                     excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column + 1, row, column], Color.LightGray);
                 }
-                excelHelper.ApplyColor(worksheet.Cells[row, currentCell.Column], Color.Gray);
-                excelHelper.ApplyColor(worksheet.Cells[row, column + 1], Color.Gray);
-                excelHelper.ApplyColor(worksheet.Cells[row + 1, column + 1], Color.Gray);
-                excelHelper.ApplyColor(worksheet.Cells[row + 2, column + 1], Color.Gray);
-                worksheet.Column(column + 1).Width = 20;
+
+                worksheet.Column(currentCell.Column).Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Column(currentCell.Column).Style.Fill.BackgroundColor.SetColor(Color.Gray);
+                SpacerColumnNumbers.Add(currentCell.Column);
+
                 currentCell.Column = ++column;
             }
             excelHelper.ApplyBorder(worksheet.Cells[row, initialColumn, row + 1, worksheet.Dimension.Columns]);
@@ -363,7 +375,6 @@ namespace BridgeCare.Services
 
         private int AddSimulationHeaderTexts(ExcelWorksheet worksheet, int column, int row, List<string> simulationHeaderTexts, int length)
         {
-            excelHelper.ApplyColor(worksheet.Cells[row, column], Color.Gray);
             for (var index = 0; index < length; index++)
             {
                 worksheet.Cells[row + 1, ++column].Value = simulationHeaderTexts[index];

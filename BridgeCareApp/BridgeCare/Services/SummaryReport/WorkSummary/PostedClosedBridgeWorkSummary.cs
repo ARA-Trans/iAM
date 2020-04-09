@@ -57,7 +57,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummary
             List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, ChartRowsModel chartRowsModel)
         {
             //excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, 1, currentCell.Row, worksheet.Dimension.Columns], Color.LightGray);
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Dollar Needs By BPN", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Dollar Needs By BPN", false);
             chartRowsModel.TotalCashNeededByBPNYearsRow = currentCell.Row;
             AddDetailsForMoneyNeededByBPN(worksheet, currentCell, simulationYears, simulationDataModels, bridgeDataModels);
             return chartRowsModel;
