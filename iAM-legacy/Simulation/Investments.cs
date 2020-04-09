@@ -383,7 +383,7 @@ namespace Simulation
 
                     try
                     {
-                        //This occurs when a split treament goes pas then end.
+                        //This occurs when a split treament goes past then end.
                         if (!hashYearAmount.Contains(currentYear.ToString())) continue;
                         //Not past end of analysis.
                         fAvailable = (float)hashYearAmount[currentYear.ToString()];
@@ -411,8 +411,8 @@ namespace Simulation
 
                     try
                     {
-                        if (!hashYearAmountOriginal.Contains(strYear)) continue;
-                        fOriginal = (float)hashYearAmountOriginal[strYear];
+                        if (!hashYearAmountOriginal.Contains(currentYear.ToString())) continue;
+                        fOriginal = (float)hashYearAmountOriginal[currentYear.ToString()];
                     }
                     catch (Exception e)
                     {
@@ -429,13 +429,13 @@ namespace Simulation
                     {
                         float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
                         var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal / 100;
-                        budgetHash = fAmount + "/" + fAvailable.ToString("f0") + "/" + original.ToString("f0");
+                        budgetHash = fAmount.ToString("f0") + "/" + fAvailable.ToString("f0") + "/" + original.ToString("f0");
                         //if (fPercent < fPercentLimit) return budgetCheck;
                         if (fPercent > fPercentLimit)
                         {
                             currentBudgetAvailable = false;
-                            reasonNoBudget = "Percent after spending greater than priority limit " + fPercent.ToString("f2")  + "/" + fPercentLimit.ToString("f2") + " for priorty (" + priority.PriorityLevel + ")";
-
+                            reasonNoBudget = "Percent after spending greater than priority limit " + fPercent.ToString("f2")  + "/" + fPercentLimit.ToString("f2") + " for year(" + currentYear + ")";
+                            return noBudgetAvailable;
                         }
                     }
                     catch (Exception e)
