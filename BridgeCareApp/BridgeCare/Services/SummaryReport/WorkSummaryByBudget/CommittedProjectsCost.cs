@@ -23,7 +23,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
         {
             var startYear = simulationYears[0];
             currentCell.Row += 1;
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work", "MPMS Work Type");
 
             currentCell.Row += 1;
             var startOfMPMSBudget = currentCell.Row += 1;
@@ -62,6 +62,9 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
             excelHelper.ApplyBorder(worksheet.Cells[startOfMPMSBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
             excelHelper.SetCustomFormat(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
             excelHelper.ApplyColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.DarkSeaGreen);
+
+            excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.FromArgb(84, 130, 53));
+            excelHelper.SetTextColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.White);
         }
 
         internal void FillCommittedProjectsBudget(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<string> budgetsOnlyForMPMS, List<WorkSummaryByBudgetModel> comittedProjectsData)
@@ -90,7 +93,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column, currentCell.Row, simulationYears.Count + 2], Color.Gray);
                 currentCell.Row += 1;
 
-                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work");
+                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work", "MPMS Work Type");
 
                 currentCell.Row += 1;
                 var startOfMPMSBudget = currentCell.Row += 1;
@@ -135,7 +138,11 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 excelHelper.ApplyBorder(worksheet.Cells[startOfMPMSBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
                 excelHelper.SetCustomFormat(worksheet.Cells[currentCell.Row - 1, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "Percentage");
                 excelHelper.SetCustomFormat(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], "NegativeCurrency");
-                excelHelper.ApplyColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], Color.DarkSeaGreen);
+
+                excelHelper.ApplyColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], Color.FromArgb(84, 130, 53));
+                excelHelper.SetTextColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], Color.White);
+
+                //excelHelper.ApplyColor(worksheet.Cells[startOfMPMSBudget, currentCell.Column + 2, currentCell.Row - 2, simulationYears.Count + 2], Color.DarkSeaGreen);
                 excelHelper.ApplyColor(worksheet.Cells[currentCell.Row - 1, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.FromArgb(248, 203, 173));
             }
         }

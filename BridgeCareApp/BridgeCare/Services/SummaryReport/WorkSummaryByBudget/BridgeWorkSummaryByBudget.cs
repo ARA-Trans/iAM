@@ -116,7 +116,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 
 
                 currentCell.Row += 1;
-                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget");
+                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget", "Totals");
                 currentCell.Row += 1;
                 currentCell.Column = 1;
                 var startOfTotalBudget = currentCell.Row;
@@ -128,6 +128,7 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 }
                 excelHelper.ApplyColor(worksheet.Cells[startOfTotalBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2],
                     Color.FromArgb(84, 130, 53));
+                excelHelper.SetTextColor(worksheet.Cells[startOfTotalBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.White);
 
                 var totalBridgeCareBudget = yearlyBudgetModels.FindAll(_ => _.BudgetName.Equals(budget.Replace("'", ""))).OrderBy(_ => _.Year).ToList();
                 currentCell.Row += 2;
@@ -141,11 +142,13 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 }
                 excelHelper.ApplyBorder(worksheet.Cells[startOfTotalBudget, currentCell.Column, currentCell.Row, simulationYears.Count + 2]);
                 excelHelper.SetCustomFormat(worksheet.Cells[startOfTotalBudget, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
+
                 excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2],
-                    Color.FromArgb(255, 255, 0));
+                    Color.FromArgb(84, 130, 53));
+                excelHelper.SetTextColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2], Color.White);
 
                 currentCell.Row += 1;
-                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Budget Analysis");
+                bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Budget Analysis", "");
                 currentCell.Row += 1;
                 currentCell.Column = 1;
                 worksheet.Cells[currentCell.Row, currentCell.Column].Value = Properties.Resources.RemainingBudget;
@@ -171,7 +174,9 @@ namespace BridgeCare.Services.SummaryReport.WorkSummaryByBudget
                 excelHelper.SetCustomFormat(worksheet.Cells[currentCell.Row, currentCell.Column + 2,
                     currentCell.Row, simulationYears.Count + 2], "NegativeCurrency");
 
-                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row + 2, simulationYears.Count + 2], Color.FromArgb(248, 203, 173));
+                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row, currentCell.Column + 2, currentCell.Row, simulationYears.Count + 2],
+                    Color.Red);
+                excelHelper.ApplyColor(worksheet.Cells[currentCell.Row + 1, currentCell.Column + 2, currentCell.Row + 2, simulationYears.Count + 2], Color.FromArgb(248, 203, 173));
                 currentCell.Row += 2;
             }
             worksheet.Cells.AutoFitColumns();

@@ -97,17 +97,17 @@ namespace BridgeCare.Services
 
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column - 1]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, row, column - 1], "Number");
-            if (isDeckArea)
-            {
-                excelHelper.ApplyColor(worksheet.Cells[row - 1, startColumn + 1, row - 1, column - 1], Color.Khaki);
-            }
+            //if (isDeckArea)
+            //{
+            //    excelHelper.ApplyColor(worksheet.Cells[row - 1, startColumn + 1, row - 1, column - 1], Color.Khaki);
+            //}
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 1, column);
         }
 
         private void FillNonNHSDeckAreaPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
             int dataStartRow, ChartRowsModel chartRowsModel)
         {
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Non-NHS Bridge Deck Area %", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Non-NHS Bridge Deck Area Percentage", true);
             chartRowsModel.NonNHSDeckAreaPercentSectionYearsRow = currentCell.Row;
             AddDetailsForNonNHSPercentSection(worksheet, currentCell, simulationYears, dataStartRow);
         }
@@ -115,7 +115,7 @@ namespace BridgeCare.Services
         private void FillNonNHSBridgeCountPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
             int dataStartRow, ChartRowsModel chartRowsModel)
         {
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Non-NHS Bridge Count %", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Non-NHS Bridge Count Percentage", true);
             chartRowsModel.NonNHSBridgeCountPercentSectionYearsRow = currentCell.Row;
             AddDetailsForNonNHSPercentSection(worksheet, currentCell, simulationYears, dataStartRow);
         }
@@ -139,7 +139,7 @@ namespace BridgeCare.Services
 
         private void FillNHSBridgeDeckAreaPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow, ChartRowsModel chartRowsModel)
         {
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Deck Area %", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Deck Area Percentage", true);
             chartRowsModel.NHSBridgeDeckAreaPercentSectionYearsRow = currentCell.Row;
             AddDetailsForNHSPercentSection(worksheet, currentCell, simulationYears, dataStartRow);
         }       
@@ -165,7 +165,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 2, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, row + 2, column], "Number");
-            excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn + 1, row + 2, column], Color.Khaki);
+            //excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn + 1, row + 2, column], Color.Khaki);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
         }
 
@@ -183,7 +183,7 @@ namespace BridgeCare.Services
 
         private void FillNHSBridgeCountPercentSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow, ChartRowsModel chartRowsModel)
         {
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Count %", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "NHS Bridge Count Percentage", true);
             chartRowsModel.NHSBridgeCountPercentSectionYearsRow = currentCell.Row;
             AddDetailsForNHSPercentSection(worksheet, currentCell, simulationYears, dataStartRow);
         }

@@ -27,7 +27,6 @@ namespace BridgeCare
         public virtual DbSet<AttributesEntity> Attributes { get; set; }
         public virtual DbSet<PennDotBridgeData> PennDotBridgeData { get; set; }
         public virtual DbSet<PennDotReportAData> PennDotReportAData { get; set; }
-        public virtual DbSet<SdRisk> SdRisks { get; set; }
         public virtual DbSet<TreatmentsEntity> Treatments { get; set; }
         public virtual DbSet<CostsEntity> Costs { get; set; }
         public virtual DbSet<FeasibilityEntity> Feasibilities { get; set; }

@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Models;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -45,7 +46,7 @@ namespace BridgeCare.Services
 
         private int FillTotalDeckAreaPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow)
         {
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Deck Area %", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Deck Area Percentage", true);
             var totalDeckAreaPercentYearsRow = currentCell.Row;
             AddDetailsForTotalBridgeAndDeckPercent(worksheet, currentCell, simulationYears, dataStartRow);
             return totalDeckAreaPercentYearsRow;
@@ -53,7 +54,7 @@ namespace BridgeCare.Services
 
         private int FillTotalBridgeCountPercent(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, int dataStartRow)
         {
-            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Bridge Count %", true);
+            bridgeWorkSummaryCommon.AddBridgeHeaders(worksheet, currentCell, simulationYears, "Total Bridge Count Percentage", true);
             var totalBridgeCountPercentYearsRow = currentCell.Row;
             AddDetailsForTotalBridgeAndDeckPercent(worksheet, currentCell, simulationYears, dataStartRow);
             return totalBridgeCountPercentYearsRow;
@@ -97,7 +98,7 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row + 2, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, startColumn + 1, row + 2, column], "Number");
-            excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn + 1, row + 2, column], Color.Khaki);
+            //excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn + 1, row + 2, column], Color.Khaki);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
         }        
 
@@ -160,6 +161,7 @@ namespace BridgeCare.Services
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
             worksheet.Cells[row, column++].Value = Properties.Resources.BridgeCare;
+            worksheet.Cells[row, column - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             worksheet.Cells[row, column].Value = bridgeWorkSummaryComputationHelper.CalculateTotalPoorBridgesDeckArea(simulationDataModels, 0);
             foreach (var year in simulationYears)
             {
@@ -184,6 +186,7 @@ namespace BridgeCare.Services
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
             worksheet.Cells[row, column++].Value = Properties.Resources.BridgeCare;
+            worksheet.Cells[row, column - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             worksheet.Cells[row, column].Value = bridgeWorkSummaryComputationHelper.CalculateTotalPoorBridgesCount(simulationDataModels, 0);
             foreach (var year in simulationYears)
             {
@@ -205,8 +208,10 @@ namespace BridgeCare.Services
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
-            worksheet.Cells[row++, column].Value = "# Bridge On";
-            worksheet.Cells[row++, column].Value = "# Bridge Off";
+            worksheet.Cells[row++, column].Value = "Number Bridge On";
+            worksheet.Cells[row - 1, column].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            worksheet.Cells[row++, column].Value = "Number Bridge Off";
+            worksheet.Cells[row - 1, column].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
             column++;
             var fromColumn = column + 1;
             foreach (var year in simulationYears)
@@ -221,7 +226,7 @@ namespace BridgeCare.Services
                 worksheet.Cells[++row, column].Value = count;
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.Khaki);
+            //excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.Khaki);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
         }
     }
