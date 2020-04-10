@@ -3,30 +3,23 @@ using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class Criterion
+    public sealed class Criterion : CompilableExpression
     {
         public Criterion(CalculateEvaluateCompiler compiler) => Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
 
-        public string Expression
+        public bool Evaluate(CalculateEvaluateArgument argument)
         {
-            get => _Expression;
-            set
+            if (!IsCompiled)
             {
-                if (_Expression != value)
-                {
-                    _Expression = value;
-
-                    Evaluator = Compiler.GetEvaluator(_Expression);
-                }
+                Evaluator = Compiler.GetEvaluator(Expression);
+                IsCompiled = true;
             }
-        }
 
-        public bool Evaluate(EvaluatorArgument arguments) => Evaluator(arguments);
+            return Evaluator(argument);
+        }
 
         private readonly CalculateEvaluateCompiler Compiler;
 
-        private string _Expression;
-
-        private Func<EvaluatorArgument, bool> Evaluator;
+        private Evaluator Evaluator;
     }
 }

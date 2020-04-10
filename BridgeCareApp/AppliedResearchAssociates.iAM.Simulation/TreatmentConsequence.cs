@@ -4,7 +4,7 @@
     {
         public RawAttribute Attribute { get; }
 
-        public ValueAdjustment Change { get; }
+        public NumberAdjustment Change { get; }
 
         public Criterion Criterion { get; }
     }
