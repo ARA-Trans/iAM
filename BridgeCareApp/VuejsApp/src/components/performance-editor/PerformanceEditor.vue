@@ -192,8 +192,7 @@
     import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
     import CreatePerformanceLibraryDialog from './performance-editor-dialogs/CreatePerformanceLibraryDialog.vue';
-    import CreatePerformanceLibraryEquationDialog
-        from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
+    import CreatePerformanceLibraryEquationDialog from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
     import EquationEditorDialog from '../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../shared/modals/CriteriaEditorDialog.vue';
     import {

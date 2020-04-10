@@ -170,8 +170,7 @@
         CreatePriorityLibraryDialogData,
         emptyCreatePriorityLibraryDialogData
     } from '@/shared/models/modals/create-priority-library-dialog-data';
-    import CreatePriorityLibraryDialog
-        from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
+    import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';

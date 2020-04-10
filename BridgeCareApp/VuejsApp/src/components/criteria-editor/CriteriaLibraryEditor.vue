@@ -86,8 +86,7 @@
         CreateCriteriaLibraryDialogData,
         emptyCreateCriteriaLibraryDialogData
     } from '@/shared/models/modals/create-criteria-library-dialog-data';
-    import CreateCriteriaLibraryDialog
-        from '@/components/criteria-editor/criteria-editor-dialogs/CreateCriteriaLibraryDialog.vue';
+    import CreateCriteriaLibraryDialog from '@/components/criteria-editor/criteria-editor-dialogs/CreateCriteriaLibraryDialog.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
 
