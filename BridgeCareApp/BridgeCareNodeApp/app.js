@@ -21,6 +21,9 @@ async function run() {
     const CashFlowLibrary = require('./models/cashFlowLibraryModel');
     const cashFlowLibraryRouter = require('./routers/cashFlowLibraryRouter')(CashFlowLibrary);
 
+    const CriteriaLibrary = require('./models/criteriaLibraryModel');
+    const criteriaLibraryRouter = require('./routers/criteriaLibraryRouter')(CriteriaLibrary);
+
     const DeficientLibrary = require('./models/deficientLibraryModel');
     const deficientLibraryRouter = require('./routers/deficientLibraryRouter')(DeficientLibrary);
 
@@ -62,7 +65,11 @@ async function run() {
     });
 
     CashFlowLibrary.watch([], options).on('change', data => {
-        io.emit('cashFlowLibrary', data);
+        emitEvent('cashFlowLibrary', data);
+    });
+
+    CriteriaLibrary.watch([], options).on('change', data => {
+        emitEvent('criteriaLibrary', data);
     });
 
     DeficientLibrary.watch([], options).on('change', data => {
@@ -103,6 +110,7 @@ async function run() {
 
     app.use("/api", [
         cashFlowLibraryRouter,
+        criteriaLibraryRouter,
         deficientLibraryRouter,
         investmentLibraryRouter,
         networkRouter,
