@@ -213,7 +213,7 @@ namespace RoadCare3
                 }
             }
 
-            String strSelect = "SELECT COMMENTS,JURISDICTION,ANALYSIS,BUDGET_CONSTRAINT,WEIGHTING,BENEFIT_VARIABLE,BENEFIT_LIMIT,USE_CUMULATIVE_COST,USE_ACROSS_BUDGET FROM SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
+            String strSelect = "SELECT COMMENTS,JURISDICTION,ANALYSIS,BUDGET_CONSTRAINT,WEIGHTING,BENEFIT_VARIABLE,BENEFIT_LIMIT,USE_CUMULATIVE_COST,USE_ACROSS_BUDGET,USE_REASONS FROM SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
             ds = new DataSet();
 
             try
@@ -260,7 +260,15 @@ namespace RoadCare3
                 radioButtonWithinBudget.Checked = true;
             }
 
-                cbBenefit.Text = strBenefitVariable.ToString();
+            var useReasons = true;
+            if (ds.Tables[0].Rows[0]["USE_REASONS"] != DBNull.Value)
+            {
+                useReasons = Convert.ToBoolean(ds.Tables[0].Rows[0]["USE_REASONS"]);
+            }
+            checkBoxReasons.Checked = useReasons;
+
+
+            cbBenefit.Text = strBenefitVariable.ToString();
             cbBudget.Text = strBudgetConstraint.ToString();
             cbOptimization.Text = strAnalysis.ToString();
             cbWeighting.Text = strWeighting.ToString();
@@ -1597,6 +1605,28 @@ namespace RoadCare3
                     }
                     dataGridViewRemainLife.Update();
                 }
+            }
+        }
+
+        private void CheckBoxReasons_CheckedChanged(object sender, EventArgs e)
+        {
+            var update = "";
+            if (checkBoxReasons.Checked)
+            {
+                update = "UPDATE SIMULATIONS SET USE_REASONS='1' WHERE SIMULATIONID='" + m_strSimulationID + "'";
+            }
+            else
+            {
+                update = "UPDATE SIMULATIONS SET USE_REASONS='0' WHERE SIMULATIONID='" + m_strSimulationID + "'";
+            }
+            try
+            {
+                DBMgr.ExecuteNonQuery(update);
+            }
+            catch (Exception exception)
+            {
+                Global.WriteOutput("Error output reason data to database: " + exception.Message.ToString());
+                return;
             }
         }
     }

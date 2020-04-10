@@ -663,7 +663,7 @@ namespace Simulation
         public bool GetSimulationMethod()
         {
             //Replace with Method information.
-            String strSelect = "SELECT ANALYSIS, BUDGET_CONSTRAINT,BENEFIT_VARIABLE, BENEFIT_LIMIT,RUN_TIME,USE_CUMULATIVE_COST,USE_ACROSS_BUDGET FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
+            String strSelect = "SELECT ANALYSIS, BUDGET_CONSTRAINT,BENEFIT_VARIABLE, BENEFIT_LIMIT,RUN_TIME,USE_CUMULATIVE_COST,USE_ACROSS_BUDGET,USE_REASONS FROM " + cgOMS.Prefix + "SIMULATIONS WHERE SIMULATIONID='" + m_strSimulationID + "'";
             try
             {
                 DataSet ds = DBMgr.ExecuteQuery(strSelect);
@@ -690,6 +690,7 @@ namespace Simulation
                     if (dr["USE_CUMULATIVE_COST"] != DBNull.Value) Method.UseCumulativeCost = Convert.ToBoolean(dr["USE_CUMULATIVE_COST"]);
                     Method.UseAcrossBudgets = false;
                     if (dr["USE_ACROSS_BUDGET"] != DBNull.Value) Method.UseAcrossBudgets = Convert.ToBoolean(dr["USE_ACROSS_BUDGET"]);
+                    if (dr["USE_REASONS"] != DBNull.Value) Method.IsUseReasons = Convert.ToBoolean(dr["USE_REASONS"]);
                     string str = dr["BENEFIT_LIMIT"].ToString();
                     double dLimit = 0;
                     double.TryParse(str, out dLimit);
@@ -1303,7 +1304,7 @@ namespace Simulation
 
             var numberColumns = m_listAttributes.Count * (Investment.AnalysisPeriod + 1);
 
-            var numberTables = Math.Ceiling(Convert.ToDouble(numberColumns) / 900);
+            var numberTables = Math.Ceiling(Convert.ToDouble(numberColumns) / 750);
             m_dictionarySimulationTables = new Dictionary<string, List<TableParameters>>();
             m_dictionaryAttributeSimulationTable = new Dictionary<string, int>();
 
@@ -1500,7 +1501,7 @@ namespace Simulation
             listColumn.Add(new TableParameters("SECTIONID", DataType.Int, false, true, false));
             listColumn.Add(new TableParameters("YEARS", DataType.Int, true));
             listColumn.Add(new TableParameters("TREATMENT", DataType.VarChar(50), true));
-            listColumn.Add(new TableParameters("REASON", DataType.VarChar(50), true));
+            listColumn.Add(new TableParameters("REASON", DataType.VarCharMax, true));
             listColumn.Add(new TableParameters("BUDGET", DataType.VarChar(50), true));
             listColumn.Add(new TableParameters("BENEFIT_ORDER", DataType.Int, true));
             listColumn.Add(new TableParameters("PRIORITY", DataType.Int, true));
@@ -5364,6 +5365,7 @@ namespace Simulation
                     throw e;
                 }
                 ISplitTreatmentLimit limit = null;
+                string reasonNoBudget = null;
                 float fAmount = section.Area * fCost * fInflationMultiplier;
                 try
                 {
@@ -5379,7 +5381,7 @@ namespace Simulation
                     {
                         if (strBudget == null)
                         {
-                            strBudget = Investment.IsBudgetAvailable(fAmount, strMultipleBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority,limits, "", out budgetHash,out limit);
+                            strBudget = Investment.IsBudgetAvailable(fAmount, strMultipleBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority,limits, "", out budgetHash,out limit,out reasonNoBudget);
                         }
                     }
                 }
@@ -5793,19 +5795,21 @@ namespace Simulation
                 throw e;
             }
 
-
-            switch (DBMgr.NativeConnectionParameters.Provider)
+            if (Method.IsUseReasons)
             {
-                case "MSSQL":
-                    DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutfile, ',');
-                    break;
+                switch (DBMgr.NativeConnectionParameters.Provider)
+                {
+                    case "MSSQL":
+                        DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutfile, ',');
+                        break;
 
-                case "ORACLE":
-                    break;
+                    case "ORACLE":
+                        break;
 
-                default:
-                    throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
-                    //break;
+                    default:
+                        throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
+                        //break;
+                }
             }
 
 
@@ -6102,7 +6106,8 @@ namespace Simulation
 
                         float fAmount = section.Area * float.Parse(sCost) * fInflationMultiplier;
                         List<ISplitTreatmentLimit> limits = GetSplitTreatmentLimits(section.m_hashNextAttributeValue);
-                        string budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority, limits,"", out budgetHash, out ISplitTreatmentLimit limit);
+                        string reasonNoBudget = null;
+                        string budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(), section.m_hashNextAttributeValue, priority, limits,"", out budgetHash, out ISplitTreatmentLimit limit,out reasonNoBudget);
                         if (string.IsNullOrWhiteSpace(budgetSelected)) continue;
                         appliedTreatment.Budget = budgetSelected;
 
@@ -6344,6 +6349,8 @@ namespace Simulation
                             //Checks budget and priorities
                             var limits = GetSplitTreatmentLimits(section.m_hashNextAttributeValue);
                             ISplitTreatmentLimit limit = null;
+                            string reasonNoBudget = null;
+
                             if (strBudgetLimit == "None") //No treatments can be spent
                             {
                                 reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "None selected for analysis budget", strBudget, "", nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
@@ -6352,21 +6359,21 @@ namespace Simulation
                             else if (strBudgetLimit == "") // Check and see if money is available
                             {
                             budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(),
-                                    section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash,out limit);
+                                    section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash,out limit,out reasonNoBudget);
                                 if (string.IsNullOrWhiteSpace(budgetSelected))
                                 {
-                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget", strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
+                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget " + reasonNoBudget, strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
                                     continue;
                                 }
                             }
                             else //if strBudgetLimit == "Unlimited" there is always budget.
                             {
                                 budgetSelected = Investment.IsBudgetAvailable(fAmount, strBudget, nYear.ToString(),
-                                        section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash, out limit);
+                                        section.m_hashNextAttributeValue, priority, limits, strBudgetLimit, out budgetHash, out limit,out reasonNoBudget);
 
                                 if (string.IsNullOrWhiteSpace(budgetSelected))
                                 {
-                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget", strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
+                                    reasonReportWriter.WriteLine(MakeReasonReportLine(section.SectionID, sTreatment, "Inadequate budget " + reasonNoBudget, strBudget, budgetHash, nYear, priority.PriorityLevel, 1, nBenefitOrder, treatment.BenefitCostRatio));
                                     continue;
                                 }
                             }
@@ -6597,21 +6604,22 @@ namespace Simulation
                     throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
                     //break;
             }
-
-            switch (DBMgr.NativeConnectionParameters.Provider)
+            if (Method.IsUseReasons)
             {
-                case "MSSQL":
-                    DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutFile, ',');
-                    break;
+                switch (DBMgr.NativeConnectionParameters.Provider)
+                {
+                    case "MSSQL":
+                        DBMgr.SQLBulkLoad(SimulationMessaging.ReasonsTable, sReasonOutFile, ',');
+                        break;
 
-                case "ORACLE":
-                    break;
+                    case "ORACLE":
+                        break;
 
-                default:
-                    throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
-                    //break;
+                    default:
+                        throw new NotImplementedException("TODO: Create ANSI implementation for XXXXXXXXXXXX");
+                        //break;
+                }
             }
-
             _spanReport += DateTime.Now - _dateTimeLast;
             _dateTimeLast = DateTime.Now;
         }

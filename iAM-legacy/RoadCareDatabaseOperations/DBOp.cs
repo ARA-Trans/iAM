@@ -1742,7 +1742,7 @@
                 {
                     string length = row["Character_maximum_length"].ToString();
                     int nLength = Convert.ToInt32(length);
-                    if (nLength < 513)
+                    if (nLength != -1 && nLength < 513)
                     {
                         if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
                         {
@@ -1957,7 +1957,31 @@
             UpdateRoadCareForSplitTreatmentLimit();
             UpdateRoadcareForSplitTreatmentCascade();
             UpdateRoadCareForInvestmentDescription();
+            UpdateRoadCareForOutputReasons();
+        }
 
+        private static void UpdateRoadCareForOutputReasons()
+        {
+            var ds = DBMgr.GetTableColumnsWithTypes("SIMULATIONS");
+            bool isUseReasons = false;
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                if (row["column_name"].ToString().ToUpper() == "USE_REASONS")
+                {
+                    isUseReasons = true;
+                }
+            }
+            if (!isUseReasons)
+            {
+                if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_REASONS NUMBER(1) NULL");
+                }
+                else
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_REASONS BIT NULL");
+                }
+            }
         }
 
         private static void UpdateRoadCareForSplitTreatmentLimit()
