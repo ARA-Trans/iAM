@@ -1,6 +1,6 @@
 <template>
-    <v-card>
-        <v-card-text class="criteria-editor-card-text">
+    <v-layout justify-center column class="criteria-editor-card-text">
+        <div>
             <v-layout justify-space-between row>
                 <v-flex xs5>
                     <v-card>
@@ -8,7 +8,8 @@
                             <v-layout justify-center><h3>Output</h3></v-layout>
                         </v-card-title>
                         <div class="conjunction-and-messages-container">
-                            <v-layout justify-space-between>
+                            <v-layout
+                                    :class="{'justify-space-between': !criteriaEditorData.isLibraryContext, 'justify-space-around': criteriaEditorData.isLibraryContext}">
                                 <div class="conjunction-select-list-container">
                                     <v-select :items="conjunctionSelectListItems" class="conjunction-select-list"
                                               lablel="Select a Conjunction" v-model="selectedConjunction">
@@ -18,28 +19,42 @@
                                 </v-btn>
                             </v-layout>
                         </div>
-                        <v-card-text class="clauses-card">
+                        <v-card-text
+                                :class="{'clauses-card-dialog': !criteriaEditorData.isLibraryContext, 'clauses-card-library': criteriaEditorData.isLibraryContext}">
                             <div v-for="(clause, index) in subCriteriaClauses">
-                                <v-layout column>
-                                    <v-textarea :class="{'textarea-focused': index === selectedSubCriteriaClauseIndex}"
-                                                :value="clause" @click="onClickSubCriteriaClauseTextarea(clause, index)"
-                                                box
-                                                class="clause-textarea"
-                                                full-width no-resize readonly
-                                                rows="3">
-                                        <template slot="append">
-                                            <v-btn @click="onRemoveSubCriteria(index)" class="ara-orange" icon>
-                                                <v-icon>fas fa-times</v-icon>
-                                            </v-btn>
-                                        </template>
-                                    </v-textarea>
-                                    <v-layout justify-center
-                                              v-if="subCriteriaClauses.length > 1 && index !== subCriteriaClauses.length - 1">
-                                        <p>{{selectedConjunction}}</p>
-                                    </v-layout>
-                                </v-layout>
+                                <v-textarea :class="{'textarea-focused': index === selectedSubCriteriaClauseIndex}"
+                                            :value="clause" @click="onClickSubCriteriaClauseTextarea(clause, index)"
+                                            box
+                                            class="clause-textarea"
+                                            full-width no-resize readonly
+                                            rows="3">
+                                    <template slot="append">
+                                        <v-btn @click="onRemoveSubCriteria(index)" class="ara-orange" icon>
+                                            <v-icon>fas fa-times</v-icon>
+                                        </v-btn>
+                                    </template>
+                                </v-textarea>
                             </div>
                         </v-card-text>
+                        <v-card-actions :class="{'validation-actions': criteriaEditorData.isLibraryContext}">
+                            <v-layout row>
+                                <div class="validation-check-btn-container">
+                                    <v-btn :disabled="onDisableCriteriaCheck()" @click="onCheckCriteria"
+                                           class="ara-blue-bg white--text">
+                                        Check Output
+                                    </v-btn>
+                                </div>
+                                <div class="validation-messages-container">
+                                    <p class="invalid-message" v-if="invalidCriteriaMessage !== null">
+                                        <strong>{{invalidCriteriaMessage}}</strong>
+                                    </p>
+                                    <p class="valid-message" v-if="validCriteriaMessage !== null">
+                                        {{validCriteriaMessage}}
+                                    </p>
+                                    <p v-if="checkOutput">Please click here to check entire rule</p>
+                                </div>
+                            </v-layout>
+                        </v-card-actions>
                     </v-card>
                 </v-flex>
                 <v-flex xs7>
@@ -47,7 +62,8 @@
                         <v-card-title>
                             <v-layout justify-center><h3>Criteria Editor</h3></v-layout>
                         </v-card-title>
-                        <v-card-text class="criteria-editor-container">
+                        <v-card-text
+                                :class="{'criteria-editor-card-dialog': !criteriaEditorData.isLibraryContext, 'criteria-editor-card-library': criteriaEditorData.isLibraryContext}">
                             <v-tabs centered v-if="selectedSubCriteriaClauseIndex !== -1">
                                 <v-tab @click="onParseRawSubCriteria" ripple>
                                     Tree View
@@ -64,72 +80,45 @@
                                     </vue-query-builder>
                                 </v-tab-item>
                                 <v-tab-item>
-                                    <v-textarea no-resize outline rows="20"
+                                    <v-textarea no-resize outline rows="23"
                                                 v-model="selectedRawSubCriteriaClause"></v-textarea>
                                 </v-tab-item>
                             </v-tabs>
                         </v-card-text>
+                        <v-card-actions :class="{'validation-actions': criteriaEditorData.isLibraryContext}">
+                            <v-layout row>
+                                <div class="validation-check-btn-container">
+                                    <v-btn :disabled="onDisableSubCriteriaCheck()" @click="onCheckSubCriteria"
+                                           class="ara-blue-bg white--text">
+                                        Check Criteria
+                                    </v-btn>
+                                </div>
+                                <div class="validation-messages-container">
+                                    <p class="invalid-message" v-if="invalidSubCriteriaMessage !== null">
+                                        <strong>{{invalidSubCriteriaMessage}}</strong>
+                                    </p>
+                                    <p class="valid-message" v-if="validSubCriteriaMessage !== null">
+                                        {{validSubCriteriaMessage}}
+                                    </p>
+                                </div>
+                            </v-layout>
+                        </v-card-actions>
                     </v-card>
                 </v-flex>
             </v-layout>
-        </v-card-text>
-        <v-card-actions>
-            <v-container fluid v-bind="container">
-                <v-layout column>
-                    <v-flex>
-                        <v-layout v-bind="layout">
-                            <div :style="checkBtnDiv">
-                                <v-layout row wrap>
-                                    <v-flex lg4 md4 sm6 xl4 xs5>
-                                        <v-btn :disabled="onDisableCriteriaCheck()" @click="onCheckCriteria"
-                                               class="ara-blue-bg white--text">
-                                            Check Output
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex xs8>
-                                        <p class="invalid-message" v-if="invalidCriteriaMessage !== null">
-                                            <strong>{{invalidCriteriaMessage}}</strong>
-                                        </p>
-                                        <p class="valid-message" v-if="validCriteriaMessage !== null">
-                                            {{validCriteriaMessage}}
-                                        </p>
-                                        <p v-if="checkOutput">Please click here to check entire rule</p>
-                                    </v-flex>
-                                </v-layout>
-                            </div>
-                            <div :style="checkBtnDiv">
-                                <v-layout row wrap>
-                                    <v-flex lg4 md4 sm6 xl4 xs5>
-                                        <v-btn :disabled="onDisableSubCriteriaCheck()" @click="onCheckSubCriteria"
-                                               class="ara-blue-bg white--text">
-                                            Check Criteria
-                                        </v-btn>
-                                    </v-flex>
-                                    <v-flex>
-                                        <p class="invalid-message" v-if="invalidSubCriteriaMessage !== null">
-                                            <strong>{{invalidSubCriteriaMessage}}</strong>
-                                        </p>
-                                        <p class="valid-message" v-if="validSubCriteriaMessage !== null">
-                                            {{validSubCriteriaMessage}}
-                                        </p>
-                                    </v-flex>
-                                </v-layout>
-                            </div>
-                        </v-layout>
-                    </v-flex>
-                    <v-divider></v-divider>
-                    <v-flex class="save-cancel-flex">
-                        <v-layout justify-center row wrap>
-                            <v-btn :disabled="cannotSubmit" @click="onSubmit(true)" class="ara-blue-bg white--text">
-                                Save
-                            </v-btn>
-                            <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
-                        </v-layout>
-                    </v-flex>
+        </div>
+        <div class="main-criteria-check-output-container">
+            <v-flex v-show="!criteriaEditorData.isLibraryContext" class="save-cancel-flex">
+                <v-layout justify-center row wrap>
+                    <v-btn :disabled="cannotSubmit" @click="onSubmitCriteriaEditorResult(true)"
+                           class="ara-blue-bg white--text">
+                        Save
+                    </v-btn>
+                    <v-btn @click="onSubmitCriteriaEditorResult(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
-            </v-container>
-        </v-card-actions>
-    </v-card>
+            </v-flex>
+        </div>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -137,7 +126,13 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
-    import {Criteria, CriteriaType, CriteriaValidationResult, emptyCriteria} from '../models/iAM/criteria';
+    import {
+        Criteria,
+        CriteriaEditorData,
+        CriteriaType,
+        CriteriaValidationResult,
+        emptyCriteria
+    } from '../models/iAM/criteria';
     import {parseCriteriaJson, parseCriteriaString, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
     import {clone, equals, findIndex, isEmpty, isNil, remove, update} from 'ramda';
@@ -150,7 +145,7 @@
         components: {VueQueryBuilder}
     })
     export default class CriteriaEditor extends Vue {
-        @Prop() mainCriteriaString: string;
+        @Prop() criteriaEditorData: CriteriaEditorData;
 
         @State(state => state.attribute.attributes) stateAttributes: Attribute[];
 
@@ -186,62 +181,6 @@
         activeTab = 'tree-view';
         checkOutput: boolean = false;
 
-        get container() {
-            const container: any = {};
-
-            if (this.$vuetify.breakpoint.xs) {
-                container['grid-list-xs'] = true;
-            }
-
-            if (this.$vuetify.breakpoint.sm) {
-                container['grid-list-sm'] = true;
-            }
-
-            if (this.$vuetify.breakpoint.md) {
-                container['grid-list-md'] = true;
-            }
-
-            if (this.$vuetify.breakpoint.lg) {
-                container['grid-list-lg'] = true;
-            }
-
-            if (this.$vuetify.breakpoint.xl) {
-                container['grid-list-xl'] = true;
-            }
-
-            return container;
-        }
-
-        get layout() {
-            const layout: any = {};
-
-            if (this.$vuetify.breakpoint.xs) {
-                layout.column = true;
-            }
-
-            if (this.$vuetify.breakpoint.smAndUp) {
-                layout.row = true;
-                layout.wrap = true;
-            }
-
-            return layout;
-        }
-
-        get checkBtnDiv() {
-            let checkBtnDiv: any = {
-                width: '50%'
-            };
-
-            if (this.$vuetify.breakpoint.xs) {
-                checkBtnDiv = {
-                    width: '100%',
-                    padding: '5px'
-                };
-            }
-
-            return checkBtnDiv;
-        }
-
         /**
          * Component mounted event handler
          */
@@ -252,13 +191,16 @@
         }
 
         /**
-         * Setter: mainCriteria property
+         * Event handler: criteriaEditorData
          */
-        @Watch('mainCriteriaString')
-        onDialogDataChanged() {
-            const mainCriteria = parseCriteriaString(this.mainCriteriaString) as Criteria;
+        @Watch('criteriaEditorData')
+        onCriteriaEditorDataChanged() {
+            const mainCriteria: Criteria = parseCriteriaString(this.criteriaEditorData.mainCriteriaString) as Criteria;
 
-            if (mainCriteria) {
+            const parsedSubCriteria: string[] | null = parseCriteriaJson(this.getMainCriteria());
+            const mainCriteriaString: string | null = hasValue(parsedSubCriteria) ? parsedSubCriteria!.join('') : null;
+
+            if (!equals(this.criteriaEditorData.mainCriteriaString, mainCriteriaString) && mainCriteria) {
                 if (!hasValue(mainCriteria.logicalOperator)) {
                     mainCriteria.logicalOperator = 'OR';
                 }
@@ -393,6 +335,8 @@
          * Removes a sub-criteria from the subCriteriaClauses property
          */
         onRemoveSubCriteria(subCriteriaClauseIndex: number) {
+            const subCriteriaClause: string = this.subCriteriaClauses[subCriteriaClauseIndex];
+
             this.subCriteriaClauses = remove(subCriteriaClauseIndex, 1, this.subCriteriaClauses);
 
             if (this.selectedSubCriteriaClauseIndex === subCriteriaClauseIndex) {
@@ -408,6 +352,15 @@
             }
 
             this.resetComponentCriteriaUIProperties();
+
+
+            if (this.criteriaEditorData.isLibraryContext) {
+                if (!hasValue(this.subCriteriaClauses)) {
+                    this.$emit('submitCriteriaEditorResult', {validated: true, criteria: ''});
+                } else if (hasValue(subCriteriaClause)) {
+                    this.$emit('submitCriteriaEditorResult', {validated: false, criteria: null});
+                }
+            }
         }
 
         /**
@@ -460,6 +413,18 @@
                             if (validationResult.isValid) {
                                 this.validCriteriaMessage = message;
                                 this.cannotSubmit = false;
+
+                                if (this.criteriaEditorData.isLibraryContext) {
+                                    const parsedCriteria = parseCriteriaJson(this.getMainCriteria());
+                                    if (parsedCriteria) {
+                                        this.$emit('submitCriteriaEditorResult', {
+                                            validated: true,
+                                            criteria: parsedCriteria.join('')
+                                        });
+                                    } else {
+                                        this.invalidCriteriaMessage = 'Unable to parse the criteria';
+                                    }
+                                }
                             } else {
                                 this.resetComponentCriteriaUIProperties();
                                 setTimeout(() => {
@@ -470,6 +435,10 @@
                                         this.invalidCriteriaMessage = validationResult.message;
                                     }
                                 });
+
+                                if (this.criteriaEditorData.isLibraryContext) {
+                                    this.$emit('submitCriteriaEditorResult', {validated: false, criteria: null});
+                                }
                             }
                         }
                     });
@@ -510,6 +479,10 @@
                             );
                             this.resetComponentCriteriaUIProperties();
                             this.checkOutput = true;
+
+                            if (this.criteriaEditorData.isLibraryContext) {
+                                this.$emit('submitCriteriaEditorResult', {validated: false, criteria: null});
+                            }
                         } else {
                             if (validationResult.numberOfResults === 0) {
                                 this.invalidSubCriteriaMessage = message;
@@ -546,7 +519,7 @@
          * Emits the parsed criteria object's data to the calling parent component or null if the user clicked the
          * 'Cancel' button
          */
-        onSubmit(submit: boolean) {
+        onSubmitCriteriaEditorResult(submit: boolean) {
             this.resetSubCriteriaSelectedProperties();
             this.resetComponentCriteriaUIProperties();
 
@@ -554,13 +527,13 @@
                 const parsedCriteria = parseCriteriaJson(this.getMainCriteria());
                 if (parsedCriteria) {
                     this.selectedConjunction = 'OR';
-                    this.$emit('submit', parsedCriteria.join(''));
+                    this.$emit('submitCriteriaEditorResult', parsedCriteria.join(''));
                 } else {
                     this.invalidCriteriaMessage = 'Unable to parse the criteria';
                 }
             } else {
                 this.selectedConjunction = 'OR';
-                this.$emit('submit', null);
+                this.$emit('submitCriteriaEditorResult', null);
             }
         }
 
@@ -636,11 +609,6 @@
 </script>
 
 <style>
-    .criteria-editor-card-text {
-        height: 700px;
-        overflow: hidden !important;
-    }
-
     .invalid-message {
         color: red;
     }
@@ -649,20 +617,25 @@
         color: green;
     }
 
-    .clauses-card, .criteria-editor-container {
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .clauses-card {
+    .clauses-card-dialog {
         height: 500px;
         max-height: calc(100vh - 400px);
         overflow-y: auto;
     }
 
-    .criteria-editor-container {
+    .clauses-card-library {
+        height: 537px;
+        overflow-y: auto;
+    }
+
+    .criteria-editor-card-dialog {
         height: 568px;
         max-height: calc(100vh - 332px);
+        overflow-y: auto;
+    }
+
+    .criteria-editor-card-library {
+        height: 581px;
         overflow-y: auto;
     }
 
@@ -676,10 +649,6 @@
 
     .clause-textarea textarea {
         border: 1px solid;
-    }
-
-    .sub-text {
-        height: 35px;
     }
 
     .conjunction-and-messages-container {
@@ -696,5 +665,17 @@
 
     .save-cancel-flex {
         margin-top: 20px;
+    }
+
+    .validation-actions {
+        height: 75px;
+    }
+
+    .validation-check-btn-container {
+        margin-left: 10px;
+    }
+
+    .validation-messages-container {
+        margin-left: 5px;
     }
 </style>

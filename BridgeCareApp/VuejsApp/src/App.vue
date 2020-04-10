@@ -52,6 +52,9 @@
                         <v-list-tile @click="onNavigate('/CashFlowEditor/Library/')">
                             <v-list-tile-title>Cash Flow</v-list-tile-title>
                         </v-list-tile>
+                        <v-list-tile @click="onNavigate('/CriteriaLibraryEditor/Library/')">
+                            <v-list-tile-title>Criteria</v-list-tile-title>
+                        </v-list-tile>
                     </v-list-group>
                     <v-list-tile @click="onNavigate('/UserCriteria/')" v-if="isAdmin">
                         <v-list-tile-action>
@@ -305,7 +308,7 @@
             this.$router.beforeEach((to: any, from: any, next: any) => {
                 this.route = to;
 
-                const showAlert: boolean = this.pushRouteUpdate === false && this.hasUnsavedChanges === true;
+                const showAlert: boolean = !this.pushRouteUpdate && this.hasUnsavedChanges;
                 if (showAlert) {
                     this.alertDialogData = {
                         showDialog: true,
@@ -372,7 +375,7 @@
 
         /**
          * Navigates a user to a page using the specified routeName
-         * @param routeName The route name to use when navigating a user
+         * @param route The route name to use when navigating a user
          */
         onNavigate(route: any) {
             if (this.$router.currentRoute.path !== route.path) {

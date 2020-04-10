@@ -35,6 +35,16 @@ export interface CriteriaLibrary {
     shared?: boolean;
 }
 
+export interface CriteriaEditorData {
+    mainCriteriaString: string;
+    isLibraryContext: boolean;
+}
+
+export interface CriteriaEditorResult {
+    validated: boolean;
+    criteria: string | null;
+}
+
 export const emptyCriteria: Criteria = {
     logicalOperator: 'AND',
     children: []
@@ -45,4 +55,9 @@ export const emptyCriteriaLibrary: CriteriaLibrary = {
     name: '',
     description: '',
     criteria: ''
+};
+
+export const emptyCriteriaEditorData: CriteriaEditorData = {
+    mainCriteriaString: '',
+    isLibraryContext: false
 };

@@ -131,7 +131,8 @@
 
         <CreateTargetDialog :showDialog="showCreateTargetDialog" @submit="onSubmitNewTarget"/>
 
-        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData" @submit="onSubmitTargetCriteria"/>
+        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitTargetCriteria"/>
     </v-layout>
 </template>
 
@@ -157,7 +158,8 @@
         CreateTargetLibraryDialogData,
         emptyCreateTargetLibraryDialogData
     } from '@/shared/models/modals/create-target-library-dialog-data';
-    import CreateTargetLibraryDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetLibraryDialog.vue';
+    import CreateTargetLibraryDialog
+        from '@/components/target-editor/target-editor-dialogs/CreateTargetLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';

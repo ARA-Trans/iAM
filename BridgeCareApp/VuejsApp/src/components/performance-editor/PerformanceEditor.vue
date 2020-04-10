@@ -181,7 +181,8 @@
 
         <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEquationEditorDialogResult"/>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteriaEditorDialogResult"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitCriteriaEditorDialogResult"/>
     </v-layout>
 </template>
 
@@ -191,7 +192,8 @@
     import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
     import CreatePerformanceLibraryDialog from './performance-editor-dialogs/CreatePerformanceLibraryDialog.vue';
-    import CreatePerformanceLibraryEquationDialog from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
+    import CreatePerformanceLibraryEquationDialog
+        from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
     import EquationEditorDialog from '../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../shared/modals/CriteriaEditorDialog.vue';
     import {
@@ -570,22 +572,12 @@
 </script>
 
 <style>
-    .performance-editor-container {
-        height: 730px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-
     .equation-name-text-field-output {
         margin-left: 10px;
     }
 
     .attribute-text-field-output {
         margin-left: 15px;
-    }
-
-    .dropdown-height {
-        height: 75px;
     }
 
     .header-height {

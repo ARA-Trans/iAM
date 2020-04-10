@@ -57,7 +57,7 @@ export const hasUnsavedChanges = (editor: string, localSelectedLibrary: any, sta
     }
 };
 
-const sortNonObjectLists = (item: any) => {
+export const sortNonObjectLists = (item: any) => {
     if (hasValue(item)) {
         keys(item).forEach((prop) => {
             if (Array.isArray(item[prop])) {
@@ -73,6 +73,6 @@ const sortNonObjectLists = (item: any) => {
     return item;
 };
 
-const isEqual = (item1: any, item2: any) => {
+export const isEqual = (item1: any, item2: any) => {
     return isEmpty(symmetricDifference([item1], [item2]));
 };

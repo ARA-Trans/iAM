@@ -95,7 +95,7 @@
                                         @submit="onCreateRemainingLifeLimit"/>
 
         <CriteriaEditorDialog :dialogData="remainingLifeLimitCriteriaEditorDialogData"
-                              @submit="onSubmitEditedCriteria"/>
+                              @submitCriteriaEditorDialogResult="onSubmitEditedCriteria"/>
     </v-layout>
 </template>
 
@@ -115,7 +115,8 @@
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {Attribute} from '@/shared/models/iAM/attribute';
-    import CreateRemainingLifeLimitDialog from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitDialog.vue';
+    import CreateRemainingLifeLimitDialog
+        from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -125,7 +126,8 @@
         CreateRemainingLifeLimitLibraryDialogData,
         emptyCreateRemainingLifeLimitLibraryDialogData
     } from '@/shared/models/modals/create-remaining-life-limit-library-dialog-data';
-    import CreateRemainingLifeLimitLibraryDialog from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitLibraryDialog.vue';
+    import CreateRemainingLifeLimitLibraryDialog
+        from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitLibraryDialog.vue';
     import {
         CreateRemainingLifeLimitDialogData,
         emptyCreateRemainingLifeLimitDialogData

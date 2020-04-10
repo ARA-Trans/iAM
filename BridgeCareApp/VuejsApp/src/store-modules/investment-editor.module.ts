@@ -178,7 +178,7 @@ const actions = {
                     const deletedInvestmentLibrary: InvestmentLibrary = find(propEq('id', payload.documentKey._id), state.investmentLibraries);
                     commit('deletedInvestmentLibraryMutator', payload.documentKey._id);
 
-                    if (deletedInvestmentLibrary.id === state.selectedInvestmentLibrary) {
+                    if (deletedInvestmentLibrary.id === state.selectedInvestmentLibrary.id) {
                         if (!equals(state.scenarioInvestmentLibrary, emptyInvestmentLibrary)) {
                             commit('selectedInvestmentLibraryMutator', state.scenarioInvestmentLibrary.id);
                         } else {

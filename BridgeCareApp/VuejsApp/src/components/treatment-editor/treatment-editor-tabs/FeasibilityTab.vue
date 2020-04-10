@@ -1,10 +1,7 @@
 <template>
     <v-layout class="feasibility-tab-content">
         <v-flex xs12>
-            <v-layout justify-center v-if="feasibility.id === 0">
-                <v-btn @click="onCreateFeasibility" class="ara-blue-bg white--text">Create Feasibility</v-btn>
-            </v-layout>
-            <v-layout column justify-center v-if="feasibility.id !== 0">
+            <v-layout column justify-center v-if="feasibility.id !== '0'">
                 <v-textarea full-width no-resize outline prepend-outer-icon="fas fa-trash" readonly
                             v-model="feasibility.criteria">
                     <template slot="append-outer">
@@ -39,7 +36,8 @@
             </v-layout>
         </v-flex>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitFeasibilityCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitFeasibilityCriteria"/>
     </v-layout>
 </template>
 
@@ -93,9 +91,9 @@
          * Sets the component's grid data
          */
         setFeasibility() {
-            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility)
+            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility) && this.feasibilityTabSelectedTreatment.feasibility.id !== '0'
                 ? this.feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility)
-                : {...clone(emptyFeasibility), id: ObjectID.generate()};
+                : {...emptyFeasibility, id: ObjectID.generate()};
         }
 
         /**

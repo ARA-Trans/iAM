@@ -1,9 +1,11 @@
 import {CriteriaLibrary, emptyCriteriaLibrary} from '@/shared/models/iAM/criteria';
-import {any, append, clone, equals, find, findIndex, propEq, update} from 'ramda';
+import {any, append, clone, find, findIndex, propEq, reject, update} from 'ramda';
 import CriteriaEditorService from '@/services/criteria-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {isEqual, sortNonObjectLists} from '@/shared/utils/has-unsaved-changes-helper';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     criteriaLibraries: [] as CriteriaLibrary[],
@@ -32,7 +34,7 @@ const mutations = {
         );
     },
     deletedCriteriaLibraryMutator(state: any, deletedCriteriaLibraryId: string) {
-
+        state.criteriaLibraries = reject(propEq('id', deletedCriteriaLibraryId), state.criteriaLibraries);
     }
 };
 
@@ -44,9 +46,7 @@ const actions = {
         await CriteriaEditorService.getCriteriaLibraries()
             .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
-                    const criteriaLibraries: CriteriaLibrary[] = response.data.map((data: any) => {
-                        convertFromMongoToVue(data);
-                    });
+                    const criteriaLibraries: CriteriaLibrary[] = response.data.map((data: any) => convertFromMongoToVue(data));
                     commit('criteriaLibrariesMutator', criteriaLibraries);
                 }
             });
@@ -74,7 +74,7 @@ const actions = {
     async deleteCriteriaLibrary({commit, dispatch}: any, payload: any) {
         await CriteriaEditorService.deleteCriteriaLibrary(payload.criteriaLibraryId)
             .then((response: AxiosResponse) => {
-                if (hasValue(response, 'data')) {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
                     commit('deletedCriteriaLibraryMutator', payload.criteriaLibraryId);
                     dispatch('setSuccessMessage', {message: 'Successfully deleted criteria library'});
                 }
@@ -89,11 +89,33 @@ const actions = {
                     case 'replace':
                         commit('updatedCriteriaLibraryMutator', criteriaLibrary);
                         if (state.selectedCriteriaLibrary.id === criteriaLibrary.id &&
-                            !equals(state.selectedCriteriaLibrary, criteriaLibrary)) {
-
+                            !isEqual(sortNonObjectLists(clone(state.selectedCriteriaLibrary)), sortNonObjectLists(clone(criteriaLibrary)))) {
+                            commit('selectedCriteriaLibraryMutator', criteriaLibrary.id);
+                            dispatch('setInfoMessage', {
+                                message: `Criteria library ${criteriaLibrary.name} has been changed from another source`
+                            });
                         }
                         break;
                     case 'insert':
+                        commit('createdCriteriaLibraryMutator', criteriaLibrary);
+                        dispatch('setInfoMessage', {
+                            message: `Criteria library ${criteriaLibrary.name} has been created from another source`
+                        });
+                }
+            } else if (hasValue(payload, 'documentKey')) {
+                if (any(propEq('id', payload.documentKey._id), state.criteriaLibraries)) {
+                    const deletedCriteriaLibrary: CriteriaLibrary = find(
+                        propEq('id', payload.documentKey._id), state.criteriaLibraries
+                    );
+                    commit('deletedCriteriaLibraryMutator', payload.documentKey._id);
+
+                    if (deletedCriteriaLibrary.id === state.selectedCriteriaLibrary.id) {
+                        commit('selectedCriteriaLibraryMutator', null);
+                    }
+
+                    dispatch('setInfoMessage', {
+                        message: `Criteria library ${deletedCriteriaLibrary.name} has been deleted from another source`
+                    });
                 }
             }
         }
