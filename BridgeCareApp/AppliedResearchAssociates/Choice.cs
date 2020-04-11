@@ -1,5 +1,5 @@
 ﻿// WARNING: This file was automatically generated from a T4 text template at the
-// following moment in time: 04/01/2020 17:02:00 -05:00. Any changes you make to
+// following moment in time: 04/10/2020 20:29:28 -05:00. Any changes you make to
 // this file will be lost when this file is regenerated from the template
 // source.
 
@@ -12,11 +12,8 @@ namespace AppliedResearchAssociates
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2> : IEquatable<Choice<T1, T2>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2) };
-
         private Choice()
         {
         }
@@ -158,11 +155,8 @@ namespace AppliedResearchAssociates
         }
     }
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2, T3> : IEquatable<Choice<T1, T2, T3>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2), typeof(Choice3) };
-
         private Choice()
         {
         }
@@ -374,11 +368,8 @@ namespace AppliedResearchAssociates
         }
     }
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2, T3, T4> : IEquatable<Choice<T1, T2, T3, T4>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2), typeof(Choice3), typeof(Choice4) };
-
         private Choice()
         {
         }
@@ -666,11 +657,8 @@ namespace AppliedResearchAssociates
         }
     }
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2, T3, T4, T5> : IEquatable<Choice<T1, T2, T3, T4, T5>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2), typeof(Choice3), typeof(Choice4), typeof(Choice5) };
-
         private Choice()
         {
         }
@@ -1040,11 +1028,8 @@ namespace AppliedResearchAssociates
         }
     }
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2, T3, T4, T5, T6> : IEquatable<Choice<T1, T2, T3, T4, T5, T6>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2), typeof(Choice3), typeof(Choice4), typeof(Choice5), typeof(Choice6) };
-
         private Choice()
         {
         }
@@ -1502,11 +1487,8 @@ namespace AppliedResearchAssociates
         }
     }
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2, T3, T4, T5, T6, T7> : IEquatable<Choice<T1, T2, T3, T4, T5, T6, T7>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2), typeof(Choice3), typeof(Choice4), typeof(Choice5), typeof(Choice6), typeof(Choice7) };
-
         private Choice()
         {
         }
@@ -2058,11 +2040,8 @@ namespace AppliedResearchAssociates
         }
     }
 
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class Choice<T1, T2, T3, T4, T5, T6, T7, T8> : IEquatable<Choice<T1, T2, T3, T4, T5, T6, T7, T8>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { typeof(Choice1), typeof(Choice2), typeof(Choice3), typeof(Choice4), typeof(Choice5), typeof(Choice6), typeof(Choice7), typeof(Choice8) };
-
         private Choice()
         {
         }

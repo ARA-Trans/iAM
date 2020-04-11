@@ -26,7 +26,6 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 
     var subtypes = choices.ToDictionary(_ => _, _ => $"Choice{_}");
     var subtypeObjects = subtypes.Values.Select(subtype => $"typeof({subtype})");
-    var subtypeSeq = string.Join(", ", subtypeObjects);
 
     var typeParams = choices.ToDictionary(_ => _, _ => $"T{_}");
     var mapTypeParams = choices.ToDictionary(_ => _, _ => $"U{_}");
@@ -51,11 +50,8 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
     var reducerNullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), getNullChecks(reducerParams));
     var mapperNullCheckBlock = string.Join(Environment.NewLine + new string(' ', 16), getNullChecks(mapperParams));
 #>
-    [KnownType(nameof(GetKnownTypes))]
     public abstract class <#= type #> : IEquatable<<#= type #>>
     {
-        private static IEnumerable<Type> GetKnownTypes() => new[] { <#= subtypeSeq #> };
-
         private Choice()
         {
         }
