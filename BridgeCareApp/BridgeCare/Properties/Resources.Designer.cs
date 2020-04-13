@@ -377,7 +377,7 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NHS Condition By Bridge Count LLCC.
+        ///   Looks up a localized string similar to NHS Condition By Bridge Count.
         /// </summary>
         internal static string NHSConditionByBridgeCountLLCC {
             get {
@@ -386,7 +386,7 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NHS Condition By Deck Area LLCC.
+        ///   Looks up a localized string similar to NHS Condition By Deck Area.
         /// </summary>
         internal static string NHSConditionByDeckAreaLLCC {
             get {
@@ -404,7 +404,7 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to % of Budget Spent - BAMS.
+        ///   Looks up a localized string similar to Percentage of Budget Spent - BAMS.
         /// </summary>
         internal static string PercentBudgetSpentBAMS {
             get {
@@ -413,7 +413,7 @@ namespace BridgeCare.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to % of Budget Spent - MPMS.
+        ///   Looks up a localized string similar to Percentage of Budget Spent - MPMS.
         /// </summary>
         internal static string PercentBudgetSpentMPMS {
             get {

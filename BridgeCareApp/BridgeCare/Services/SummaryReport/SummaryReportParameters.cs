@@ -46,6 +46,7 @@ namespace BridgeCare.Services.SummaryReport
 
             worksheet.Cells["A1:B1"].Value = "Simulation Name";
             worksheet.Cells["C1:J1"].Value = simulationModel.simulationName;
+            excelHelper.ApplyColor(worksheet.Cells[1, 3, 1, 10], Color.FromArgb(142, 169, 219));
             excelHelper.ApplyBorder(worksheet.Cells[1, 1, 1, 10]);
             // End of Simulation Name format
 
@@ -61,12 +62,10 @@ namespace BridgeCare.Services.SummaryReport
 
         private void FillStaticData(ExcelWorksheet worksheet)
         {
-            worksheet.Cells["A3:B3"].Value = "BridgeCare Rules Creator:";
-            excelHelper.MergeCells(worksheet, 3, 1, 3, 2);
-            worksheet.Cells["C3"].Value = "Central Office";
-            worksheet.Cells["A4:B4"].Value = "BridgeCare Rules Date:";
-            worksheet.Cells["C4"].Value = "10/25/2019";
-            excelHelper.MergeCells(worksheet, 4, 1, 4, 2);
+            worksheet.Cells["A3"].Value = "BridgeCare Rules Creator:";
+            worksheet.Cells["B3"].Value = "Central Office";
+            worksheet.Cells["A4"].Value = "BridgeCare Rules Date:";
+            worksheet.Cells["B4"].Value = "10/25/2019";
             excelHelper.ApplyBorder(worksheet.Cells[3, 1, 4, 2]);
 
             excelHelper.MergeCells(worksheet, 6, 1, 6, 2);
@@ -511,10 +510,13 @@ namespace BridgeCare.Services.SummaryReport
             {
                 excelHelper.MergeCells(worksheet, startingRow, 13, startingRow, worksheet.Dimension.End.Column, false);
                 worksheet.Cells[startingRow, 12].Value = startingRow - 20;
+                worksheet.Cells[startingRow, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[startingRow, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 worksheet.Cells[startingRow, 13].Value = item.Criteria;
+                worksheet.Row(startingRow).Height = 33;
                 startingRow++;
             }
-            excelHelper.ApplyBorder(worksheet.Cells[21, 12, startingRow, worksheet.Dimension.End.Column]);
+            excelHelper.ApplyBorder(worksheet.Cells[21, 12, startingRow - 1, worksheet.Dimension.End.Column]);
         }
 
         private void FillJurisdictionCriteria(ExcelWorksheet worksheet, string criteria)
@@ -581,8 +583,8 @@ namespace BridgeCare.Services.SummaryReport
                 nextBudget = 0;
             }
             excelHelper.MergeCells(worksheet, 38, 1, 39, 1);
-            excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count + 2);
-            excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 2]);
+            excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count + 1);
+            excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 1]);
             FillBudgetCriteria(worksheet, startingRowInvestment, criterias);
         }
 
@@ -595,6 +597,7 @@ namespace BridgeCare.Services.SummaryReport
 
             worksheet.Cells[startingRowInvestment + 3, 1].Value = "Budget Name";
             worksheet.Cells[startingRowInvestment + 3, 2].Value = "Criteria";
+            excelHelper.MergeCells(worksheet, startingRowInvestment + 3, 2, startingRowInvestment + 3, 5);
             var cells = worksheet.Cells[startingRowInvestment + 3, 1, startingRowInvestment + 3, 2];
             excelHelper.ApplyStyle(cells);
             foreach (var item in criterias)

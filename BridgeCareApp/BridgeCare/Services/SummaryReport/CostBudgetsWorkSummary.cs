@@ -46,35 +46,41 @@ namespace BridgeCare.Services
         private int FillCostOfCommittedWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
             List<WorkSummaryByBudgetModel> comittedProjectsData)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of MPMS Work", "MPMS Work Type");
             var committedTotalRow = AddCostsOfCommittedWork(worksheet, simulationYears, currentCell, comittedProjectsData);
             return committedTotalRow;
         }
 
         private int FillCostOfCulvertWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<string> treatments)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Culvert Work");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of BAMS Culvert Work", "BAMS Culvert Work Type");
             var culvertTotalRow = AddCostsOfCulvertWork(worksheet, simulationDataModels, simulationYears, currentCell, treatments);
             return culvertTotalRow;
         }
 
         private int FillCostOfBridgeWorkSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<SimulationDataModel> simulationDataModels, List<string> treatments)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of Bridge Work");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Cost of BAMS Bridge Work", "BAMS Bridge Work Type");
             var bridgeTotalRow = AddCostsOfBridgeWork(worksheet, simulationDataModels, simulationYears, currentCell, treatments);
             return bridgeTotalRow;
         }
 
         private int FillTotalBudgetSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget", "Totals");
+            worksheet.Cells[currentCell.Row, simulationYears.Count + 3].Value = "Total Analysis Budget (all year)";
+            excelHelper.ApplyStyle(worksheet.Cells[currentCell.Row, simulationYears.Count + 3]);
+            excelHelper.ApplyBorder(worksheet.Cells[currentCell.Row, simulationYears.Count + 3]);
             var budgetTotalRow = AddDetailsForTotalBudget(worksheet, simulationYears, currentCell, yearlyBudgetModels);
             return budgetTotalRow;
         }
 
         private void FillRemainingBudgetSection(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, int committedTotalRow, int culvertTotalRow, int bridgeTotalRow, int budgetTotalRow)
         {
-            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Budget Analysis");
+            bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Budget Analysis", "");
+            worksheet.Cells[currentCell.Row, simulationYears.Count + 3].Value = "Total Remaining Budget(all years)";
+            excelHelper.ApplyStyle(worksheet.Cells[currentCell.Row, simulationYears.Count + 3]);
+            excelHelper.ApplyBorder(worksheet.Cells[currentCell.Row, simulationYears.Count + 3]);
             AddDetailsForRemainingBudget(worksheet, simulationYears, currentCell, committedTotalRow, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
@@ -128,6 +134,8 @@ namespace BridgeCare.Services
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
             excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));
+            excelHelper.ApplyColor(worksheet.Cells[committedTotalRow, fromColumn, committedTotalRow, column], Color.FromArgb(84, 130, 53));
+            excelHelper.SetTextColor(worksheet.Cells[committedTotalRow, fromColumn, committedTotalRow, column], Color.White);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return committedTotalRow;
         }
@@ -168,7 +176,10 @@ namespace BridgeCare.Services
             }
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));            
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));
+
+            excelHelper.ApplyColor(worksheet.Cells[culvertTotalRow, fromColumn, culvertTotalRow, column], Color.FromArgb(84, 130, 53));
+            excelHelper.SetTextColor(worksheet.Cells[culvertTotalRow, fromColumn, culvertTotalRow, column], Color.White);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return culvertTotalRow;
         }              
@@ -191,14 +202,18 @@ namespace BridgeCare.Services
                 worksheet.Cells[row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.budgetAmount ?? 0);
                 budgetTotalRow = row;
             }
-            excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
-            excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
+            worksheet.Cells[row, column + 1].Formula = "SUM(" + worksheet.Cells[row, fromColumn, row, column] + ")";
+
+            excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column + 1]);
+            excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column + 1], "NegativeCurrency");
             excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(84, 130, 53));
+            excelHelper.SetTextColor(worksheet.Cells[startRow, fromColumn, row, column], Color.White);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return budgetTotalRow;
         }
 
-        private void AddDetailsForRemainingBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, int committedTotalRow, int culvertTotalRow, int bridgeTotalRow, int budgetTotalRow)
+        private void AddDetailsForRemainingBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, int committedTotalRow,
+            int culvertTotalRow, int bridgeTotalRow, int budgetTotalRow)
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
@@ -216,21 +231,25 @@ namespace BridgeCare.Services
                     Convert.ToDouble(worksheet.Cells[committedTotalRow, column].Value);
 
                 worksheet.Cells[row, column].Value = Convert.ToDouble(worksheet.Cells[budgetTotalRow, column].Value) - totalSpent;
-                //excelHelper.SetCustomFormat(worksheet.Cells[row, fromColumn, row, column], "NegativeCurrency");
                 row++;
 
                 worksheet.Cells[row, column].Formula = worksheet.Cells[committedTotalRow, column] + "/" + totalSpent;
                 row++;
 
                 worksheet.Cells[row, column].Formula = 1 + "-" + worksheet.Cells[row - 1, column];
-                //excelHelper.SetCustomFormat(worksheet.Cells[row - 1, startColumn + 1, row, column], "Percentage");
             }
-            excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
+            worksheet.Cells[startRow, column + 1].Formula = "SUM(" + worksheet.Cells[startRow, fromColumn, startRow, column] + ")";
+            worksheet.Cells[startRow, column + 2].Formula = worksheet.Cells[startRow, column + 1] + "/" + worksheet.Cells[budgetTotalRow, column + 1];
+            worksheet.Cells[startRow, column + 2].Style.Numberformat.Format = "#0.00%";
+            worksheet.Cells[startRow, column + 3].Value = "Percentage of Total Budget that was Unspent";
 
-            excelHelper.SetCustomFormat(worksheet.Cells[row - 2, fromColumn, row - 2, column], "NegativeCurrency");
+            excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column + 1]);
+
+            excelHelper.SetCustomFormat(worksheet.Cells[row - 2, fromColumn, row - 2, column + 1], "NegativeCurrency");
             excelHelper.SetCustomFormat(worksheet.Cells[row - 1, fromColumn, row, column], "Percentage");
 
-            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(248, 203, 173));
+            excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, startRow, column], Color.Red);
+            excelHelper.ApplyColor(worksheet.Cells[startRow + 1, fromColumn, row, column], Color.FromArgb(248, 203, 173));
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, row + 3, column);
             excelHelper.ApplyColor(worksheet.Cells[row + 2, startColumn, row + 2, column], Color.DimGray);
         }
@@ -273,6 +292,9 @@ namespace BridgeCare.Services
             excelHelper.ApplyBorder(worksheet.Cells[startRow, startColumn, row, column]);
             excelHelper.SetCustomFormat(worksheet.Cells[startRow, fromColumn, row, column], "NegativeCurrency");
             excelHelper.ApplyColor(worksheet.Cells[startRow, fromColumn, row, column], Color.FromArgb(198, 224, 180));
+
+            excelHelper.ApplyColor(worksheet.Cells[bridgeTotalRow, fromColumn, bridgeTotalRow, column], Color.FromArgb(84, 130, 53));
+            excelHelper.SetTextColor(worksheet.Cells[bridgeTotalRow, fromColumn, bridgeTotalRow, column], Color.White);
             bridgeWorkSummaryCommon.UpdateCurrentCell(currentCell, ++row, column);
             return bridgeTotalRow;
         }
