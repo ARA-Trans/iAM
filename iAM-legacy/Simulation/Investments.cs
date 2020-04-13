@@ -420,7 +420,7 @@ namespace Simulation
                         throw e;
                     }
 
-                    fAfterSpending = fAvailable - fAmount;
+                    fAfterSpending = fAvailable - currentYearAmount;
                     if (fOriginal <= 0) continue;
                     fPercent = (1 - fAfterSpending / fOriginal) * 100;
 
@@ -429,7 +429,7 @@ namespace Simulation
                     {
                         float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
                         var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal / 100;
-                        budgetHash = fAmount.ToString("f0") + "/" + fAvailable.ToString("f0") + "/" + original.ToString("f0");
+                        budgetHash = currentYearAmount.ToString("#,##0.##") +"/" + fAmount.ToString("#,##0.##") + "/" + fAvailable.ToString("#,##0.##") + "/" + original.ToString("#,##0.##");
                         //if (fPercent < fPercentLimit) return budgetCheck;
                         if (fPercent > fPercentLimit)
                         {
