@@ -8,8 +8,8 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         public CalculateEvaluateCompilerBenchmarks()
         {
             Compiler.ParameterTypes["deck_area"] = ParameterType.Number;
-            Compiler.ParameterTypes["district"] = ParameterType.String;
-            Compiler.ParameterTypes["family_id"] = ParameterType.String;
+            Compiler.ParameterTypes["district"] = ParameterType.Text;
+            Compiler.ParameterTypes["family_id"] = ParameterType.Text;
         }
 
         [Params(.2, .5, .8)]

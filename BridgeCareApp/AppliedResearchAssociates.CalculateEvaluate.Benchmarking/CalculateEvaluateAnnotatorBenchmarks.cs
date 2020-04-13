@@ -6,8 +6,8 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
     {
         public CalculateEvaluateAnnotatorBenchmarks()
         {
-            Compiler.ParameterTypes["district"] = ParameterType.String;
-            Compiler.ParameterTypes["family_id"] = ParameterType.String;
+            Compiler.ParameterTypes["district"] = ParameterType.Text;
+            Compiler.ParameterTypes["family_id"] = ParameterType.Text;
         }
 
         [Benchmark]

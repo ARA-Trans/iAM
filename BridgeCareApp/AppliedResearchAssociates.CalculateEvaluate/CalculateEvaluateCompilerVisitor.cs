@@ -214,7 +214,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
                 argumentInfo = Numbers;
                 break;
 
-            case ParameterType.String:
+            case ParameterType.Text:
                 if (!allowStrings)
                 {
                     goto default;
@@ -222,7 +222,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
                 argumentInfo = Strings;
                 break;
 
-            case ParameterType.Date:
+            case ParameterType.Timestamp:
                 argumentInfo = Dates;
                 break;
 

@@ -10,8 +10,8 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         {
             var compiler = new CalculateEvaluateCompiler();
             compiler.ParameterTypes["param1"] = ParameterType.Number;
-            compiler.ParameterTypes["param2"] = ParameterType.String;
-            compiler.ParameterTypes["param3"] = ParameterType.Date;
+            compiler.ParameterTypes["param2"] = ParameterType.Text;
+            compiler.ParameterTypes["param3"] = ParameterType.Timestamp;
 
             var expression = "[param1]=|1| and ([param2]<>|| or [param3]<|2000-01-01|)";
             var annotatedExpression = compiler.AnnotateParameterReferenceTypes(expression);
@@ -154,7 +154,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         private void SingleDateParameterEvaluation(string inputExpression, Action<bool> assert)
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.Date;
+            compiler.ParameterTypes["PARAM"] = ParameterType.Timestamp;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
             argument.Dates["PaRaM"] = d1;
@@ -176,7 +176,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         private void SingleStringParameterEvaluation(string inputExpression, Action<bool> assert)
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.String;
+            compiler.ParameterTypes["PARAM"] = ParameterType.Text;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
             argument.Strings["PaRaM"] = s1;

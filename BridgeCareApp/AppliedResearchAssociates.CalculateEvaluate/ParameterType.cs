@@ -3,7 +3,7 @@
     public enum ParameterType
     {
         Number,
-        String,
-        Date,
+        Text,
+        Timestamp,
     }
 }

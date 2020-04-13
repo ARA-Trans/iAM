@@ -99,11 +99,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
                 case ParameterType.Number:
                     break;
 
-                case ParameterType.String:
+                case ParameterType.Text:
                     insert("@");
                     break;
 
-                case ParameterType.Date:
+                case ParameterType.Timestamp:
                     insert("$");
                     break;
 
