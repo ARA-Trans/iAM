@@ -5,7 +5,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class AnalysisMethod
     {
-        public RawAttribute Benefit { get; }
+        public NumberAttribute Benefit { get; }
 
         public double BenefitLimit { get; }
 

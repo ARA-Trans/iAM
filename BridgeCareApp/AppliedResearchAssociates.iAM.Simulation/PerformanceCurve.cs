@@ -2,7 +2,7 @@
 {
     public class PerformanceCurve
     {
-        public RawAttribute Attribute { get; }
+        public NumberAttribute Attribute { get; }
 
         public Criterion Criterion { get; }
 

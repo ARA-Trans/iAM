@@ -2,7 +2,7 @@
 {
     public class TreatmentConsequence
     {
-        public RawAttribute Attribute { get; }
+        public NumberAttribute Attribute { get; }
 
         public NumberAdjustment Change { get; }
 
