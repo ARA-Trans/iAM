@@ -13,26 +13,14 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 IsCompiled = true;
             }
 
-            return Adjuster(value, Operand);
+            return Adjuster(value);
         }
 
         private static readonly Regex ExpressionPattern = new Regex(@"\A\s*((?:\+|-)?)(.+?)(%?)\s*\z");
 
-        private Func<double, double, double> Adjuster;
+        private Func<double, double> Adjuster;
 
         private double Operand;
-
-        private static double Add(double value, double operand) => value + operand;
-
-        private static double AddPercentage(double value, double operand) => value * (1 + operand);
-
-        private static double Set(double value, double operand) => operand;
-
-        private static double SetPercentage(double value, double operand) => value * operand;
-
-        private static double Subtract(double value, double operand) => value - operand;
-
-        private static double SubtractPercentage(double value, double operand) => value * (1 - operand);
 
         private void Compile()
         {
@@ -89,5 +77,21 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 throw new InvalidOperationException("Invalid operand type.");
             }
         }
+
+        #region Operations
+
+        private double Add(double value) => value + Operand;
+
+        private double AddPercentage(double value) => value * (1 + Operand);
+
+        private double Set(double value) => Operand;
+
+        private double SetPercentage(double value) => value * Operand;
+
+        private double Subtract(double value) => value - Operand;
+
+        private double SubtractPercentage(double value) => value * (1 - Operand);
+
+        #endregion Operations
     }
 }
