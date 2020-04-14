@@ -132,7 +132,8 @@
 
         <CreateDeficientDialog :showDialog="showCreateDeficientDialog" @submit="onSubmitNewDeficient"/>
 
-        <DeficientCriteriaEditor :dialogData="deficientCriteriaEditorDialogData" @submit="onSubmitDeficientCriteria"/>
+        <DeficientCriteriaEditor :dialogData="deficientCriteriaEditorDialogData"
+                                 @submitCriteriaEditorDialogResult="onSubmitDeficientCriteria"/>
     </v-layout>
 </template>
 
@@ -156,7 +157,6 @@
     } from '@/shared/models/modals/create-deficient-library-dialog-data';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import CreateDeficientLibraryDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';

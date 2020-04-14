@@ -153,7 +153,8 @@
                                             <v-edit-dialog :return-value.sync="props.item.percentage" @save="onEditSelectedLibraryListData(props.item, 'percentage')" full-width
                                                            large lazy
                                                            persistent>
-                                                <input :class="{'invalid-input':sumOfPercentsEqualsOneHundred(props.item.percentage) !== true}":value="props.item.percentage" class="output"
+                                                <input :class="{'invalid-input': sumOfPercentsEqualsOneHundred(props.item.percentage) !== true}"
+                                                       :value="props.item.percentage" class="output"
                                                        readonly
                                                        type="text"/>
                                                 <template slot="input">
@@ -214,7 +215,8 @@
 
         <CreateCashFlowLibraryDialog :dialogData="createCashFlowLibraryDialogData" @submit="onCreateCashFlowLibrary"/>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitCriteria"/>
     </v-layout>
 </template>
 
@@ -224,7 +226,7 @@
     import {Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
     import {SelectItem} from '@/shared/models/vue/select-item';
-    import {clone, any, propEq, find, update, findIndex, isNil, prepend, append} from 'ramda';
+    import {append, clone, find, findIndex, isNil, prepend, propEq, update} from 'ramda';
     import {
         CashFlowLibrary,
         emptyCashFlowLibrary,
@@ -250,6 +252,7 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+
     const ObjectID = require('bson-objectid');
 
     @Component({

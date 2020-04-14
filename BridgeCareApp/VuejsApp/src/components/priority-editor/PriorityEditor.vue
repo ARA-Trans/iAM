@@ -136,7 +136,8 @@
 
         <CreatePriorityDialog :showDialog="showCreatePriorityDialog" @submit="onSubmitNewPriority"/>
 
-        <PrioritiesCriteriaEditor :dialogData="prioritiesCriteriaEditorDialogData" @submit="onSubmitPriorityCriteria"/>
+        <PrioritiesCriteriaEditor :dialogData="prioritiesCriteriaEditorDialogData"
+                                  @submitCriteriaEditorDialogResult="onSubmitPriorityCriteria"/>
     </v-layout>
 </template>
 
@@ -162,7 +163,6 @@
     import {any, clone, contains, find, findIndex, flatten, isNil, prepend, propEq, update} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {EditBudgetsDialogData, emptyEditBudgetsDialogData} from '@/shared/models/modals/edit-budgets-dialog';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     import {SelectItem} from '@/shared/models/vue/select-item';
@@ -373,7 +373,7 @@
                     const row: PrioritiesDataTableRow = {
                         id: priority.id,
                         priorityLevel: priority.priorityLevel.toString(),
-                        year: priority.year === null || priority.year === undefined ? '' : priority.year.toString(),
+                        year: !hasValue(priority.year) ? '' : priority.year!.toString(),
                         criteria: priority.criteria
                     };
 
@@ -603,10 +603,6 @@
 </script>
 
 <style>
-    .criteria-input-icons {
-        margin-left: 1px;
-    }
-
     .priorities-data-table {
         height: 425px;
         overflow-y: auto;

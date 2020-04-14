@@ -69,7 +69,8 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitCriteria"/>
     </v-layout>
 </template>
 

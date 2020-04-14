@@ -20,7 +20,12 @@ const actions = {
         await PollingService.pollEvents(state.sessionId)
             .then((response: AxiosResponse<any>) => {
                 if (hasValue(response, 'data')) {
-                    response.data.map((event: any) => dispatch('socket_' + event.eventName, event.payload));
+                    response.data.map((event: any) => {
+                        if (event.eventName === 'criteriaLibrary') {
+                            console.log('here it is');
+                        }
+                        dispatch(`socket_${event.eventName}`, event.payload);
+                    });
                 }
             });
     },

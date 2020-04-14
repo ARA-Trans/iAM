@@ -38,7 +38,8 @@
 
         <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedCostEquation"/>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedCostCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitEditedCostCriteria"/>
     </v-layout>
 </template>
 

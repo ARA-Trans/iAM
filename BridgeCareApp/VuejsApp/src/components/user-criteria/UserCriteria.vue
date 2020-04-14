@@ -6,24 +6,24 @@
                     <v-card-title class="userCriteriaTableHeader">
                         Unassigned Users
                     </v-card-title>
-                    <v-card-text style="justify-content: center; text-align: center; padding-top: 0px">
+                    <v-card-text style="justify-content: center; text-align: center; padding-top: 0">
                         The following users have no access to any inventory items.
                     </v-card-text>
-                    <v-divider style="margin: 0px"/>
+                    <v-divider style="margin: 0"/>
                     <div v-for="user in unassignedUsers">
                         <v-layout row style="margin: auto; width: 75%;text-align: center">
-                            <v-flex style="display: flex; flex-direction: column; justify-content: center; font-size: 1.2em; padding-top: 0px; padding-bottom: 0px"
+                            <v-flex style="display: flex; flex-direction: column; justify-content: center; font-size: 1.2em; padding-top: 0; padding-bottom: 0"
                                     xs4>
                                 {{user.username}}
                             </v-flex>
-                            <v-flex style="padding: 0px" xs4>
+                            <v-flex style="padding: 0" xs4>
                                 <v-btn @click="onEditCriteria(user)" class="ara-blue-bg white--text"
                                        title="Give the user limited access to the bridge inventory">
                                     <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-edit</v-icon>
                                     Assign Criteria Filter
                                 </v-btn>
                             </v-flex>
-                            <v-flex style="padding: 0px; justify-content: center" xs4>
+                            <v-flex style="padding: 0; justify-content: center" xs4>
                                 <v-btn @click="onGiveUnrestrictedAccess(user)" class="ara-blue-bg white--text"
                                        title="Allow the user to access the full bridge inventory">
                                     <v-icon size="1.5em" style="padding-right: 0.5em">fas fa-lock-open</v-icon>
@@ -31,7 +31,7 @@
                                 </v-btn>
                             </v-flex>
                         </v-layout>
-                        <v-divider style="margin: 0px"/>
+                        <v-divider style="margin: 0"/>
                     </div>
                 </div>
                 <v-card-title class="userCriteriaTableHeader">
@@ -46,16 +46,18 @@
                         <template slot="items" slot-scope="props">
                             <td style="width: 10%; font-size: 1.2em; padding-top: 0.4em">{{ props.item.username }}</td>
                             <td style="width: 25%">
-                                <v-layout align-center style="flex-wrap:nowrap; margin-left: 0px">
+                                <v-layout align-center style="flex-wrap:nowrap; margin-left: 0">
                                     <v-menu bottom
                                             min-height="500px" min-width="500px" v-if="props.item.hasCriteria">
                                         <template slot="activator">
-                                            <input :value="props.item.criteria" class="output" readonly style="width: 25em"
+                                            <input :value="props.item.criteria" class="output" readonly
+                                                   style="width: 25em"
                                                    type="text"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly
                                                             rows="5">
                                                 </v-textarea>
                                             </v-card-text>
@@ -94,7 +96,8 @@
             </v-card>
         </v-flex>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitCriteria"/>
     </v-layout>
 </template>
 

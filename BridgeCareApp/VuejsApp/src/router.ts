@@ -3,8 +3,6 @@ import VueRouter from 'vue-router';
 import './register-hooks';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
-import RemainingLifeLimitEditor from '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue';
-import CashFlowEditor from '@/components/cash-flow-editor/CashFlowEditor.vue';
 import Logout from '@/components/Logout.vue';
 import News from '@/components/News.vue';
 import AuthenticationStart from '@/components/authentication/AuthenticationStart.vue';
@@ -23,6 +21,10 @@ const AuthenticationFailure = () => import (/* webpackChunkName: "authentication
 const NoRole = () => import (/*webpackChunkName: "noRole" */ '@/components/authentication/NoRole.vue');
 const Inventory = () => import (/*webpackChunkName: "inventory" */ '@/components/Inventory.vue');
 const UserCriteriaEditor = () => import (/*webpackChunkName: "userCriteria" */ '@/components/user-criteria/UserCriteria.vue');
+const CriteriaLibraryEditor = () => import(/*webpackChunkName: "criteriaEditor" */ '@/components/criteria-editor/CriteriaLibraryEditor.vue');
+const AnalysisEditor = () => import (/*webpackChunkName: editAnalysis*/ '@/components/scenarios/EditAnalysis.vue');
+const RemainingLifeLimitEditor = () => import (/*webpackChunkName: remainingLifeLimitEditor*/ '@/components/remaining-life-limit-editor/RemainingLifeLimitEditor.vue');
+const CashFlowEditor = () => import (/*webpackChunkName: cashFlowEditor*/ '@/components/cash-flow-editor/CashFlowEditor.vue');
 
 Vue.use(VueRouter);
 
@@ -47,7 +49,7 @@ const router = new VueRouter({
                 {
                     path: '/EditAnalysis/',
                     name: 'EditAnalysis',
-                    component: EditAnalysis,
+                    component: AnalysisEditor,
                 },
                 {
                     path: '/InvestmentEditor/Scenario/',
@@ -138,6 +140,11 @@ const router = new VueRouter({
             name: 'CashFlowEditor',
             component: CashFlowEditor,
             props: true
+        },
+        {
+            path: '/CriteriaLibraryEditor/Library/',
+            name: 'CriteriaLibraryEditor',
+            component: CriteriaLibraryEditor,
         },
         {
             path: '/Authentication/',

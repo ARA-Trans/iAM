@@ -131,7 +131,8 @@
 
         <CreateTargetDialog :showDialog="showCreateTargetDialog" @submit="onSubmitNewTarget"/>
 
-        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData" @submit="onSubmitTargetCriteria"/>
+        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitTargetCriteria"/>
     </v-layout>
 </template>
 

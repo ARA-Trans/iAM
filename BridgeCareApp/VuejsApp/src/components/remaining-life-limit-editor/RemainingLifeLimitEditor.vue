@@ -95,7 +95,7 @@
                                         @submit="onCreateRemainingLifeLimit"/>
 
         <CriteriaEditorDialog :dialogData="remainingLifeLimitCriteriaEditorDialogData"
-                              @submit="onSubmitEditedCriteria"/>
+                              @submitCriteriaEditorDialogResult="onSubmitEditedCriteria"/>
     </v-layout>
 </template>
 
