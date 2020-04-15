@@ -9,14 +9,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public double Calculate(CalculateEvaluateArgument argument)
         {
-            if (!IsCompiled)
-            {
-                Calculator = Compiler.GetCalculator(Expression);
-                IsCompiled = true;
-            }
-
+            Prepare();
             return Calculator(argument);
         }
+
+        protected override void Compile() => Calculator = Compiler.GetCalculator(Expression);
 
         private readonly CalculateEvaluateCompiler Compiler;
 

@@ -7,22 +7,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public double Adjust(double value)
         {
-            if (!IsCompiled)
-            {
-                Compile();
-                IsCompiled = true;
-            }
-
+            Prepare();
             return Adjuster(value);
         }
 
-        private static readonly Regex ExpressionPattern = new Regex(@"\A\s*((?:\+|-)?)(.+?)(%?)\s*\z");
-
-        private Func<double, double> Adjuster;
-
-        private double Operand;
-
-        private void Compile()
+        protected override void Compile()
         {
             var match = ExpressionPattern.Match(Expression);
 
@@ -77,6 +66,12 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 throw new InvalidOperationException("Invalid operand type.");
             }
         }
+
+        private static readonly Regex ExpressionPattern = new Regex(@"\A\s*((?:\+|-)?)(.+?)(%?)\s*\z");
+
+        private Func<double, double> Adjuster;
+
+        private double Operand;
 
         #region Operations
 

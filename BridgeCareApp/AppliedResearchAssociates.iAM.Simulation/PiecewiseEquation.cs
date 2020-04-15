@@ -4,36 +4,32 @@ using System.Text.RegularExpressions;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class PiecewiseEquation
+    public class PiecewiseEquation : CompilableExpression
     {
-        public string Expression
+        public double this[int index]
         {
-            get => _Expression;
-            set
+            get
             {
-                if (_Expression != value)
-                {
-                    _Expression = value;
-
-                    Data.Clear();
-                    var match = Pattern.Match(_Expression);
-                    foreach (var group in match.Groups.Cast<Group>().Skip(1))
-                    {
-                        var datum = group.Value.Split(',');
-                        var input = int.Parse(datum[0]);
-                        var output = double.Parse(datum[1]);
-                        Data.Add(input, output);
-                    }
-                }
+                Prepare();
+                return Data[index];
             }
         }
 
-        public double this[int index] => Data[index];
+        protected override void Compile()
+        {
+            Data.Clear();
+            var match = Pattern.Match(Expression);
+            foreach (var group in match.Groups.Cast<Group>().Skip(1))
+            {
+                var datum = group.Value.Split(',');
+                var input = int.Parse(datum[0]);
+                var output = double.Parse(datum[1]);
+                Data.Add(input, output);
+            }
+        }
 
         private static readonly Regex Pattern = new Regex(@"\A(?:\((.*?)\))*\z");
 
         private readonly Dictionary<int, double> Data = new Dictionary<int, double>();
-
-        private string _Expression;
     }
 }

@@ -1,7 +1,11 @@
-﻿namespace AppliedResearchAssociates.iAM.Simulation
+﻿using System;
+
+namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class CompilableExpression
+    public abstract class CompilableExpression
     {
+        protected CompilableExpression() => _Prepare = _Compile;
+
         public string Expression
         {
             get => _Expression;
@@ -10,17 +14,23 @@
                 if (_Expression != value)
                 {
                     _Expression = value;
-                    IsCompiled = false;
+                    _Prepare = _Compile;
                 }
             }
         }
 
-        private protected CompilableExpression()
-        {
-        }
+        protected abstract void Compile();
 
-        protected bool IsCompiled { get; set; }
+        protected void Prepare() => _Prepare();
 
         private string _Expression;
+
+        private Action _Prepare;
+
+        private void _Compile()
+        {
+            Compile();
+            _Prepare = Static.DoNothing;
+        }
     }
 }

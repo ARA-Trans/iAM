@@ -13,9 +13,13 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Choice.cs</LastGenOutput>
     </None>
-    <None Update="ValueTupleEqualityComparer.tt">
-      <LastGenOutput>ValueTupleEqualityComparer.cs</LastGenOutput>
+    <None Update="Static.DoNothing.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Static.DoNothing.cs</LastGenOutput>
+    </None>
+    <None Update="ValueTupleEqualityComparer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ValueTupleEqualityComparer.cs</LastGenOutput>
     </None>
     <None Update="Zip.ToTuples.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -29,19 +33,24 @@
 
   <ItemGroup>
     <Compile Update="Choice.cs">
-      <DependentUpon>Choice.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>Choice.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Static.DoNothing.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Static.DoNothing.tt</DependentUpon>
     </Compile>
     <Compile Update="Zip.ToTuples.cs">
-      <DependentUpon>Zip.ToTuples.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>Zip.ToTuples.tt</DependentUpon>
     </Compile>
     <Compile Update="ValueTupleEqualityComparer.cs">
-      <DependentUpon>ValueTupleEqualityComparer.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>ValueTupleEqualityComparer.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 
