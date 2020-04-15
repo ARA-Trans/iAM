@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace AppliedResearchAssociates.iAM.Simulation
+﻿namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class TextAttribute : Attribute
+    public sealed class TextAttribute : Attribute<string>
     {
-        public List<AttributeDatum<string>> Data { get; }
-
-        public string Default { get; }
     }
 }
