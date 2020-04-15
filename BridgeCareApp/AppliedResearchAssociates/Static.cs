@@ -5,11 +5,46 @@ using System.Linq;
 
 namespace AppliedResearchAssociates
 {
-    public static class Static
+    public static partial class Static
     {
         public static IDisposable AsDisposable(this IEnumerable<IDisposable> source) => new AggregateDisposable(source);
 
         public static T? AsNullable<T>(this T value) where T : struct => value;
+
+        public static IEnumerable<int> BoundRange(int start, int end, int stride = 1)
+        {
+            var direction = Math.Sign(stride);
+            if (direction == 1)
+            {
+                return towardPositiveInfinity();
+            }
+            else if (direction == -1)
+            {
+                return towardNegativeInfinity();
+            }
+            else
+            {
+                throw new ArgumentException("Stride must be non-zero.", nameof(stride));
+            }
+
+            IEnumerable<int> towardPositiveInfinity()
+            {
+                while (start <= end)
+                {
+                    yield return start;
+                    start += stride;
+                }
+            }
+
+            IEnumerable<int> towardNegativeInfinity()
+            {
+                while (start >= end)
+                {
+                    yield return start;
+                    start += stride;
+                }
+            }
+        }
 
         public static int CombineHashCodes(this IEnumerable values, IEqualityComparer equalityComparer = null) => values.Cast<object>().CombineHashCodes(equalityComparer);
 
