@@ -88,30 +88,51 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
             public TokenStreamRewriter Rewriter { get; }
 
-            public override void EnterParameterReference(CalculateEvaluateParser.ParameterReferenceContext context)
+            public override void EnterEvaluationParameterReference(CalculateEvaluateParser.EvaluationParameterReferenceContext context)
             {
-                var identifierContext = context.IDENTIFIER();
-                var identifierText = identifierContext.GetText();
+                var annotationNode = context.TYPE_ANNOTATION();
+                var identifierNode = context.IDENTIFIER();
+                var identifierText = identifierNode.GetText();
                 var parameterType = ParameterTypes[identifierText];
 
                 switch (parameterType)
                 {
                 case ParameterType.Number:
+                    if (annotationNode != null)
+                    {
+                        Rewriter.Delete(annotationNode.Symbol);
+                    }
                     break;
 
                 case ParameterType.Text:
-                    insert("@");
+                    update(CalculateEvaluateLexer.TEXT_TYPE_ANNOTATION);
                     break;
 
                 case ParameterType.Timestamp:
-                    insert("$");
+                    update(CalculateEvaluateLexer.TIMESTAMP_TYPE_ANNOTATION);
                     break;
 
                 default:
                     throw new InvalidOperationException("Invalid parameter type.");
                 }
 
-                void insert(string typeAnnotation) => Rewriter.InsertBefore(identifierContext.Symbol, typeAnnotation);
+                void update(int annotationTokenType)
+                {
+                    var annotationTokenLiteral = CalculateEvaluateLexer.DefaultVocabulary.GetLiteralName(annotationTokenType);
+                    var annotationTokenText = annotationTokenLiteral.Substring(1, 1);
+
+                    if (annotationNode != null)
+                    {
+                        if (annotationNode.Symbol.Type != annotationTokenType)
+                        {
+                            Rewriter.Replace(annotationNode.Symbol, annotationTokenText);
+                        }
+                    }
+                    else
+                    {
+                        Rewriter.InsertBefore(identifierNode.Symbol, annotationTokenText);
+                    }
+                }
             }
 
             private readonly IReadOnlyDictionary<string, ParameterType> ParameterTypes;

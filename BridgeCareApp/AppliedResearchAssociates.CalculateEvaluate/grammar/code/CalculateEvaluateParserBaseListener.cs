@@ -314,17 +314,29 @@ public partial class CalculateEvaluateParserBaseListener : ICalculateEvaluatePar
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.calculationParameterReference"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context) { }
+	public virtual void EnterCalculationParameterReference([NotNull] CalculateEvaluateParser.CalculationParameterReferenceContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.calculationParameterReference"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context) { }
+	public virtual void ExitCalculationParameterReference([NotNull] CalculateEvaluateParser.CalculationParameterReferenceContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationParameterReference"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationParameterReference"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

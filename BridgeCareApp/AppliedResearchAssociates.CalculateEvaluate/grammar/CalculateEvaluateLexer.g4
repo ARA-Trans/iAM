@@ -82,6 +82,19 @@ RIGHT_BRACKET
    : ']'
    ;
 
+TYPE_ANNOTATION
+   : TEXT_TYPE_ANNOTATION
+   | TIMESTAMP_TYPE_ANNOTATION
+   ;
+
+TEXT_TYPE_ANNOTATION
+   : '@'
+   ;
+
+TIMESTAMP_TYPE_ANNOTATION
+   : '$'
+   ;
+
 // Custom literals
 
 IDENTIFIER

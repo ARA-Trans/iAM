@@ -24,9 +24,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             case CalculateEvaluateLexer.PLUS:
                 result = Expression.AddChecked(leftOperand, rightOperand);
                 break;
+
             case CalculateEvaluateLexer.MINUS:
                 result = Expression.SubtractChecked(leftOperand, rightOperand);
                 break;
+
             default:
                 throw new InvalidOperationException("Operation is neither addition nor subtraction.");
             }
@@ -75,9 +77,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             case CalculateEvaluateLexer.TIMES:
                 result = Expression.MultiplyChecked(leftOperand, rightOperand);
                 break;
+
             case CalculateEvaluateLexer.DIVIDED_BY:
                 result = Expression.Divide(leftOperand, rightOperand);
                 break;
+
             default:
                 throw new InvalidOperationException("Operation is neither multiplication nor division.");
             }
@@ -101,7 +105,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNumberParameterReference(CalculateEvaluateParser.NumberParameterReferenceContext context)
         {
-            var identifierText = context.parameterReference().IDENTIFIER().GetText();
+            var identifierText = context.calculationParameterReference().IDENTIFIER().GetText();
             var parameterType = ParameterTypes[identifierText];
 
             if (parameterType != ParameterType.Number)
@@ -140,7 +144,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitEqual(CalculateEvaluateParser.EqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.Equal, true);
+            var result = GetComparisonExpression(context.evaluationParameterReference(), context.EVALUATION_LITERAL(), Expression.Equal, true);
             return result;
         }
 
@@ -159,25 +163,25 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitGreaterThan(CalculateEvaluateParser.GreaterThanContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.GreaterThan, false);
+            var result = GetComparisonExpression(context.evaluationParameterReference(), context.EVALUATION_LITERAL(), Expression.GreaterThan, false);
             return result;
         }
 
         public override Expression VisitGreaterThanOrEqual(CalculateEvaluateParser.GreaterThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.GreaterThanOrEqual, false);
+            var result = GetComparisonExpression(context.evaluationParameterReference(), context.EVALUATION_LITERAL(), Expression.GreaterThanOrEqual, false);
             return result;
         }
 
         public override Expression VisitLessThan(CalculateEvaluateParser.LessThanContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.LessThan, false);
+            var result = GetComparisonExpression(context.evaluationParameterReference(), context.EVALUATION_LITERAL(), Expression.LessThan, false);
             return result;
         }
 
         public override Expression VisitLessThanOrEqual(CalculateEvaluateParser.LessThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.LessThanOrEqual, false);
+            var result = GetComparisonExpression(context.evaluationParameterReference(), context.EVALUATION_LITERAL(), Expression.LessThanOrEqual, false);
             return result;
         }
 
@@ -199,13 +203,13 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNotEqual(CalculateEvaluateParser.NotEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.NotEqual, true);
+            var result = GetComparisonExpression(context.evaluationParameterReference(), context.EVALUATION_LITERAL(), Expression.NotEqual, true);
             return result;
         }
 
-        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, ITerminalNode evaluationLiteral, Func<IndexExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
+        private Expression GetComparisonExpression(CalculateEvaluateParser.EvaluationParameterReferenceContext evaluationParameterReference, ITerminalNode evaluationLiteral, Func<IndexExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
         {
-            var identifierText = parameterReference.IDENTIFIER().GetText();
+            var identifierText = evaluationParameterReference.IDENTIFIER().GetText();
             var parameterType = ParameterTypes[identifierText];
 
             ArgumentInfo argumentInfo;
