@@ -71,6 +71,7 @@
                         <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
+                        <td>{{formatDate(props.item.lastRun)}}</td>
                         <td>{{props.item.status}}</td>
                         <td>
                             <v-layout nowrap row>
@@ -161,6 +162,7 @@
                         <td>{{props.item.owner ? props.item.owner : '[ No Owner ]'}}</td>
                         <td>{{formatDate(props.item.createdDate)}}</td>
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
+                        <td>{{formatDate(props.item.lastRun)}}</td>
                         <td>{{props.item.status}}</td>
                         <td>
                             <v-layout nowrap row>
@@ -288,6 +290,7 @@
             {text: 'Owner', sortable: false, value: 'owner'},
             {text: 'Date Created', sortable: true, value: 'createdDate'},
             {text: 'Date Last Modified', sortable: true, value: 'lastModifiedDate'},
+            {text: 'Date Last Run', sortable: true, value: 'lastRun'},
             {text: 'Status', sortable: false, value: 'status'},
             {text: '', sortable: false, value: 'actions'}
         ];
@@ -371,7 +374,7 @@
          * @param unformattedDate Unformatted date
          */
         formatDate(unformattedDate: Date) {
-            return moment(unformattedDate).format('M/D/YYYY');
+            return hasValue(unformattedDate) ? moment(unformattedDate).format('M/D/YYYY') : null;
         }
 
         /**

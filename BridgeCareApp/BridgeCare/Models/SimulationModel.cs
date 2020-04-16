@@ -33,7 +33,7 @@ namespace BridgeCare.Models
             simulationName = entity.SIMULATION;
             networkId = entity.NETWORKID ?? 0;
             Created = entity.DATE_CREATED;
-            LastRun = entity.DATE_LAST_RUN ?? DateTime.Now;
+            LastRun = entity.DATE_LAST_RUN;
             networkName = entity.NETWORK?.NETWORK_NAME;
         }
     }
