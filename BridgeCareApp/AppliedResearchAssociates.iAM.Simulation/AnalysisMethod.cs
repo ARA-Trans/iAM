@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
@@ -21,11 +20,12 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public List<RemainingLifeLimit> RemainingLifeLimits { get; }
 
+        public bool ShouldApplyMultipleFeasibleCosts { get; }
+
         public ISpendingStrategy SpendingStrategy { get; }
 
         public List<TargetConditionGoal> TargetConditionGoals { get; }
 
-        [Obsolete("Deprecated per Gregg's presentation on 2020-03-10.")]
-        public object Weighting { get; }
+        public NumberAttribute Weighting { get; }
     }
 }

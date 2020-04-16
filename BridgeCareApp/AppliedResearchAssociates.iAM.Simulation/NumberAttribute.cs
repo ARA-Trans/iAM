@@ -2,8 +2,10 @@
 {
     public sealed class NumberAttribute : Attribute<double>
     {
-        public double Maximum { get; }
+        public Deterioration Deterioration { get; }
 
-        public double Minimum { get; }
+        public double? Maximum { get; }
+
+        public double? Miniumum { get; }
     }
 }

@@ -11,6 +11,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public List<AttributeDatum<T>> Data { get; }
 
-        public T Default { get; }
+        public T DefaultValue { get; }
     }
 }

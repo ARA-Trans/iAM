@@ -1,9 +1,9 @@
 ﻿namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class CriterialEquation
+    public class Criterial<T>
     {
         public Criterion Criterion { get; }
 
-        public Equation Equation { get; }
+        public T Item { get; }
     }
 }

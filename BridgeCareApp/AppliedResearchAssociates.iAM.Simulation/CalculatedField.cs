@@ -4,8 +4,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class CalculatedField
     {
-        public string Name { get; }
+        public List<Criterial<Equation>> Equations { get; }
 
-        public List<CriterialEquation> Equations { get; }
+        public string Name { get; }
     }
 }
