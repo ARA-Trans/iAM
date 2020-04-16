@@ -23,15 +23,15 @@ calculation
    ;
 
 evaluation
-   : left = evaluation AND right = evaluation                   # logicalConjunction
-   | left = evaluation OR right = evaluation                    # logicalDisjunction
-   | parameterReference EQUAL evaluationLiteral                 # equal
-   | parameterReference NOT_EQUAL evaluationLiteral             # notEqual
-   | parameterReference LESS_THAN evaluationLiteral             # lessThan
-   | parameterReference LESS_THAN_OR_EQUAL evaluationLiteral    # lessThanOrEqual
-   | parameterReference GREATER_THAN_OR_EQUAL evaluationLiteral # greaterThanOrEqual
-   | parameterReference GREATER_THAN evaluationLiteral          # greaterThan
-   | LEFT_PAREN evaluation RIGHT_PAREN                          # evaluationGrouping
+   : left = evaluation AND right = evaluation                    # logicalConjunction
+   | left = evaluation OR right = evaluation                     # logicalDisjunction
+   | parameterReference EQUAL EVALUATION_LITERAL                 # equal
+   | parameterReference NOT_EQUAL EVALUATION_LITERAL             # notEqual
+   | parameterReference LESS_THAN EVALUATION_LITERAL             # lessThan
+   | parameterReference LESS_THAN_OR_EQUAL EVALUATION_LITERAL    # lessThanOrEqual
+   | parameterReference GREATER_THAN_OR_EQUAL EVALUATION_LITERAL # greaterThanOrEqual
+   | parameterReference GREATER_THAN EVALUATION_LITERAL          # greaterThan
+   | LEFT_PAREN evaluation RIGHT_PAREN                           # evaluationGrouping
    ;
 
 arguments
@@ -40,9 +40,4 @@ arguments
 
 parameterReference
    : LEFT_BRACKET IDENTIFIER RIGHT_BRACKET
-   ;
-
-evaluationLiteral
-   : EMPTY_EVALUATION_LITERAL
-   | EVALUATION_LITERAL_OPENING_DELIMITER EVALUATION_LITERAL_CONTENT EVALUATION_LITERAL_CLOSING_DELIMITER
    ;

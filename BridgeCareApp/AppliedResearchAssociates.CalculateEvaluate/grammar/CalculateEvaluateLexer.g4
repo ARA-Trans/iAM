@@ -1,6 +1,11 @@
 lexer grammar CalculateEvaluateLexer
    ;
 
+tokens
+{
+   EVALUATION_LITERAL
+}
+
 WHITESPACE
    : [ \t\r\n]+ -> channel(HIDDEN)
    ;
@@ -104,32 +109,42 @@ fragment EXPONENT_PART
    : [eE] ('-' | '+')? NATURAL_NUMBER
    ;
 
-fragment NATURAL_NUMBER
-   : '0'
-   | [1-9] DIGIT*
+fragment DECIMAL_PART
+   : '.' NATURAL_NUMBER
    ;
 
-fragment DECIMAL_PART
-   : '.' DIGIT+
+fragment NATURAL_NUMBER
+   : DIGIT+
    ;
 
 // Evaluation literal
 
-EMPTY_EVALUATION_LITERAL
-   : '||'
+EVALUATION_LITERAL_1_OPENING_DELIMITER
+   : '\'' -> more, pushMode(EVALUATION_LITERAL_1_MODE)
    ;
 
-EVALUATION_LITERAL_OPENING_DELIMITER
-   : '|' -> mode(EVALUATION_LITERAL_MODE)
+EVALUATION_LITERAL_2_OPENING_DELIMITER
+   : '|' -> more, pushMode(EVALUATION_LITERAL_2_MODE)
    ;
 
-mode EVALUATION_LITERAL_MODE
+mode EVALUATION_LITERAL_1_MODE
    ;
 
-EVALUATION_LITERAL_CONTENT
-   : ~'|'+
+EVALUATION_LITERAL_1_CLOSING_DELIMITER
+   : '\'' -> popMode, type(EVALUATION_LITERAL)
    ;
 
-EVALUATION_LITERAL_CLOSING_DELIMITER
-   : '|' -> mode(DEFAULT_MODE)
+EVALUATION_LITERAL_1_CONTENT
+   : . -> more
+   ;
+
+mode EVALUATION_LITERAL_2_MODE
+   ;
+
+EVALUATION_LITERAL_2_CLOSING_DELIMITER
+   : '|' -> popMode, type(EVALUATION_LITERAL)
+   ;
+
+EVALUATION_LITERAL_2_CONTENT
+   : . -> more
    ;

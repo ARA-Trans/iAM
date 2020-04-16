@@ -13,10 +13,10 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             compiler.ParameterTypes["param2"] = ParameterType.Text;
             compiler.ParameterTypes["param3"] = ParameterType.Timestamp;
 
-            var expression = "[param1]=|1| and ([param2]<>|| or [param3]<|2000-01-01|)";
+            var expression = "[param1]=|1| and ([param2]<>|| or [param3]<'2000-01-01')";
             var annotatedExpression = compiler.AnnotateParameterReferenceTypes(expression);
 
-            Assert.That(annotatedExpression, Is.EqualTo("[param1]=|1| and ([@param2]<>|| or [$param3]<|2000-01-01|)"));
+            Assert.That(annotatedExpression, Is.EqualTo("[param1]=|1| and ([@param2]<>|| or [$param3]<'2000-01-01')"));
         }
 
         #region "Calculate"
@@ -62,9 +62,9 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             var expression = "[param]";
             var calculator = compiler.GetCalculator(expression);
             var argument = new CalculateEvaluateArgument();
-            argument.Numbers["PaRaM"] = n1;
+            argument.Number["PaRaM"] = n1;
             var result = calculator(argument);
-            Assert.That(result, Is.EqualTo(argument.Numbers["pArAm"]));
+            Assert.That(result, Is.EqualTo(argument.Number["pArAm"]));
         }
 
         [Test]
@@ -77,31 +77,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void DateEqual() => SingleDateParameterEvaluation($"[param]=|{d2}|", Assert.IsFalse);
-
-        [Test]
-        [Category(CATEGORY_EVALUATE)]
-        public void DateGreaterThan() => SingleDateParameterEvaluation($"[param]>|{d2}|", Assert.IsFalse);
-
-        [Test]
-        [Category(CATEGORY_EVALUATE)]
-        public void DateGreaterThanOrEqual() => SingleDateParameterEvaluation($"[param]>=|{d2}|", Assert.IsFalse);
-
-        [Test]
-        [Category(CATEGORY_EVALUATE)]
-        public void DateLessThan() => SingleDateParameterEvaluation($"[param]<|{d2}|", Assert.IsTrue);
-
-        [Test]
-        [Category(CATEGORY_EVALUATE)]
-        public void DateLessThanOrEqual() => SingleDateParameterEvaluation($"[param]<=|{d2}|", Assert.IsTrue);
-
-        [Test]
-        [Category(CATEGORY_EVALUATE)]
-        public void DateNotEqual() => SingleDateParameterEvaluation($"[param]<>|{d2}|", Assert.IsTrue);
-
-        [Test]
-        [Category(CATEGORY_EVALUATE)]
-        public void NumberEqual() => SingleNumberParameterEvaluation($"[param]=|{n2}|", Assert.IsFalse);
+        public void NumberEqual() => SingleNumberParameterEvaluation($"[param]='{n2}'", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
@@ -125,11 +101,35 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void StringEqual() => SingleStringParameterEvaluation($"[param]=|{s2}|", Assert.IsFalse);
+        public void TextEqual() => SingleTextParameterEvaluation($"[param]='{s2}'", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void StringNotEqual() => SingleStringParameterEvaluation($"[param]<>|{s2}|", Assert.IsTrue);
+        public void TextNotEqual() => SingleTextParameterEvaluation($"[param]<>|{s2}|", Assert.IsTrue);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampEqual() => SingleTimestampParameterEvaluation($"[param]='{d2}'", Assert.IsFalse);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampGreaterThan() => SingleTimestampParameterEvaluation($"[param]>|{d2}|", Assert.IsFalse);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampGreaterThanOrEqual() => SingleTimestampParameterEvaluation($"[param]>=|{d2}|", Assert.IsFalse);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampLessThan() => SingleTimestampParameterEvaluation($"[param]<|{d2}|", Assert.IsTrue);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampLessThanOrEqual() => SingleTimestampParameterEvaluation($"[param]<=|{d2}|", Assert.IsTrue);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampNotEqual() => SingleTimestampParameterEvaluation($"[param]<>|{d2}|", Assert.IsTrue);
 
         #endregion "Evaluate"
 
@@ -143,23 +143,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         private static readonly DateTime d1 = new DateTime(2000, 1, 1), d2 = new DateTime(2020, 1, 1);
 
-        private void ParameterlessCalculation(string inputExpression, object expectedOutput)
+        private void ParameterlessCalculation(string inputExpression, double expectedOutput)
         {
             var compiler = new CalculateEvaluateCompiler();
             var calculator = compiler.GetCalculator(inputExpression);
             var result = calculator(null);
             Assert.That(result, Is.EqualTo(expectedOutput));
-        }
-
-        private void SingleDateParameterEvaluation(string inputExpression, Action<bool> assert)
-        {
-            var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.Timestamp;
-            var calculator = compiler.GetEvaluator(inputExpression);
-            var argument = new CalculateEvaluateArgument();
-            argument.Dates["PaRaM"] = d1;
-            var result = calculator(argument);
-            assert(result);
         }
 
         private void SingleNumberParameterEvaluation(string inputExpression, Action<bool> assert)
@@ -168,18 +157,29 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             compiler.ParameterTypes["PARAM"] = ParameterType.Number;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
-            argument.Numbers["PaRaM"] = n1;
+            argument.Number["PaRaM"] = n1;
             var result = calculator(argument);
             assert(result);
         }
 
-        private void SingleStringParameterEvaluation(string inputExpression, Action<bool> assert)
+        private void SingleTextParameterEvaluation(string inputExpression, Action<bool> assert)
         {
             var compiler = new CalculateEvaluateCompiler();
             compiler.ParameterTypes["PARAM"] = ParameterType.Text;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
-            argument.Strings["PaRaM"] = s1;
+            argument.Text["PaRaM"] = s1;
+            var result = calculator(argument);
+            assert(result);
+        }
+
+        private void SingleTimestampParameterEvaluation(string inputExpression, Action<bool> assert)
+        {
+            var compiler = new CalculateEvaluateCompiler();
+            compiler.ParameterTypes["PARAM"] = ParameterType.Timestamp;
+            var calculator = compiler.GetEvaluator(inputExpression);
+            var argument = new CalculateEvaluateArgument();
+            argument.Timestamp["PaRaM"] = d1;
             var result = calculator(argument);
             assert(result);
         }

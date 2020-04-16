@@ -279,15 +279,5 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate

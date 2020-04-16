@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Antlr4.Runtime.Tree;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
@@ -139,7 +140,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitEqual(CalculateEvaluateParser.EqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.Equal, true);
+            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.Equal, true);
             return result;
         }
 
@@ -158,25 +159,25 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitGreaterThan(CalculateEvaluateParser.GreaterThanContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.GreaterThan, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.GreaterThan, false);
             return result;
         }
 
         public override Expression VisitGreaterThanOrEqual(CalculateEvaluateParser.GreaterThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.GreaterThanOrEqual, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.GreaterThanOrEqual, false);
             return result;
         }
 
         public override Expression VisitLessThan(CalculateEvaluateParser.LessThanContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.LessThan, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.LessThan, false);
             return result;
         }
 
         public override Expression VisitLessThanOrEqual(CalculateEvaluateParser.LessThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.LessThanOrEqual, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.LessThanOrEqual, false);
             return result;
         }
 
@@ -198,11 +199,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNotEqual(CalculateEvaluateParser.NotEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.evaluationLiteral(), Expression.NotEqual, true);
+            var result = GetComparisonExpression(context.parameterReference(), context.EVALUATION_LITERAL(), Expression.NotEqual, true);
             return result;
         }
 
-        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, CalculateEvaluateParser.EvaluationLiteralContext evaluationLiteral, Func<IndexExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
+        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, ITerminalNode evaluationLiteral, Func<IndexExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
         {
             var identifierText = parameterReference.IDENTIFIER().GetText();
             var parameterType = ParameterTypes[identifierText];
@@ -233,8 +234,9 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             var identifierString = Expression.Constant(identifierText);
             var reference = Expression.Property(argumentInfo.DictionaryExpression, argumentInfo.IndexerInfo, identifierString);
 
-            var literalText = evaluationLiteral.EVALUATION_LITERAL_CONTENT()?.GetText() ?? "";
-            var literal = argumentInfo.ParseLiteral(literalText);
+            var literalText = evaluationLiteral.GetText();
+            var literalContent = literalText.Substring(1, literalText.Length - 2);
+            var literal = argumentInfo.ParseLiteral(literalContent);
 
             var result = getComparison(reference, literal);
             return result;
@@ -244,11 +246,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument), "arg");
 
-        private static readonly ArgumentInfo Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Dates), Convert.ToDateTime);
+        private static readonly ArgumentInfo Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Timestamp), Convert.ToDateTime);
 
-        private static readonly ArgumentInfo Numbers = GetArgumentInfo(nameof(CalculateEvaluateArgument.Numbers), double.Parse);
+        private static readonly ArgumentInfo Numbers = GetArgumentInfo(nameof(CalculateEvaluateArgument.Number), double.Parse);
 
-        private static readonly ArgumentInfo Strings = GetArgumentInfo(nameof(CalculateEvaluateArgument.Strings), Static.Identity);
+        private static readonly ArgumentInfo Strings = GetArgumentInfo(nameof(CalculateEvaluateArgument.Text), Static.Identity);
 
         private readonly IReadOnlyDictionary<string, ParameterType> ParameterTypes;
 
