@@ -4,11 +4,11 @@
             <v-navigation-drawer :disable-resize-watcher="true" app class="paper-white-bg" v-if="authenticatedWithRole"
                                  v-model="drawer">
                 <v-list class="pt-0" dense>
-                    <v-list-tile @click="drawer=false; onNavigate('/News/')">
+                    <v-list-tile @click="drawer=false; onNavigate('/Home/')">
                         <v-list-tile-action>
                             <v-icon class="ara-dark-gray">fas fa-newspaper</v-icon>
                         </v-list-tile-action>
-                        <v-list-tile-title>Announcements</v-list-tile-title>
+                        <v-list-tile-title>Home</v-list-tile-title>
                     </v-list-tile>
                     <v-list-tile @click="onNavigate('/Inventory/')">
                         <v-list-tile-action>
@@ -66,9 +66,9 @@
             </v-navigation-drawer>
             <v-toolbar app class="ara-blue-pantone-289-bg">
                 <v-toolbar-side-icon @click="drawer = !drawer"
-                                     class="white--text" v-if="authenticatedWithRole && ($router.currentRoute.name !== 'News')"></v-toolbar-side-icon>
+                                     class="white--text" v-if="authenticatedWithRole && ($router.currentRoute.name !== 'Home')"></v-toolbar-side-icon>
                 <v-toolbar-title class="white--text"
-                                 v-if="authenticatedWithRole && ($router.currentRoute.name === 'News')">
+                                 v-if="authenticatedWithRole && ($router.currentRoute.name === 'Home')">
                     <v-btn @click="onNavigate('/Inventory/')" class="ara-blue-bg white--text" round>
                         <v-icon style="padding-right: 12px">fas fa-archive</v-icon>
                         Inventory Lookup
