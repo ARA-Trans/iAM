@@ -52,7 +52,7 @@
         @Watch('checkedForRole')
         onCheckedRole() {
             if (this.hasRole) {
-                this.$router.push('/News/');
+                this.$router.push('/Home/');
             } else {
                 this.$router.push('/NoRole/');
             }

@@ -97,7 +97,7 @@
     const ObjectID = require('bson-objectid');
 
     @Component
-    export default class News extends Vue {
+    export default class Home extends Vue {
         @State(state => state.announcement.announcements) announcements: Announcement[];
         @State(state => state.authentication.isAdmin) isAdmin: boolean;
 

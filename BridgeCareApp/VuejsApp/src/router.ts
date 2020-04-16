@@ -4,7 +4,7 @@ import './register-hooks';
 import EditAnalysis from '@/components/scenarios/EditAnalysis.vue';
 import UnderConstruction from '@/components/UnderConstruction.vue';
 import Logout from '@/components/Logout.vue';
-import News from '@/components/News.vue';
+import Home from '@/components/Home.vue';
 import AuthenticationStart from '@/components/authentication/AuthenticationStart.vue';
 
 // Lazily-loaded pages
@@ -177,9 +177,9 @@ const router = new VueRouter({
             component: Logout
         },
         {
-            path: '/News/',
-            name: 'News',
-            component: News
+            path: '/Home/',
+            name: 'Home',
+            component: Home
         },
         {
             path: '/UserCriteria/',
