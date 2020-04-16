@@ -9,7 +9,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public bool Evaluate(CalculateEvaluateArgument argument)
         {
-            Prepare();
+            EnsureCompiled();
             return Evaluator(argument);
         }
 

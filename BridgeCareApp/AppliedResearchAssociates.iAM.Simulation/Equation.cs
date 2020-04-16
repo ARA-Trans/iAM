@@ -9,7 +9,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public double Calculate(CalculateEvaluateArgument argument)
         {
-            Prepare();
+            EnsureCompiled();
             return Calculator(argument);
         }
 

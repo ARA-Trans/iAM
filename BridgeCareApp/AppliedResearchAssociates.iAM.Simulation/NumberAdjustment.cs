@@ -7,7 +7,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public double Adjust(double value)
         {
-            Prepare();
+            EnsureCompiled();
             return Adjuster(value);
         }
 

@@ -4,8 +4,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public abstract class CompilableExpression
     {
-        protected CompilableExpression() => _Prepare = _Compile;
-
         public string Expression
         {
             get => _Expression;
@@ -14,23 +12,25 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 if (_Expression != value)
                 {
                     _Expression = value;
-                    _Prepare = _Compile;
+                    _EnsureCompiled = _Compile;
                 }
             }
         }
 
+        protected CompilableExpression() => _EnsureCompiled = _Compile;
+
         protected abstract void Compile();
 
-        protected void Prepare() => _Prepare();
+        protected void EnsureCompiled() => _EnsureCompiled();
+
+        private Action _EnsureCompiled;
 
         private string _Expression;
-
-        private Action _Prepare;
 
         private void _Compile()
         {
             Compile();
-            _Prepare = Static.DoNothing;
+            _EnsureCompiled = Static.DoNothing;
         }
     }
 }
