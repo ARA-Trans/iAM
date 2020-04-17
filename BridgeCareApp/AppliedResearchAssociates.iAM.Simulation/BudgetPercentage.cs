@@ -2,7 +2,7 @@
 {
     public class BudgetPercentage
     {
-        public decimal BudgetAmountPercentage { get; }
+        public double BudgetAmountPercentage { get; }
 
         public BudgetCategory BudgetCategory { get; }
     }

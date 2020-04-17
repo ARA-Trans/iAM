@@ -6,11 +6,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public List<BudgetCategory> BudgetCategories { get; }
 
-        public decimal DiscountRatePercentage { get; }
+        public double DiscountRatePercentage { get; }
 
         public int FirstYearOfAnalysisPeriod { get; }
 
-        public decimal InflationRatePercentage { get; }
+        public double InflationRatePercentage { get; }
 
         public int NumberOfYearsInAnalysisPeriod { get; }
     }

@@ -6,6 +6,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public string Name { get; }
 
+        public List<Section> Sections { get; }
+
         public List<Simulation> Simulations { get; }
     }
 }

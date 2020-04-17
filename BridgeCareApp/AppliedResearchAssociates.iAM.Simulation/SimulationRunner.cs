@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class SimulationRunner
     {
-        public SimulationRunner(Simulation simulation)
-        {
-            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
-        }
+        public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
         public void Run() => CompileSimulation();
 
         private readonly Simulation Simulation;
 
+        private const string AGE = "age";
+
         private IEnumerable<Project> Projects { get; }
 
-        private IEnumerable<Section> Sections { get; }
+        private IEnumerable<Section> Sections { get; } // filtered by jurisdiction criterion
+
+        private IReadOnlyDictionary<NumberAttribute, PerformanceCurve> AttributeCurves { get; set; } // must be "seeded" at the start of each run.
 
         private void ApplyDeterioration(int year)
         {
@@ -77,15 +79,22 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 //  for each performance curve:
                 //    if curve criterion is met:
                 //      if another curve's criterion was met and that curve has the same target attribute:
-                //        ERROR (right?)
+                //        emit warning, take "worst" curve result (depends on attribute's deterioration direction).
                 //      else:
                 //        curve attribute value for current year = curve equation result
-                foreach (var section in Sections)
+                foreach (var section in Simulation.Network.Sections)
                 {
+                    var data = SectionData[section];
+                    data.Number[AGE] += 1;
+
+                    var applicablePerformanceCurves = Simulation.PerformanceCurves
+                        .Where(curve => curve.Criterion.Evaluate(data))
+                        .GroupBy(curve => curve.Attribute)
+                        .Select(curve => curve.Equation.Calculate(data))
+                        .ToArray();
                     foreach (var curve in Simulation.PerformanceCurves)
                     {
-                        //var evaluationInput = ???
-                        if (curve.Criterion.Evaluate(null))
+                        if (curve.Criterion.Evaluate(SectionData[section]))
                         {
 
                         }

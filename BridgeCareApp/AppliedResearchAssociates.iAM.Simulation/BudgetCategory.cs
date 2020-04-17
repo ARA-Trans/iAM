@@ -6,6 +6,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public string Name { get; }
 
-        public List<decimal> YearlyBudgetAmounts { get; }
+        public List<double> YearlyBudgetAmounts { get; }
     }
 }

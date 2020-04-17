@@ -10,4 +10,9 @@
 
         public Treatment Treatment { get; }
     }
+
+    public class CommittedProject
+    {
+
+    }
 }

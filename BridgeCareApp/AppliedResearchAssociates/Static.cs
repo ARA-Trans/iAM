@@ -59,6 +59,12 @@ namespace AppliedResearchAssociates
             return result.ToHashCode();
         }
 
+        public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> keyValue, out TKey key, out TValue value)
+        {
+            key = keyValue.Key;
+            value = keyValue.Value;
+        }
+
         public static IEnumerable<T> Distinct<T>(params T[] values) => values.Distinct();
 
         public static IEnumerable<T> Distinct<T>(IEqualityComparer<T> equalityComparer, params T[] values) => values.Distinct(equalityComparer);
