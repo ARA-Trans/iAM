@@ -28,8 +28,6 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
             var pennDotReportAData = db.PennDotReportAData.Where(p => brKeys.Contains(p.BRKEY)).ToList();
 
-            //var sdRisk = db.SdRisks.Where(s => brKeys.Contains(s.BRKEY)).ToList();
-
             brKeys = brKeys.OrderBy(b => b).ToList();
 
             foreach (var BRKey in brKeys)
@@ -38,7 +36,6 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
                 var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
 
-                //var sdRiskRow = sdRisk.Where(s => s.BRKEY == BRKey).FirstOrDefault();
                 bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow));
             }
 
@@ -189,6 +186,54 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             return budgets;
         }
 
+        public List<BudgetsPerBRKey> GetBudgetsPerBRKey(SimulationModel simulationModel, BridgeCareContext dbContext)
+        {
+            var budgetsPerBrKey = new List<BudgetsPerBRKey>();
+            var selectBugetForBrKey = $"select SECTION_13.SECTIONID, SECTION_13.FACILITY as BRKey, SECTION_13.SECTION as BridgeId, BUDGET, YEARS, ISCOMMITTED, TREATMENT, PROJECT_TYPE as ProjectType " +
+                $"from SECTION_{simulationModel.networkId} " +
+                $"INNER JOIN Report_{simulationModel.networkId}_{simulationModel.simulationId} " +
+                $"on SECTION_{simulationModel.networkId}.SECTIONID = Report_{simulationModel.networkId}_{simulationModel.simulationId}.SECTIONID " +
+                $" WHERE BUDGET IS NOT NULL OR ISCOMMITTED != 0 Order By BRKey ASC";
+
+            try
+            {
+                budgetsPerBrKey = dbContext.Database.SqlQuery<BudgetsPerBRKey>(selectBugetForBrKey).ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+            }
+
+            return budgetsPerBrKey;
+        }
+
+        public List<UnfundedRecommendationModel> GetUnfundedRcommendations(SimulationModel simulationModel, BridgeCareContext dbContext)
+        {
+            var reasonsTable = $"REASONS_{simulationModel.networkId}_{simulationModel.simulationId}";
+            var simulationTable = $"SIMULATION_{simulationModel.networkId}_{simulationModel.simulationId}_0";
+            var sectionTable = $"SECTION_{simulationModel.networkId}";
+
+            var selectUnfundedRecommendation = $"SELECT {reasonsTable}.SECTIONID, FACILITY as BRKey, YEARS, TREATMENT, REASON, BUDGET, BUDGET_HASH, " +
+                $" RISK_SCORE_0 as RiskScore FROM " +
+                $"{reasonsTable} " +
+                $"INNER JOIN {simulationTable} on {simulationTable}.SECTIONID = {reasonsTable}.SECTIONID " +
+                $"INNER JOIN {sectionTable} on {sectionTable}.SECTIONID = {simulationTable}.SECTIONID " +
+                $"WHERE BUDGET_HASH is Not Null AND " +
+                $"(REASON like 'Inadequate%' OR REASON = 'Selected') AND RISK_SCORE_0 > 15000 " +
+                $"ORDER BY {reasonsTable}.SECTIONID";
+            var unfundedRecommendation = new List<UnfundedRecommendationModel>();
+
+            try
+            {
+                unfundedRecommendation = dbContext.Database.SqlQuery<UnfundedRecommendationModel>(selectUnfundedRecommendation).ToList();
+            }
+            catch(Exception ex)
+            {
+                log.Error(ex.Message);
+            }
+            return unfundedRecommendation;
+        }
+
         #region private methods
         private string GetDynamicColumns(List<int> simulationYears)
         {
@@ -244,27 +289,6 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
                 ADTOverTenThousand = isADTOverTenThousand ? "Y" : "N"
             };
-        }
-
-        public List<BudgetsPerBRKey> GetBudgetsPerBRKey(SimulationModel simulationModel, BridgeCareContext dbContext)
-        {
-            var budgetsPerBrKey = new List<BudgetsPerBRKey>();
-            var selectBugetForBrKey = $"select SECTION_13.SECTIONID, SECTION_13.FACILITY as BRKey, SECTION_13.SECTION as BridgeId, BUDGET, YEARS, ISCOMMITTED, TREATMENT, PROJECT_TYPE as ProjectType " +
-                $"from SECTION_{simulationModel.networkId} " +
-                $"INNER JOIN Report_{simulationModel.networkId}_{simulationModel.simulationId} " +
-                $"on SECTION_{simulationModel.networkId}.SECTIONID = Report_{simulationModel.networkId}_{simulationModel.simulationId}.SECTIONID " +
-                $" WHERE BUDGET IS NOT NULL OR ISCOMMITTED != 0 Order By BRKey ASC";
-
-            try
-            {
-                budgetsPerBrKey = dbContext.Database.SqlQuery<BudgetsPerBRKey>(selectBugetForBrKey).ToList();
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-            }
-
-            return budgetsPerBrKey;
         }
         #endregion
     }

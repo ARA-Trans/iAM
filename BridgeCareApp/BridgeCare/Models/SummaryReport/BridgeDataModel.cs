@@ -27,6 +27,7 @@
         public int AdtTotal { get; set; }
         public int P3 { get; set; }
         public int ParallelBridge { get; set; }
+        public double RiskScore { get; set; }
 
         //Below data fetched from table PENNDOT_BRIDGE_DATA
         public int BridgeFamily { get; set; }

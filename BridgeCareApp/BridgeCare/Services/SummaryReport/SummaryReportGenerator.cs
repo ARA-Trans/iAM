@@ -5,6 +5,7 @@ using BridgeCare.Services.SummaryReport.Charts;
 using BridgeCare.Services.SummaryReport.Charts.PostedCountByBPN;
 using BridgeCare.Services.SummaryReport.PoorDeckAreaByBPN;
 using BridgeCare.Services.SummaryReport.ShortNameGlossary;
+using BridgeCare.Services.SummaryReport.UnfundedRecommendation;
 using BridgeCare.Services.SummaryReport.WorkSummaryByBudget;
 using Hangfire;
 using MongoDB.Driver;
@@ -35,6 +36,7 @@ namespace BridgeCare.Services.SummaryReport
         private readonly SummaryReportGlossary summaryReportGlossary;
         private readonly NonNHSConditionBridgeCount nonNHSconditionBridgeCount;
         private readonly NonNHSConditionDeckArea nonNHSConditionDeckArea;
+        private readonly UnfundedRecommendations unfundedRecommendations;
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SummaryReportGenerator));
 
@@ -42,7 +44,8 @@ namespace BridgeCare.Services.SummaryReport
             BridgeWorkSummary bridgeWorkSummary, ConditionBridgeCount conditionBridgeCount, ConditionDeckArea conditionDeckArea, PoorBridgeCount poorBridgeCount,
             PoorBridgeDeckArea poorBridgeDeckArea, NHSConditionChart nhsConditionBridgeCount, SummaryReportParameters summaryReportParameters,
             BridgeWorkSummaryByBudget workSummaryByBudget, BridgeWorkSummaryCharts bridgeWorkSummaryCharts,
-            SummaryReportGlossary summaryReportGlossary, NonNHSConditionBridgeCount nonNHSconditionBridgeCount, NonNHSConditionDeckArea nonNHSConditionDeckArea)
+            SummaryReportGlossary summaryReportGlossary, NonNHSConditionBridgeCount nonNHSconditionBridgeCount, NonNHSConditionDeckArea nonNHSConditionDeckArea,
+            UnfundedRecommendations unfundedRecommendations)
         {
             this.summaryReportBridgeData = summaryReportBridgeData ?? throw new ArgumentNullException(nameof(summaryReportBridgeData));
             this.commonSummaryReportData = commonSummaryReportData ?? throw new ArgumentNullException(nameof(commonSummaryReportData));
@@ -58,6 +61,7 @@ namespace BridgeCare.Services.SummaryReport
             this.summaryReportGlossary = summaryReportGlossary ?? throw new ArgumentNullException(nameof(summaryReportGlossary));
             this.nonNHSconditionBridgeCount = nonNHSconditionBridgeCount ?? throw new ArgumentNullException(nameof(nonNHSconditionBridgeCount));
             this.nonNHSConditionDeckArea = nonNHSConditionDeckArea ?? throw new ArgumentNullException(nameof(nonNHSConditionDeckArea));
+            this.unfundedRecommendations = unfundedRecommendations ?? throw new ArgumentNullException(nameof(unfundedRecommendations));
         }
 
         /// <summary>
@@ -107,6 +111,10 @@ namespace BridgeCare.Services.SummaryReport
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "End of Bridge Data TAB Generation");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
+                // Unfunded Recommendations TAB
+                var unfundedRecommendationWorksheet = excelPackage.Workbook.Worksheets.Add("Unfunded Recommendations");
+                unfundedRecommendations.Fill(unfundedRecommendationWorksheet, workSummaryModel.UnfundedRecommendations, workSummaryModel.BridgeDataModels, simulationYears);
 
                 // Simulation Legend TAB
                 var shortNameWorksheet = excelPackage.Workbook.Worksheets.Add("Legend");

@@ -285,6 +285,7 @@
     <Compile Include="Models\SimulationUserModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
+    <Compile Include="Models\SummaryReport\UnfundedRecommendationModel.cs" />
     <Compile Include="Models\UserCriteriaModel.cs" />
     <Compile Include="Interfaces\SummaryReport\IWorkSummaryByBudget.cs" />
     <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />
@@ -495,6 +496,7 @@
     <Compile Include="Services\SummaryReport\Charts\NonNHSConditionDeckArea.cs" />
     <Compile Include="Services\SummaryReport\ShortNameGlossary\SummaryReportGlossary.cs" />
     <Compile Include="Services\SummaryReport\ShortNamesForTreatments.cs" />
+    <Compile Include="Services\SummaryReport\UnfundedRecommendation\UnfundedRecommendations.cs" />
     <Compile Include="Services\SummaryReport\WorkSummary\BridgeRateDeckAreaWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\WorkSummary\BridgesCulvertsWorkSummary.cs" />
     <Compile Include="Services\SummaryReport\Charts\BridgeWorkSummaryCharts.cs" />

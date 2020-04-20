@@ -54,6 +54,10 @@ namespace BridgeCare.Services
             var budgetsPerBrKey = bridgeData.GetBudgetsPerBRKey(simulationModel, dbContext);
 
             var simulationDataModels = bridgeDataHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels, budgetsPerBrKey);
+            var unfundedRecommendations = bridgeData.GetUnfundedRcommendations(simulationModel, dbContext);
+            unfundedRecommendations.ForEach(_ => {
+                _.TotalProjectCost = Convert.ToDouble(_.Budget_Hash.Split('/')[1]);
+            });
 
             // Add data to excel.
             var headers = GetHeaders();
@@ -78,7 +82,8 @@ namespace BridgeCare.Services
             }
             var lastColumn = worksheet.Dimension.Columns + 1;
             worksheet.Column(lastColumn).Width = 3;
-            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey };            
+            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels,
+                Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey, UnfundedRecommendations = unfundedRecommendations };            
             return workSummaryModel;
         }
 
@@ -114,7 +119,7 @@ namespace BridgeCare.Services
                 // Save DeckArea for further use
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 simulationDataModel.BRKey = brKey;
-                //bridgeDataModel.RiskScore = simulationDataModel.RiskScore;
+                bridgeDataModel.RiskScore = simulationDataModel.RiskScore;
                 worksheet.Cells[row, columnForRiskScore].Value = simulationDataModel.RiskScore;
                 var yearsData = simulationDataModel.YearsData;
                 var projectPickByYear = new Dictionary<int, int>();
