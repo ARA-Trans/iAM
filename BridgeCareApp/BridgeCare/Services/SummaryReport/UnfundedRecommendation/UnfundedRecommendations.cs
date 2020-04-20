@@ -38,8 +38,7 @@ namespace BridgeCare.Services.SummaryReport.UnfundedRecommendation
         private void AddDynamicDataCells(ExcelWorksheet worksheet, List<int> simulationYears, List<UnfundedRecommendationModel> unfundedRecommendations,
             List<BridgeDataModel> bridgeDataModels, CurrentCell currentCell)
         {
-            var row = 4; // Data starts here
-            currentCell.Row = 4;
+            currentCell.Row = 4; // Data starts here
             currentCell.Column = 1;
             var brKeys = unfundedRecommendations.Select(_ => _.BRKey).Distinct();
 

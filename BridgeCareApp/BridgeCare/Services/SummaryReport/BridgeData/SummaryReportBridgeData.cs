@@ -432,11 +432,11 @@ namespace BridgeCare.Services
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.NHS;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BPN;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.StructureType;
-                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.FunctionalClass;
+                //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.FunctionalClass;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.YearBuilt;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.Age;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.AdtTotal;
-                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.ADTOverTenThousand;
+                //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.ADTOverTenThousand;
                 columnNo++;
                 //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.RiskScore; // We fill this data in the next function call "AddDynamicDataCells"
                 worksheet.Cells[rowNo, columnNo].Value = bridgeDataModel.P3 > 0 ? "Y" : "N";
@@ -461,11 +461,11 @@ namespace BridgeCare.Services
                 "NHS",
                 "BPN",
                 "Struct Type",
-                "Functional Class",
+                //"Functional Class",
                 "Year Built",
                 "Age",
                 "ADTT",
-                "ADT Over 10,000",
+                //"ADT Over 10,000",
                 "Risk Score",
                 "P3"
             };
