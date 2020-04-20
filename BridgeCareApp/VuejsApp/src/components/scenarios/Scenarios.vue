@@ -1,7 +1,7 @@
 <template>
     <v-layout column>
         <v-flex xs12>
-            <v-card>
+            <v-card elevation=5>
                 <v-flex xs10>
                     <v-layout>
                         <div>
@@ -34,7 +34,10 @@
                         </div>
                     </v-layout>
                 </v-flex>
-                <v-divider></v-divider>
+            </v-card>
+        </v-flex>
+            <v-flex x12>
+            <v-card elevation=5 color="blue lighten-5">
                 <v-card-title>
                     <v-flex xs4>
                         <v-chip color="ara-blue-bg" text-color="white">
@@ -122,19 +125,20 @@
                         Your search for "{{searchMine}}" found no results.
                     </v-alert>
                 </v-data-table>
-                <v-card-actions>
+                <v-card-actions color="white">
                     <div style="width:2em"/>
-                    <v-btn @click="onCreateScenario" color="ara-blue-bg white--text">Create new</v-btn>
+                    <v-btn @click="onCreateScenario" color="green darken-2 white--text">Create new scenario</v-btn>
                 </v-card-actions>
             </v-card>
         </v-flex>
 
         <v-flex xs12>
-            <v-card>
+            <v-card elevation=5 color="blue lighten-3">
                 <v-card-title>
                     <v-flex xs4>
                         <v-chip class="ara-blue-bg white--text">
                             Shared with Me
+                            <v-icon right>star</v-icon>
                         </v-chip>
                     </v-flex>
                     <v-spacer/>
