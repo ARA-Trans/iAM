@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using BridgeCare.Properties;
 using DatabaseManager;
 using log4net;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using Simulation;
 
 namespace BridgeCare.DataAccessLayer
@@ -237,9 +239,22 @@ namespace BridgeCare.DataAccessLayer
 
             var simulation = db.Simulations.Single(s => s.SIMULATIONID == id);
 
-            simulation.DATE_LAST_RUN = DateTime.Now;
+            var lastRun = DateTime.Now;
+
+            simulation.DATE_LAST_RUN = lastRun;
 
             db.SaveChanges();
+
+#if DEBUG
+            var mongoConnection = Settings.Default.MongoDBDevConnectionString;
+#else
+            var mongoConnection = Settings.Default.MongoDBProdConnectionString;
+#endif
+            var mongoClient = new MongoClient(mongoConnection);
+            var mongoDB = mongoClient.GetDatabase("BridgeCare");
+            var simulations = mongoDB.GetCollection<SimulationModel>("scenarios");
+            var updateLastRunDate = Builders<SimulationModel>.Update.Set("lastRun", lastRun);
+            simulations.UpdateOne(s => s.simulationId == id, updateLastRunDate);
         }
 
         public void SetPermittedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username)

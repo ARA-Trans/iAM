@@ -12,6 +12,7 @@ const scenarioUserSchema = new Schema({
 const scenarioModel = new Schema({
     createdDate: { type: Date, default: Date.now },
     lastModifiedDate: {type: Date, default: Date.now },
+    lastRun: {type: Date},
     networkId: { type: Number },
     simulationId: { type: Number },
     networkName: { type: String },

@@ -37,6 +37,7 @@ export interface Scenario {
     simulationName: string;
     createdDate?: Date;
     lastModifiedDate?: Date;
+    lastRun?: Date;
     status?: string;
     shared?: boolean;
     owner?: string;
