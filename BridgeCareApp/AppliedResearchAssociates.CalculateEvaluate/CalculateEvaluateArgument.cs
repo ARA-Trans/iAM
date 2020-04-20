@@ -5,10 +5,24 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 {
     public sealed class CalculateEvaluateArgument
     {
-        public IDictionary<string, double> Number { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+        public double GetNumber(string key) => Number[key]();
 
-        public IDictionary<string, string> Text { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public string GetText(string key) => Text[key];
 
-        public IDictionary<string, DateTime> Timestamp { get; } = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        public DateTime GetTimestamp(string key) => Timestamp[key];
+
+        public void SetNumber(string key, double value) => SetNumber(key, () => value);
+
+        public void SetNumber(string key, Func<double> getValue) => Number[key] = getValue;
+
+        public void SetText(string key, string value) => Text[key] = value;
+
+        public void SetTimestamp(string key, DateTime value) => Timestamp[key] = value;
+
+        private readonly IDictionary<string, Func<double>> Number = new Dictionary<string, Func<double>>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly IDictionary<string, string> Text = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly IDictionary<string, DateTime> Timestamp = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
     }
 }

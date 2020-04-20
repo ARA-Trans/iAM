@@ -99,7 +99,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         public override Expression VisitNumberLiteral(CalculateEvaluateParser.NumberLiteralContext context)
         {
             var numberText = context.NUMBER().GetText();
-            var result = Numbers.ParseLiteral(numberText);
+            var result = Number.ParseLiteral(numberText);
             return result;
         }
 
@@ -114,7 +114,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             }
 
             var identifierString = Expression.Constant(identifierText);
-            var result = Expression.Property(Numbers.DictionaryExpression, Numbers.IndexerInfo, identifierString);
+            var result = Expression.Call(ArgumentParameter, Number.GetterInfo, identifierString);
             return result;
         }
 
@@ -207,7 +207,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        private Expression GetComparisonExpression(CalculateEvaluateParser.EvaluationParameterReferenceContext evaluationParameterReference, ITerminalNode evaluationLiteral, Func<IndexExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
+        private Expression GetComparisonExpression(CalculateEvaluateParser.EvaluationParameterReferenceContext evaluationParameterReference, ITerminalNode evaluationLiteral, Func<MethodCallExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
         {
             var identifierText = evaluationParameterReference.IDENTIFIER().GetText();
             var parameterType = ParameterTypes[identifierText];
@@ -216,7 +216,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             switch (parameterType)
             {
             case ParameterType.Number:
-                argumentInfo = Numbers;
+                argumentInfo = Number;
                 break;
 
             case ParameterType.Text:
@@ -224,11 +224,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
                 {
                     goto default;
                 }
-                argumentInfo = Strings;
+                argumentInfo = Text;
                 break;
 
             case ParameterType.Timestamp:
-                argumentInfo = Dates;
+                argumentInfo = Timestamp;
                 break;
 
             default:
@@ -236,7 +236,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             }
 
             var identifierString = Expression.Constant(identifierText);
-            var reference = Expression.Property(argumentInfo.DictionaryExpression, argumentInfo.IndexerInfo, identifierString);
+            var reference = Expression.Call(ArgumentParameter, argumentInfo.GetterInfo, identifierString);
 
             var literalText = evaluationLiteral.GetText();
             var literalContent = literalText.Substring(1, literalText.Length - 2);
@@ -250,33 +250,29 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument), "arg");
 
-        private static readonly ArgumentInfo Dates = GetArgumentInfo(nameof(CalculateEvaluateArgument.Timestamp), Convert.ToDateTime);
+        private static readonly ArgumentInfo Timestamp = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetTimestamp), Convert.ToDateTime);
 
-        private static readonly ArgumentInfo Numbers = GetArgumentInfo(nameof(CalculateEvaluateArgument.Number), double.Parse);
+        private static readonly ArgumentInfo Number = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetNumber), double.Parse);
 
-        private static readonly ArgumentInfo Strings = GetArgumentInfo(nameof(CalculateEvaluateArgument.Text), Static.Identity);
+        private static readonly ArgumentInfo Text = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetText), Static.Identity);
 
         private readonly IReadOnlyDictionary<string, ParameterType> ParameterTypes;
 
-        private static ArgumentInfo GetArgumentInfo<T>(string argumentPropertyName, Func<string, T> parse)
+        private static ArgumentInfo GetArgumentInfo<T>(string argumentGetterName, Func<string, T> parse)
         {
-            var dictionaryExpression = Expression.Property(ArgumentParameter, argumentPropertyName);
-            var indexerInfo = (PropertyInfo)dictionaryExpression.Type.GetDefaultMembers().Single();
-            return new ArgumentInfo(dictionaryExpression, indexerInfo, literal => Expression.Constant(parse(literal)));
+            var getterInfo = typeof(CalculateEvaluateArgument).GetMethod(argumentGetterName);
+            return new ArgumentInfo(getterInfo, literal => Expression.Constant(parse(literal)));
         }
 
         private class ArgumentInfo
         {
-            public ArgumentInfo(Expression dictionaryExpression, PropertyInfo indexerInfo, Func<string, ConstantExpression> parseLiteral)
+            public ArgumentInfo(MethodInfo getterInfo, Func<string, ConstantExpression> parseLiteral)
             {
-                DictionaryExpression = dictionaryExpression;
-                IndexerInfo = indexerInfo;
+                GetterInfo = getterInfo;
                 ParseLiteral = parseLiteral;
             }
 
-            public Expression DictionaryExpression { get; }
-
-            public PropertyInfo IndexerInfo { get; }
+            public MethodInfo GetterInfo { get; }
 
             public Func<string, ConstantExpression> ParseLiteral { get; }
         }
