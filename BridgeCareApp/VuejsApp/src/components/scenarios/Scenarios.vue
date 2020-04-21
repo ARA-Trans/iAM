@@ -138,7 +138,7 @@
                     <v-flex xs4>
                         <v-chip class="ara-blue-bg white--text">
                             Shared with Me
-                            <v-icon right>star</v-icon>
+                            <v-icon right>share</v-icon>
                         </v-chip>
                     </v-flex>
                     <v-spacer/>

@@ -286,6 +286,8 @@
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
     <Compile Include="Models\SummaryReport\UnfundedRecommendationModel.cs" />
+    <Compile Include="Models\SummaryReport\ParametersTAB\NHSModel.cs" />
+    <Compile Include="Models\SummaryReport\ParametersTAB\ParametersModel.cs" />
     <Compile Include="Models\UserCriteriaModel.cs" />
     <Compile Include="Interfaces\SummaryReport\IWorkSummaryByBudget.cs" />
     <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />

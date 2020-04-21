@@ -8,19 +8,21 @@ using BridgeCare.EntityClasses;
 using BridgeCare.Interfaces;
 using BridgeCare.Models;
 using BridgeCare.Models.SummaryReport;
+using BridgeCare.Models.SummaryReport.ParametersTAB;
 
 namespace BridgeCare.DataAccessLayer.SummaryReport
 {
     public class BridgeDataDAL : IBridgeData
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BridgeDataDAL));
+
         /// <summary>
         /// Fetches bridge data using a list of br keys
         /// </summary>
         /// <param name="brKeys">br keys list</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>BridgeDataModel list</returns>        
-        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, SimulationModel model, BridgeCareContext db)
+        public List<BridgeDataModel> GetBridgeData(List<int> brKeys, SimulationModel model, BridgeCareContext db, ParametersModel parametersModel)
         {
             var bridgeDataModels = new List<BridgeDataModel>();
 
@@ -36,7 +38,22 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
                 var pennDotReportADataRow = pennDotReportAData.Where(p => p.BRKEY == BRKey).FirstOrDefault();
 
-                bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow));
+                // Track status for parameters TAB
+                if (!parametersModel.Status.Contains(pennDotReportADataRow.Posted.ToLower()))
+                {
+                    parametersModel.Status.Add(pennDotReportADataRow.Posted.ToLower());
+                }
+                // Track P3 for parameters TAB
+                if(pennDotReportADataRow.P3 > 0 && parametersModel.P3 != 1)
+                {
+                    parametersModel.P3 = pennDotReportADataRow.P3;
+                }
+                if (!parametersModel.OwnerCode.Contains(pennDotReportADataRow.OwnerCode))
+                {
+                    parametersModel.OwnerCode.Add(pennDotReportADataRow.OwnerCode);
+                }
+
+                bridgeDataModels.Add(CreateBridgeDataModel(penndotBridgeDataRow, pennDotReportADataRow, parametersModel));
             }
 
             return bridgeDataModels;
@@ -252,7 +269,8 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "<Pending>")]
-        private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow)
+        private BridgeDataModel CreateBridgeDataModel(PennDotBridgeData penndotBridgeDataRow, PennDotReportAData pennDotReportADataRow,
+            ParametersModel parametersModel)
         {
             bool adtTotalHasValue = int.TryParse(pennDotReportADataRow.ADTTOTAL, out int adtTotal);
             bool isADTOverTenThousand = adtTotalHasValue ? adtTotal > 10000 : false;
@@ -262,8 +280,20 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
             int.TryParse(pennDotReportADataRow.YEAR_BUILT, out var yearBuilt);
             int.TryParse(pennDotReportADataRow.StructureLength, out var structureLength);
             int.TryParse(pennDotReportADataRow.ADTTOTAL, out var ADTTotal);
-            //double.TryParse(sdRiskRow.SD_RISK, out var sdRisk);
             var age = DateTime.Today.Year - yearBuilt;
+
+            if(structureLength > 20 && parametersModel.LengthGreaterThan20 != "Y")
+            {
+                parametersModel.LengthGreaterThan20 = "Y";
+            }
+            if(structureLength >= 8 && structureLength <= 20 && parametersModel.LengthBetween8and20 != "Y")
+            {
+                parametersModel.LengthBetween8and20 = "Y";
+            }
+            if (!parametersModel.FunctionalClass.Contains(pennDotReportADataRow.FUNC_CLASS))
+            {
+                parametersModel.FunctionalClass.Add(pennDotReportADataRow.FUNC_CLASS);
+            }
 
             return new BridgeDataModel
             {

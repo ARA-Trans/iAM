@@ -97,7 +97,6 @@ namespace BridgeCare.Services.SummaryReport
 
                 // Simulation parameters TAB
                 var parametersWorksheet = excelPackage.Workbook.Worksheets.Add("Parameters");
-                summaryReportParameters.Fill(parametersWorksheet, simulationModel, simulationYearsCount);
 
                 // Bridge Data tab
                 updateStatus = Builders<SimulationModel>.Update
@@ -111,6 +110,9 @@ namespace BridgeCare.Services.SummaryReport
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "End of Bridge Data TAB Generation");
                 simulations.UpdateOne(s => s.simulationId == simulationId, updateStatus);
+
+                // Filling up parameters tab
+                summaryReportParameters.Fill(parametersWorksheet, simulationModel, simulationYearsCount, workSummaryModel.ParametersModel);
 
                 // Unfunded Recommendations TAB
                 var unfundedRecommendationWorksheet = excelPackage.Workbook.Worksheets.Add("Unfunded Recommendations");
