@@ -16,5 +16,6 @@ namespace BridgeCare.Interfaces
         List<string> GetTreatments(int simulationId, BridgeCareContext db);
         List<string> GetBudgets(int simulationId, BridgeCareContext db);
         List<BudgetsPerBRKey> GetBudgetsPerBRKey(SimulationModel model, BridgeCareContext db);
+        List<UnfundedRecommendationModel> GetUnfundedRcommendations(SimulationModel model, BridgeCareContext db);
     }
 }

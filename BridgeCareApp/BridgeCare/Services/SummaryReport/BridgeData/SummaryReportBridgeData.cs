@@ -54,6 +54,10 @@ namespace BridgeCare.Services
             var budgetsPerBrKey = bridgeData.GetBudgetsPerBRKey(simulationModel, dbContext);
 
             var simulationDataModels = bridgeDataHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels, budgetsPerBrKey);
+            var unfundedRecommendations = bridgeData.GetUnfundedRcommendations(simulationModel, dbContext);
+            unfundedRecommendations.ForEach(_ => {
+                _.TotalProjectCost = Convert.ToDouble(_.Budget_Hash.Split('/')[1]);
+            });
 
             // Add data to excel.
             var headers = GetHeaders();
@@ -78,7 +82,8 @@ namespace BridgeCare.Services
             }
             var lastColumn = worksheet.Dimension.Columns + 1;
             worksheet.Column(lastColumn).Width = 3;
-            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey };            
+            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels,
+                Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey, UnfundedRecommendations = unfundedRecommendations };            
             return workSummaryModel;
         }
 
@@ -114,7 +119,7 @@ namespace BridgeCare.Services
                 // Save DeckArea for further use
                 simulationDataModel.DeckArea = bridgeDataModel.DeckArea;
                 simulationDataModel.BRKey = brKey;
-                //bridgeDataModel.RiskScore = simulationDataModel.RiskScore;
+                bridgeDataModel.RiskScore = simulationDataModel.RiskScore;
                 worksheet.Cells[row, columnForRiskScore].Value = simulationDataModel.RiskScore;
                 var yearsData = simulationDataModel.YearsData;
                 var projectPickByYear = new Dictionary<int, int>();
@@ -427,11 +432,11 @@ namespace BridgeCare.Services
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.NHS;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.BPN;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.StructureType;
-                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.FunctionalClass;
+                //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.FunctionalClass;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.YearBuilt;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.Age;
                 worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.AdtTotal;
-                worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.ADTOverTenThousand;
+                //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.ADTOverTenThousand;
                 columnNo++;
                 //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.RiskScore; // We fill this data in the next function call "AddDynamicDataCells"
                 worksheet.Cells[rowNo, columnNo].Value = bridgeDataModel.P3 > 0 ? "Y" : "N";
@@ -456,11 +461,11 @@ namespace BridgeCare.Services
                 "NHS",
                 "BPN",
                 "Struct Type",
-                "Functional Class",
+                //"Functional Class",
                 "Year Built",
                 "Age",
                 "ADTT",
-                "ADT Over 10,000",
+                //"ADT Over 10,000",
                 "Risk Score",
                 "P3"
             };
