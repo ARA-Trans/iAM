@@ -5,6 +5,7 @@ using BridgeCare.Interfaces;
 using BridgeCare.Interfaces.CriteriaDrivenBudgets;
 using BridgeCare.Models;
 using BridgeCare.Models.CriteriaDrivenBudgets;
+using BridgeCare.Models.SummaryReport.ParametersTAB;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
@@ -31,7 +32,7 @@ namespace BridgeCare.Services.SummaryReport
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, int simulationYearsCount)
+        internal void Fill(ExcelWorksheet worksheet, SimulationModel simulationModel, int simulationYearsCount, ParametersModel parametersModel)
         {
             var simulationId = simulationModel.simulationId;
             var investmentPeriod = analysisData.GetAnySimulationAnalysis(simulationId, db);
@@ -50,7 +51,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.ApplyBorder(worksheet.Cells[1, 1, 1, 10]);
             // End of Simulation Name format
 
-            FillStaticData(worksheet);
+            FillData(worksheet, parametersModel);
 
             FillSimulationDetails(worksheet, investmentPeriod, inflationAndInvestments.InflationRate, simulationYearsCount);
             FillAnalysisDetails(worksheet, investmentPeriod);
@@ -60,8 +61,11 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells.AutoFitColumns(50);
         }
 
-        private void FillStaticData(ExcelWorksheet worksheet)
+        private void FillData(ExcelWorksheet worksheet, ParametersModel parametersModel)
         {
+            var bpnValueCellTracker = new Dictionary<string, string>();
+            var statusValueCellTracker = new Dictionary<string, string>();
+
             worksheet.Cells["A3"].Value = "BridgeCare Rules Creator:";
             worksheet.Cells["B3"].Value = "Central Office";
             worksheet.Cells["A4"].Value = "BridgeCare Rules Date:";
@@ -76,10 +80,10 @@ namespace BridgeCare.Services.SummaryReport
             var flag = worksheet.DataValidations.AddListValidation("B7");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["B7"].Value = "Y";
+            worksheet.Cells["B7"].Value = parametersModel.nHSModel.NHS; //"Y";
             flag = worksheet.DataValidations.AddListValidation("B8");
             flag.Formula.Values.Add("Y");
-            worksheet.Cells["B8"].Value = "Y";
+            worksheet.Cells["B8"].Value = parametersModel.nHSModel.NonNHS;// "Y";
             flag.Formula.Values.Add("N");
             excelHelper.ApplyBorder(worksheet.Cells[6, 1, 8, 2]);
 
@@ -92,10 +96,16 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A14"].Value = "4";
             worksheet.Cells["A15"].Value = "H";
 
+            bpnValueCellTracker.Add("1", "B11");
+            bpnValueCellTracker.Add("2", "B12");
+            bpnValueCellTracker.Add("3", "B13");
+            bpnValueCellTracker.Add("4", "B14");
+            bpnValueCellTracker.Add("H", "B15");
+
             flag = worksheet.DataValidations.AddListValidation("B11");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["B11"].Value = "Y";
+            //worksheet.Cells["B11"].Value = "Y";
             flag = worksheet.DataValidations.AddListValidation("B12");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
@@ -105,13 +115,13 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("B14");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["B12"].Value = "Y";
-            worksheet.Cells["B13"].Value = "Y";
-            worksheet.Cells["B14"].Value = "Y";
+            //worksheet.Cells["B12"].Value = "Y";
+            //worksheet.Cells["B13"].Value = "Y";
+            //worksheet.Cells["B14"].Value = "Y";
             flag = worksheet.DataValidations.AddListValidation("B15");
             flag.Formula.Values.Add("N");
             flag.Formula.Values.Add("Y");
-            worksheet.Cells["B15"].Value = "N";
+            //worksheet.Cells["B15"].Value = "N";
 
             worksheet.Cells["A16"].Value = "L";
             worksheet.Cells["A17"].Value = "T";
@@ -134,9 +144,21 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("B20");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
+            
+            foreach (var item in bpnValueCellTracker)
+            {
+                if (parametersModel.BPNValues.Contains(item.Key))
+                {
+                    worksheet.Cells[item.Value].Value = "Y";
+                }
+                else
+                {
+                    worksheet.Cells[item.Value].Value = "N";
+                }
+            }
             worksheet.Cells["B16"].Value = "Y";
-            worksheet.Cells["B17"].Value = "N";
-            worksheet.Cells["B18"].Value = "N";
+            worksheet.Cells["B17"].Value = "Y";
+            worksheet.Cells["B18"].Value = "Y";
             worksheet.Cells["B19"].Value = "Y";
             worksheet.Cells["B20"].Value = "Y";
             excelHelper.ApplyBorder(worksheet.Cells[10, 1, 20, 2]);
@@ -153,8 +175,8 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("B25");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["B24"].Value = "Y";
-            worksheet.Cells["B25"].Value = "Y";
+            worksheet.Cells["B24"].Value = parametersModel.LengthBetween8and20;
+            worksheet.Cells["B25"].Value = parametersModel.LengthGreaterThan20;
 
             excelHelper.MergeCells(worksheet, 27, 1, 27, 2);
             excelHelper.ApplyColor(worksheet.Cells[27, 1, 27, 2], Color.Gray);
@@ -163,6 +185,10 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["A29"].Value = "Closed";
             worksheet.Cells["A30"].Value = "P3";
             worksheet.Cells["A31"].Value = "Posted";
+
+            statusValueCellTracker.Add("open", "B28");
+            statusValueCellTracker.Add("closed", "B29");
+            statusValueCellTracker.Add("posted", "B31");
 
             flag = worksheet.DataValidations.AddListValidation("B28");
             flag.Formula.Values.Add("Y");
@@ -176,10 +202,18 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("B31");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["B28"].Value = "Y";
-            worksheet.Cells["B29"].Value = "N";
-            worksheet.Cells["B30"].Value = "N";
-            worksheet.Cells["B31"].Value = "Y";
+            foreach (var item in statusValueCellTracker)
+            {
+                if (parametersModel.Status.Contains(item.Key))
+                {
+                    worksheet.Cells[item.Value].Value = "Y";
+                }
+                else
+                {
+                    worksheet.Cells[item.Value].Value = "N";
+                }
+            }
+            worksheet.Cells["B30"].Value = parametersModel.P3 > 0 ? "Y" : "N";
             excelHelper.ApplyBorder(worksheet.Cells[23, 1, 31, 2]);
 
             excelHelper.MergeCells(worksheet, 14, 4, 14, 6);
@@ -228,6 +262,10 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["D34:E34"].Value = "80 - Unknown";
             excelHelper.MergeCells(worksheet, 35, 4, 35, 5, false);
             worksheet.Cells["D35:E35"].Value = "XX - Demolished/Replaced";
+
+            var ownerCodeValueTracker = new Dictionary<string, string> { {"01", "F15"},{"02", "F16"},{"03","F17"},{"04","F18"},{"11","F19"},{"12","F20"},
+                {"21","F21"},{"25","F22"},{"26","F23"},{"27","F24"},{"31","F25"},{"32","F26"},{"60","F27"},{"62","F28"},{"64","F29"},{"66","F30"},{"68","F31"},
+                {"69","F32"},{"70","F33"},{"80","F34"},{"XX","F35"} };
 
             flag = worksheet.DataValidations.AddListValidation("F15");
             flag.Formula.Values.Add("Y");
@@ -292,27 +330,18 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("F35");
             flag.Formula.Values.Add("N");
             flag.Formula.Values.Add("Y");
-            worksheet.Cells["F15"].Value = "Y";
-            worksheet.Cells["F16"].Value = "N";
-            worksheet.Cells["F17"].Value = "N";
-            worksheet.Cells["F18"].Value = "N";
-            worksheet.Cells["F19"].Value = "N";
-            worksheet.Cells["F20"].Value = "N";
-            worksheet.Cells["F21"].Value = "N";
-            worksheet.Cells["F22"].Value = "N";
-            worksheet.Cells["F23"].Value = "N";
-            worksheet.Cells["F24"].Value = "N";
-            worksheet.Cells["F25"].Value = "N";
-            worksheet.Cells["F26"].Value = "N";
-            worksheet.Cells["F27"].Value = "N";
-            worksheet.Cells["F28"].Value = "N";
-            worksheet.Cells["F29"].Value = "N";
-            worksheet.Cells["F30"].Value = "N";
-            worksheet.Cells["F31"].Value = "N";
-            worksheet.Cells["F32"].Value = "N";
-            worksheet.Cells["F33"].Value = "N";
-            worksheet.Cells["F34"].Value = "N";
-            worksheet.Cells["F35"].Value = "N";
+
+            foreach (var item in ownerCodeValueTracker)
+            {
+                if (parametersModel.OwnerCode.Contains(item.Key))
+                {
+                    worksheet.Cells[item.Value].Value = "Y";
+                }
+                else
+                {
+                    worksheet.Cells[item.Value].Value = "N";
+                }
+            }
             excelHelper.ApplyBorder(worksheet.Cells[14, 4, 35, 6]);
 
             excelHelper.MergeCells(worksheet, 14, 8, 14, 10);
@@ -337,6 +366,9 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 22, 8, 22, 9, false);
             worksheet.Cells["H22:I22"].Value = "NN - Other";
 
+            var functionalClassValueTracker = new Dictionary<string, string> { {"01","J16"},{"02","J17"},{"06","J18"},{"07","J19"},{"08","J20"},{"09","J21"},
+                {"NN","J22"},{"11","J24"},{"12","J25"},{"14","J26"},{"16","J27"},{"17","J28"},{"19","J29"},{"99","J31"} };
+
             flag = worksheet.DataValidations.AddListValidation("J16");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
@@ -358,13 +390,13 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("J22");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["J16"].Value = "Y";
-            worksheet.Cells["J17"].Value = "Y";
-            worksheet.Cells["J18"].Value = "Y";
-            worksheet.Cells["J19"].Value = "Y";
-            worksheet.Cells["J20"].Value = "Y";
-            worksheet.Cells["J21"].Value = "Y";
-            worksheet.Cells["J22"].Value = "Y";
+            //worksheet.Cells["J16"].Value = "Y";
+            //worksheet.Cells["J17"].Value = "Y";
+            //worksheet.Cells["J18"].Value = "Y";
+            //worksheet.Cells["J19"].Value = "Y";
+            //worksheet.Cells["J20"].Value = "Y";
+            //worksheet.Cells["J21"].Value = "Y";
+            //worksheet.Cells["J22"].Value = "Y";
 
             excelHelper.MergeCells(worksheet, 23, 8, 23, 10);
             excelHelper.ApplyColor(worksheet.Cells[23, 8, 23, 10], Color.DimGray);
@@ -411,14 +443,27 @@ namespace BridgeCare.Services.SummaryReport
             flag = worksheet.DataValidations.AddListValidation("J31");
             flag.Formula.Values.Add("Y");
             flag.Formula.Values.Add("N");
-            worksheet.Cells["J24"].Value = "Y";
-            worksheet.Cells["J25"].Value = "Y";
-            worksheet.Cells["J26"].Value = "Y";
-            worksheet.Cells["J27"].Value = "Y";
-            worksheet.Cells["J28"].Value = "Y";
-            worksheet.Cells["J29"].Value = "Y";
-            worksheet.Cells["J30"].Value = "Y";
-            worksheet.Cells["J31"].Value = "Y";
+
+            foreach (var item in functionalClassValueTracker)
+            {
+                if (parametersModel.FunctionalClass.Contains(item.Key))
+                {
+                    worksheet.Cells[item.Value].Value = "Y";
+                }
+                else
+                {
+                    worksheet.Cells[item.Value].Value = "N";
+                }
+            }
+            worksheet.Cells["J30"].Value = worksheet.Cells["J22"].Value;
+            //worksheet.Cells["J24"].Value = "Y";
+            //worksheet.Cells["J25"].Value = "Y";
+            //worksheet.Cells["J26"].Value = "Y";
+            //worksheet.Cells["J27"].Value = "Y";
+            //worksheet.Cells["J28"].Value = "Y";
+            //worksheet.Cells["J29"].Value = "Y";
+            //worksheet.Cells["J30"].Value = "Y";
+            //worksheet.Cells["J31"].Value = "Y";
             excelHelper.ApplyBorder(worksheet.Cells[14, 8, 31, 10]);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BridgeCare.Models.SummaryReport;
+using BridgeCare.Models.SummaryReport.ParametersTAB;
 
 namespace BridgeCare.Models
 {
@@ -12,5 +13,7 @@ namespace BridgeCare.Models
         public List<string> Treatments { get; set; }
 
         public List<BudgetsPerBRKey> BudgetsPerBRKeys { get; set; }
+
+        public ParametersModel ParametersModel { get; set; }
     }
 }

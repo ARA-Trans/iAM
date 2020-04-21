@@ -90,6 +90,9 @@ namespace BridgeCare
             modelBuilder.Entity<PennDotReportAData>()
                 .Property(p => p.ParallelBridge)
                 .HasColumnName("Parallel_Struct");
+            modelBuilder.Entity<PennDotReportAData>()
+                .Property(p => p.OwnerCode)
+                .HasColumnName("OWNER_CODE");
 
             modelBuilder.Entity<SimulationEntity>()
                 .HasMany(e => e.USERS);

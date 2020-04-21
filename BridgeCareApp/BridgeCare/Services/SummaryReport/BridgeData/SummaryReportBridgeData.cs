@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Interfaces;
 using BridgeCare.Models;
+using BridgeCare.Models.SummaryReport.ParametersTAB;
 using BridgeCare.Services.SummaryReport;
 using BridgeCare.Services.SummaryReport.BridgeData;
 using OfficeOpenXml;
@@ -20,14 +21,16 @@ namespace BridgeCare.Services
         private readonly HighlightWorkDoneCells highlightWorkDoneCells;
         private Dictionary<MinCValue, Func<ExcelWorksheet, int, int, YearsData, int>> valueForMinC;
         private List<int> SpacerColumnNumbers;
+        private readonly ParametersModel parametersModel;
 
         public SummaryReportBridgeData(IBridgeData bridgeData, BridgeDataHelper bridgeDataHelper, ExcelHelper excelHelper,
-            HighlightWorkDoneCells highlightWorkDoneCells)
+            HighlightWorkDoneCells highlightWorkDoneCells, ParametersModel parametersModel)
         {
             this.bridgeData = bridgeData;
             this.bridgeDataHelper = bridgeDataHelper;
             this.excelHelper = excelHelper;
             this.highlightWorkDoneCells = highlightWorkDoneCells;
+            this.parametersModel = parametersModel;
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace BridgeCare.Services
                                                 select dt.Field<int>("SECTIONID");
             var sectionsForSummaryReport = sections.Where(sm => sectionIdsFromSimulationTable.Contains(sm.SECTIONID)).ToList();
             BRKeys = sectionsForSummaryReport.Select(sm => Convert.ToInt32(sm.FACILITY)).ToList();
-            var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, simulationModel, dbContext);
+            var bridgeDataModels = bridgeData.GetBridgeData(BRKeys, simulationModel, dbContext, parametersModel);
             var budgetsPerBrKey = bridgeData.GetBudgetsPerBRKey(simulationModel, dbContext);
 
             var simulationDataModels = bridgeDataHelper.GetSimulationDataModels(simulationDataTable, simulationYears, projectCostModels, budgetsPerBrKey);
@@ -78,7 +81,9 @@ namespace BridgeCare.Services
             }
             var lastColumn = worksheet.Dimension.Columns + 1;
             worksheet.Column(lastColumn).Width = 3;
-            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels, Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey };            
+            var workSummaryModel = new WorkSummaryModel { SimulationDataModels = simulationDataModels, BridgeDataModels = bridgeDataModels,
+                Treatments = treatments, BudgetsPerBRKeys = budgetsPerBrKey, ParametersModel = parametersModel
+            };            
             return workSummaryModel;
         }
 
@@ -435,6 +440,25 @@ namespace BridgeCare.Services
                 columnNo++;
                 //worksheet.Cells[rowNo, columnNo++].Value = bridgeDataModel.RiskScore; // We fill this data in the next function call "AddDynamicDataCells"
                 worksheet.Cells[rowNo, columnNo].Value = bridgeDataModel.P3 > 0 ? "Y" : "N";
+
+                // Get NHS record for Parameter TAB
+                if (parametersModel.nHSModel.NHS == null || parametersModel.nHSModel.NonNHS == null)
+                {
+                    switch (bridgeDataModel.NHS)
+                    {
+                        case "Y":
+                            parametersModel.nHSModel.NHS = "Y";
+                            break;
+                        case "N":
+                            parametersModel.nHSModel.NonNHS = "Y";
+                            break;
+                    }
+                }
+                // Get BPN data for parameter TAB
+                if (!parametersModel.BPNValues.Contains(bridgeDataModel.BPN))
+                {
+                    parametersModel.BPNValues.Add(bridgeDataModel.BPN);
+                }
             }
             currentCell.Row = rowNo;
             currentCell.Column = columnNo;
