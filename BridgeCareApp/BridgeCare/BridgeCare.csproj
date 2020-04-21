@@ -285,7 +285,6 @@
     <Compile Include="Models\SimulationUserModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
-    <Compile Include="Models\SummaryReport\ParametersTAB\FunctionalClassModel.cs" />
     <Compile Include="Models\SummaryReport\ParametersTAB\NHSModel.cs" />
     <Compile Include="Models\SummaryReport\ParametersTAB\ParametersModel.cs" />
     <Compile Include="Models\UserCriteriaModel.cs" />
