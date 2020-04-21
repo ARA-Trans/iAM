@@ -15,12 +15,6 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
     public class BridgeDataDAL : IBridgeData
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BridgeDataDAL));
-        //private readonly ParametersModel parametersModel;
-
-        //public BridgeDataDAL(ParametersModel parametersModel)
-        //{
-        //    this.parametersModel = parametersModel;
-        //}
 
         /// <summary>
         /// Fetches bridge data using a list of br keys
