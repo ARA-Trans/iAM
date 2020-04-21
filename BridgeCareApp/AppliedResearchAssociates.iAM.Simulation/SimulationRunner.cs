@@ -17,7 +17,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         private IReadOnlyDictionary<Section, ICollection<Project>> ProjectsPerSection { get; set; }
 
-        private IReadOnlyCollection<(Section, CalculateEvaluateArgument)> SectionContexts { get; set; }
+        private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
 
         private ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; set; }
 
@@ -25,19 +25,34 @@ namespace AppliedResearchAssociates.iAM.Simulation
         {
             // fill OCI weights.
 
-            // load attributes.
-            CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
-            var sectionContexts = Simulation.Network.Sections.Select(section =>
+            loadAttributes();
+            void loadAttributes()
             {
-                var data = new CalculateEvaluateArgument();
-                //- fill in with rolled up data (?)
-                //- fill in calculated field funcs.
-                return (section, data);
-            }).ToList();
+                CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
 
-            // [REVIEW] "jurisdiction" should only run on non-roll-forward data? per Gregg's memo
-            _ = sectionContexts.RemoveAll(context => !Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context.data));
-            SectionContexts = sectionContexts;
+                var sectionContexts = Simulation.Network.Sections.Select(section =>
+                {
+                    var data = new CalculateEvaluateArgument();
+
+                    //- fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
+
+                    foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
+                    {
+                        data.SetNumber(calculatedField.Name, () => calculatedField.Calculate(data));
+                    }
+
+                    return new SectionContext(section, data);
+                }).ToList();
+
+                _ = sectionContexts.RemoveAll(context => !Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context.Data));
+
+                foreach (var context in sectionContexts)
+                {
+                    //- fill in with ROLL-FORWARD data.
+                }
+
+                SectionContexts = sectionContexts;
+            }
 
             // drop previous simulation.
 
@@ -62,46 +77,63 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             //SpendAllCommittedProjects();
 
-            foreach (var age in Enumerable.Range(1, Simulation.InvestmentPlan.NumberOfYearsInAnalysisPeriod))
+            foreach (var year in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
-                var year = Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod + age - 1;
-
-                // "apply deterioration"
-                foreach (var (section, data) in SectionContexts)
+                applyDeterioration();
+                void applyDeterioration()
                 {
-                    data.SetNumber(AGE, age);
-
-                    var projectsForThisSection = ProjectsPerSection[section];
-                    var sectionShouldDeteriorate = projectsForThisSection.All(project => year < project.FirstYear || project.LastYear < year);
-                    if (sectionShouldDeteriorate)
+                    foreach (var context in SectionContexts)
                     {
-                        var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
-                        {
-                            var applicableCurves = curves.Where(curve => curve.Criterion.Evaluate(data)).ToArray();
-                            if (applicableCurves.Length > 1)
-                            {
-                                throw new NotImplementedException("A warning should be emitted when more than one curve is valid.");
-                            }
+                        var section = context.Section;
+                        var data = context.Data;
 
-                            switch (curves.Key.Deterioration)
-                            {
-                            case Deterioration.Decreasing:
-                                return applicableCurves.Min(curve => curve.Equation.Calculate(data));
-                            case Deterioration.Increasing:
-                                return applicableCurves.Max(curve => curve.Equation.Calculate(data));
-                            default:
-                                throw new InvalidOperationException("Invalid deterioration.");
-                            }
-                        });
-
-                        foreach (var (key, value) in dataUpdates)
+                        var projectsForThisSection = ProjectsPerSection[section];
+                        var sectionShouldDeteriorate = projectsForThisSection.All(project => year < project.FirstYear || project.LastYear < year);
+                        if (sectionShouldDeteriorate)
                         {
-                            data.SetNumber(key, value);
+                            var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
+                            {
+                                curves.Channel(
+                                    curve => curve.Criterion.Evaluate(data),
+                                    result => result ?? false,
+                                    result => !result.HasValue,
+                                    out var applicableCurves,
+                                    out var defaultCurves);
+
+                                var operativeCurves = applicableCurves.Count > 0 ? applicableCurves : defaultCurves;
+
+                                if (operativeCurves.Count > 1)
+                                {
+                                    throw new NotImplementedException("A warning should be emitted when more than one curve is valid.");
+                                }
+
+                                switch (curves.Key.Deterioration)
+                                {
+                                case Deterioration.Decreasing:
+                                    return operativeCurves.Min(curve => curve.Equation.Calculate(data));
+                                case Deterioration.Increasing:
+                                    return operativeCurves.Max(curve => curve.Equation.Calculate(data));
+                                default:
+                                    throw new InvalidOperationException("Invalid deterioration.");
+                                }
+                            });
+
+                            foreach (var (key, value) in dataUpdates)
+                            {
+                                data.SetNumber(key, value);
+                            }
                         }
                     }
                 }
 
-                // determine benefit/cost.
+                determineBenefitCost();
+                void determineBenefitCost()
+                {
+                    //- collect all feasible treatments for this section.
+                    //- collect all superseded treatments from these feasible treatments.
+                    //- remove these superseded treatments from the feasible treatments.
+                    //- for each remaining treatment, determine benefit & cost...
+                }
 
                 // load & apply committed projects.
 

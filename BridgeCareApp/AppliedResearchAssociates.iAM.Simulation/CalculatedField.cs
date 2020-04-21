@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM.Simulation
@@ -12,7 +12,17 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public double Calculate(CalculateEvaluateArgument argument)
         {
-            throw new NotImplementedException("Need to find applicable equation(s) for calculation.");
+            Equations.Channel(
+                equation => equation.Criterion.Evaluate(argument),
+                result => result ?? false,
+                result => !result.HasValue,
+                out var applicableEquations,
+                out var defaultEquations);
+
+            var operativeEquations = applicableEquations.Count > 0 ? applicableEquations : defaultEquations;
+            var operativeEquation = operativeEquations.Single();
+
+            return operativeEquation.Item.Calculate(argument);
         }
     }
 }

@@ -13,6 +13,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Choice.cs</LastGenOutput>
     </None>
+    <None Update="Static.Channel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Static.Channel.cs</LastGenOutput>
+    </None>
     <None Update="Static.DoNothing.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Static.DoNothing.cs</LastGenOutput>
@@ -36,6 +40,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Choice.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Static.Channel.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Static.Channel.tt</DependentUpon>
     </Compile>
     <Compile Update="Static.DoNothing.cs">
       <DesignTime>True</DesignTime>

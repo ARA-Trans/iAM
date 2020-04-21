@@ -1,0 +1,82 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// WARNING: This file was automatically generated from a T4 text template at the
+// following moment in time: <#= DateTimeOffset.Now #>. Any changes you make to
+// this file will be lost when this file is regenerated from the template
+// source.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace AppliedResearchAssociates
+{
+    partial class Static
+    {
+        public static IList<TElement>[] Channel<TElement>(this IEnumerable<TElement> elements, params Predicate<TElement>[] predicates) => elements.Channel(Identity, predicates);
+
+        public static IList<TElement>[] Channel<TElement, TSelection>(this IEnumerable<TElement> elements, Func<TElement, TSelection> selector, params Predicate<TSelection>[] predicates)
+        {
+            var destinations = predicates.Select(_ => new List<TElement>()).ToArray();
+
+            foreach (var element in elements)
+            {
+                var selection = selector(element);
+
+                foreach (var (predicate, destination) in Zip.Strict(predicates, destinations))
+                {
+                    if (predicate(selection))
+                    {
+                        destination.Add(element);
+                    }
+                }
+            }
+
+            return destinations;
+        }
+<#
+foreach (var arity in Enumerable.Range(2, 7))
+{
+    var labelNumbers = Enumerable.Range(1, arity).ToList();
+    var elementPredicateParams = string.Join(", ", labelNumbers.Select(n => $"Predicate<TElement> predicate{n}"));
+    var selectionPredicateParams = string.Join(", ", labelNumbers.Select(n => $"Predicate<TSelection> predicate{n}"));
+    var outParams = string.Join(", ", labelNumbers.Select(n => $"out IList<TElement> channel{n}"));
+    var predicateArgs = string.Join(", ", labelNumbers.Select(n => $"predicate{n}"));
+    var outArgs = string.Join(", ", labelNumbers.Select(n => $"out channel{n}"));
+#>
+
+        public static void Channel<TElement>(this IEnumerable<TElement> elements, <#= elementPredicateParams #>, <#= outParams #>) => elements.Channel(Identity, <#= predicateArgs #>, <#= outArgs #>);
+
+        public static void Channel<TElement, TSelection>(this IEnumerable<TElement> elements, Func<TElement, TSelection> selector, <#= selectionPredicateParams #>, <#= outParams #>)
+        {
+<#
+    foreach (var n in labelNumbers)
+    {
+#>
+            channel<#= n #> = new List<TElement>();
+<#
+    }
+#>
+
+            foreach (var element in elements)
+            {
+                var selection = selector(element);
+
+<#
+    foreach (var n in labelNumbers)
+    {
+#>
+                if (predicate<#= n #>(selection)) channel<#= n #>.Add(element);
+<#
+    }
+#>
+            }
+        }
+<#
+}
+#>
+    }
+}

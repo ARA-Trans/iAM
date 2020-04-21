@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
@@ -13,5 +14,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
         public double InflationRatePercentage { get; }
 
         public int NumberOfYearsInAnalysisPeriod { get; }
+
+        public IEnumerable<int> YearsOfAnalysis => Enumerable.Range(FirstYearOfAnalysisPeriod, NumberOfYearsInAnalysisPeriod);
     }
 }

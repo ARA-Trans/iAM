@@ -7,8 +7,13 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public Criterion(CalculateEvaluateCompiler compiler) => Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
 
-        public bool Evaluate(CalculateEvaluateArgument argument)
+        public bool? Evaluate(CalculateEvaluateArgument argument)
         {
+            if (string.IsNullOrWhiteSpace(Expression))
+            {
+                return null;
+            }
+
             EnsureCompiled();
             return Evaluator(argument);
         }
