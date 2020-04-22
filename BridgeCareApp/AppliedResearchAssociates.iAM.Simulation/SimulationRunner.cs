@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using MathNet.Numerics.Integration;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
@@ -13,9 +14,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         private readonly Simulation Simulation;
 
-        private const string AGE = "age";
-
-        private IReadOnlyDictionary<Section, ICollection<Project>> ProjectsPerSection { get; set; }
+        private IDictionary<Section, ICollection<Project>> ProjectsPerSection { get; set; }
 
         private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
 
@@ -32,19 +31,19 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
                 var sectionContexts = Simulation.Network.Sections.Select(section =>
                 {
-                    var data = new CalculateEvaluateArgument();
+                    var context = new SectionContext(section);
 
                     //- fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
 
                     foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
                     {
-                        data.SetNumber(calculatedField.Name, () => calculatedField.Calculate(data));
+                        context.SetNumber(calculatedField.Name, () => calculatedField.Calculate(context));
                     }
 
-                    return new SectionContext(section, data);
+                    return context;
                 }).ToList();
 
-                _ = sectionContexts.RemoveAll(context => !Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context.Data));
+                _ = sectionContexts.RemoveAll(context => !Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context));
 
                 foreach (var context in sectionContexts)
                 {
@@ -84,44 +83,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 {
                     foreach (var context in SectionContexts)
                     {
-                        var section = context.Section;
-                        var data = context.Data;
-
-                        var projectsForThisSection = ProjectsPerSection[section];
+                        var projectsForThisSection = ProjectsPerSection[context.Section];
                         var sectionShouldDeteriorate = projectsForThisSection.All(project => year < project.FirstYear || project.LastYear < year);
                         if (sectionShouldDeteriorate)
                         {
-                            var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
-                            {
-                                curves.Channel(
-                                    curve => curve.Criterion.Evaluate(data),
-                                    result => result ?? false,
-                                    result => !result.HasValue,
-                                    out var applicableCurves,
-                                    out var defaultCurves);
-
-                                var operativeCurves = applicableCurves.Count > 0 ? applicableCurves : defaultCurves;
-
-                                if (operativeCurves.Count > 1)
-                                {
-                                    throw new NotImplementedException("A warning should be emitted when more than one curve is valid.");
-                                }
-
-                                switch (curves.Key.Deterioration)
-                                {
-                                case Deterioration.Decreasing:
-                                    return operativeCurves.Min(curve => curve.Equation.Calculate(data));
-                                case Deterioration.Increasing:
-                                    return operativeCurves.Max(curve => curve.Equation.Calculate(data));
-                                default:
-                                    throw new InvalidOperationException("Invalid deterioration.");
-                                }
-                            });
-
-                            foreach (var (key, value) in dataUpdates)
-                            {
-                                data.SetNumber(key, value);
-                            }
+                            ApplyPerformanceCurves(context);
                         }
                     }
                 }
@@ -129,10 +95,40 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 determineBenefitCost();
                 void determineBenefitCost()
                 {
-                    //- collect all feasible treatments for this section.
-                    //- collect all superseded treatments from these feasible treatments.
-                    //- remove these superseded treatments from the feasible treatments.
-                    //- for each remaining treatment, determine benefit & cost...
+                    foreach (var context in SectionContexts)
+                    {
+                        var feasibleTreatments = Simulation.Treatments
+                            .Where(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false)
+                            .ToArray();
+
+                        var supersededTreatments = feasibleTreatments
+                            .SelectMany(treatment => treatment.Supersessions
+                                .Where(supersession => supersession.Criterion.Evaluate(context) ?? false)
+                                .Select(supersession => supersession.Treatment))
+                            .ToArray();
+
+                        var availableTreatments = feasibleTreatments
+                            .Except(supersededTreatments)
+                            .ToArray();
+
+                        var baselineContext = new SectionContext(context.Section);
+                        context.CopyTo(baselineContext);
+
+                        var baselineBenefit = GetTotalBenefit(baselineContext);
+
+                        foreach (var treatment in availableTreatments)
+                        {
+                            var treatmentContext = new SectionContext(context.Section);
+                            context.CopyTo(treatmentContext);
+
+                            // apply consequences.
+
+                            var treatmentBenefit = GetTotalBenefit(treatmentContext);
+                            treatmentBenefit -= baselineBenefit;
+
+                            var treatmentCost = 0d;
+                        }
+                    }
                 }
 
                 // load & apply committed projects.
@@ -152,5 +148,70 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             // if multi-year, "solve". (?)
         }
+
+        private double GetTotalBenefit(SectionContext context)
+        {
+            var result = Enumerable.Range(default, 100).Sum(delegate
+            {
+                // TODO: Account for scheduled and committed projects.
+                ApplyPerformanceCurves(context);
+
+                var benefit = context.GetNumber(Simulation.AnalysisMethod.Benefit.Name);
+
+                double limitedBenefit;
+                switch (Simulation.AnalysisMethod.Benefit.Deterioration)
+                {
+                case Deterioration.Decreasing:
+                    limitedBenefit = benefit - Simulation.AnalysisMethod.BenefitLimit;
+                    break;
+                case Deterioration.Increasing:
+                    limitedBenefit = Simulation.AnalysisMethod.BenefitLimit - benefit;
+                    break;
+                default:
+                    throw InvalidDeterioration;
+                }
+
+                return Math.Max(0, limitedBenefit);
+            });
+
+            return result;
+        }
+
+        private void ApplyPerformanceCurves(SectionContext context)
+        {
+            var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
+            {
+                curves.Channel(
+                    curve => curve.Criterion.Evaluate(context),
+                    result => result ?? false,
+                    result => !result.HasValue,
+                    out var applicableCurves,
+                    out var defaultCurves);
+
+                var operativeCurves = applicableCurves.Count > 0 ? applicableCurves : defaultCurves;
+
+                if (operativeCurves.Count > 1)
+                {
+                    // TODO: A warning should be emitted when more than one curve is valid.
+                }
+
+                switch (curves.Key.Deterioration)
+                {
+                case Deterioration.Decreasing:
+                    return operativeCurves.Min(curve => curve.Equation.Calculate(context));
+                case Deterioration.Increasing:
+                    return operativeCurves.Max(curve => curve.Equation.Calculate(context));
+                default:
+                    throw InvalidDeterioration;
+                }
+            });
+
+            foreach (var (key, value) in dataUpdates)
+            {
+                context.SetNumber(key, value);
+            }
+        }
+
+        private static Exception InvalidDeterioration => new InvalidOperationException("Invalid deterioration.");
     }
 }

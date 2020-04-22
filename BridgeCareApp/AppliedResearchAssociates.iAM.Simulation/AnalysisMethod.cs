@@ -4,6 +4,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class AnalysisMethod
     {
+        public NumberAttribute AreaAttribute { get; }
+
         public NumberAttribute Benefit { get; }
 
         public double BenefitLimit { get; }

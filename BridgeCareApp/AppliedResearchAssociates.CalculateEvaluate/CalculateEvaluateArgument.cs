@@ -3,21 +3,28 @@ using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    public sealed class CalculateEvaluateArgument
+    public class CalculateEvaluateArgument
     {
-        public double GetNumber(string key) => Number[key]();
+        public void CopyTo(CalculateEvaluateArgument target)
+        {
+            Number.CopyTo(target.Number);
+            Text.CopyTo(target.Text);
+            Timestamp.CopyTo(target.Timestamp);
+        }
 
-        public string GetText(string key) => Text[key];
+        public virtual double GetNumber(string key) => Number[key]();
 
-        public DateTime GetTimestamp(string key) => Timestamp[key];
+        public virtual string GetText(string key) => Text[key];
 
-        public void SetNumber(string key, double value) => SetNumber(key, () => value);
+        public virtual DateTime GetTimestamp(string key) => Timestamp[key];
 
-        public void SetNumber(string key, Func<double> getValue) => Number[key] = getValue;
+        public virtual void SetNumber(string key, double value) => SetNumber(key, () => value);
 
-        public void SetText(string key, string value) => Text[key] = value;
+        public virtual void SetNumber(string key, Func<double> getValue) => Number[key] = getValue;
 
-        public void SetTimestamp(string key, DateTime value) => Timestamp[key] = value;
+        public virtual void SetText(string key, string value) => Text[key] = value;
+
+        public virtual void SetTimestamp(string key, DateTime value) => Timestamp[key] = value;
 
         private readonly IDictionary<string, Func<double>> Number = new Dictionary<string, Func<double>>(StringComparer.OrdinalIgnoreCase);
 

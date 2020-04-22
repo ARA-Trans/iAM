@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class CalculatedField
     {
-        public List<Criterial<Equation>> Equations { get; }
+        public List<ConditionalEquation> Equations { get; }
 
         public string Name { get; }
 
@@ -22,7 +22,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
             var operativeEquations = applicableEquations.Count > 0 ? applicableEquations : defaultEquations;
             var operativeEquation = operativeEquations.Single();
 
-            return operativeEquation.Item.Calculate(argument);
+            return operativeEquation.Equation.Calculate(argument);
         }
     }
 }

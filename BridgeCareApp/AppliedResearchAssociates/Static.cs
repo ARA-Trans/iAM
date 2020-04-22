@@ -13,17 +13,15 @@ namespace AppliedResearchAssociates
 
         public static IEnumerable<int> BoundRange(int start, int end, int stride = 1)
         {
-            var direction = Math.Sign(stride);
-            if (direction == 1)
+            switch (Math.Sign(stride))
             {
+            case 1:
                 return towardPositiveInfinity();
-            }
-            else if (direction == -1)
-            {
+
+            case -1:
                 return towardNegativeInfinity();
-            }
-            else
-            {
+
+            default:
                 throw new ArgumentException("Stride must be non-zero.", nameof(stride));
             }
 
@@ -57,6 +55,14 @@ namespace AppliedResearchAssociates
             }
 
             return result.ToHashCode();
+        }
+
+        public static void CopyTo<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, IDictionary<TKey, TValue> target)
+        {
+            foreach (var (key, value) in source)
+            {
+                target[key] = value;
+            }
         }
 
         public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> keyValue, out TKey key, out TValue value)

@@ -8,7 +8,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public List<TreatmentConsequence> Consequences { get; }
 
-        public List<Criterial<Equation>> CostEquations { get; }
+        public List<ConditionalEquation> CostEquations { get; }
 
         public string Description { get; }
 
@@ -20,6 +20,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public int NumberOfYearsBeforeSubsequentApplicationOfSameTreatment { get; }
 
-        public List<Criterial<Treatment>> SupersededTreatments { get; }
+        public List<TreatmentSupersession> Supersessions { get; }
     }
 }

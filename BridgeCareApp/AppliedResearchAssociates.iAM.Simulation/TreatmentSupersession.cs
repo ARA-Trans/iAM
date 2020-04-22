@@ -1,9 +1,9 @@
 ﻿namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class Criterial<T>
+    public class TreatmentSupersession
     {
         public Criterion Criterion { get; }
 
-        public T Item { get; }
+        public Treatment Treatment { get; }
     }
 }
