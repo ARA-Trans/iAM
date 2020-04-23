@@ -87,7 +87,7 @@ namespace BridgeCare.Controllers
         private Dictionary<string, SimulationRunMethod> CreateRunMethods()
         {
             Task<string> RunAnySimulation(SimulationModel model, UserInformationModel userInformation) =>
-                repo.RunSimulation(model);
+                repo.RunSimulation(model, db);
             Task<string> RunPermittedSimulation(SimulationModel model, UserInformationModel userInformation) =>
                 repo.RunPermittedSimulation(model, db, userInformation.Name);
 

@@ -14,7 +14,7 @@ namespace BridgeCare.Interfaces
         void UpdatePermittedSimulation(SimulationModel model, BridgeCareContext db, string username);
         void DeleteAnySimulation(int id, BridgeCareContext db);
         void DeletePermittedSimulation(int id, BridgeCareContext db, string username);
-        Task<string> RunSimulation(SimulationModel model);
+        Task<string> RunSimulation(SimulationModel model, BridgeCareContext db);
         Task<string> RunPermittedSimulation(SimulationModel model, BridgeCareContext db, string username);
         void SetSimulationLastRunDate(int id, BridgeCareContext db);
         void SetPermittedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username);
