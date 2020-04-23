@@ -42,7 +42,6 @@
         TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {clone} from 'ramda';
     import {getUserName} from '@/shared/utils/get-user-info';
 
     const ObjectID = require('bson-objectid');

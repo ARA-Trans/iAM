@@ -67,7 +67,7 @@
     import {Action} from 'vuex-class';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import {any, clone, last, propEq} from 'ramda';
+    import {any, last, propEq} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {bytesToMegabytes} from '@/shared/utils/math-utils.ts';
     import {CommittedProjectsDialogResult} from '@/shared/models/modals/committed-projects-dialog-result';

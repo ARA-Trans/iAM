@@ -28,7 +28,6 @@
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
     import {emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
-    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 

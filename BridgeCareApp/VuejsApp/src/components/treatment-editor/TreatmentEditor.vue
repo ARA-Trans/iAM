@@ -148,8 +148,6 @@
     import ConsequencesTab from '@/components/treatment-editor/treatment-editor-tabs/ConsequencesTab.vue';
     import BudgetsTab from '@/components/treatment-editor/treatment-editor-tabs/BudgetsTab.vue';
     import {InvestmentLibrary} from '@/shared/models/iAM/investment';
-    import {sorter} from '@/shared/utils/sorter-utils';
-    import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';

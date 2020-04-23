@@ -42,7 +42,6 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {clone} from 'ramda';
     import moment from 'moment';
 
     const ObjectID = require('bson-objectid');

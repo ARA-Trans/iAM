@@ -28,7 +28,6 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {clone} from 'ramda';
     import {CreateDeficientLibraryDialogData} from '@/shared/models/modals/create-deficient-library-dialog-data';
     import {Deficient, DeficientLibrary, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
     import {getUserName} from '../../../shared/utils/get-user-info';
