@@ -92,7 +92,14 @@ namespace BridgeCare.DataAccessLayer
         private void DeleteSimulation(int id, BridgeCareContext db)
         {
             var simulation = db.Simulations.Single(b => b.SIMULATIONID == id);
+            var splitTreatment = db.SplitTreatments.Where(s => s.SIMULATIONID == id);
             db.Entry(simulation).State = System.Data.Entity.EntityState.Deleted;
+            db.SplitTreatments.RemoveRange(db.SplitTreatments.Where(s => s.SIMULATIONID == id));
+
+            foreach (var item in splitTreatment)
+            {
+                db.SplitTreatmentLimits.RemoveRange(db.SplitTreatmentLimits.Where(r => r.SPLIT_TREATMENT_ID == item.SPLIT_TREATMENT_ID));
+            }
             db.SaveChanges();
 
             using (var connection = new SqlConnection(db.Database.Connection.ConnectionString))
