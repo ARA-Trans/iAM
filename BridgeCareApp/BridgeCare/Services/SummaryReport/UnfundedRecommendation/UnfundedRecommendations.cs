@@ -140,7 +140,7 @@ namespace BridgeCare.Services.SummaryReport.UnfundedRecommendation
 
         private void AddDynamicHeadersCells(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears)
         {
-            const string HeaderConstText = "Feasiable ";
+            const string HeaderConstText = "Feasible ";
             var column = currentCell.Column;
             var row = currentCell.Row;
             var initialColumn = column;
