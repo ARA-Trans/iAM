@@ -175,7 +175,7 @@
          * Creates a new Consequence object to add to the selected treatment
          */
         onAddConsequence() {
-            const newConsequence: Consequence = {...clone(emptyConsequence), id: ObjectID.generate()};
+            const newConsequence: Consequence = {...emptyConsequence, id: ObjectID.generate()};
 
             this.consequencesTabSelectedTreatmentLibrary = {
                 ...this.consequencesTabSelectedTreatmentLibrary,
@@ -229,7 +229,7 @@
             this.selectedConsequence = clone(consequence);
 
             this.equationEditorDialogData = {
-                ...clone(emptyEquationEditorDialogData),
+                ...emptyEquationEditorDialogData,
                 showDialog: true,
                 equation: this.selectedConsequence.equation
             };

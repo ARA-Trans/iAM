@@ -392,10 +392,10 @@
         }
 
         onNewLibrary() {
-            this.createCashFlowLibraryDialogData = clone({
+            this.createCashFlowLibraryDialogData = {
                 ...emptyCreateCashFlowLibraryDialogData,
                 showDialog: true
-            });
+            };
         }
 
         onCreateAsNewLibrary() {
@@ -414,10 +414,10 @@
         }
 
         onAddSplitTreatment() {
-            const newSplitTreatment: SplitTreatment = clone({
+            const newSplitTreatment: SplitTreatment = {
                 ...emptySplitTreatment,
                 id: ObjectID.generate()
-            });
+            };
 
             this.selectedCashFlowLibrary = {
                 ...this.selectedCashFlowLibrary,
@@ -436,25 +436,24 @@
         onAddSplitTreatmentLimit() {
             const newSplitTreatmentLimit: SplitTreatmentLimit = this.modifyNewSplitTreatmentLimitDefaultValues();
 
-            this.selectCashFlowLibraryAction({selectedCashFlowLibrary: clone({
-                    ...this.selectedCashFlowLibrary,
-                    splitTreatments: update(
-                        findIndex(propEq('id', this.selectedSplitTreatment.id), this.selectedCashFlowLibrary.splitTreatments),
-                        clone({
-                            ...this.selectedSplitTreatment,
-                            splitTreatmentLimits: append(newSplitTreatmentLimit, this.selectedSplitTreatment.splitTreatmentLimits)
-                        }),
-                        this.selectedCashFlowLibrary.splitTreatments
-                    )
-                })
-            });
+            this.selectedCashFlowLibrary = {
+                ...this.selectedCashFlowLibrary,
+                splitTreatments: update(
+                    findIndex(propEq('id', this.selectedSplitTreatment.id), this.selectedCashFlowLibrary.splitTreatments),
+                    {
+                        ...this.selectedSplitTreatment,
+                        splitTreatmentLimits: append(newSplitTreatmentLimit, this.selectedSplitTreatment.splitTreatmentLimits)
+                    },
+                    this.selectedCashFlowLibrary.splitTreatments
+                )
+            };
         }
 
         modifyNewSplitTreatmentLimitDefaultValues() {
-            const newSplitTreatmentLimit: SplitTreatmentLimit = clone({
+            const newSplitTreatmentLimit: SplitTreatmentLimit = {
                 ...emptySplitTreatmentLimit,
                 id: ObjectID.generate()
-            });
+            };
 
             if (this.selectedSplitTreatment.splitTreatmentLimits.length === 0) {
                 return newSplitTreatmentLimit;

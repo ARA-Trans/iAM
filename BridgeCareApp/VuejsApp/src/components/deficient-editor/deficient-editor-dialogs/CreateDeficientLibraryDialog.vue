@@ -39,7 +39,7 @@
     export default class CreateDeficientLibraryDialog extends Vue {
         @Prop() dialogData: CreateDeficientLibraryDialogData;
 
-        newDeficientLibrary: DeficientLibrary = clone({...emptyDeficientLibrary, id: ObjectID.generate()});
+        newDeficientLibrary: DeficientLibrary = {...emptyDeficientLibrary, id: ObjectID.generate()};
 
         /**
          * Sets the newDeficientLibrary object's description & deficients properties with the dialogData object's
@@ -67,7 +67,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newDeficientLibrary = clone({...emptyDeficientLibrary, id: ObjectID.generate()});
+            this.newDeficientLibrary = {...emptyDeficientLibrary, id: ObjectID.generate()};
         }
 
         /**

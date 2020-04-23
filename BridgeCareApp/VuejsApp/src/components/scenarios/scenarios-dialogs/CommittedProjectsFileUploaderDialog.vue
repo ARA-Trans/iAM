@@ -141,10 +141,10 @@
                     });
                 if (any((extension: string) => extension !== 'xlsx', extensions)) {
                     this.setErrorMessageAction({message: 'Only .xlsx file types are allowed'});
-                    newFiles = [...clone(newFiles)].filter((file: File) => file.name.indexOf('xlsx') !== -1);
+                    newFiles = [...newFiles].filter((file: File) => file.name.indexOf('xlsx') !== -1);
                 }
                 const oldFiles = this.files.filter((file: File) => !any(propEq('name', file.name), newFiles));
-                this.files = [...clone(oldFiles), ...clone(newFiles)];
+                this.files = [...oldFiles, ...newFiles];
                 this.setIsBusyAction({isBusy: false});
             }
         }

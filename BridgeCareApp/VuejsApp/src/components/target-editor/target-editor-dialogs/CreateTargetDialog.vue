@@ -52,7 +52,7 @@
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        newTarget: Target = clone({...emptyTarget, id: ObjectID.generate(), year: moment().year()});
+        newTarget: Target = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         numericAttributes: string[] = [];
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
@@ -95,7 +95,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newTarget = clone({...emptyTarget, id: ObjectID.generate(), year: moment().year()});
+            this.newTarget = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         }
     }
 </script>

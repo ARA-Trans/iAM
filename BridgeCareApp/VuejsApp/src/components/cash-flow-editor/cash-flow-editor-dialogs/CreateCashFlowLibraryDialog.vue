@@ -51,17 +51,17 @@
     export default class CreateCashFlowLibraryDialog extends Vue {
         @Prop() dialogData: CreateCashFlowLibraryDialogData;
 
-        createdCashFlowLibrary: CashFlowLibrary = clone({...emptyCashFlowLibrary, id: ObjectID.generate()});
+        createdCashFlowLibrary: CashFlowLibrary = {...emptyCashFlowLibrary, id: ObjectID.generate()};
 
         /**
          * Sets createdCashFlowLibrary class property using dialogData class property
          */
         @Watch('dialogData')
         onDialogDataChanged() {
-            this.createdCashFlowLibrary = clone({
+            this.createdCashFlowLibrary = {
                 ...this.createdCashFlowLibrary,
                 splitTreatments: this.dialogData.splitTreatments
-            });
+            };
         }
 
         /**
@@ -81,7 +81,7 @@
                 this.$emit('submit', null);
             }
 
-            this.createdCashFlowLibrary = clone({...emptyCashFlowLibrary, id: ObjectID.generate()});
+            this.createdCashFlowLibrary = {...emptyCashFlowLibrary, id: ObjectID.generate()};
         }
 
         /**
@@ -90,7 +90,7 @@
         setIdsForNewLibrarySubData() {
             this.createdCashFlowLibrary.splitTreatments = this.createdCashFlowLibrary.splitTreatments
                 .map((splitTreatment: SplitTreatment) => {
-                    return clone({
+                    return {
                         ...splitTreatment,
                         id: ObjectID.generate(),
                         splitTreatmentLimits: splitTreatment.splitTreatmentLimits
@@ -98,7 +98,7 @@
                                 splitTreatmentLimit.id = ObjectID.generate();
                                 return splitTreatmentLimit;
                             })
-                    });
+                    };
                 });
         }
     }

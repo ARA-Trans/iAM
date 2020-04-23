@@ -41,7 +41,7 @@
     export default class CreateTargetLibraryDialog extends Vue {
         @Prop() dialogData: CreateTargetLibraryDialogData;
 
-        newTargetLibrary: TargetLibrary = clone({...emptyTargetLibrary, id: ObjectID.generate()});
+        newTargetLibrary: TargetLibrary = {...emptyTargetLibrary, id: ObjectID.generate()};
 
         /**
          * Sets the newTargetLibrary object's description & targets properties with the dialogData object's
@@ -70,7 +70,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newTargetLibrary = clone({...emptyTargetLibrary, id: ObjectID.generate()});
+            this.newTargetLibrary = {...emptyTargetLibrary, id: ObjectID.generate()};
         }
 
         /**
