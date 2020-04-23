@@ -2,10 +2,10 @@
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class BudgetCategory
+    public class Budget
     {
         public string Name { get; }
 
-        public List<double> YearlyBudgetAmounts { get; }
+        public List<double> YearlyAmounts { get; }
     }
 }

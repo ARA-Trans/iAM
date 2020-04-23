@@ -4,6 +4,6 @@
     {
         public double BudgetAmountPercentage { get; }
 
-        public BudgetCategory BudgetCategory { get; }
+        public Budget BudgetCategory { get; }
     }
 }

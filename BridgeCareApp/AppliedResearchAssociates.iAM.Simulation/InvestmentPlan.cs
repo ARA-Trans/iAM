@@ -5,7 +5,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class InvestmentPlan
     {
-        public List<BudgetCategory> BudgetCategories { get; }
+        // TODO: Split treatment configurations...
+
+        public List<BudgetCondition> BudgetConditions { get; }
+
+        public List<Budget> Budgets { get; }
 
         public double DiscountRatePercentage { get; }
 

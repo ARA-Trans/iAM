@@ -5,11 +5,15 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 {
     public class CalculateEvaluateArgument
     {
-        public void CopyTo(CalculateEvaluateArgument target)
+        public CalculateEvaluateArgument()
         {
-            Number.CopyTo(target.Number);
-            Text.CopyTo(target.Text);
-            Timestamp.CopyTo(target.Timestamp);
+        }
+
+        public CalculateEvaluateArgument(CalculateEvaluateArgument original)
+        {
+            Number.CopyFrom(original.Number);
+            Text.CopyFrom(original.Text);
+            Timestamp.CopyFrom(original.Timestamp);
         }
 
         public virtual double GetNumber(string key) => Number[key]();

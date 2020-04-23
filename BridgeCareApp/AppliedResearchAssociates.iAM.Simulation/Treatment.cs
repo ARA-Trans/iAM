@@ -4,7 +4,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class Treatment
     {
-        public BudgetCategory BudgetCategory { get; }
+        // Gregg's memo mentions a "cumulative cost" flag. Couldn't find it in the desktop UI.
+
+        public List<Budget> BudgetCategories { get; }
 
         public List<TreatmentConsequence> Consequences { get; }
 
@@ -19,6 +21,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
         public int NumberOfYearsBeforeSubsequentApplicationOfAnyTreatment { get; }
 
         public int NumberOfYearsBeforeSubsequentApplicationOfSameTreatment { get; }
+
+        public List<TreatmentScheduling> Schedulings { get; }
 
         public List<TreatmentSupersession> Supersessions { get; }
     }

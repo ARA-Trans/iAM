@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
@@ -15,10 +16,19 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Network Network { get; }
 
+        public Treatment DesignatedInactiveTreatment { get; }
+
         public List<PerformanceCurve> PerformanceCurves { get; }
 
         public List<SimulationResult> Results { get; }
 
         public List<Treatment> Treatments { get; }
+
+        public List<Treatment> GetActiveTreatments()
+        {
+            var result = Treatments.ToList();
+            _ = result.Remove(DesignatedInactiveTreatment);
+            return result;
+        }
     }
 }

@@ -13,13 +13,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public SectionContext(Section section) => Section = section ?? throw new ArgumentNullException(nameof(section));
 
-        public Section Section { get; }
-
-        public void CopyTo(SectionContext target)
+        public SectionContext(SectionContext original) : base(original)
         {
-            base.CopyTo(target);
-            NumberCache.CopyTo(target.NumberCache);
+            Section = original.Section;
+            NumberCache.CopyFrom(original.NumberCache);
         }
+
+        public IDictionary<int, Treatment> ScheduledTreatments { get; } = new Dictionary<int, Treatment>();
+
+        public Section Section { get; }
 
         public override double GetNumber(string key)
         {

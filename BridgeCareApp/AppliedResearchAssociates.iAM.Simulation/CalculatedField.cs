@@ -10,7 +10,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public string Name { get; }
 
-        public double Calculate(CalculateEvaluateArgument argument)
+        public double Calculate(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             Equations.Channel(
                 equation => equation.Criterion.Evaluate(argument),
@@ -22,7 +22,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
             var operativeEquations = applicableEquations.Count > 0 ? applicableEquations : defaultEquations;
             var operativeEquation = operativeEquations.Single();
 
-            return operativeEquation.Equation.Calculate(argument);
+            return operativeEquation.Equation.Compute(argument, ageAttribute);
         }
     }
 }

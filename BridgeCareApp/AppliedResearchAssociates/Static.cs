@@ -57,7 +57,7 @@ namespace AppliedResearchAssociates
             return result.ToHashCode();
         }
 
-        public static void CopyTo<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, IDictionary<TKey, TValue> target)
+        public static void CopyFrom<TKey, TValue>(this IDictionary<TKey, TValue> target, IEnumerable<KeyValuePair<TKey, TValue>> source)
         {
             foreach (var (key, value) in source)
             {

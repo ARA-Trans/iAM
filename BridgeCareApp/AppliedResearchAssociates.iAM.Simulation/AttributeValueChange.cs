@@ -1,19 +1,31 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public sealed class NumberAdjustment : CompilableExpression
+    public sealed class AttributeValueChange : CompilableExpression
     {
-        public double Adjust(double value)
+        public Action GetApplicator(Attribute attribute, CalculateEvaluateArgument argument)
         {
-            EnsureCompiled();
-            return Adjuster(value);
+            switch (attribute)
+            {
+            case NumberAttribute _:
+                var oldValue = argument.GetNumber(attribute.Name);
+                var newValue = ChangeNumber(oldValue);
+                return () => argument.SetNumber(attribute.Name, newValue);
+
+            case TextAttribute _:
+                return () => argument.SetText(attribute.Name, Expression);
+
+            default:
+                throw new ArgumentException("Invalid attribute type.", nameof(attribute));
+            }
         }
 
         protected override void Compile()
         {
-            var match = ExpressionPattern.Match(Expression);
+            var match = NumberChangePattern.Match(Expression);
 
             var operation = match.Groups[1].Value;
             Operand = double.Parse(match.Groups[2].Value);
@@ -26,15 +38,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 switch (operation)
                 {
                 case "+":
-                    Adjuster = AddPercentage;
+                    NumberChanger = AddPercentage;
                     break;
 
                 case "-":
-                    Adjuster = SubtractPercentage;
+                    NumberChanger = SubtractPercentage;
                     break;
 
                 case "":
-                    Adjuster = SetPercentage;
+                    NumberChanger = SetPercentage;
                     break;
 
                 default:
@@ -46,15 +58,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 switch (operation)
                 {
                 case "+":
-                    Adjuster = Add;
+                    NumberChanger = Add;
                     break;
 
                 case "-":
-                    Adjuster = Subtract;
+                    NumberChanger = Subtract;
                     break;
 
                 case "":
-                    Adjuster = Set;
+                    NumberChanger = Set;
                     break;
 
                 default:
@@ -67,13 +79,19 @@ namespace AppliedResearchAssociates.iAM.Simulation
             }
         }
 
-        private static readonly Regex ExpressionPattern = new Regex(@"\A\s*((?:\+|-)?)(.+?)(%?)\s*\z");
+        private static readonly Regex NumberChangePattern = new Regex(@"\A\s*((?:\+|-)?)(.+?)(%?)\s*\z");
 
-        private Func<double, double> Adjuster;
+        private Func<double, double> NumberChanger;
 
         private double Operand;
 
-        #region Operations
+        private double ChangeNumber(double value)
+        {
+            EnsureCompiled();
+            return NumberChanger(value);
+        }
+
+        #region Number-changing operations
 
         private double Add(double value) => value + Operand;
 
@@ -87,6 +105,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         private double SubtractPercentage(double value) => value * (1 - Operand);
 
-        #endregion Operations
+        #endregion Number-changing operations
     }
 }
