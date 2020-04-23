@@ -78,8 +78,22 @@ namespace BridgeCare.Services
             yearsData.SD = yearsData.MinC < 5 ? "Y" : "N";
 
             yearsData.Project = year != 0 ? projectCostEntry?.TREATMENT : string.Empty;
-            yearsData.Cost = year != 0 ? (projectCostEntry == null ? 0 : projectCostEntry.COST_) : 0;
-            //yearsData.Project = yearsData.Cost == 0 ? "No Treatment" : yearsData.Project;
+
+            double roundedCost = 0;
+            if (projectCostEntry != null)
+            {
+                var amount = projectCostEntry.COST_;
+                if (amount >= 500)
+                {
+                    roundedCost = amount % 1000 >= 500 ? amount + 1000 - amount % 1000 : amount - amount % 1000;
+                }
+                else
+                {
+                    roundedCost = 1000;
+                }
+            }
+            
+            yearsData.Cost = year != 0 ? roundedCost : 0;
             yearsData.Project = yearsData.Project == null ? "No Treatment" : yearsData.Project;
             yearsData.Budget = budgetPerBrKey != null ? budgetPerBrKey.Budget : "";
             yearsData.ProjectPick = budgetPerBrKey != null ?
