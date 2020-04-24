@@ -14,13 +14,13 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         private static Exception InvalidDeterioration => new InvalidOperationException("Invalid deterioration.");
 
+        private IReadOnlyCollection<Treatment> ActiveTreatments { get; set; }
+
         private ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; set; }
 
-        private IDictionary<Section, ICollection<Project>> ProjectsPerSection { get; set; }
+        private IDictionary<Section, ICollection<Project>> ProjectsPerSection { get; set; } // output only, I think.
 
         private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
-
-        private IReadOnlyCollection<Treatment> ActiveTreatments { get; set; }
 
         private void ApplyPerformanceCurves(SectionContext context)
         {
@@ -59,6 +59,45 @@ namespace AppliedResearchAssociates.iAM.Simulation
             {
                 context.SetNumber(key, value);
             }
+        }
+
+        private double ApplyTreatment(SectionContext context, Treatment treatment, int year)
+        {
+            treatment.Consequences.Channel(
+                consequence => consequence.Criterion.Evaluate(context),
+                result => result ?? false,
+                result => !result.HasValue,
+                out var applicableConsequences,
+                out var defaultConsequences);
+
+            var operativeConsequences = applicableConsequences.Count > 0 ? applicableConsequences : defaultConsequences;
+
+            operativeConsequences = operativeConsequences
+                .GroupBy(consequence => consequence.Attribute)
+                .Select(group => group.Single()) // It's (currently) an error when one attribute has multiple valid consequences.
+                .ToArray();
+
+            var consequenceActions = operativeConsequences
+                .Select(consequence => consequence.GetRecalculator(context, Simulation.AnalysisMethod.AgeAttribute))
+                .ToArray();
+
+            foreach (var consequenceAction in consequenceActions)
+            {
+                consequenceAction();
+            }
+
+            foreach (var scheduling in treatment.Schedulings)
+            {
+                var schedulingYear = year + scheduling.OffsetToFutureYear;
+                context.ScheduledTreatmentPerYear[schedulingYear] = scheduling.Treatment;
+            }
+
+            context.LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
+            context.SetLastYearOfShadowForSameTreatment(treatment, year + treatment.ShadowForSameTreatment);
+
+            // TODO: compute cost, use weighting.
+
+            // TODO: create a project and add it to context.
         }
 
         private void CompileSimulation()
@@ -121,35 +160,54 @@ namespace AppliedResearchAssociates.iAM.Simulation
             }
         }
 
-        private double GetTotalBenefit(SectionContext context, int initialYear)
+        private ProjectionSummary GetProjection(SectionContext context, Treatment treatment, int initialYear)
         {
-            var result = Enumerable.Range(initialYear, 100).Sum(year =>
+            Func<double, double> limitBenefit;
+            switch (Simulation.AnalysisMethod.Benefit.Deterioration)
             {
-                // TODO: Account for scheduled and committed projects.
+            case Deterioration.Decreasing:
+                limitBenefit = benefit => benefit - Simulation.AnalysisMethod.BenefitLimit;
+                break;
+
+            case Deterioration.Increasing:
+                limitBenefit = benefit => Simulation.AnalysisMethod.BenefitLimit - benefit;
+                break;
+
+            default:
+                throw InvalidDeterioration;
+            }
+
+            double getBenefit()
+            {
+                var rawBenefit = context.GetNumber(Simulation.AnalysisMethod.Benefit.Name);
+                var limitedBenefit = limitBenefit(rawBenefit);
+                var benefit = Math.Max(0, limitedBenefit);
+                return benefit;
+            }
+
+            var summary = new ProjectionSummary
+            {
+                Cost = ApplyTreatment(context, treatment, initialYear),
+                Benefit = getBenefit()
+            };
+
+            foreach (var year in Enumerable.Range(initialYear + 1, 100))
+            {
+                // TODO: Account for committed projects.
 
                 ApplyPerformanceCurves(context);
 
-                var benefit = context.GetNumber(Simulation.AnalysisMethod.Benefit.Name);
-
-                double limitedBenefit;
-                switch (Simulation.AnalysisMethod.Benefit.Deterioration)
+                if (context.ScheduledTreatmentPerYear.TryGetValue(year, out var scheduledTreatment))
                 {
-                case Deterioration.Decreasing:
-                    limitedBenefit = benefit - Simulation.AnalysisMethod.BenefitLimit;
-                    break;
-
-                case Deterioration.Increasing:
-                    limitedBenefit = Simulation.AnalysisMethod.BenefitLimit - benefit;
-                    break;
-
-                default:
-                    throw InvalidDeterioration;
+                    var treatmentCost = ApplyTreatment(context, scheduledTreatment, year);
+                    summary.Cost += treatmentCost;
                 }
 
-                return Math.Max(0, limitedBenefit);
-            });
+                var benefit = getBenefit();
+                summary.Benefit += benefit;
+            }
 
-            return result;
+            return summary;
         }
 
         private bool IsWithinJurisdiction(SectionContext context) => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true;
@@ -190,41 +248,14 @@ namespace AppliedResearchAssociates.iAM.Simulation
                             .ToArray();
 
                         var baselineContext = new SectionContext(context);
-                        var baselineBenefit = GetTotalBenefit(baselineContext, currentYear);
+                        var baselineProjection = GetProjection(baselineContext, Simulation.DesignatedPassiveTreatment, currentYear);
 
                         foreach (var treatment in availableTreatments)
                         {
-                            // TODO: Account for "number of years before..." restrictions. And schedulings. And scheduled projects.
+                            // TODO: Account for "number of years before..." restrictions.
 
                             var treatmentContext = new SectionContext(context);
-
-                            treatment.Consequences.Channel(
-                                consequence => consequence.Criterion.Evaluate(treatmentContext),
-                                result => result ?? false,
-                                result => !result.HasValue,
-                                out var applicableConsequences,
-                                out var defaultConsequences);
-
-                            var operativeConsequences = applicableConsequences.Count > 0 ? applicableConsequences : defaultConsequences;
-
-                            operativeConsequences = operativeConsequences
-                                .GroupBy(consequence => consequence.Attribute)
-                                .Select(group => group.Single()) // It's (currently) an error when one attribute has multiple valid consequences.
-                                .ToArray();
-
-                            var consequenceActions = operativeConsequences
-                                .Select(consequence => consequence.GetRecalculator(treatmentContext, Simulation.AnalysisMethod.AgeAttribute))
-                                .ToArray();
-
-                            foreach (var consequenceAction in consequenceActions)
-                            {
-                                consequenceAction();
-                            }
-
-                            var treatmentBenefit = GetTotalBenefit(treatmentContext, currentYear);
-                            treatmentBenefit -= baselineBenefit;
-
-                            var treatmentCost = 0d;
+                            var treatmentProjection = GetProjection(treatmentContext, treatment, currentYear);
 
                             // switch on optimization strategy.
                         }

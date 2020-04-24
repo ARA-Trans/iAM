@@ -18,9 +18,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public string Name { get; }
 
-        public int NumberOfYearsBeforeSubsequentApplicationOfAnyTreatment { get; }
+        public int ShadowForAnyTreatment { get; }
 
-        public int NumberOfYearsBeforeSubsequentApplicationOfSameTreatment { get; }
+        public int ShadowForSameTreatment { get; }
 
         public List<TreatmentScheduling> Schedulings { get; }
 

@@ -16,12 +16,21 @@ namespace AppliedResearchAssociates.iAM.Simulation
         public SectionContext(SectionContext original) : base(original)
         {
             Section = original.Section;
+            LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
+            LastYearsOfShadowForSameTreatment.CopyFrom(original.LastYearsOfShadowForSameTreatment);
+            ScheduledTreatmentPerYear.CopyFrom(original.ScheduledTreatmentPerYear);
             NumberCache.CopyFrom(original.NumberCache);
         }
 
-        public IDictionary<int, Treatment> ScheduledTreatments { get; } = new Dictionary<int, Treatment>();
+        public int? LastYearOfShadowForAnyTreatment { get; set; }
+
+        public ICollection<Project> Projects { get; } = new List<Project>();
+
+        public IDictionary<int, Treatment> ScheduledTreatmentPerYear { get; } = new Dictionary<int, Treatment>();
 
         public Section Section { get; }
+
+        public int? GetLastYearOfShadowForSameTreatment(Treatment treatment) => LastYearsOfShadowForSameTreatment.TryGetValue(treatment, out var result) ? result.AsNullable() : null;
 
         public override double GetNumber(string key)
         {
@@ -33,6 +42,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             return number;
         }
+
+        public void SetLastYearOfShadowForSameTreatment(Treatment treatment, int year) => LastYearsOfShadowForSameTreatment[treatment] = year;
 
         public override void SetNumber(string key, double value)
         {
@@ -51,6 +62,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
             NumberCache.Clear();
             base.SetText(key, value);
         }
+
+        private readonly IDictionary<Treatment, int> LastYearsOfShadowForSameTreatment = new Dictionary<Treatment, int>();
 
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
     }

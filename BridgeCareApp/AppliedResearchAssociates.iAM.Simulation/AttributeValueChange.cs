@@ -79,7 +79,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
             }
         }
 
-        private static readonly Regex NumberChangePattern = new Regex(@"\A\s*((?:\+|-)?)(.+?)(%?)\s*\z");
+        private static readonly Regex NumberChangePattern = new Regex(@"(?>\A\s*((?:\+|-)?)([^%]+)(%?)\s*\z)", RegexOptions.Compiled);
 
         private Func<double, double> NumberChanger;
 

@@ -16,7 +16,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Network Network { get; }
 
-        public Treatment DesignatedInactiveTreatment { get; }
+        public Treatment DesignatedPassiveTreatment { get; }
 
         public List<PerformanceCurve> PerformanceCurves { get; }
 
@@ -27,7 +27,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
         public List<Treatment> GetActiveTreatments()
         {
             var result = Treatments.ToList();
-            _ = result.Remove(DesignatedInactiveTreatment);
+            _ = result.Remove(DesignatedPassiveTreatment);
             return result;
         }
     }
