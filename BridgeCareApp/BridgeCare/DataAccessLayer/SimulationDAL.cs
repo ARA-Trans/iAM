@@ -187,7 +187,7 @@ namespace BridgeCare.DataAccessLayer
         /// </summary>
         /// <param name="model">SimulationModel</param>
         /// <returns>string Task</returns>
-        public Task<string> RunSimulation(SimulationModel model)
+        public Task<string> RunSimulation(SimulationModel model, BridgeCareContext db)
         {
             if (model is null)
             {
@@ -196,6 +196,9 @@ namespace BridgeCare.DataAccessLayer
 
             try
             {
+                if (!db.Simulations.Any(s => s.SIMULATIONID == model.simulationId))
+                    throw new RowNotInTableException($"No scenario was found with id {model.simulationId}");
+
                 var connectionString = ConfigurationManager.ConnectionStrings["BridgeCareContext"].ConnectionString;
                 DBMgr.NativeConnectionParameters = new ConnectionParameters(connectionString, false, "MSSQL");
 
@@ -204,6 +207,25 @@ namespace BridgeCare.DataAccessLayer
 #else
                 var mongoConnection = Settings.Default.MongoDBProdConnectionString;
 #endif
+
+                var simulation = db.Simulations
+                    .Include(s => s.COMMITTEDPROJECTS)
+                    .Single(s => s.SIMULATIONID == model.simulationId);
+
+                if (simulation.COMMITTEDPROJECTS.Any())
+                {
+                    var earliestCommittedProjectStartYear = simulation.COMMITTEDPROJECTS
+                        .OrderBy(cp => cp.YEARS).First().YEARS;
+                    if (earliestCommittedProjectStartYear < simulation.COMMITTED_START)
+                    {
+                        var mongoClient = new MongoClient(mongoConnection);
+                        var mongoDB = mongoClient.GetDatabase("BridgeCare");
+                        var simulations = mongoDB.GetCollection<SimulationModel>("scenarios");
+                        var updateStatus = Builders<SimulationModel>.Update.Set("status", "Error: Projects committed before analysis start");
+                        simulations.UpdateOne(s => s.simulationId == model.simulationId, updateStatus);
+                        throw new ConstraintException("Analysis error: Projects committed before analysis start");
+                    }
+                }
 
                 var simulationParameters = new SimulationParameters(
                     model.simulationName,
@@ -230,7 +252,7 @@ namespace BridgeCare.DataAccessLayer
                 throw new RowNotInTableException($"No scenario was found with id {model.simulationId}");
             if (!db.Simulations.Include(s => s.USERS).First(s => s.SIMULATIONID == model.simulationId).UserCanModify(username))
                 throw new UnauthorizedAccessException("You are not authorized to run this scenario.");
-            return RunSimulation(model);
+            return RunSimulation(model, db);
         }
 
         /// <summary>
