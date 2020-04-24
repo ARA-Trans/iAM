@@ -32,7 +32,6 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {CreateTargetLibraryDialogData} from '@/shared/models/modals/create-target-library-dialog-data';
     import {emptyTargetLibrary, Target, TargetLibrary} from '@/shared/models/iAM/target';
-    import {clone} from 'ramda';
     import {getUserName} from '@/shared/utils/get-user-info';
 
     const ObjectID = require('bson-objectid');
@@ -41,7 +40,7 @@
     export default class CreateTargetLibraryDialog extends Vue {
         @Prop() dialogData: CreateTargetLibraryDialogData;
 
-        newTargetLibrary: TargetLibrary = clone({...emptyTargetLibrary, id: ObjectID.generate()});
+        newTargetLibrary: TargetLibrary = {...emptyTargetLibrary, id: ObjectID.generate()};
 
         /**
          * Sets the newTargetLibrary object's description & targets properties with the dialogData object's
@@ -70,7 +69,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newTargetLibrary = clone({...emptyTargetLibrary, id: ObjectID.generate()});
+            this.newTargetLibrary = {...emptyTargetLibrary, id: ObjectID.generate()};
         }
 
         /**

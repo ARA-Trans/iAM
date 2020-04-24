@@ -28,7 +28,6 @@
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
     import {emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
-    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 
@@ -36,7 +35,7 @@
     export default class CreateTreatmentDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        createdTreatment: Treatment = clone({...emptyTreatment, id: ObjectID.generate()});
+        createdTreatment: Treatment = {...emptyTreatment, id: ObjectID.generate()};
 
         /**
          * Emits the createdTreatment object or a null value to the parent component and resets the createdTreatment object
@@ -49,7 +48,7 @@
                 this.$emit('submit', null);
             }
 
-            this.createdTreatment = clone({...emptyTreatment, id: ObjectID.generate()});
+            this.createdTreatment = {...emptyTreatment, id: ObjectID.generate()};
         }
     }
 </script>

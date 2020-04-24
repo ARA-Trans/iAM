@@ -42,7 +42,6 @@
         TreatmentLibrary
     } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {clone} from 'ramda';
     import {getUserName} from '@/shared/utils/get-user-info';
 
     const ObjectID = require('bson-objectid');
@@ -51,7 +50,7 @@
     export default class CreateTreatmentLibraryDialog extends Vue {
         @Prop() dialogData: CreateTreatmentLibraryDialogData;
 
-        newTreatmentLibrary: TreatmentLibrary = clone({...emptyTreatmentLibrary, id: ObjectID.generate()});
+        newTreatmentLibrary: TreatmentLibrary = {...emptyTreatmentLibrary, id: ObjectID.generate()};
 
         /**
          * Sets the newTreatmentLibrary object's description & treatments data properties if present in the dialogData object
@@ -79,7 +78,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newTreatmentLibrary = clone({...emptyTreatmentLibrary, id: ObjectID.generate()});
+            this.newTreatmentLibrary = {...emptyTreatmentLibrary, id: ObjectID.generate()};
         }
 
         /**
