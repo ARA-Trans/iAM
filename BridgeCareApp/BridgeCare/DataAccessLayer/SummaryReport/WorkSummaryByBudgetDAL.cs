@@ -28,7 +28,7 @@ namespace BridgeCare.DataAccessLayer.SummaryReport
 
         public List<WorkSummaryByBudgetModel> GetworkSummaryByBudgetsData(SimulationModel simulationModel, BridgeCareContext dbContext)
         {
-            var selectReportStatement = $"SELECT YEARS, TREATMENT, BUDGET, SUM(COST_) AS CostPerTreatmentPerYear FROM REPORT_{simulationModel.networkId}_{simulationModel.simulationId} " +
+            var selectReportStatement = $"SELECT YEARS, TREATMENT, BUDGET, round(SUM(COST_), -3) AS CostPerTreatmentPerYear FROM REPORT_{simulationModel.networkId}_{simulationModel.simulationId} " +
                                         $" WHERE BUDGET IS NOT NULL and (Project_Type IN (0, 2)) " +
                                         $"GROUP BY TREATMENT, YEARS, BUDGET";
 
