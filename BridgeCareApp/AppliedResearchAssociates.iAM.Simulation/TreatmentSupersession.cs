@@ -4,6 +4,6 @@
     {
         public Criterion Criterion { get; }
 
-        public Treatment Treatment { get; }
+        public SelectableTreatment Treatment { get; }
     }
 }

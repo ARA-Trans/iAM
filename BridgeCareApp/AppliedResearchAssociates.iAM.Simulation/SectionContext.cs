@@ -18,17 +18,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
             Section = original.Section;
             LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
             LastYearsOfShadowForSameTreatment.CopyFrom(original.LastYearsOfShadowForSameTreatment);
-            ScheduledTreatmentPerYear.CopyFrom(original.ScheduledTreatmentPerYear);
+            TreatmentSchedule.CopyFrom(original.TreatmentSchedule);
             NumberCache.CopyFrom(original.NumberCache);
         }
 
         public int? LastYearOfShadowForAnyTreatment { get; set; }
 
-        public ICollection<Project> Projects { get; } = new List<Project>();
-
-        public IDictionary<int, Treatment> ScheduledTreatmentPerYear { get; } = new Dictionary<int, Treatment>();
-
         public Section Section { get; }
+
+        public IDictionary<int, Treatment> TreatmentSchedule { get; } = new Dictionary<int, Treatment>();
 
         public int? GetLastYearOfShadowForSameTreatment(Treatment treatment) => LastYearsOfShadowForSameTreatment.TryGetValue(treatment, out var result) ? result.AsNullable() : null;
 
@@ -62,6 +60,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
             NumberCache.Clear();
             base.SetText(key, value);
         }
+
+        public bool YearHasOngoingTreatment(int year) => TreatmentSchedule.TryGetValue(year, out var treatment) && treatment == null;
 
         private readonly IDictionary<Treatment, int> LastYearsOfShadowForSameTreatment = new Dictionary<Treatment, int>();
 

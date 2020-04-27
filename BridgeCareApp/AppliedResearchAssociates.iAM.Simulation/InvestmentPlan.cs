@@ -5,7 +5,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     public class InvestmentPlan
     {
-        // TODO: Split treatment configurations...
+        // TODO: Split treatment configurations... Need detailed description of what the UI elements mean from Gregg.
 
         public List<BudgetCondition> BudgetConditions { get; }
 

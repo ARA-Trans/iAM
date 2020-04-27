@@ -1,7 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM.Simulation
 {
-    public class CommittedProject
+    public class CommittedProject : Treatment
     {
-
     }
 }

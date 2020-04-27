@@ -99,6 +99,9 @@ namespace AppliedResearchAssociates
 
         public static bool SequenceEquals<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2, IEqualityComparer<T> comparer = null) => _SequenceEquals(sequence1, sequence2, (comparer ?? EqualityComparer<T>.Default).Equals);
 
+        [Obsolete("Already present in netstandard2.1. Remove after upgrading.")]
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> equalityComparer = null) => new HashSet<T>(source, equalityComparer);
+
         public static FinalActor<T> WithFinalAction<T>(this T value, Action<FinalActor<T>> finalAction) => new FinalActor<T>(value, finalAction ?? throw new ArgumentNullException(nameof(finalAction)));
 
         private static int _SequenceCompare<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2, Func<T, T, int> compare)

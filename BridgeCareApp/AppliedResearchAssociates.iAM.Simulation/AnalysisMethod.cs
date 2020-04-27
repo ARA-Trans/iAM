@@ -30,6 +30,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public List<TargetConditionGoal> TargetConditionGoals { get; }
 
+        public UseOfExtraFunds UseOfExtraFunds { get; }
+
         public NumberAttribute Weighting { get; }
     }
 }

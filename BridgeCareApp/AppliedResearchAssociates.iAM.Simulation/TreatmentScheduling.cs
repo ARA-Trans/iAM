@@ -4,6 +4,6 @@
     {
         public int OffsetToFutureYear { get; }
 
-        public Treatment Treatment { get; }
+        public SelectableTreatment Treatment { get; }
     }
 }

@@ -16,15 +16,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Network Network { get; }
 
-        public Treatment DesignatedPassiveTreatment { get; }
+        public SelectableTreatment DesignatedPassiveTreatment { get; }
 
         public List<PerformanceCurve> PerformanceCurves { get; }
 
         public List<SimulationResult> Results { get; }
 
-        public List<Treatment> Treatments { get; }
+        public List<SelectableTreatment> Treatments { get; }
 
-        public List<Treatment> GetActiveTreatments()
+        public List<SelectableTreatment> GetActiveTreatments()
         {
             var result = Treatments.ToList();
             _ = result.Remove(DesignatedPassiveTreatment);

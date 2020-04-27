@@ -8,22 +8,27 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
+        private NumberAttribute AgeAttribute => Simulation.AnalysisMethod.AgeAttribute;
+
         public void Run() => CompileSimulation();
 
         private readonly Simulation Simulation;
 
         private static Exception InvalidDeterioration => new InvalidOperationException("Invalid deterioration.");
 
-        private IReadOnlyCollection<Treatment> ActiveTreatments { get; set; }
+        private IReadOnlyCollection<SelectableTreatment> ActiveTreatments { get; set; }
 
         private ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; set; }
 
-        private IDictionary<Section, ICollection<Project>> ProjectsPerSection { get; set; } // output only, I think.
-
         private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
 
-        private void ApplyPerformanceCurves(SectionContext context)
+        private void ApplyPerformanceCurves(SectionContext context, int year)
         {
+            if (context.YearHasOngoingTreatment(year))
+            {
+                return;
+            }
+
             var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
             {
                 curves.Channel(
@@ -40,7 +45,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
                     // TODO: A warning should be emitted when more than one curve is valid.
                 }
 
-                double calculate(PerformanceCurve curve) => curve.Equation.Compute(context, Simulation.AnalysisMethod.AgeAttribute);
+                double calculate(PerformanceCurve curve) => curve.Equation.Compute(context, AgeAttribute);
 
                 switch (curves.Key.Deterioration)
                 {
@@ -63,6 +68,14 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         private double ApplyTreatment(SectionContext context, Treatment treatment, int year)
         {
+            // TODO: Needs to handle cashflow/split treatments/projects.
+
+            context.TreatmentSchedule[year] = treatment;
+
+            var totalCost = treatment.CostEquations
+                .Where(costEquation => costEquation.Criterion.Evaluate(context) ?? true)
+                .Sum(costEquation => costEquation.Equation.Compute(context, AgeAttribute));
+
             treatment.Consequences.Channel(
                 consequence => consequence.Criterion.Evaluate(context),
                 result => result ?? false,
@@ -78,7 +91,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 .ToArray();
 
             var consequenceActions = operativeConsequences
-                .Select(consequence => consequence.GetRecalculator(context, Simulation.AnalysisMethod.AgeAttribute))
+                .Select(consequence => consequence.GetRecalculator(context, AgeAttribute))
                 .ToArray();
 
             foreach (var consequenceAction in consequenceActions)
@@ -89,15 +102,16 @@ namespace AppliedResearchAssociates.iAM.Simulation
             foreach (var scheduling in treatment.Schedulings)
             {
                 var schedulingYear = year + scheduling.OffsetToFutureYear;
-                context.ScheduledTreatmentPerYear[schedulingYear] = scheduling.Treatment;
+                context.TreatmentSchedule.Add(schedulingYear, scheduling.Treatment);
+
+                // Unclear what is correct when two treatments write into the same schedule slot. Or
+                // when one scheduled treatment is slotted to begin before the end of another.
             }
 
             context.LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
             context.SetLastYearOfShadowForSameTreatment(treatment, year + treatment.ShadowForSameTreatment);
 
-            // TODO: compute cost, use weighting.
-
-            // TODO: create a project and add it to context.
+            return totalCost;
         }
 
         private void CompileSimulation()
@@ -110,7 +124,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             SectionContexts = Simulation.Network.Sections
                 .Select(CreateContext)
-                .Where(IsWithinJurisdiction)
+                .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true) // Can jurisdiction criterion be blank?
                 .ToArray();
 
             foreach (var context in SectionContexts)
@@ -137,7 +151,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
             {
-                double calculate() => calculatedField.Calculate(context, Simulation.AnalysisMethod.AgeAttribute);
+                double calculate() => calculatedField.Calculate(context, AgeAttribute);
                 context.SetNumber(calculatedField.Name, calculate);
             }
 
@@ -148,19 +162,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
         {
             foreach (var context in SectionContexts)
             {
-                // This needs to use context schedule.
-
-                var projectsForThisSection = ProjectsPerSection[context.Section];
-                var sectionShouldDeteriorate = projectsForThisSection.All(project => year < project.FirstYear || project.LastYear < year);
-
-                if (sectionShouldDeteriorate)
-                {
-                    ApplyPerformanceCurves(context);
-                }
+                ApplyPerformanceCurves(context, year);
             }
         }
 
-        private ProjectionSummary GetProjection(SectionContext context, Treatment treatment, int initialYear)
+        private TreatmentOutlook GetTreatmentOutlook(SectionContext context, SelectableTreatment treatment, int initialYear)
         {
             Func<double, double> limitBenefit;
             switch (Simulation.AnalysisMethod.Benefit.Deterioration)
@@ -182,35 +188,36 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 var rawBenefit = context.GetNumber(Simulation.AnalysisMethod.Benefit.Name);
                 var limitedBenefit = limitBenefit(rawBenefit);
                 var benefit = Math.Max(0, limitedBenefit);
-                return benefit;
+
+                var weight = context.GetNumber(Simulation.AnalysisMethod.Weighting.Name);
+                var weightedBenefit = weight * benefit;
+
+                return weightedBenefit;
             }
 
-            var summary = new ProjectionSummary
+            var outlookContext = new SectionContext(context);
+            var outlook = new TreatmentOutlook(outlookContext)
             {
-                Cost = ApplyTreatment(context, treatment, initialYear),
-                Benefit = getBenefit()
+                TotalCost = ApplyTreatment(context, treatment, initialYear),
+                TotalBenefit = getBenefit()
             };
 
             foreach (var year in Enumerable.Range(initialYear + 1, 100))
             {
-                // TODO: Account for committed projects.
+                ApplyPerformanceCurves(context, year);
 
-                ApplyPerformanceCurves(context);
-
-                if (context.ScheduledTreatmentPerYear.TryGetValue(year, out var scheduledTreatment))
+                if (context.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
                 {
                     var treatmentCost = ApplyTreatment(context, scheduledTreatment, year);
-                    summary.Cost += treatmentCost;
+                    outlook.TotalCost += treatmentCost;
                 }
 
                 var benefit = getBenefit();
-                summary.Benefit += benefit;
+                outlook.TotalBenefit += benefit;
             }
 
-            return summary;
+            return outlook;
         }
-
-        private bool IsWithinJurisdiction(SectionContext context) => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true;
 
         private void RunSimulation()
         {
@@ -233,29 +240,22 @@ namespace AppliedResearchAssociates.iAM.Simulation
                 {
                     foreach (var context in SectionContexts)
                     {
-                        var feasibleTreatments = ActiveTreatments
-                            .Where(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false)
-                            .ToArray();
+                        var feasibleTreatments = ActiveTreatments.Where(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false).ToHashSet();
 
                         var supersededTreatments = feasibleTreatments
                             .SelectMany(treatment => treatment.Supersessions
                                 .Where(supersession => supersession.Criterion.Evaluate(context) ?? false)
-                                .Select(supersession => supersession.Treatment))
-                            .ToArray();
+                                .Select(supersession => supersession.Treatment));
 
-                        var availableTreatments = feasibleTreatments
-                            .Except(supersededTreatments)
-                            .ToArray();
+                        feasibleTreatments.ExceptWith(supersededTreatments);
 
-                        var baselineContext = new SectionContext(context);
-                        var baselineProjection = GetProjection(baselineContext, Simulation.DesignatedPassiveTreatment, currentYear);
+                        var baselineOutlook = GetTreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, currentYear);
 
-                        foreach (var treatment in availableTreatments)
+                        foreach (var treatment in feasibleTreatments)
                         {
                             // TODO: Account for "number of years before..." restrictions.
 
-                            var treatmentContext = new SectionContext(context);
-                            var treatmentProjection = GetProjection(treatmentContext, treatment, currentYear);
+                            var treatmentOutlook = GetTreatmentOutlook(context, treatment, currentYear);
 
                             // switch on optimization strategy.
                         }
