@@ -1226,9 +1226,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\BridgeCareApp\PciDistress\PciDistress.csproj">
+    <ProjectReference Include="..\..\BridgeCareApp\AppliedResearchAssociates.PciDistress\AppliedResearchAssociates.PciDistress.csproj">
       <Project>{1a6e8f6e-1e99-40c8-8888-7005e7756cb3}</Project>
-      <Name>PciDistress</Name>
+      <Name>AppliedResearchAssociates.PciDistress</Name>
     </ProjectReference>
     <ProjectReference Include="..\AssetRollup\AssetRollup.csproj">
       <Project>{079A9D92-569A-4DE5-AEED-D97AF90124FE}</Project>
