@@ -8,8 +8,16 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public SectionContext SectionContext { get; }
 
+        public void ApplyTreatment(Treatment treatment, int year)
+        {
+            SectionContext.ApplyTreatment(treatment, year, out var costPerUnitArea);
+            TotalCostPerUnitArea += costPerUnitArea;
+        }
+
+        public void AccumulateBenefit() => TotalBenefit += SectionContext.GetBenefit();
+
         public double TotalBenefit { get; set; }
 
-        public double TotalCost { get; set; }
+        public double TotalCostPerUnitArea { get; set; }
     }
 }
