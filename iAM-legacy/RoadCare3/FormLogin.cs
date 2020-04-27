@@ -380,8 +380,8 @@ namespace RoadCare3
             #if DEBUG
                         tbRoadCarePassword.Text = "install";
                         tbRoadCareUserName.Text = "install";
-                        tbMSSQLDatabaseName.Text = "BridgeCare_2018";
-                        tbMSSQLServerName.Text = "PDKB6W6003\\SQLEXPRESS";
+                        tbMSSQLDatabaseName.Text = "iAMBridgeCare";
+                        tbMSSQLServerName.Text = "(localdb)\\MSSQLLocalDB";
                         tbMSSQLUserName.Text = "";
                         tbMSSQLPassword.Text = "";
                         chkUseIntegratedSecurity.Checked = true;
