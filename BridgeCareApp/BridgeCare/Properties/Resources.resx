@@ -208,7 +208,7 @@
     <value>Total</value>
   </data>
   <data name="ConditionByBridgeCount" xml:space="preserve">
-    <value>Condition By Bridge Count</value>
+    <value>Non-NHS Condition By Bridge Count</value>
   </data>
   <data name="Fair" xml:space="preserve">
     <value>Fair</value>
@@ -220,7 +220,7 @@
     <value>Poor</value>
   </data>
   <data name="ConditionByDeckArea" xml:space="preserve">
-    <value>Condition By Deck Area</value>
+    <value>Non-NHS Condition By Deck Area</value>
   </data>
   <data name="PoorBridgeCompareBridgeCount" xml:space="preserve">
     <value>Poor Bridge Compare Bridge Count</value>
@@ -229,9 +229,85 @@
     <value>Poor Bridge Compare Deck Area</value>
   </data>
   <data name="NHSConditionByBridgeCountLLCC" xml:space="preserve">
-    <value>NHS Condition By Bridge Count LLCC</value>
+    <value>NHS Condition By Bridge Count</value>
   </data>
   <data name="NHSConditionByDeckAreaLLCC" xml:space="preserve">
-    <value>NHS Condition By Deck Area LLCC</value>
+    <value>NHS Condition By Deck Area</value>
+  </data>
+  <data name="TotalSpent" xml:space="preserve">
+    <value>Total Spent</value>
+  </data>
+  <data name="MPMSTotal" xml:space="preserve">
+    <value>MPMS Total</value>
+  </data>
+  <data name="TotalBridgeCareBudget" xml:space="preserve">
+    <value>Total Bridge Care Budget</value>
+  </data>
+  <data name="RemainingBudget" xml:space="preserve">
+    <value>Remaining Budget</value>
+  </data>
+  <data name="BPN1" xml:space="preserve">
+    <value>BPN 1</value>
+  </data>
+  <data name="BPN2" xml:space="preserve">
+    <value>BPN 2</value>
+  </data>
+  <data name="BPN3" xml:space="preserve">
+    <value>BPN 3</value>
+  </data>
+  <data name="BPN4" xml:space="preserve">
+    <value>BPN 4</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Posted" xml:space="preserve">
+    <value>Posted</value>
+  </data>
+  <data name="PoorDeckAreaByBPN" xml:space="preserve">
+    <value>Poor Deck Area By BPN</value>
+  </data>
+  <data name="PostedBridgeCountByBPN" xml:space="preserve">
+    <value>Posted Bridge Count By BPN</value>
+  </data>
+  <data name="CashNeededByBPNUnconstrainedBudget" xml:space="preserve">
+    <value>Cash Needed By BPN - Unconstrained Budget</value>
+  </data>
+  <data name="ClosedBridgeCountByBPN" xml:space="preserve">
+    <value>Closed Bridge Count By BPN</value>
+  </data>
+  <data name="ClosedBridgeDeckAreaByBPN" xml:space="preserve">
+    <value>Closed Bridge Deck Area By BPN</value>
+  </data>
+  <data name="CombinedPostedAndClosed" xml:space="preserve">
+    <value>Combined Posted And Closed</value>
+  </data>
+  <data name="PostedBridgeDeckAreaByBPN" xml:space="preserve">
+    <value>Posted Bridge Deck Area By BPN</value>
+  </data>
+  <data name="MeanAnnualSpending" xml:space="preserve">
+    <value>Mean Annual Spending</value>
+  </data>
+  <data name="TotalBudget" xml:space="preserve">
+    <value>Total Budget</value>
+  </data>
+  <data name="CommittedTotal" xml:space="preserve">
+    <value>Committed Total</value>
+  </data>
+  <data name="CombineNHSNonNHSConditionByBridgeCount" xml:space="preserve">
+    <value>Combine NHS and Non-NHS Condition By Bridge Count</value>
+  </data>
+  <data name="CombineNHSNonNHSConditionByDeckArea" xml:space="preserve">
+    <value>Combine NHS and Non-NHS Without Committed Projects
+Condition By Deck Area</value>
+  </data>
+  <data name="PercentBudgetSpentBAMS" xml:space="preserve">
+    <value>Percentage of Budget Spent - BAMS</value>
+  </data>
+  <data name="PercentBudgetSpentMPMS" xml:space="preserve">
+    <value>Percentage of Budget Spent - MPMS</value>
+  </data>
+  <data name="RiskScore" xml:space="preserve">
+    <value>RISK_SCORE_</value>
   </data>
 </root>

@@ -1,24 +1,24 @@
 <template>
     <v-layout class="costs-tab-content">
         <v-flex xs12>
-            <v-btn class="ara-blue-bg white--text" @click="onAddCost">Add Cost</v-btn>
+            <v-btn @click="onAddCost" class="ara-blue-bg white--text">Add Cost</v-btn>
             <div class="costs-data-table">
-                <v-data-table :headers="costsGridHeaders" :items="costsGridData" hide-actions
-                              class="elevation-1 fixed-header v-table__overflow">
+                <v-data-table :headers="costsGridHeaders" :items="costsGridData" class="elevation-1 fixed-header v-table__overflow"
+                              hide-actions>
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.equation">
+                            <v-textarea full-width no-resize outline readonly rows="3" v-model="props.item.equation">
                                 <template slot="append-outer">
-                                    <v-btn class="edit-icon" icon @click="onEditCostEquation(props.item)">
+                                    <v-btn @click="onEditCostEquation(props.item)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </template>
                             </v-textarea>
                         </td>
                         <td>
-                            <v-textarea rows="3" readonly no-resize full-width outline v-model="props.item.criteria">
+                            <v-textarea full-width no-resize outline readonly rows="3" v-model="props.item.criteria">
                                 <template slot="append-outer">
-                                    <v-btn class="edit-icon" icon @click="onEditCostCriteria(props.item)">
+                                    <v-btn @click="onEditCostCriteria(props.item)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </template>
@@ -26,7 +26,7 @@
                         </td>
                         <td>
                             <v-layout align-start>
-                                <v-btn class="ara-orange" icon @click="onDeleteCost(props.item)">
+                                <v-btn @click="onDeleteCost(props.item)" class="ara-orange" icon>
                                     <v-icon>fas fa-trash</v-icon>
                                 </v-btn>
                             </v-layout>
@@ -36,9 +36,10 @@
             </div>
         </v-flex>
 
-        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedCostEquation" />
+        <EquationEditorDialog :dialogData="equationEditorDialogData" @submit="onSubmitEditedCostEquation"/>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitEditedCostCriteria"/>
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitEditedCostCriteria"/>
     </v-layout>
 </template>
 
@@ -62,14 +63,13 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {
-        EquationEditorDialogResult
-    } from '@/shared/models/modals/equation-editor-dialog-result';
-    import {isNil, findIndex, clone, append} from 'ramda';
+    import {EquationEditorDialogResult} from '@/shared/models/modals/equation-editor-dialog-result';
+    import {append, clone, findIndex, isNil, propEq, update} from 'ramda';
     import EquationEditorDialog from '../../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../../shared/modals/CriteriaEditorDialog.vue';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {TabData} from '@/shared/models/child-components/tab-data';
+
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -121,7 +121,16 @@
                 id: ObjectID.generate()
             };
 
-            this.submitChanges(newCost, false);
+            this.costsTabSelectedTreatmentLibrary = {
+                ...this.costsTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(propEq('id', this.costsTabSelectedTreatment.id), this.costsTabSelectedTreatmentLibrary.treatments),
+                    {...this.costsTabSelectedTreatment, costs: append(newCost, this.costsTabSelectedTreatment.costs)},
+                    this.costsTabSelectedTreatmentLibrary.treatments
+                )
+            };
+
+            this.$emit('submit', this.costsTabSelectedTreatmentLibrary);
         }
 
         /**
@@ -139,21 +148,32 @@
         }
 
         /**
-         * Modifies the selectedCost's equation & isFunction data using the EquationEditorDialog result
-         * @param result EquationEditorDialog result
+         * Modifies the selected cost in the costsTabSelectedTreatment's costs list with the equation editor result
          */
         onSubmitEditedCostEquation(result: EquationEditorDialogResult) {
             this.equationEditorDialogData = clone(emptyEquationEditorDialogData);
 
             if (!isNil(result)) {
-                const updatedCost: Cost = clone(this.selectedCost);
-                this.selectedCost = clone(emptyCost);
+                this.costsTabSelectedTreatmentLibrary = {
+                    ...this.costsTabSelectedTreatmentLibrary,
+                    treatments: update(
+                        findIndex(propEq('id', this.costsTabSelectedTreatment.id), this.costsTabSelectedTreatmentLibrary.treatments),
+                        {
+                            ...this.costsTabSelectedTreatment,
+                            costs: update(
+                                findIndex(propEq('id', this.selectedCost.id), this.costsTabSelectedTreatment.costs),
+                                {...this.selectedCost, equation: result.equation, isFunction: result.isFunction},
+                                this.costsTabSelectedTreatment.costs
+                            )
+                        },
+                        this.costsTabSelectedTreatmentLibrary.treatments
+                    )
+                };
 
-                updatedCost.equation = result.equation;
-                updatedCost.isFunction = result.isFunction;
-
-                this.submitChanges(updatedCost, false);
+                this.$emit('submit', this.costsTabSelectedTreatmentLibrary);
             }
+
+            this.selectedCost = clone(emptyCost);
         }
 
         /**
@@ -170,55 +190,49 @@
         }
 
         /**
-         * Modifies the selectedCost's criteria data using the CriteriaEditorDialog result
-         * @param criteria CriteriaEditorDialog result
+         * Modifies the selected cost in the costsTabSelectedTreatment's costs list with the specified criteria
          */
         onSubmitEditedCostCriteria(criteria: string) {
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                const updatedCost: Cost = clone(this.selectedCost);
-                this.selectedCost = clone(emptyCost);
+                this.costsTabSelectedTreatmentLibrary = {
+                    ...this.costsTabSelectedTreatmentLibrary,
+                    treatments: update(
+                        findIndex(propEq('id', this.costsTabSelectedTreatment.id), this.costsTabSelectedTreatmentLibrary.treatments),
+                        {
+                            ...this.costsTabSelectedTreatment,
+                            costs: update(
+                                findIndex(propEq('id', this.selectedCost.id), this.costsTabSelectedTreatment.costs),
+                                {...this.selectedCost, criteria: criteria},
+                                this.costsTabSelectedTreatment.costs
+                            )
+                        },
+                        this.costsTabSelectedTreatmentLibrary.treatments
+                    )
+                };
 
-                updatedCost.criteria = criteria;
-
-                this.submitChanges(updatedCost, false);
+                this.$emit('submit', this.costsTabSelectedTreatmentLibrary);
             }
+
+            this.selectedCost = clone(emptyCost);
         }
 
         /**
-         * Sends a Cost object that has been marked for deletion to the submitChanges function
+         * Removes a cost with the specified costId from the costsTabSelectedTreatment's costs list
          */
-        onDeleteCost(cost: Cost) {
-            this.submitChanges(cost, true);
-        }
-
-        /**
-         * Modifies the selected treatment & selected treatment library with a Cost object's data changes and emits the
-         * modified objects to the parent component
-         * @param costData Cost object data
-         * @param forDelete Whether or not the Cost object's data is marked for deletion
-         */
-        submitChanges(costData: Cost, forDelete: boolean) {
-            if (forDelete) {
-                this.costsTabSelectedTreatment.costs = this.costsTabSelectedTreatment.costs
-                    .filter((cost: Cost) => cost.id !== costData.id);
-            } else {
-                const updatedCostIndex: number = findIndex((cost: Cost) =>
-                    cost.id === costData.id, this.costsTabSelectedTreatment.costs
-                );
-                if (updatedCostIndex === -1) {
-                    this.costsTabSelectedTreatment.costs = append(costData, this.costsTabSelectedTreatment.costs);
-                } else {
-                    this.costsTabSelectedTreatment.costs[updatedCostIndex] = costData;
-                }
-            }
-
-            const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
-                treatment.id === this.costsTabSelectedTreatment.id,
-                this.costsTabSelectedTreatmentLibrary.treatments
-            );
-            this.costsTabSelectedTreatmentLibrary.treatments[updatedTreatmentIndex] = this.costsTabSelectedTreatment;
+        onDeleteCost(costId: string) {
+            this.costsTabSelectedTreatmentLibrary = {
+                ...this.costsTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(propEq('id', this.costsTabSelectedTreatment.id), this.costsTabSelectedTreatmentLibrary.treatments),
+                    {
+                        ...this.costsTabSelectedTreatment,
+                        costs: this.costsTabSelectedTreatment.costs.filter((cost: Cost) => cost.id !== costId)
+                    },
+                    this.costsTabSelectedTreatmentLibrary.treatments
+                )
+            };
 
             this.$emit('submit', this.costsTabSelectedTreatmentLibrary);
         }

@@ -1,18 +1,15 @@
 <template>
     <v-layout class="feasibility-tab-content">
         <v-flex xs12>
-            <v-layout justify-center v-if="feasibility.id === 0">
-                <v-btn class="ara-blue-bg white--text" @click="onCreateFeasibility">Create Feasibility</v-btn>
-            </v-layout>
-            <v-layout v-if="feasibility.id !== 0" justify-center column>
-                <v-textarea no-resize full-width outline readonly prepend-outer-icon="fas fa-trash"
+            <v-layout column justify-center v-if="feasibility.id !== '0'">
+                <v-textarea full-width no-resize outline prepend-outer-icon="fas fa-trash" readonly
                             v-model="feasibility.criteria">
                     <template slot="append-outer">
-                        <v-layout row align-center fill-height>
-                            <v-btn class="edit-icon" icon @click="onEditFeasibilityCriteria">
+                        <v-layout align-center fill-height row>
+                            <v-btn @click="onEditFeasibilityCriteria" class="edit-icon" icon>
                                 <v-icon>fas fa-edit</v-icon>
                             </v-btn>
-                            <v-btn class="ara-orange" icon @click="onDeleteFeasibility">
+                            <v-btn @click="onDeleteFeasibility" class="ara-orange" icon>
                                 <v-icon>fas fa-minus-square</v-icon>
                             </v-btn>
                         </v-layout>
@@ -22,15 +19,15 @@
                     <v-spacer></v-spacer>
                     <v-layout justify-space-between row>
                         <v-flex xs5>
-                            <v-text-field label="Years Before Any" :mask="'####'" outline
-                                          v-model="feasibility.yearsBeforeAny"
-                                          @change="onChangeYears">
+                            <v-text-field :mask="'####'" @change="onChangeYears" label="Years Before Any"
+                                          outline
+                                          v-model="feasibility.yearsBeforeAny">
                             </v-text-field>
                         </v-flex>
                         <v-flex xs5>
-                            <v-text-field label="Years Before Same" :mask="'####'" outline
-                                          v-model="feasibility.yearsBeforeSame"
-                                          @change="onChangeYears">
+                            <v-text-field :mask="'####'" @change="onChangeYears" label="Years Before Same"
+                                          outline
+                                          v-model="feasibility.yearsBeforeSame">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
@@ -39,15 +36,18 @@
             </v-layout>
         </v-flex>
 
-        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData" @submit="onSubmitFeasibilityCriteria" />
+        <CriteriaEditorDialog :dialogData="criteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitFeasibilityCriteria"/>
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch, Prop} from 'vue-property-decorator';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
     import {
-        emptyFeasibility, emptyTreatment, emptyTreatmentLibrary,
+        emptyFeasibility,
+        emptyTreatment,
+        emptyTreatmentLibrary,
         Feasibility,
         Treatment,
         TreatmentLibrary
@@ -57,9 +57,10 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {findIndex, isNil, clone} from 'ramda';
+    import {clone, findIndex, isNil, propEq, update} from 'ramda';
     import {TabData} from '@/shared/models/child-components/tab-data';
     import {hasValue} from '@/shared/utils/has-value-util';
+
     const ObjectID = require('bson-objectid');
 
     @Component({
@@ -90,15 +91,9 @@
          * Sets the component's grid data
          */
         setFeasibility() {
-            const feasibility: Feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility) as Feasibility;
-            if (hasValue(feasibility) && feasibility.id !== '0') {
-                    this.feasibility = feasibility;
-            } else {
-                this.feasibility = {
-                    ...clone(emptyFeasibility),
-                    id: ObjectID.generate()
-                };
-            }
+            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility) && this.feasibilityTabSelectedTreatment.feasibility.id !== '0'
+                ? this.feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility)
+                : {...emptyFeasibility, id: ObjectID.generate()};
         }
 
         /**
@@ -119,9 +114,19 @@
             this.criteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                this.feasibility.criteria = criteria;
+                this.feasibilityTabSelectedTreatmentLibrary = {
+                    ...this.feasibilityTabSelectedTreatmentLibrary,
+                    treatments: update(
+                        findIndex(propEq('id', this.feasibilityTabSelectedTreatment.id), this.feasibilityTabSelectedTreatmentLibrary.treatments),
+                        {
+                            ...this.feasibilityTabSelectedTreatment,
+                            feasibility: {...this.feasibility, criteria: criteria}
+                        },
+                        this.feasibilityTabSelectedTreatmentLibrary.treatments
+                    )
+                };
 
-                this.submitChanges(this.feasibility);
+                this.$emit('submit', this.feasibilityTabSelectedTreatmentLibrary);
             }
         }
 
@@ -130,7 +135,16 @@
          * yearsBeforeSame data
          */
         onChangeYears() {
-            this.submitChanges(this.feasibility);
+            this.feasibilityTabSelectedTreatmentLibrary = {
+                ...this.feasibilityTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(propEq('id', this.feasibilityTabSelectedTreatment.id), this.feasibilityTabSelectedTreatmentLibrary.treatments),
+                    {...this.feasibilityTabSelectedTreatment, feasibility: {...this.feasibility}},
+                    this.feasibilityTabSelectedTreatmentLibrary.treatments
+                )
+            };
+
+            this.$emit('submit', this.feasibilityTabSelectedTreatmentLibrary);
         }
 
         /**
@@ -138,27 +152,17 @@
          */
         onDeleteFeasibility() {
             const deletedFeasibility: Feasibility = {
-                ...this.feasibility,
-                criteria: '',
-                yearsBeforeAny: 0,
-                yearsBeforeSame: 0
+                ...this.feasibility, criteria: '', yearsBeforeAny: 0, yearsBeforeSame: 0
             };
-            this.submitChanges(deletedFeasibility);
-        }
 
-        /**
-         * Modifies the selected treatment & selected treatment library with the Feasibility object's data changes
-         * @param feasibilityData The feasibility data to submit changes on
-         */
-        submitChanges(feasibilityData: Feasibility) {
-            this.feasibilityTabSelectedTreatment.feasibility = feasibilityData;
-
-            const updatedTreatmentIndex: number = findIndex((treatment: Treatment) =>
-                treatment.id === this.feasibilityTabSelectedTreatment.id,
-                this.feasibilityTabSelectedTreatmentLibrary.treatments
-            );
-            this.feasibilityTabSelectedTreatmentLibrary
-                .treatments[updatedTreatmentIndex] = this.feasibilityTabSelectedTreatment;
+            this.feasibilityTabSelectedTreatmentLibrary = {
+                ...this.feasibilityTabSelectedTreatmentLibrary,
+                treatments: update(
+                    findIndex(propEq('id', this.feasibilityTabSelectedTreatment.id), this.feasibilityTabSelectedTreatmentLibrary.treatments),
+                    {...this.feasibilityTabSelectedTreatment, feasibility: deletedFeasibility},
+                    this.feasibilityTabSelectedTreatmentLibrary.treatments
+                )
+            };
 
             this.$emit('submit', this.feasibilityTabSelectedTreatmentLibrary);
         }

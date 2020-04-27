@@ -1,6 +1,6 @@
 import {AxiosPromise} from 'axios';
 import {Analysis} from '@/shared/models/iAM/scenario';
-import {axiosInstance} from '@/shared/utils/axios-instance';
+import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 
 export default class AnalysisEditorService {
     /**
@@ -15,7 +15,9 @@ export default class AnalysisEditorService {
      * Saves a scenario's analysis data
      * @param scenarioAnalysisData A scenario's analysis data
      */
-    static saveScenarioAnalysisData(scenarioAnalysisData: Analysis): AxiosPromise {
+    static saveScenarioAnalysisData(scenarioAnalysisData: Analysis, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioAnalysisData', scenarioAnalysisData);
     }
 }

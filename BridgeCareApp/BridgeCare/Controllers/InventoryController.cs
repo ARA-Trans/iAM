@@ -1,4 +1,5 @@
 ﻿using BridgeCare.Interfaces;
+using BridgeCare.Models;
 using BridgeCare.Security;
 using System;
 using System.Web.Http;
@@ -26,7 +27,11 @@ namespace BridgeCare.Controllers
         [HttpGet]
         [Route("api/GetInventory")]
         [RestrictAccess]
-        public IHttpActionResult GetInventory() => Ok(repo.GetInventorySelectionModels(db));
+        public IHttpActionResult GetInventory()
+        {
+            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            return Ok(repo.GetInventorySelectionModels(db, userInformation));
+        }
 
         /// <summary>
         /// API endpoint for fetching inventory item detail data by bms id

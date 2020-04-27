@@ -33,5 +33,19 @@ namespace BridgeCare.EntityClasses
 
         [Column(TypeName = "VARCHAR")]
         public string ADTTOTAL { get; set; }
+
+        public string StructureLength { get; private set; }
+
+        public string StructureType { get; private set; }
+
+        public string PlanningPartner { get; private set; }
+
+        public string Posted { get; private set; }
+
+        public int P3 { get; private set; }
+
+        public int ParallelBridge { get; private set; }
+
+        public string OwnerCode { get; private set; }
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="450px">
+        <v-dialog max-width="450px" persistent v-model="showDialog">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -10,28 +10,30 @@
                 <v-card-text class="new-deficient-card-text">
                     <v-layout column>
                         <v-flex>
-                            <v-text-field label="Name" v-model="newDeficient.name" outline></v-text-field>
+                            <v-text-field label="Name" outline v-model="newDeficient.name"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-select label="Select Attribute" :items="numericAttributes" v-model="newDeficient.attribute"
-                                      outline>
+                            <v-select :items="numericAttributes" label="Select Attribute"
+                                      outline
+                                      v-model="newDeficient.attribute">
                             </v-select>
                         </v-flex>
                         <v-flex>
-                            <v-text-field label="Deficient Level" v-model="newDeficient.deficient" outline></v-text-field>
+                            <v-text-field label="Deficient Level" outline
+                                          v-model="newDeficient.deficient"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field label="Allowed Deficient(%)" v-model="newDeficient.percentDeficient" outline>
+                            <v-text-field label="Allowed Deficient(%)" outline v-model="newDeficient.percentDeficient">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
+                        <v-btn :disabled="disableSubmit()" @click="onSubmit(true)" class="ara-blue-bg white--text">
                             Save
                         </v-btn>
-                        <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                        <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">
                             Cancel
                         </v-btn>
                     </v-layout>
@@ -50,6 +52,7 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
+
     const ObjectID = require('bson-objectid');
 
     @Component
@@ -85,7 +88,7 @@
          */
         disableSubmit() {
             return !hasValue(this.newDeficient.name) || !hasValue(this.newDeficient.attribute) ||
-                   !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
+                !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
         }
 
         /**

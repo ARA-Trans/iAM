@@ -1,11 +1,12 @@
 import {AxiosPromise, AxiosResponse} from 'axios';
-import {Scenario} from '@/shared/models/iAM/scenario';
-import { axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
+import {Scenario, ScenarioUser} from '@/shared/models/iAM/scenario';
+import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
 import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
 import {hasValue} from '@/shared/utils/has-value-util';
-import { Simulation } from '@/shared/models/iAM/simulation';
-import { any, propEq } from 'ramda';
+import {Simulation} from '@/shared/models/iAM/simulation';
+import {any, propEq} from 'ramda';
 import {http2XX} from '@/shared/utils/http-utils';
+import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
@@ -23,74 +24,38 @@ export default class ScenarioService {
     }
 
     /**
-     * Given two arrays of scenarios, returns an array of
-     * scenarios that are in the first array but not the second.
-     * @param arrayA The first array 
-     * @param arrayB The second array
-     */
-    private static getMissingScenarios(arrayA: Scenario[], arrayB: Scenario[]): Scenario[]  {
-        var missingScenarios: Scenario[] = [];
-        arrayA.forEach(simulation => {
-            if (!any(propEq('simulationId', simulation.simulationId), arrayB)) {
-                missingScenarios.push(simulation);
-            }
-        });
-        return missingScenarios;
-    }
-
-    /**
-     * Removes several scenarios from mongoDB
-     * @param scenarios Array of scenarios to remove
-     */
-    private static removeMongoScenarios(scenarios: Scenario[]): AxiosPromise {
-        return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
-            scenarios.forEach(simulation => {
-                nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${(simulation as any)._id}`)
-                    .then((res: AxiosResponse) => {
-                        if (hasValue(res)) {
-                            return resolve(res);
-                        }
-                    })
-                    .catch((error: any) => {
-                        return resolve(error.response);
-                    });
-            });
-        });
-    }
-
-    /**
      * Updates mongodb to match the scenarios from the legacy database
      */
     static getLegacyScenarios(): AxiosPromise {
         return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
             axiosInstance.get('api/GetScenarios')
-                .then((responseLegacy: AxiosResponse<Scenario[]>)=>{
-                    if (hasValue(responseLegacy)){
-                    this.getMongoScenarios()
-                        .then((responseMongo: AxiosResponse<Scenario[]>)=>{
-                            if (hasValue(responseMongo)) {
-                                var scenariosToAdd = this.getMissingScenarios(responseLegacy.data, responseMongo.data);
-                                var scenariosToRemove = this.getMissingScenarios(responseMongo.data, responseLegacy.data);
-                                if (scenariosToAdd.length > 0) {
-                                    nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd)
-                                        .then((res: AxiosResponse<Scenario[]>) => {
-                                            if (hasValue(res)){
+                .then((responseLegacy: AxiosResponse<Scenario[]>) => {
+                    if (hasValue(responseLegacy)) {
+                        this.getMongoScenarios()
+                            .then((responseMongo: AxiosResponse<Scenario[]>) => {
+                                if (hasValue(responseMongo)) {
+                                    var scenariosToAdd = this.getMissingScenarios(responseLegacy.data, responseMongo.data);
+                                    var scenariosToRemove = this.getMissingScenarios(responseMongo.data, responseLegacy.data);
+                                    if (scenariosToAdd.length > 0) {
+                                        nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd)
+                                            .then((res: AxiosResponse<Scenario[]>) => {
+                                                if (hasValue(res)) {
+                                                    return resolve(res);
+                                                }
+                                            })
+                                            .catch((error: any) => resolve(error.response));
+                                    }
+                                    if (scenariosToRemove.length > 0) {
+                                        this.removeMongoScenarios(scenariosToRemove).then((res: AxiosResponse) => {
+                                            if (hasValue(res)) {
                                                 return resolve(res);
                                             }
-                                        })
-                                        .catch((error: any) => resolve(error.response));
+                                        }).catch((error: any) => resolve(error.response));
+                                    }
+                                    return resolve(responseLegacy);
                                 }
-                                if (scenariosToRemove.length > 0) {
-                                    this.removeMongoScenarios(scenariosToRemove).then((res: AxiosResponse) => {
-                                        if (hasValue(res)) {
-                                            return resolve(res);
-                                        }
-                                    }).catch((error: any) => resolve(error.response));
-                                }
-                                return resolve(responseLegacy);
-                            }
-                        })
-                        .catch((error: any) => resolve(error.response));
+                            })
+                            .catch((error: any) => resolve(error.response));
                     }
                 })
                 .catch((error: any) => resolve(error.response));
@@ -109,7 +74,6 @@ export default class ScenarioService {
                     if (hasValue(response)) {
                         const scenarioToTrackStatus: Scenario = {
                             ...response.data,
-                            shared: false,
                             status: 'New scenario'
                         };
                         nodejsAxiosInstance.post('api/GetMongoScenarios', scenarioToTrackStatus)
@@ -138,7 +102,6 @@ export default class ScenarioService {
             axiosInstance.post('/api/UpdateScenario', scenarioUpdateData)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
-
                         nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenarioId}`, scenarioUpdateData)
                             .then((res: AxiosResponse<Scenario>) => {
                                 if (hasValue(res)) {
@@ -160,12 +123,53 @@ export default class ScenarioService {
         });
     }
 
+    static updateScenarioUsers(scenario: Scenario): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario>>((resolve) => {
+            axiosInstance.post(`/api/SetScenarioUsers/${scenario.simulationId}`, scenario.users)
+                .then((response: AxiosResponse<Scenario>) => {
+                    if (hasValue(response)) {
+                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenario.id}`, convertFromVueToMongo({users: response.data}));
+                    }
+                });
+        });
+    }
+
     static updateScenarioStatus(scenarioStatus: String, scenarioId: number): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
             nodejsAxiosInstance.put(`api/UpdateMongoScenarioStatus/${scenarioId}`, {status: scenarioStatus})
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         return resolve(response);
+                    }
+                });
+        });
+    }
+
+    static cloneScenario(scenarioId: number): AxiosPromise {
+        return new Promise<AxiosResponse>((resolve) => {
+            axiosInstance.post(`/api/CloneScenario/${scenarioId}`)
+                .then((response: AxiosResponse) => {
+                    if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                        const newScenario: Scenario = {
+                            ...response.data,
+                            status: 'New scenario'
+                        };
+                        nodejsAxiosInstance.post('api/GetMongoScenarios', newScenario)
+                            .then((res: AxiosResponse<Scenario>) => {
+                                if (hasValue(res)) {
+                                    return resolve(res);
+                                }
+                            })
+                            .catch((error: any) => {
+                                const axiosResponse: AxiosResponse<Scenario> = {
+                                    data: {} as Scenario,
+                                    status: 500,
+                                    statusText: error.toString(),
+                                    headers: {},
+                                    config: {}
+                                };
+                                return resolve(axiosResponse);
+                            });
                     }
                 });
         });
@@ -200,5 +204,45 @@ export default class ScenarioService {
      */
     static runScenarioSimulation(selectedScenario: Scenario, userId: string): AxiosPromise {
         return axiosInstance.post('/api/RunSimulation', selectedScenario);
+    }
+
+    static setScenarioUsers(scenarioId: number, scenarioUsers: ScenarioUser[]): AxiosPromise {
+        return axiosInstance.post(`/api/SetScenarioUsers/${scenarioId}`, scenarioUsers);
+    }
+
+    /**
+     * Given two arrays of scenarios, returns an array of
+     * scenarios that are in the first array but not the second.
+     * @param arrayA The first array
+     * @param arrayB The second array
+     */
+    private static getMissingScenarios(arrayA: Scenario[], arrayB: Scenario[]): Scenario[] {
+        var missingScenarios: Scenario[] = [];
+        arrayA.forEach(simulation => {
+            if (!any(propEq('simulationId', simulation.simulationId), arrayB)) {
+                missingScenarios.push(simulation);
+            }
+        });
+        return missingScenarios;
+    }
+
+    /**
+     * Removes several scenarios from mongoDB
+     * @param scenarios Array of scenarios to remove
+     */
+    private static removeMongoScenarios(scenarios: Scenario[]): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
+            scenarios.forEach(simulation => {
+                nodejsAxiosInstance.delete(`api/DeleteMongoScenario/${(simulation as any)._id}`)
+                    .then((res: AxiosResponse) => {
+                        if (hasValue(res)) {
+                            return resolve(res);
+                        }
+                    })
+                    .catch((error: any) => {
+                        return resolve(error.response);
+                    });
+            });
+        });
     }
 }

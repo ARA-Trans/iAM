@@ -1,18 +1,25 @@
 <template>
     <v-app class="paper-white-bg">
         <v-content>
-            <v-navigation-drawer app v-if="authenticatedWithRole" class="paper-white-bg" v-model="drawer" :disable-resize-watcher="true">
-                <v-list dense class="pt-0">
-                    <v-list-tile @click="drawer=false; onNavigate('/News/')">
-                        <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-newspaper</v-icon></v-list-tile-action>
-                        <v-list-tile-title>Announcements</v-list-tile-title>
+            <v-navigation-drawer :disable-resize-watcher="true" app class="paper-white-bg" v-if="authenticatedWithRole"
+                                 v-model="drawer">
+                <v-list class="pt-0" dense>
+                    <v-list-tile @click="drawer=false; onNavigate('/Home/')">
+                        <v-list-tile-action>
+                            <v-icon class="ara-dark-gray">fas fa-newspaper</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Home</v-list-tile-title>
                     </v-list-tile>
                     <v-list-tile @click="onNavigate('/Inventory/')">
-                        <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-archive</v-icon></v-list-tile-action>
+                        <v-list-tile-action>
+                            <v-icon class="ara-dark-gray">fas fa-archive</v-icon>
+                        </v-list-tile-action>
                         <v-list-tile-title>Inventory</v-list-tile-title>
                     </v-list-tile>
                     <v-list-tile @click="onNavigate('/Scenarios/')">
-                        <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-project-diagram</v-icon></v-list-tile-action>
+                        <v-list-tile-action>
+                            <v-icon class="ara-dark-gray">fas fa-project-diagram</v-icon>
+                        </v-list-tile-action>
                         <v-list-tile-title>Scenarios</v-list-tile-title>
                     </v-list-tile>
                     <v-list-group prepend-icon="fas fa-book">
@@ -39,32 +46,43 @@
                         <v-list-tile @click="onNavigate('/DeficientEditor/Library/')">
                             <v-list-tile-title>Deficient</v-list-tile-title>
                         </v-list-tile>
-                        <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')">
+                        <v-list-tile @click="onNavigate('/RemainingLifeLimitEditor/Library/')" v-if="isAdmin">
                             <v-list-tile-title>Remaining Life Limit</v-list-tile-title>
                         </v-list-tile>
                         <v-list-tile @click="onNavigate('/CashFlowEditor/Library/')">
                             <v-list-tile-title>Cash Flow</v-list-tile-title>
                         </v-list-tile>
+                        <v-list-tile @click="onNavigate('/CriteriaLibraryEditor/Library/')">
+                            <v-list-tile-title>Criteria</v-list-tile-title>
+                        </v-list-tile>
                     </v-list-group>
-                    <v-list-tile @click="onNavigate('/UnderConstruction/')">
-                        <v-list-tile-action><v-icon class="ara-dark-gray">fas fa-lock</v-icon></v-list-tile-action>
+                    <v-list-tile @click="onNavigate('/UserCriteria/')" v-if="isAdmin">
+                        <v-list-tile-action>
+                            <v-icon class="ara-dark-gray">fas fa-lock</v-icon>
+                        </v-list-tile-action>
                         <v-list-tile-title>Security</v-list-tile-title>
                     </v-list-tile>
                 </v-list>
             </v-navigation-drawer>
             <v-toolbar app class="ara-blue-pantone-289-bg">
-                <v-toolbar-side-icon v-if="authenticatedWithRole && ($router.currentRoute.name !== 'News')" class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
-                <v-toolbar-title v-if="authenticatedWithRole && ($router.currentRoute.name === 'News')" class="white--text">
-                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/Inventory/')">
+                <v-toolbar-side-icon @click="drawer = !drawer"
+                                     class="white--text" v-if="authenticatedWithRole && ($router.currentRoute.name !== 'Home')"></v-toolbar-side-icon>
+                <v-toolbar-title class="white--text"
+                                 v-if="authenticatedWithRole && ($router.currentRoute.name === 'Home')">
+                    <v-btn @click="onNavigate('/Inventory/')" class="ara-blue-bg white--text" round>
                         <v-icon style="padding-right: 12px">fas fa-archive</v-icon>
                         Inventory Lookup
                     </v-btn>
-                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/Scenarios/')">
+                    <v-btn @click="onNavigate('/Scenarios/')" class="ara-blue-bg white--text" round>
                         <v-icon style="padding-right: 12px">fas fa-project-diagram</v-icon>
                         BridgeCare Analysis
                     </v-btn>
+                    <v-btn @click="onNavigate('/UserCriteria/')" class="ara-blue-bg white--text" round v-if="isAdmin">
+                        <v-icon style="padding-right: 12px">fas fa-lock</v-icon>
+                        Security
+                    </v-btn>
                 </v-toolbar-title>
-                <v-toolbar-title v-if="selectedScenarioName !== ''" class="white--text">
+                <v-toolbar-title class="white--text" v-if="selectedScenarioName !== ''">
                     <span class="font-weight-light">Scenario: </span>
                     <span>{{selectedScenarioName}}</span>
                 </v-toolbar-title>
@@ -75,25 +93,25 @@
                         <v-icon right>star</v-icon>
                     </v-btn>
                 </v-toolbar-title> -->
-                <v-toolbar-title v-if="authenticated" class="white--text">
+                <v-toolbar-title class="white--text" v-if="authenticated">
                     <span class="font-weight-light">Hello, </span>
                     <span>{{username}}</span>
                 </v-toolbar-title>
-                <v-toolbar-title v-if="!authenticated" class="white--text">
-                    <v-btn round class="ara-blue-bg white--text" @click="onNavigate('/AuthenticationStart/')">
+                <v-toolbar-title class="white--text" v-if="!authenticated">
+                    <v-btn @click="onNavigate('/AuthenticationStart/')" class="ara-blue-bg white--text" round>
                         Log In
                     </v-btn>
                 </v-toolbar-title>
-                <v-toolbar-title v-if="authenticated" class="white--text">
-                    <v-btn round class="ara-blue-bg white--text" @click="onLogout()">
+                <v-toolbar-title class="white--text" v-if="authenticated">
+                    <v-btn @click="onLogout()" class="ara-blue-bg white--text" round>
                         Log Out
                     </v-btn>
                 </v-toolbar-title>
             </v-toolbar>
-            <v-container fluid grid-list-xl>
+            <v-container fluid v-bind="container">
                 <router-view></router-view>
             </v-container>
-            <v-footer app fixed class="ara-blue-pantone-289-bg white--text">
+            <v-footer app class="ara-blue-pantone-289-bg white--text" fixed>
                 <v-spacer></v-spacer>
                 <v-flex xs1>
                     <span class="font-weight-light">iAM </span>
@@ -101,37 +119,43 @@
                 </v-flex>
                 <v-spacer></v-spacer>
             </v-footer>
-            <Spinner />
+            <Spinner/>
+            <Alert :dialog-data="alertDialogData" @submit="onAlertResult"/>
         </v-content>
     </v-app>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import Component from 'vue-class-component';
+    import {Watch} from 'vue-property-decorator';
+    import {Action, State} from 'vuex-class';
     import Spinner from './shared/modals/Spinner.vue';
     import iziToast from 'izitoast';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
     import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
     import {getErrorMessage, setAuthHeader, setContentTypeCharset} from '@/shared/utils/http-utils';
-    import {getAuthorizationHeader} from '@/shared/utils/authorization-header';
     import ReportsService from './services/reports.service';
+    import Alert from '@/shared/modals/Alert.vue';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import {clone} from 'ramda';
 
     @Component({
-        components: {Spinner}
+        components: {Alert, Spinner}
     })
     export default class AppComponent extends Vue {
+        @State(state => state) state: any;
         @State(state => state.authentication.authenticated) authenticated: boolean;
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
-        @State(state => state.authentication.isAdmin) isAdmin: boolean;
+        @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
 
         @Action('refreshTokens') refreshTokensAction: any;
         @Action('checkBrowserTokens') checkBrowserTokensAction: any;
@@ -144,9 +168,43 @@
         @Action('setInfoMessage') setInfoMessageAction: any;
         @Action('pollEvents') pollEventsAction: any;
         @Action('generatePollingSessionId') generatePollingSessionIdAction: any;
+        @Action('getUserCriteria') getUserCriteriaAction: any;
 
         drawer: boolean = false;
         selectedScenarioName: string = '';
+        alertDialogData: AlertData = clone(emptyAlertData);
+        pushRouteUpdate: boolean = false;
+        route: any = {};
+
+        get container() {
+            const container: any = {};
+
+            if (this.$vuetify.breakpoint.xs) {
+                container['grid-list-xs'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.sm) {
+                container['grid-list-sm'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.md) {
+                container['grid-list-md'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.lg) {
+                container['grid-list-lg'] = true;
+            }
+
+            if (this.$vuetify.breakpoint.xl) {
+                container['grid-list-xl'] = true;
+            }
+
+            return container;
+        }
+
+        get authenticatedWithRole() {
+            return this.authenticated && this.hasRole;
+        }
 
         @Watch('successMessage')
         onSuccessMessageChanged() {
@@ -195,6 +253,15 @@
             this.selectedScenarioName = hasValue(this.stateSelectedScenarioName) ? this.stateSelectedScenarioName : '';
         }
 
+        @Watch('authenticatedWithRole')
+        onAuthenticationChange() {
+            if (this.authenticated && this.hasRole) {
+                this.onLogin();
+            } else if (!this.authenticated) {
+                this.onLogout();
+            }
+        }
+
         created() {
             // create a request handler
             const requestHandler = (request: AxiosRequestConfig) => {
@@ -238,6 +305,23 @@
                 (error: any) => errorHandler(error)
             );
 
+            this.$router.beforeEach((to: any, from: any, next: any) => {
+                this.route = to;
+
+                const showAlert: boolean = !this.pushRouteUpdate && this.hasUnsavedChanges;
+                if (showAlert) {
+                    this.alertDialogData = {
+                        showDialog: true,
+                        heading: 'Unsaved Changes',
+                        message: 'You have unsaved changes. Are you sure you wish to continue?',
+                        choice: true
+                    };
+                } else {
+                    this.pushRouteUpdate = false;
+                    next();
+                }
+            });
+
             // Upon opening the page, and every 30 seconds, check if authentication data
             // has been changed by another tab or window
             this.checkBrowserTokensAction();
@@ -248,19 +332,15 @@
             window.setInterval(this.pollEventsAction, 5000);
         }
 
-        get authenticatedWithRole() {
-            return this.authenticated && this.hasRole;
-        }
+        onAlertResult(submit: boolean) {
+            this.alertDialogData = clone(emptyAlertData);
 
-        @Watch('authenticatedWithRole')
-        onAuthenticationChange() {
-            if (this.authenticated && this.hasRole) {
-                this.onLogin();
-            } else if (!this.authenticated) {
-                this.onLogout();
+            if (submit) {
+                this.pushRouteUpdate = true;
+                this.onNavigate(this.route);
             }
         }
-        
+
         /**
          * Sets up a recurring attempt at refreshing user tokens, and fetches network and attribute data
          */
@@ -270,6 +350,7 @@
             this.$forceUpdate();
             this.getNetworksAction();
             this.getAttributesAction();
+            this.getUserCriteriaAction();
         }
 
         /**
@@ -294,22 +375,23 @@
 
         /**
          * Navigates a user to a page using the specified routeName
-         * @param routeName The route name to use when navigating a user
+         * @param route The route name to use when navigating a user
          */
-        onNavigate(routeName: string) {
-            if(this.$router.currentRoute.path !== routeName) {
-                this.$router.push(routeName);
+        onNavigate(route: any) {
+            if (this.$router.currentRoute.path !== route.path) {
+                this.$router.push(route);
             }
         }
-        async onJobQueue(){
+
+        async onJobQueue() {
             await ReportsService.getJobList()
-                                    .then((response: AxiosResponse<any>) => {
-                                        if(response == undefined){
-                                          this.setErrorMessageAction({message: 'unauthorized access'});
-                                        } else{
-                                          window.open(process.env.VUE_APP_URL + '/hangfire/');
-                                        }
-                                    });
+                .then((response: AxiosResponse<any>) => {
+                    if (response == undefined) {
+                        this.setErrorMessageAction({message: 'unauthorized access'});
+                    } else {
+                        window.open(process.env.VUE_APP_URL + '/hangfire/');
+                    }
+                });
         }
     }
 </script>

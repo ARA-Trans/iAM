@@ -28,6 +28,14 @@ export default class PriorityService {
     }
 
     /**
+     * Deletes a priority library
+     * @param priorityLibraryData The priority library to delete
+     */
+    static deletePriorityLibrary(priorityLibraryData: PriorityLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeletePriorityLibrary/${priorityLibraryData.id}`);
+    }
+
+    /**
      * Gets a scenario's priority library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's priority library data
      */
@@ -39,7 +47,9 @@ export default class PriorityService {
      * Upserts a scenario's priority library data
      * @param saveScenarioPriorityLibraryData The scenario priority library upsert data
      */
-    static saveScenarioPriorityLibrary(saveScenarioPriorityLibraryData: PriorityLibrary): AxiosPromise {
+    static saveScenarioPriorityLibrary(saveScenarioPriorityLibraryData: PriorityLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioPriorityLibrary', saveScenarioPriorityLibraryData);
     }
 }

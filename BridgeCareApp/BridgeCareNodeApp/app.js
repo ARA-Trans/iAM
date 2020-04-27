@@ -1,7 +1,8 @@
 ﻿const express = require("express");
 const debug = require('debug')('app');
+var winston = require('./config/winston');
 const app = express();
-require('./config/express')(app);
+require('./config/express')(app, winston);
 
 const passport = require("passport");
 
@@ -20,12 +21,15 @@ async function run() {
     const CashFlowLibrary = require('./models/cashFlowLibraryModel');
     const cashFlowLibraryRouter = require('./routers/cashFlowLibraryRouter')(CashFlowLibrary);
 
+    const CriteriaLibrary = require('./models/criteriaLibraryModel');
+    const criteriaLibraryRouter = require('./routers/criteriaLibraryRouter')(CriteriaLibrary);
+
     const DeficientLibrary = require('./models/deficientLibraryModel');
     const deficientLibraryRouter = require('./routers/deficientLibraryRouter')(DeficientLibrary);
 
     const InvestmentLibrary = require('./models/investmentLibraryModel');
     const investmentLibraryRouter = require('./routers/investmentLibraryRouter')(InvestmentLibrary);
-
+    
     const Network = require('./models/NetworkModel');
     const networkRouter = require('./routers/networkRouter')(Network);
 
@@ -61,7 +65,11 @@ async function run() {
     });
 
     CashFlowLibrary.watch([], options).on('change', data => {
-        io.emit('cashFlowLibrary', data);
+        emitEvent('cashFlowLibrary', data);
+    });
+
+    CriteriaLibrary.watch([], options).on('change', data => {
+        emitEvent('criteriaLibrary', data);
     });
 
     DeficientLibrary.watch([], options).on('change', data => {
@@ -102,6 +110,7 @@ async function run() {
 
     app.use("/api", [
         cashFlowLibraryRouter,
+        criteriaLibraryRouter,
         deficientLibraryRouter,
         investmentLibraryRouter,
         networkRouter,
@@ -114,5 +123,9 @@ async function run() {
         pollingRouter,
         announcementRouter
     ]);
+
+    app.use(function (err, req, res, next) {
+        winston.error(err.stack);
+      });
 
 }

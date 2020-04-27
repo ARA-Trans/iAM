@@ -24,6 +24,12 @@ export const emptyAnalysis: Analysis = {
     weightingAttribute: ''
 };
 
+export interface ScenarioUser {
+    id?: number;
+    username: string | null;
+    canModify: boolean;
+}
+
 export interface Scenario {
     networkId: number;
     networkName: string;
@@ -31,9 +37,13 @@ export interface Scenario {
     simulationName: string;
     createdDate?: Date;
     lastModifiedDate?: Date;
+    lastRun?: Date;
     status?: string;
     shared?: boolean;
+    owner?: string;
+    creator?: string;
     id: number | string;
+    users: ScenarioUser[];
 }
 
 export const emptyScenario: Scenario = {
@@ -45,5 +55,6 @@ export const emptyScenario: Scenario = {
     lastModifiedDate: new Date(),
     status: '',
     shared: false,
-    id: 0
+    id: 0,
+    users: []
 };

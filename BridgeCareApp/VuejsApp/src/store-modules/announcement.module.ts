@@ -1,5 +1,5 @@
-import {Announcement, emptyAnnouncement} from '@/shared/models/iAM/announcement';
-import {clone, append, any, propEq, update, findIndex, equals, reject} from 'ramda';
+import {Announcement} from '@/shared/models/iAM/announcement';
+import {any, append, clone, findIndex, propEq, reject, update} from 'ramda';
 import AnnouncementService from '@/services/announcement.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';

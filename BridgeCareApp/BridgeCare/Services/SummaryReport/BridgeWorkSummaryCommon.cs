@@ -1,5 +1,6 @@
 ﻿using BridgeCare.Models;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System.Collections.Generic;
 
 namespace BridgeCare.Services
@@ -20,9 +21,9 @@ namespace BridgeCare.Services
         /// <param name="currentCell"></param>
         /// <param name="simulationYears"></param>
         /// <param name="sectionName"></param>
-        public void AddHeaders(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, string sectionName)
+        public void AddHeaders(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, string sectionName, string workTypeName)
         {
-            AddWorkTypeHeader(worksheet, currentCell);
+            AddWorkTypeHeader(worksheet, currentCell, workTypeName);
             AddMergeSectionHeader(worksheet, sectionName, simulationYears.Count, currentCell);
             AddYearsHeaderRow(worksheet, simulationYears, currentCell);
         }
@@ -98,9 +99,9 @@ namespace BridgeCare.Services
             currentCell.Column = column - 1;
         }
 
-        private void AddWorkTypeHeader(ExcelWorksheet worksheet, CurrentCell currentCell)
+        private void AddWorkTypeHeader(ExcelWorksheet worksheet, CurrentCell currentCell, string workTypeName)
         {
-            const string WorkTypeHeader = "Work Type";
+            var WorkTypeHeader = workTypeName;
             var row = currentCell.Row;
             var column = 1;
             worksheet.Cells[++row, column].Value = WorkTypeHeader;
@@ -164,6 +165,25 @@ namespace BridgeCare.Services
             worksheet.Cells[row++, column].Value = Properties.Resources.Good;
             worksheet.Cells[row++, column].Value = Properties.Resources.Fair;
             worksheet.Cells[row++, column++].Value = Properties.Resources.Poor;
+            worksheet.Cells[row - 3, column - 1, row - 1, column - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        }
+
+        public void InitializeBPNLabels(ExcelWorksheet worksheet, CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
+        {
+            SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
+            worksheet.Cells[row++, column].Value = Properties.Resources.BPN1;
+            worksheet.Cells[row++, column].Value = Properties.Resources.BPN2;
+            worksheet.Cells[row++, column].Value = Properties.Resources.BPN3;
+            worksheet.Cells[row++, column++].Value = Properties.Resources.BPN4;
+            worksheet.Cells[row - 4, column - 1, row - 1, column - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        }
+
+        public void InitializeTotalBridgeCountLabels(ExcelWorksheet worksheet, CurrentCell currentCell, out int startRow, out int startColumn, out int row, out int column)
+        {
+            SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
+            worksheet.Cells[row++, column].Value = Properties.Resources.Posted;
+            worksheet.Cells[row++, column++].Value = Properties.Resources.Closed;
+            worksheet.Cells[row - 2, column - 1, row - 1, column - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
         }
     }
 }

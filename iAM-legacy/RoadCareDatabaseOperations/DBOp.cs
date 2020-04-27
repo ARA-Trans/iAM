@@ -1742,7 +1742,7 @@
                 {
                     string length = row["Character_maximum_length"].ToString();
                     int nLength = Convert.ToInt32(length);
-                    if (nLength < 513)
+                    if (nLength != -1 && nLength < 513)
                     {
                         if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
                         {
@@ -1955,7 +1955,33 @@
             UpdateRoadCareForScheduled();
             UpdateRoadCareForSplitTreatment();
             UpdateRoadCareForSplitTreatmentLimit();
+            UpdateRoadcareForSplitTreatmentCascade();
+            UpdateRoadCareForInvestmentDescription();
+            UpdateRoadCareForOutputReasons();
+        }
 
+        private static void UpdateRoadCareForOutputReasons()
+        {
+            var ds = DBMgr.GetTableColumnsWithTypes("SIMULATIONS");
+            bool isUseReasons = false;
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                if (row["column_name"].ToString().ToUpper() == "USE_REASONS")
+                {
+                    isUseReasons = true;
+                }
+            }
+            if (!isUseReasons)
+            {
+                if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_REASONS NUMBER(1) NULL");
+                }
+                else
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_REASONS BIT NULL");
+                }
+            }
         }
 
         private static void UpdateRoadCareForSplitTreatmentLimit()
@@ -1975,11 +2001,18 @@
             {
                 DBMgr.ExecuteNonQuery("CREATE TABLE [dbo].[SPLIT_TREATMENT]([SIMULATIONID][int] NOT NULL,[SPLIT_TREATMENT_ID][int] IDENTITY(1, 1) NOT NULL,[DESCRIPTION][varchar](50) NULL,[CRITERIA][varchar](max) NULL, CONSTRAINT[PK_SPLIT_TREATMENT] PRIMARY KEY CLUSTERED" +
                     "([SPLIT_TREATMENT_ID] ASC )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON[PRIMARY]) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]");
-                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT]  WITH CHECK ADD  CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS] FOREIGN KEY([SIMULATIONID]) REFERENCES[dbo].[SIMULATIONS]([SIMULATIONID])");
+                DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT]  WITH CHECK ADD  CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS] FOREIGN KEY([SIMULATIONID]) REFERENCES[dbo].[SIMULATIONS]([SIMULATIONID]) ON DELETE CASCADE");
                 DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT] CHECK CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS]");
 
             }
         }
+
+        private static void UpdateRoadcareForSplitTreatmentCascade()
+        {
+            DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT] DROP CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS]");
+            DBMgr.ExecuteNonQuery("ALTER TABLE [dbo].[SPLIT_TREATMENT]  WITH CHECK ADD  CONSTRAINT [FK_SPLIT_TREATMENT_SIMULATIONS] FOREIGN KEY([SIMULATIONID]) REFERENCES[dbo].[SIMULATIONS]([SIMULATIONID]) ON DELETE CASCADE");
+        }
+
 
         private static void UpdateRoadCareForScheduled()
         {
@@ -2077,6 +2110,31 @@
                 else
                 {
                     DBMgr.ExecuteNonQuery("ALTER TABLE SIMULATIONS ADD USE_ACROSS_BUDGET BIT NULL");
+                }
+            }
+        }
+
+
+        private static void UpdateRoadCareForInvestmentDescription()
+        {
+            var ds = DBMgr.GetTableColumnsWithTypes("INVESTMENTS");
+            bool isCumulativeCost = false;
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                if (row["column_name"].ToString().ToUpper() == "DESCRIPTION")
+                {
+                    isCumulativeCost = true;
+                }
+            }
+            if (!isCumulativeCost)
+            {
+                if (DBMgr.NativeConnectionParameters.Provider == "ORACLE")
+                {
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    DBMgr.ExecuteNonQuery("ALTER TABLE INVESTMENTS ADD DESCRIPTION VARCHAR(MAX) NULL");
                 }
             }
         }

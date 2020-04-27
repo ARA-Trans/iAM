@@ -234,8 +234,9 @@ namespace Simulation
         /// <param name="priority"></param>
         /// <param name="limits">Limits where treatments are split over multiple years</param>
         /// <returns></returns>
-        public string IsBudgetAvailable(float fAmount, String strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, List<ISplitTreatmentLimit> limits, string budgetLimitType, out string budgetHash, out ISplitTreatmentLimit splitTreatmentLimit)
+        public string IsBudgetAvailable(float fAmount, string strBudget, String strYear, Hashtable hashAttributeValue,Priorities priority, List<ISplitTreatmentLimit> limits, string budgetLimitType, out string budgetHash, out ISplitTreatmentLimit splitTreatmentLimit, out string reasonNoBudget)
         {
+            reasonNoBudget = "";
             string noBudgetAvailable = "";
             splitTreatmentLimit = limits[0];
 
@@ -243,6 +244,7 @@ namespace Simulation
             if (!(priority.IsAllSections || priority.Criteria.IsCriteriaMet(hashAttributeValue)))
             {
                 budgetHash = "";
+                reasonNoBudget = "Priority (" + priority.PriorityLevel  + ") criteria not met for year " + strYear;
                 return noBudgetAvailable;
             }
 
@@ -309,7 +311,10 @@ namespace Simulation
                 }
             }
 
-
+            if(budgets.Count == 0)
+            {
+                reasonNoBudget = "Budget (" + strBudget + ") did not meet budget criteria.";
+            }
 
             foreach (string budget in budgets)
             {
@@ -355,7 +360,7 @@ namespace Simulation
 
                 bool currentBudgetAvailable = true;
 
-                if(budgetLimitType.ToLower() == "unlimited")//If the budget is available (possible budget) and is unlimited... we are good.
+                if (budgetLimitType.ToLower() == "unlimited")//If the budget is available (possible budget) and is unlimited... we are good.
                 {
                     return budgetCheck;
                 }
@@ -369,14 +374,16 @@ namespace Simulation
                     var currentYear = year + i;
 
                     //Priority must be all years, match the current year or the current year must be greater than maximum year and the Maximum year must be a priority.
-                    if(!(priority.IsAllYears || priority.Years == currentYear || (currentYear > MaximumYear && priority.Years==MaximumYear)))
+                    if (!(priority.IsAllYears || priority.Years == currentYear || (currentYear > MaximumYear && priority.Years == MaximumYear)))
                     {
+
+                        reasonNoBudget = "Priority is not set for year " + currentYear;
                         return null;
                     }
 
                     try
                     {
-                        //This occurs when a split treament goes pas then end.
+                        //This occurs when a split treament goes past then end.
                         if (!hashYearAmount.Contains(currentYear.ToString())) continue;
                         //Not past end of analysis.
                         fAvailable = (float)hashYearAmount[currentYear.ToString()];
@@ -387,7 +394,7 @@ namespace Simulation
                         throw e;
                     }
 
-                    
+
                     //This gets a hash of all years and the amount of budgets originally available.                    
                     try
                     {
@@ -401,11 +408,11 @@ namespace Simulation
                         throw e;
                     }
 
-                    
+
                     try
                     {
-                        if (!hashYearAmountOriginal.Contains(strYear)) continue;
-                        fOriginal = (float)hashYearAmountOriginal[strYear];
+                        if (!hashYearAmountOriginal.Contains(currentYear.ToString())) continue;
+                        fOriginal = (float)hashYearAmountOriginal[currentYear.ToString()];
                     }
                     catch (Exception e)
                     {
@@ -413,7 +420,7 @@ namespace Simulation
                         throw e;
                     }
 
-                    fAfterSpending = fAvailable - fAmount;
+                    fAfterSpending = fAvailable - currentYearAmount;
                     if (fOriginal <= 0) continue;
                     fPercent = (1 - fAfterSpending / fOriginal) * 100;
 
@@ -421,10 +428,15 @@ namespace Simulation
                     try
                     {
                         float fPercentLimit = (float)priority.BudgetPercent[budgetCheck];
-                        var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal;
-                        budgetHash = fAmount + "/" + fAvailable.ToString("f0") + "/" + original.ToString("f0");
+                        var original = (float)priority.BudgetPercent[budgetCheck] * fOriginal / 100;
+                        budgetHash = currentYearAmount.ToString("#,##0.##") +"/" + fAmount.ToString("#,##0.##") + "/" + fAvailable.ToString("#,##0.##") + "/" + original.ToString("#,##0.##");
                         //if (fPercent < fPercentLimit) return budgetCheck;
-                        if (fPercent > fPercentLimit) currentBudgetAvailable = false;
+                        if (fPercent > fPercentLimit)
+                        {
+                            currentBudgetAvailable = false;
+                            reasonNoBudget = "Percent after spending greater than priority limit " + fPercent.ToString("f2")  + "/" + fPercentLimit.ToString("f2") + " for year(" + currentYear + ")";
+                            return noBudgetAvailable;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -432,13 +444,13 @@ namespace Simulation
                         throw e;
                     }
                 }
-            
-                
-                
                 //To be true here, there must be money available for each year.
-                if (currentBudgetAvailable) return budgetCheck;
+                if (currentBudgetAvailable)
+                {
+                    return budgetCheck;
+                }
+                
             }
-
             return noBudgetAvailable;
         }
 

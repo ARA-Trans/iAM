@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="dialogData.showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,19 +8,19 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" v-model="newPriorityLibrary.name" outline></v-text-field>
-                    <v-textarea rows="3" no-resize outline label="Description"
+                    <v-text-field label="Name" outline v-model="newPriorityLibrary.name"></v-text-field>
+                    <v-textarea label="Description" no-resize outline rows="3"
                                 v-model="newPriorityLibrary.description">
                     </v-textarea>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)"
-                           :disabled="newPriorityLibrary.name === ''">
+                    <v-btn :disabled="newPriorityLibrary.name === ''" @click="onSubmit(true)"
+                           class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
                 </v-layout>
             </v-card-actions>
         </v-card>
@@ -38,16 +38,17 @@
         PriorityFund,
         PriorityLibrary
     } from '@/shared/models/iAM/priority';
-    import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {getUserName} from '@/shared/utils/get-user-info';
+
     const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreatePriorityLibraryDialog extends Vue {
         @Prop() dialogData: CreatePriorityLibraryDialogData;
 
-        newPriorityLibrary: PriorityLibrary = clone({...emptyPriorityLibrary, id: ObjectID.generate()});
+        newPriorityLibrary: PriorityLibrary = {...emptyPriorityLibrary, id: ObjectID.generate()};
 
         /**
          * Sets the newPriorityLibrary object's description & priorities properties with the dialogData object's
@@ -69,15 +70,16 @@
         onSubmit(submit: boolean) {
             if (submit) {
                 if (!hasValue(this.newPriorityLibrary.priorities)) {
-                    this.newPriorityLibrary.priorities.push(clone({...emptyPriority, year: moment().year()}));
+                    this.newPriorityLibrary.priorities.push({...emptyPriority, year: moment().year()});
                 }
                 this.setIdsForNewPriorityLibrarySubData();
+                this.newPriorityLibrary.owner = getUserName();
                 this.$emit('submit', this.newPriorityLibrary);
             } else {
                 this.$emit('submit', null);
             }
 
-            this.newPriorityLibrary = clone({...emptyPriorityLibrary, id: ObjectID.generate()});
+            this.newPriorityLibrary = {...emptyPriorityLibrary, id: ObjectID.generate()};
         }
 
         /**

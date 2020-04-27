@@ -19,6 +19,8 @@ namespace BridgeCare.DataAccessLayer
             var yearlyBudgetModels = yearlyInvestments.Select(m => new InvestmentLibraryBudgetYearModel
             {
                 Year = m.YEAR_,
+                BudgetName = m.BUDGETNAME,
+                BudgetAmount = m.AMOUNT,
                 Budget = yearlyInvestments
                             .Where(n => n.YEAR_ == m.YEAR_)
                             .Select(f => new InvestmentLibraryBudgetModel()

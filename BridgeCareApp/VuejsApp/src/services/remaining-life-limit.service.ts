@@ -28,6 +28,14 @@ export default class RemainingLifeLimitService {
     }
 
     /**
+     * Deletes a remaining life limit library
+     * @param remainingLifeLimitLibrary The remaining life limit library to delete
+     */
+    static deleteRemainingLifeLimitLibrary(remainingLifeLimitLibrary: RemainingLifeLimitLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteRemainingLifeLimitLibrary/${remainingLifeLimitLibrary.id}`);
+    }
+
+    /**
      * Gets a scenario's remaining life limit library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's remaining life limit library data
      */
@@ -39,7 +47,9 @@ export default class RemainingLifeLimitService {
      * Upserts a scenario's remaining life limit library data
      * @param saveRemainingLifeLimitLibraryData The scenario remaining life limit library upsert data
      */
-    static saveScenarioRemainingLifeLimitLibrary(saveRemainingLifeLimitLibraryData: RemainingLifeLimitLibrary): AxiosPromise {
+    static saveScenarioRemainingLifeLimitLibrary(saveRemainingLifeLimitLibraryData: RemainingLifeLimitLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioRemainingLifeLimitLibrary', saveRemainingLifeLimitLibraryData);
     }
 }

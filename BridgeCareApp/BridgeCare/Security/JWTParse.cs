@@ -65,9 +65,10 @@ namespace BridgeCare.Security
             if (TokenIsRevoked(idToken))
                 throw new UnauthorizedAccessException("Your ID Token has been revoked.");
             JwtSecurityToken decodedToken = DecodeToken(idToken);
-            string role = ParseLDAP(decodedToken.GetClaimValue("roles"));
-            string name = ParseLDAP(decodedToken.GetClaimValue("sub"));
-            return new Models.UserInformationModel(name, role);
+            string role = ParseLDAP(decodedToken.GetClaimValue("roles")).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
+            string name = ParseLDAP(decodedToken.GetClaimValue("sub"))[0];
+            string email = decodedToken.GetClaimValue("email");
+            return new Models.UserInformationModel(name, role, email);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace BridgeCare.Security
         /// <returns></returns>
         private static string GetClaimValue(this JwtSecurityToken jwt, string type)
         {
-            return jwt.Claims.First(claim => claim.Type == type).Value;
+            return jwt.Claims.FirstOrDefault(claim => claim.Type == type).Value;
         }
 
         /// <summary>
@@ -135,15 +136,21 @@ namespace BridgeCare.Security
         }
 
         /// <summary>
-        /// Given an LDAP-formatted string from ESEC, extracts the Common Name (CN) field.
+        /// Given an LDAP-formatted string from ESEC, extracts the Common Name (CN) fields.
         /// </summary>
         /// <param name="roleResponse">LDAP-formatted response</param>
         /// <returns>Role</returns>
-        private static string ParseLDAP(string ldap)
+        private static List<string> ParseLDAP(string ldap)
         {
-            string firstSegment = ldap.Split(',')[0];
-            string role = firstSegment.Substring(3);
-            return role;
+            string[] segments = ldap.Split('^');
+            List<string> commonNames = new List<string>();
+            foreach (string segment in segments)
+            {
+                string firstSubSegment = ldap.Split(',')[0];
+                string commonName = firstSubSegment.Split('=')[1];
+                commonNames.Add(commonName);
+            }
+            return commonNames;
         }
     }
 }

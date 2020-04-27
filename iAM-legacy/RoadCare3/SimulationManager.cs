@@ -444,9 +444,11 @@ namespace RoadCare3
             listInserts.Add(delete);
 
 
+            var deleteSplitTreatment = "DELETE FROM SPLIT_TREATMENT WHERE SIMULATIONID=" + strNewSimulationID;
+            listInserts.Add(deleteSplitTreatment);
 
 
-			String strSelect = "SELECT * FROM INVESTMENTS WHERE SIMULATIONID=" + m_strCopyInvestmentSimulationID;
+            String strSelect = "SELECT * FROM INVESTMENTS WHERE SIMULATIONID=" + m_strCopyInvestmentSimulationID;
 
 			String strSimulationID;
 			String strFirstYear;
@@ -454,7 +456,7 @@ namespace RoadCare3
 			String strInflation;
 			String strDiscount;
 			String strBudgetOrder;
-            String strDescription;
+            String strDescription="";
 
 			try
 			{
@@ -468,9 +470,9 @@ namespace RoadCare3
 					strInflation = dr["INFLATIONRATE"].ToString();
 					strDiscount = dr["DISCOUNTRATE"].ToString();
 					strBudgetOrder = dr["BUDGETORDER"].ToString();
-                    strDescription = dr["DESCRIPTION"].ToString();
+                    if(dr["DESCRIPTION"] != DBNull.Value) strDescription = dr["DESCRIPTION"].ToString();
 
-                    String strInsert = "INSERT INTO INVESTMENTS (SIMULATIONID,FIRSTYEAR,NUMBERYEARS,INFLATIONRATE,DISCOUNTRATE,BUDGETORDER,DESCRIPTION) VALUES (" + strNewSimulationID + "," + strFirstYear + "," + strNumberYear + "," + strInflation + "," + strDiscount + ",'" + strBudgetOrder + ",'" + strDescription + "')";
+                    String strInsert = "INSERT INTO INVESTMENTS (SIMULATIONID,FIRSTYEAR,NUMBERYEARS,INFLATIONRATE,DISCOUNTRATE,BUDGETORDER,DESCRIPTION) VALUES ('" + strNewSimulationID + "','" + strFirstYear + "','" + strNumberYear + "','" + strInflation + "','" + strDiscount + "','" + strBudgetOrder + "','" + strDescription + "')";
 					listInserts.Add( strInsert );
 				}
 				else
@@ -511,6 +513,7 @@ namespace RoadCare3
 
             var selectBudgetCriteria = "SELECT * FROM BUDGET_CRITERIA  WHERE SIMULATIONID=" + m_strCopyInvestmentSimulationID;
 
+
             try
             {
                 DataSet ds = DBMgr.ExecuteQuery(selectBudgetCriteria);
@@ -518,7 +521,8 @@ namespace RoadCare3
                 {
                     var budgetName = dr["BUDGET_NAME"].ToString();
                     var criteria = dr["CRITERIA"].ToString();
-    
+
+
                     String strInsert = "INSERT INTO BUDGET_CRITERIA (SIMULATIONID,BUDGET_NAME,CRITERIA) VALUES ('" + strNewSimulationID + "','" + budgetName + "','" + criteria + "')";
                     listInserts.Add(strInsert);
                 }
@@ -529,19 +533,70 @@ namespace RoadCare3
                 return;
             }
 
+            try
+            {
+                DBMgr.ExecuteBatchNonQuery(listInserts);
+                Global.WriteOutput("Investment and Budget Criteria successfully copied.");
+            }
+            catch (Exception exception)
+            {
+                Global.WriteOutput("Error: Copying Investments from one simulation to another" + exception.Message);
+            }
 
-
-
+            var selectSplitTreatment = "SELECT * FROM SPLIT_TREATMENT WHERE SIMULATIONID=" + m_strCopyInvestmentSimulationID;
 
             try
             {
-				DBMgr.ExecuteBatchNonQuery( listInserts );
-                Global.WriteOutput("Investment and Budget Criteria successfully copied.");
-			}
-			catch( Exception exception )
-			{
-				Global.WriteOutput( "Error: Copying Investments from one simulation to another" + exception.Message );
-			}
+                DataSet ds = DBMgr.ExecuteQuery(selectSplitTreatment);
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    var description = dr["DESCRIPTION"].ToString();
+                    var criteria = dr["CRITERIA"].ToString();
+                    var splitTreatmentIdToCopy = dr["SPLIT_TREATMENT_ID"].ToString();
+
+
+                    String strInsert = "INSERT INTO SPLIT_TREATMENT(SIMULATIONID,DESCRIPTION,CRITERIA) VALUES ('" + strNewSimulationID + "','" + description + "','" + criteria + "')";
+                    DBMgr.ExecuteNonQuery(strInsert);
+
+
+                    //Get the identity
+
+                    string selectIdentity = "SELECT IDENT_CURRENT ('SPLIT_TREATMENT') FROM SPLIT_TREATMENT";
+                    var splitTreatmentIdToPaste = DBMgr.ExecuteScalar(selectIdentity).ToString();
+
+
+                    var splitTreatmentLimit = "SELECT * FROM SPLIT_TREATMENT_LIMIT WHERE SPLIT_TREATMENT_ID=" + splitTreatmentIdToCopy;
+                    DataSet dataSetLimit = DBMgr.ExecuteQuery(splitTreatmentLimit);
+                    foreach(DataRow limit in dataSetLimit.Tables[0].Rows)
+                    {
+                        int rank = -1;
+                        float amount = -1;
+                        string percentage = "";
+
+                        if (limit["RANK"] != DBNull.Value) rank = Convert.ToInt32(limit["RANK"]);
+                        if (limit["AMOUNT"] != DBNull.Value) amount = Convert.ToSingle(limit["AMOUNT"]);
+                        if (limit["PERCENTAGE"] != DBNull.Value) percentage = limit["PERCENTAGE"].ToString();
+
+                        String limitInsert = "INSERT INTO SPLIT_TREATMENT_LIMIT(SPLIT_TREATMENT_ID,RANK,PERCENTAGE) VALUES ('" + splitTreatmentIdToPaste + "','" + rank + "','" + percentage + "')";
+
+                        if(amount > 0)
+                        {
+                            limitInsert = "INSERT INTO SPLIT_TREATMENT_LIMIT(SPLIT_TREATMENT_ID,RANK,PERCENTAGE,AMOUNT) VALUES ('" + splitTreatmentIdToPaste + "','" + rank + "','" + percentage + "','" + amount + "')";
+                        }
+
+                        DBMgr.ExecuteNonQuery(limitInsert);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Global.WriteOutput("Error: Retrieving existing split treatment information." + exception.Message);
+                return;
+            }
+
+
+
+
 
 
 		}

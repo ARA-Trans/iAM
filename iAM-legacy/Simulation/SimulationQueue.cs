@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,6 +9,22 @@ namespace Simulation
     public sealed class SimulationQueue : IDisposable
     {
         public SimulationQueue(int maximumConcurrency) => MaximumConcurrency = maximumConcurrency;
+
+        private static SimulationQueue mainSimulationQueueInstance = null;
+        public static SimulationQueue MainSimulationQueue
+        {
+            get
+            {
+                lock (typeof(SimulationQueue))
+                {
+                    if (mainSimulationQueueInstance == null)
+                    {
+                        mainSimulationQueueInstance = new SimulationQueue(1);
+                    }
+                    return mainSimulationQueueInstance;
+                }
+            }
+        }
 
         public int MaximumConcurrency
         {
@@ -36,6 +53,20 @@ namespace Simulation
         public Task Enqueue(SimulationParameters simulationParameters, CancellationToken cancellationToken = default)
         {
             var task = new Task(Simulation, simulationParameters, cancellationToken);
+            Queue.Add(task);
+            return task;
+        }
+
+        // Allow generic tasks to be enqueued, if it is unsafe to run a simulation while those tasks are running
+        public Task Enqueue(Task nonSimulationTask)
+        {
+            Queue.Add(nonSimulationTask);
+            return nonSimulationTask;
+        }
+
+        public Task Enqueue(Action nonSimulationAction, CancellationToken cancellationToken = default)
+        {
+            var task = new Task(nonSimulationAction, cancellationToken);
             Queue.Add(task);
             return task;
         }
