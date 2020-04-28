@@ -65,6 +65,15 @@ namespace AppliedResearchAssociates
             }
         }
 
+        public static IEnumerable<int> Count(int from = 0, int by = 1)
+        {
+            while (true)
+            {
+                yield return from;
+                from += by;
+            }
+        }
+
         public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> keyValue, out TKey key, out TValue value)
         {
             key = keyValue.Key;

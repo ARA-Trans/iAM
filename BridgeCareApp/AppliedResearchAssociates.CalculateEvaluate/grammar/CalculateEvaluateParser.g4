@@ -7,8 +7,8 @@ options
 }
 
 root
-   : calculation # calculationRoot
-   | evaluation  # evaluationRoot
+   : calculation EOF # calculationRoot
+   | evaluation EOF  # evaluationRoot
    ;
 
 calculation

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace AppliedResearchAssociates.CalculateEvaluate.Testing
@@ -19,15 +20,25 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             Assert.That(annotatedExpression, Is.EqualTo("[@param2]='foo' or [param1]=|1| and ([@param2]<>|| or [$param3]<'2000-01-01')"));
         }
 
+        [Test]
+        public void BadLex() => Assert.Throws<CalculateEvaluateLexingException>(() => ParameterlessCalculation("2 # 2", 4));
+
+        [Test]
+        public void BadParse() => Assert.Throws<CalculateEvaluateParsingException>(() => ParameterlessCalculation("2 ( 2", 4));
+
         #region "Calculate"
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void Addition() => ParameterlessCalculation($"{n1} + {n2}", n1 + n2);
+        public void Addition() => ParameterlessCalculation($"{n0} + {n1}", n0 + n1);
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void CalculationGrouping() => ParameterlessCalculation($"{n1} * ({n1} + {n2})", n1 * (n1 + n2));
+        public void CalculationAssociativity() => MultipleParameterCalculation($"2 + 3 * 4 + 5", 19);
+
+        [Test]
+        [Category(CATEGORY_CALCULATE)]
+        public void CalculationGrouping() => ParameterlessCalculation("2 * (3 + 4) * 5", 70);
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
@@ -35,23 +46,23 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void Division() => ParameterlessCalculation($"{n1} / {n2}", n1 / n2);
+        public void Division() => ParameterlessCalculation($"{n0} / {n1}", n0 / n1);
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void Invocation() => ParameterlessCalculation($"log({n1})", Math.Log(n1));
+        public void Invocation() => ParameterlessCalculation($"log({n0})", Math.Log(n0));
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void Multiplication() => ParameterlessCalculation($"{n1} * {n2}", n1 * n2);
+        public void Multiplication() => ParameterlessCalculation($"{n0} * {n1}", n0 * n1);
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void Negation() => ParameterlessCalculation($"-{n1}", -n1);
+        public void Negation() => ParameterlessCalculation($"-{n0}", -n0);
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void NumberLiteral() => ParameterlessCalculation($"{n1}", n1);
+        public void NumberLiteral() => ParameterlessCalculation($"{n0}", n0);
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
@@ -62,14 +73,14 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             var expression = "[param]";
             var calculator = compiler.GetCalculator(expression);
             var argument = new CalculateEvaluateArgument();
-            argument.Number["PaRaM"] = n1;
+            argument.SetNumber("PaRaM", n0);
             var result = calculator(argument);
-            Assert.That(result, Is.EqualTo(argument.Number["pArAm"]));
+            Assert.That(result, Is.EqualTo(argument.GetNumber("pArAm")));
         }
 
         [Test]
         [Category(CATEGORY_CALCULATE)]
-        public void Subtraction() => ParameterlessCalculation($"{n1} - {n2}", n1 - n2);
+        public void Subtraction() => ParameterlessCalculation($"{n0} - {n1}", n0 - n1);
 
         #endregion "Calculate"
 
@@ -77,59 +88,75 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void NumberEqual() => SingleNumberParameterEvaluation($"[param]='{n2}'", Assert.IsFalse);
+        public void EvaluationAssociativity() => MultipleNumberParameterEvaluation($"[param0]='{n0}' or [param0]='{n1}' and [param1]='{n0}'", Assert.IsTrue, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void NumberGreaterThan() => SingleNumberParameterEvaluation($"[param]>|{n2}|", Assert.IsFalse);
+        public void EvaluationGrouping() => MultipleNumberParameterEvaluation($"([param0]='{n0}' or [param0]='{n1}') and [param1]='{n0}'", Assert.IsFalse, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void NumberGreaterThanOrEqual() => SingleNumberParameterEvaluation($"[param]>=|{n2}|", Assert.IsFalse);
+        public void LogicalConjunction() => MultipleNumberParameterEvaluation($"[param0]='{n0}' and [param1]='{n0}'", Assert.IsFalse, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void NumberLessThan() => SingleNumberParameterEvaluation($"[param]<|{n2}|", Assert.IsTrue);
+        public void LogicalDisjunction() => MultipleNumberParameterEvaluation($"[param0]='{n0}' or [param1]='{n0}'", Assert.IsTrue, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void NumberLessThanOrEqual() => SingleNumberParameterEvaluation($"[param]<=|{n2}|", Assert.IsTrue);
+        public void NumberEqual() => SingleNumberParameterEvaluation($"[param]='{n1}'", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void NumberNotEqual() => SingleNumberParameterEvaluation($"[param]<>|{n2}|", Assert.IsTrue);
+        public void NumberGreaterThan() => SingleNumberParameterEvaluation($"[param]>|{n1}|", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TextEqual() => SingleTextParameterEvaluation($"[param]='{s2}'", Assert.IsFalse);
+        public void NumberGreaterThanOrEqual() => SingleNumberParameterEvaluation($"[param]>=|{n1}|", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TextNotEqual() => SingleTextParameterEvaluation($"[param]<>|{s2}|", Assert.IsTrue);
+        public void NumberLessThan() => SingleNumberParameterEvaluation($"[param]<|{n1}|", Assert.IsTrue);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TimestampEqual() => SingleTimestampParameterEvaluation($"[param]='{d2}'", Assert.IsFalse);
+        public void NumberLessThanOrEqual() => SingleNumberParameterEvaluation($"[param]<=|{n1}|", Assert.IsTrue);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TimestampGreaterThan() => SingleTimestampParameterEvaluation($"[param]>|{d2}|", Assert.IsFalse);
+        public void NumberNotEqual() => SingleNumberParameterEvaluation($"[param]<>|{n1}|", Assert.IsTrue);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TimestampGreaterThanOrEqual() => SingleTimestampParameterEvaluation($"[param]>=|{d2}|", Assert.IsFalse);
+        public void TextEqual() => SingleTextParameterEvaluation($"[param]='{s1}'", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TimestampLessThan() => SingleTimestampParameterEvaluation($"[param]<|{d2}|", Assert.IsTrue);
+        public void TextNotEqual() => SingleTextParameterEvaluation($"[param]<>|{s1}|", Assert.IsTrue);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TimestampLessThanOrEqual() => SingleTimestampParameterEvaluation($"[param]<=|{d2}|", Assert.IsTrue);
+        public void TimestampEqual() => SingleTimestampParameterEvaluation($"[param]='{d1}'", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TimestampNotEqual() => SingleTimestampParameterEvaluation($"[param]<>|{d2}|", Assert.IsTrue);
+        public void TimestampGreaterThan() => SingleTimestampParameterEvaluation($"[param]>|{d1}|", Assert.IsFalse);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampGreaterThanOrEqual() => SingleTimestampParameterEvaluation($"[param]>=|{d1}|", Assert.IsFalse);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampLessThan() => SingleTimestampParameterEvaluation($"[param]<|{d1}|", Assert.IsTrue);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampLessThanOrEqual() => SingleTimestampParameterEvaluation($"[param]<=|{d1}|", Assert.IsTrue);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void TimestampNotEqual() => SingleTimestampParameterEvaluation($"[param]<>|{d1}|", Assert.IsTrue);
 
         #endregion "Evaluate"
 
@@ -137,11 +164,47 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         private const string CATEGORY_EVALUATE = "Evaluate";
 
-        private const double n1 = 19.123, n2 = 23.456;
+        private const double n0 = 19.123, n1 = 23.456;
 
-        private const string s1 = "foo", s2 = "bar";
+        private const string s0 = "foo", s1 = "bar";
 
-        private static readonly DateTime d1 = new DateTime(2000, 1, 1), d2 = new DateTime(2020, 1, 1);
+        private static readonly DateTime d0 = new DateTime(2000, 1, 1), d1 = new DateTime(2020, 1, 1);
+
+        private void MultipleNumberParameterEvaluation(string inputExpression, Action<bool> assert, params double[] parameterValues)
+        {
+            var parameters = parameterValues.Select(ValueTuple.Create<double, int>).ToArray();
+            var compiler = new CalculateEvaluateCompiler();
+            foreach (var (_, i) in parameters)
+            {
+                compiler.ParameterTypes["PARAM" + i] = ParameterType.Number;
+            }
+            var evaluator = compiler.GetEvaluator(inputExpression);
+            var argument = new CalculateEvaluateArgument();
+            foreach (var (n, i) in parameters)
+            {
+                argument.SetNumber("PaRaM" + i, n);
+            }
+            var result = evaluator(argument);
+            assert(result);
+        }
+
+        private void MultipleParameterCalculation(string inputExpression, double expectedOutput, params double[] parameterValues)
+        {
+            var parameters = parameterValues.Select(ValueTuple.Create<double, int>).ToArray();
+            var compiler = new CalculateEvaluateCompiler();
+            foreach (var (_, i) in parameters)
+            {
+                compiler.ParameterTypes["PARAM" + i] = ParameterType.Number;
+            }
+            var calculator = compiler.GetCalculator(inputExpression);
+            var argument = new CalculateEvaluateArgument();
+            foreach (var (n, i) in parameters)
+            {
+                argument.SetNumber("PaRaM" + i, n);
+            }
+            var result = calculator(argument);
+            Assert.That(result, Is.EqualTo(expectedOutput));
+        }
 
         private void ParameterlessCalculation(string inputExpression, double expectedOutput)
         {
@@ -157,7 +220,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             compiler.ParameterTypes["PARAM"] = ParameterType.Number;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
-            argument.Number["PaRaM"] = n1;
+            argument.SetNumber("PaRaM", n0);
             var result = calculator(argument);
             assert(result);
         }
@@ -168,7 +231,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             compiler.ParameterTypes["PARAM"] = ParameterType.Text;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
-            argument.Text["PaRaM"] = s1;
+            argument.SetText("PaRaM", s0);
             var result = calculator(argument);
             assert(result);
         }
@@ -179,7 +242,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             compiler.ParameterTypes["PARAM"] = ParameterType.Timestamp;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
-            argument.Timestamp["PaRaM"] = d1;
+            argument.SetTimestamp("PaRaM", d0);
             var result = calculator(argument);
             assert(result);
         }

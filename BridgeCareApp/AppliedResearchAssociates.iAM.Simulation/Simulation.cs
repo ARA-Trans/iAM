@@ -7,8 +7,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
     {
         public AnalysisMethod AnalysisMethod { get; }
 
-        // ??? Some kind of result data, only accessible after a simulation is run.
-        public object Committed { get; }
+        public List<CommittedProject> CommittedProjects { get; }
 
         public InvestmentPlan InvestmentPlan { get; }
 
@@ -24,9 +23,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public List<SelectableTreatment> Treatments { get; }
 
-        public List<SelectableTreatment> GetActiveTreatments()
+        public HashSet<SelectableTreatment> GetActiveTreatments()
         {
-            var result = Treatments.ToList();
+            var result = Treatments.ToHashSet();
             _ = result.Remove(DesignatedPassiveTreatment);
             return result;
         }

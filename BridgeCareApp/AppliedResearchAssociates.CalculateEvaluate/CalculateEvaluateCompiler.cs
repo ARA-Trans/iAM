@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Atn;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
@@ -19,10 +21,19 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         public string AnnotateParameterReferenceTypes(string expression)
         {
             var input = new AntlrInputStream(expression);
-            var lexer = new CalculateEvaluateLexer(input);
+            var lexer = new CalculateEvaluateBailingLexer(input);
             var tokens = new CommonTokenStream(lexer);
-            var parser = new CalculateEvaluateParser(tokens);
-            var tree = parser.root();
+            var parser = new CalculateEvaluateBailingParser(tokens);
+
+            IParseTree tree;
+            try
+            {
+                tree = parser.root();
+            }
+            catch (ParseCanceledException e)
+            {
+                throw new CalculateEvaluateParsingException(null, e);
+            }
 
             var listener = new ParameterReferenceTypeAnnotatorListener(ParameterTypes, tokens);
             ParseTreeWalker.Default.Walk(listener, tree);
@@ -48,7 +59,8 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             }
 
             var input = new AntlrInputStream(expression);
-            var lexer = new CalculateEvaluateLexer(input);
+            var lexer = new CalculateEvaluateBailingLexer(input);
+
             var tokenList = lexer.GetAllTokens();
 
             var cacheKey = tokenList
@@ -66,8 +78,30 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
             var tokenSource = new ListTokenSource(tokenList);
             var tokens = new CommonTokenStream(tokenSource);
-            var parser = new CalculateEvaluateParser(tokens);
-            var tree = parser.root();
+
+            var parser = new CalculateEvaluateBailingParser(tokens);
+            parser.Interpreter.PredictionMode = PredictionMode.SLL; // Fast mode. Not as robust as default, but almost always works.
+
+            IParseTree tree;
+            try
+            {
+                tree = parser.root();
+            }
+            catch (ParseCanceledException)
+            {
+                tokens.Reset();
+                parser.Reset();
+                parser.Interpreter.PredictionMode = PredictionMode.LL; // Default, robust mode. Fails only when successful parse is impossible (for ANTLR, anyway).
+
+                try
+                {
+                    tree = parser.root();
+                }
+                catch (ParseCanceledException e)
+                {
+                    throw new CalculateEvaluateParsingException(null, e);
+                }
+            }
 
             var visitor = new CalculateEvaluateCompilerVisitor(ParameterTypes);
             var lambdaExpression = (Expression<T>)visitor.Visit(tree);

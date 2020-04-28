@@ -23,7 +23,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
             Section = original.Section;
             Simulation = original.Simulation;
             LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
-            LastYearsOfShadowForSameTreatment.CopyFrom(original.LastYearsOfShadowForSameTreatment);
+            LastYearOfShadowForSameTreatment.CopyFrom(original.LastYearOfShadowForSameTreatment);
             TreatmentSchedule.CopyFrom(original.TreatmentSchedule);
             NumberCache.CopyFrom(original.NumberCache);
         }
@@ -77,10 +77,11 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
                 // Unclear what is correct when two treatments write into the same schedule slot. Or
                 // when one scheduled treatment is slotted to begin before the end of another.
+                // UPDATE: According to legacy code, both are eliminated! wtf...
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
-            LastYearsOfShadowForSameTreatment[treatment] = year;
+            LastYearOfShadowForSameTreatment[treatment] = year;
         }
 
         public double GetBenefit()
@@ -125,9 +126,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public bool YearIsWithinShadowForAnyTreatment(int year) => year <= LastYearOfShadowForAnyTreatment;
 
-        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearsOfShadowForSameTreatment.TryGetValue(treatment, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
+        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
 
-        private readonly IDictionary<Treatment, int> LastYearsOfShadowForSameTreatment = new Dictionary<Treatment, int>();
+        private readonly IDictionary<Treatment, int> LastYearOfShadowForSameTreatment = new Dictionary<Treatment, int>();
 
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 

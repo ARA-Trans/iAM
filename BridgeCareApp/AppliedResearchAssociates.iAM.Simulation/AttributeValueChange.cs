@@ -11,12 +11,13 @@ namespace AppliedResearchAssociates.iAM.Simulation
             switch (attribute)
             {
             case NumberAttribute _:
-                var oldValue = argument.GetNumber(attribute.Name);
-                var newValue = ChangeNumber(oldValue);
-                return () => argument.SetNumber(attribute.Name, newValue);
+                var oldNumber = argument.GetNumber(attribute.Name);
+                var newNumber = ChangeNumber(oldNumber);
+                return () => argument.SetNumber(attribute.Name, newNumber);
 
             case TextAttribute _:
-                return () => argument.SetText(attribute.Name, Expression);
+                var newText = Expression;
+                return () => argument.SetText(attribute.Name, newText);
 
             default:
                 throw new ArgumentException("Invalid attribute type.", nameof(attribute));
@@ -27,8 +28,18 @@ namespace AppliedResearchAssociates.iAM.Simulation
         {
             var match = NumberChangePattern.Match(Expression);
 
+            if (!match.Success)
+            {
+                throw new InputException("Expression does not match the number-change pattern: (+/-) N (%)");
+            }
+
+            if (!double.TryParse(match.Groups[2].Value, out var operand))
+            {
+                throw new InputException("Operand is not a correctly formatted number.");
+            }
+
+            Operand = operand;
             var operation = match.Groups[1].Value;
-            Operand = double.Parse(match.Groups[2].Value);
             var operandType = match.Groups[3].Value;
 
             switch (operandType)

@@ -11,13 +11,13 @@ namespace AppliedResearchAssociates.iAM.Simulation
         public void ApplyTreatment(Treatment treatment, int year)
         {
             SectionContext.ApplyTreatment(treatment, year, out var costPerUnitArea);
-            TotalCostPerUnitArea += costPerUnitArea;
+            CumulativeCostPerUnitArea += costPerUnitArea;
         }
 
-        public void AccumulateBenefit() => TotalBenefit += SectionContext.GetBenefit();
+        public void AccumulateBenefit() => CumulativeBenefit += SectionContext.GetBenefit();
 
-        public double TotalBenefit { get; set; }
+        public double CumulativeBenefit { get; private set; }
 
-        public double TotalCostPerUnitArea { get; set; }
+        public double CumulativeCostPerUnitArea { get; private set; }
     }
 }
