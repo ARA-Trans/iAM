@@ -14,15 +14,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public void Run() => CompileSimulation();
 
-        private readonly Simulation Simulation;
-
-        private IReadOnlyCollection<SelectableTreatment> ActiveTreatments { get; set; }
-
-        private ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; set; }
-
-        private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
-
-        private void ApplyPerformanceCurves(SectionContext context)
+        internal void ApplyPerformanceCurves(SectionContext context)
         {
             var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
             {
@@ -42,22 +34,40 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
                 double calculate(PerformanceCurve curve) => curve.Equation.Compute(context, Simulation.AnalysisMethod.AgeAttribute);
 
-                switch (curves.Key.Deterioration)
-                {
-                case Deterioration.Decreasing:
-                    return operativeCurves.Min(calculate);
-
-                case Deterioration.Increasing:
-                    return operativeCurves.Max(calculate);
-
-                default:
-                    throw new InvalidOperationException("Invalid deterioration.");
-                }
+                return curves.Key.IsDecreasingWithDeterioration ? operativeCurves.Min(calculate) : operativeCurves.Max(calculate);
             });
 
             foreach (var (key, value) in dataUpdates)
             {
                 context.SetNumber(key, value);
+            }
+        }
+
+        private readonly Simulation Simulation;
+
+        private IReadOnlyCollection<SelectableTreatment> ActiveTreatments { get; set; }
+
+        private ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; set; }
+
+        private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
+
+        private void ApplyScheduledTreatments(int year, out ISet<SectionContext> unscheduledContexts)
+        {
+            unscheduledContexts = SectionContexts.ToHashSet();
+
+            foreach (var sectionContext in SectionContexts)
+            {
+                if (sectionContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
+                {
+                    _ = unscheduledContexts.Remove(sectionContext);
+
+                    if (scheduledTreatment != null)
+                    {
+                        sectionContext.ApplyTreatment(scheduledTreatment, year, out var totalCost);
+
+                        // TODO: allocate that cost to the right budget(s).
+                    }
+                }
             }
         }
 
@@ -105,19 +115,19 @@ namespace AppliedResearchAssociates.iAM.Simulation
             return context;
         }
 
-        private void DetermineBenefitCost(int year)
+        private IEnumerable<TreatmentOutlook> GetTreatmentOutlooks(int year, IEnumerable<SectionContext> unscheduledContexts)
         {
-            foreach (var context in SectionContexts)
+            foreach (var context in unscheduledContexts)
             {
-                if (context.YearHasOngoingTreatment(year))
-                {
-                    continue;
-                }
-
                 ApplyPerformanceCurves(context);
 
-                var baselineOutlook = GetTreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, year);
-                var selectedOutlook = baselineOutlook;
+                var remainingLifeCalculatorFactories = Enumerable.ToArray(
+                    from limit in Simulation.AnalysisMethod.RemainingLifeLimits
+                    where limit.Criterion.Evaluate(context) ?? true
+                    group limit.Value by limit.Attribute into attributeLimitValues
+                    select new RemainingLifeCalculator.Factory(attributeLimitValues));
+
+                var selectedOutlook = new TreatmentOutlook(this, context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
 
                 if (!context.YearIsWithinShadowForAnyTreatment(year))
                 {
@@ -135,61 +145,14 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
                     foreach (var treatment in feasibleTreatments)
                     {
-                        var treatmentOutlook = GetTreatmentOutlook(context, treatment, year);
+                        var treatmentOutlook = new TreatmentOutlook(this, context, treatment, year, remainingLifeCalculatorFactories);
 
-                        // switch on optimization strategy. re-assign selectedOutlook if this one's better.
+                        //selectedOutlook = strategy.GetOptimum(selectedOutlook, treatmentOutlook);
                     }
                 }
 
-                // rank outlooks using optimization strategy.
+                yield return selectedOutlook;
             }
-
-            // later, rank sections based on best outlook, using spending strategy.
-        }
-
-        private TreatmentOutlook GetTreatmentOutlook(SectionContext context, Treatment treatment, int initialYear)
-        {
-            var outlookContext = new SectionContext(context);
-            var outlook = new TreatmentOutlook(outlookContext);
-
-            outlook.ApplyTreatment(treatment, initialYear);
-            outlook.AccumulateBenefit();
-
-            // need to aggregate for targets, deficient, remaining life, etc.
-
-            const int MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK = 100;
-            var maximumYearOfOutlook = initialYear + MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK;
-
-            foreach (var year in Static.Count(initialYear + 1))
-            {
-                if (year > maximumYearOfOutlook)
-                {
-                    throw new SimulationException($"Treatment outlook must terminate naturally within {MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK} years.");
-                }
-
-                if (context.YearHasOngoingTreatment(year))
-                {
-                    continue;
-                }
-
-                ApplyPerformanceCurves(context);
-
-                if (context.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment) && scheduledTreatment != null)
-                {
-                    outlook.ApplyTreatment(scheduledTreatment, year);
-                }
-
-                var previousCumulativeBenefit = outlook.CumulativeBenefit;
-
-                outlook.AccumulateBenefit();
-
-                if (outlook.CumulativeBenefit == previousCumulativeBenefit && context.TreatmentSchedule.Keys.All(scheduleYear => scheduleYear <= year))
-                {
-                    break;
-                }
-            }
-
-            return outlook;
         }
 
         private void OnInformation(InformationEventArgs e) => Information?.Invoke(this, e);
@@ -210,9 +173,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             foreach (var currentYear in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
-                DetermineBenefitCost(currentYear);
+                ApplyScheduledTreatments(currentYear, out var unscheduledContexts);
 
-                // load & apply committed projects.
+                var treatmentOutlooks = GetTreatmentOutlooks(currentYear, unscheduledContexts);
 
                 // calculate network averages and "deficient base" (after committed).
 

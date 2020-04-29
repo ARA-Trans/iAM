@@ -14,21 +14,16 @@ namespace AppliedResearchAssociates.iAM.Simulation
             get => _Benefit;
             set
             {
-                switch (value.Deterioration)
-                {
-                case Deterioration.Decreasing:
-                    _LimitBenefit = LimitDecreasingBenefit;
-                    break;
-
-                case Deterioration.Increasing:
-                    _LimitBenefit = LimitIncreasingBenefit;
-                    break;
-
-                default:
-                    throw new ArgumentException("Invalid deterioration.", nameof(value));
-                }
-
                 _Benefit = value;
+
+                if (_Benefit.IsDecreasingWithDeterioration)
+                {
+                    _LimitBenefit = LimitDecreasingBenefit;
+                }
+                else
+                {
+                    _LimitBenefit = LimitIncreasingBenefit;
+                }
             }
         }
 

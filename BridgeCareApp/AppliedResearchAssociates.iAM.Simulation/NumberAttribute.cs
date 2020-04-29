@@ -2,7 +2,7 @@
 {
     public sealed class NumberAttribute : Attribute<double>
     {
-        public Deterioration Deterioration { get; }
+        public bool IsDecreasingWithDeterioration { get; }
 
         public double? Maximum { get; }
 

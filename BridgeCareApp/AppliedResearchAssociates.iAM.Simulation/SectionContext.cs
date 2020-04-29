@@ -34,18 +34,15 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public IDictionary<int, Treatment> TreatmentSchedule { get; } = new Dictionary<int, Treatment>();
 
-        public void ApplyTreatment(Treatment treatment, int year, out double costPerUnitArea)
+        public void ApplyTreatment(Treatment treatment, int year, out double totalCost)
         {
             // TODO: Needs to handle cashflow/split treatments/projects.
 
             TreatmentSchedule[year] = treatment;
 
-            var area = GetNumber(Simulation.AnalysisMethod.AreaAttribute.Name);
-            var totalCost = treatment.CostEquations
+            totalCost = treatment.CostEquations
                 .Where(costEquation => costEquation.Criterion.Evaluate(this) ?? true)
                 .Sum(costEquation => costEquation.Equation.Compute(this, Simulation.AnalysisMethod.AgeAttribute));
-
-            costPerUnitArea = totalCost / area;
 
             treatment.Consequences.Channel(
                 consequence => consequence.Criterion.Evaluate(this),
@@ -81,8 +78,10 @@ namespace AppliedResearchAssociates.iAM.Simulation
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
-            LastYearOfShadowForSameTreatment[treatment] = year;
+            LastYearOfShadowForSameTreatment[treatment] = year + treatment.ShadowForSameTreatment;
         }
+
+        public double GetArea() => GetNumber(Simulation.AnalysisMethod.AreaAttribute.Name);
 
         public double GetBenefit()
         {
@@ -121,8 +120,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
             NumberCache.Clear();
             base.SetText(key, value);
         }
-
-        public bool YearHasOngoingTreatment(int year) => TreatmentSchedule.TryGetValue(year, out var treatment) && treatment == null;
 
         public bool YearIsWithinShadowForAnyTreatment(int year) => year <= LastYearOfShadowForAnyTreatment;
 

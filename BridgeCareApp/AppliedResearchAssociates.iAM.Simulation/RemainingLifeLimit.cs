@@ -2,10 +2,10 @@
 {
     public class RemainingLifeLimit
     {
-        public NumberAttribute RemainingLifeAttribute { get; }
-
-        public double Limit { get; }
+        public NumberAttribute Attribute { get; }
 
         public Criterion Criterion { get; }
+
+        public double Value { get; }
     }
 }
