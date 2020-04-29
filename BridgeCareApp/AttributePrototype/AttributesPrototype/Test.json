@@ -1,0 +1,16 @@
+{
+	"AttributeList": [{
+			"attributeID": 1,
+			"attributeName": "Att1",
+			"userName": "sa",
+			"password": "20Pikachu^"
+		},
+
+		{
+			"attributeID": 2,
+			"attributeName": "Att2",
+			"userName": "sa",
+			"password": "20Pikachu^"
+		}
+	]
+}
