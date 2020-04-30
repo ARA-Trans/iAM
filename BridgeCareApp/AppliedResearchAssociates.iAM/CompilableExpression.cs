@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM
 {
     public abstract class CompilableExpression
     {

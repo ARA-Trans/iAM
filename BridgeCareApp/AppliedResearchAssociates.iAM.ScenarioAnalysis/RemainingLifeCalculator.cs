@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class RemainingLifeCalculator
     {

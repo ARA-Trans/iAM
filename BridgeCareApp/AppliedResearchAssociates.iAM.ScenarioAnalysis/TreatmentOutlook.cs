@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class TreatmentOutlook
     {

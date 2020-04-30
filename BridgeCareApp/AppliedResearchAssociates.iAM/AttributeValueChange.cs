@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using AppliedResearchAssociates.CalculateEvaluate;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM
 {
     public sealed class AttributeValueChange : CompilableExpression
     {

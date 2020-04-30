@@ -1,7 +1,7 @@
 ﻿using System;
 using AppliedResearchAssociates.CalculateEvaluate;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM
 {
     public sealed class Criterion : CompilableExpression
     {

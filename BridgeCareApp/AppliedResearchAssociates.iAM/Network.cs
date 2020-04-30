@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM
 {
     public class Network
     {

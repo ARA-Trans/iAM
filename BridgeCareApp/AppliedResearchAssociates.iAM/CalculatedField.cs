@@ -2,7 +2,7 @@
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM
 {
     public class CalculatedField
     {

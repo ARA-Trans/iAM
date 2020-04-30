@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using AppliedResearchAssociates.CalculateEvaluate;
 using MathNet.Numerics;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM
 {
     public sealed class Equation : CompilableExpression
     {

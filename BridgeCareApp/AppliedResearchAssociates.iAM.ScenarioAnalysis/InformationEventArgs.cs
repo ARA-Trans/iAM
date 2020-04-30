@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppliedResearchAssociates.iAM.Simulation
+namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     public sealed class InformationEventArgs : EventArgs
     {
