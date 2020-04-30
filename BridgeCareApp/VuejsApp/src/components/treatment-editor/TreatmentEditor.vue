@@ -9,10 +9,12 @@
                     </v-btn>
                     <v-select :items="treatmentLibrariesSelectListItems"
                               class="treatment-library-select" label="Select a Treatment Library"
-                              outline v-if="!hasSelectedTreatmentLibrary || selectedScenarioId !== '0'" v-model="treatmentLibrarySelectItemValue">
+                              outline v-if="!hasSelectedTreatmentLibrary || selectedScenarioId !== '0'"
+                              v-model="treatmentLibrarySelectItemValue">
                     </v-select>
                     <v-text-field label="Treatment Name"
-                                  v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" v-model="selectedTreatmentLibrary.name">
+                                  v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'"
+                                  v-model="selectedTreatmentLibrary.name">
                         <template slot="append">
                             <v-btn @click="treatmentLibrarySelectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -23,7 +25,8 @@
                         Owner: {{selectedTreatmentLibrary.owner ? selectedTreatmentLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" v-model="selectedTreatmentLibrary.shared"/>
+                                v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'"
+                                v-model="selectedTreatmentLibrary.shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -35,9 +38,17 @@
                         <v-btn @click="showCreateTreatmentDialog = true" class="ara-blue-bg white--text">
                             Add Treatment
                         </v-btn>
-                        <v-select :items="treatmentsSelectListItems" clearable label="Select a Treatment"
-                                  outline v-model="treatmentSelectItemValue">
+                        <v-select :items="treatmentsSelectListItems" label="Select a Treatment"
+                                  outline v-model="treatmentSelectItemValue" v-if="!hasSelectedTreatment">
                         </v-select>
+                        <v-text-field label="Treatment Name"
+                                      v-if="hasSelectedTreatment" v-model="selectedTreatment.name">
+                            <template slot="append">
+                                <v-btn @click="treatmentSelectItemValue = null" class="ara-orange" icon>
+                                    <v-icon>fas fa-caret-left</v-icon>
+                                </v-btn>
+                            </template>
+                        </v-text-field>
                     </v-flex>
                     <v-flex xs9>
                         <div v-show="selectedTreatment.id !== '0'">
@@ -191,6 +202,7 @@
         tabData: TabData = clone(emptyTabData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        hasSelectedTreatment: boolean = false;
 
         /**
          * Sets component ui properties that triggers cascading ui updates
@@ -298,7 +310,8 @@
 
         @Watch('selectedTreatment')
         onSelectedTreatmentChanged() {
-            if (this.selectedTreatment.id !== '0') {
+            this.hasSelectedTreatment = this.selectedTreatment.id !== '0';
+            if (this.hasSelectedTreatment) {
                 this.tabData = {
                     tabTreatmentLibraries: clone(this.stateTreatmentLibraries),
                     tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
@@ -353,7 +366,7 @@
                     treatments: append(createdTreatment, this.selectedTreatmentLibrary.treatments)
                 };
 
-                this.treatmentSelectItemValue = createdTreatment.id;
+                setTimeout(() => this.treatmentSelectItemValue = createdTreatment.id);
             }
         }
 

@@ -27,7 +27,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
-    import {emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
+    import {emptyFeasibility, emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
 
     const ObjectID = require('bson-objectid');
 
@@ -35,7 +35,9 @@
     export default class CreateTreatmentDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        createdTreatment: Treatment = {...emptyTreatment, id: ObjectID.generate()};
+        createdTreatment: Treatment = {
+            ...emptyTreatment, id: ObjectID.generate(), feasibility: {...emptyFeasibility, id: ObjectID.generate()}
+        };
 
         /**
          * Emits the createdTreatment object or a null value to the parent component and resets the createdTreatment object
@@ -48,7 +50,9 @@
                 this.$emit('submit', null);
             }
 
-            this.createdTreatment = {...emptyTreatment, id: ObjectID.generate()};
+            this.createdTreatment = {
+                ...emptyTreatment, id: ObjectID.generate(), feasibility: {...emptyFeasibility, id: ObjectID.generate()}
+            };
         }
     }
 </script>
