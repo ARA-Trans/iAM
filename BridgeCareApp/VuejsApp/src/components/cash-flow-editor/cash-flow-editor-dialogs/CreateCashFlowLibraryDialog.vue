@@ -8,7 +8,8 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" outline v-model="createdCashFlowLibrary.name"></v-text-field>
+                    <v-text-field label="Name" outline v-model="createdCashFlowLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"></v-text-field>
 
                     <v-textarea label="Description" no-resize outline rows="3"
                                 v-model="createdCashFlowLibrary.description">
@@ -43,6 +44,8 @@
     } from '@/shared/models/iAM/cash-flow';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {getUserName} from '../../../shared/utils/get-user-info';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 
@@ -51,6 +54,7 @@
         @Prop() dialogData: CreateCashFlowLibraryDialogData;
 
         createdCashFlowLibrary: CashFlowLibrary = {...emptyCashFlowLibrary, id: ObjectID.generate()};
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets createdCashFlowLibrary class property using dialogData class property

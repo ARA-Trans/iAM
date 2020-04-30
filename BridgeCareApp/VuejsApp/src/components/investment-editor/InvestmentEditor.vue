@@ -11,7 +11,7 @@
                               outline v-if="!hasSelectedInvestmentLibrary || selectedScenarioId !== '0'" v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedInvestmentLibrary.name">
+                                  v-model="selectedInvestmentLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -179,6 +179,7 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -219,6 +220,7 @@
         showSetRangeForAddingBudgetYearsDialog: boolean = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets component UI properties that triggers cascading UI updates

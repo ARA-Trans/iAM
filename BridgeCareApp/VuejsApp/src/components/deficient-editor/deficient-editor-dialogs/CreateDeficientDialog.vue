@@ -10,20 +10,23 @@
                 <v-card-text class="new-deficient-card-text">
                     <v-layout column>
                         <v-flex>
-                            <v-text-field label="Name" outline v-model="newDeficient.name"></v-text-field>
+                            <v-text-field label="Name" outline v-model="newDeficient.name"
+                                          :rules="[rules['generalRules'].valueIsNotEmpty]"></v-text-field>
                         </v-flex>
                         <v-flex>
                             <v-select :items="numericAttributes" label="Select Attribute"
                                       outline
-                                      v-model="newDeficient.attribute">
+                                      v-model="newDeficient.attribute" :rules="[rules['generalRules'].valueIsNotEmpty]">
                             </v-select>
                         </v-flex>
                         <v-flex>
                             <v-text-field label="Deficient Level" outline
-                                          v-model="newDeficient.deficient"></v-text-field>
+                                          v-model="newDeficient.deficient"
+                                          :rules="[rules['generalRules'].valueIsNotEmpty]"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field label="Allowed Deficient(%)" outline v-model="newDeficient.percentDeficient">
+                            <v-text-field label="Allowed Deficient(%)" outline v-model="newDeficient.percentDeficient"
+                                          :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(newDeficient.percentDeficient, [0, 100])]">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
@@ -52,6 +55,7 @@
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -63,6 +67,7 @@
 
         newDeficient: Deficient = clone({...emptyDeficient, id: ObjectID.generate()});
         numericAttributes: string[] = [];
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Component mounted event handler
@@ -88,7 +93,8 @@
          */
         disableSubmit() {
             return !hasValue(this.newDeficient.name) || !hasValue(this.newDeficient.attribute) ||
-                !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient);
+                !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient) ||
+                !this.rules['generalRules'].valueIsWithinRange(this.newDeficient.percentDeficient, [0, 100]);
         }
 
         /**

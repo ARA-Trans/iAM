@@ -81,10 +81,10 @@
                                 <v-edit-dialog
                                         :return-value.sync="props.item[header.value]"
                                         @save="onEditPriorityFundAmount(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :rules="[rule.fundingPercent]" :value="props.item[header.value]" class="output" readonly
+                                    <input :rules="[isFundingPercentWithinValidRange]" :value="props.item[header.value]" class="output" readonly
                                            type="text"/>
                                     <template slot="input">
-                                        <v-text-field :mask="'###'" :rules="[rule.fundingPercent]" label="Edit"
+                                        <v-text-field :mask="'###'" :rules="[isFundingPercentWithinValidRange]" label="Edit"
                                                       single-line v-model="props.item[header.value]">
                                         </v-text-field>
                                     </template>
@@ -218,9 +218,6 @@
         showCreatePriorityDialog: boolean = false;
         prioritiesCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createPriorityLibraryDialogData: CreatePriorityLibraryDialogData = clone(emptyCreatePriorityLibraryDialogData);
-        rule: any = {
-            fundingPercent: (value: number) => (value >= 0 && value <= 100) || 'Value range is 0 to 100'
-        };
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
 
@@ -598,6 +595,11 @@
                 this.selectItemValue = null;
                 this.deletePriorityLibraryAction({priorityLibrary: this.selectedPriorityLibrary});
             }
+        }
+
+        /***********************************************RULES**********************************************************/
+        isFundingPercentWithinValidRange(fundingPercent: number) {
+            return (fundingPercent >= 0 && fundingPercent <= 100) || 'Allowed value range: 0 - 100';
         }
     }
 </script>

@@ -12,7 +12,7 @@
                               outline v-if="!hasSelectedDeficientLibrary || selectedScenarioId !== '0'" v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedDeficientLibrary.name">
+                                  v-model="selectedDeficientLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -47,21 +47,30 @@
                                 <v-edit-dialog
                                         :return-value.sync="props.item.attribute"
                                         @save="onEditDeficientProperty(props.item, 'attribute', props.item.attribute)" large lazy persistent>
-                                    <input :value="props.item.attribute" class="output" readonly type="text"/>
+                                    <input :value="props.item.attribute" class="output" readonly type="text" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-select :items="numericAttributes" label="Select an Attribute"
-                                                  v-model="props.item.attribute">
+                                                  v-model="props.item.attribute" :rules="[rules['generalRules'].valueIsNotEmpty]">
                                         </v-select>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value !== 'attribute' && header.value !== 'criteria'">
-                                <v-edit-dialog
+                                <v-edit-dialog v-if="header.value !== 'percentDeficient'"
                                         :return-value.sync="props.item[header.value]"
                                         @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :value="props.item[header.value]" class="output" readonly type="text"/>
+                                    <input :value="props.item[header.value]" class="output" readonly type="text" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]">
+                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]" :rules="[rules['generalRules'].valueIsNotEmpty]">
+                                        </v-text-field>
+                                    </template>
+                                </v-edit-dialog>
+                                <v-edit-dialog v-else
+                                               :return-value.sync="props.item[header.value]"
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])" large lazy persistent>
+                                    <input :value="props.item[header.value]" class="output" readonly type="text" :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
+                                    <template slot="input">
+                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]" :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]">
                                         </v-text-field>
                                     </template>
                                 </v-edit-dialog>
@@ -163,6 +172,7 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     @Component({
         components: {
@@ -220,6 +230,7 @@
         createDeficientLibraryDialogData: CreateDeficientLibraryDialogData = clone(emptyCreateDeficientLibraryDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets onload component UI properties

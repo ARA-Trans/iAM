@@ -7,7 +7,8 @@
                 </v-layout>
             </v-card-title>
             <v-card-text>
-                <v-text-field label="Name" outline v-model="newDeficientLibrary.name"></v-text-field>
+                <v-text-field label="Name" outline v-model="newDeficientLibrary.name"
+                              :rules="[rules['generalRules'].valueIsNotEmpty]"></v-text-field>
                 <v-textarea label="Description" no-resize outline rows="3"
                             v-model="newDeficientLibrary.description">
                 </v-textarea>
@@ -31,6 +32,8 @@
     import {CreateDeficientLibraryDialogData} from '@/shared/models/modals/create-deficient-library-dialog-data';
     import {Deficient, DeficientLibrary, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
     import {getUserName} from '../../../shared/utils/get-user-info';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 
@@ -39,6 +42,7 @@
         @Prop() dialogData: CreateDeficientLibraryDialogData;
 
         newDeficientLibrary: DeficientLibrary = {...emptyDeficientLibrary, id: ObjectID.generate()};
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets the newDeficientLibrary object's description & deficients properties with the dialogData object's
