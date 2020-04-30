@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class AttributeDatum<T>
+    public sealed class AttributeDatum<T>
     {
         public string BeginStation { get; }
 

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
-    internal class SimulationException : Exception
+    public class SimulationException : Exception
     {
         public SimulationException()
         {

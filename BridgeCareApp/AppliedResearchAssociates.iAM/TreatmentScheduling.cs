@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class TreatmentScheduling
+    public sealed class TreatmentScheduling
     {
         public int OffsetToFutureYear { get; }
 

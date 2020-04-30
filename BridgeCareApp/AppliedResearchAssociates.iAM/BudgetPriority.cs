@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class BudgetPriority
+    public sealed class BudgetPriority
     {
         public List<BudgetPercentage> BudgetPercentages { get; }
 

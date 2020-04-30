@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class AnalysisMethod
+    public sealed class AnalysisMethod
     {
         public NumberAttribute AgeAttribute { get; }
 

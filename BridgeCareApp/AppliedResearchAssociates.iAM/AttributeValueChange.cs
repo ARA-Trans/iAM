@@ -99,7 +99,8 @@ namespace AppliedResearchAssociates.iAM
         private double ChangeNumber(double value)
         {
             EnsureCompiled();
-            return NumberChanger(value);
+            var newValue = NumberChanger(value);
+            return newValue;
         }
 
         #region Number-changing operations

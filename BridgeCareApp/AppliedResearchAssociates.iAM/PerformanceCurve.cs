@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class PerformanceCurve
+    public sealed class PerformanceCurve
     {
         public NumberAttribute Attribute { get; }
 

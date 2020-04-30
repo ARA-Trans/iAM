@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class Network
+    public sealed class Network
     {
         //- Needs to have a representation of segmentation & roll-up. Is "roll-forward" the same thing as roll-up?
 

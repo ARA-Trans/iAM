@@ -8,18 +8,19 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
     {
         public TreatmentOutlook(SectionContext templateContext, Treatment initialTreatment, int initialYear, IEnumerable<RemainingLifeCalculator.Factory> remainingLifeCalculatorFactories)
         {
-            CumulativeContext = new SectionContext(templateContext ?? throw new ArgumentNullException(nameof(templateContext)));
+            TemplateContext = templateContext ?? throw new ArgumentNullException(nameof(templateContext));
+            AccumulationContext = new SectionContext(TemplateContext);
             InitialTreatment = initialTreatment ?? throw new ArgumentNullException(nameof(initialTreatment));
             InitialYear = initialYear;
 
-            RemainingLifeCalculators = remainingLifeCalculatorFactories.Select(factory => factory.Create(CumulativeContext)).ToArray();
+            RemainingLifeCalculators = remainingLifeCalculatorFactories.Select(factory => factory.Create(AccumulationContext)).ToArray();
 
             Run();
         }
 
-        public double CumulativeBenefit { get; private set; }
+        public SectionContext TemplateContext { get; }
 
-        public SectionContext CumulativeContext { get; }
+        public double CumulativeBenefit { get; private set; }
 
         public double CumulativeCostPerUnitArea { get; private set; }
 
@@ -27,21 +28,23 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public double? RemainingLife { get; private set; }
 
+        private readonly SectionContext AccumulationContext;
+
         private readonly int InitialYear;
 
         private readonly IReadOnlyCollection<RemainingLifeCalculator> RemainingLifeCalculators;
 
         private void AccumulateBenefit()
         {
-            var benefit = CumulativeContext.GetBenefit();
+            var benefit = AccumulationContext.GetBenefit();
             CumulativeBenefit += benefit;
         }
 
         private void ApplyTreatment(Treatment treatment, int year)
         {
-            CumulativeContext.ApplyTreatment(treatment, year, out var totalCost);
-            var area = CumulativeContext.GetArea();
-            var costPerUnitArea = totalCost / area;
+            AccumulationContext.ApplyTreatment(treatment, year, out var cost);
+            var area = AccumulationContext.GetArea();
+            var costPerUnitArea = cost / area;
             CumulativeCostPerUnitArea += costPerUnitArea;
         }
 
@@ -90,14 +93,14 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     throw new SimulationException($"Treatment outlook must terminate naturally within {MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK} years.");
                 }
 
-                if (CumulativeContext.TreatmentSchedule.ContainsKey(year))
+                if (AccumulationContext.TreatmentSchedule.ContainsKey(year))
                 {
                     continue;
                 }
 
-                CumulativeContext.ApplyPerformanceCurves();
+                AccumulationContext.ApplyPerformanceCurves();
 
-                if (CumulativeContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment) && scheduledTreatment != null)
+                if (AccumulationContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment) && scheduledTreatment != null)
                 {
                     ApplyTreatment(scheduledTreatment, year);
                 }
@@ -107,7 +110,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 updateRemainingLife?.Invoke();
 
-                if (CumulativeBenefit == previousCumulativeBenefit && CumulativeContext.TreatmentSchedule.Keys.All(scheduledYear => scheduledYear <= year))
+                if (CumulativeBenefit == previousCumulativeBenefit && AccumulationContext.TreatmentSchedule.Keys.All(scheduledYear => scheduledYear <= year))
                 {
                     break;
                 }

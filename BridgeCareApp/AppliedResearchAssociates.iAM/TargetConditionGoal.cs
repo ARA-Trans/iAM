@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class TargetConditionGoal : ConditionGoal
+    public sealed class TargetConditionGoal : ConditionGoal
     {
         public double Target { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class RemainingLifeLimit
+    public sealed class RemainingLifeLimit
     {
         public NumberAttribute Attribute { get; }
 

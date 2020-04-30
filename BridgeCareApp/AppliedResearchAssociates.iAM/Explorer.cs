@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class Explorer
+    public sealed class Explorer
     {
         public List<CalculatedField> CalculatedFields { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class ConditionalEquation
+    public sealed class ConditionalEquation
     {
         public Criterion Criterion { get; }
 

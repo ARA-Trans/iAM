@@ -5,7 +5,7 @@ using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
-    public sealed class SectionContext : CalculateEvaluateArgument
+    internal sealed class SectionContext : CalculateEvaluateArgument
     {
         // An instance of this type is conditionally thread-safe, i.e. multiple threads using only
         // "get" operations is safe, and multiple threads using only "set" operations is safe, but
@@ -34,7 +34,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public IDictionary<int, Treatment> TreatmentSchedule { get; } = new Dictionary<int, Treatment>();
 
-        private Simulation Simulation => SimulationRunner.Simulation;
+        private AnalysisMethod AnalysisMethod => SimulationRunner.Simulation.AnalysisMethod;
 
         public void ApplyPerformanceCurves()
         {
@@ -54,7 +54,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     SimulationRunner.OnWarning(new WarningEventArgs("Two or more performance curves are simultaneously valid."));
                 }
 
-                double calculate(PerformanceCurve curve) => curve.Equation.Compute(this, Simulation.AnalysisMethod.AgeAttribute);
+                double calculate(PerformanceCurve curve) => curve.Equation.Compute(this, AnalysisMethod.AgeAttribute);
 
                 return curves.Key.IsDecreasingWithDeterioration ? operativeCurves.Min(calculate) : operativeCurves.Max(calculate);
             });
@@ -65,40 +65,19 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
         }
 
-        public void ApplyTreatment(Treatment treatment, int year, out double totalCost)
+        public void ApplyTreatment(Treatment treatment, int year, out double cost)
         {
-            // TODO: Needs to handle cashflow/split treatments/projects.
-
             TreatmentSchedule[year] = treatment;
 
-            totalCost = treatment.CostEquations
-                .Where(costEquation => costEquation.Criterion.Evaluate(this) ?? true)
-                .Sum(costEquation => costEquation.Equation.Compute(this, Simulation.AnalysisMethod.AgeAttribute));
+            cost = treatment.GetCost(this, AnalysisMethod.AgeAttribute); // TODO: Handle cash-flow/split treatments.
 
-            treatment.Consequences.Channel(
-                consequence => consequence.Criterion.Evaluate(this),
-                result => result ?? false,
-                result => !result.HasValue,
-                out var applicableConsequences,
-                out var defaultConsequences);
-
-            var operativeConsequences = applicableConsequences.Count > 0 ? applicableConsequences : defaultConsequences;
-
-            operativeConsequences = operativeConsequences
-                .GroupBy(consequence => consequence.Attribute)
-                .Select(group => group.Single()) // It's (currently) an error when one attribute has multiple valid consequences.
-                .ToArray();
-
-            var consequenceActions = operativeConsequences
-                .Select(consequence => consequence.GetRecalculator(this, Simulation.AnalysisMethod.AgeAttribute))
-                .ToArray();
-
+            var consequenceActions = treatment.GetConsequenceActions(this, AnalysisMethod.AgeAttribute);
             foreach (var consequenceAction in consequenceActions)
             {
                 consequenceAction();
             }
 
-            foreach (var scheduling in treatment.Schedulings)
+            foreach (var scheduling in treatment.GetSchedulings())
             {
                 var schedulingYear = year + scheduling.OffsetToFutureYear;
                 TreatmentSchedule.Add(schedulingYear, scheduling.Treatment);
@@ -109,16 +88,16 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
-            LastYearOfShadowForSameTreatment[treatment] = year + treatment.ShadowForSameTreatment;
+            LastYearOfShadowForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
         }
 
-        public double GetArea() => GetNumber(Simulation.AnalysisMethod.AreaAttribute.Name);
+        public double GetArea() => GetNumber(AnalysisMethod.AreaAttribute.Name);
 
         public double GetBenefit()
         {
-            var rawBenefit = GetNumber(Simulation.AnalysisMethod.Benefit.Name);
-            var benefit = Simulation.AnalysisMethod.LimitBenefit(rawBenefit);
-            var weight = GetNumber(Simulation.AnalysisMethod.Weighting.Name);
+            var rawBenefit = GetNumber(AnalysisMethod.Benefit.Name);
+            var benefit = AnalysisMethod.LimitBenefit(rawBenefit);
+            var weight = GetNumber(AnalysisMethod.Weighting.Name);
             var weightedBenefit = weight * benefit;
             return weightedBenefit;
         }
@@ -154,9 +133,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public bool YearIsWithinShadowForAnyTreatment(int year) => year <= LastYearOfShadowForAnyTreatment;
 
-        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
+        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment.Name, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
 
-        private readonly IDictionary<Treatment, int> LastYearOfShadowForSameTreatment = new Dictionary<Treatment, int>();
+        private readonly IDictionary<string, int> LastYearOfShadowForSameTreatment = new Dictionary<string, int>();
 
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 

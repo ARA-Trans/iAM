@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class SimulationResult
+    public sealed class SimulationResult
     {
         public Section Section { get; }
 

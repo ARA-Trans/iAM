@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class Simulation
+    public sealed class Simulation
     {
         public AnalysisMethod AnalysisMethod { get; }
 

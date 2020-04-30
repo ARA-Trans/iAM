@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class Project
+    public sealed class Project
     {
         public int FirstYear { get; }
 

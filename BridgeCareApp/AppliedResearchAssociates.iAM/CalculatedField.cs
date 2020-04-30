@@ -4,7 +4,7 @@ using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class CalculatedField
+    public sealed class CalculatedField
     {
         public List<ConditionalEquation> Equations { get; }
 

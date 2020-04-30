@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class BudgetCondition
+    public sealed class BudgetCondition
     {
         public Budget Budget { get; }
 

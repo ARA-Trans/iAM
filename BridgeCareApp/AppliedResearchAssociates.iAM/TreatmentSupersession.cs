@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class TreatmentSupersession
+    public sealed class TreatmentSupersession
     {
         public Criterion Criterion { get; }
 

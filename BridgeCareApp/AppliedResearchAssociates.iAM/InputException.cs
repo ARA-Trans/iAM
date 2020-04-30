@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace AppliedResearchAssociates.iAM
 {
-    internal class InputException : Exception
+    public class InputException : Exception
     {
         public InputException()
         {
