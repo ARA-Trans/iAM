@@ -12,16 +12,16 @@ namespace AppliedResearchAssociates.iAM.Simulation
         // multiple threads concurrently using both "get" and "set" operations could produce
         // inconsistent "get" results.
 
-        public SectionContext(Section section, Simulation simulation)
+        public SectionContext(Section section, SimulationRunner simulationRunner)
         {
             Section = section ?? throw new ArgumentNullException(nameof(section));
-            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+            SimulationRunner = simulationRunner ?? throw new ArgumentNullException(nameof(simulationRunner));
         }
 
         public SectionContext(SectionContext original) : base(original)
         {
             Section = original.Section;
-            Simulation = original.Simulation;
+            SimulationRunner = original.SimulationRunner;
             LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
             LastYearOfShadowForSameTreatment.CopyFrom(original.LastYearOfShadowForSameTreatment);
             TreatmentSchedule.CopyFrom(original.TreatmentSchedule);
@@ -30,9 +30,40 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public Section Section { get; }
 
-        public Simulation Simulation { get; }
+        public SimulationRunner SimulationRunner { get; }
 
         public IDictionary<int, Treatment> TreatmentSchedule { get; } = new Dictionary<int, Treatment>();
+
+        private Simulation Simulation => SimulationRunner.Simulation;
+
+        public void ApplyPerformanceCurves()
+        {
+            var dataUpdates = SimulationRunner.CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
+            {
+                curves.Channel(
+                    curve => curve.Criterion.Evaluate(this),
+                    result => result ?? false,
+                    result => !result.HasValue,
+                    out var applicableCurves,
+                    out var defaultCurves);
+
+                var operativeCurves = applicableCurves.Count > 0 ? applicableCurves : defaultCurves;
+
+                if (operativeCurves.Count > 1)
+                {
+                    SimulationRunner.OnWarning(new WarningEventArgs("Two or more performance curves are simultaneously valid."));
+                }
+
+                double calculate(PerformanceCurve curve) => curve.Equation.Compute(this, Simulation.AnalysisMethod.AgeAttribute);
+
+                return curves.Key.IsDecreasingWithDeterioration ? operativeCurves.Min(calculate) : operativeCurves.Max(calculate);
+            });
+
+            foreach (var (key, value) in dataUpdates)
+            {
+                SetNumber(key, value);
+            }
+        }
 
         public void ApplyTreatment(Treatment treatment, int year, out double totalCost)
         {

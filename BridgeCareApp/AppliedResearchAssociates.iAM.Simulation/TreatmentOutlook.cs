@@ -6,10 +6,9 @@ namespace AppliedResearchAssociates.iAM.Simulation
 {
     internal sealed class TreatmentOutlook
     {
-        public TreatmentOutlook(SimulationRunner simulationRunner, SectionContext originalContext, Treatment initialTreatment, int initialYear, IEnumerable<RemainingLifeCalculator.Factory> remainingLifeCalculatorFactories)
+        public TreatmentOutlook(SectionContext templateContext, Treatment initialTreatment, int initialYear, IEnumerable<RemainingLifeCalculator.Factory> remainingLifeCalculatorFactories)
         {
-            SimulationRunner = simulationRunner ?? throw new ArgumentNullException(nameof(simulationRunner));
-            CumulativeContext = new SectionContext(originalContext ?? throw new ArgumentNullException(nameof(originalContext)));
+            CumulativeContext = new SectionContext(templateContext ?? throw new ArgumentNullException(nameof(templateContext)));
             InitialTreatment = initialTreatment ?? throw new ArgumentNullException(nameof(initialTreatment));
             InitialYear = initialYear;
 
@@ -31,8 +30,6 @@ namespace AppliedResearchAssociates.iAM.Simulation
         private readonly int InitialYear;
 
         private readonly IReadOnlyCollection<RemainingLifeCalculator> RemainingLifeCalculators;
-
-        private readonly SimulationRunner SimulationRunner;
 
         private void AccumulateBenefit()
         {
@@ -98,7 +95,7 @@ namespace AppliedResearchAssociates.iAM.Simulation
                     continue;
                 }
 
-                SimulationRunner.ApplyPerformanceCurves(CumulativeContext);
+                CumulativeContext.ApplyPerformanceCurves();
 
                 if (CumulativeContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment) && scheduledTreatment != null)
                 {

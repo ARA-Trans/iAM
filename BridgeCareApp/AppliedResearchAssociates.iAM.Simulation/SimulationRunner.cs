@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AppliedResearchAssociates.iAM.Simulation
 {
@@ -12,67 +14,12 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
         public event EventHandler<WarningEventArgs> Warning;
 
-        public void Run() => CompileSimulation();
+        public Simulation Simulation { get; }
 
-        internal void ApplyPerformanceCurves(SectionContext context)
+        public void Run()
         {
-            var dataUpdates = CurvesPerAttribute.ToDictionary(curves => curves.Key.Name, curves =>
-            {
-                curves.Channel(
-                    curve => curve.Criterion.Evaluate(context),
-                    result => result ?? false,
-                    result => !result.HasValue,
-                    out var applicableCurves,
-                    out var defaultCurves);
+            // --- CompileSimulation
 
-                var operativeCurves = applicableCurves.Count > 0 ? applicableCurves : defaultCurves;
-
-                if (operativeCurves.Count > 1)
-                {
-                    OnWarning(new WarningEventArgs("Two or more performance curves are simultaneously valid."));
-                }
-
-                double calculate(PerformanceCurve curve) => curve.Equation.Compute(context, Simulation.AnalysisMethod.AgeAttribute);
-
-                return curves.Key.IsDecreasingWithDeterioration ? operativeCurves.Min(calculate) : operativeCurves.Max(calculate);
-            });
-
-            foreach (var (key, value) in dataUpdates)
-            {
-                context.SetNumber(key, value);
-            }
-        }
-
-        private readonly Simulation Simulation;
-
-        private IReadOnlyCollection<SelectableTreatment> ActiveTreatments { get; set; }
-
-        private ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; set; }
-
-        private IReadOnlyCollection<SectionContext> SectionContexts { get; set; }
-
-        private void ApplyScheduledTreatments(int year, out ISet<SectionContext> unscheduledContexts)
-        {
-            unscheduledContexts = SectionContexts.ToHashSet();
-
-            foreach (var sectionContext in SectionContexts)
-            {
-                if (sectionContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
-                {
-                    _ = unscheduledContexts.Remove(sectionContext);
-
-                    if (scheduledTreatment != null)
-                    {
-                        sectionContext.ApplyTreatment(scheduledTreatment, year, out var totalCost);
-
-                        // TODO: allocate that cost to the right budget(s).
-                    }
-                }
-            }
-        }
-
-        private void CompileSimulation()
-        {
             // fill OCI weights.
 
             ActiveTreatments = Simulation.GetActiveTreatments();
@@ -97,70 +44,8 @@ namespace AppliedResearchAssociates.iAM.Simulation
 
             // get simulation attributes.
 
-            RunSimulation();
-        }
+            // --- RunSimulation
 
-        private SectionContext CreateContext(Section section)
-        {
-            var context = new SectionContext(section, Simulation);
-
-            //- fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
-
-            foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
-            {
-                double calculate() => calculatedField.Calculate(context, Simulation.AnalysisMethod.AgeAttribute);
-                context.SetNumber(calculatedField.Name, calculate);
-            }
-
-            return context;
-        }
-
-        private IEnumerable<TreatmentOutlook> GetTreatmentOutlooks(int year, IEnumerable<SectionContext> unscheduledContexts)
-        {
-            foreach (var context in unscheduledContexts)
-            {
-                ApplyPerformanceCurves(context);
-
-                var remainingLifeCalculatorFactories = Enumerable.ToArray(
-                    from limit in Simulation.AnalysisMethod.RemainingLifeLimits
-                    where limit.Criterion.Evaluate(context) ?? true
-                    group limit.Value by limit.Attribute into attributeLimitValues
-                    select new RemainingLifeCalculator.Factory(attributeLimitValues));
-
-                var selectedOutlook = new TreatmentOutlook(this, context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
-
-                if (!context.YearIsWithinShadowForAnyTreatment(year))
-                {
-                    var feasibleTreatments = ActiveTreatments.ToHashSet();
-
-                    _ = feasibleTreatments.RemoveWhere(treatment => context.YearIsWithinShadowForSameTreatment(year, treatment));
-                    _ = feasibleTreatments.RemoveWhere(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false);
-
-                    var supersededTreatments = feasibleTreatments
-                        .SelectMany(treatment => treatment.Supersessions
-                            .Where(supersession => supersession.Criterion.Evaluate(context) ?? false)
-                            .Select(supersession => supersession.Treatment));
-
-                    feasibleTreatments.ExceptWith(supersededTreatments);
-
-                    foreach (var treatment in feasibleTreatments)
-                    {
-                        var treatmentOutlook = new TreatmentOutlook(this, context, treatment, year, remainingLifeCalculatorFactories);
-
-                        //selectedOutlook = strategy.GetOptimum(selectedOutlook, treatmentOutlook);
-                    }
-                }
-
-                yield return selectedOutlook;
-            }
-        }
-
-        private void OnInformation(InformationEventArgs e) => Information?.Invoke(this, e);
-
-        private void OnWarning(WarningEventArgs e) => Warning?.Invoke(this, e);
-
-        private void RunSimulation()
-        {
             //FillSectionList();
 
             //FillCommittedProjects();
@@ -191,6 +76,95 @@ namespace AppliedResearchAssociates.iAM.Simulation
             // database bulk load for each "simulation table".
 
             // if multi-year, "solve". (?)
+        }
+
+        internal ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; private set; }
+
+        internal void OnInformation(InformationEventArgs e) => Information?.Invoke(this, e);
+
+        internal void OnWarning(WarningEventArgs e) => Warning?.Invoke(this, e);
+
+        private IReadOnlyCollection<SelectableTreatment> ActiveTreatments;
+
+        private IReadOnlyCollection<SectionContext> SectionContexts;
+
+        private void ApplyScheduledTreatments(int year, out ISet<SectionContext> unscheduledContexts)
+        {
+            unscheduledContexts = SectionContexts.ToHashSet();
+
+            foreach (var sectionContext in SectionContexts)
+            {
+                if (sectionContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
+                {
+                    _ = unscheduledContexts.Remove(sectionContext);
+
+                    if (scheduledTreatment != null)
+                    {
+                        sectionContext.ApplyTreatment(scheduledTreatment, year, out var totalCost);
+
+                        // TODO: allocate that cost to the right budget(s).
+                    }
+                }
+            }
+        }
+
+        private SectionContext CreateContext(Section section)
+        {
+            var context = new SectionContext(section, this);
+
+            //- fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
+
+            foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
+            {
+                double calculate() => calculatedField.Calculate(context, Simulation.AnalysisMethod.AgeAttribute);
+                context.SetNumber(calculatedField.Name, calculate);
+            }
+
+            return context;
+        }
+
+        private IReadOnlyCollection<TreatmentOutlook> GetTreatmentOutlooks(int year, IEnumerable<SectionContext> unscheduledContexts)
+        {
+            var treatmentOutlooks = new ConcurrentBag<TreatmentOutlook>();
+            void addTreatmentOutlook(SectionContext context)
+            {
+                context.ApplyPerformanceCurves();
+
+                var remainingLifeCalculatorFactories = Enumerable.ToArray(
+                    from limit in Simulation.AnalysisMethod.RemainingLifeLimits
+                    where limit.Criterion.Evaluate(context) ?? true
+                    group limit.Value by limit.Attribute into attributeLimitValues
+                    select new RemainingLifeCalculator.Factory(attributeLimitValues));
+
+                var selectedOutlook = new TreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
+
+                if (!context.YearIsWithinShadowForAnyTreatment(year))
+                {
+                    var feasibleTreatments = ActiveTreatments.ToHashSet();
+
+                    _ = feasibleTreatments.RemoveWhere(treatment => context.YearIsWithinShadowForSameTreatment(year, treatment));
+                    _ = feasibleTreatments.RemoveWhere(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false);
+
+                    var supersededTreatments = feasibleTreatments
+                        .SelectMany(treatment => treatment.Supersessions
+                            .Where(supersession => supersession.Criterion.Evaluate(context) ?? false)
+                            .Select(supersession => supersession.Treatment));
+
+                    feasibleTreatments.ExceptWith(supersededTreatments);
+
+                    foreach (var treatment in feasibleTreatments)
+                    {
+                        var treatmentOutlook = new TreatmentOutlook(context, treatment, year, remainingLifeCalculatorFactories);
+
+                        //selectedOutlook = strategy.GetOptimum(selectedOutlook, treatmentOutlook);
+                    }
+                }
+
+                treatmentOutlooks.Add(selectedOutlook);
+            }
+
+            _ = Parallel.ForEach(unscheduledContexts, addTreatmentOutlook);
+            return treatmentOutlooks;
         }
     }
 }
