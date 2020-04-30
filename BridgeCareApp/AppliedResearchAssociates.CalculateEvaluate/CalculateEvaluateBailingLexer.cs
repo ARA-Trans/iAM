@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    public class CalculateEvaluateBailingLexer : CalculateEvaluateLexer
+    internal sealed class CalculateEvaluateBailingLexer : CalculateEvaluateLexer
     {
         public CalculateEvaluateBailingLexer(ICharStream input) : base(input) => RemoveErrorListeners();
 

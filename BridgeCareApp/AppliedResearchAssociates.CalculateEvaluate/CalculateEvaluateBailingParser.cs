@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    public class CalculateEvaluateBailingParser : CalculateEvaluateParser
+    internal sealed class CalculateEvaluateBailingParser : CalculateEvaluateParser
     {
         public CalculateEvaluateBailingParser(ITokenStream input) : base(input)
         {
