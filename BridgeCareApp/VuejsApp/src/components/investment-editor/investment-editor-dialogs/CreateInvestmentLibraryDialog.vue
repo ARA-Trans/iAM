@@ -8,12 +8,13 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" outline v-model="newInvestmentLibrary.name"></v-text-field>
+                    <v-text-field label="Name" outline v-model="newInvestmentLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                     <v-flex xs4>
                         <v-layout justify-space-between>
                             <v-text-field :mask="'##########'" label="Inflation Rate (%)" outline
-                                          v-model="newInvestmentLibrary.inflationRate">
-                            </v-text-field>
+                                          v-model="newInvestmentLibrary.inflationRate"
+                                          :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                         </v-layout>
                     </v-flex>
                     <v-textarea label="Description" no-resize outline rows="3"
@@ -44,6 +45,8 @@
         InvestmentLibraryBudgetYear
     } from '@/shared/models/iAM/investment';
     import {getUserName} from '../../../shared/utils/get-user-info';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 
@@ -52,6 +55,7 @@
         @Prop() dialogData: CreateInvestmentLibraryDialogData;
 
         newInvestmentLibrary: InvestmentLibrary = {...emptyInvestmentLibrary, id: ObjectID.generate()};
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets the newInvestmentLibrary object's data properties using the dialogData object's data properties

@@ -109,3 +109,7 @@
 .output {
     border-bottom: 1px solid;
 }
+
+.sm-txt {
+    font-size: 12px;
+}

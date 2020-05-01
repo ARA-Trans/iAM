@@ -21,11 +21,12 @@
                         </v-flex>
                         <v-flex>
                             <v-text-field label="Deficient Level" outline
-                                          v-model="newDeficient.deficient"
+                                          v-model.number="newDeficient.deficient" :mask="'##########'"
                                           :rules="[rules['generalRules'].valueIsNotEmpty]"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field label="Allowed Deficient(%)" outline v-model="newDeficient.percentDeficient"
+                            <v-text-field label="Allowed Deficient(%)" outline v-model.number="newDeficient.percentDeficient"
+                                          :mask="'###'"
                                           :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(newDeficient.percentDeficient, [0, 100])]">
                             </v-text-field>
                         </v-flex>

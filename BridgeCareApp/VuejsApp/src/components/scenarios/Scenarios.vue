@@ -59,8 +59,7 @@
                 <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
+                            <v-edit-dialog @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
                                            persistent>
                                 {{props.item.simulationName}}
                                 <template slot="input">
@@ -151,8 +150,7 @@
                 <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
+                            <v-edit-dialog @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
                                            persistent>
                                 {{props.item.simulationName}}
                                 <template slot="input">
@@ -255,6 +253,7 @@
     import {Simulation} from '@/shared/models/iAM/simulation';
     import {emptyRollup, Rollup} from '@/shared/models/iAM/rollup';
     import {getUserName} from '@/shared/utils/get-user-info';
+    import {findIndex, propEq, update} from 'ramda';
 
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog, ShareScenarioDialog}
@@ -531,16 +530,27 @@
         }
 
         onEditScenarioName(scenarioName: string, id: string, simulationId: any) {
-            var scenarioData: Simulation = {
-                simulationId: simulationId,
-                simulationName: scenarioName,
-                networkId: this.networks[0].networkId,
-                networkName: this.networks[0].networkName
-            };
-            this.updateScenarioAction({
-                updateScenarioData: scenarioData,
-                scenarioId: id
-            });
+            if (hasValue(scenarioName)) {
+                const scenarioData: Simulation = {
+                    simulationId: simulationId,
+                    simulationName: scenarioName,
+                    networkId: this.networks[0].networkId,
+                    networkName: this.networks[0].networkName
+                };
+
+                this.updateScenarioAction({
+                    updateScenarioData: scenarioData,
+                    scenarioId: id
+                }).then(() => {
+                    const scenario: Scenario = this.scenarios
+                        .find((s: Scenario) => s.simulationId === simulationId) as Scenario;
+                    this.scenarios = update(
+                        findIndex(propEq('simulationId', simulationId), this.scenarios),
+                        {...scenario, simulationName: scenarioName},
+                        this.scenarios
+                    )
+                });
+            }
         }
 
         onSubmitNewScenario(createScenarioData: ScenarioCreationData) {

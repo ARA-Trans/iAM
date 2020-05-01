@@ -9,15 +9,16 @@
             <v-card-text>
                 <v-layout column>
                     <v-select :items="dialogData.numericAttributesSelectListItems" label="Select an Attribute"
-                              outline v-model="newRemainingLifeLimit.attribute">
-
-                    </v-select>
-                    <v-text-field label="Limit" outline v-model="newRemainingLifeLimit.limit"></v-text-field>
+                              outline v-model="newRemainingLifeLimit.attribute"
+                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                    <v-text-field label="Limit" outline :mask="'##########'"
+                                  v-model.number="newRemainingLifeLimit.limit"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn :disabled="disableSubmit()" @click="onSubmit(true)" class="ara-blue-bg white--text">
+                    <v-btn :disabled="disableSubmitAction()" @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Save
                     </v-btn>
                     <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
@@ -33,6 +34,7 @@
     import {emptyRemainingLifeLimit, RemainingLifeLimit} from '@/shared/models/iAM/remaining-life-limit';
     import {CreateRemainingLifeLimitDialogData} from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     var ObjectID = require('bson-objectid');
 
@@ -41,12 +43,14 @@
         @Prop() dialogData: CreateRemainingLifeLimitDialogData;
 
         newRemainingLifeLimit: RemainingLifeLimit = {...emptyRemainingLifeLimit, id: ObjectID.generate()};
+        rules: InputValidationRules = {...rules};
 
         /**
          * Whether or not the 'Submit' button should be enabled
          */
-        disableSubmit() {
-            return !hasValue(this.newRemainingLifeLimit.attribute);
+        disableSubmitAction() {
+            return this.rules['generalRules'].valueIsNotEmpty(this.newRemainingLifeLimit.attribute) !== true ||
+                this.rules['generalRules'].valueIsNotEmpty(this.newRemainingLifeLimit.limit) !== true;
         }
 
         /**

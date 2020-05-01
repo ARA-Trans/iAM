@@ -32,7 +32,7 @@
     "socket.io-client": "^2.2.0",
     "vue": "2.5.17",
     "vue-class-component": "6.0.0",
-    "vue-currency-input": "1.17.3",
+    "vue-currency-input": "1.18.3",
     "vue-property-decorator": "7.0.0",
     "vue-query-builder": "0.7.1",
     "vue-router": "^3.1.2",

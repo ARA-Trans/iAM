@@ -12,7 +12,7 @@
                               v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedCashFlowLibrary.name">
+                                  v-model="selectedCashFlowLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="onClearSelectedCashFlowLibrary" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -52,34 +52,28 @@
                                             </v-radio-group>
                                         </td>
                                         <td>
-                                            <v-edit-dialog :return-value.sync="props.item.description"
-                                                           @save="onEditSelectedLibraryListData(props.item, 'description')"
-                                                           large
-                                                           lazy
-                                                           persistent>
-                                                <input :class="{'invalid-input':rules.generalRules.valueIsNotEmpty(props.item.description) !== true}"
-                                                       :value="props.item.description" class="output" readonly
-                                                       type="text"/>
+                                            <v-edit-dialog :return-value.sync="props.item.description" large lazy
+                                                           persistent
+                                                           @save="onEditSelectedLibraryListData(props.item, 'description')">
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.description"
+                                                              :rules="[rules.generalRules.valueIsNotEmpty]"/>
                                                 <template slot="input">
                                                     <v-textarea label="Description" no-resize outline rows="5"
                                                                 :rules="[rules.generalRules.valueIsNotEmpty]"
-                                                                v-model="props.item.description">
-                                                    </v-textarea>
+                                                                v-model="props.item.description"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
                                         <td>
                                             <v-menu bottom min-height="500px" min-width="500px">
                                                 <template slot="activator">
-                                                    <input :value="props.item.criteria" class="output" readonly
-                                                           type="text"/>
+                                                    <v-text-field readonly single-line class="sm-txt" :value="props.item.criteria"/>
                                                 </template>
                                                 <v-card>
                                                     <v-card-text>
                                                         <v-textarea :value="props.item.criteria" full-width no-resize
-                                                                    outline readonly
-                                                                    rows="5">
-                                                        </v-textarea>
+                                                                    outline readonly rows="5"/>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-menu>
@@ -117,16 +111,13 @@
                                                            full-width large
                                                            lazy
                                                            persistent>
-                                                <input :class="{'invalid-input':rules['generalRules'].valueIsNotEmpty(props.item.rank) !== true || rules['cashFlowRules'].isRankGreaterThanPreviousRank(props.item, selectedSplitTreatment) !== true}"
-                                                       :value="props.item.rank" class="output" readonly
-                                                       type="text"/>
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.rank"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isRankGreaterThanPreviousRank(props.item, selectedSplitTreatment)]"/>
                                                 <template slot="input">
-                                                    <v-text-field
-                                                            :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isRankGreaterThanPreviousRank(props.item, selectedSplitTreatment)]"
-                                                            label="Edit"
-                                                            single-line
-                                                            v-model.number="props.item.rank">
-                                                    </v-text-field>
+                                                    <v-text-field label="Edit" single-line
+                                                                  v-model.number="props.item.rank"
+                                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isRankGreaterThanPreviousRank(props.item, selectedSplitTreatment)]"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
@@ -134,35 +125,14 @@
                                             <v-edit-dialog :return-value.sync="props.item.amount" large lazy persistent
                                                            full-width
                                                            @save="onEditSelectedLibraryListData(props.item, 'amount')">
-                                                <input class="output" type="text"
-                                                       readonly :value="formatAsCurrency(props.item.amount)"
-                                                       :class="{'invalid-input':rules['generalRules'].valueIsNotEmpty(props.item.amount) !== true || rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment) !== true}"/>
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="formatAsCurrency(props.item.amount)"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment)]"/>
                                                 <template slot="input">
-                                                    <div class="amount-div">
-                                                        <v-layout justify-center column>
-                                                            <div>
-                                                                <currency-input
-                                                                        class="split-treatment-limit-currency-input"
-                                                                        :value="props.item.amount"
-                                                                        @change="props.item.amount = $event"
-                                                                        :currency="{prefix: '$', suffix: ''}"
-                                                                        :locale="'en-US'"
-                                                                        :distractionFree="false"
-                                                                        @keydown.enter.stop
-                                                                        @keyup.enter.stop/>
-                                                            </div>
-                                                            <div v-if="rules['generalRules'].valueIsNotEmpty(props.item.amount) !== true">
-                                                                <span class="invalid-input split-treatment-limit-amount-rule-span">
-                                                                    {{rules['generalRules'].valueIsNotEmpty(props.item.amount)}}
-                                                                </span>
-                                                            </div>
-                                                            <div v-if="rules['generalRules'].valueIsNotEmpty(props.item.amount) === true && rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment) !== true">
-                                                                <span class="invalid-input split-treatment-limit-amount-rule-span">
-                                                                    {{rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment)}}
-                                                                </span>
-                                                            </div>
-                                                        </v-layout>
-                                                    </div>
+                                                    <v-text-field label="Edit" single-line
+                                                                  v-model.number="props.item.amount"
+                                                                  v-currency="{currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false}"
+                                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment)]"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
@@ -172,17 +142,13 @@
                                                            full-width
                                                            large lazy
                                                            persistent>
-                                                <input :class="{'invalid-input':rules['generalRules'].valueIsNotEmpty(props.item.percentage) !== true ||  rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred(props.item.percentage) !== true}"
-                                                       :value="props.item.percentage" class="output"
-                                                       readonly
-                                                       type="text"/>
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.percentage"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred]"/>
                                                 <template slot="input">
-                                                    <v-text-field
-                                                            :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred]"
-                                                            label="Edit"
-                                                            single-line
-                                                            v-model="props.item.percentage">
-                                                    </v-text-field>
+                                                    <v-text-field label="Edit" single-line
+                                                                  v-model="props.item.percentage"
+                                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred]"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>

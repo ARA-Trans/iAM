@@ -12,6 +12,9 @@ const generalRules = {
     },
     'valueIsWithinRange': (value: number, range: number[]) => {
         return (value >= range[0] && value <= range[1]) || `Value must be in range ${range[0]} - ${range[1]}`;
+    },
+    'valueIsNumeric': (value: any) => {
+        return !isNaN(value) || 'Numerical values only';
     }
 };
 /***********************************************CASH FLOW RULES********************************************************/

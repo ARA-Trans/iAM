@@ -11,8 +11,10 @@
                               outline v-if="!hasSelectedPerformanceLibrary || selectedScenarioId !== '0'"
                               v-model="selectItemValue">
                     </v-select>
-                    <v-text-field label="Library Name" v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedPerformanceLibrary.name">
+                    <v-text-field label="Library Name"
+                                  v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'"
+                                  v-model="selectedPerformanceLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -23,7 +25,8 @@
                         Owner: {{selectedPerformanceLibrary.owner ? selectedPerformanceLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'" v-model="selectedPerformanceLibrary.shared"/>
+                                v-if="hasSelectedPerformanceLibrary && selectedScenarioId === '0'"
+                                v-model="selectedPerformanceLibrary.shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -58,12 +61,13 @@
                                             :return-value.sync="props.item.equationName"
                                             @save="onEditEquationProperty(props.item.id, 'equationName', props.item.equationName)"
                                             large lazy persistent>
-                                        <v-text-field :value="props.item.equationName" class="equation-name-text-field-output"
-                                                      readonly></v-text-field>
+                                        <v-text-field readonly single-line
+                                                      class="sm-txt equation-name-text-field-output"
+                                                      :value="props.item.equationName"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                         <template slot="input">
-                                            <v-text-field label="Edit"
-                                                          single-line v-model="props.item.equationName">
-                                            </v-text-field>
+                                            <v-text-field label="Edit" single-line v-model="props.item.equationName"
+                                                          :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                         </template>
                                     </v-edit-dialog>
                                 </td>
@@ -72,11 +76,13 @@
                                             :return-value.sync="props.item.attribute"
                                             @save="onEditEquationProperty(props.item.id, 'attribute', props.item.attribute)"
                                             large lazy persistent>
-                                        <v-text-field :value="props.item.attribute" class="attribute-text-field-output"
-                                                      readonly></v-text-field>
+                                        <v-text-field readonly single-line class="sm-txt attribute-text-field-output"
+                                                      :value="props.item.attribute"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                         <template slot="input">
                                             <v-select :items="attributesSelectListItems" label="Edit"
-                                                      v-model="props.item.attribute">
+                                                      v-model="props.item.attribute"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]">
                                             </v-select>
                                         </template>
                                     </v-edit-dialog>
@@ -91,9 +97,9 @@
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.equation" full-width no-resize outline readonly
-                                                            rows="5">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.equation" full-width no-resize outline
+                                                            readonly
+                                                            rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
@@ -111,9 +117,9 @@
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
-                                                            rows="5">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly
+                                                            rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
@@ -138,8 +144,7 @@
             <v-layout justify-center>
                 <v-flex xs6>
                     <v-textarea label="Description" no-resize outline rows="4"
-                                v-model="selectedPerformanceLibrary.description">
-                    </v-textarea>
+                                v-model="selectedPerformanceLibrary.description"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -192,7 +197,8 @@
     import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
     import CreatePerformanceLibraryDialog from './performance-editor-dialogs/CreatePerformanceLibraryDialog.vue';
-    import CreatePerformanceLibraryEquationDialog from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
+    import CreatePerformanceLibraryEquationDialog
+        from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
     import EquationEditorDialog from '../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../shared/modals/CriteriaEditorDialog.vue';
     import {
@@ -223,6 +229,7 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -273,6 +280,7 @@
         showCreatePerformanceLibraryEquationDialog = false;
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = clone(rules);
 
         /**
          * beforeRouteEnter event handler

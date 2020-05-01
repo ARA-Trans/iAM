@@ -8,16 +8,17 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" outline v-model="newTarget.name"></v-text-field>
+                    <v-text-field label="Name" outline v-model="newTarget.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
                     <v-select :items="numericAttributes" label="Select Attribute"
-                              outline v-model="newTarget.attribute">
-                    </v-select>
+                              outline v-model="newTarget.attribute" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
-                    <v-text-field :mask="'####'" label="Year" outline v-model="newTarget.year"></v-text-field>
+                    <v-text-field :mask="'####'" label="Year" outline v-model.number="newTarget.year"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
-                    <v-text-field label="Target" outline v-model="newTarget.targetMean">
-                    </v-text-field>
+                    <v-text-field label="Target" outline :mask="'##########'" v-model.number="newTarget.targetMean"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -43,6 +44,7 @@
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
     @Component
@@ -55,6 +57,7 @@
         numericAttributes: string[] = [];
         showDatePicker: boolean = false;
         year: string = moment().year().toString();
+        rules: InputValidationRules = {...rules};
 
         /**
          * Component mounted event handler

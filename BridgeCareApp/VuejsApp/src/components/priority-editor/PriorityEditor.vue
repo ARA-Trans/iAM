@@ -7,7 +7,8 @@
                         New Library
                     </v-btn>
                     <v-select :items="priorityLibrariesSelectListItems"
-                              label="Select a Priority Library" outline v-if="!hasSelectedPriorityLibrary || selectedScenarioId !== '0'"
+                              label="Select a Priority Library" outline
+                              v-if="!hasSelectedPriorityLibrary || selectedScenarioId !== '0'"
                               v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'"
@@ -22,7 +23,8 @@
                         Owner: {{selectedPriorityLibrary.owner ? selectedPriorityLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'" v-model="selectedPriorityLibrary.shared"/>
+                                v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'"
+                                v-model="selectedPriorityLibrary.shared"/>
                 </v-flex>
             </v-layout>
             <v-flex v-show="hasSelectedPriorityLibrary" xs3>
@@ -46,11 +48,19 @@
                             <div v-if="header.value === 'priorityLevel' || header.value === 'year'">
                                 <v-edit-dialog
                                         :return-value.sync="props.item[header.value]"
-                                        @save="onEditPriorityProperty(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :value="props.item[header.value]" class="output" readonly type="text"/>
+                                        @save="onEditPriorityProperty(props.item, header.value, props.item[header.value])"
+                                        large lazy persistent>
+                                    <v-text-field readonly single-line class="sm-txt"
+                                                  :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]">
-                                        </v-text-field>
+                                        <v-text-field v-if="header.value === 'priorityLevel'" label="Edit" single-line
+                                                      v-model.number="props.item[header.value]"
+                                                      :mask="'##########'"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        <v-text-field v-else label="Edit" single-line :mask="'####'"
+                                                      v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
@@ -58,17 +68,20 @@
                                 <v-layout align-center row style="flex-wrap:nowrap">
                                     <v-menu bottom min-height="500px" min-width="500px">
                                         <template slot="activator">
-                                            <v-btn class="ara-blue" icon v-if="budgets.length > 5">
-                                                <v-icon>fas fa-eye</v-icon>
-                                            </v-btn>
-                                            <input :value="props.item.criteria" class="output priority-criteria-output" readonly type="text"
-                                                   v-else/>
+                                            <div v-if="budgets.length > 5">
+                                                <v-btn class="ara-blue" icon >
+                                                    <v-icon>fas fa-eye</v-icon>
+                                                </v-btn>
+                                            </div>
+                                            <div v-else class="priority-criteria-output">
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.criteria"/>
+                                            </div>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
-                                                            rows="5">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
@@ -80,13 +93,14 @@
                             <div v-else>
                                 <v-edit-dialog
                                         :return-value.sync="props.item[header.value]"
-                                        @save="onEditPriorityFundAmount(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :rules="[isFundingPercentWithinValidRange]" :value="props.item[header.value]" class="output" readonly
-                                           type="text"/>
+                                        @save="onEditPriorityFundAmount(props.item, header.value, props.item[header.value])"
+                                        large lazy persistent>
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
                                     <template slot="input">
-                                        <v-text-field :mask="'###'" :rules="[isFundingPercentWithinValidRange]" label="Edit"
-                                                      single-line v-model="props.item[header.value]">
-                                        </v-text-field>
+                                        <v-text-field :mask="'###'" label="Edit" single-line
+                                                      v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
@@ -170,11 +184,14 @@
         CreatePriorityLibraryDialogData,
         emptyCreatePriorityLibraryDialogData
     } from '@/shared/models/modals/create-priority-library-dialog-data';
-    import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
+    import CreatePriorityLibraryDialog
+        from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {InvestmentLibrary} from '@/shared/models/iAM/investment';
 
     const ObjectID = require('bson-objectid');
 
@@ -184,12 +201,14 @@
         }
     })
     export default class PriorityEditor extends Vue {
+        @State(state => state.investmentEditor.scenarioInvestmentLibrary) stateScenarioInvestmentLibrary: InvestmentLibrary;
         @State(state => state.priorityEditor.priorityLibraries) statePriorityLibraries: PriorityLibrary[];
         @State(state => state.priorityEditor.selectedPriorityLibrary) stateSelectedPriorityLibrary: PriorityLibrary;
         @State(state => state.priorityEditor.scenarioPriorityLibrary) stateScenarioPriorityLibrary: PriorityLibrary;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
+        @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
         @Action('getPriorityLibraries') getPriorityLibrariesAction: any;
         @Action('selectPriorityLibrary') selectPriorityLibraryAction: any;
         @Action('createPriorityLibrary') createPriorityLibraryAction: any;
@@ -197,7 +216,6 @@
         @Action('deletePriorityLibrary') deletePriorityLibraryAction: any;
         @Action('getScenarioPriorityLibrary') getScenarioPriorityLibraryAction: any;
         @Action('saveScenarioPriorityLibrary') saveScenarioPriorityLibraryAction: any;
-        @Action('getScenarioInvestmentLibrary') getScenarioInvestmentLibraryAction: any;
         @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
         selectedScenarioId: string = '0';
@@ -220,6 +238,7 @@
         createPriorityLibraryDialogData: CreatePriorityLibraryDialogData = clone(emptyCreatePriorityLibraryDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -239,7 +258,8 @@
                 vm.getPriorityLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
-                            vm.getScenarioPriorityLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+                            vm.getScenarioInvestmentLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)})
+                                .then(() => vm.getScenarioPriorityLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)}));
                         }
                     });
             });

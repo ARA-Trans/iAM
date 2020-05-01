@@ -9,11 +9,10 @@
             <v-card-text>
                 <v-layout column>
                     <v-text-field label="Name" outline v-model="createdCashFlowLibrary.name"
-                                  :rules="[rules['generalRules'].valueIsNotEmpty]"></v-text-field>
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
                     <v-textarea label="Description" no-resize outline rows="3"
-                                v-model="createdCashFlowLibrary.description">
-                    </v-textarea>
+                                v-model="createdCashFlowLibrary.description"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>

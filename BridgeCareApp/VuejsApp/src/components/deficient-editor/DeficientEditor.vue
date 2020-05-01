@@ -9,10 +9,12 @@
                     </v-btn>
                     <v-select :items="deficientLibrariesSelectListItems"
                               label="Select a Deficient Library"
-                              outline v-if="!hasSelectedDeficientLibrary || selectedScenarioId !== '0'" v-model="selectItemValue">
+                              outline v-if="!hasSelectedDeficientLibrary || selectedScenarioId !== '0'"
+                              v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedDeficientLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
+                                  v-model="selectedDeficientLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -23,7 +25,8 @@
                         Owner: {{selectedDeficientLibrary.owner ? selectedDeficientLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'" v-model="selectedDeficientLibrary.shared"/>
+                                v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'"
+                                v-model="selectedDeficientLibrary.shared"/>
                 </v-flex>
             </v-layout>
             <v-flex v-show="hasSelectedDeficientLibrary" xs3>
@@ -36,7 +39,8 @@
         </v-flex>
         <v-flex xs12>
             <div class="deficients-data-table">
-                <v-data-table :headers="deficientDataTableHeaders" :items="deficients" class="elevation-1 fixed-header v-table__overflow"
+                <v-data-table :headers="deficientDataTableHeaders" :items="deficients"
+                              class="elevation-1 fixed-header v-table__overflow"
                               item-key="id" select-all v-model="selectedDeficientRows">
                     <template slot="items" slot-scope="props">
                         <td>
@@ -46,32 +50,52 @@
                             <div v-if="header.value === 'attribute'">
                                 <v-edit-dialog
                                         :return-value.sync="props.item.attribute"
-                                        @save="onEditDeficientProperty(props.item, 'attribute', props.item.attribute)" large lazy persistent>
-                                    <input :value="props.item.attribute" class="output" readonly type="text" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        @save="onEditDeficientProperty(props.item, 'attribute', props.item.attribute)"
+                                        large lazy persistent>
+                                    <v-text-field readonly class="sm-txt" :value="props.item.attribute"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-select :items="numericAttributes" label="Select an Attribute"
-                                                  v-model="props.item.attribute" :rules="[rules['generalRules'].valueIsNotEmpty]">
+                                                  v-model="props.item.attribute"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                                         </v-select>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value !== 'attribute' && header.value !== 'criteria'">
-                                <v-edit-dialog v-if="header.value !== 'percentDeficient'"
-                                        :return-value.sync="props.item[header.value]"
-                                        @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :value="props.item[header.value]" class="output" readonly type="text" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                <v-edit-dialog v-if="header.value === 'deficient'"
+                                               :return-value.sync="props.item[header.value]"
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
+                                               large lazy persistent>
+                                    <v-text-field readonly class="sm-text" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]" :rules="[rules['generalRules'].valueIsNotEmpty]">
-                                        </v-text-field>
+                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]"
+                                                      :mask="'##########'"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                    </template>
+                                </v-edit-dialog>
+                                <v-edit-dialog v-else-if="header.value === 'percentDeficient'"
+                                               :return-value.sync="props.item[header.value]"
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
+                                               large lazy persistent>
+                                    <v-text-field readonly class="sm-txt" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
+                                    <template slot="input">
+                                        <v-text-field label="Edit" single-line v-model.number="props.item[header.value]"
+                                                      :mask="'###'"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
                                     </template>
                                 </v-edit-dialog>
                                 <v-edit-dialog v-else
                                                :return-value.sync="props.item[header.value]"
-                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :value="props.item[header.value]" class="output" readonly type="text" :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
+                                               large lazy persistent>
+                                    <v-text-field readonly class="sm-text" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]" :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]">
-                                        </v-text-field>
+                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
@@ -79,14 +103,13 @@
                                 <v-layout align-center row style="flex-wrap:nowrap">
                                     <v-menu bottom min-height="500px" min-width="500px">
                                         <template slot="activator">
-                                            <input :value="props.item.criteria" class="output deficient-criteria-output"
-                                                   readonly type="text"/>
+                                            <v-text-field readonly class="sm-txt" :value="props.item.criteria"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
-                                                            rows="5">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly
+                                                            rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
@@ -159,7 +182,8 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
-    import CreateDeficientDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientDialog.vue';
+    import CreateDeficientDialog
+        from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientDialog.vue';
     import {
         CreateDeficientLibraryDialogData,
         emptyCreateDeficientLibraryDialogData
@@ -167,7 +191,8 @@
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {SelectItem} from '@/shared/models/vue/select-item';
-    import CreateDeficientLibraryDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
+    import CreateDeficientLibraryDialog
+        from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';

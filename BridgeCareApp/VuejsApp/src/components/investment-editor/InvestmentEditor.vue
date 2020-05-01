@@ -8,10 +8,12 @@
                     </v-btn>
                     <v-select :items="investmentLibrariesSelectListItems"
                               label="Select an Investment library"
-                              outline v-if="!hasSelectedInvestmentLibrary || selectedScenarioId !== '0'" v-model="selectItemValue">
+                              outline v-if="!hasSelectedInvestmentLibrary || selectedScenarioId !== '0'"
+                              v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedInvestmentLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
+                                  v-model="selectedInvestmentLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -22,17 +24,18 @@
                         Owner: {{selectedInvestmentLibrary.owner ? selectedInvestmentLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'" v-model="selectedInvestmentLibrary.shared"/>
+                                v-if="hasSelectedInvestmentLibrary && selectedScenarioId === '0'"
+                                v-model="selectedInvestmentLibrary.shared"/>
                 </v-flex>
             </v-layout>
             <v-layout justify-center v-show="hasSelectedInvestmentLibrary">
                 <v-flex xs12>
                     <v-layout justify-center>
                         <v-flex xs3>
-                            <v-text-field :disabled="!hasSelectedInvestmentLibrary" :mask="'##########'" label="Inflation Rate (%)"
-                                          outline
-                                          v-model="selectedInvestmentLibrary.inflationRate">
-                            </v-text-field>
+                            <v-text-field :disabled="!hasSelectedInvestmentLibrary" :mask="'##########'" outline
+                                          label="Inflation Rate (%)"
+                                          v-model.number="selectedInvestmentLibrary.inflationRate"
+                                          :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                         </v-flex>
                     </v-layout>
                 </v-flex>
@@ -50,7 +53,8 @@
                                class="ara-blue-bg white--text">
                             Add Year
                         </v-btn>
-                        <v-btn :disabled="selectedInvestmentLibrary.budgetOrder.length === 0" @click="showSetRangeForAddingBudgetYearsDialog = true"
+                        <v-btn :disabled="selectedInvestmentLibrary.budgetOrder.length === 0"
+                               @click="showSetRangeForAddingBudgetYearsDialog = true"
                                class="ara-blue-bg white--text">
                             Add Years by Range
                         </v-btn>
@@ -74,21 +78,21 @@
                                 <td v-for="header in budgetYearsGridHeaders">
                                     <div v-if="header.value !== 'year'">
                                         <v-edit-dialog :return-value.sync="props.item[header.value]"
-                                                       @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])" large lazy
-                                                       persistent>
-                                            {{formatAsCurrency(props.item[header.value])}}
+                                                       @save="onEditBudgetYearAmount(props.item.year, header.value, props.item[header.value])"
+                                                       large lazy persistent>
+                                            <v-text-field readonly single-line class="sm-txt"
+                                                          :value="formatAsCurrency(props.item[header.value])"
+                                                          :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                             <template slot="input">
-                                                <currency-input class="budget-year-amount-input"
-                                                                v-model="props.item[header.value]"
-                                                                :currency="{prefix: '$', suffix: ''}" :locale="'en-US'"
-                                                                :distractionFree="false"
-                                                                @keydown.enter.stop
-                                                                @keyup.enter.stop/>
+                                                <v-text-field label="Edit" single-line
+                                                              v-model.number="props.item[header.value]"
+                                                              v-currency="{currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false}"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                             </template>
                                         </v-edit-dialog>
                                     </div>
-                                    <div v-if="header.value === 'year'">
-                                        {{props.item.year}}
+                                    <div v-else>
+                                        <span class="sm-txt">{{props.item.year}}</span>
                                     </div>
                                 </td>
                             </template>
@@ -110,11 +114,13 @@
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedInvestmentLibrary">
-                <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onApplyToScenario" class="ara-blue-bg white--text"
+                <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onApplyToScenario"
+                       class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
-                <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onUpdateLibrary" class="ara-blue-bg white--text"
+                <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onUpdateLibrary"
+                       class="ara-blue-bg white--text"
                        v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
@@ -126,7 +132,8 @@
                        v-show="selectedScenarioId === '0'">
                     Delete Library
                 </v-btn>
-                <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onDiscardChanges" class="ara-orange-bg white--text"
+                <v-btn :disabled="!hasSelectedInvestmentLibrary" @click="onDiscardChanges"
+                       class="ara-orange-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Discard Changes
                 </v-btn>
@@ -540,7 +547,7 @@
          */
         onCreateAsNewLibrary() {
             if (isNil(this.selectedInvestmentLibrary.budgetCriteria)) {
-               this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
+                this.selectedInvestmentLibrary.budgetCriteria = this.intermittentBudgetsCriteria;
             }
             this.createInvestmentLibraryDialogData = {
                 showDialog: true,
