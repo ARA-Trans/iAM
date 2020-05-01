@@ -7,7 +7,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public abstract class Treatment
     {
-        public string Name { get; }
+        public virtual Treatment SameTreatment => this;
 
         public int ShadowForAnyTreatment { get; }
 

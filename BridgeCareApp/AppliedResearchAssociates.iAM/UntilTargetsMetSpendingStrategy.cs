@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class UntilTargetsMetSpendingStrategy : ISpendingStrategy
+    public class UntilTargetsMetSpendingStrategy : SpendingStrategy
     {
     }
 }

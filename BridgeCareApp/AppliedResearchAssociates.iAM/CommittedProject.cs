@@ -13,17 +13,45 @@ namespace AppliedResearchAssociates.iAM
 
         public double Cost { get; }
 
+        public override Treatment SameTreatment => TemplateTreatment;
+
         public Section Section { get; }
 
-        public int Year { get; }
-
-        public void FillFromTreatment(SelectableTreatment treatment)
+        public SelectableTreatment TemplateTreatment
         {
-            // TODO
+            get => _TemplateTreatment;
+            set
+            {
+                _TemplateTreatment = value;
+
+                Consequences.Clear();
+                foreach (var templateConsequence in TemplateTreatment.Consequences)
+                {
+                    void addConsequence(AttributeValueChange templateChange)
+                    {
+                        var change = new AttributeValueChange
+                        {
+                            Expression = templateChange.Expression
+                        };
+                        var consequence = new UnconditionalTreatmentConsequence
+                        {
+                            Attribute = templateConsequence.Attribute,
+                            Change = change,
+                        };
+                        Consequences.Add(consequence);
+                    }
+
+                    templateConsequence.Recalculation.Handle(addConsequence, Static.DoNothing);
+                }
+            }
         }
+
+        public int Year { get; }
 
         public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Consequences.Select(consequence => consequence.GetRecalculator(argument, ageAttribute)).ToArray();
 
         public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Cost;
+
+        private SelectableTreatment _TemplateTreatment;
     }
 }

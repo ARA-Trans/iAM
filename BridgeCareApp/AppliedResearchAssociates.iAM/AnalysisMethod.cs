@@ -37,13 +37,13 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion JurisdictionCriterion { get; }
 
-        public IOptimizationStrategy OptimizationStrategy { get; }
+        public OptimizationStrategy OptimizationStrategy { get; }
 
         public List<RemainingLifeLimit> RemainingLifeLimits { get; }
 
         public bool ShouldApplyMultipleFeasibleCosts { get; }
 
-        public ISpendingStrategy SpendingStrategy { get; }
+        public SpendingStrategy SpendingStrategy { get; }
 
         public List<TargetConditionGoal> TargetConditionGoals { get; }
 

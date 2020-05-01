@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public class AsBudgetPermitsSpendingStrategy : ISpendingStrategy
+    public class AsBudgetPermitsSpendingStrategy : SpendingStrategy
     {
     }
 }

@@ -17,6 +17,8 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion FeasibilityCriterion { get; }
 
+        public string Name { get; }
+
         public List<TreatmentScheduling> Schedulings { get; }
 
         public List<TreatmentSupersession> Supersessions { get; }

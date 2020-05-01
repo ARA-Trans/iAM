@@ -34,6 +34,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public IDictionary<int, Treatment> TreatmentSchedule { get; } = new Dictionary<int, Treatment>();
 
+        public IDictionary<int, TreatmentProgress> ProgressSchedule { get; } = new Dictionary<int, TreatmentProgress>();
+
         private AnalysisMethod AnalysisMethod => SimulationRunner.Simulation.AnalysisMethod;
 
         public void ApplyPerformanceCurves()
@@ -88,7 +90,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
-            LastYearOfShadowForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
+            LastYearOfShadowForSameTreatment[treatment.SameTreatment] = year + treatment.ShadowForSameTreatment;
         }
 
         public double GetArea() => GetNumber(AnalysisMethod.AreaAttribute.Name);
@@ -133,9 +135,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public bool YearIsWithinShadowForAnyTreatment(int year) => year <= LastYearOfShadowForAnyTreatment;
 
-        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment.Name, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
+        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
 
-        private readonly IDictionary<string, int> LastYearOfShadowForSameTreatment = new Dictionary<string, int>();
+        private readonly IDictionary<Treatment, int> LastYearOfShadowForSameTreatment = new Dictionary<Treatment, int>();
 
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 

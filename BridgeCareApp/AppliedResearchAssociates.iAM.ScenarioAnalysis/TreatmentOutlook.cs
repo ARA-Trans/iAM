@@ -9,30 +9,45 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         public TreatmentOutlook(SectionContext templateContext, Treatment initialTreatment, int initialYear, IEnumerable<RemainingLifeCalculator.Factory> remainingLifeCalculatorFactories)
         {
             TemplateContext = templateContext ?? throw new ArgumentNullException(nameof(templateContext));
-            AccumulationContext = new SectionContext(TemplateContext);
             InitialTreatment = initialTreatment ?? throw new ArgumentNullException(nameof(initialTreatment));
             InitialYear = initialYear;
 
             RemainingLifeCalculators = remainingLifeCalculatorFactories.Select(factory => factory.Create(AccumulationContext)).ToArray();
 
+            AccumulationContext = new SectionContext(TemplateContext);
+
             Run();
         }
 
-        public SectionContext TemplateContext { get; }
+        public TreatmentOutlookSummary GetSummaryRelativeToBaseline(TreatmentOutlook baseline)
+        {
+            if (TemplateContext != baseline.TemplateContext)
+            {
+                throw new ArgumentException("Template context does not match.", nameof(baseline));
+            }
 
-        public double CumulativeBenefit { get; private set; }
+            if (InitialTreatment != baseline.InitialTreatment)
+            {
+                throw new ArgumentException("Initial treatment does not match.", nameof(baseline));
+            }
 
-        public double CumulativeCostPerUnitArea { get; private set; }
+            return new TreatmentOutlookSummary(
+                TemplateContext,
+                InitialTreatment,
+                CumulativeCostPerUnitArea - baseline.CumulativeCostPerUnitArea,
+                CumulativeBenefit - baseline.CumulativeBenefit,
+                RemainingLife - baseline.RemainingLife);
+        }
 
-        public Treatment InitialTreatment { get; }
-
-        public double? RemainingLife { get; private set; }
-
+        private readonly SectionContext TemplateContext;
         private readonly SectionContext AccumulationContext;
-
+        private readonly Treatment InitialTreatment;
         private readonly int InitialYear;
-
         private readonly IReadOnlyCollection<RemainingLifeCalculator> RemainingLifeCalculators;
+
+        private double CumulativeBenefit;
+        private double CumulativeCostPerUnitArea;
+        private double? RemainingLife;
 
         private void AccumulateBenefit()
         {
@@ -90,17 +105,18 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             {
                 if (year > maximumYearOfOutlook)
                 {
-                    throw new SimulationException($"Treatment outlook must terminate naturally within {MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK} years.");
+                    throw new InvalidOperationException($"Treatment outlook did not terminate naturally within {MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK} years.");
                 }
 
-                if (AccumulationContext.TreatmentSchedule.ContainsKey(year))
+                if (AccumulationContext.ProgressSchedule.TryGetValue(year, out var treatmentProgress))
                 {
+                    // TODO: apply progress (accumulating cost & applying consequences)
                     continue;
                 }
 
                 AccumulationContext.ApplyPerformanceCurves();
 
-                if (AccumulationContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment) && scheduledTreatment != null)
+                if (AccumulationContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
                 {
                     ApplyTreatment(scheduledTreatment, year);
                 }
@@ -110,7 +126,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 updateRemainingLife?.Invoke();
 
-                if (CumulativeBenefit == previousCumulativeBenefit && AccumulationContext.TreatmentSchedule.Keys.All(scheduledYear => scheduledYear <= year))
+                if (CumulativeBenefit == previousCumulativeBenefit &&
+                    AccumulationContext.TreatmentSchedule.Keys.All(scheduledYear => scheduledYear <= year) &&
+                    AccumulationContext.ProgressSchedule.Keys.All(scheduleYear => scheduleYear <= year))
                 {
                     break;
                 }

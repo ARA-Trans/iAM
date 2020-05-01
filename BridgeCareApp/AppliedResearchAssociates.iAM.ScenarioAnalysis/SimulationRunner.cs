@@ -35,7 +35,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             foreach (var context in SectionContexts)
             {
-                //- fill in with ROLL-FORWARD data and committed projects.
+                // TODO: fill in with ROLL-FORWARD data and committed projects.
             }
 
             // drop previous simulation.
@@ -60,22 +60,33 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             foreach (var currentYear in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
-                ApplyScheduledTreatments(currentYear, out var untreatedContexts);
-
-                var optimalTreatmentOutlooks = GetOptimalTreatmentOutlooks(currentYear, untreatedContexts);
+                var idleContexts = ApplyProgress(SectionContexts, currentYear);
+                ApplyPerformanceCurves(idleContexts);
+                var untreatedContexts = ApplyScheduledTreatments(idleContexts, currentYear);
 
                 // calculate network averages and "deficient base" (after committed).
+                bool targetConditionGoalsMet;
+                bool deficientConditionGoalsMet;
 
-                // either (a) spend as budget permits or (b) spend until targets/deficient met.
+                if (Simulation.AnalysisMethod.SpendingStrategy != SpendingStrategy.NoSpending)
                 {
-                    // When a treatment is chosen, spent, and applied, remove that context from untreatedContexts.
+                    // TODO: Don't optimize if target/deficient strategy and it's already satisfied.
+
+                    var optimizedOrderOfTreatments = GetOptimizedOrderOfTreatments(untreatedContexts, currentYear);
+
+                    {
+                        // When a treatment is chosen, spent, and applied, remove that context from untreatedContexts.
+                    }
                 }
 
                 foreach (var untreatedContext in untreatedContexts)
                 {
                     untreatedContext.ApplyTreatment(Simulation.DesignatedPassiveTreatment, currentYear, out var cost);
 
-                    // TODO: Allocate "cost" appropriately.
+                    if (cost != 0)
+                    {
+                        throw new NotSupportedException("Cost of passive treatment is non-zero.");
+                    }
                 }
 
                 // report targets/deficient.
@@ -102,34 +113,58 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private IReadOnlyCollection<SectionContext> SectionContexts;
 
-        private void ApplyScheduledTreatments(int year, out ISet<SectionContext> untreatedContexts)
+        private void ApplyPerformanceCurves(IEnumerable<SectionContext> idleContexts)
         {
-            untreatedContexts = SectionContexts.ToHashSet();
-
-            foreach (var sectionContext in SectionContexts)
+            foreach (var context in idleContexts)
             {
-                if (sectionContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
+                context.ApplyPerformanceCurves();
+            }
+        }
+
+        private ISet<SectionContext> ApplyProgress(IEnumerable<SectionContext> allContexts, int year)
+        {
+            var idleContexts = allContexts.ToHashSet();
+
+            foreach (var context in allContexts)
+            {
+                if (context.ProgressSchedule.TryGetValue(year, out var treatmentProgress))
                 {
-                    _ = untreatedContexts.Remove(sectionContext);
+                    _ = idleContexts.Remove(context);
 
-                    if (scheduledTreatment != null)
-                    {
-                        sectionContext.ApplyTreatment(scheduledTreatment, year, out var cost);
-
-                        // TODO: allocate that cost to the right budget(s).
-
-                        // filter the treatment's budget list by the budget criterion for each
-                        // budget in that list. spend from the remaining budgets.
-                    }
+                    // TODO: apply the progress (expenses and possibly consequences).
                 }
             }
+
+            return idleContexts;
+        }
+
+        private ISet<SectionContext> ApplyScheduledTreatments(IEnumerable<SectionContext> idleContexts, int year)
+        {
+            var untreatedContexts = idleContexts.ToHashSet();
+
+            foreach (var context in idleContexts)
+            {
+                if (context.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
+                {
+                    _ = untreatedContexts.Remove(context);
+
+                    // TODO: filter the treatment's budget list by the budget criterion for each budget in
+                    // that list. spend from the remaining budgets.
+
+                    context.ApplyTreatment(scheduledTreatment, year, out var cost);
+
+                    // TODO: allocate that cost to the right budget(s).
+                }
+            }
+
+            return untreatedContexts;
         }
 
         private SectionContext CreateContext(Section section)
         {
             var context = new SectionContext(section, this);
 
-            //- fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
+            // TODO: fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
 
             foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
             {
@@ -145,10 +180,35 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             return context;
         }
 
-        private IReadOnlyCollection<TreatmentOutlook> GetOptimalTreatmentOutlooks(int year, IEnumerable<SectionContext> unscheduledContexts)
+        private IReadOnlyCollection<TreatmentOutlookSummary> GetOptimizedOrderOfTreatments(IEnumerable<SectionContext> unscheduledContexts, int year)
         {
-            var treatmentOutlooks = new ConcurrentBag<TreatmentOutlook>();
-            void addTreatmentOutlook(SectionContext context)
+            Func<TreatmentOutlookSummary, double> objectiveFunction;
+            switch (Simulation.AnalysisMethod.OptimizationStrategy)
+            {
+            case OptimizationStrategy.Benefit:
+                objectiveFunction = summary => summary.Benefit;
+                break;
+
+            case OptimizationStrategy.BenefitPerCost:
+                objectiveFunction = summary => summary.Benefit / summary.CostPerUnitArea;
+                break;
+
+            case OptimizationStrategy.RemainingLife:
+                ValidateRemainingLifeOptimization();
+                objectiveFunction = summary => summary.RemainingLife.Value;
+                break;
+
+            case OptimizationStrategy.RemainingLifePerCost:
+                ValidateRemainingLifeOptimization();
+                objectiveFunction = summary => summary.RemainingLife.Value / summary.CostPerUnitArea;
+                break;
+
+            default:
+                throw new InvalidOperationException("Invalid optimization strategy.");
+            }
+
+            var outlookSummariesBag = new ConcurrentBag<TreatmentOutlookSummary>();
+            void addOutlookSummaries(SectionContext context)
             {
                 context.ApplyPerformanceCurves();
 
@@ -174,22 +234,30 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                             group limit.Value by limit.Attribute into attributeLimitValues
                             select new RemainingLifeCalculator.Factory(attributeLimitValues));
 
-                        var selectedOutlook = new TreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
+                        var baselineOutlook = new TreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
 
                         foreach (var treatment in feasibleTreatments)
                         {
-                            var treatmentOutlook = new TreatmentOutlook(context, treatment, year, remainingLifeCalculatorFactories);
-
-                            //selectedOutlook = strategy.GetOptimum(selectedOutlook, treatmentOutlook);
+                            var outlook = new TreatmentOutlook(context, treatment, year, remainingLifeCalculatorFactories);
+                            var summary = outlook.GetSummaryRelativeToBaseline(baselineOutlook);
+                            outlookSummariesBag.Add(summary);
                         }
-
-                        treatmentOutlooks.Add(selectedOutlook);
                     }
                 }
             }
 
-            _ = Parallel.ForEach(unscheduledContexts, addTreatmentOutlook);
-            return treatmentOutlooks;
+            _ = Parallel.ForEach(unscheduledContexts, addOutlookSummaries);
+
+            var outlookSummaries = outlookSummariesBag.OrderByDescending(objectiveFunction).ToList();
+            return outlookSummaries;
+        }
+
+        private void ValidateRemainingLifeOptimization()
+        {
+            if (Simulation.AnalysisMethod.RemainingLifeLimits.Count == 0)
+            {
+                throw new InvalidOperationException("Simulation is using remaining-life optimization but has no remaining life limits.");
+            }
         }
     }
 }
