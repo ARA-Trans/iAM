@@ -183,5 +183,11 @@ public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Res
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate

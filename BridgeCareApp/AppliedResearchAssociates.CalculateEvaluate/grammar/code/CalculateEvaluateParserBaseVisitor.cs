@@ -273,5 +273,15 @@ public partial class CalculateEvaluateParserBaseVisitor<Result> : AbstractParseT
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { return VisitChildren(context); }
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate

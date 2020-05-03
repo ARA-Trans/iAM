@@ -337,6 +337,18 @@ public partial class CalculateEvaluateParserBaseListener : ICalculateEvaluatePar
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

@@ -3,7 +3,7 @@
         "alignTrailingComments": true,
         "allowShortBlocksOnASingleLine": true,
         "breakBeforeBraces": true,
-        "columnLimit": 120,
+        "columnLimit": 200,
         "continuationIndentWidth": 3,
         "indentWidth": 3,
         "keepEmptyLinesAtTheStartOfBlocks": false,

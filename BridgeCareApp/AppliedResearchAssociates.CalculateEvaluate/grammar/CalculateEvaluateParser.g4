@@ -23,15 +23,15 @@ calculation
    ;
 
 evaluation
-   : left = evaluation AND right = evaluation                              # logicalConjunction
-   | left = evaluation OR right = evaluation                               # logicalDisjunction
-   | evaluationParameterReference EQUAL EVALUATION_LITERAL                 # equal
-   | evaluationParameterReference NOT_EQUAL EVALUATION_LITERAL             # notEqual
-   | evaluationParameterReference LESS_THAN EVALUATION_LITERAL             # lessThan
-   | evaluationParameterReference LESS_THAN_OR_EQUAL EVALUATION_LITERAL    # lessThanOrEqual
-   | evaluationParameterReference GREATER_THAN_OR_EQUAL EVALUATION_LITERAL # greaterThanOrEqual
-   | evaluationParameterReference GREATER_THAN EVALUATION_LITERAL          # greaterThan
-   | LEFT_PAREN evaluation RIGHT_PAREN                                     # evaluationGrouping
+   : left = evaluation AND right = evaluation                             # logicalConjunction
+   | left = evaluation OR right = evaluation                              # logicalDisjunction
+   | evaluationParameterReference EQUAL evaluationLiteral                 # equal
+   | evaluationParameterReference NOT_EQUAL evaluationLiteral             # notEqual
+   | evaluationParameterReference LESS_THAN evaluationLiteral             # lessThan
+   | evaluationParameterReference LESS_THAN_OR_EQUAL evaluationLiteral    # lessThanOrEqual
+   | evaluationParameterReference GREATER_THAN_OR_EQUAL evaluationLiteral # greaterThanOrEqual
+   | evaluationParameterReference GREATER_THAN evaluationLiteral          # greaterThan
+   | LEFT_PAREN evaluation RIGHT_PAREN                                    # evaluationGrouping
    ;
 
 arguments
@@ -44,4 +44,9 @@ calculationParameterReference
 
 evaluationParameterReference
    : LEFT_BRACKET TYPE_ANNOTATION? IDENTIFIER RIGHT_BRACKET
+   ;
+
+evaluationLiteral
+   : EVALUATION_LITERAL_OPENING_DELIMITER_1 content = EVALUATION_LITERAL_CONTENT_1? EVALUATION_LITERAL_CLOSING_DELIMITER_1
+   | EVALUATION_LITERAL_OPENING_DELIMITER_2 content = EVALUATION_LITERAL_CONTENT_2? EVALUATION_LITERAL_CLOSING_DELIMITER_2
    ;
