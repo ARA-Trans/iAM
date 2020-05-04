@@ -238,7 +238,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             var identifierString = Expression.Constant(identifierText);
             var reference = Expression.Call(ArgumentParameter, argumentInfo.GetterInfo, identifierString);
 
-            var literalContent = evaluationLiteral.content.Text;
+            var literalContent = evaluationLiteral.content?.Text ?? "";
             var literal = argumentInfo.ParseLiteral(literalContent);
 
             var result = getComparison(reference, literal);
