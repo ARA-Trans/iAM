@@ -91,7 +91,7 @@
          * Sets the component's grid data
          */
         setFeasibility() {
-            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility) && this.feasibilityTabSelectedTreatment.feasibility.id !== '0'
+            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility)
                 ? this.feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility)
                 : {...emptyFeasibility, id: ObjectID.generate()};
         }
