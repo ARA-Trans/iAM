@@ -128,7 +128,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void TextEqual() => SingleTextParameterEvaluation($"[param]='{s1}'", Assert.IsFalse);
+        public void TextEqual() => SingleTextParameterEvaluation($"[param]=''", Assert.IsFalse);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
