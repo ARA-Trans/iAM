@@ -8,7 +8,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Equation : CompilableExpression
     {
-        public Equation(CalculateEvaluateCompiler compiler) => Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+        public CalculateEvaluateCompiler Compiler { get; set; }
 
         public double Compute(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
@@ -39,8 +39,6 @@ namespace AppliedResearchAssociates.iAM
         }
 
         private static readonly Regex PiecewisePattern = new Regex($@"(?>\A\s*(?:\(\s*({Subpatterns.Number})\s*,\s*({Subpatterns.Number})\s*\)\s*)*\z)", RegexOptions.Compiled);
-
-        private readonly CalculateEvaluateCompiler Compiler;
 
         private Choice<Calculator, Func<double, double>> Computer;
 

@@ -3,8 +3,8 @@
     public enum SpendingStrategy
     {
         NoSpending,
-        AsBudgetPermits,
         UnlimitedSpending,
+        AsBudgetPermits,
         UntilTargetAndDeficientConditionGoalsMet,
         UntilTargetOrDeficientConditionGoalsMet,
         UntilTargetConditionGoalsMet,

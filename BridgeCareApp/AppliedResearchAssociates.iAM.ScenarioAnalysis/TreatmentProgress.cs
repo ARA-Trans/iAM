@@ -6,6 +6,10 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
     {
         public Treatment Treatment { get; }
 
-        public List<UnconditionalTreatmentConsequence> Consequences { get; } = new List<UnconditionalTreatmentConsequence>();
+        public object Expenditures { get; } // TODO
+
+        public List<UnconditionalTreatmentConsequence> Consequences { get; }
+
+        public List<TreatmentScheduling> Schedulings { get; }
     }
 }

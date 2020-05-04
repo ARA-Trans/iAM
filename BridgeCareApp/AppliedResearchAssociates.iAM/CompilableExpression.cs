@@ -17,11 +17,11 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
+        public void EnsureCompiled() => _EnsureCompiled();
+
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 
         protected abstract void Compile();
-
-        protected void EnsureCompiled() => _EnsureCompiled();
 
         private Action _EnsureCompiled;
 

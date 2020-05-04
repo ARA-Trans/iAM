@@ -13,8 +13,6 @@ namespace AppliedResearchAssociates.iAM
 
         public double Cost { get; }
 
-        public override Treatment SameTreatment => TemplateTreatment;
-
         public Section Section { get; }
 
         public SelectableTreatment TemplateTreatment
@@ -23,6 +21,8 @@ namespace AppliedResearchAssociates.iAM
             set
             {
                 _TemplateTreatment = value;
+
+                Name = _TemplateTreatment.Name;
 
                 Consequences.Clear();
                 foreach (var templateConsequence in TemplateTreatment.Consequences)

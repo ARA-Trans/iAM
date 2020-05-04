@@ -47,7 +47,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private double CumulativeBenefit;
         private double CumulativeCostPerUnitArea;
-        private double? RemainingLife;
+        private double? RemainingLife; // REVIEW: Should this default to zero so that per-context lack of valid RLLs doesn't crash the optimization ordering?
 
         private void AccumulateBenefit()
         {

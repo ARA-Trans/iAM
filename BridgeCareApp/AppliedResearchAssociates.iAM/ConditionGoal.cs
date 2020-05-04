@@ -2,7 +2,7 @@
 {
     public class ConditionGoal
     {
-        public NumberAttribute Attribute { get; }
+        public NumberAttribute Attribute { get; set;}
 
         public Criterion Criterion { get; }
 

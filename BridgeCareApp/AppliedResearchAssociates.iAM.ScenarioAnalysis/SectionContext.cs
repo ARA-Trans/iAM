@@ -7,11 +7,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class SectionContext : CalculateEvaluateArgument
     {
-        // An instance of this type is conditionally thread-safe, i.e. multiple threads using only
-        // "get" operations is safe, and multiple threads using only "set" operations is safe, but
-        // multiple threads concurrently using both "get" and "set" operations could produce
-        // inconsistent "get" results.
-
         public SectionContext(Section section, SimulationRunner simulationRunner)
         {
             Section = section ?? throw new ArgumentNullException(nameof(section));
@@ -90,7 +85,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
-            LastYearOfShadowForSameTreatment[treatment.SameTreatment] = year + treatment.ShadowForSameTreatment;
+            LastYearOfShadowForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
         }
 
         public double GetArea() => GetNumber(AnalysisMethod.AreaAttribute.Name);
@@ -135,9 +130,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public bool YearIsWithinShadowForAnyTreatment(int year) => year <= LastYearOfShadowForAnyTreatment;
 
-        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
+        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment.Name, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
 
-        private readonly IDictionary<Treatment, int> LastYearOfShadowForSameTreatment = new Dictionary<Treatment, int>();
+        private readonly IDictionary<string, int> LastYearOfShadowForSameTreatment = new Dictionary<string, int>();
 
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 

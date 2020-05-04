@@ -1,11 +1,10 @@
-﻿using System;
-using AppliedResearchAssociates.CalculateEvaluate;
+﻿using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class Criterion : CompilableExpression
     {
-        public Criterion(CalculateEvaluateCompiler compiler) => Compiler = compiler ?? throw new ArgumentNullException(nameof(compiler));
+        public CalculateEvaluateCompiler Compiler { get; set; }
 
         public bool? Evaluate(CalculateEvaluateArgument argument)
         {
@@ -19,8 +18,6 @@ namespace AppliedResearchAssociates.iAM
         }
 
         protected override void Compile() => Evaluator = Compiler.GetEvaluator(Expression);
-
-        private readonly CalculateEvaluateCompiler Compiler;
 
         private Evaluator Evaluator;
     }

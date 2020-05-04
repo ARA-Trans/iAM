@@ -17,8 +17,6 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion FeasibilityCriterion { get; }
 
-        public string Name { get; }
-
         public List<TreatmentScheduling> Schedulings { get; }
 
         public List<TreatmentSupersession> Supersessions { get; }
@@ -36,7 +34,10 @@ namespace AppliedResearchAssociates.iAM
 
             operativeConsequences = operativeConsequences
                 .GroupBy(consequence => consequence.Attribute)
-                .Select(group => group.Single()) // It's (currently) an error when one attribute has multiple valid consequences.
+                // It's (currently) an error when one attribute has multiple valid consequences. A
+                // semantic that might match more closely with legacy intent is to use 'First'
+                // instead of 'Single'.
+                .Select(group => group.Single())
                 .ToArray();
 
             var consequenceActions = operativeConsequences

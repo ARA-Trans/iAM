@@ -3,8 +3,8 @@
     public enum OptimizationStrategy
     {
         Benefit,
-        BenefitPerCost,
+        BenefitToCostRatio,
         RemainingLife,
-        RemainingLifePerCost,
+        RemainingLifeToCostRatio,
     }
 }

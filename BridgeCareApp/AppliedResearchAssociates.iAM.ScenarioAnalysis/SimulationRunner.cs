@@ -64,9 +64,12 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 ApplyPerformanceCurves(idleContexts);
                 var untreatedContexts = ApplyScheduledTreatments(idleContexts, currentYear);
 
-                // calculate network averages and "deficient base" (after committed).
-                bool targetConditionGoalsMet;
-                bool deficientConditionGoalsMet;
+                {// "Calculate target condition goal statuses"
+                    var actualValuePerTargetConditionGoal = GetActualValuesForTargetConditionGoals(currentYear);
+                    var targetConditionGoalsMet = actualValuePerTargetConditionGoal.All(kv => kv.Key.IsMet(kv.Value));
+
+                    bool deficientConditionGoalsMet;
+                }
 
                 if (Simulation.AnalysisMethod.SpendingStrategy != SpendingStrategy.NoSpending)
                 {
@@ -74,9 +77,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                     var optimizedOrderOfTreatments = GetOptimizedOrderOfTreatments(untreatedContexts, currentYear);
 
-                    {
-                        // When a treatment is chosen, spent, and applied, remove that context from untreatedContexts.
-                    }
+                    // When a treatment is chosen, spent, and applied, remove that context from untreatedContexts.
                 }
 
                 foreach (var untreatedContext in untreatedContexts)
@@ -88,6 +89,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                         throw new NotSupportedException("Cost of passive treatment is non-zero.");
                     }
                 }
+
+                // "Calculate target condition goal statuses"
 
                 // report targets/deficient.
             }
@@ -131,7 +134,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 {
                     _ = idleContexts.Remove(context);
 
-                    // TODO: apply the progress (expenses and possibly consequences).
+                    // TODO: apply the progress (expenses and possibly consequences and further schedulings).
                 }
             }
 
@@ -180,7 +183,26 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             return context;
         }
 
-        private IReadOnlyCollection<TreatmentOutlookSummary> GetOptimizedOrderOfTreatments(IEnumerable<SectionContext> unscheduledContexts, int year)
+        private IDictionary<TargetConditionGoal, double> GetActualValuesForTargetConditionGoals(int year)
+        {
+            var results = new Dictionary<TargetConditionGoal, double>();
+
+            foreach (var goal in Simulation.AnalysisMethod.TargetConditionGoals)
+            {
+                if (goal.Year.HasValue && goal.Year.Value != year)
+                {
+                    continue;
+                }
+
+                var applicableContexts = SectionContexts.Where(context => goal.Criterion.Evaluate(context) ?? true).ToArray();
+                var actual = applicableContexts.Average(context => context.GetNumber(goal.Attribute.Name));
+                results.Add(goal, actual);
+            }
+
+            return results;
+        }
+
+        private IReadOnlyCollection<TreatmentOutlookSummary> GetOptimizedOrderOfTreatments(IEnumerable<SectionContext> untreatedContexts, int year)
         {
             Func<TreatmentOutlookSummary, double> objectiveFunction;
             switch (Simulation.AnalysisMethod.OptimizationStrategy)
@@ -189,7 +211,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 objectiveFunction = summary => summary.Benefit;
                 break;
 
-            case OptimizationStrategy.BenefitPerCost:
+            case OptimizationStrategy.BenefitToCostRatio:
                 objectiveFunction = summary => summary.Benefit / summary.CostPerUnitArea;
                 break;
 
@@ -198,7 +220,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 objectiveFunction = summary => summary.RemainingLife.Value;
                 break;
 
-            case OptimizationStrategy.RemainingLifePerCost:
+            case OptimizationStrategy.RemainingLifeToCostRatio:
                 ValidateRemainingLifeOptimization();
                 objectiveFunction = summary => summary.RemainingLife.Value / summary.CostPerUnitArea;
                 break;
@@ -210,43 +232,41 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             var outlookSummariesBag = new ConcurrentBag<TreatmentOutlookSummary>();
             void addOutlookSummaries(SectionContext context)
             {
-                context.ApplyPerformanceCurves();
+                var feasibleTreatments = ActiveTreatments.ToHashSet();
 
-                if (!context.YearIsWithinShadowForAnyTreatment(year))
+                _ = feasibleTreatments.RemoveWhere(treatment => context.YearIsWithinShadowForSameTreatment(year, treatment));
+                _ = feasibleTreatments.RemoveWhere(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false);
+
+                var supersededTreatments = Enumerable.ToArray(
+                    from treatment in feasibleTreatments
+                    from supersession in treatment.Supersessions
+                    where supersession.Criterion.Evaluate(context) ?? true
+                    select supersession.Treatment);
+
+                feasibleTreatments.ExceptWith(supersededTreatments);
+
+                if (feasibleTreatments.Count > 0)
                 {
-                    var feasibleTreatments = ActiveTreatments.ToHashSet();
+                    var remainingLifeCalculatorFactories = Enumerable.ToArray(
+                        from limit in Simulation.AnalysisMethod.RemainingLifeLimits
+                        where limit.Criterion.Evaluate(context) ?? true
+                        group limit.Value by limit.Attribute into attributeLimitValues
+                        select new RemainingLifeCalculator.Factory(attributeLimitValues));
 
-                    _ = feasibleTreatments.RemoveWhere(treatment => context.YearIsWithinShadowForSameTreatment(year, treatment));
-                    _ = feasibleTreatments.RemoveWhere(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false);
+                    var baselineOutlook = new TreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
 
-                    var supersededTreatments = feasibleTreatments
-                        .SelectMany(treatment => treatment.Supersessions
-                            .Where(supersession => supersession.Criterion.Evaluate(context) ?? false)
-                            .Select(supersession => supersession.Treatment));
-
-                    feasibleTreatments.ExceptWith(supersededTreatments);
-
-                    if (feasibleTreatments.Count > 0)
+                    foreach (var treatment in feasibleTreatments)
                     {
-                        var remainingLifeCalculatorFactories = Enumerable.ToArray(
-                            from limit in Simulation.AnalysisMethod.RemainingLifeLimits
-                            where limit.Criterion.Evaluate(context) ?? true
-                            group limit.Value by limit.Attribute into attributeLimitValues
-                            select new RemainingLifeCalculator.Factory(attributeLimitValues));
-
-                        var baselineOutlook = new TreatmentOutlook(context, Simulation.DesignatedPassiveTreatment, year, remainingLifeCalculatorFactories);
-
-                        foreach (var treatment in feasibleTreatments)
-                        {
-                            var outlook = new TreatmentOutlook(context, treatment, year, remainingLifeCalculatorFactories);
-                            var summary = outlook.GetSummaryRelativeToBaseline(baselineOutlook);
-                            outlookSummariesBag.Add(summary);
-                        }
+                        var outlook = new TreatmentOutlook(context, treatment, year, remainingLifeCalculatorFactories);
+                        var summary = outlook.GetSummaryRelativeToBaseline(baselineOutlook);
+                        outlookSummariesBag.Add(summary);
                     }
                 }
             }
 
-            _ = Parallel.ForEach(unscheduledContexts, addOutlookSummaries);
+            _ = Parallel.ForEach(
+                untreatedContexts.Where(context => !context.YearIsWithinShadowForAnyTreatment(year)),
+                addOutlookSummaries);
 
             var outlookSummaries = outlookSummariesBag.OrderByDescending(objectiveFunction).ToList();
             return outlookSummaries;

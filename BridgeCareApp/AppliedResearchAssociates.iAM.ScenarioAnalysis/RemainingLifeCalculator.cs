@@ -46,9 +46,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private readonly NumberAttribute Attribute;
 
-        private readonly double Limit;
+        private readonly SectionContext Context;
 
-        private SectionContext Context;
+        private readonly double Limit;
 
         private double CurrentValue;
 
