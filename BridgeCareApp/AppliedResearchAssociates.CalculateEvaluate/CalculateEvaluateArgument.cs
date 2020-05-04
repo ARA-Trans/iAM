@@ -26,7 +26,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public virtual void SetNumber(string key, Func<double> getValue) => Number[key] = getValue;
 
-        public virtual void SetText(string key, string value) => Text[key] = value;
+        public virtual void SetText(string key, string value) => Text[key] = value ?? "";
 
         public virtual void SetTimestamp(string key, DateTime value) => Timestamp[key] = value;
 
