@@ -16,6 +16,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             Timestamp.CopyFrom(original.Timestamp);
         }
 
+        public IEnumerable<string> NumberKeys => Number.Keys;
+
+        public IEnumerable<string> TextKeys => Text.Keys;
+
+        public IEnumerable<string> TimestampKeys => Timestamp.Keys;
+
         public virtual double GetNumber(string key) => Number[key]();
 
         public virtual string GetText(string key) => Text[key];

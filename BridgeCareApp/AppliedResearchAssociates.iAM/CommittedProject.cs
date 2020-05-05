@@ -22,7 +22,7 @@ namespace AppliedResearchAssociates.iAM
             {
                 _TemplateTreatment = value;
 
-                Name = _TemplateTreatment.Name;
+                Name = TemplateTreatment.Name;
 
                 Consequences.Clear();
                 foreach (var templateConsequence in TemplateTreatment.Consequences)

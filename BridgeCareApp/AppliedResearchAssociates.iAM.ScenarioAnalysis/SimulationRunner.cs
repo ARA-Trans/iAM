@@ -64,20 +64,46 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 ApplyPerformanceCurves(idleContexts);
                 var untreatedContexts = ApplyScheduledTreatments(idleContexts, currentYear);
 
-                {// "Calculate target condition goal statuses"
-                    var actualValuePerTargetConditionGoal = GetActualValuesForTargetConditionGoals(currentYear);
-                    var targetConditionGoalsMet = actualValuePerTargetConditionGoal.All(kv => kv.Key.IsMet(kv.Value));
+                // TODO: Might need tweaking. Criteria should probably only evaluated once, up-front... Maybe.
+                var actualValuePerTargetConditionGoal = GetActualValuesForTargetConditionGoals(currentYear);
+                var targetConditionGoalsMet = actualValuePerTargetConditionGoal.All(kv => kv.Key.IsMet(kv.Value));
 
-                    bool deficientConditionGoalsMet;
-                }
+                var actualValuesPerDeficientConditionGoal = GetActualValuesForDeficientConditionGoals();
+                var deficientConditionGoalsMet = actualValuesPerDeficientConditionGoal.All(kv => kv.Key.IsMet(kv.Value));
 
-                if (Simulation.AnalysisMethod.SpendingStrategy != SpendingStrategy.NoSpending)
+                switch (Simulation.AnalysisMethod.SpendingStrategy)
                 {
-                    // TODO: Don't optimize if target/deficient strategy and it's already satisfied.
-
+                case SpendingStrategy.NoSpending:
+                    break;
+                case SpendingStrategy.UnlimitedSpending:
                     var optimizedOrderOfTreatments = GetOptimizedOrderOfTreatments(untreatedContexts, currentYear);
-
-                    // When a treatment is chosen, spent, and applied, remove that context from untreatedContexts.
+                    foreach (var summary in optimizedOrderOfTreatments)
+                    {
+                        if (untreatedContexts.Remove(summary.Context))
+                        {
+                            // determine budget(s) to spend from.
+                            summary.Context.ApplyTreatment(summary.CandidateTreatment, currentYear, out var cost);
+                            // allocate cost to the right budget(s).
+                        }
+                    }
+                    break;
+                case SpendingStrategy.AsBudgetPermits:
+                    // same as unlimited, except additional stop condition: when the money runs out. (CHECK AT TOP OF APPLICATION LOOP BODY!)
+                    break;
+                case SpendingStrategy.UntilTargetAndDeficientConditionGoalsMet:
+                    // same as unlimited, except additional stop condition: when T & D are met. (ALSO CHECK BEFORE OPTIMIZATION!)
+                    break;
+                case SpendingStrategy.UntilTargetOrDeficientConditionGoalsMet:
+                    // same as unlimited, except additional stop condition: when T | D is met. (ALSO CHECK BEFORE OPTIMIZATION!)
+                    break;
+                case SpendingStrategy.UntilTargetConditionGoalsMet:
+                    // same as unlimited, except additional stop condition: when T is met. (ALSO CHECK BEFORE OPTIMIZATION!)
+                    break;
+                case SpendingStrategy.UntilDeficientConditionGoalsMet:
+                    // same as unlimited, except additional stop condition: when D is met. (ALSO CHECK BEFORE OPTIMIZATION!)
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid spending strategy.");
                 }
 
                 foreach (var untreatedContext in untreatedContexts)
@@ -194,9 +220,28 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     continue;
                 }
 
-                var applicableContexts = SectionContexts.Where(context => goal.Criterion.Evaluate(context) ?? true).ToArray();
-                var actual = applicableContexts.Average(context => context.GetNumber(goal.Attribute.Name));
+                var actual = SectionContexts
+                    .Where(context => goal.Criterion.Evaluate(context) ?? true)
+                    .Average(context => context.GetNumber(goal.Attribute.Name));
+
                 results.Add(goal, actual);
+            }
+
+            return results;
+        }
+
+        private IDictionary<DeficientConditionGoal, ICollection<double>> GetActualValuesForDeficientConditionGoals()
+        {
+            var results = new Dictionary<DeficientConditionGoal, ICollection<double>>();
+
+            foreach (var goal in Simulation.AnalysisMethod.DeficientConditionGoals)
+            {
+                var actualLevels = SectionContexts
+                    .Where(context => goal.Criterion.Evaluate(context) ?? true)
+                    .Select(context => context.GetNumber(goal.Attribute.Name))
+                    .ToArray();
+
+                results.Add(goal, actualLevels);
             }
 
             return results;

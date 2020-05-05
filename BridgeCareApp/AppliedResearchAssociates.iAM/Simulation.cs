@@ -18,7 +18,7 @@ namespace AppliedResearchAssociates.iAM
 
         public List<PerformanceCurve> PerformanceCurves { get; }
 
-        public List<SimulationResult> Results { get; }
+        public List<SimulationYear> Results { get; } = new List<SimulationYear>();
 
         public List<SelectableTreatment> Treatments { get; }
 

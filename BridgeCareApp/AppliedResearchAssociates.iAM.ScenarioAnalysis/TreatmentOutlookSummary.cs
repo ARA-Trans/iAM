@@ -4,7 +4,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class TreatmentOutlookSummary
     {
-        public TreatmentOutlookSummary(SectionContext context, Treatment candidateTreatment, double costPerUnitArea, double benefit, double? remainingLife)
+        public TreatmentOutlookSummary(SectionContext context, SelectableTreatment candidateTreatment, double costPerUnitArea, double benefit, double? remainingLife)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
             CandidateTreatment = candidateTreatment ?? throw new ArgumentNullException(nameof(candidateTreatment));
@@ -13,13 +13,15 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             RemainingLife = remainingLife;
         }
 
-        public SectionContext Context { get; }
-
         public double Benefit { get; }
+
+        public SelectableTreatment CandidateTreatment { get; }
+
+        public SectionContext Context { get; }
 
         public double CostPerUnitArea { get; }
 
-        public Treatment CandidateTreatment { get; }
+        public FeasibleTreatmentSummary FeasibleTreatmentSummary => new FeasibleTreatmentSummary(CostPerUnitArea, Benefit, RemainingLife);
 
         public double? RemainingLife { get; }
     }

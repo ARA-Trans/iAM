@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class TreatmentOutlook
     {
-        public TreatmentOutlook(SectionContext templateContext, Treatment initialTreatment, int initialYear, IEnumerable<RemainingLifeCalculator.Factory> remainingLifeCalculatorFactories)
+        public TreatmentOutlook(SectionContext templateContext, SelectableTreatment initialTreatment, int initialYear, IEnumerable<RemainingLifeCalculator.Factory> remainingLifeCalculatorFactories)
         {
             TemplateContext = templateContext ?? throw new ArgumentNullException(nameof(templateContext));
             InitialTreatment = initialTreatment ?? throw new ArgumentNullException(nameof(initialTreatment));
@@ -41,7 +41,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private readonly SectionContext TemplateContext;
         private readonly SectionContext AccumulationContext;
-        private readonly Treatment InitialTreatment;
+        private readonly SelectableTreatment InitialTreatment;
         private readonly int InitialYear;
         private readonly IReadOnlyCollection<RemainingLifeCalculator> RemainingLifeCalculators;
 

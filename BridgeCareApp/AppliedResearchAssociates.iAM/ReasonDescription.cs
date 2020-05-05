@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public enum ReasonDescription
+    public enum TreatmentReason
     {
         Selected,
     }
