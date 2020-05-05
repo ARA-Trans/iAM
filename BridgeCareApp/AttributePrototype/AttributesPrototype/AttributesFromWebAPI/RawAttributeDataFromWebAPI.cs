@@ -6,9 +6,9 @@ namespace AttributesPrototype.AttributesFromWebAPI
 {
     class RawAttributeDataFromWebAPI : IAttributeData
     {
-        public void GetAttributeData(IConnectionDetails connectionDetails)
+        public void GetAttributeDataChuncks(IConnectionDetails connectionDetails)
         {
-            // Implementation of getting attribute data from Web API connection
+            Console.WriteLine("Implementation for Raw attribute data from Web API will go here");
         }
     }
 }

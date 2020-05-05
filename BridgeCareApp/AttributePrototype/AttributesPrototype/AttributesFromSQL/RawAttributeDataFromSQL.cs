@@ -9,7 +9,7 @@ namespace AttributesPrototype
     class RawAttributeDataFromSQL : IAttributeData
     {
 
-        public void GetAttributeData(IConnectionDetails connectionDetails)
+        public void GetAttributeDataChuncks(IConnectionDetails connectionDetails)
         {
             var rawAttributes = File.ReadAllText("Test.json");
             var myJsonObject = JsonConvert.DeserializeObject<AttributeModel>(rawAttributes);

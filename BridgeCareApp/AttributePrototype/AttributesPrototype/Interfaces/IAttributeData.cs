@@ -6,6 +6,6 @@ namespace AttributesPrototype
 {
     interface IAttributeData
     {
-        public void GetAttributeData(IConnectionDetails connectionDetails);
+        public void GetAttributeDataChuncks(IConnectionDetails connectionDetails);
     }
 }
