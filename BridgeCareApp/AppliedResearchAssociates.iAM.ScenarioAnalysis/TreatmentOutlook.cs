@@ -57,7 +57,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private void ApplyTreatment(Treatment treatment, int year)
         {
-            AccumulationContext.ApplyTreatment(treatment, year, out var cost);
+            var cost = AccumulationContext.GetCostOfTreatment(treatment);
+            AccumulationContext.ApplyTreatment(treatment, year);
             var area = AccumulationContext.GetArea();
             var costPerUnitArea = cost / area;
             CumulativeCostPerUnitArea += costPerUnitArea;
@@ -108,17 +109,18 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     throw new InvalidOperationException($"Treatment outlook did not terminate naturally within {MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK} years.");
                 }
 
-                if (AccumulationContext.ProgressSchedule.TryGetValue(year, out var treatmentProgress))
+                if (AccumulationContext.ProjectSchedule.TryGetValue(year, out var project) && project.IsT2(out var progress))
                 {
                     // TODO: apply progress (accumulating cost & applying consequences)
+
                     continue;
                 }
 
                 AccumulationContext.ApplyPerformanceCurves();
 
-                if (AccumulationContext.TreatmentSchedule.TryGetValue(year, out var scheduledTreatment))
+                if (AccumulationContext.ProjectSchedule.TryGetValue(year, out project) && project.IsT1(out var treatment))
                 {
-                    ApplyTreatment(scheduledTreatment, year);
+                    ApplyTreatment(treatment, year);
                 }
 
                 var previousCumulativeBenefit = CumulativeBenefit;
@@ -126,9 +128,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 updateRemainingLife?.Invoke();
 
-                if (CumulativeBenefit == previousCumulativeBenefit &&
-                    AccumulationContext.TreatmentSchedule.Keys.All(scheduledYear => scheduledYear <= year) &&
-                    AccumulationContext.ProgressSchedule.Keys.All(scheduleYear => scheduleYear <= year))
+                if (CumulativeBenefit == previousCumulativeBenefit && AccumulationContext.ProjectSchedule.Keys.All(scheduledYear => scheduledYear <= year))
                 {
                     break;
                 }

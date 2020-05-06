@@ -1,5 +1,5 @@
 ﻿// WARNING: This file was automatically generated from a T4 text template at the
-// following moment in time: 04/10/2020 20:29:28 -05:00. Any changes you make to
+// following moment in time: 05/06/2020 15:40:51 -05:00. Any changes you make to
 // this file will be lost when this file is regenerated from the template
 // source.
 
@@ -22,17 +22,33 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2> Of(T2 value) => value != null ? new Choice2(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -62,11 +78,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -111,11 +127,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -167,23 +183,47 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2, T3> Of(T3 value) => value != null ? new Choice3(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T3 AsT3 => default;
+        public T3 AsT3()
+        {
+            _ = IsT3(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT3 => false;
+        public bool IsT3() => IsT3(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT3(out T3 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -217,11 +257,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -269,11 +309,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -321,11 +361,11 @@ namespace AppliedResearchAssociates
 
             public Choice3(T3 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T3 AsT3 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT3 => true;
+            public override bool IsT3(out T3 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -382,29 +422,61 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2, T3, T4> Of(T4 value) => value != null ? new Choice4(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T3 AsT3 => default;
+        public T3 AsT3()
+        {
+            _ = IsT3(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T4 AsT4 => default;
+        public T4 AsT4()
+        {
+            _ = IsT4(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT3 => false;
+        public bool IsT3() => IsT3(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT4 => false;
+        public bool IsT4() => IsT4(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT3(out T3 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT4(out T4 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -442,11 +514,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -497,11 +569,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -552,11 +624,11 @@ namespace AppliedResearchAssociates
 
             public Choice3(T3 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T3 AsT3 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT3 => true;
+            public override bool IsT3(out T3 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -607,11 +679,11 @@ namespace AppliedResearchAssociates
 
             public Choice4(T4 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T4 AsT4 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT4 => true;
+            public override bool IsT4(out T4 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -673,35 +745,75 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2, T3, T4, T5> Of(T5 value) => value != null ? new Choice5(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T3 AsT3 => default;
+        public T3 AsT3()
+        {
+            _ = IsT3(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T4 AsT4 => default;
+        public T4 AsT4()
+        {
+            _ = IsT4(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T5 AsT5 => default;
+        public T5 AsT5()
+        {
+            _ = IsT5(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT3 => false;
+        public bool IsT3() => IsT3(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT4 => false;
+        public bool IsT4() => IsT4(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT5 => false;
+        public bool IsT5() => IsT5(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT3(out T3 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT4(out T4 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT5(out T5 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -743,11 +855,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -801,11 +913,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -859,11 +971,11 @@ namespace AppliedResearchAssociates
 
             public Choice3(T3 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T3 AsT3 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT3 => true;
+            public override bool IsT3(out T3 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -917,11 +1029,11 @@ namespace AppliedResearchAssociates
 
             public Choice4(T4 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T4 AsT4 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT4 => true;
+            public override bool IsT4(out T4 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -975,11 +1087,11 @@ namespace AppliedResearchAssociates
 
             public Choice5(T5 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T5 AsT5 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT5 => true;
+            public override bool IsT5(out T5 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1046,41 +1158,89 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2, T3, T4, T5, T6> Of(T6 value) => value != null ? new Choice6(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T3 AsT3 => default;
+        public T3 AsT3()
+        {
+            _ = IsT3(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T4 AsT4 => default;
+        public T4 AsT4()
+        {
+            _ = IsT4(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T5 AsT5 => default;
+        public T5 AsT5()
+        {
+            _ = IsT5(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T6 AsT6 => default;
+        public T6 AsT6()
+        {
+            _ = IsT6(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT3 => false;
+        public bool IsT3() => IsT3(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT4 => false;
+        public bool IsT4() => IsT4(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT5 => false;
+        public bool IsT5() => IsT5(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT6 => false;
+        public bool IsT6() => IsT6(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT3(out T3 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT4(out T4 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT5(out T5 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT6(out T6 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -1126,11 +1286,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1187,11 +1347,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1248,11 +1408,11 @@ namespace AppliedResearchAssociates
 
             public Choice3(T3 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T3 AsT3 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT3 => true;
+            public override bool IsT3(out T3 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1309,11 +1469,11 @@ namespace AppliedResearchAssociates
 
             public Choice4(T4 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T4 AsT4 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT4 => true;
+            public override bool IsT4(out T4 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1370,11 +1530,11 @@ namespace AppliedResearchAssociates
 
             public Choice5(T5 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T5 AsT5 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT5 => true;
+            public override bool IsT5(out T5 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1431,11 +1591,11 @@ namespace AppliedResearchAssociates
 
             public Choice6(T6 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T6 AsT6 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT6 => true;
+            public override bool IsT6(out T6 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1507,47 +1667,103 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2, T3, T4, T5, T6, T7> Of(T7 value) => value != null ? new Choice7(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T3 AsT3 => default;
+        public T3 AsT3()
+        {
+            _ = IsT3(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T4 AsT4 => default;
+        public T4 AsT4()
+        {
+            _ = IsT4(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T5 AsT5 => default;
+        public T5 AsT5()
+        {
+            _ = IsT5(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T6 AsT6 => default;
+        public T6 AsT6()
+        {
+            _ = IsT6(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T7 AsT7 => default;
+        public T7 AsT7()
+        {
+            _ = IsT7(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT3 => false;
+        public bool IsT3() => IsT3(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT4 => false;
+        public bool IsT4() => IsT4(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT5 => false;
+        public bool IsT5() => IsT5(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT6 => false;
+        public bool IsT6() => IsT6(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT7 => false;
+        public bool IsT7() => IsT7(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT3(out T3 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT4(out T4 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT5(out T5 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT6(out T6 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT7(out T7 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -1597,11 +1813,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1661,11 +1877,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1725,11 +1941,11 @@ namespace AppliedResearchAssociates
 
             public Choice3(T3 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T3 AsT3 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT3 => true;
+            public override bool IsT3(out T3 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1789,11 +2005,11 @@ namespace AppliedResearchAssociates
 
             public Choice4(T4 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T4 AsT4 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT4 => true;
+            public override bool IsT4(out T4 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1853,11 +2069,11 @@ namespace AppliedResearchAssociates
 
             public Choice5(T5 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T5 AsT5 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT5 => true;
+            public override bool IsT5(out T5 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1917,11 +2133,11 @@ namespace AppliedResearchAssociates
 
             public Choice6(T6 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T6 AsT6 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT6 => true;
+            public override bool IsT6(out T6 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -1981,11 +2197,11 @@ namespace AppliedResearchAssociates
 
             public Choice7(T7 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T7 AsT7 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT7 => true;
+            public override bool IsT7(out T7 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2062,53 +2278,117 @@ namespace AppliedResearchAssociates
 
         public static Choice<T1, T2, T3, T4, T5, T6, T7, T8> Of(T8 value) => value != null ? new Choice8(value) : null;
 
-        [IgnoreDataMember]
-        public virtual T1 AsT1 => default;
+        public T1 AsT1()
+        {
+            _ = IsT1(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T2 AsT2 => default;
+        public T2 AsT2()
+        {
+            _ = IsT2(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T3 AsT3 => default;
+        public T3 AsT3()
+        {
+            _ = IsT3(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T4 AsT4 => default;
+        public T4 AsT4()
+        {
+            _ = IsT4(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T5 AsT5 => default;
+        public T5 AsT5()
+        {
+            _ = IsT5(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T6 AsT6 => default;
+        public T6 AsT6()
+        {
+            _ = IsT6(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T7 AsT7 => default;
+        public T7 AsT7()
+        {
+            _ = IsT7(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual T8 AsT8 => default;
+        public T8 AsT8()
+        {
+            _ = IsT8(out var value);
+            return value;
+        }
 
-        [IgnoreDataMember]
-        public virtual bool IsT1 => false;
+        public bool IsT1() => IsT1(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT2 => false;
+        public bool IsT2() => IsT2(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT3 => false;
+        public bool IsT3() => IsT3(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT4 => false;
+        public bool IsT4() => IsT4(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT5 => false;
+        public bool IsT5() => IsT5(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT6 => false;
+        public bool IsT6() => IsT6(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT7 => false;
+        public bool IsT7() => IsT7(out _);
 
-        [IgnoreDataMember]
-        public virtual bool IsT8 => false;
+        public bool IsT8() => IsT8(out _);
+
+        public virtual bool IsT1(out T1 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT2(out T2 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT3(out T3 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT4(out T4 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT5(out T5 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT6(out T6 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT7(out T7 value)
+        {
+            value = default;
+            return false;
+        }
+
+        public virtual bool IsT8(out T8 value)
+        {
+            value = default;
+            return false;
+        }
 
         public abstract object Value { get; }
 
@@ -2162,11 +2442,11 @@ namespace AppliedResearchAssociates
 
             public Choice1(T1 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T1 AsT1 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT1 => true;
+            public override bool IsT1(out T1 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2229,11 +2509,11 @@ namespace AppliedResearchAssociates
 
             public Choice2(T2 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T2 AsT2 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT2 => true;
+            public override bool IsT2(out T2 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2296,11 +2576,11 @@ namespace AppliedResearchAssociates
 
             public Choice3(T3 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T3 AsT3 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT3 => true;
+            public override bool IsT3(out T3 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2363,11 +2643,11 @@ namespace AppliedResearchAssociates
 
             public Choice4(T4 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T4 AsT4 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT4 => true;
+            public override bool IsT4(out T4 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2430,11 +2710,11 @@ namespace AppliedResearchAssociates
 
             public Choice5(T5 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T5 AsT5 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT5 => true;
+            public override bool IsT5(out T5 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2497,11 +2777,11 @@ namespace AppliedResearchAssociates
 
             public Choice6(T6 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T6 AsT6 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT6 => true;
+            public override bool IsT6(out T6 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2564,11 +2844,11 @@ namespace AppliedResearchAssociates
 
             public Choice7(T7 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T7 AsT7 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT7 => true;
+            public override bool IsT7(out T7 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
@@ -2631,11 +2911,11 @@ namespace AppliedResearchAssociates
 
             public Choice8(T8 value) => _value = value;
 
-            [IgnoreDataMember]
-            public override T8 AsT8 => _value;
-
-            [IgnoreDataMember]
-            public override bool IsT8 => true;
+            public override bool IsT8(out T8 value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 

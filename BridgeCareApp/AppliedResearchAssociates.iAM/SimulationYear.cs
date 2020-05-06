@@ -2,18 +2,16 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class SimulationBudgetDetail
-    {
-        // TODO
-    }
-
+    // [TODO] This output aggregate should probably have value semantics, and so it should not
+    // reference any entity (i.e. input) types. But, maybe it's better to outsource "value-ness" to
+    // additional "snapshotting" logic?
     public sealed class SimulationYear
     {
         //TODO
         public object ConditionGoalsProgress { get; }
 
-        public IDictionary<Budget, SimulationBudgetDetail> DetailPerBudget { get; } = new Dictionary<Budget, SimulationBudgetDetail>();
+        public IEnumerable<SimulationBudgetDetail> DetailPerBudget { get; }
 
-        public IDictionary<Section, SimulationSectionDetail> DetailPerSection { get; } = new Dictionary<Section, SimulationSectionDetail>();
+        public IEnumerable<SimulationSectionDetail> DetailPerSection { get; }
     }
 }

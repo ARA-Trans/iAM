@@ -3,5 +3,7 @@
     public enum TreatmentReason
     {
         Selected,
+        Scheduled,
+        CashFlowed,
     }
 }

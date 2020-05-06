@@ -8,6 +8,6 @@ namespace AppliedResearchAssociates.iAM
 
         public int? Year { get; }
 
-        public bool IsMet(double actual) => Attribute.IsDecreasingWithDeterioration ? actual >= Target : actual <= Target;
+        public override bool IsMet(double actual) => Attribute.IsDecreasingWithDeterioration ? actual >= Target : actual <= Target;
     }
 }

@@ -19,7 +19,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             SimulationRunner = original.SimulationRunner;
             LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
             LastYearOfShadowForSameTreatment.CopyFrom(original.LastYearOfShadowForSameTreatment);
-            TreatmentSchedule.CopyFrom(original.TreatmentSchedule);
+            ProjectSchedule.CopyFrom(original.ProjectSchedule);
             NumberCache.CopyFrom(original.NumberCache);
         }
 
@@ -27,9 +27,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public SimulationRunner SimulationRunner { get; }
 
-        public IDictionary<int, Treatment> TreatmentSchedule { get; } = new Dictionary<int, Treatment>();
-
-        public IDictionary<int, TreatmentProgress> ProgressSchedule { get; } = new Dictionary<int, TreatmentProgress>();
+        public IDictionary<int, Choice<Treatment, TreatmentProgress>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
 
         private AnalysisMethod AnalysisMethod => SimulationRunner.Simulation.AnalysisMethod;
 
@@ -62,11 +60,11 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
         }
 
-        public void ApplyTreatment(Treatment treatment, int year, out double cost)
+        public void ApplyTreatment(Treatment treatment, int year)
         {
-            TreatmentSchedule[year] = treatment;
+            ProjectSchedule[year] = treatment;
 
-            cost = treatment.GetCost(this, AnalysisMethod.AgeAttribute); // TODO: Handle cash-flow/split treatments.
+            // TODO: Handle cash-flow/split treatments.
 
             var consequenceActions = treatment.GetConsequenceActions(this, AnalysisMethod.AgeAttribute);
             foreach (var consequenceAction in consequenceActions)
@@ -77,11 +75,16 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             foreach (var scheduling in treatment.GetSchedulings())
             {
                 var schedulingYear = year + scheduling.OffsetToFutureYear;
-                TreatmentSchedule.Add(schedulingYear, scheduling.Treatment);
 
-                // Unclear what is correct when two treatments write into the same schedule slot. Or
-                // when one scheduled treatment is slotted to begin before the end of another.
-                // UPDATE: According to legacy code, both are eliminated! wtf...
+                if (ProjectSchedule.ContainsKey(schedulingYear))
+                {
+                    // [REVIEW] Unclear what is correct when two treatments write into the same
+                    // schedule slot. Or when one scheduled treatment is slotted to begin before the
+                    // end of another. According to legacy code, both are eliminated! wtf...
+                    throw new InvalidOperationException("Year is already scheduled for other activity.");
+                }
+
+                ProjectSchedule.Add(schedulingYear, scheduling.Treatment);
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
@@ -98,6 +101,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             var weightedBenefit = weight * benefit;
             return weightedBenefit;
         }
+
+        public double GetCostOfTreatment(Treatment treatment) => treatment.GetCost(this, AnalysisMethod.AgeAttribute);
 
         public override double GetNumber(string key)
         {

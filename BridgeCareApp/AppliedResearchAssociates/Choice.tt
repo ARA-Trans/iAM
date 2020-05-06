@@ -69,8 +69,11 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
     foreach (var c in choices)
     {
 #>
-        [IgnoreDataMember]
-        public virtual <#= typeParams[c] #> As<#= typeParams[c] #> => default;
+        public <#= typeParams[c] #> As<#= typeParams[c] #>()
+        {
+            _ = Is<#= typeParams[c] #>(out var value);
+            return value;
+        }
 
 <#
     }
@@ -79,8 +82,20 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
     foreach (var c in choices)
     {
 #>
-        [IgnoreDataMember]
-        public virtual bool Is<#= typeParams[c] #> => false;
+        public bool Is<#= typeParams[c] #>() => Is<#= typeParams[c] #>(out _);
+
+<#
+    }
+#>
+<#
+    foreach (var c in choices)
+    {
+#>
+        public virtual bool Is<#= typeParams[c] #>(out <#= typeParams[c] #> value)
+        {
+            value = default;
+            return false;
+        }
 
 <#
     }
@@ -129,11 +144,11 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 
             public <#= subtypes[c] #>(<#= typeParams[c] #> value) => _value = value;
 
-            [IgnoreDataMember]
-            public override <#= typeParams[c] #> As<#= typeParams[c] #> => _value;
-
-            [IgnoreDataMember]
-            public override bool Is<#= typeParams[c] #> => true;
+            public override bool Is<#= typeParams[c] #>(out <#= typeParams[c] #> value)
+            {
+                value = _value;
+                return true;
+            }
 
             public override object Value => _value;
 
