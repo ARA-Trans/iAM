@@ -12,7 +12,7 @@ namespace AttributesPrototype
         public void GetAttributeDataChuncks(IConnectionDetails connectionDetails)
         {
             var rawAttributes = File.ReadAllText("Test.json");
-            var myJsonObject = JsonConvert.DeserializeObject<AttributeModel>(rawAttributes);
+            var myJsonObject = JsonConvert.DeserializeObject<AttributeMetaDataModel>(rawAttributes);
 
             var attributeNames = new List<string>();
             foreach (var item in myJsonObject.AttributeList)
