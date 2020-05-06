@@ -292,6 +292,7 @@
     <Compile Include="Interfaces\SummaryReport\IWorkSummaryByBudget.cs" />
     <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryByBudgetModel.cs" />
+    <Compile Include="Option.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
     <Compile Include="Security\JWTParse.cs" />
     <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />

@@ -22,7 +22,6 @@ namespace BridgeCare
         public void Configuration(IAppBuilder app)
         {
             var container = UnityConfig.Container;
-
             Hangfire.GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(container));
             var dashboardPath = "/hangfire";
 
