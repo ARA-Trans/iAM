@@ -28,6 +28,14 @@ export default class TargetService {
     }
 
     /**
+     * Deletes a target library
+     * @param targetLibrary The target library to delete
+     */
+    static deleteTargetLibrary(targetLibrary: TargetLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteTargetLibrary/${targetLibrary.id}`);
+    }
+
+    /**
      * Gets a scenario's target library data
      * @param selectedScenarioId Scenario object id
      */
@@ -39,7 +47,9 @@ export default class TargetService {
      * Upserts a scenario's target library data
      * @param scenarioTargetLibraryData Scenario target library upsert data
      */
-    static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary): AxiosPromise {
+    static saveScenarioTargetLibrary(scenarioTargetLibraryData: TargetLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioTargetLibrary', scenarioTargetLibraryData);
     }
 }

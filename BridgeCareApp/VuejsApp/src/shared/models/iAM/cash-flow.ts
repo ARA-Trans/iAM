@@ -1,7 +1,7 @@
 export interface SplitTreatmentLimit {
     id: string;
     rank: number;
-    amount: number;
+    amount: number | null;
     percentage: string;
 }
 
@@ -15,6 +15,8 @@ export interface SplitTreatment {
 export interface CashFlowLibrary {
     id: string;
     name: string;
+    owner?: string;
+    shared?: boolean;
     description: string;
     splitTreatments: SplitTreatment[];
 }
@@ -36,6 +38,6 @@ export const emptySplitTreatment: SplitTreatment = {
 export const emptySplitTreatmentLimit: SplitTreatmentLimit = {
     id: '0',
     rank: 1,
-    amount: 1000000,
+    amount: 0,
     percentage: '100'
 };

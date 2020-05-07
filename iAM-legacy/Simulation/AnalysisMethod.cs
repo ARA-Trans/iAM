@@ -19,11 +19,12 @@ namespace Simulation
         private bool _isOMSUnlimited;
         private bool _isOMSTargetEnforced = true;
         public bool IsConditionalRSL { get; set; }
-
+        public bool IsUseReasons { get; set; }
         
         public AnalysisMethod()
         {
             this.IsConditionalRSL = false;
+            IsUseReasons = true;
         }
 
         /// <summary>

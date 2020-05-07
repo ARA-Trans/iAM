@@ -25,7 +25,7 @@ namespace BridgeCare.Services
         public void Fill(ExcelWorksheet worksheet, ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count)
         {
             stackedColumnChartCommon.SetWorksheetProperties(worksheet);
-            var title = Properties.Resources.ConditionByDeckArea;
+            var title = Properties.Resources.CombineNHSNonNHSConditionByDeckArea;
             var chart = worksheet.Drawings.AddChart(title, eChartType.ColumnStacked);
             stackedColumnChartCommon.SetChartProperties(chart, title, 950, 700, 6, 7);
 
@@ -42,7 +42,7 @@ namespace BridgeCare.Services
 
             CreateSeries(bridgeWorkSummaryWorkSheet, totalDeckAreaSectionYearsRow, count, chart, totalDeckAreaSectionYearsRow + 2, Properties.Resources.Fair, Color.Yellow);
 
-            CreateSeries(bridgeWorkSummaryWorkSheet, totalDeckAreaSectionYearsRow, count, chart, totalDeckAreaSectionYearsRow + 1, Properties.Resources.Good, Color.Green);
+            CreateSeries(bridgeWorkSummaryWorkSheet, totalDeckAreaSectionYearsRow, count, chart, totalDeckAreaSectionYearsRow + 1, Properties.Resources.Good, Color.FromArgb(0, 176, 80));
         }
 
         private void CreateSeries(ExcelWorksheet bridgeWorkSummaryWorkSheet, int totalDeckAreaSectionYearsRow, int count, ExcelChart chart, int fromRow, string header, Color color)
@@ -52,17 +52,24 @@ namespace BridgeCare.Services
             var excelChartSerie = chart.Series.Add(serie, xSerie);
             excelChartSerie.Header = header;
             excelChartSerie.Fill.Color = color;
-        }  
+        }
 
         private void SetChartAxes(ExcelChart chart)
         {
             stackedColumnChartCommon.SetChartAxes(chart);
-            var yAxis = chart.YAxis;
-            yAxis.DisplayUnit = 1000000;
-            yAxis.Format = "_(* #,##0.00_);_(* (#,##0.00);_(* -??_);_(@_)";
-            yAxis.Title.TextVertical = OfficeOpenXml.Drawing.eTextVerticalType.Vertical;
-            yAxis.Title.Font.Size = 10;
-            yAxis.Title.Text = "Millions sqft";
+            chart.YAxis.Format = "#0%";
+            chart.YAxis.MaxValue = 1;
         }
+
+        //private void SetChartAxes(ExcelChart chart)
+        //{
+        //    stackedColumnChartCommon.SetChartAxes(chart);
+        //    var yAxis = chart.YAxis;
+        //    yAxis.DisplayUnit = 1000000;
+        //    yAxis.Format = "_(* #,##0.00_);_(* (#,##0.00);_(* -??_);_(@_)";
+        //    yAxis.Title.TextVertical = OfficeOpenXml.Drawing.eTextVerticalType.Vertical;
+        //    yAxis.Title.Font.Size = 10;
+        //    yAxis.Title.Text = "Millions sqft";
+        //}
     }    
 }

@@ -8,9 +8,10 @@
                             <h3>Beginning Authentication</h3>
                         </v-card-title>
                         <v-card-text>
-                            You should be redirected to the PennDOT login page shortly. If you are not redirected within 5 seconds, press the button below.
+                            You should be redirected to the PennDOT login page shortly. If you are not redirected within
+                            5 seconds, press the button below.
                         </v-card-text>
-                        <v-btn class="v-btn theme--light ara-blue-bg white--text" @click="onRedirect">
+                        <v-btn @click="onRedirect" class="v-btn theme--light ara-blue-bg white--text">
                             Go to login page
                         </v-btn>
                     </v-card>
@@ -23,7 +24,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {State} from 'vuex-class';
     import oidcConfig from '@/oidc-config';
 
     @Component
@@ -51,7 +52,7 @@
         @Watch('checkedForRole')
         onCheckedRole() {
             if (this.hasRole) {
-                this.$router.push('/News/');
+                this.$router.push('/Home/');
             } else {
                 this.$router.push('/NoRole/');
             }

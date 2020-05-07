@@ -20,7 +20,44 @@ export interface CriteriaRule {
     value?: string;
 }
 
+export interface CriteriaValidationResult {
+    isValid: boolean;
+    numberOfResults: number;
+    message: string;
+}
+
+export interface CriteriaLibrary {
+    id: string;
+    name: string;
+    description: string;
+    criteria: string;
+    owner?: string;
+    shared?: boolean;
+}
+
+export interface CriteriaEditorData {
+    mainCriteriaString: string;
+    isLibraryContext: boolean;
+}
+
+export interface CriteriaEditorResult {
+    validated: boolean;
+    criteria: string | null;
+}
+
 export const emptyCriteria: Criteria = {
     logicalOperator: 'AND',
     children: []
+};
+
+export const emptyCriteriaLibrary: CriteriaLibrary = {
+    id: '0',
+    name: '',
+    description: '',
+    criteria: ''
+};
+
+export const emptyCriteriaEditorData: CriteriaEditorData = {
+    mainCriteriaString: '',
+    isLibraryContext: false
 };

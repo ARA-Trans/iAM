@@ -28,6 +28,14 @@ export default class DeficientService {
     }
 
     /**
+     * Deletes a deficient library
+     * @param deficientLibrary The deficient library to delete
+     */
+    static deleteDeficientLibrary(deficientLibrary: DeficientLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteDeficientLibrary/${deficientLibrary.id}`);
+    }
+
+    /**
      * Gets scenario deficient library data
      * @param selectedScenarioId Scenario object id
      */
@@ -39,7 +47,9 @@ export default class DeficientService {
      * Saves scenario deficient library data
      * @param scenarioDeficientLibraryData Scenario deficient library data
      */
-    static saveScenarioDeficientLibrary(scenarioDeficientLibraryData: DeficientLibrary): AxiosPromise {
+    static saveScenarioDeficientLibrary(scenarioDeficientLibraryData: DeficientLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioDeficientLibrary', scenarioDeficientLibraryData);
     }
 }

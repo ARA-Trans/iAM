@@ -1937,7 +1937,7 @@ namespace RoadCare3
 					+ "2','"
 					+ "3','"
                     + "Rehabilitation,Maintenance,Construction','"
-                    + "new simulation')";
+                    + "New simulation')";
 
 				try
 				{
@@ -2747,6 +2747,15 @@ namespace RoadCare3
 			{
 				Global.WriteOutput("Warning: Table SIMULATION_" + strNetworkID + "_" + strSimulationID + " not found in database. ");
 			}
+
+            if (DBMgr.IsTableInDatabase("REASONS_" + strNetworkID + "_" + strSimulationID))
+            {
+                listCommands.Add("DROP TABLE REASONS_" + strNetworkID + "_" + strSimulationID);
+            }
+            else
+            {
+                Global.WriteOutput("Warning: Table REASONS_" + strNetworkID + "_" + strSimulationID + " not found in database. ");
+            }
 
             // Now delete the simulation row from the simulations table
             String strDelete = "DELETE FROM SIMULATIONS WHERE SIMULATIONID = '" + strSimulationID + "'";

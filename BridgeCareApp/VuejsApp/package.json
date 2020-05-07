@@ -14,6 +14,10 @@
     "lint-fix": "wotan --fix 'src/**'"
   },
   "dependencies": {
+    "@progress/kendo-charts-vue-wrapper": "2020.1.115",
+    "@progress/kendo-grid-vue-wrapper": "2020.1.219",
+    "@progress/kendo-theme-default": "4.12.2",
+    "@progress/kendo-ui": "2020.1.115",
     "@types/ramda": "0.25.48",
     "@types/socket.io-client": "^1.4.32",
     "axios": "0.19.0",
@@ -28,6 +32,7 @@
     "socket.io-client": "^2.2.0",
     "vue": "2.5.17",
     "vue-class-component": "6.0.0",
+    "vue-currency-input": "1.18.3",
     "vue-property-decorator": "7.0.0",
     "vue-query-builder": "0.7.1",
     "vue-router": "^3.1.2",

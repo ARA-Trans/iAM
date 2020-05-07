@@ -7,11 +7,17 @@ namespace BridgeCare.Interfaces
     public interface ISimulation
     {
         List<SimulationModel> GetSimulations(BridgeCareContext db);
+        List<SimulationModel> GetPermittedSimulations(BridgeCareContext db, string username);
         SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db);
-        void UpdateSimulation(SimulationModel model, BridgeCareContext db);
-        void DeleteSimulation(int id, BridgeCareContext db);
-        Task<string> RunSimulation(SimulationModel model);
+        SimulationModel CloneSimulation(int simulationId, BridgeCareContext db, string username);
+        void UpdateAnySimulation(SimulationModel model, BridgeCareContext db);
+        void UpdatePermittedSimulation(SimulationModel model, BridgeCareContext db, string username);
+        void DeleteAnySimulation(int id, BridgeCareContext db);
+        void DeletePermittedSimulation(int id, BridgeCareContext db, string username);
+        Task<string> RunSimulation(SimulationModel model, BridgeCareContext db);
+        Task<string> RunPermittedSimulation(SimulationModel model, BridgeCareContext db, string username);
         void SetSimulationLastRunDate(int id, BridgeCareContext db);
-
+        void SetPermittedSimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db, string username);
+        void SetAnySimulationUsers(int simulationId, List<SimulationUserModel> simulationUsers, BridgeCareContext db);
     }
 }

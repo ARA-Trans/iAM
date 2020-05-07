@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,16 +8,18 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Priority" v-model="newPriority.priorityLevel" outline></v-text-field>
-                    <v-autocomplete :items="years" v-model="selectedYear" outline label="Select a Year"></v-autocomplete>
+                    <v-text-field label="Priority" outline v-model.number="newPriority.priorityLevel"
+                                  :mask="'##########'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                    <v-text-field label="Year" outline v-model.number="newPriority.year"
+                                    :mask="'####'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
+                    <v-btn :disabled="disableSubmit()" @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">
                         Cancel
                     </v-btn>
                 </v-layout>
@@ -32,16 +34,18 @@
     import {emptyPriority, Priority} from '@/shared/models/iAM/priority';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+
     const ObjectID = require('bson-objectid');
-    import {clone} from 'ramda';
 
     @Component
     export default class CreatePriorityDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        newPriority: Priority = clone({...emptyPriority, id: ObjectID.generate(), year: moment().year()});
+        newPriority: Priority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
         selectedYear: string = moment().year().toString();
         years: string[] = [];
+        rules: InputValidationRules = {...rules};
 
         mounted() {
             const endYear = moment().subtract(50, 'years');
@@ -55,8 +59,8 @@
 
         @Watch('selectedYear')
         onSelectedYearChanged() {
-            if (this.selectedYear === '') {
-                this.newPriority.year = undefined;
+            if (!hasValue(this.selectedYear)) {
+                this.newPriority.year = null;
                 return;
             }
             this.newPriority.year = parseInt(this.selectedYear);
@@ -67,7 +71,8 @@
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newPriority.priorityLevel);
+            return !(this.rules['generalRules'].valueIsNotEmpty(this.newPriority.year) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newPriority.priorityLevel));
         }
 
         /**
@@ -81,7 +86,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newPriority = clone({...emptyPriority, id: ObjectID.generate(), year: this.newPriority.year});
+            this.newPriority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
         }
     }
 </script>

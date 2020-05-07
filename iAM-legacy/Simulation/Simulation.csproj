@@ -253,6 +253,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Crc32C.NET, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
@@ -260,10 +264,14 @@
     <Reference Include="DnsClient, Version=1.2.0.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
       <HintPath>..\packages\DnsClient.1.2.0\lib\net471\DnsClient.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\BridgeCareApp\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.SqlServer.Smo, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Microsoft SQL Server assemblies\2012 (v11)\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MongoDB.Bson, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\BridgeCareApp\packages\MongoDB.Bson.2.10.1\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -291,6 +299,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BridgeCareApp\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -312,6 +321,7 @@
   <ItemGroup>
     <Compile Include="AnalysisMethod.cs" />
     <Compile Include="AnalysisParameters.cs" />
+    <Compile Include="SimulationQueue.cs" />
     <Compile Include="AppliedTreatment.cs" />
     <Compile Include="AttributeChange.cs" />
     <Compile Include="BenefitCost.cs" />
@@ -346,6 +356,7 @@
     <Compile Include="OMSCriteria.cs" />
     <Compile Include="OverallConditionIndex.cs" />
     <Compile Include="Priorities.cs" />
+    <Compile Include="SimulationParameters.cs" />
     <Compile Include="RemainingLife.cs" />
     <Compile Include="ReportOMS.cs" />
     <Compile Include="Scheduled.cs" />
@@ -404,6 +415,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\BridgeCareApp\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets" Condition="Exists('..\..\BridgeCareApp\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

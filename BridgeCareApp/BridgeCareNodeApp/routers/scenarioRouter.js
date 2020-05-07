@@ -1,20 +1,23 @@
 const express = require('express');
 const scenarioController = require('../controllers/scenarioController');
 const authorizationFilter = require('../authorization/authorizationFilter');
+const roles = require('../authorization/roleConfig');
 
 function scenarioRouter(Scenario){
     const router = express.Router();
     const controller = scenarioController(Scenario);
 
     router.route("/GetMongoScenarios")
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post)
+        .post(authorizationFilter(), controller.post)
         .get(authorizationFilter(), controller.get);
     router.route("/DeleteMongoScenario/:scenarioId")
-        .delete(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.deleteScenario);
+        .delete(authorizationFilter(), controller.deleteScenario);
     router.route("/UpdateMongoScenario/:scenarioId")
-        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+        .put(authorizationFilter(), controller.put);
+    router.route("/UpdateMongoScenarioStatus/:scenarioId")
+        .put(controller.updateScenarioStatus);
     router.route("/AddMultipleScenarios")
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.postMultipleScenarios);
+        .post(authorizationFilter(), controller.postMultipleScenarios);
 
     return router;
 }

@@ -6,6 +6,7 @@ using DatabaseManager;
 using System.Data;
 using System.IO;
 using Simulation.Interface;
+using System.Configuration;
 
 namespace Simulation
 {
@@ -13,6 +14,7 @@ namespace Simulation
     {
 
         static private List<SimulationMessage> m_strListProgress = new List<SimulationMessage>();
+        public static bool IsDesktop { private get; set; } = true;
         [ThreadStatic]
         static private bool m_bCancel = false;
         [ThreadStatic]
@@ -366,7 +368,7 @@ namespace Simulation
         static public void AddMessage(string baseMessage, Exception ex)
 		{
 			Exception currentException = ex;
-			while (currentException != null)
+			if (currentException != null)
 			{
 				baseMessage += "{" + currentException.Message + "}";
 			}
@@ -375,6 +377,11 @@ namespace Simulation
 		
 		static public void AddMessage(SimulationMessage message)
         {
+            if (!IsDesktop)
+            {
+                return;
+            }
+
             if (message.Percent != 100)
             {
                 message.Percent = PercentComplete();
@@ -759,11 +766,30 @@ namespace Simulation
 
         static public TextWriter CreateTextWriter(String strFile, out String strOutFile)
         {
-			String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
-			Directory.CreateDirectory(strMyDocumentsFolder);
 
-			strOutFile = strMyDocumentsFolder + "\\" + strFile;
+
+            // This path will be "..\BridgeCare\iAMApp\BridgeCareApp\BridgeCare"
+            //string workingDirectory = HostingEnvironment.ApplicationPhysicalPath;
+            string val = ConfigurationManager.AppSettings["TempFilePath"];
+
+            string path = "";
+
+            if (val != null)
+            {
+                path = System.Environment.ExpandEnvironmentVariables(val);
+            }
+            else
+            {
+                String strMyDocumentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                strMyDocumentsFolder += "\\RoadCare Projects\\Temp";
+                path = strMyDocumentsFolder;
+            }
+
+
+
+            Directory.CreateDirectory(path);
+
+			strOutFile = path + "\\" + strFile;
             TextWriter tw = new StreamWriter(strOutFile);
             return tw;
         }

@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="dialogData.showDialog" persistent max-width="290">
+    <v-dialog max-width="290" persistent v-model="dialogData.showDialog">
         <v-card>
             <v-card-title class="headline">
                 <v-layout justify-center>
@@ -10,16 +10,16 @@
                 {{dialogData.message}}
             </v-card-text>
             <v-card-actions>
-                <v-layout v-if="dialogData.choice" justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)">
+                <v-layout justify-space-between row v-if="dialogData.choice">
+                    <v-btn @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Proceed
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">
                         Cancel
                     </v-btn>
                 </v-layout>
-                <v-layout v-if="!dialogData.choice" justify-center>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)">
+                <v-layout justify-center v-if="!dialogData.choice">
+                    <v-btn @click="onSubmit(true)" class="ara-blue-bg white--text">
                         OK
                     </v-btn>
                 </v-layout>

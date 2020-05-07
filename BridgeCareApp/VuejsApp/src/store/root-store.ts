@@ -11,15 +11,17 @@ import performanceEditor from '@/store-modules/performance-editor.module';
 import treatmentEditor from '@/store-modules/treatment-editor.module';
 import attribute from '@/store-modules/attribute.module';
 import toastr from '@/store-modules/toastr.module';
-import deficient from '@/store-modules/deficient.module';
-import priority from '@/store-modules/priority.module';
-import target from '@/store-modules/target.module';
+import deficientEditor from '@/store-modules/deficient.module';
+import priorityEditor from '@/store-modules/priority.module';
+import targetEditor from '@/store-modules/target.module';
 import remainingLifeLimitEditor from '@/store-modules/remaining-life-limit.module';
-import criteriaDrivenBudgets from '@/store-modules/budget-criteria.module';
 import rollup from '../store-modules/rollup.module';
 import polling from '@/store-modules/polling.module';
 import announcement from '@/store-modules/announcement.module';
-import cashFlow from '@/store-modules/cash-flow.module';
+import cashFlowEditor from '@/store-modules/cash-flow.module';
+import userCriteria from '@/store-modules/user-criteria.module';
+import unsavedChangesFlag from '@/store-modules/unsaved-changes-flag.module';
+import criteriaEditor from '@/store-modules/criteria-editor.module';
 
 Vue.use(Vuex);
 
@@ -35,14 +37,16 @@ export default new Vuex.Store({
         attribute,
         treatmentEditor,
         toastr,
-        deficient,
-        priority,
-        target,
+        deficientEditor,
+        priorityEditor,
+        targetEditor,
         remainingLifeLimitEditor,
-        criteriaDrivenBudgets,
         rollup,
         polling,
         announcement,
-        cashFlow
+        cashFlowEditor,
+        userCriteria,
+        unsavedChangesFlag,
+        criteriaEditor
     }
 });

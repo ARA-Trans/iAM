@@ -4,9 +4,9 @@
             <v-layout fixed justify-space-between>
                 <div>
                     <v-tabs>
-                        <v-tab v-for="navigationTab in navigationTabs"
-                               :key="navigationTab.tabName"
-                               :to="navigationTab.navigation">
+                        <v-tab :key="navigationTab.tabName"
+                               :to="navigationTab.navigation"
+                               v-for="navigationTab in visibleNavigationTabs()">
                             {{navigationTab.tabName}}
                             <v-icon right>{{navigationTab.tabIcon}}</v-icon>
                         </v-tab>
@@ -14,8 +14,9 @@
                 </div>
 
                 <div>
-                    <v-btn class="ara-blue-bg white--text" @click="onShowCommittedProjectsFileUploader">
-                        Committed Projects<v-icon right class="white--text">fas fa-cloud-upload-alt</v-icon>
+                    <v-btn @click="onShowCommittedProjectsFileUploader" class="ara-blue-bg white--text">
+                        Committed Projects
+                        <v-icon class="white--text" right>fas fa-cloud-upload-alt</v-icon>
                     </v-btn>
                 </div>
             </v-layout>
@@ -27,31 +28,31 @@
             </v-container>
         </v-flex>
 
-        <CommittedProjectsFileUploaderDialog :showDialog="showFileUploader" @submit="onUploadCommittedProjectFiles" />
+        <CommittedProjectsFileUploaderDialog :showDialog="showFileUploader" @submit="onUploadCommittedProjectFiles"/>
     </v-layout>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
     import Component from 'vue-class-component';
-    import {State, Action} from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import {Scenario} from '@/shared/models/iAM/scenario';
     import CommittedProjectsFileUploaderDialog from '@/components/scenarios/scenarios-dialogs/CommittedProjectsFileUploaderDialog.vue';
-    import {isNil, any} from 'ramda';
+    import {any, isNil} from 'ramda';
     import {AxiosResponse} from 'axios';
     import CommittedProjectsService from '@/services/committed-projects.service';
     import {Network} from '@/shared/models/iAM/network';
     import FileDownload from 'js-file-download';
     import {NavigationTab} from '@/shared/models/iAM/navigation-tab';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {CommittedProjectsDialogResult} from '@/shared/models/modals/committed-projects-dialog-result';
 
     @Component({
-        components: { CommittedProjectsFileUploaderDialog }
+        components: {CommittedProjectsFileUploaderDialog}
     })
     export default class EditScenario extends Vue {
-        @State(state => state.breadcrumb.navigation) navigation: any[];        
+        @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
+        @State(state => state.authentication.isAdmin) isAdmin: boolean;
 
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
@@ -65,7 +66,8 @@
             simulationId: this.selectedScenarioId,
             networkId: this.networkId,
             simulationName: '',
-            networkName: ''
+            networkName: '',
+            users: []
         };
         navigationTabs: NavigationTab[] = [];
 
@@ -78,7 +80,7 @@
                 // check that selectedScenarioId is set
                 if (vm.selectedScenarioId === 0) {
                     // set 'no selected scenario' error message, then redirect user to Scenarios UI
-                    vm.setErrorMessageAction({ message: 'Found no selected scenario for edit' });
+                    vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
                 } else {
                     vm.setSelectedScenarioNameAction({selectedScenarioName: to.query.simulationName});
@@ -89,7 +91,11 @@
                             tabIcon: 'fas fa-chart-bar',
                             navigation: {
                                 path: '/EditAnalysis/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
@@ -97,7 +103,11 @@
                             tabIcon: 'fas fa-dollar-sign',
                             navigation: {
                                 path: '/InvestmentEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
@@ -105,15 +115,23 @@
                             tabIcon: 'fas fa-chart-line',
                             navigation: {
                                 path: '/PerformanceEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
                             tabName: 'Treatment',
-                            tabIcon: 'fas fa-heartbeat',
+                            tabIcon: 'fas fa-tools',
                             navigation: {
                                 path: '/TreatmentEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
@@ -121,7 +139,11 @@
                             tabIcon: 'fas fa-copy',
                             navigation: {
                                 path: '/PriorityEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
@@ -129,7 +151,11 @@
                             tabIcon: 'fas fa-bullseye',
                             navigation: {
                                 path: '/TargetEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
@@ -137,15 +163,24 @@
                             tabIcon: 'fas fa-level-down-alt',
                             navigation: {
                                 path: '/DeficientEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
                             tabName: 'Remaining Life Limit',
                             tabIcon: 'fas fa-business-time',
+                            visible: vm.isAdmin,
                             navigation: {
                                 path: '/RemainingLifeLimitEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         },
                         {
@@ -153,7 +188,11 @@
                             tabIcon: 'fas fa-money-bill-wave',
                             navigation: {
                                 path: '/CashFlowEditor/Scenario/',
-                                query: {selectedScenarioId: to.query.selectedScenarioId, simulationName: to.query.simulationName}
+                                query: {
+                                    selectedScenarioId: to.query.selectedScenarioId,
+                                    simulationName: to.query.simulationName,
+                                    objectIdMOngoDBForScenario: to.query.objectIdMOngoDBForScenario
+                                }
                             }
                         }
                     ];
@@ -196,7 +235,7 @@
                 CommittedProjectsService
                     .saveCommittedProjectsFiles(result.files, result.applyNoTreatment, this.selectedScenarioId.toString(), this.networks[0].networkId.toString())
                     .then((response: AxiosResponse<any>) => {
-                        this.setSuccessMessageAction({ message: 'Successfully saved file(s)' });
+                        this.setSuccessMessageAction({message: 'Successfully uploaded committed projects. You will receive an email when the projects have been fully processed.'});
                     });
             }
             if (isExport) {
@@ -207,6 +246,10 @@
                         FileDownload(response.data, 'CommittedProjects.xlsx');
                     });
             }
+        }
+
+        visibleNavigationTabs() {
+            return this.navigationTabs.filter(navigationTab => navigationTab.visible === undefined || navigationTab.visible);
         }
     }
 </script>

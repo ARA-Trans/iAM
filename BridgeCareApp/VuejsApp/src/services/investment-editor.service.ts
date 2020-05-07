@@ -28,6 +28,14 @@ export default class InvestmentEditorService {
     }
 
     /**
+     * Deletes an investment library
+     * @param investmentLibrary The investment library to delete
+     */
+    static deleteInvestmentLibrary(investmentLibrary: InvestmentLibrary): AxiosPromise {
+        return nodejsAxiosInstance.delete(`/api/DeleteInvestmentLibrary/${investmentLibrary.id}`);
+    }
+
+    /**
      * Gets a scenario's investment library data
      * @param selectedScenarioId Scenario id to use in finding a scenario's investment library data
      */
@@ -39,7 +47,9 @@ export default class InvestmentEditorService {
      * Upserts a scenario's investment library data
      * @param saveScenarioInvestmentLibraryData The scenario investment library upsert data
      */
-    static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary): AxiosPromise {
+    static saveScenarioInvestmentLibrary(saveScenarioInvestmentLibraryData: InvestmentLibrary, objectIdMOngoDBForScenario: string): AxiosPromise {
+        // Node API call is to update last modified date. (THe date is set in the nodejs app)
+        nodejsAxiosInstance.put(`/api/UpdateMongoScenario/${objectIdMOngoDBForScenario}`);
         return axiosInstance.post('/api/SaveScenarioInvestmentLibrary', saveScenarioInvestmentLibraryData);
     }
 }

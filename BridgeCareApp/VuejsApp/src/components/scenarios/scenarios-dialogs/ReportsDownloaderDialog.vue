@@ -1,36 +1,47 @@
 ﻿<template>
-    <v-dialog v-model="dialogData.showModal" persistent scrollable max-width="500px">
+    <v-dialog max-width="500px" persistent scrollable v-model="dialogData.showModal">
         <v-card>
             <v-card-title primary-title>
                 <v-layout column>
                     <v-flex>
                         <v-layout justify-center><h3 class="grey--text">Available Reports</h3></v-layout>
                     </v-flex>
-                    <v-progress-linear v-if="isBusy" :indeterminate="true"></v-progress-linear>
+                    <v-progress-linear :indeterminate="true" v-if="isBusy"></v-progress-linear>
                     <v-flex>
-                        <span v-if="isBusy" class="grey--text">Downloading...</span>
+                        <span class="grey--text" v-if="isBusy">Downloading...</span>
                     </v-flex>
                 </v-layout>
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-                <v-list-tile v-for="item in reports" :key="item" avatar :disabled="isBusy">
+                <v-flex>
+                    <v-btn :disabled="showMissingAttributesMessage" @click="generateSummaryReport()"
+                           class="green darken-2 white--text">
+                        Generate summary report
+                        <v-icon right>star</v-icon>
+                    </v-btn>
+                </v-flex>
+                <v-divider></v-divider>
+                <v-list-tile :disabled="isBusy" :key="item" avatar v-for="item in reports">
                     <v-layout align-start row v-if="item === 'Summary Report'">
                         <v-flex xs4>
-                            <v-checkbox :value="item" :label="item" color="primary lighten-1" v-model="selectedReports"
-                                        :disabled="showMissingAttributesMessage">
+                            <v-checkbox :disabled="showMissingAttributesMessage" :label="item" :value="item" color="primary lighten-1"
+                                        v-model="selectedReports">
                             </v-checkbox>
                         </v-flex>
                         <v-flex xs1>
-                            <v-menu v-if="showMissingAttributesMessage" top>
+                            <v-menu top v-if="showMissingAttributesMessage">
                                 <template slot="activator">
-                                    <v-btn icon class="ara-dark-gray"><v-icon>fas fa-info-circle</v-icon></v-btn>
+                                    <v-btn class="ara-dark-gray" icon>
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </v-btn>
                                 </template>
                                 <v-card>
                                     <v-card-text class="missing-attributes-card-text">
                                         <v-list>
                                             <v-subheader>MISSING SCENARIO ATTRIBUTES</v-subheader>
-                                            <v-list-tile v-for="attribute in missingSummaryReportAttributes" :key="attribute">
+                                            <v-list-tile :key="attribute"
+                                                         v-for="attribute in missingSummaryReportAttributes">
                                                 <v-list-tile-content>
                                                     <v-list-tile-title>{{attribute}}</v-list-tile-title>
                                                 </v-list-tile-content>
@@ -43,7 +54,7 @@
                         <v-spacer></v-spacer>
                     </v-layout>
                     <v-layout align-start row v-else>
-                        <v-checkbox :value="item" :label="item" color="primary lighten-1" v-model="selectedReports">
+                        <v-checkbox :label="item" :value="item" color="primary lighten-1" v-model="selectedReports">
                         </v-checkbox>
                     </v-layout>
                 </v-list-tile>
@@ -52,10 +63,10 @@
             <v-divider></v-divider>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" :disabled="isBusy" @click="onDownload(true)">
+                    <v-btn :disabled="isBusy" @click="onDownload(true)" class="ara-blue-bg white--text">
                         Download
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" :disabled="isBusy" @click="onDownload(false)">
+                    <v-btn :disabled="isBusy" @click="onDownload(false)" class="ara-orange-bg white--text">
                         Close
                     </v-btn>
                 </v-layout>
@@ -67,7 +78,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
-    import {State, Action} from 'vuex-class';
+    import {Action, State} from 'vuex-class';
     import {ReportsDownloaderDialogData} from '@/shared/models/modals/reports-downloader-dialog-data';
     import FileDownload from 'js-file-download';
     import ReportsService from '@/services/reports.service';
@@ -76,8 +87,7 @@
     import {clone} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
 
-    @Component({
-    })
+    @Component({})
     export default class ReportsDownloaderDialog extends Vue {
         @Prop() dialogData: ReportsDownloaderDialogData;
 
@@ -86,6 +96,7 @@
 
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('clearSummaryReportMissingAttributes') clearSummaryReportMissingAttributesAction: any;
+        @Action('setSuccessMessage') setSuccessMessageAction: any;
 
         selectedScenarioData: Scenario = clone(emptyScenario);
         reports: string[] = ['Detailed Report', 'Summary Report'];
@@ -130,8 +141,13 @@
                                 break;
                             }
                             case 'Summary Report': {
-                                await ReportsService.getSummaryReport(this.selectedScenarioData)
+                                await ReportsService.downloadSummaryReport(this.selectedScenarioData)
                                     .then((response: AxiosResponse<any>) => {
+                                        if (response == undefined) {
+                                            this.setErrorMessageAction({message: 'Summary report does not exists on the target path. Please generate the report before downloading'});
+                                        } else {
+                                            this.setSuccessMessageAction({message: 'Report has been downloaded'});
+                                        }
                                         FileDownload(response.data, 'SummaryReport.xlsx');
                                     });
                                 break;
@@ -140,9 +156,16 @@
                     }
                 }
             } else {
-               this.clearSummaryReportMissingAttributesAction();
+                this.clearSummaryReportMissingAttributesAction();
                 this.dialogData.showModal = false;
             }
+        }
+
+        async generateSummaryReport() {
+            await ReportsService.getSummaryReport(this.selectedScenarioData)
+                .then((response: AxiosResponse<any>) => {
+                    this.setSuccessMessageAction({message: 'Report generation started, please check the dashboard for status update'});
+                });
         }
     }
 </script>

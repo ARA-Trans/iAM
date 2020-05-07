@@ -34,8 +34,8 @@ namespace BridgeCare.DataAccessLayer
 
             var select =
                 "SELECT TargetID, Years, coalesce(TARGETMET, 0) as TargetMet, IsDeficient " +
-                    " FROM Target_" + data.NetworkId
-                    + "_" + data.SimulationId;
+                    " FROM Target_" + data.networkId
+                    + "_" + data.simulationId;
 
             try
             {
@@ -66,7 +66,7 @@ namespace BridgeCare.DataAccessLayer
 
         private DeficientResult GetDeficientInformation(SimulationModel data, Hashtable yearsIDValues, int[] totalYears)
         {
-            var deficientTableData = db.Deficients.AsNoTracking().Where(_ => _.SIMULATIONID == data.SimulationId);
+            var deficientTableData = db.Deficients.AsNoTracking().Where(_ => _.SIMULATIONID == data.simulationId);
             var totalYearCount = totalYears.Count();
             DataTable DeficientTable = new DataTable();
             DeficientTable.Columns.Add("Attribute");

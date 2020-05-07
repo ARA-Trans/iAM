@@ -73,6 +73,7 @@ namespace RoadCare3
             this.timerSimulation = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.checkBoxMultipleCost = new System.Windows.Forms.CheckBox();
+            this.checkBoxReasons = new System.Windows.Forms.CheckBox();
             this.tabControlAnalysis.SuspendLayout();
             this.tabPagePriority.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPriority)).BeginInit();
@@ -319,7 +320,6 @@ namespace RoadCare3
             this.dataGridViewRemainLife.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewRemainLife_CellMouseDoubleClick);
             this.dataGridViewRemainLife.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewRemainLife_CellValidated);
             this.dataGridViewRemainLife.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.DataGridViewRemainLife_UserDeletedRow);
-
             // 
             // RemainingLifeAttribute
             // 
@@ -383,7 +383,7 @@ namespace RoadCare3
             this.tbDescription.Location = new System.Drawing.Point(76, 58);
             this.tbDescription.Margin = new System.Windows.Forms.Padding(2);
             this.tbDescription.Name = "tbDescription";
-            this.tbDescription.Size = new System.Drawing.Size(380, 20);
+            this.tbDescription.Size = new System.Drawing.Size(213, 20);
             this.tbDescription.TabIndex = 6;
             this.tbDescription.Validated += new System.EventHandler(this.tbDescription_Validated);
             // 
@@ -457,7 +457,7 @@ namespace RoadCare3
             // labelBenefitLimit
             // 
             this.labelBenefitLimit.AutoSize = true;
-            this.labelBenefitLimit.Location = new System.Drawing.Point(461, 62);
+            this.labelBenefitLimit.Location = new System.Drawing.Point(294, 62);
             this.labelBenefitLimit.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBenefitLimit.Name = "labelBenefitLimit";
             this.labelBenefitLimit.Size = new System.Drawing.Size(67, 13);
@@ -466,7 +466,7 @@ namespace RoadCare3
             // 
             // tbBenefitLimit
             // 
-            this.tbBenefitLimit.Location = new System.Drawing.Point(528, 58);
+            this.tbBenefitLimit.Location = new System.Drawing.Point(361, 58);
             this.tbBenefitLimit.Margin = new System.Windows.Forms.Padding(2);
             this.tbBenefitLimit.Name = "tbBenefitLimit";
             this.tbBenefitLimit.Size = new System.Drawing.Size(118, 20);
@@ -536,7 +536,7 @@ namespace RoadCare3
             // checkBoxMultipleCost
             // 
             this.checkBoxMultipleCost.AutoSize = true;
-            this.checkBoxMultipleCost.Location = new System.Drawing.Point(656, 60);
+            this.checkBoxMultipleCost.Location = new System.Drawing.Point(501, 60);
             this.checkBoxMultipleCost.Name = "checkBoxMultipleCost";
             this.checkBoxMultipleCost.Size = new System.Drawing.Size(157, 17);
             this.checkBoxMultipleCost.TabIndex = 24;
@@ -544,11 +544,23 @@ namespace RoadCare3
             this.checkBoxMultipleCost.UseVisualStyleBackColor = true;
             this.checkBoxMultipleCost.CheckedChanged += new System.EventHandler(this.checkBoxMultipleCost_CheckedChanged);
             // 
+            // checkBoxReasons
+            // 
+            this.checkBoxReasons.AutoSize = true;
+            this.checkBoxReasons.Location = new System.Drawing.Point(660, 60);
+            this.checkBoxReasons.Name = "checkBoxReasons";
+            this.checkBoxReasons.Size = new System.Drawing.Size(144, 17);
+            this.checkBoxReasons.TabIndex = 25;
+            this.checkBoxReasons.Text = "Add reasons to database";
+            this.checkBoxReasons.UseVisualStyleBackColor = true;
+            this.checkBoxReasons.CheckedChanged += new System.EventHandler(this.CheckBoxReasons_CheckedChanged);
+            // 
             // FormAnalysis
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(838, 518);
+            this.Controls.Add(this.checkBoxReasons);
             this.Controls.Add(this.checkBoxMultipleCost);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.buttonRunSimulation);
@@ -637,5 +649,6 @@ namespace RoadCare3
         private System.Windows.Forms.DataGridViewComboBoxColumn RemainingLifeAttribute;
         private System.Windows.Forms.DataGridViewTextBoxColumn RemainingLifeLimit;
         private System.Windows.Forms.DataGridViewTextBoxColumn RemainingLifeCriteria;
+        private System.Windows.Forms.CheckBox checkBoxReasons;
     }
 }

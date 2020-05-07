@@ -52,40 +52,11 @@ function investmentLibraryController(InvestmentLibrary) {
         });
     }
 
-    /**
-     * PUT Nodejs API endpoint for investment libraries; updates & returns an investment library
-     * @param req
-     * @param res
-     */
-    function put(req, res) {
-        InvestmentLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
-            if (err) {
-                return res.status(400).json(err);
-            }
+    const {getUpdateFunction, getDeletionFunction} = require('./libraryAPIFunctions');
+    
+    put = getUpdateFunction(InvestmentLibrary);
+    deleteLibrary = getDeletionFunction(InvestmentLibrary);
 
-            return res.status(200).json(doc);
-        });
-    }
-
-    /**
-     * DELETE Nodejs API endpoint for investment libraries; returns 204 status code on success
-     * @param req
-     * @param res
-     */
-    function deleteLibrary(req, res) {
-        InvestmentLibrary.findById(req.params.investmentLibraryId, (err, library) => {
-            if (err) {
-                return res.json(err);
-            }
-
-            library.remove((err) => {
-                if (err) {
-                    return res.status(400).json(err);
-                }
-                return res.status(204);
-            });
-        });
-    }
     return { post, get, getById, put, deleteLibrary };
 }
 

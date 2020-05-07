@@ -35,41 +35,10 @@ function performanceLibraryController(PerformanceLibrary) {
         });
     }
 
-    /**
-     * PUT Nodejs API endpoint for performance libraries; returns updates & returns a performance library
-     * @param req
-     * @param res
-     */
-    function put(req, res) {
-        PerformanceLibrary.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc) => {
-           if (err) {
-               return res.status(400).json(err);
-           }
+    const {getUpdateFunction, getDeletionFunction} = require('./libraryAPIFunctions');
 
-           return res.status(200).json(doc);
-        });
-    }
-
-    /**
-     * DELETE Nodejs API endpoint for performance libraries; returns 204 status code on success
-     * @param req
-     * @param res
-     */
-    function deleteLibrary(req, res) {
-        PerformanceLibrary.findById(req.params.performanceLibraryId, (err, library) => {
-           if (err) {
-               return res.json(err);
-           }
-
-           library.remove((err) => {
-              if (err) {
-                  return res.status(400).json(err);
-              }
-
-              return res.status(204);
-           });
-        });
-    }
+    put = getUpdateFunction(PerformanceLibrary);
+    deleteLibrary = getDeletionFunction(PerformanceLibrary);
 
     return { post, get, put, deleteLibrary };
 }

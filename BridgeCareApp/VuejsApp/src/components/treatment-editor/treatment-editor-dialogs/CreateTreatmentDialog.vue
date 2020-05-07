@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="showDialog" persistent max-width="250px">
+        <v-dialog max-width="250px" persistent v-model="showDialog">
             <v-card>
                 <v-card-title>
                     <v-layout justify-center>
@@ -9,13 +9,14 @@
                 </v-card-title>
                 <v-card-text>
                     <v-layout>
-                        <v-text-field label="Name" v-model="createdTreatment.name" outline></v-text-field>
+                        <v-text-field label="Name" outline v-model="createdTreatment.name"></v-text-field>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
-                        <v-btn color="info" @click="onSubmit(true)" :disabled="createdTreatment.name === ''">Save</v-btn>
-                        <v-btn color="error" @click="onSubmit(false)">Cancel</v-btn>
+                        <v-btn :disabled="createdTreatment.name === ''" @click="onSubmit(true)" color="info">Save
+                        </v-btn>
+                        <v-btn @click="onSubmit(false)" color="error">Cancel</v-btn>
                     </v-layout>
                 </v-card-actions>
             </v-card>
@@ -26,14 +27,17 @@
 <script lang="ts">
     import Vue from 'vue';
     import {Component, Prop} from 'vue-property-decorator';
-    import {emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
-    import {clone} from 'ramda';
+    import {emptyFeasibility, emptyTreatment, Treatment} from '@/shared/models/iAM/treatment';
+
+    const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateTreatmentDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        createdTreatment: Treatment = clone(emptyTreatment);
+        createdTreatment: Treatment = {
+            ...emptyTreatment, id: ObjectID.generate(), feasibility: {...emptyFeasibility, id: ObjectID.generate()}
+        };
 
         /**
          * Emits the createdTreatment object or a null value to the parent component and resets the createdTreatment object
@@ -46,7 +50,9 @@
                 this.$emit('submit', null);
             }
 
-            this.createdTreatment = clone(emptyTreatment);
+            this.createdTreatment = {
+                ...emptyTreatment, id: ObjectID.generate(), feasibility: {...emptyFeasibility, id: ObjectID.generate()}
+            };
         }
     }
 </script>

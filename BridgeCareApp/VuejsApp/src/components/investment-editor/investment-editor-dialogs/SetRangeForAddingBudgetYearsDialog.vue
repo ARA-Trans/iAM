@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="200px">
+    <v-dialog max-width="200px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -7,11 +7,11 @@
                 </v-layout>
             </v-card-title>
             <v-card-text>
-                <v-text-field v-model="range" label="Edit" single-line :mask="'####'"></v-text-field>
+                <v-text-field :mask="'##########'" label="Edit" single-line v-model.number="range" />
             </v-card-text>
             <v-card-actions>
-                <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="range === ''">Save</v-btn>
-                <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">Cancel</v-btn>
+                <v-btn :disabled="range === 0" @click="onSubmit(true)" class="ara-blue-bg white--text">Save</v-btn>
+                <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

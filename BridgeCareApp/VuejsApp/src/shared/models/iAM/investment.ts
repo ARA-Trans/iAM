@@ -1,33 +1,46 @@
-import { CriteriaDrivenBudgets } from './criteria-driven-budgets';
-
 export interface InvestmentLibraryBudgetYear {
-    id: number | string;
+    id: string;
     year: number;
     budgetName: string;
-    budgetAmount: number;
+    budgetAmount: number | null;
+    criteriaDrivenBudgetId: string;
+}
+
+export interface CriteriaDrivenBudget {
+    id: string;
+    budgetName: string;
+    criteria: string;
 }
 
 export interface InvestmentLibrary {
-    id: number | string;
+    id: string;
     name: string;
+    owner?: string;
+    shared?: boolean;
     inflationRate: number;
     description: string;
     budgetOrder: string[];
     budgetYears: InvestmentLibraryBudgetYear[];
-    budgetCriteria: CriteriaDrivenBudgets[];
+    criteriaDrivenBudgets: CriteriaDrivenBudget[];
 }
 
 export interface BudgetYearsGridData {
     year: number;
-    [budgetName: string]: number;
+    [budgetName: string]: number | null;
 }
 
 export const emptyInvestmentLibrary: InvestmentLibrary = {
-    id: 0,
+    id: '0',
     name: '',
     inflationRate: 0,
     description: '',
     budgetOrder: [],
     budgetYears: [],
-    budgetCriteria: []
+    criteriaDrivenBudgets: []
+};
+
+export const emptyCriteriaDrivenBudget: CriteriaDrivenBudget = {
+    id: '0',
+    budgetName: '',
+    criteria: ''
 };

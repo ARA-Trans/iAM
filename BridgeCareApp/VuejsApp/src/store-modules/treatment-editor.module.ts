@@ -1,9 +1,10 @@
-import {emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
-import {any, propEq, findIndex, clone, append, equals} from 'ramda';
+import {emptyTreatmentLibrary, TreatmentLibrary} from '@/shared/models/iAM/treatment';
+import {any, append, clone, equals, find, findIndex, propEq, reject, update} from 'ramda';
 import TreatmentEditorService from '@/services/treatment-editor.service';
 import {AxiosResponse} from 'axios';
 import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
+import {http2XX} from '@/shared/utils/http-utils';
 
 const state = {
     treatmentLibraries: [] as TreatmentLibrary[],
@@ -15,39 +16,31 @@ const mutations = {
     treatmentLibrariesMutator(state: any, treatmentLibraries: TreatmentLibrary[]) {
         state.treatmentLibraries = clone(treatmentLibraries);
     },
-    selectedTreatmentLibraryMutator(state: any, treatmentLibraryId: string) {
-        if (any(propEq('id', treatmentLibraryId), state.treatmentLibraries)) {
-            // find the existing treatment library in state.treatmentLibraries where the id matches treatmentLibraryId,
-            // copy it, then update state.selectedTreatmentLibrary with the copy
-            state.selectedTreatmentLibrary = clone(state.treatmentLibraries
-                .find((treatmentLibrary: TreatmentLibrary) =>
-                    treatmentLibrary.id === treatmentLibraryId
-                ) as TreatmentLibrary);
+    selectedTreatmentLibraryMutator(state: any, libraryId: string) {
+        if (any(propEq('id', libraryId), state.treatmentLibraries)) {
+            state.selectedTreatmentLibrary = find(propEq('id', libraryId), state.treatmentLibraries);
+        } else if (state.scenarioTreatmentLibrary.id === libraryId) {
+            state.selectedTreatmentLibrary = clone(state.scenarioTreatmentLibrary);
         } else {
-            // update state.selectedTreatmentLibrary with an empty treatment library object
             state.selectedTreatmentLibrary = clone(emptyTreatmentLibrary);
         }
     },
-    updatedSelectedTreatmentLibraryMutator(state: any, updatedSelectedTreatmentLibrary: TreatmentLibrary) {
-        // update state.selectedTreatmentLibrary with the updated selected treatment library
-        state.selectedTreatmentLibrary = clone(updatedSelectedTreatmentLibrary);
-    },
     createdTreatmentLibraryMutator(state: any, createdTreatmentLibrary: TreatmentLibrary) {
-        // append the created treatment library to a copy of state.treatmentLibraries, then update state.treatmentLibraries
-        // with the copy
         state.treatmentLibraries = append(createdTreatmentLibrary, state.treatmentLibraries);
     },
     updatedTreatmentLibraryMutator(state: any, updatedTreatmentLibrary: TreatmentLibrary) {
-        if (any(propEq('id', updatedTreatmentLibrary.id), state.treatmentLibraries)) {
-            // make a copy of state.treatmentLibraries
-            const treatmentLibraries: TreatmentLibrary[] = clone(state.treatmentLibraries);
-            // find the index of the existing treatment library in the copy that has a matching id with the updated
-            // treatment library
-            const index: number = findIndex(propEq('id', updatedTreatmentLibrary.id), treatmentLibraries);
-            // update the copy at the specified index with the updated treatment library
-            treatmentLibraries[index] = clone(updatedTreatmentLibrary);
-            // update state.treatmentLibraries with the copy
-            state.treatmentLibraries = treatmentLibraries;
+        state.treatmentLibraries = update(
+            findIndex(propEq('id', updatedTreatmentLibrary), state.treatmentLibraries),
+            updatedTreatmentLibrary,
+            state.treatmentLibraries
+        );
+    },
+    deletedTreatmentLibraryMutator(state: any, deletedTreatmentLibraryId: string) {
+        if (any(propEq('id', deletedTreatmentLibraryId), state.treatmentLibraries)) {
+            state.treatmentLibraries = reject(
+                (library: TreatmentLibrary) => deletedTreatmentLibraryId === library.id,
+                state.treatmentLibraries
+            );
         }
     },
     scenarioTreatmentLibraryMutator(state: any, scenarioTreatmentLibrary: TreatmentLibrary) {
@@ -57,10 +50,7 @@ const mutations = {
 
 const actions = {
     selectTreatmentLibrary({commit}: any, payload: any) {
-        commit('selectedTreatmentLibraryMutator', payload.treatmentLibraryId);
-    },
-    updateSelectedTreatmentLibrary({commit}: any, payload: any) {
-        commit('updatedSelectedTreatmentLibraryMutator', payload.updatedSelectedTreatmentLibrary);
+        commit('selectedTreatmentLibraryMutator', payload.selectedLibraryId);
     },
     async getTreatmentLibraries({commit}: any) {
         await TreatmentEditorService.getTreatmentLibraries()
@@ -74,7 +64,7 @@ const actions = {
     },
     async createTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.createTreatmentLibrary(payload.createdTreatmentLibrary)
-            .then((response: AxiosResponse<any>) => {
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
                     const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(response.data);
                     commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
@@ -84,7 +74,7 @@ const actions = {
     },
     async updateTreatmentLibrary({dispatch, commit}: any, payload: any) {
         await TreatmentEditorService.updateTreatmentLibrary(payload.updatedTreatmentLibrary)
-            .then((response: AxiosResponse<any>) => {
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
                     const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(response.data);
                     commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
@@ -93,41 +83,68 @@ const actions = {
                 }
             });
     },
+    async deleteTreatmentLibrary({dispatch, commit}: any, payload: any) {
+        await TreatmentEditorService.deleteTreatmentLibrary(payload.treatmentLibrary)
+            .then((response: AxiosResponse) => {
+                if (hasValue(response, 'status') && http2XX.test(response.status.toString())) {
+                    commit('deletedTreatmentLibraryMutator', payload.treatmentLibrary.id);
+                    dispatch('setSuccessMessage', {message: 'Successfully deleted treatment library'});
+                }
+            });
+    },
     async getScenarioTreatmentLibrary({commit}: any, payload: any) {
         await TreatmentEditorService.getScenarioTreatmentLibrary(payload.selectedScenarioId)
-            .then((response: AxiosResponse<TreatmentLibrary>) => {
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioTreatmentLibraryMutator', response.data);
-                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
+                    commit('selectedTreatmentLibraryMutator', response.data.id);
                 }
             });
     },
     async saveScenarioTreatmentLibrary({dispatch, commit}: any, payload: any) {
-        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.saveScenarioTreatmentLibraryData)
-            .then((response: AxiosResponse<TreatmentLibrary>) => {
+        await TreatmentEditorService.saveScenarioTreatmentLibrary(payload.saveScenarioTreatmentLibraryData, payload.objectIdMOngoDBForScenario)
+            .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
                     commit('scenarioTreatmentLibraryMutator', response.data);
-                    commit('updatedSelectedTreatmentLibraryMutator', response.data);
                     dispatch('setSuccessMessage', {message: 'Successfully saved scenario treatment library'});
                 }
             });
     },
     async socket_treatmentLibrary({dispatch, state, commit}: any, payload: any) {
-        if (hasValue(payload, 'operationType') && hasValue(payload, 'fullDocument')) {
-            if (payload.operationType == 'update' || payload.operationType == 'replace') {
-                const updatedTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(payload.fullDocument);
-                commit('updatedTreatmentLibraryMutator', updatedTreatmentLibrary);
-
-                if (state.selectedTreatmentLibrary.id === updatedTreatmentLibrary.id &&
-                    !equals(state.selectedTreatmentLibrary, updatedTreatmentLibrary)) {
-                    commit('selectedTreatmentLibraryMutator', updatedTreatmentLibrary.id);
-                    dispatch('setInfoMessage', {message: 'Library data has been changed from another source'});
+        if (hasValue(payload, 'operationType')) {
+            if (hasValue(payload, 'fullDocument')) {
+                const treatmentLibrary: TreatmentLibrary = convertFromMongoToVue(payload.fullDocument);
+                switch (payload.operationType) {
+                    case 'update':
+                    case 'replace':
+                        commit('updatedTreatmentLibraryMutator', treatmentLibrary);
+                        if (state.selectedTreatmentLibrary.id === treatmentLibrary.id &&
+                            !equals(state.selectedTreatmentLibrary, treatmentLibrary)) {
+                            commit('selectedTreatmentLibraryMutator', treatmentLibrary.id);
+                            dispatch('setInfoMessage', {message: `Treatment library ${treatmentLibrary.name} has been changed from another source`});
+                        }
+                        break;
+                    case 'insert':
+                        if (!any(propEq('id', treatmentLibrary.id), state.treatmentLibraries)) {
+                            commit('createdTreatmentLibraryMutator', treatmentLibrary);
+                            dispatch('setInfoMessage', {message: `Treatment library ${treatmentLibrary.name} has been created from another source`});
+                        }
                 }
-            }
+            } else if (hasValue(payload, 'documentKey')) {
+                if (any(propEq('id', payload.documentKey._id), state.treatmentLibraries)) {
+                    const deletedTreatmentLibrary: TreatmentLibrary = find(propEq('id', payload.documentKey._id), state.treatmentLibraries);
+                    commit('deletedTreatmentLibraryMutator', payload.documentKey._id);
 
-            if (payload.operationType == 'insert') {
-                const createdTreatmentLibrary: TreatmentLibrary = convertFromMongoToVue(payload.fullDocument);
-                commit('createdTreatmentLibraryMutator', createdTreatmentLibrary);
+                    if (deletedTreatmentLibrary.id === state.selectedTreatmentLibrary.id) {
+                        if (!equals(state.scenarioTreatmentLibrary, emptyTreatmentLibrary)) {
+                            commit('selectedTreatmentLibraryMutator', state.scenarioTreatmentLibrary.id);
+                        } else {
+                            commit('selectedTreatmentLibraryMutator', null);
+                        }
+                    }
+
+                    dispatch('setInfoMessage', {message: `Treatment library ${deletedTreatmentLibrary.name} has been deleted from another source`});
+                }
             }
         }
     }

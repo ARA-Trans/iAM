@@ -7,7 +7,7 @@
                         <v-card-title>
                             <h3>Authentication Failed</h3>
                         </v-card-title>
-                        <v-btn class="v-btn theme--light ara-blue-bg white--text" @click="onAttemptAuthentication">
+                        <v-btn @click="onAttemptAuthentication" class="v-btn theme--light ara-blue-bg white--text">
                             Try Again
                         </v-btn>
                     </v-card>
@@ -19,7 +19,7 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Watch} from 'vue-property-decorator';
+    import {Component} from 'vue-property-decorator';
 
     @Component
     export default class AuthenticationFailure extends Vue {

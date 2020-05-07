@@ -9,9 +9,11 @@ function deficientLibraryRouter(DeficientLibrary) {
     router.route('/GetDeficientLibraries')
         .get(authorizationFilter(), controller.get);
     router.route('/CreateDeficientLibrary')
-        .post(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.post);
+        .post(authorizationFilter(), controller.post);
     router.route('/UpdateDeficientLibrary')
-        .put(authorizationFilter(["PD-BAMS-Administrator", "PD-BAMS-DBEngineer"]), controller.put);
+        .put(authorizationFilter(), controller.put);
+    router.route('/DeleteDeficientLibrary/:libraryId')
+        .delete(authorizationFilter(), controller.deleteLibrary);
 
     return router;
 }

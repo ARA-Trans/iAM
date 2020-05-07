@@ -10,6 +10,8 @@ export interface Deficient {
 export interface DeficientLibrary {
     id: string;
     name: string;
+    owner?: string;
+    shared?: boolean;
     description: string;
     deficients: Deficient[];
 }
@@ -18,8 +20,8 @@ export const emptyDeficient: Deficient = {
     id: '0',
     attribute: '',
     name: '',
-    deficient: 1,
-    percentDeficient: 1,
+    deficient: 0,
+    percentDeficient: 0,
     criteria: ''
 };
 

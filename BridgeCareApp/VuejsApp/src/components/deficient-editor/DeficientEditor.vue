@@ -3,74 +3,117 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onAddNewDeficientLibrary">
+                    <v-btn @click="onAddNewDeficientLibrary" class="ara-blue-bg white--text"
+                           v-show="selectedScenarioId === '0'">
                         New Library
                     </v-btn>
-                    <v-select v-if="!hasSelectedDeficientLibrary || selectedScenarioId !== '0'" label="Select a Deficient Library"
-                              :items="deficientLibrariesSelectListItems" v-model="selectItemValue" outline>
+                    <v-select :items="deficientLibrariesSelectListItems"
+                              label="Select a Deficient Library"
+                              outline v-if="!hasSelectedDeficientLibrary || selectedScenarioId !== '0'"
+                              v-model="selectItemValue">
                     </v-select>
-                    <v-text-field v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'" label="Library Name"
-                                  v-model="selectedDeficientLibrary.name">
+                    <v-text-field label="Library Name" v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'"
+                                  v-model="selectedDeficientLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="onClearSelectedDeficientLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                            <v-btn @click="selectItemValue = null" class="ara-orange" icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedDeficientLibrary.owner ? selectedDeficientLibrary.owner : "[ No Owner ]"}}
+                    </div>
+                    <v-checkbox class="sharing" label="Shared"
+                                v-if="hasSelectedDeficientLibrary && selectedScenarioId === '0'"
+                                v-model="selectedDeficientLibrary.shared"/>
                 </v-flex>
             </v-layout>
-            <v-flex xs3 v-show="hasSelectedDeficientLibrary">
-                <v-btn class="ara-blue-bg white--text" @click="showCreateDeficientDialog = true">Add</v-btn>
-                <v-btn class="ara-orange-bg white--text" @click="onDeleteDeficients" :disabled="selectedDeficientIds.length === 0">
+            <v-flex v-show="hasSelectedDeficientLibrary" xs3>
+                <v-btn @click="showCreateDeficientDialog = true" class="ara-blue-bg white--text">Add</v-btn>
+                <v-btn :disabled="selectedDeficientIds.length === 0" @click="onDeleteDeficients"
+                       class="ara-orange-bg white--text">
                     Delete
                 </v-btn>
             </v-flex>
         </v-flex>
         <v-flex xs12>
             <div class="deficients-data-table">
-                <v-data-table :headers="deficientDataTableHeaders" :items="deficients" v-model="selectedDeficientRows"
-                              select-all item-key="id" class="elevation-1 fixed-header v-table__overflow">
+                <v-data-table :headers="deficientDataTableHeaders" :items="deficients"
+                              class="elevation-1 fixed-header v-table__overflow"
+                              item-key="id" select-all v-model="selectedDeficientRows">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                            <v-checkbox hide-details primary v-model="props.selected"></v-checkbox>
                         </td>
                         <td v-for="header in deficientDataTableHeaders">
                             <div v-if="header.value === 'attribute'">
-                                <v-edit-dialog @save="onEditDeficientProperty(props.item, 'attribute', props.item.attribute)"
-                                               :return-value.sync="props.item.attribute" large lazy persistent>
-                                    <input class="output" type="text" :value="props.item.attribute" readonly />
+                                <v-edit-dialog
+                                        :return-value.sync="props.item.attribute"
+                                        @save="onEditDeficientProperty(props.item, 'attribute', props.item.attribute)"
+                                        large lazy persistent>
+                                    <v-text-field readonly class="sm-txt" :value="props.item.attribute"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-select :items="numericAttributes" label="Select an Attribute"
-                                                  v-model="props.item.attribute">
+                                                  v-model="props.item.attribute"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                                         </v-select>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value !== 'attribute' && header.value !== 'criteria'">
-                                <v-edit-dialog @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
-                                               :return-value.sync="props.item[header.value]" large lazy persistent>
-                                    <input class="output" type="text" :value="props.item[header.value]" readonly />
+                                <v-edit-dialog v-if="header.value === 'deficient'"
+                                               :return-value.sync="props.item[header.value]"
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
+                                               large lazy persistent>
+                                    <v-text-field readonly class="sm-txt" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
-                                        </v-text-field>
+                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]"
+                                                      :mask="'##########'"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                    </template>
+                                </v-edit-dialog>
+                                <v-edit-dialog v-else-if="header.value === 'percentDeficient'"
+                                               :return-value.sync="props.item[header.value]"
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
+                                               large lazy persistent>
+                                    <v-text-field readonly class="sm-txt" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
+                                    <template slot="input">
+                                        <v-text-field label="Edit" single-line v-model.number="props.item[header.value]"
+                                                      :mask="'###'"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsWithinRange(props.item[header.value], [0, 100])]"/>
+                                    </template>
+                                </v-edit-dialog>
+                                <v-edit-dialog v-else
+                                               :return-value.sync="props.item[header.value]"
+                                               @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
+                                               large lazy persistent>
+                                    <v-text-field readonly class="sm-txt" :value="props.item[header.value]"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                    <template slot="input">
+                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value === 'criteria'">
                                 <v-layout align-center row style="flex-wrap:nowrap">
-                                    <v-menu bottom min-width="500px" min-height="500px">
+                                    <v-menu bottom min-height="500px" min-width="500px">
                                         <template slot="activator">
-                                            <input class="output deficient-criteria-output" type="text" :value="props.item.criteria" readonly />
+                                            <v-text-field readonly class="sm-txt" :value="props.item.criteria"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea rows="5" no-resize readonly full-width outline
-                                                            :value="props.item.criteria">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly
+                                                            rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <v-btn icon class="edit-icon" @click="onEditDeficientCriteria(props.item)">
+                                    <v-btn @click="onEditDeficientCriteria(props.item)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-layout>
@@ -80,36 +123,51 @@
                 </v-data-table>
             </div>
         </v-flex>
-        <v-flex xs12 v-show="hasSelectedDeficientLibrary && selectedDeficientLibrary.id !== stateScenarioDeficientLibrary.id">
+        <v-flex v-show="hasSelectedDeficientLibrary && selectedDeficientLibrary.id !== stateScenarioDeficientLibrary.id"
+                xs12>
             <v-layout justify-center>
                 <v-flex xs6>
-                    <v-textarea rows="4" no-resize outline label="Description" v-model="selectedDeficientLibrary.description">
+                    <v-textarea label="Description" no-resize outline rows="4"
+                                v-model="selectedDeficientLibrary.description">
                     </v-textarea>
                 </v-flex>
             </v-layout>
         </v-flex>
-        <v-flex xs12 v-show="hasSelectedDeficientLibrary">
+        <v-flex v-show="hasSelectedDeficientLibrary" xs12>
             <v-layout justify-end row>
-                <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyDeficientLibraryToScenario">
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
+                       v-show="selectedScenarioId !== '0'" :disabled="disableSubmitAction()">
                     Save
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateDeficientLibrary">
+                <v-btn @click="onUpdateDeficientLibrary" class="ara-blue-bg white--text"
+                       v-show="selectedScenarioId === '0'" :disabled="disableSubmitAction()">
                     Update Library
                 </v-btn>
-                <v-btn class="ara-blue-bg white--text" @click="onAddAsNewDeficientLibrary">
+                <v-btn @click="onAddAsNewDeficientLibrary" class="ara-blue-bg white--text" :disabled="disableSubmitAction()">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardDeficientLibraryChanges">
+                <v-btn @click="onDeleteDeficientLibrary" class="ara-orange-bg white--text"
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedDeficientLibrary">
+                    Delete Library
+                </v-btn>
+                <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text"
+                       v-show="selectedScenarioId !== '0'" :disabled="!hasSelectedDeficientLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
 
-        <CreateDeficientLibraryDialog :dialogData="createDeficientLibraryDialogData" @submit="onCreateNewDeficientLibrary" />
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse"/>
 
-        <CreateDeficientDialog :showDialog="showCreateDeficientDialog" @submit="onSubmitNewDeficient" />
+        <CreateDeficientLibraryDialog :dialogData="createDeficientLibraryDialogData"
+                                      @submit="onCreateNewDeficientLibrary"/>
 
-        <DeficientCriteriaEditor :dialogData="deficientCriteriaEditorDialogData" @submit="onSubmitDeficientCriteria" />
+        <CreateDeficientDialog :showDialog="showCreateDeficientDialog"
+                               :numberOfDeficients="selectedDeficientLibrary.deficients.length"
+                               @submit="onSubmitNewDeficient"/>
+
+        <DeficientCriteriaEditor :dialogData="deficientCriteriaEditorDialogData"
+                                 @submitCriteriaEditorDialogResult="onSubmitDeficientCriteria"/>
     </v-layout>
 </template>
 
@@ -117,10 +175,10 @@
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import {Watch} from 'vue-property-decorator';
-    import {State, Action, Getter} from 'vuex-class';
+    import {Action, Getter, State} from 'vuex-class';
     import {Deficient, DeficientLibrary, emptyDeficient, emptyDeficientLibrary} from '@/shared/models/iAM/deficient';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
-    import {clone, isNil, prepend, findIndex, propEq, update, find, contains} from 'ramda';
+    import {clone, contains, findIndex, isNil, prepend, propEq, update} from 'ramda';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -133,18 +191,26 @@
     } from '@/shared/models/modals/create-deficient-library-dialog-data';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import CreateDeficientLibraryDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
+    import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     @Component({
-        components: {CreateDeficientLibraryDialog, CreateDeficientDialog, DeficientCriteriaEditor: CriteriaEditorDialog}
+        components: {
+            CreateDeficientLibraryDialog,
+            CreateDeficientDialog,
+            DeficientCriteriaEditor: CriteriaEditorDialog,
+            Alert
+        }
     })
     export default class DeficientEditor extends Vue {
-        @State(state => state.deficient.deficientLibraries) stateDeficientLibraries: DeficientLibrary[];
-        @State(state => state.deficient.selectedDeficientLibrary) stateSelectedDeficientLibrary: DeficientLibrary;
-        @State(state => state.deficient.scenarioDeficientLibrary) stateScenarioDeficientLibrary: DeficientLibrary;
+        @State(state => state.deficientEditor.deficientLibraries) stateDeficientLibraries: DeficientLibrary[];
+        @State(state => state.deficientEditor.selectedDeficientLibrary) stateSelectedDeficientLibrary: DeficientLibrary;
+        @State(state => state.deficientEditor.scenarioDeficientLibrary) stateScenarioDeficientLibrary: DeficientLibrary;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -152,23 +218,32 @@
         @Action('selectDeficientLibrary') selectDeficientLibraryAction: any;
         @Action('createDeficientLibrary') createDeficientLibraryAction: any;
         @Action('updateDeficientLibrary') updateDeficientLibraryAction: any;
+        @Action('deleteDeficientLibrary') deleteDeficientLibraryAction: any;
         @Action('getScenarioDeficientLibrary') getScenarioDeficientLibraryAction: any;
         @Action('saveScenarioDeficientLibrary') saveScenarioDeficientLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
+        @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
         @Getter('getNumericAttributes') getNumericAttributesGetter: any;
 
         selectedScenarioId: string = '0';
         deficientLibrariesSelectListItems: SelectItem[] = [];
-        selectItemValue: string = '';
+        selectItemValue: string | null = null;
         selectedDeficientLibrary: DeficientLibrary = clone(emptyDeficientLibrary);
         hasSelectedDeficientLibrary: boolean = false;
         deficients: Deficient[] = [];
         deficientDataTableHeaders: DataTableHeader[] = [
-            {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: ''},
-            {text: 'Name', value: 'name', align: 'left', sortable: false, class: '', width: ''},
-            {text: 'Deficient Level', value: 'deficient', align: 'left', sortable: false, class: '', width: ''},
-            {text: 'Allowed Deficient(%)', value: 'percentDeficient', align: 'left', sortable: false, class: '', width: ''},
+            {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: '12%'},
+            {text: 'Name', value: 'name', align: 'left', sortable: false, class: '', width: '15%'},
+            {text: 'Deficient Level', value: 'deficient', align: 'left', sortable: false, class: '', width: '8%'},
+            {
+                text: 'Allowed Deficient(%)',
+                value: 'percentDeficient',
+                align: 'left',
+                sortable: false,
+                class: '',
+                width: '11%'
+            },
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '50%'}
         ];
         numericAttributes: string[] = [];
@@ -178,6 +253,9 @@
         showCreateDeficientDialog: boolean = false;
         deficientCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createDeficientLibraryDialogData: CreateDeficientLibraryDialogData = clone(emptyCreateDeficientLibraryDialogData);
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets onload component UI properties
@@ -186,34 +264,25 @@
             next((vm: any) => {
                 if (to.path === '/DeficientEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
-
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
                 }
 
-                vm.onClearSelectedDeficientLibrary();
-                setTimeout(() => {
-                    vm.getDeficientLibrariesAction()
+                vm.selectItemValue = null;
+                vm.getDeficientLibrariesAction()
                     .then(() => {
                         if (vm.selectedScenarioId !== '0') {
                             vm.getScenarioDeficientLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
                         }
                     });
-                });
             });
         }
 
-        /**
-         * Resets onload component UI properties
-         */
-        beforeRouteUpdate(to: any, from: any, next: any) {
-            if (to.path === '/DeficientEditor/Library/') {
-                this.selectedScenarioId = '0';
-                this.onClearSelectedDeficientLibrary();
-                next();
-            }
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
         }
 
         /**
@@ -232,13 +301,7 @@
          */
         @Watch('selectItemValue')
         onSelectItemValueChanged() {
-            const selectedDeficientLibrary: DeficientLibrary = find(
-                propEq('id', this.selectItemValue), this.stateDeficientLibraries
-            ) as DeficientLibrary;
-
-            this.selectDeficientLibraryAction({
-                selectedDeficientLibrary: hasValue(selectedDeficientLibrary) ? selectedDeficientLibrary : clone(emptyDeficientLibrary)
-            });
+            this.selectDeficientLibraryAction({selectedLibraryId: this.selectItemValue});
         }
 
         /**
@@ -254,6 +317,10 @@
          */
         @Watch('selectedDeficientLibrary')
         onSelectedDeficientLibraryChanged() {
+            this.setHasUnsavedChangesAction({
+                value: hasUnsavedChanges(
+                    'deficient', this.selectedDeficientLibrary, this.stateSelectedDeficientLibrary, this.stateScenarioDeficientLibrary)
+            });
             this.hasSelectedDeficientLibrary = this.selectedDeficientLibrary.id !== '0';
             this.deficients = clone(this.selectedDeficientLibrary.deficients);
             if (this.numericAttributes.length === 0) {
@@ -275,13 +342,6 @@
         }
 
         /**
-         * Sets selectItemValue to '' or '0' to de-select the selected deficient library
-         */
-        onClearSelectedDeficientLibrary() {
-            this.selectItemValue = hasValue(this.selectItemValue) ? '' : '0';
-        }
-
-        /**
          * Enables the CreateDeficientLibraryDialog
          */
         onAddNewDeficientLibrary() {
@@ -299,11 +359,10 @@
             this.showCreateDeficientDialog = false;
 
             if (!isNil(newDeficient)) {
-                this.selectDeficientLibraryAction({selectedDeficientLibrary: {
-                        ...this.selectedDeficientLibrary,
-                        deficients: prepend(newDeficient, this.selectedDeficientLibrary.deficients)
-                    }
-                });
+                this.selectedDeficientLibrary = {
+                    ...this.selectedDeficientLibrary,
+                    deficients: prepend(newDeficient, this.selectedDeficientLibrary.deficients)
+                };
             }
         }
 
@@ -314,14 +373,14 @@
          * @param value Value to set on the selected Deficient object's property
          */
         onEditDeficientProperty(deficient: Deficient, property: string, value: any) {
-            this.selectDeficientLibraryAction({selectedDeficientLibrary: {
-                    ...this.selectedDeficientLibrary,
-                    deficients: update(
-                        findIndex(propEq('id', deficient.id), this.selectedDeficientLibrary.deficients),
-                        setItemPropertyValue(property, value, deficient) as Deficient,
-                        this.selectedDeficientLibrary.deficients
-                    )
-                }});
+            this.selectedDeficientLibrary = {
+                ...this.selectedDeficientLibrary,
+                deficients: update(
+                    findIndex(propEq('id', deficient.id), this.selectedDeficientLibrary.deficients),
+                    setItemPropertyValue(property, value, deficient) as Deficient,
+                    this.selectedDeficientLibrary.deficients
+                )
+            };
         }
 
         /**
@@ -345,17 +404,14 @@
             this.deficientCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                this.selectedDeficient.criteria = criteria;
-
-                this.selectDeficientLibraryAction({selectedDeficientLibrary: {
-                        ...this.selectedDeficientLibrary,
-                        deficients: update(
-                            findIndex(propEq('id', this.selectedDeficient.id), this.selectedDeficientLibrary.deficients),
-                            this.selectedDeficient,
-                            this.selectedDeficientLibrary.deficients
-                        )
-                    }
-                });
+                this.selectedDeficientLibrary = {
+                    ...this.selectedDeficientLibrary,
+                    deficients: update(
+                        findIndex(propEq('id', this.selectedDeficient.id), this.selectedDeficientLibrary.deficients),
+                        {...this.selectedDeficient, criteria: criteria},
+                        this.selectedDeficientLibrary.deficients
+                    )
+                };
             }
 
             this.selectedDeficient = clone(emptyDeficient);
@@ -389,34 +445,33 @@
         /**
          * Dispatches an action to update the scenario's deficient library data in the sql server database
          */
-        onApplyDeficientLibraryToScenario() {
-            this.saveScenarioDeficientLibraryAction({saveScenarioDeficientLibraryData: {
+        onApplyToScenario() {
+            this.saveScenarioDeficientLibraryAction({
+                saveScenarioDeficientLibraryData: {
                     ...this.selectedDeficientLibrary,
                     id: this.selectedScenarioId
-                }
-            }).then(() => this.onDiscardDeficientLibraryChanges());
+                },
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
+            }).then(() => this.onDiscardChanges());
+        }
+
+        /**
+         * Dispatches an action to clear changes made to the selected deficient library
+         */
+        onDiscardChanges() {
+            this.selectItemValue = null;
+            setTimeout(() => this.selectDeficientLibraryAction({selectedLibraryId: this.stateScenarioDeficientLibrary.id}));
         }
 
         /**
          * Dispatches an action to remove selected deficients from the selected deficient library
          */
         onDeleteDeficients() {
-            this.selectDeficientLibraryAction({selectedDeficientLibrary: {
-                    ...this.selectedDeficientLibrary,
-                    deficients: this.selectedDeficientLibrary.deficients
-                        .filter((deficient: Deficient) => !contains(deficient.id, this.selectedDeficientIds))
-                }
-            });
-        }
-
-        /**
-         * Dispatches an action to clear changes made to the selected deficient library
-         */
-        onDiscardDeficientLibraryChanges() {
-            this.onClearSelectedDeficientLibrary();
-            setTimeout(() => {
-                this.selectDeficientLibraryAction({selectedDeficientLibrary: this.stateScenarioDeficientLibrary});
-            });
+            this.selectedDeficientLibrary = {
+                ...this.selectedDeficientLibrary,
+                deficients: this.selectedDeficientLibrary.deficients
+                    .filter((deficient: Deficient) => !contains(deficient.id, this.selectedDeficientIds))
+            };
         }
 
         /**
@@ -424,6 +479,45 @@
          */
         onUpdateDeficientLibrary() {
             this.updateDeficientLibraryAction({updatedDeficientLibrary: this.selectedDeficientLibrary});
+        }
+
+        onDeleteDeficientLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+
+            if (response) {
+                this.selectItemValue = null;
+                this.deleteDeficientLibraryAction({deficientLibrary: this.selectedDeficientLibrary});
+            }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedDeficientLibrary) {
+                const allDataIsValid: boolean = this.selectedDeficientLibrary.deficients.every((d: Deficient) => {
+                    return this.rules['generalRules'].valueIsNotEmpty(d.attribute) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(d.name) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(d.deficient) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(d.percentDeficient) === true &&
+                        this.rules['generalRules'].valueIsWithinRange(d.percentDeficient, [0, 100]) === true;
+                });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedDeficientLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return true;
         }
     }
 </script>
@@ -437,5 +531,14 @@
 
     .deficients-data-table .v-menu--inline, .deficient-criteria-output {
         width: 100%;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>

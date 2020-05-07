@@ -10,6 +10,6 @@ namespace BridgeCare.Interfaces
 
         InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db);
 
-        List<InventorySelectionModel> GetInventorySelectionModels(BridgeCareContext db);
+        List<InventorySelectionModel> GetInventorySelectionModels(BridgeCareContext db, UserInformationModel userInformation);
     }
 }

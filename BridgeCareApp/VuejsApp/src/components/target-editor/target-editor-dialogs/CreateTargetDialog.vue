@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="450px">
+    <v-dialog max-width="450px" persistent v-model="showDialog">
         <v-card>
             <v-card-title>
                 <v-layout justify-center>
@@ -8,24 +8,25 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" v-model="newTarget.name" outline></v-text-field>
+                    <v-text-field label="Name" outline v-model="newTarget.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
-                    <v-select label="Select Attribute" :items="numericAttributes"
-                              v-model="newTarget.attribute" outline>
-                    </v-select>
+                    <v-select :items="numericAttributes" label="Select Attribute"
+                              outline v-model="newTarget.attribute" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
-                    <v-text-field v-model="newTarget.year" label="Year" outline :mask="'####'"></v-text-field>
+                    <v-text-field :mask="'####'" label="Year" outline v-model.number="newTarget.year"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
 
-                    <v-text-field label="Target" v-model="newTarget.targetMean" outline>
-                    </v-text-field>
+                    <v-text-field label="Target" outline :mask="'##########'" v-model.number="newTarget.targetMean"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
                 <v-layout justify-space-between row>
-                    <v-btn class="ara-blue-bg white--text" @click="onSubmit(true)" :disabled="disableSubmit()">
+                    <v-btn :disabled="disableSubmit()" @click="onSubmit(true)" class="ara-blue-bg white--text">
                         Save
                     </v-btn>
-                    <v-btn class="ara-orange-bg white--text" @click="onSubmit(false)">
+                    <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">
                         Cancel
                     </v-btn>
                 </v-layout>
@@ -38,12 +39,13 @@
     import Vue from 'vue';
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {State} from 'vuex-class';
-    import {Target, emptyTarget} from '@/shared/models/iAM/target';
+    import {emptyTarget, Target} from '@/shared/models/iAM/target';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {hasValue} from '@/shared/utils/has-value-util';
-    import {clone} from 'ramda';
     import moment from 'moment';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+
     const ObjectID = require('bson-objectid');
     @Component
     export default class CreateTargetDialog extends Vue {
@@ -51,10 +53,10 @@
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
-        newTarget: Target = clone({...emptyTarget, id: ObjectID.generate(), year: moment().year()});
+        newTarget: Target = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         numericAttributes: string[] = [];
-        showDatePicker: boolean = false;
         year: string = moment().year().toString();
+        rules: InputValidationRules = {...rules};
 
         /**
          * Component mounted event handler
@@ -75,12 +77,30 @@
             }
         }
 
+        @Watch('showDialog')
+        onShowDialogChanged() {
+            this.setDefaultAttributeValue();
+        }
+
+        @Watch('numericAttributes')
+        onNumericAttributesChanged() {
+            this.setDefaultAttributeValue();
+        }
+
+        setDefaultAttributeValue() {
+            if (hasValue(this.numericAttributes)) {
+                this.newTarget.attribute = this.numericAttributes[0];
+            }
+        }
+
         /**
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newTarget.name) || !hasValue(this.newTarget.attribute) ||
-                   !hasValue(this.newTarget.year) || !hasValue(this.newTarget.targetMean);
+            return !(this.rules['generalRules'].valueIsNotEmpty(this.newTarget.attribute) === true &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newTarget.targetMean) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newTarget.name) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newTarget.year));
         }
 
         /**
@@ -89,12 +109,12 @@
          */
         onSubmit(submit: boolean) {
             if (submit) {
-                this.$emit('submit',this.newTarget);
+                this.$emit('submit', this.newTarget);
             } else {
                 this.$emit('submit', null);
             }
 
-            this.newTarget = clone({...emptyTarget, id: ObjectID.generate(), year: moment().year()});
+            this.newTarget = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         }
     }
 </script>

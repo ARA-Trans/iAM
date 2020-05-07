@@ -3,74 +3,98 @@
         <v-flex xs12>
             <v-layout justify-center>
                 <v-flex xs3>
-                    <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onAddNewTargetLibrary">
+                    <v-btn @click="onAddNewTargetLibrary" class="ara-blue-bg white--text"
+                           v-show="selectedScenarioId === '0'">
                         New Library
                     </v-btn>
-                    <v-select v-if="!hasSelectedTargetLibrary || selectedScenarioId !== '0'" label="Select a Target Library"
-                              :items="targetLibrariesSelectListItems" v-model="selectItemValue" outline>
+                    <v-select :items="targetLibrariesSelectListItems"
+                              label="Select a Target Library"
+                              outline v-if="!hasSelectedTargetLibrary || selectedScenarioId !== '0'"
+                              v-model="selectItemValue">
                     </v-select>
-                    <v-text-field v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'" label="Library Name"
-                                  v-model="selectedTargetLibrary.name">
+                    <v-text-field label="Library Name" v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'"
+                                  v-model="selectedTargetLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
-                            <v-btn class="ara-orange" icon @click="onClearSelectedTargetLibrary">
-                                <v-icon>fas fa-times</v-icon>
+                            <v-btn @click="selectItemValue = null" class="ara-orange" icon>
+                                <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
                     </v-text-field>
+                    <div v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'">
+                        Owner: {{selectedTargetLibrary.owner ? selectedTargetLibrary.owner : "[ No Owner ]"}}
+                    </div>
+                    <v-checkbox class="sharing" label="Shared"
+                                v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'"
+                                v-model="selectedTargetLibrary.shared"/>
                 </v-flex>
             </v-layout>
-            <v-flex xs3 v-show="hasSelectedTargetLibrary">
-                <v-btn class="ara-blue-bg white--text" @click="showCreateTargetDialog = true">Add</v-btn>
-                <v-btn class="ara-orange-bg white--text" @click="onDeleteTargets" :disabled="selectedTargetIds.length === 0">
+            <v-flex v-show="hasSelectedTargetLibrary" xs3>
+                <v-btn @click="showCreateTargetDialog = true" class="ara-blue-bg white--text">Add</v-btn>
+                <v-btn :disabled="selectedTargetIds.length === 0" @click="onDeleteTargets"
+                       class="ara-orange-bg white--text">
                     Delete
                 </v-btn>
             </v-flex>
         </v-flex>
-        <v-flex xs12 v-show="hasSelectedTargetLibrary">
+        <v-flex v-show="hasSelectedTargetLibrary" xs12>
             <div class="targets-data-table">
-                <v-data-table :headers="targetDataTableHeaders" :items="targets" v-model="selectedTargetRows" select-all
-                              item-key="id" class="elevation-1 fixed-header v-table__overflow">
+                <v-data-table :headers="targetDataTableHeaders" :items="targets"
+                              class="elevation-1 fixed-header v-table__overflow" item-key="id"
+                              select-all v-model="selectedTargetRows">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                            <v-checkbox hide-details primary v-model="props.selected"></v-checkbox>
                         </td>
                         <td v-for="header in targetDataTableHeaders">
                             <div v-if="header.value === 'attribute'">
-                                <v-edit-dialog @save="onEditTargetProperty(props.item, 'attribute', props.item.attribute)"
-                                               :return-value.sync="props.item.attribute" large lazy persistent>
-                                    <input class="output" type="text" :value="props.item.attribute" readonly />
+                                <v-edit-dialog
+                                        :return-value.sync="props.item.attribute"
+                                        @save="onEditTargetProperty(props.item, 'attribute', props.item.attribute)"
+                                        large lazy persistent>
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item.attribute"
+                                           :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-select :items="numericAttributes" label="Select an Attribute"
-                                                  v-model="props.item.attribute">
-                                        </v-select>
+                                                  v-model="props.item.attribute"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value !== 'attribute' && header.value !== 'criteria'">
-                                <v-edit-dialog @save="onEditTargetProperty(props.item, header.value, props.item[header.value])"
-                                               :return-value.sync="props.item[header.value]" large lazy persistent>
-                                    <input class="output" type="text" :value="props.item[header.value]" readonly />
+                                <v-edit-dialog
+                                        :return-value.sync="props.item[header.value]"
+                                        @save="onEditTargetProperty(props.item, header.value, props.item[header.value])"
+                                        large lazy persistent>
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item[header.value]"
+                                           :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field v-model="props.item[header.value]" label="Edit" single-line>
-                                        </v-text-field>
+                                        <v-text-field v-if="header.value === 'year'" label="Edit" single-line
+                                                      :mask="'####'" v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        <v-text-field v-else-if="header.value === 'targetMean'" label="Edit" single-line
+                                                      :mask="'##########'" v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        <v-text-field v-else label="Edit" single-line v-model="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value === 'criteria'">
                                 <v-layout align-center row style="flex-wrap:nowrap">
-                                    <v-menu bottom min-width="500px" min-height="500px">
+                                    <v-menu bottom min-height="500px" min-width="500px">
                                         <template slot="activator">
-                                            <input class="output target-criteria-output" type="text" :value="props.item.criteria" readonly />
+                                            <v-text-field readonly single-line class="sm-txt"
+                                                          :value="props.item.criteria"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea rows="5" no-resize readonly full-width outline
-                                                            :value="props.item.criteria">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly
+                                                            rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
-                                    <v-btn icon class="edit-icon" @click="onEditTargetCriteria(props.item)">
+                                    <v-btn @click="onEditTargetCriteria(props.item)" class="edit-icon" icon>
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-layout>
@@ -80,36 +104,48 @@
                 </v-data-table>
             </div>
         </v-flex>
-        <v-flex xs12 v-show="hasSelectedTargetLibrary && selectedTargetLibrary.id !== stateScenarioTargetLibrary.id">
+        <v-flex v-show="hasSelectedTargetLibrary && selectedTargetLibrary.id !== stateScenarioTargetLibrary.id" xs12>
             <v-layout justify-center>
                 <v-flex xs6>
-                    <v-textarea rows="4" no-resize outline label="Description" v-model="selectedTargetLibrary.description">
+                    <v-textarea label="Description" no-resize outline rows="4"
+                                v-model="selectedTargetLibrary.description">
                     </v-textarea>
                 </v-flex>
             </v-layout>
         </v-flex>
-        <v-flex xs12 v-show="hasSelectedTargetLibrary">
+        <v-flex v-show="hasSelectedTargetLibrary" xs12>
             <v-layout justify-end row>
-                <v-btn v-show="selectedScenarioId !== '0'" class="ara-blue-bg white--text" @click="onApplyTargetLibraryToScenario">
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
+                       v-show="selectedScenarioId !== '0'" :disabled="disableSubmitAction()">
                     Save
                 </v-btn>
-                <v-btn v-show="selectedScenarioId === '0'" class="ara-blue-bg white--text" @click="onUpdateTargetLibrary">
+                <v-btn @click="onUpdateTargetLibrary" class="ara-blue-bg white--text"
+                       v-show="selectedScenarioId === '0'" :disabled="disableSubmitAction()">
                     Update Library
                 </v-btn>
-                <v-btn class="ara-blue-bg white--text" @click="onAddAsNewTargetLibrary" :disabled="!hasSelectedTargetLibrary">
+                <v-btn @click="onAddAsNewTargetLibrary" class="ara-blue-bg white--text"
+                       :disabled="disableSubmitAction()">
                     Create as New Library
                 </v-btn>
-                <v-btn v-show="selectedScenarioId !== '0'" class="ara-orange-bg white--text" @click="onDiscardTargetLibraryChanges">
+                <v-btn @click="onDeleteTargetLibrary" class="ara-orange-bg white--text"
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedTargetLibrary">
+                    Delete Library
+                </v-btn>
+                <v-btn @click="onDiscardTargetLibraryChanges" class="ara-orange-bg white--text"
+                       v-show="selectedScenarioId !== '0'">
                     Discard Changes
                 </v-btn>
             </v-layout>
         </v-flex>
 
-        <CreateTargetLibraryDialog :dialogData="createTargetLibraryDialogData" @submit="onCreateNewTargetLibrary" />
+        <Alert :dialogData="alertBeforeDelete" @submit="onSubmitDeleteResponse"/>
 
-        <CreateTargetDialog :showDialog="showCreateTargetDialog" @submit="onSubmitNewTarget" />
+        <CreateTargetLibraryDialog :dialogData="createTargetLibraryDialogData" @submit="onCreateNewTargetLibrary"/>
 
-        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData" @submit="onSubmitTargetCriteria" />
+        <CreateTargetDialog :showDialog="showCreateTargetDialog" @submit="onSubmitNewTarget"/>
+
+        <TargetCriteriaEditor :dialogData="targetCriteriaEditorDialogData"
+                              @submitCriteriaEditorDialogResult="onSubmitTargetCriteria"/>
     </v-layout>
 </template>
 
@@ -117,9 +153,9 @@
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import {Watch} from 'vue-property-decorator';
-    import {State, Action, Getter} from 'vuex-class';
+    import {Action, Getter, State} from 'vuex-class';
     import {emptyTarget, emptyTargetLibrary, Target, TargetLibrary} from '@/shared/models/iAM/target';
-    import {clone, isNil, prepend, contains, propEq, find, update, findIndex} from 'ramda';
+    import {clone, contains, findIndex, isNil, prepend, propEq, update} from 'ramda';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -137,14 +173,18 @@
     } from '@/shared/models/modals/create-target-library-dialog-data';
     import CreateTargetLibraryDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
+    import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     @Component({
-        components: {CreateTargetLibraryDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog}
+        components: {CreateTargetLibraryDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog, Alert}
     })
     export default class TargetEditor extends Vue {
-        @State(state => state.target.targetLibraries) stateTargetLibraries: TargetLibrary[];
-        @State(state => state.target.selectedTargetLibrary) stateSelectedTargetLibrary: TargetLibrary;
-        @State(state => state.target.scenarioTargetLibrary) stateScenarioTargetLibrary: TargetLibrary;
+        @State(state => state.targetEditor.targetLibraries) stateTargetLibraries: TargetLibrary[];
+        @State(state => state.targetEditor.selectedTargetLibrary) stateSelectedTargetLibrary: TargetLibrary;
+        @State(state => state.targetEditor.scenarioTargetLibrary) stateScenarioTargetLibrary: TargetLibrary;
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
         @Action('setErrorMessage') setErrorMessageAction: any;
@@ -152,15 +192,17 @@
         @Action('selectTargetLibrary') selectTargetLibraryAction: any;
         @Action('createTargetLibrary') createTargetLibraryAction: any;
         @Action('updateTargetLibrary') updateTargetLibraryAction: any;
+        @Action('deleteTargetLibrary') deleteTargetLibraryAction: any;
         @Action('getScenarioTargetLibrary') getScenarioTargetLibraryAction: any;
         @Action('saveScenarioTargetLibrary') saveScenarioTargetLibraryAction: any;
         @Action('getAttributes') getAttributesAction: any;
+        @Action('setHasUnsavedChanges') setHasUnsavedChangesAction: any;
 
         @Getter('getNumericAttributes') getNumericAttributesGetter: any;
 
         selectedScenarioId: string = '0';
         targetLibrariesSelectListItems: SelectItem[] = [];
-        selectItemValue: string = '';
+        selectItemValue: string | null = '';
         selectedTargetLibrary: TargetLibrary = clone(emptyTargetLibrary);
         hasSelectedTargetLibrary: boolean = false;
         targets: Target[] = [];
@@ -174,11 +216,13 @@
         numericAttributes: string[] = [];
         selectedTargetRows: Target[] = [];
         selectedTargetIds: string[] = [];
-        selectedTarget: Target= clone(emptyTarget);
+        selectedTarget: Target = clone(emptyTarget);
         showCreateTargetDialog: boolean = false;
         targetCriteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         createTargetLibraryDialogData: CreateTargetLibraryDialogData = clone(emptyCreateTargetLibraryDialogData);
-        editDialogResult: string = '';
+        alertBeforeDelete: AlertData = clone(emptyAlertData);
+        objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = {...rules};
 
         /**
          * Sets onload component UI properties
@@ -187,34 +231,25 @@
             next((vm: any) => {
                 if (to.path === '/TargetEditor/Scenario/') {
                     vm.selectedScenarioId = to.query.selectedScenarioId;
-
+                    vm.objectIdMOngoDBForScenario = to.query.objectIdMOngoDBForScenario;
                     if (vm.selectedScenarioId === '0') {
                         vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                         vm.$router.push('/Scenarios/');
                     }
                 }
 
-                vm.onClearSelectedTargetLibrary();
-                setTimeout(() => {
-                    vm.getTargetLibrariesAction()
-                        .then(() => {
-                            if (vm.selectedScenarioId !== '0') {
-                                vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
-                            }
-                        });
-                });
+                vm.selectItemValue = null;
+                vm.getTargetLibrariesAction()
+                    .then(() => {
+                        if (vm.selectedScenarioId !== '0') {
+                            vm.getScenarioTargetLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
+                        }
+                    });
             });
         }
 
-        /**
-         * Resets onload component UI properties
-         */
-        beforeRouteUpdate(to: any, from: any, next: any) {
-            if (to.path === '/TargetEditor/Library/') {
-                this.selectedScenarioId = '0';
-                this.onClearSelectedTargetLibrary();
-                next();
-            }
+        beforeDestroy() {
+            this.setHasUnsavedChangesAction({value: false});
         }
 
         /**
@@ -233,13 +268,7 @@
          */
         @Watch('selectItemValue')
         onSelectItemValueChanged() {
-            const selectedTargetLibrary: TargetLibrary = find(
-                propEq('id', this.selectItemValue), this.stateTargetLibraries
-            ) as TargetLibrary;
-
-            this.selectTargetLibraryAction({
-                selectedTargetLibrary: hasValue(selectedTargetLibrary) ? selectedTargetLibrary : clone(emptyTargetLibrary)
-            });
+            this.selectTargetLibraryAction({selectedLibraryId: this.selectItemValue});
         }
 
         /**
@@ -255,6 +284,11 @@
          */
         @Watch('selectedTargetLibrary')
         onSelectedTargetLibraryChanged() {
+            this.setHasUnsavedChangesAction({
+                value: hasUnsavedChanges(
+                    'target', this.selectedTargetLibrary, this.stateSelectedTargetLibrary, this.stateScenarioTargetLibrary
+                )
+            });
             this.hasSelectedTargetLibrary = this.selectedTargetLibrary.id !== '0';
             this.targets = clone(this.selectedTargetLibrary.targets);
             if (this.numericAttributes.length === 0) {
@@ -267,7 +301,7 @@
          */
         @Watch('selectedTargetRows')
         onSelectedTargetRowsChanged() {
-            this.selectedTargetIds  = getPropertyValues('id', this.selectedTargetRows) as string[];
+            this.selectedTargetIds = getPropertyValues('id', this.selectedTargetRows) as string[];
         }
 
         @Watch('stateNumericAttributes')
@@ -300,11 +334,10 @@
             this.showCreateTargetDialog = false;
 
             if (!isNil(newTarget)) {
-                this.selectTargetLibraryAction({selectedTargetLibrary: {
-                        ...this.selectedTargetLibrary,
-                        targets: prepend(newTarget, this.selectedTargetLibrary.targets)
-                    }
-                });
+                this.selectedTargetLibrary = {
+                    ...this.selectedTargetLibrary,
+                    targets: prepend(newTarget, this.selectedTargetLibrary.targets)
+                };
             }
         }
 
@@ -315,15 +348,14 @@
          * @param value Value to set on the selected Target object's propertyd
          */
         onEditTargetProperty(target: Target, property: string, value: any) {
-            this.selectTargetLibraryAction({selectedTargetLibrary: {
-                    ...this.selectedTargetLibrary,
-                    targets: update(
-                        findIndex(propEq('id', target.id), this.selectedTargetLibrary.targets),
-                        setItemPropertyValue(property, value, target) as Target,
-                        this.selectedTargetLibrary.targets
-                    )
-                }
-            });
+            this.selectedTargetLibrary = {
+                ...this.selectedTargetLibrary,
+                targets: update(
+                    findIndex(propEq('id', target.id), this.selectedTargetLibrary.targets),
+                    setItemPropertyValue(property, value, target) as Target,
+                    this.selectedTargetLibrary.targets
+                )
+            };
         }
 
         /**
@@ -347,17 +379,14 @@
             this.targetCriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
 
             if (!isNil(criteria)) {
-                this.selectedTarget.criteria = criteria;
-
-                this.selectTargetLibraryAction({selectedTargetLibrary: {
-                        ...this.selectedTargetLibrary,
-                        targets: update(
-                            findIndex(propEq('id', this.selectedTarget.id), this.selectedTargetLibrary.targets),
-                            this.selectedTarget,
-                            this.selectedTargetLibrary.targets
-                        )
-                    }
-                });
+                this.selectedTargetLibrary = {
+                    ...this.selectedTargetLibrary,
+                    targets: update(
+                        findIndex(propEq('id', this.selectedTarget.id), this.selectedTargetLibrary.targets),
+                        {...this.selectedTarget, criteria: criteria},
+                        this.selectedTargetLibrary.targets
+                    )
+                };
             }
 
             this.selectedTarget = clone(emptyTarget);
@@ -389,23 +418,13 @@
         /**
          * Dispatches an action to update the scenario's target library data in the sql server database
          */
-        onApplyTargetLibraryToScenario() {
-            this.saveScenarioTargetLibraryAction({saveScenarioTargetLibraryData: {
+        onApplyToScenario() {
+            this.saveScenarioTargetLibraryAction({
+                saveScenarioTargetLibraryData: {
                     ...this.selectedTargetLibrary,
-                    id: this.selectedScenarioId
-                }
-            }).then(() => this.onDiscardTargetLibraryChanges());
-        }
-
-        /**
-         * Dispatches an action to remove selected targets from the selected target library
-         */
-        onDeleteTargets() {
-            this.selectTargetLibraryAction({selectedTargetLibrary: {
-                    ...this.selectedTargetLibrary,
-                    targets: this.selectedTargetLibrary.targets
-                        .filter((target: Target) => !contains(target.id, this.selectedTargetIds))
-                }
+                    id: this.stateScenarioTargetLibrary.id
+                },
+                objectIdMOngoDBForScenario: this.objectIdMOngoDBForScenario
             });
         }
 
@@ -413,10 +432,19 @@
          * Dispatches an action to clear changes made to the selected target library
          */
         onDiscardTargetLibraryChanges() {
-            this.onClearSelectedTargetLibrary();
-            setTimeout(() => {
-                this.selectTargetLibraryAction({selectedTargetLibrary: this.stateScenarioTargetLibrary});
-            });
+            this.selectItemValue = null;
+            setTimeout(() => this.selectTargetLibraryAction({selectedLibraryId: this.stateScenarioTargetLibrary.id}));
+        }
+
+        /**
+         * Dispatches an action to remove selected targets from the selected target library
+         */
+        onDeleteTargets() {
+            this.selectedTargetLibrary = {
+                ...this.selectedTargetLibrary,
+                targets: this.selectedTargetLibrary.targets
+                    .filter((target: Target) => !contains(target.id, this.selectedTargetIds))
+            };
         }
 
         /**
@@ -424,6 +452,42 @@
          */
         onUpdateTargetLibrary() {
             this.updateTargetLibraryAction({updatedTargetLibrary: this.selectedTargetLibrary});
+        }
+
+        onDeleteTargetLibrary() {
+            this.alertBeforeDelete = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Are you sure you want to delete?'
+            };
+        }
+
+        onSubmitDeleteResponse(response: boolean) {
+            this.alertBeforeDelete = clone(emptyAlertData);
+
+            if (response) {
+                this.selectItemValue = null;
+                this.deleteTargetLibraryAction({targetLibrary: this.selectedTargetLibrary});
+            }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedTargetLibrary) {
+                const allDataIsValid = this.selectedTargetLibrary.targets.every((t: Target) => {
+                    return this.rules['generalRules'].valueIsNotEmpty(t.attribute) === true && this.rules['generalRules'].valueIsNotEmpty(t.name) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(t.year) === true && this.rules['generalRules'].valueIsNotEmpty(t.targetMean) === true;
+                });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedTargetLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return false;
         }
     }
 </script>
@@ -437,5 +501,14 @@
 
     .targets-data-table .v-menu--inline, .target-criteria-output {
         width: 100%;
+    }
+
+    .sharing label {
+        padding-top: 0.5em;
+    }
+
+    .sharing {
+        padding-top: 0;
+        margin: 0;
     }
 </style>
