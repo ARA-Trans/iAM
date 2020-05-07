@@ -80,16 +80,21 @@ namespace BridgeCare.DataAccessLayer
 
             if (simulation.CriteriaDrivenBudgets.Any())
             {
-                simulation.CriteriaDrivenBudgets.ToList().ForEach(budget =>
+                simulation.CriteriaDrivenBudgets.ToList().ForEach(criteriaDrivenBudget =>
                 {
-                    db.Entry(budget).State = System.Data.Entity.EntityState.Deleted;
+                    var criteriaDrivenBudgetModel =
+                        model.CriteriaDrivenBudgets.SingleOrDefault(m =>
+                            m.Id == criteriaDrivenBudget.BUDGET_CRITERIA_ID.ToString());
+
+                    if (criteriaDrivenBudgetModel == null)
+                        CriteriaDrivenBudgetEntity.DeleteEntry(criteriaDrivenBudget, db);
+                    else
+                    {
+                        criteriaDrivenBudgetModel.matched = true;
+                        criteriaDrivenBudgetModel.UpdateCriteriaDrivenBudget(criteriaDrivenBudget);
+                    }
                 });
             }
-
-            model.BudgetCriteria.ForEach(budgetModel =>
-            {
-                simulation.CriteriaDrivenBudgets.Add(new CriteriaDrivenBudgetsEntity(id, budgetModel));
-            });
 
             if (simulation.INVESTMENTS != null)
                 model.UpdateInvestment(simulation.INVESTMENTS);
@@ -144,6 +149,13 @@ namespace BridgeCare.DataAccessLayer
                 db.YearlyInvestments.AddRange(model.BudgetYears
                     .Where(yearlyInvestmentModel => !yearlyInvestmentModel.matched)
                     .Select(yearlyInvestmentModel => new YearlyInvestmentEntity(id, yearlyInvestmentModel))
+                    .ToList()
+                );
+
+            if (model.CriteriaDrivenBudgets.Any(m => !m.matched))
+                db.CriteriaDrivenBudgets.AddRange(model.CriteriaDrivenBudgets
+                    .Where(criteriaDrivenBudgetModel => !criteriaDrivenBudgetModel.matched)
+                    .Select(criteriaDrivenBudgetModel => new CriteriaDrivenBudgetEntity(id, criteriaDrivenBudgetModel))
                     .ToList()
                 );
 

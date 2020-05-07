@@ -38,6 +38,6 @@ export const emptySplitTreatment: SplitTreatment = {
 export const emptySplitTreatmentLimit: SplitTreatmentLimit = {
     id: '0',
     rank: 1,
-    amount: 1000000,
+    amount: 0,
     percentage: '100'
 };

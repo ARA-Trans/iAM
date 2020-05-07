@@ -9,18 +9,18 @@
                 </v-card-title>
                 <v-card-text>
                     <v-layout column>
-                        <v-text-field label="Name" outline v-model="newPerformanceLibraryEquation.equationName">
-                        </v-text-field>
+                        <v-text-field label="Name" outline v-model="newPerformanceLibraryEquation.equationName"
+                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                         <v-select :items="attributesSelectListItems" label="Select Attribute"
-                                  outline v-model="newPerformanceLibraryEquation.attribute">
-                        </v-select>
+                                  outline v-model="newPerformanceLibraryEquation.attribute"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                     </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-layout justify-space-between row>
                         <v-btn :disabled="newPerformanceLibraryEquation.equationName === '' ||
-                                          newPerformanceLibraryEquation.attribute === ''" @click="onSubmit(true)"
-                               class="ara-blue-bg white--text">
+                                          newPerformanceLibraryEquation.attribute === ''"
+                               @click="onSubmit(true)" class="ara-blue-bg white--text">
                             Save
                         </v-btn>
                         <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>
@@ -39,6 +39,8 @@
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 
@@ -50,6 +52,7 @@
 
         attributesSelectListItems: SelectItem[] = [];
         newPerformanceLibraryEquation: PerformanceLibraryEquation = {...emptyEquation, id: ObjectID.generate()};
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Component mounted event handler

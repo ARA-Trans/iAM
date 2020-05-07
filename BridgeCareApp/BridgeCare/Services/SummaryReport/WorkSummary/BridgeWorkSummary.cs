@@ -49,11 +49,11 @@ namespace BridgeCare.Services
         public ChartRowsModel Fill(ExcelWorksheet worksheet, List<SimulationDataModel> simulationDataModels, List<BridgeDataModel> bridgeDataModels, List<int> simulationYears, BridgeCareContext dbContext, SimulationModel simulationModel, List<string> treatments)
         {
             var currentCell = new CurrentCell { Row = 1, Column = 1 };
-            var yearlyBudgetModels = bridgeWorkSummaryData.GetYearlyBudgetModels(simulationModel.simulationId, dbContext);
+            var yearlyBudgetAmounts = bridgeWorkSummaryData.GetYearlyBudgetAmounts(simulationModel.simulationId, simulationYears, dbContext);
 
             var comittedProjectsData = workSummaryByBudgetData.GetAllCommittedProjects(simulationModel, dbContext);
 
-            costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetModels, treatments, comittedProjectsData);
+            costBudgetsWorkSummary.FillCostBudgetWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, yearlyBudgetAmounts, treatments, comittedProjectsData);
 
             bridgesCulvertsWorkSummary.FillBridgesCulvertsWorkSummarySections(worksheet, currentCell, simulationYears, simulationDataModels, treatments);
 

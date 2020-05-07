@@ -8,9 +8,10 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Priority" outline v-model="newPriority.priorityLevel"></v-text-field>
-                    <v-autocomplete :items="years" label="Select a Year" outline
-                                    v-model="selectedYear"></v-autocomplete>
+                    <v-text-field label="Priority" outline v-model.number="newPriority.priorityLevel"
+                                  :mask="'##########'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                    <v-text-field label="Year" outline v-model.number="newPriority.year"
+                                    :mask="'####'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -33,6 +34,7 @@
     import {emptyPriority, Priority} from '@/shared/models/iAM/priority';
     import {hasValue} from '@/shared/utils/has-value-util';
     import moment from 'moment';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -40,9 +42,10 @@
     export default class CreatePriorityDialog extends Vue {
         @Prop() showDialog: boolean;
 
-        newPriority: Priority = {...emptyPriority, id: ObjectID.generate()};
-        selectedYear: string = '';
+        newPriority: Priority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
+        selectedYear: string = moment().year().toString();
         years: string[] = [];
+        rules: InputValidationRules = {...rules};
 
         mounted() {
             const endYear = moment().subtract(50, 'years');
@@ -68,7 +71,8 @@
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newPriority.priorityLevel);
+            return !(this.rules['generalRules'].valueIsNotEmpty(this.newPriority.year) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newPriority.priorityLevel));
         }
 
         /**
@@ -82,7 +86,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newPriority = {...emptyPriority, id: ObjectID.generate(), year: this.newPriority.year};
+            this.newPriority = {...emptyPriority, id: ObjectID.generate(), year: moment().year()};
         }
     }
 </script>

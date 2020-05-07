@@ -10,12 +10,9 @@ namespace BridgeCare.Models
         public int Year { get; set; }
         public string BudgetName { get; set; }
         public double? BudgetAmount { get; set; }
-        public List<InvestmentLibraryBudgetModel> Budget { get; set; }
+        public string CriteriaDrivenBudgetId { get; set; }
 
-        public InvestmentLibraryBudgetYearModel()
-        {
-            Budget = new List<InvestmentLibraryBudgetModel>();
-        }
+        public InvestmentLibraryBudgetYearModel() { }
 
         public InvestmentLibraryBudgetYearModel(YearlyInvestmentEntity entity)
         {

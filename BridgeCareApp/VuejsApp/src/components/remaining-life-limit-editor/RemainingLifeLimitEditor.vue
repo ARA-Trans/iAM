@@ -6,13 +6,13 @@
                     <v-btn @click="onNewLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === '0'">
                         New Library
                     </v-btn>
-                    <v-select :items="selectListItems"
-                              label="Select a Remaining Life Limit Library" outline v-if="!hasSelectedRemainingLifeLimitLibrary || selectedScenarioId !== '0'"
-                              v-model="selectItemValue">
-                    </v-select>
-                    <v-text-field label="Library Name"
-                                  v-if="hasSelectedRemainingLifeLimitLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedRemainingLifeLimitLibrary.name">
+                    <v-select v-if="!hasSelectedRemainingLifeLimitLibrary || selectedScenarioId !== '0'"
+                              :items="selectListItems"
+                              label="Select a Remaining Life Limit Library" outline v-model="selectItemValue"/>
+                    <v-text-field v-if="hasSelectedRemainingLifeLimitLibrary && selectedScenarioId === '0'"
+                                  label="Library Name"
+                                  v-model="selectedRemainingLifeLimitLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -31,20 +31,26 @@
                               class="elevation-1 fixed-header v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.attribute" large lazy persistent>
-                                {{props.item.attribute}}
+                            <v-edit-dialog :return-value.sync="props.item.attribute" large lazy persistent
+                                           @save="onEditProperty(props.item, 'attribute', props.item.attribute)">
+                                <v-text-field readonly single-line class="sm-txt" :value="props.item.attribute"
+                                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 <template slot="input">
                                     <v-select :items="numericAttributesSelectListItems" label="Select an Attribute"
-                                              outline v-model="props.item.attribute">
-                                    </v-select>
+                                              outline v-model="props.item.attribute"
+                                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.limit" large lazy persistent>
-                                {{props.item.limit}}
+                            <v-edit-dialog :return-value.sync="props.item.limit" large lazy persistent
+                                           @save="onEditProperty(props.item, 'limit', props.item.limit)">
+                                <v-text-field readonly single-line class="sm-txt" :value="props.item.limit"
+                                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 <template slot="input">
-                                    <v-text-field label="Edit" single-line v-model="props.item.limit"></v-text-field>
+                                    <v-text-field label="Edit" single-line :mask="'##########'"
+                                                  v-model.number="props.item.limit"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -63,23 +69,27 @@
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedRemainingLifeLimitLibrary">
-                <v-btn :disabled="!hasSelectedRemainingLifeLimitLibrary" @click="onApplyToScenario" class="ara-blue-bg white--text"
+                <v-btn :disabled="disableSubmitAction()" @click="onApplyToScenario"
+                       class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
-                <v-btn :disabled="!hasSelectedRemainingLifeLimitLibrary" @click="onUpdateLibrary" class="ara-blue-bg white--text"
+                <v-btn :disabled="disableSubmitAction()" @click="onUpdateLibrary"
+                       class="ara-blue-bg white--text"
                        v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
-                <v-btn :disabled="!hasSelectedRemainingLifeLimitLibrary" @click="onCreateAsNewLibrary"
+                <v-btn :disabled="disableSubmitAction()" @click="onCreateAsNewLibrary"
                        class="ara-blue-bg white--text">
                     Create as New Library
                 </v-btn>
-                <v-btn @click="onDeleteRemainingLifeLimitLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                <v-btn v-show="selectedScenarioId === '0'" class="ara-orange-bg white--text"
+                       @click="onDeleteRemainingLifeLimitLibrary"
+                       :disabled="!hasSelectedRemainingLifeLimitLibrary">
                     Delete Library
                 </v-btn>
-                <v-btn :disabled="!hasSelectedRemainingLifeLimitLibrary" @click="onDiscardChanges" class="ara-orange-bg white--text"
+                <v-btn :disabled="!hasSelectedRemainingLifeLimitLibrary" @click="onDiscardChanges"
+                       class="ara-orange-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Discard Changes
                 </v-btn>
@@ -133,6 +143,8 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {setItemPropertyValue} from '@/shared/utils/setter-utils';
 
     const ObjectID = require('bson-objectid');
     @Component({
@@ -184,6 +196,7 @@
         );
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = {...rules};
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -316,6 +329,17 @@
             }
         }
 
+        onEditProperty(remainingLifeLimit: RemainingLifeLimit, property: string, value: any) {
+            this.selectedRemainingLifeLimitLibrary = {
+                ...this.selectedRemainingLifeLimitLibrary,
+                remainingLifeLimits: update(
+                    findIndex(propEq('id', remainingLifeLimit.id), this.selectedRemainingLifeLimitLibrary.remainingLifeLimits),
+                    setItemPropertyValue(property, value, remainingLifeLimit),
+                    this.selectedRemainingLifeLimitLibrary.remainingLifeLimits
+                )
+            };
+        }
+
         /**
          * Toggles the CriteriaEditorDialog modal
          */
@@ -416,6 +440,25 @@
                 this.selectItemValue = null;
                 this.deleteRemainingLifeLimitLibraryAction({remainingLifeLimitLibrary: this.selectedRemainingLifeLimitLibrary});
             }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedRemainingLifeLimitLibrary) {
+                const allDataIsValid = this.selectedRemainingLifeLimitLibrary.remainingLifeLimits
+                    .every((rml: RemainingLifeLimit) => {
+                        return this.rules['generalRules'].valueIsNotEmpty(rml.attribute) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(rml.limit) === true;
+                    });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedRemainingLifeLimitLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return false;
         }
     }
 </script>
