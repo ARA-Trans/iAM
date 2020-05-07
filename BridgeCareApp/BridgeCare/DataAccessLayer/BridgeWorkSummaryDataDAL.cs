@@ -28,11 +28,11 @@ namespace BridgeCare.DataAccessLayer
                 }
 
                 var budgetAmounts = yearlyInvestments?.Where(y => y.YEAR_ == year)
-                    .Select(y => y.YEAR_).ToList();
+                    .Select(y => y.AMOUNT).ToList();
 
                 if (budgetAmounts != null && budgetAmounts.Any())
                 {
-                    budgetAmounts.ForEach(amount => yearlyBudgetAmounts[year].Add(amount));
+                    budgetAmounts.ForEach(amount => yearlyBudgetAmounts[year].Add(amount ?? 0));
                 }
             });
             
