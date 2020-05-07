@@ -548,7 +548,7 @@
                         findIndex(propEq('simulationId', simulationId), this.scenarios),
                         {...scenario, simulationName: scenarioName},
                         this.scenarios
-                    )
+                    );
                 });
             }
         }

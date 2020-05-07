@@ -19,8 +19,8 @@
                 <v-card-actions>
                     <v-layout justify-space-between row>
                         <v-btn :disabled="newPerformanceLibraryEquation.equationName === '' ||
-                                          newPerformanceLibraryEquation.attribute === ''" @click="onSubmit(true)"
-                               class="ara-blue-bg white--text">
+                                          newPerformanceLibraryEquation.attribute === ''"
+                               @click="onSubmit(true)" class="ara-blue-bg white--text">
                             Save
                         </v-btn>
                         <v-btn @click="onSubmit(false)" class="ara-orange-bg white--text">Cancel</v-btn>

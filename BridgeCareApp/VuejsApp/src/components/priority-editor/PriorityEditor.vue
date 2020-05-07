@@ -12,7 +12,7 @@
                               v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedPriorityLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedPriorityLibrary.name">
+                                  v-model="selectedPriorityLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -122,22 +122,22 @@
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedPriorityLibrary">
                 <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId !== '0'">
+                       v-show="selectedScenarioId !== '0'" :disabled="disableSubmitAction()">
                     Save
                 </v-btn>
                 <v-btn @click="onUpdatePriorityLibrary" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="disableSubmitAction()">
                     Update Library
                 </v-btn>
-                <v-btn @click="onAddAsNewPriorityLibrary" class="ara-blue-bg white--text">
+                <v-btn @click="onAddAsNewPriorityLibrary" class="ara-blue-bg white--text" :disabled="disableSubmitAction()">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeletePriorityLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedPriorityLibrary">
                     Delete Library
                 </v-btn>
                 <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId !== '0'">
+                       v-show="selectedScenarioId !== '0'" :disabled="!hasSelectedPriorityLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -174,7 +174,7 @@
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
-    import {any, clone, contains, find, findIndex, flatten, isNil, prepend, propEq, update} from 'ramda';
+    import {any, clone, contains, find, findIndex, flatten, isNil, prepend, propEq, update, keys} from 'ramda';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
@@ -184,8 +184,7 @@
         CreatePriorityLibraryDialogData,
         emptyCreatePriorityLibraryDialogData
     } from '@/shared/models/modals/create-priority-library-dialog-data';
-    import CreatePriorityLibraryDialog
-        from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
+    import CreatePriorityLibraryDialog from '@/components/priority-editor/priority-editor-dialogs/CreatePriorityLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
@@ -239,6 +238,7 @@
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
         rules: InputValidationRules = clone(rules);
+        nonBudgetKeys: string[] = ['id', 'priorityLevel', 'year', 'criteria'];
 
         /**
          * Sets component UI properties that triggers cascading UI updates
@@ -617,9 +617,28 @@
             }
         }
 
-        /***********************************************RULES**********************************************************/
-        isFundingPercentWithinValidRange(fundingPercent: number) {
-            return (fundingPercent >= 0 && fundingPercent <= 100) || 'Allowed value range: 0 - 100';
+        disableSubmitAction() {
+            if (this.hasSelectedPriorityLibrary) {
+                const allDataIsValid: boolean = this.selectedPriorityLibrary.priorities.every((p: Priority) => {
+                    const allSubDataIsValid: boolean = p.priorityFunds.every((pf: PriorityFund) => {
+                        return this.rules['generalRules'].valueIsNotEmpty(pf.budget) &&
+                                this.rules['generalRules'].valueIsNotEmpty(pf.funding) &&
+                                this.rules['generalRules'].valueIsWithinRange(pf.funding, [0, 100]);
+                    });
+
+                    return this.rules['generalRules'].valueIsNotEmpty(p.priorityLevel) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(p.year) === true && allSubDataIsValid;
+                });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedPriorityLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return true;
         }
     }
 </script>

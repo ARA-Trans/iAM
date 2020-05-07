@@ -82,8 +82,7 @@
                                         <template slot="input">
                                             <v-select :items="attributesSelectListItems" label="Edit"
                                                       v-model="props.item.attribute"
-                                                      :rules="[rules['generalRules'].valueIsNotEmpty]">
-                                            </v-select>
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                         </template>
                                     </v-edit-dialog>
                                 </td>
@@ -97,7 +96,8 @@
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.equation" full-width no-resize outline
+                                                <v-textarea class="sm-txt" :value="props.item.equation" full-width
+                                                            no-resize outline
                                                             readonly
                                                             rows="5"/>
                                             </v-card-text>
@@ -117,7 +117,8 @@
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                <v-textarea class="sm-txt" :value="props.item.criteria" full-width
+                                                            no-resize outline
                                                             readonly
                                                             rows="5"/>
                                             </v-card-text>
@@ -150,27 +151,26 @@
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedPerformanceLibrary">
-                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onApplyToScenario"
+                <v-btn :disabled="disableSubmitAction()" @click="onApplyToScenario"
                        class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
-                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onUpdateLibrary"
+                <v-btn :disabled="disableSubmitAction()" @click="onUpdateLibrary"
                        class="ara-blue-bg white--text"
                        v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
-                <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onCreateAsNewLibrary"
+                <v-btn :disabled="disableSubmitAction()" @click="onCreateAsNewLibrary"
                        class="ara-blue-bg white--text">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeletePerformanceLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedPerformanceLibrary">
                     Delete Library
                 </v-btn>
                 <v-btn :disabled="!hasSelectedPerformanceLibrary" @click="onDiscardChanges"
-                       class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId !== '0'">
+                       class="ara-orange-bg white--text" v-show="selectedScenarioId !== '0'">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -197,8 +197,7 @@
     import Component from 'vue-class-component';
     import {Action, State} from 'vuex-class';
     import CreatePerformanceLibraryDialog from './performance-editor-dialogs/CreatePerformanceLibraryDialog.vue';
-    import CreatePerformanceLibraryEquationDialog
-        from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
+    import CreatePerformanceLibraryEquationDialog from './performance-editor-dialogs/CreatePerformanceLibraryEquationDialog.vue';
     import EquationEditorDialog from '../../shared/modals/EquationEditorDialog.vue';
     import CriteriaEditorDialog from '../../shared/modals/CriteriaEditorDialog.vue';
     import {
@@ -574,6 +573,24 @@
                 this.selectItemValue = null;
                 this.deletePerformanceLibraryAction({performanceLibrary: this.selectedPerformanceLibrary});
             }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedPerformanceLibrary) {
+                const allDataIsValid: boolean = this.selectedPerformanceLibrary.equations
+                    .every((pe: PerformanceLibraryEquation) => {
+                        return this.rules['generalRules'].valueIsNotEmpty(pe.equationName) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(pe.attribute) === true;
+                    });
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedPerformanceLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return true;
         }
     }
 </script>

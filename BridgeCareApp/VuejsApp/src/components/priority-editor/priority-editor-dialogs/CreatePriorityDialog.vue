@@ -8,10 +8,10 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Priority" outline v-model="newPriority.priorityLevel"
-                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['generalRules'].valueIsNumeric]"/>
-                    <v-autocomplete :items="years" label="Select a Year" outline v-model="selectedYear"
-                                    :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                    <v-text-field label="Priority" outline v-model.number="newPriority.priorityLevel"
+                                  :mask="'##########'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                    <v-text-field label="Year" outline v-model.number="newPriority.year"
+                                    :mask="'####'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -71,7 +71,8 @@
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newPriority.priorityLevel);
+            return !(this.rules['generalRules'].valueIsNotEmpty(this.newPriority.year) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newPriority.priorityLevel));
         }
 
         /**

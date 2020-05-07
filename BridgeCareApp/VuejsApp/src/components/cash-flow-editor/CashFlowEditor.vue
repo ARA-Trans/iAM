@@ -12,9 +12,10 @@
                               v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedCashFlowLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
+                                  v-model="selectedCashFlowLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
-                            <v-btn @click="onClearSelectedCashFlowLibrary" class="ara-orange" icon>
+                            <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
@@ -68,7 +69,8 @@
                                         <td>
                                             <v-menu bottom min-height="500px" min-width="500px">
                                                 <template slot="activator">
-                                                    <v-text-field readonly single-line class="sm-txt" :value="props.item.criteria"/>
+                                                    <v-text-field readonly single-line class="sm-txt"
+                                                                  :value="props.item.criteria"/>
                                                 </template>
                                                 <v-card>
                                                     <v-card-text>
@@ -177,22 +179,23 @@
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedCashFlowLibrary">
-                <v-btn :disabled="disableSubmitButtons()" @click="onApplyToScenario" class="ara-blue-bg white--text"
+                <v-btn :disabled="disableSubmitAction()" @click="onApplyToScenario" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
-                <v-btn :disabled="disableSubmitButtons()" @click="onUpdateLibrary" class="ara-blue-bg white--text"
+                <v-btn :disabled="disableSubmitAction()" @click="onUpdateLibrary" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
-                <v-btn :disabled="disableSubmitButtons()" @click="onCreateAsNewLibrary" class="ara-blue-bg white--text">
+                <v-btn :disabled="disableSubmitAction()" @click="onCreateAsNewLibrary" class="ara-blue-bg white--text">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeleteCashFlowLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedCashFlowLibrary">
                     Delete Library
                 </v-btn>
-                <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text" v-show="selectedScenarioId !== '0'">
+                <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text" v-show="selectedScenarioId !== '0'"
+                       :disabled="!hasSelectedCashFlowLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -232,8 +235,7 @@
         CreateCashFlowLibraryDialogData,
         emptyCreateCashFlowLibraryDialogData
     } from '@/shared/models/modals/create-cash-flow-library-dialog-data';
-    import CreateCashFlowLibraryDialog
-        from '@/components/cash-flow-editor/cash-flow-editor-dialogs/CreateCashFlowLibraryDialog.vue';
+    import CreateCashFlowLibraryDialog from '@/components/cash-flow-editor/cash-flow-editor-dialogs/CreateCashFlowLibraryDialog.vue';
     import {formatAsCurrency} from '@/shared/utils/currency-formatter';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {getLatestPropertyValue, getPropertyValuesNonUniq} from '@/shared/utils/getter-utils';
@@ -301,7 +303,7 @@
                     }
                 }
 
-                vm.cashFlowLibrarySelectItemValue = null;
+                vm.selectItemValue = null;
                 vm.getCashFlowLibrariesAction().then(() => {
                     if (vm.selectedScenarioId !== '0') {
                         vm.getScenarioCashFlowLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
@@ -376,10 +378,6 @@
             }
         }
 
-        onClearSelectedCashFlowLibrary() {
-            this.selectItemValue = null;
-        }
-
         onNewLibrary() {
             this.createCashFlowLibraryDialogData = {
                 ...emptyCreateCashFlowLibraryDialogData,
@@ -405,7 +403,7 @@
         onAddSplitTreatment() {
             const newSplitTreatment: SplitTreatment = {
                 ...emptySplitTreatment,
-                description: `Unnamed Rule ${this.selectedCashFlowLibrary.splitTreatments.length}`,
+                description: `Unnamed Rule ${this.selectedCashFlowLibrary.splitTreatments.length + 1}`,
                 id: ObjectID.generate()
             };
 
@@ -550,7 +548,10 @@
                                 findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
                                 {
                                     ...data,
-                                    amount: hasValue(data.amount) ? parseFloat(data.amount) : null
+                                    amount: hasValue(data.amount)
+                                        ? parseFloat(data.amount.toString()
+                                            .replace(/(\$*)(\,*)/g, ''))
+                                        : null
                                 } as SplitTreatmentLimit,
                                 this.selectedSplitTreatment.splitTreatmentLimits
                             )
@@ -595,40 +596,35 @@
             return null;
         }
 
-        disableSubmitButtons() {
-            let disabled: boolean = false;
+        disableSubmitAction() {
+            if (this.hasSelectedCashFlowLibrary) {
+                const allDataIsValid = this.selectedCashFlowLibrary.splitTreatments.every((st: SplitTreatment) => {
+                    const allSubDataIsValid = st.splitTreatmentLimits.every((stl: SplitTreatmentLimit, index: number) => {
+                        let isValid: boolean = this.rules['generalRules'].valueIsNotEmpty(stl.rank) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(stl.amount) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(stl.percentage) === true &&
+                            this.rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred(stl.percentage) === true;
 
-            if (this.selectedSplitTreatment.id !== '0' && hasValue(this.selectedSplitTreatment.splitTreatmentLimits)) {
-                if (this.selectedSplitTreatment.splitTreatmentLimits.length > 1) {
-                    let index = 1;
-                    while (!disabled && index !== this.selectedSplitTreatment.splitTreatmentLimits.length) {
-                        disabled = this.rules['cashFlowRules'].isRankGreaterThanPreviousRank(
-                            this.selectedSplitTreatment.splitTreatmentLimits[index], this.selectedSplitTreatment) !== true;
-
-                        if (!disabled) {
-                            disabled = this.rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(
-                                this.selectedSplitTreatment.splitTreatmentLimits[index], this.selectedSplitTreatment) !== true;
+                        if (index !== 0) {
+                            isValid = isValid && this.rules['cashFlowRules'].isRankGreaterThanPreviousRank(stl, st) === true &&
+                                this.rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(stl, st) === true;
                         }
 
-                        index++;
-                    }
-                }
+                        return isValid;
+                    });
 
-                if (!disabled) {
-                    const percentages: string[] = getPropertyValuesNonUniq(
-                        'percentage', this.selectedSplitTreatment.splitTreatmentLimits);
+                    return this.rules['generalRules'].valueIsNotEmpty(st.description) === true && allSubDataIsValid;
+                });
 
-                    if (percentages.length > 0) {
-                        let index = 0;
-                        while (!disabled && index !== percentages.length) {
-                            disabled = this.rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred(percentages[index]) !== true;
-                            index++;
-                        }
-                    }
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedCashFlowLibrary.name) === true &&
+                        allDataIsValid);
                 }
             }
 
-            return disabled;
+            return true;
         }
 
         onDeleteCashFlowLibrary() {

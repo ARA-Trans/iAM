@@ -3,27 +3,31 @@
         <v-flex xs12>
             <v-btn @click="onAddConsequence" class="ara-blue-bg white--text">Add Consequence</v-btn>
             <div class="consequences-data-table">
-                <v-data-table :headers="consequencesGridHeaders" :items="consequencesGridData" class="elevation-1 fixed-header v-table__overflow"
+                <v-data-table :headers="consequencesGridHeaders" :items="consequencesGridData"
+                              class="elevation-1 fixed-header v-table__overflow"
                               hide-actions>
                     <template slot="items" slot-scope="props">
                         <td>
                             <v-edit-dialog
                                     :return-value.sync="props.item.attribute"
-                                    @save="onEditConsequenceProperty(props.item, 'attribute', props.item.attribute)" large lazy persistent>
-                                <v-text-field :value="props.item.attribute" readonly></v-text-field>
+                                    @save="onEditConsequenceProperty(props.item, 'attribute', props.item.attribute)"
+                                    large lazy persistent>
+                                <v-text-field readonly single-line class="sm-txt" :value="props.item.attribute"
+                                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 <template slot="input">
                                     <v-select :items="attributesSelectListItems" label="Edit"
-                                              v-model="props.item.attribute">
-                                    </v-select>
+                                              v-model="props.item.attribute"
+                                              :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>
                         <td>
                             <v-edit-dialog :return-value.sync="props.item.change"
-                                           @save="onEditConsequenceProperty(props.item, 'change', props.item.change)" large lazy persistent>
-                                <v-text-field :value="props.item.change" readonly></v-text-field>
+                                           @save="onEditConsequenceProperty(props.item, 'change', props.item.change)"
+                                           large lazy persistent>
+                                <v-text-field readonly single-line class="sm-txt" :value="props.item.change" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 <template slot="input">
-                                    <v-text-field label="Edit" v-model="props.item.change"></v-text-field>
+                                    <v-text-field label="Edit" v-model="props.item.change" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -94,6 +98,7 @@
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
+    import {InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -102,6 +107,7 @@
     })
     export default class ConsequencesTab extends Vue {
         @Prop() consequencesTabData: TabData;
+        @Prop() rules: InputValidationRules;
 
         @State(state => state.attribute.attributes) stateAttributes: Attribute[];
 

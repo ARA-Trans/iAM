@@ -13,7 +13,7 @@
                               v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedTargetLibrary.name">
+                                  v-model="selectedTargetLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -51,7 +51,7 @@
                                         :return-value.sync="props.item.attribute"
                                         @save="onEditTargetProperty(props.item, 'attribute', props.item.attribute)"
                                         large lazy persistent>
-                                    <input readonly single-line class="sm-txt" :value="props.item.attribute"
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item.attribute"
                                            :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-select :items="numericAttributes" label="Select an Attribute"
@@ -65,15 +65,16 @@
                                         :return-value.sync="props.item[header.value]"
                                         @save="onEditTargetProperty(props.item, header.value, props.item[header.value])"
                                         large lazy persistent>
-                                    <input readonly single-line class="sm-txt" :value="props.item[header.value]"
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item[header.value]"
                                            :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-text-field v-if="header.value === 'year'" label="Edit" single-line
-                                                      :mask="'####'"
-                                                      v-model.number="props.item[header.value]"
+                                                      :mask="'####'" v-model.number="props.item[header.value]"
                                                       :rules="[rules['generalRules'].valueIsNotEmpty]"/>
-                                        <v-text-field v-if="header.value === 'targetMean'" label="Edit" single-line
+                                        <v-text-field v-else-if="header.value === 'targetMean'" label="Edit" single-line
                                                       :mask="'##########'" v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        <v-text-field v-else label="Edit" single-line v-model="props.item[header.value]"
                                                       :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
@@ -170,8 +171,7 @@
         CreateTargetLibraryDialogData,
         emptyCreateTargetLibraryDialogData
     } from '@/shared/models/modals/create-target-library-dialog-data';
-    import CreateTargetLibraryDialog
-        from '@/components/target-editor/target-editor-dialogs/CreateTargetLibraryDialog.vue';
+    import CreateTargetLibraryDialog from '@/components/target-editor/target-editor-dialogs/CreateTargetLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';

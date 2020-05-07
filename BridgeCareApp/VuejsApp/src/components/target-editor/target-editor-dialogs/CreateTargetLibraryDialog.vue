@@ -9,7 +9,7 @@
             <v-card-text>
                 <v-layout column>
                     <v-text-field label="Name" outline v-model="newTargetLibrary.name"
-                                  :rules="rules['generalRules'].valueIsNotEmpty"/>
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                     <v-textarea label="Description" no-resize outline rows="3"
                                 v-model="newTargetLibrary.description"/>
                 </v-layout>

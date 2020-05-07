@@ -30,13 +30,13 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import {Component, Prop} from 'vue-property-decorator';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
     import {emptyRemainingLifeLimit, RemainingLifeLimit} from '@/shared/models/iAM/remaining-life-limit';
     import {CreateRemainingLifeLimitDialogData} from '@/shared/models/modals/create-remaining-life-limit-dialog-data';
-    import {hasValue} from '@/shared/utils/has-value-util';
     import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {hasValue} from '@/shared/utils/has-value-util';
 
-    var ObjectID = require('bson-objectid');
+    const ObjectID = require('bson-objectid');
 
     @Component
     export default class CreateRemainingLifeLimitDialog extends Vue {
@@ -44,6 +44,12 @@
 
         newRemainingLifeLimit: RemainingLifeLimit = {...emptyRemainingLifeLimit, id: ObjectID.generate()};
         rules: InputValidationRules = {...rules};
+
+        @Watch('dialogData')
+        onDialogDataChanged() {
+            this.newRemainingLifeLimit.attribute = hasValue(this.dialogData.numericAttributesSelectListItems)
+                ? this.dialogData.numericAttributesSelectListItems[0].value.toString() : '';
+        }
 
         /**
          * Whether or not the 'Submit' button should be enabled

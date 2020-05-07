@@ -63,6 +63,7 @@
     @Component
     export default class CreateDeficientDialog extends Vue {
         @Prop() showDialog: boolean;
+        @Prop() numberOfDeficients: number;
 
         @State(state => state.attribute.numericAttributes) stateNumericAttributes: Attribute[];
 
@@ -86,16 +87,45 @@
         onStateNumericAttributesChanged() {
             if (hasValue(this.stateNumericAttributes)) {
                 this.numericAttributes = getPropertyValues('name', this.stateNumericAttributes);
+
+                if (this.showDialog) {
+                    this.setNewDeficientDefaultValues();
+                }
             }
+        }
+
+        @Watch('showDialog')
+        onShowDialogChanged() {
+            if (this.showDialog) {
+                this.setNewDeficientDefaultValues();
+            }
+        }
+
+        @Watch('numberOfDeficients')
+        onNumberOfDeficientsChanged() {
+            if (this.showDialog) {
+                this.setNewDeficientDefaultValues();
+            }
+        }
+
+        setNewDeficientDefaultValues() {
+            this.newDeficient = {
+                ...this.newDeficient,
+                attribute: hasValue(this.numericAttributes) ? this.numericAttributes[0] : '',
+                name: `Unnamed Deficient ${this.numberOfDeficients + 1}`,
+                deficient: this.numberOfDeficients > 0 ? this.numberOfDeficients + 1 : 1
+            };
         }
 
         /**
          * Disables the submit button if the new deficient is missing required properties' data
          */
         disableSubmit() {
-            return !hasValue(this.newDeficient.name) || !hasValue(this.newDeficient.attribute) ||
-                !hasValue(this.newDeficient.deficient) || !hasValue(this.newDeficient.percentDeficient) ||
-                !this.rules['generalRules'].valueIsWithinRange(this.newDeficient.percentDeficient, [0, 100]);
+            return !(this.rules['generalRules'].valueIsNotEmpty(this.newDeficient.name) === true &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newDeficient.attribute) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newDeficient.deficient) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newDeficient.percentDeficient) &&
+                this.rules['generalRules'].valueIsWithinRange(this.newDeficient.percentDeficient, [0, 100]));
         }
 
         /**
@@ -109,7 +139,7 @@
                 this.$emit('submit', null);
             }
 
-            this.newDeficient = clone({...emptyDeficient, id: ObjectID.generate()});
+            this.newDeficient = {...emptyDeficient, id: ObjectID.generate()};
         }
     }
 </script>

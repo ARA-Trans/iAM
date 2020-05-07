@@ -31,7 +31,8 @@
                               class="elevation-1 fixed-header v-table__overflow">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.attribute" large lazy persistent>
+                            <v-edit-dialog :return-value.sync="props.item.attribute" large lazy persistent
+                                           @save="onEditProperty(props.item, 'attribute', props.item.attribute)">
                                 <v-text-field readonly single-line class="sm-txt" :value="props.item.attribute"
                                               :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 <template slot="input">
@@ -42,7 +43,8 @@
                             </v-edit-dialog>
                         </td>
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.limit" large lazy persistent>
+                            <v-edit-dialog :return-value.sync="props.item.limit" large lazy persistent
+                                           @save="onEditProperty(props.item, 'limit', props.item.limit)">
                                 <v-text-field readonly single-line class="sm-txt" :value="props.item.limit"
                                               :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 <template slot="input">
@@ -118,13 +120,12 @@
         RemainingLifeLimit,
         RemainingLifeLimitLibrary
     } from '@/shared/models/iAM/remaining-life-limit';
-    import {append, clone, findIndex, isNil, propEq, update} from 'ramda';
+    import {append, clone, findIndex, isNil, propEq, update, update} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';
     import {Attribute} from '@/shared/models/iAM/attribute';
-    import CreateRemainingLifeLimitDialog
-        from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitDialog.vue';
+    import CreateRemainingLifeLimitDialog from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitDialog.vue';
     import {
         CriteriaEditorDialogData,
         emptyCriteriaEditorDialogData
@@ -134,8 +135,7 @@
         CreateRemainingLifeLimitLibraryDialogData,
         emptyCreateRemainingLifeLimitLibraryDialogData
     } from '@/shared/models/modals/create-remaining-life-limit-library-dialog-data';
-    import CreateRemainingLifeLimitLibraryDialog
-        from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitLibraryDialog.vue';
+    import CreateRemainingLifeLimitLibraryDialog from '@/components/remaining-life-limit-editor/remaining-life-limit-editor-dialogs/CreateRemainingLifeLimitLibraryDialog.vue';
     import {
         CreateRemainingLifeLimitDialogData,
         emptyCreateRemainingLifeLimitDialogData
@@ -144,6 +144,7 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
     import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {setItemPropertyValue} from '@/shared/utils/setter-utils';
 
     const ObjectID = require('bson-objectid');
     @Component({
@@ -328,6 +329,17 @@
             }
         }
 
+        onEditProperty(remainingLifeLimit: RemainingLifeLimit, property: string, value: any) {
+            this.selectedRemainingLifeLimitLibrary = {
+                ...this.selectedRemainingLifeLimitLibrary,
+                remainingLifeLimits: update(
+                    findIndex(propEq('id', remainingLifeLimit.id), this.selectedRemainingLifeLimitLibrary.remainingLifeLimits),
+                    setItemPropertyValue(property, value, remainingLifeLimit),
+                    this.selectedRemainingLifeLimitLibrary.remainingLifeLimits
+                )
+            };
+        }
+
         /**
          * Toggles the CriteriaEditorDialog modal
          */
@@ -437,7 +449,7 @@
                         return this.rules['generalRules'].valueIsNotEmpty(rml.attribute) === true &&
                             this.rules['generalRules'].valueIsNotEmpty(rml.limit) === true;
                     });
-                // if modifying a scenario's library then the library name does not matter
+
                 if (this.selectedScenarioId !== '0') {
                     return !allDataIsValid;
                 } else {

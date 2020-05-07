@@ -55,7 +55,6 @@
 
         newTarget: Target = {...emptyTarget, id: ObjectID.generate(), year: moment().year()};
         numericAttributes: string[] = [];
-        showDatePicker: boolean = false;
         year: string = moment().year().toString();
         rules: InputValidationRules = {...rules};
 
@@ -78,12 +77,30 @@
             }
         }
 
+        @Watch('showDialog')
+        onShowDialogChanged() {
+            this.setDefaultAttributeValue();
+        }
+
+        @Watch('numericAttributes')
+        onNumericAttributesChanged() {
+            this.setDefaultAttributeValue();
+        }
+
+        setDefaultAttributeValue() {
+            if (hasValue(this.numericAttributes)) {
+                this.newTarget.attribute = this.numericAttributes[0];
+            }
+        }
+
         /**
          * Whether or not to disable the 'Submit' button
          */
         disableSubmit() {
-            return !hasValue(this.newTarget.name) || !hasValue(this.newTarget.attribute) ||
-                !hasValue(this.newTarget.year) || !hasValue(this.newTarget.targetMean);
+            return !(this.rules['generalRules'].valueIsNotEmpty(this.newTarget.attribute) === true &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newTarget.targetMean) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newTarget.name) &&
+                this.rules['generalRules'].valueIsNotEmpty(this.newTarget.year));
         }
 
         /**

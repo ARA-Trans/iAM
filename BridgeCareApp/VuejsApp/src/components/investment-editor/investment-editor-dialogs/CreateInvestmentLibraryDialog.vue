@@ -40,6 +40,7 @@
     import {Component, Prop, Watch} from 'vue-property-decorator';
     import {CreateInvestmentLibraryDialogData} from '@/shared/models/modals/create-investment-library-dialog-data';
     import {
+        CriteriaDrivenBudget,
         emptyInvestmentLibrary,
         InvestmentLibrary,
         InvestmentLibraryBudgetYear
@@ -69,7 +70,7 @@
                 description: this.dialogData.description,
                 budgetOrder: this.dialogData.budgetOrder,
                 budgetYears: this.dialogData.budgetYears,
-                budgetCriteria: this.dialogData.budgetCriteria
+                criteriaDrivenBudgets: this.dialogData.budgetCriteria
             };
         }
 
@@ -93,8 +94,15 @@
          * Sets the ids for the newInvestmentLibrary object's budgetYears
          */
         setIdsForNewInvestmentLibrarySubData() {
+            this.newInvestmentLibrary.criteriaDrivenBudgets = this.newInvestmentLibrary.criteriaDrivenBudgets
+                .map((budget: CriteriaDrivenBudget) => ({...budget, id: ObjectID.generate()}));
             this.newInvestmentLibrary.budgetYears = this.newInvestmentLibrary.budgetYears
-                .map((budgetYear: InvestmentLibraryBudgetYear) => ({...budgetYear, id: ObjectID.generate()}));
+                .map((budgetYear: InvestmentLibraryBudgetYear) => ({
+                    ...budgetYear,
+                    id: ObjectID.generate(),
+                    criteriaDrivenBudgetId: this.newInvestmentLibrary.criteriaDrivenBudgets
+                        .find((budget: CriteriaDrivenBudget) => budget.budgetName === budgetYear.budgetName)!.id
+                }));
         }
     }
 </script>

@@ -1,10 +1,13 @@
 import {hasValue} from '@/shared/utils/has-value-util';
 import {SplitTreatment, SplitTreatmentLimit} from '@/shared/models/iAM/cash-flow';
-import {findIndex, propEq} from 'ramda';
+import {findIndex, propEq, contains} from 'ramda';
+import {getPropertyValues} from '@/shared/utils/getter-utils';
+import {CriteriaDrivenBudget} from '@/shared/models/iAM/investment';
 
 export interface InputValidationRules {
     [Rules: string]: any;
 }
+
 /***********************************************GENERAL RULES**********************************************************/
 const generalRules = {
     'valueIsNotEmpty': (value: any) => {
@@ -12,9 +15,6 @@ const generalRules = {
     },
     'valueIsWithinRange': (value: number, range: number[]) => {
         return (value >= range[0] && value <= range[1]) || `Value must be in range ${range[0]} - ${range[1]}`;
-    },
-    'valueIsNumeric': (value: any) => {
-        return !isNaN(value) || 'Numerical values only';
     }
 };
 /***********************************************CASH FLOW RULES********************************************************/
@@ -36,7 +36,7 @@ const cashFlowRules = {
 
         if (index > 0) {
             const currentAmount: number | null = hasValue(splitTreatmentLimit.amount)
-                ? splitTreatmentLimit.amount!
+                ? parseFloat(splitTreatmentLimit.amount!.toString().replace(/(\$*)(\,*)/g, ''))
                 : null;
 
             const previousAmount: number | null = hasValue(selectedSplitTreatment.splitTreatmentLimits[index - 1].amount)
@@ -61,13 +61,17 @@ const cashFlowRules = {
         return total === 100 || 'Total of percents must equal 100';
     }
 };
-/***********************************************DEFICIENT RULES********************************************************/
-const deficientRules = {
-
+/**********************************************INVESTMENT RULES********************************************************/
+const investmentRules = {
+    'budgetNameIsUnique': (budget: CriteriaDrivenBudget, budgets: CriteriaDrivenBudget[]) => {
+        const otherBudgetNames: string[] = getPropertyValues(
+            'budgetName', budgets.filter((b: CriteriaDrivenBudget) => b.id !== budget.id));
+        return !contains(budget.budgetName, otherBudgetNames) || 'Budget name must be unique';
+    }
 };
 /**************************************************ALL RULES***********************************************************/
 export const rules: InputValidationRules = {
     'generalRules': generalRules,
     'cashFlowRules': cashFlowRules,
-    'deficientRules': deficientRules
+    'investmentRules': investmentRules
 };

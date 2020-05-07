@@ -67,7 +67,7 @@
                                                :return-value.sync="props.item[header.value]"
                                                @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
                                                large lazy persistent>
-                                    <v-text-field readonly class="sm-text" :value="props.item[header.value]"
+                                    <v-text-field readonly class="sm-txt" :value="props.item[header.value]"
                                                   :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-text-field label="Edit" single-line v-model="props.item[header.value]"
@@ -91,7 +91,7 @@
                                                :return-value.sync="props.item[header.value]"
                                                @save="onEditDeficientProperty(props.item, header.value, props.item[header.value])"
                                                large lazy persistent>
-                                    <v-text-field readonly class="sm-text" :value="props.item[header.value]"
+                                    <v-text-field readonly class="sm-txt" :value="props.item[header.value]"
                                                   :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-text-field label="Edit" single-line v-model="props.item[header.value]"
@@ -136,22 +136,22 @@
         <v-flex v-show="hasSelectedDeficientLibrary" xs12>
             <v-layout justify-end row>
                 <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId !== '0'">
+                       v-show="selectedScenarioId !== '0'" :disabled="disableSubmitAction()">
                     Save
                 </v-btn>
                 <v-btn @click="onUpdateDeficientLibrary" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="disableSubmitAction()">
                     Update Library
                 </v-btn>
-                <v-btn @click="onAddAsNewDeficientLibrary" class="ara-blue-bg white--text">
+                <v-btn @click="onAddAsNewDeficientLibrary" class="ara-blue-bg white--text" :disabled="disableSubmitAction()">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeleteDeficientLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedDeficientLibrary">
                     Delete Library
                 </v-btn>
                 <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId !== '0'">
+                       v-show="selectedScenarioId !== '0'" :disabled="!hasSelectedDeficientLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -162,7 +162,9 @@
         <CreateDeficientLibraryDialog :dialogData="createDeficientLibraryDialogData"
                                       @submit="onCreateNewDeficientLibrary"/>
 
-        <CreateDeficientDialog :showDialog="showCreateDeficientDialog" @submit="onSubmitNewDeficient"/>
+        <CreateDeficientDialog :showDialog="showCreateDeficientDialog"
+                               :numberOfDeficients="selectedDeficientLibrary.deficients.length"
+                               @submit="onSubmitNewDeficient"/>
 
         <DeficientCriteriaEditor :dialogData="deficientCriteriaEditorDialogData"
                                  @submitCriteriaEditorDialogResult="onSubmitDeficientCriteria"/>
@@ -182,8 +184,7 @@
         emptyCriteriaEditorDialogData
     } from '@/shared/models/modals/criteria-editor-dialog-data';
     import CriteriaEditorDialog from '@/shared/modals/CriteriaEditorDialog.vue';
-    import CreateDeficientDialog
-        from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientDialog.vue';
+    import CreateDeficientDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientDialog.vue';
     import {
         CreateDeficientLibraryDialogData,
         emptyCreateDeficientLibraryDialogData
@@ -191,8 +192,7 @@
     import {setItemPropertyValue} from '@/shared/utils/setter-utils';
     import {getPropertyValues} from '@/shared/utils/getter-utils';
     import {SelectItem} from '@/shared/models/vue/select-item';
-    import CreateDeficientLibraryDialog
-        from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
+    import CreateDeficientLibraryDialog from '@/components/deficient-editor/deficient-editor-dialogs/CreateDeficientLibraryDialog.vue';
     import {Attribute} from '@/shared/models/iAM/attribute';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
@@ -233,16 +233,16 @@
         hasSelectedDeficientLibrary: boolean = false;
         deficients: Deficient[] = [];
         deficientDataTableHeaders: DataTableHeader[] = [
-            {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: ''},
-            {text: 'Name', value: 'name', align: 'left', sortable: false, class: '', width: ''},
-            {text: 'Deficient Level', value: 'deficient', align: 'left', sortable: false, class: '', width: ''},
+            {text: 'Attribute', value: 'attribute', align: 'left', sortable: false, class: '', width: '12%'},
+            {text: 'Name', value: 'name', align: 'left', sortable: false, class: '', width: '15%'},
+            {text: 'Deficient Level', value: 'deficient', align: 'left', sortable: false, class: '', width: '8%'},
             {
                 text: 'Allowed Deficient(%)',
                 value: 'percentDeficient',
                 align: 'left',
                 sortable: false,
                 class: '',
-                width: ''
+                width: '11%'
             },
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: '50%'}
         ];
@@ -497,6 +497,27 @@
                 this.selectItemValue = null;
                 this.deleteDeficientLibraryAction({deficientLibrary: this.selectedDeficientLibrary});
             }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedDeficientLibrary) {
+                const allDataIsValid: boolean = this.selectedDeficientLibrary.deficients.every((d: Deficient) => {
+                    return this.rules['generalRules'].valueIsNotEmpty(d.attribute) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(d.name) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(d.deficient) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(d.percentDeficient) === true &&
+                        this.rules['generalRules'].valueIsWithinRange(d.percentDeficient, [0, 100]) === true;
+                });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedDeficientLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return true;
         }
     }
 </script>

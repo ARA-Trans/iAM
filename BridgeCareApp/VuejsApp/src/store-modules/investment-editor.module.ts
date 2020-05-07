@@ -1,4 +1,4 @@
-import {CriteriaDrivenBudgets, emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
+import {CriteriaDrivenBudget, emptyInvestmentLibrary, InvestmentLibrary} from '@/shared/models/iAM/investment';
 import InvestmentEditorService from '@/services/investment-editor.service';
 import {any, append, clone, equals, find, findIndex, propEq, reject, update} from 'ramda';
 import {AxiosResponse} from 'axios';
@@ -36,12 +36,12 @@ const mutations = {
         }
 
         if (hasValue(selectedInvestmentLibrary.budgetOrder)) {
-            const orderedBudgetCriteria: CriteriaDrivenBudgets[] = [];
+            const orderedBudgetCriteria: CriteriaDrivenBudget[] = [];
 
             selectedInvestmentLibrary.budgetOrder.forEach((budget: string) => {
-                if (hasValue(selectedInvestmentLibrary.budgetCriteria)) {
-                    const criteriaBudget: CriteriaDrivenBudgets = find(
-                        propEq('budgetName', budget), selectedInvestmentLibrary.budgetCriteria) as CriteriaDrivenBudgets;
+                if (hasValue(selectedInvestmentLibrary.criteriaDrivenBudgets)) {
+                    const criteriaBudget: CriteriaDrivenBudget = find(
+                        propEq('budgetName', budget), selectedInvestmentLibrary.criteriaDrivenBudgets) as CriteriaDrivenBudget;
                     orderedBudgetCriteria.push(criteriaBudget);
                 } else {
                     orderedBudgetCriteria.push({
@@ -53,7 +53,7 @@ const mutations = {
                 }
             });
 
-            selectedInvestmentLibrary.budgetCriteria =  orderedBudgetCriteria;
+            selectedInvestmentLibrary.criteriaDrivenBudgets =  orderedBudgetCriteria;
         }
 
         state.selectedInvestmentLibrary = selectedInvestmentLibrary;
