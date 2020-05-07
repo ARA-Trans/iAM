@@ -6,7 +6,7 @@ namespace AttributesPrototype.Attributes
 {
     public class TextAttribute : AttributeDatum<string>
     {
-        public TextAttribute(string value, Location location) : base(value, location)
+        public TextAttribute(Attribute attribute, string value, Location location) : base(attribute, value, location)
         {
         }
     }

@@ -7,9 +7,11 @@ namespace AttributesPrototype.Attributes
     public class AttributeDatum<T>
     {
         public Location Location { get; }
+        public Attribute Attribute { get; }
 
-        public AttributeDatum(T value, Location location)
+        public AttributeDatum(Attribute attribute, T value, Location location)
         {
+            Attribute = attribute;
             Value = value;
             Location = location;
         }

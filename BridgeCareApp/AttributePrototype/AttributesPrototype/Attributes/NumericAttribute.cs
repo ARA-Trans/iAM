@@ -6,7 +6,7 @@ namespace AttributesPrototype.Attributes
 {
     public class NumericAttribute : AttributeDatum<double>
     {
-        public NumericAttribute(double maximum, double minimum, double value, Location location) : base(value, location)
+        public NumericAttribute(Attribute attribute, double maximum, double minimum, double value, Location location) : base(attribute, value, location)
         {
             Maximum = maximum;
             Minimum = minimum;

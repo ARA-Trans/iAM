@@ -6,7 +6,7 @@ namespace AttributesPrototype.Attributes
 {
     public class SectionLocation : Location
     {
-        public SectionLocation(string uniqueIdentifier) :base(uniqueIdentifier)
+        public SectionLocation(string uniqueIdentifier) : base(uniqueIdentifier)
         {
 
         }
