@@ -6,16 +6,16 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public abstract class Attribute
     {
-        public Attribute(string name, ConnectionProperties connectionProperties)
+        public Attribute(string name, AttributeConnection attributeConnection)
         {
             Guid = Guid.NewGuid();
             Name = name;
-            ConnectionProperties = connectionProperties;
+            AttributeConnection = attributeConnection;
         }
 
         public Guid Guid { get; }
         public string Name { get; }
-        public ConnectionProperties ConnectionProperties { get; }
+        public AttributeConnection AttributeConnection { get; }
 
         public abstract void Persist();
     }

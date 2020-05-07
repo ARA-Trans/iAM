@@ -4,10 +4,10 @@ using System.Text;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
-    public class SectionLocation : Location
+    public abstract class Route
     {
-        public SectionLocation(string uniqueIdentifier) => UniqueIdentifier = uniqueIdentifier;
-
         public string UniqueIdentifier { get; }
+
+        public Route(string uniqueIdentifier) => UniqueIdentifier = uniqueIdentifier;
     }
 }

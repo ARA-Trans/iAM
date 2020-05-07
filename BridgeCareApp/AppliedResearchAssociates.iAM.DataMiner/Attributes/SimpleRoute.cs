@@ -4,7 +4,9 @@ using System.Text;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
-    public abstract class Location
+    public class SimpleRoute : Route
     {
+        public string Name { get; }
+        public SimpleRoute(string name) : base(name) => Name = name;
     }
 }
