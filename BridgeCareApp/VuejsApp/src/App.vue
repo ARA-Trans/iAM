@@ -82,9 +82,12 @@
                         Security
                     </v-btn>
                 </v-toolbar-title>
-                <v-toolbar-title class="white--text" v-if="selectedScenarioName !== ''">
+                <v-toolbar-title class="white--text" v-if="stateSelectedScenario.simulationId !== 0">
                     <span class="font-weight-light">Scenario: </span>
-                    <span>{{selectedScenarioName}}</span>
+                    <span>{{stateSelectedScenario.simulationName}}</span>
+                    <span v-if="rules['generalRules'].valueIsNotEmpty(stateSelectedScenario.status) === true">
+                        => status: {{stateSelectedScenario.status}}
+                    </span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <!-- <v-toolbar-title  class="white--text">
@@ -140,6 +143,7 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import {clone} from 'ramda';
+    import {Scenario} from '@/shared/models/iAM/scenario';
 
     @Component({
         components: {Alert, Spinner}
@@ -156,6 +160,7 @@
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
         @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
+        @State(state => state.scenario.selectedScenario) stateSelectedScenario: Scenario;
 
         @Action('refreshTokens') refreshTokensAction: any;
         @Action('checkBrowserTokens') checkBrowserTokensAction: any;
