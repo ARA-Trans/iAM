@@ -45,8 +45,7 @@ const mutations = {
                     orderedBudgetCriteria.push(criteriaBudget);
                 } else {
                     orderedBudgetCriteria.push({
-                        scenarioId: isNaN(parseInt(selectedInvestmentLibrary.id)) ? 0 : parseInt(selectedInvestmentLibrary.id),
-                        _id: ObjectID.generate(),
+                        id: ObjectID.generate(),
                         budgetName: budget,
                         criteria: ''
                     });

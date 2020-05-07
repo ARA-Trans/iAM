@@ -120,7 +120,7 @@
         RemainingLifeLimit,
         RemainingLifeLimitLibrary
     } from '@/shared/models/iAM/remaining-life-limit';
-    import {append, clone, findIndex, isNil, propEq, update, update} from 'ramda';
+    import {append, clone, findIndex, isNil, propEq, update} from 'ramda';
     import {hasValue} from '@/shared/utils/has-value-util';
     import {SelectItem} from '@/shared/models/vue/select-item';
     import {DataTableHeader} from '@/shared/models/vue/data-table-header';

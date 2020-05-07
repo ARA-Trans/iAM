@@ -128,7 +128,6 @@
                 id: ObjectID.generate(),
                 budgetName: `Unnamed Budget ${unnamedBudgets.length + 1}`,
                 criteria: '',
-                scenarioId: this.dialogData.scenarioId
             });
         }
 
