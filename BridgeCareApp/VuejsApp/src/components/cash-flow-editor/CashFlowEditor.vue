@@ -7,13 +7,15 @@
                         New Library
                     </v-btn>
                     <v-select :items="cashFlowLibrariesSelectListItems"
-                              label="Select a Cash Flow Library" outline v-if="!hasSelectedCashFlowLibrary || selectedScenarioId !== '0'"
+                              label="Select a Cash Flow Library" outline
+                              v-if="!hasSelectedCashFlowLibrary || selectedScenarioId !== '0'"
                               v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedCashFlowLibrary.name">
+                                  v-model="selectedCashFlowLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
-                            <v-btn @click="onClearSelectedCashFlowLibrary" class="ara-orange" icon>
+                            <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
                             </v-btn>
                         </template>
@@ -22,7 +24,8 @@
                         Owner: {{selectedCashFlowLibrary.owner ? selectedCashFlowLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'" v-model="selectedCashFlowLibrary.shared"/>
+                                v-if="hasSelectedCashFlowLibrary && selectedScenarioId === '0'"
+                                v-model="selectedCashFlowLibrary.shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -50,29 +53,29 @@
                                             </v-radio-group>
                                         </td>
                                         <td>
-                                            <v-edit-dialog :return-value.sync="props.item.description" @save="onEditSelectedLibraryListData(props.item, 'description')" large
-                                                           lazy
-                                                           persistent>
-                                                <input :value="props.item.description" class="output" readonly
-                                                       type="text"/>
+                                            <v-edit-dialog :return-value.sync="props.item.description" large lazy
+                                                           persistent
+                                                           @save="onEditSelectedLibraryListData(props.item, 'description')">
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.description"
+                                                              :rules="[rules.generalRules.valueIsNotEmpty]"/>
                                                 <template slot="input">
                                                     <v-textarea label="Description" no-resize outline rows="5"
-                                                                v-model="props.item.description">
-                                                    </v-textarea>
+                                                                :rules="[rules.generalRules.valueIsNotEmpty]"
+                                                                v-model="props.item.description"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
                                         <td>
                                             <v-menu bottom min-height="500px" min-width="500px">
                                                 <template slot="activator">
-                                                    <input :value="props.item.criteria" class="output" readonly
-                                                           type="text"/>
+                                                    <v-text-field readonly single-line class="sm-txt"
+                                                                  :value="props.item.criteria"/>
                                                 </template>
                                                 <v-card>
                                                     <v-card-text>
-                                                        <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
-                                                                    rows="5">
-                                                        </v-textarea>
+                                                        <v-textarea :value="props.item.criteria" full-width no-resize
+                                                                    outline readonly rows="5"/>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-menu>
@@ -105,16 +108,18 @@
                                               class="elevation-1 v-table__overflow">
                                     <template slot="items" slot-scope="props">
                                         <td>
-                                            <v-edit-dialog :return-value.sync="props.item.rank" @save="onEditSelectedLibraryListData(props.item, 'rank')" full-width large
+                                            <v-edit-dialog :return-value.sync="props.item.rank"
+                                                           @save="onEditSelectedLibraryListData(props.item, 'rank')"
+                                                           full-width large
                                                            lazy
                                                            persistent>
-                                                <input :class="{'invalid-input':splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(props.item) !== true}" :value="props.item.rank" class="output" readonly
-                                                       type="text"/>
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.rank"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isRankGreaterThanPreviousRank(props.item, selectedSplitTreatment)]"/>
                                                 <template slot="input">
-                                                    <v-text-field :rules="[splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(props.item)]" label="Edit"
-                                                                  single-line
-                                                                  v-model.number="props.item.rank">
-                                                    </v-text-field>
+                                                    <v-text-field label="Edit" single-line
+                                                                  v-model.number="props.item.rank"
+                                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isRankGreaterThanPreviousRank(props.item, selectedSplitTreatment)]"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
@@ -122,46 +127,30 @@
                                             <v-edit-dialog :return-value.sync="props.item.amount" large lazy persistent
                                                            full-width
                                                            @save="onEditSelectedLibraryListData(props.item, 'amount')">
-                                                <input class="output" type="text"
-                                                       readonly :value="formatAsCurrency(props.item.amount)"
-                                                       :class="{'invalid-input':splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true}"/>
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="formatAsCurrency(props.item.amount)"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment)]"/>
                                                 <template slot="input">
-                                                    <div class="amount-div">
-                                                        <v-layout justify-center column>
-                                                            <div>
-                                                                <currency-input
-                                                                        class="split-treatment-limit-currency-input"
-                                                                        :value="props.item.amount"
-                                                                        @change="props.item.amount = $event"
-                                                                        :currency="{prefix: '$', suffix: ''}"
-                                                                        :locale="'en-US'"
-                                                                        :distractionFree="false"
-                                                                        @keydown.enter.stop
-                                                                        @keyup.enter.stop/>
-                                                            </div>
-                                                            <div v-if="splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item) !== true">
-                                                                <span class="invalid-input split-treatment-limit-amount-rule-span">
-                                                                    {{splitTreatmentLimitAmountNotLessThanPreviousAmount(props.item)}}
-                                                                </span>
-                                                            </div>
-                                                        </v-layout>
-                                                    </div>
+                                                    <v-text-field label="Edit" single-line
+                                                                  v-model.number="props.item.amount"
+                                                                  v-currency="{currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false}"
+                                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(props.item, selectedSplitTreatment)]"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
                                         <td>
-                                            <v-edit-dialog :return-value.sync="props.item.percentage" @save="onEditSelectedLibraryListData(props.item, 'percentage')" full-width
+                                            <v-edit-dialog :return-value.sync="props.item.percentage"
+                                                           @save="onEditSelectedLibraryListData(props.item, 'percentage')"
+                                                           full-width
                                                            large lazy
                                                            persistent>
-                                                <input :class="{'invalid-input': sumOfPercentsEqualsOneHundred(props.item.percentage) !== true}"
-                                                       :value="props.item.percentage" class="output"
-                                                       readonly
-                                                       type="text"/>
+                                                <v-text-field readonly single-line class="sm-txt"
+                                                              :value="props.item.percentage"
+                                                              :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred]"/>
                                                 <template slot="input">
-                                                    <v-text-field :rules="[sumOfPercentsEqualsOneHundred]" label="Edit"
-                                                                  single-line
-                                                                  v-model="props.item.percentage">
-                                                    </v-text-field>
+                                                    <v-text-field label="Edit" single-line
+                                                                  v-model="props.item.percentage"
+                                                                  :rules="[rules['generalRules'].valueIsNotEmpty, rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred]"/>
                                                 </template>
                                             </v-edit-dialog>
                                         </td>
@@ -190,22 +179,23 @@
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedCashFlowLibrary">
-                <v-btn :disabled="disableSubmitButtons()" @click="onApplyToScenario" class="ara-blue-bg white--text"
+                <v-btn :disabled="disableSubmitAction()" @click="onApplyToScenario" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId !== '0'">
                     Save
                 </v-btn>
-                <v-btn :disabled="disableSubmitButtons()" @click="onUpdateLibrary" class="ara-blue-bg white--text"
+                <v-btn :disabled="disableSubmitAction()" @click="onUpdateLibrary" class="ara-blue-bg white--text"
                        v-show="selectedScenarioId === '0'">
                     Update Library
                 </v-btn>
-                <v-btn :disabled="disableSubmitButtons()" @click="onCreateAsNewLibrary" class="ara-blue-bg white--text">
+                <v-btn :disabled="disableSubmitAction()" @click="onCreateAsNewLibrary" class="ara-blue-bg white--text">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeleteCashFlowLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedCashFlowLibrary">
                     Delete Library
                 </v-btn>
-                <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text" v-show="selectedScenarioId !== '0'">
+                <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text" v-show="selectedScenarioId !== '0'"
+                       :disabled="!hasSelectedCashFlowLibrary">
                     Discard Changes
                 </v-btn>
             </v-layout>
@@ -252,6 +242,7 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -299,7 +290,7 @@
         criteriaEditorDialogData: CriteriaEditorDialogData = clone(emptyCriteriaEditorDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
-        currencyInputConfig: any = {currency: {prefix: '$', suffix: ''}, locale: 'en-US', distractionFree: false};
+        rules: InputValidationRules = clone(rules);
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -312,7 +303,7 @@
                     }
                 }
 
-                vm.cashFlowLibrarySelectItemValue = null;
+                vm.selectItemValue = null;
                 vm.getCashFlowLibrariesAction().then(() => {
                     if (vm.selectedScenarioId !== '0') {
                         vm.getScenarioCashFlowLibraryAction({selectedScenarioId: parseInt(vm.selectedScenarioId)});
@@ -387,10 +378,6 @@
             }
         }
 
-        onClearSelectedCashFlowLibrary() {
-            this.selectItemValue = null;
-        }
-
         onNewLibrary() {
             this.createCashFlowLibraryDialogData = {
                 ...emptyCreateCashFlowLibraryDialogData,
@@ -416,6 +403,7 @@
         onAddSplitTreatment() {
             const newSplitTreatment: SplitTreatment = {
                 ...emptySplitTreatment,
+                description: `Unnamed Rule ${this.selectedCashFlowLibrary.splitTreatments.length + 1}`,
                 id: ObjectID.generate()
             };
 
@@ -538,10 +526,6 @@
             }
         }
 
-        onCurrencyInputKeyPress(event: any) {
-            event.preventDefault();
-        }
-
         onEditSelectedLibraryListData(data: any, property: string) {
             let updatedSplitTreatments: SplitTreatment[] = clone(this.selectedCashFlowLibrary.splitTreatments);
 
@@ -564,7 +548,10 @@
                                 findIndex(propEq('id', data.id), this.selectedSplitTreatment.splitTreatmentLimits),
                                 {
                                     ...data,
-                                    amount: hasValue(data.amount) ? parseFloat(data.amount) : null
+                                    amount: hasValue(data.amount)
+                                        ? parseFloat(data.amount.toString()
+                                            .replace(/(\$*)(\,*)/g, ''))
+                                        : null
                                 } as SplitTreatmentLimit,
                                 this.selectedSplitTreatment.splitTreatmentLimits
                             )
@@ -609,78 +596,35 @@
             return null;
         }
 
-        disableSubmitButtons() {
-            let disabled: boolean = false;
+        disableSubmitAction() {
+            if (this.hasSelectedCashFlowLibrary) {
+                const allDataIsValid = this.selectedCashFlowLibrary.splitTreatments.every((st: SplitTreatment) => {
+                    const allSubDataIsValid = st.splitTreatmentLimits.every((stl: SplitTreatmentLimit, index: number) => {
+                        let isValid: boolean = this.rules['generalRules'].valueIsNotEmpty(stl.rank) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(stl.amount) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(stl.percentage) === true &&
+                            this.rules['cashFlowRules'].doesTotalOfPercentsEqualOneHundred(stl.percentage) === true;
 
-            if (this.selectedSplitTreatment.id !== '0' && hasValue(this.selectedSplitTreatment.splitTreatmentLimits)) {
-                if (this.selectedSplitTreatment.splitTreatmentLimits.length > 1) {
-                    let index = 1;
-                    while (!disabled && index !== this.selectedSplitTreatment.splitTreatmentLimits.length) {
-                        disabled = this.splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(
-                            this.selectedSplitTreatment.splitTreatmentLimits[index]) !== true;
-
-                        if (!disabled) {
-                            disabled = this.splitTreatmentLimitAmountNotLessThanPreviousAmount(
-                                this.selectedSplitTreatment.splitTreatmentLimits[index]) !== true;
+                        if (index !== 0) {
+                            isValid = isValid && this.rules['cashFlowRules'].isRankGreaterThanPreviousRank(stl, st) === true &&
+                                this.rules['cashFlowRules'].isAmountGreaterThanOrEqualToPreviousAmount(stl, st) === true;
                         }
 
-                        index++;
-                    }
-                }
+                        return isValid;
+                    });
 
-                if (!disabled) {
-                    const percentages: string[] = getPropertyValuesNonUniq(
-                        'percentage', this.selectedSplitTreatment.splitTreatmentLimits);
+                    return this.rules['generalRules'].valueIsNotEmpty(st.description) === true && allSubDataIsValid;
+                });
 
-                    if (percentages.length > 0) {
-                        let index = 0;
-                        while (!disabled && index !== percentages.length) {
-                            disabled = this.sumOfPercentsEqualsOneHundred(percentages[index]) !== true;
-                            index++;
-                        }
-                    }
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedCashFlowLibrary.name) === true &&
+                        allDataIsValid);
                 }
             }
 
-            return disabled;
-        }
-
-        splitTreatmentLimitRankNotLessThanOrEqualToPreviousRank(splitTreatmentLimit: SplitTreatmentLimit) {
-            const index: number = findIndex(propEq('id', splitTreatmentLimit.id), this.selectedSplitTreatment.splitTreatmentLimits);
-            if (index > 0) {
-                return this.selectedSplitTreatment.splitTreatmentLimits[index - 1].rank < splitTreatmentLimit.rank ||
-                    'This split treatment limit year must be > than previous year';
-            }
-
             return true;
-        }
-
-        splitTreatmentLimitAmountNotLessThanPreviousAmount(splitTreatmentLimit: SplitTreatmentLimit) {
-            const index: number = findIndex(propEq('id', splitTreatmentLimit.id), this.selectedSplitTreatment.splitTreatmentLimits);
-            if (index > 0) {
-                const currentAmount: number | null = hasValue(splitTreatmentLimit.amount)
-                    ? splitTreatmentLimit.amount!
-                    : null;
-
-                const previousAmount: number | null = hasValue(this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount)
-                    ? this.selectedSplitTreatment.splitTreatmentLimits[index - 1].amount!
-                    : null;
-
-                return !hasValue(currentAmount) || (hasValue(currentAmount) && !hasValue(previousAmount)) ||
-                    (hasValue(currentAmount) && hasValue(previousAmount) && previousAmount! <= currentAmount!) ||
-                    'This split treatment limit amount must be >= to previous amount';
-            }
-
-            return true;
-        }
-
-        sumOfPercentsEqualsOneHundred(value: string) {
-            if (value.indexOf('/')) {
-                const percents: string[] = value.split('/');
-                value = percents.reduce((x, y) => (parseInt(x) + parseInt(y)).toString());
-            }
-
-            return parseInt(value) === 100 || 'Percents must add up to 100';
         }
 
         onDeleteCashFlowLibrary() {

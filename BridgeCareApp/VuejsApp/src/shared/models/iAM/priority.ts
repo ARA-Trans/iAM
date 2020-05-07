@@ -47,6 +47,5 @@ export interface PrioritiesDataTableRow {
     priorityLevel: string;
     year: string;
     criteria: string;
-
     [budgetName: string]: string;
 }

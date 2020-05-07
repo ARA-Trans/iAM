@@ -1,35 +1,48 @@
 ﻿using BridgeCare.Interfaces;
-using BridgeCare.Models;
 using System.Collections.Generic;
 using System.Linq;
+using BridgeCare.Models;
 
 namespace BridgeCare.DataAccessLayer
 {
     public class BridgeWorkSummaryDataDAL: IBridgeWorkSummaryData
     {
         /// <summary>
-        /// Get yearly details for budget amounts to be utilized by Total Budget section of the work smmary report.
+        /// Get yearly details for budget amounts to be utilized by Total Budget section of the work summary report.
         /// </summary>
         /// <param name="simulationId"></param>
+        /// <param name="simulationYears"></param>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public List<InvestmentLibraryBudgetYearModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext)
+        public Dictionary<int, List<double>> GetYearlyBudgetAmounts(int simulationId, List<int> simulationYears, BridgeCareContext dbContext)
         {
-            var yearlyInvestments = dbContext.YearlyInvestments.Where(y => y.SIMULATIONID == simulationId);
-            var yearlyBudgetModels = yearlyInvestments.Select(m => new InvestmentLibraryBudgetYearModel
+            var yearlyBudgetAmounts = new Dictionary<int, List<double>>();
+
+            var yearlyInvestments = dbContext?.YearlyInvestments.Where(y => y.SIMULATIONID == simulationId);
+
+            simulationYears?.ForEach(year =>
             {
-                Year = m.YEAR_,
-                BudgetName = m.BUDGETNAME,
-                BudgetAmount = m.AMOUNT,
-                Budget = yearlyInvestments
-                            .Where(n => n.YEAR_ == m.YEAR_)
-                            .Select(f => new InvestmentLibraryBudgetModel()
-                            {
-                                budgetAmount = f.AMOUNT,
-                                budgetName = f.BUDGETNAME
-                            }).ToList()
-            }).ToList();
-            return yearlyBudgetModels;
+                if (!yearlyBudgetAmounts.ContainsKey(year))
+                {
+                    yearlyBudgetAmounts.Add(year, new List<double>());
+                }
+
+                var budgetAmounts = yearlyInvestments?.Where(y => y.YEAR_ == year)
+                    .Select(y => y.AMOUNT).ToList();
+
+                if (budgetAmounts != null && budgetAmounts.Any())
+                {
+                    budgetAmounts.ForEach(amount => yearlyBudgetAmounts[year].Add(amount ?? 0));
+                }
+            });
+            
+            return yearlyBudgetAmounts;
         }
+
+        public List<InvestmentLibraryBudgetYearModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext) =>
+            dbContext?.YearlyInvestments.Where(y => y.SIMULATIONID == simulationId)
+                .Select(y => new InvestmentLibraryBudgetYearModel {
+                    BudgetName = y.BUDGETNAME, BudgetAmount = y.AMOUNT, Year = y.YEAR_
+                }).ToList() ?? new List<InvestmentLibraryBudgetYearModel>();
     }
 }

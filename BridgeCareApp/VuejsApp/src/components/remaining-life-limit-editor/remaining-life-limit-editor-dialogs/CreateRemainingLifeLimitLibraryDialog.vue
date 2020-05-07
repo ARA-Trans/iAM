@@ -8,10 +8,10 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" outline v-model="newRemainingLifeLimitLibrary.name"></v-text-field>
+                    <v-text-field label="Name" outline v-model="newRemainingLifeLimitLibrary.name"
+                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                     <v-textarea label="Description" no-resize outline rows="3"
-                                v-model="newRemainingLifeLimitLibrary.description">
-                    </v-textarea>
+                                v-model="newRemainingLifeLimitLibrary.description"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -36,6 +36,7 @@
         RemainingLifeLimit,
         RemainingLifeLimitLibrary
     } from '@/shared/models/iAM/remaining-life-limit';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -47,6 +48,7 @@
             ...emptyRemainingLifeLimitLibrary,
             id: ObjectID.generate()
         };
+        rules: InputValidationRules = {...rules};
 
         /**
          * Instantiates a newRemainingLifeLimitLibrary object with the description and remainingLifeLimits data in

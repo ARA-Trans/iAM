@@ -50,7 +50,7 @@ namespace BridgeCare.EntityClasses
         public virtual ICollection<TargetsEntity> TARGETS { get; set; }                     
         public virtual ICollection<CommittedEntity> COMMITTEDPROJECTS { get; set; }
         public virtual ICollection<RemainingLifeLimitsEntity> REMAINING_LIFE_LIMITS { get; set; }
-        public virtual ICollection<CriteriaDrivenBudgetsEntity> CriteriaDrivenBudgets { get; set; }
+        public virtual ICollection<CriteriaDrivenBudgetEntity> CriteriaDrivenBudgets { get; set; }
         public virtual ICollection<SplitTreatmentEntity> SPLIT_TREATMENTS { get; set; }
         public virtual ICollection<SimulationUserEntity> USERS { get; set; }
 
@@ -167,19 +167,19 @@ namespace BridgeCare.EntityClasses
                 BUDGETORDER = "Rehabilitation,Maintenance,Construction"
             };
 
-            CriteriaDrivenBudgets = new List<CriteriaDrivenBudgetsEntity>
+            CriteriaDrivenBudgets = new List<CriteriaDrivenBudgetEntity>
             {
-                new CriteriaDrivenBudgetsEntity
+                new CriteriaDrivenBudgetEntity
                 {
                     BUDGET_NAME = "Maintenance",
                     CRITERIA = ""
                 },
-                new CriteriaDrivenBudgetsEntity
+                new CriteriaDrivenBudgetEntity
                 {
                     BUDGET_NAME = "Rehabilitation",
                     CRITERIA = ""
                 },
-                new CriteriaDrivenBudgetsEntity
+                new CriteriaDrivenBudgetEntity
                 {
                     BUDGET_NAME = "Construction",
                     CRITERIA = ""

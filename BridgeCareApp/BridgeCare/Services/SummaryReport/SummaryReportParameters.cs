@@ -389,7 +389,7 @@ namespace BridgeCare.Services.SummaryReport
             worksheet.Cells["N16:Z16"].Value = criteria;
         }
 
-        private void FillInvestmentAndBudgetCriteria(ExcelWorksheet worksheet, InvestmentLibraryModel inflationAndInvestments, List<Models.CriteriaDrivenBudgets.CriteriaDrivenBudgetsModel> criterias)
+        private void FillInvestmentAndBudgetCriteria(ExcelWorksheet worksheet, InvestmentLibraryModel inflationAndInvestments, List<Models.CriteriaDrivenBudgets.CriteriaDrivenBudgetModel> criteriaDrivenBudgets)
         {
             var currencyFormat = "_-$* #,##0.00_-;-$* #,##0.00_-;_-$* \"-\"??_-;_-@_-";
             worksheet.Cells[38, 1].Value = "Years";
@@ -444,10 +444,10 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, 38, 1, 39, 1);
             excelHelper.MergeCells(worksheet, 38, 2, 38, inflationAndInvestments.BudgetOrder.Count + 1);
             excelHelper.ApplyBorder(worksheet.Cells[38, 1, startingRowInvestment - 1, inflationAndInvestments.BudgetOrder.Count + 1]);
-            FillBudgetCriteria(worksheet, startingRowInvestment, criterias);
+            FillBudgetCriteria(worksheet, startingRowInvestment, criteriaDrivenBudgets);
         }
 
-        private void FillBudgetCriteria(ExcelWorksheet worksheet, int startingRowInvestment, List<CriteriaDrivenBudgetsModel> criterias)
+        private void FillBudgetCriteria(ExcelWorksheet worksheet, int startingRowInvestment, List<CriteriaDrivenBudgetModel> criteriaDrivenBudgets)
         {
             var rowToApplyBorder = startingRowInvestment + 2;
             worksheet.Cells[startingRowInvestment + 2, 1].Value = "Budget Criteria";
@@ -459,7 +459,7 @@ namespace BridgeCare.Services.SummaryReport
             excelHelper.MergeCells(worksheet, startingRowInvestment + 3, 2, startingRowInvestment + 3, 5);
             var cells = worksheet.Cells[startingRowInvestment + 3, 1, startingRowInvestment + 3, 2];
             excelHelper.ApplyStyle(cells);
-            foreach (var item in criterias)
+            foreach (var item in criteriaDrivenBudgets)
             {
                 worksheet.Cells[startingRowInvestment + 4, 1].Value = item.BudgetName;
                 worksheet.Cells[startingRowInvestment + 4, 2].Value = item.Criteria;

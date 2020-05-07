@@ -20,8 +20,8 @@ export const emptyDeficient: Deficient = {
     id: '0',
     attribute: '',
     name: '',
-    deficient: 1,
-    percentDeficient: 1,
+    deficient: 0,
+    percentDeficient: 0,
     criteria: ''
 };
 
