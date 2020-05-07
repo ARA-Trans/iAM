@@ -41,6 +41,8 @@ namespace BridgeCare.DataAccessLayer
 
         public List<InvestmentLibraryBudgetYearModel> GetYearlyBudgetModels(int simulationId, BridgeCareContext dbContext) =>
             dbContext?.YearlyInvestments.Where(y => y.SIMULATIONID == simulationId)
-                .Select(y => new InvestmentLibraryBudgetYearModel(y)).ToList() ?? new List<InvestmentLibraryBudgetYearModel>();
+                .Select(y => new InvestmentLibraryBudgetYearModel {
+                    BudgetName = y.BUDGETNAME, BudgetAmount = y.AMOUNT, Year = y.YEAR_
+                }).ToList() ?? new List<InvestmentLibraryBudgetYearModel>();
     }
 }
