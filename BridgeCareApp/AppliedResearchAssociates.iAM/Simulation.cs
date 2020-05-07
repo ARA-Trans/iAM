@@ -8,13 +8,15 @@ namespace AppliedResearchAssociates.iAM
 
         public List<CommittedProject> CommittedProjects { get; }
 
+        public SelectableTreatment DesignatedPassiveTreatment { get; }
+
         public InvestmentPlan InvestmentPlan { get; }
 
         public string Name { get; }
 
         public Network Network { get; }
 
-        public SelectableTreatment DesignatedPassiveTreatment { get; }
+        public int NumberOfYearsOfTreatmentOutlook { get; } = 100;
 
         public List<PerformanceCurve> PerformanceCurves { get; }
 

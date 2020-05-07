@@ -19,7 +19,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             Run();
         }
 
-        public TreatmentOutlookSummary GetSummaryRelativeToBaseline(TreatmentOutlook baseline)
+        public TreatmentOption GetOptionRelativeToBaseline(TreatmentOutlook baseline)
         {
             if (TemplateContext != baseline.TemplateContext)
             {
@@ -31,7 +31,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 throw new ArgumentException("Initial treatment does not match.", nameof(baseline));
             }
 
-            return new TreatmentOutlookSummary(
+            return new TreatmentOption(
                 TemplateContext,
                 InitialTreatment,
                 CumulativeCostPerUnitArea - baseline.CumulativeCostPerUnitArea,
@@ -58,10 +58,10 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         private void ApplyTreatment(Treatment treatment, int year)
         {
             var cost = AccumulationContext.GetCostOfTreatment(treatment);
-            AccumulationContext.ApplyTreatment(treatment, year);
-            var area = AccumulationContext.GetArea();
+            var area = AccumulationContext.GetAreaOfSection();
             var costPerUnitArea = cost / area;
             CumulativeCostPerUnitArea += costPerUnitArea;
+            AccumulationContext.ApplyTreatment(treatment, year);
         }
 
         private void Run()
@@ -69,7 +69,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             ApplyTreatment(InitialTreatment, InitialYear);
             AccumulateBenefit();
 
-            Action updateRemainingLife = null;
+            Action updateRemainingLife = Static.DoNothing;
 
             if (RemainingLifeCalculators.Count > 0)
             {
@@ -90,7 +90,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     if (minimumFractionalRemainingLife.HasValue)
                     {
                         RemainingLife += minimumFractionalRemainingLife.Value;
-                        updateRemainingLife = null;
+                        updateRemainingLife = Static.DoNothing;
                     }
                     else
                     {
@@ -99,17 +99,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 };
             }
 
-            const int MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK = 100;
-            var maximumYearOfOutlook = InitialYear + MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK;
-
-            foreach (var year in Static.Count(InitialYear + 1))
+            foreach (var year in Enumerable.Range(InitialYear + 1, AccumulationContext.SimulationRunner.Simulation.NumberOfYearsOfTreatmentOutlook))
             {
-                if (year > maximumYearOfOutlook)
-                {
-                    throw new InvalidOperationException($"Treatment outlook did not terminate naturally within {MAXIMUM_NUMBER_OF_YEARS_OF_OUTLOOK} years.");
-                }
-
-                if (AccumulationContext.ProjectSchedule.TryGetValue(year, out var project) && project.IsT2(out var progress))
+                if (AccumulationContext.ProjectSchedule.TryGetValue(year, out var project) && project.IsT2(out var activity))
                 {
                     // TODO: apply progress (accumulating cost & applying consequences)
 
@@ -126,12 +118,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 var previousCumulativeBenefit = CumulativeBenefit;
                 AccumulateBenefit();
 
-                updateRemainingLife?.Invoke();
-
-                if (CumulativeBenefit == previousCumulativeBenefit && AccumulationContext.ProjectSchedule.Keys.All(scheduledYear => scheduledYear <= year))
-                {
-                    break;
-                }
+                updateRemainingLife();
             }
         }
     }

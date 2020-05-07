@@ -23,11 +23,11 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             NumberCache.CopyFrom(original.NumberCache);
         }
 
+        public IDictionary<int, Choice<Treatment, TreatmentActivity>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentActivity>>();
+
         public Section Section { get; }
 
         public SimulationRunner SimulationRunner { get; }
-
-        public IDictionary<int, Choice<Treatment, TreatmentProgress>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
 
         private AnalysisMethod AnalysisMethod => SimulationRunner.Simulation.AnalysisMethod;
 
@@ -91,7 +91,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             LastYearOfShadowForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
         }
 
-        public double GetArea() => GetNumber(AnalysisMethod.AreaAttribute.Name);
+        public double GetAreaOfSection() => GetNumber(AnalysisMethod.AreaAttribute.Name);
 
         public double GetBenefit()
         {

@@ -7,7 +7,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class SelectableTreatment : Treatment
     {
-        public List<Budget> Budgets { get; }
+        public ISet<Budget> Budgets { get; }
 
         public List<ConditionalTreatmentConsequence> Consequences { get; }
 

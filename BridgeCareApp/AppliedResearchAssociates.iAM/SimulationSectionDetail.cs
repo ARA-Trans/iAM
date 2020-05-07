@@ -17,7 +17,7 @@ namespace AppliedResearchAssociates.iAM
 
         public TreatmentReason ReasonForAppliedTreatment { get; }
 
-        public IDictionary<SelectableTreatment, FeasibleTreatmentSummary> SummaryPerFeasibleTreatment { get; } = new Dictionary<SelectableTreatment, FeasibleTreatmentSummary>();
+        public IDictionary<SelectableTreatment, TreatmentOptionSummary> SummaryPerFeasibleTreatment { get; } = new Dictionary<SelectableTreatment, TreatmentOptionSummary>();
 
         public IDictionary<TextAttribute, string> Text { get; } = new Dictionary<TextAttribute, string>();
     }

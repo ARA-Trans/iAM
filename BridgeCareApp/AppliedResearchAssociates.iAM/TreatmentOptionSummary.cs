@@ -1,8 +1,8 @@
 ﻿namespace AppliedResearchAssociates.iAM
 {
-    public sealed class FeasibleTreatmentSummary
+    public sealed class TreatmentOptionSummary
     {
-        public FeasibleTreatmentSummary(double costPerUnitArea, double benefit, double? remainingLife)
+        public TreatmentOptionSummary(double costPerUnitArea, double benefit, double? remainingLife)
         {
             CostPerUnitArea = costPerUnitArea;
             Benefit = benefit;

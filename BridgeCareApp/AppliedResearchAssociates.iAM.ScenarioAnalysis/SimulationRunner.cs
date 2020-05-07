@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
@@ -16,6 +17,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public Simulation Simulation { get; }
 
+
+
         public void Run()
         {
             // --- CompileSimulation
@@ -28,9 +31,12 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
 
+            BudgetContexts = Simulation.InvestmentPlan.Budgets.Select(budget => new BudgetContext(budget)).ToArray();
+
             SectionContexts = Simulation.Network.Sections
                 .Select(CreateContext)
-                .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true) // Can jurisdiction criterion be blank?
+                // Can jurisdiction criterion be blank?
+                .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true)
                 .ToArray();
 
             foreach (var context in SectionContexts)
@@ -58,74 +64,129 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             //SpendAllCommittedProjects();
 
-            var spendingStrategyConductor = SpendingStrategyConductor.GetInstance(Simulation.AnalysisMethod.SpendingStrategy);
+            var spendingStrategy = SpendingStrategyBehaviorProvider.GetInstance(Simulation.AnalysisMethod.SpendingStrategy);
 
             foreach (var currentYear in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
-                var idleContexts = ApplyTreatmentProgress(SectionContexts, currentYear);
+                foreach (var context in BudgetContexts)
+                {
+                    context.MoveToNextYear();
+                }
+
+                var idleContexts = ApplyTreatmentActivities(SectionContexts, currentYear);
                 ApplyPerformanceCurves(idleContexts);
                 var untreatedContexts = ApplyScheduledTreatments(idleContexts, currentYear);
 
                 var targetConditionActuals = GetTargetConditionActuals(currentYear);
                 var deficientConditionActuals = GetDeficientConditionActuals();
 
-                var optimizedOrderOfTreatments = GetOptimizedOrderOfTreatments(untreatedContexts, currentYear);
+                var treatmentOptions = GetTreatmentOptionsInOptimalOrder(untreatedContexts, currentYear);
 
-                if (spendingStrategyConductor.SpendingIsAllowed)
+                if (spendingStrategy.SpendingIsAllowed && !spendingStrategy.GoalsAreMet(targetConditionActuals, deficientConditionActuals))
                 {
-                    foreach (var summary in optimizedOrderOfTreatments)
+                    var applicablePriorities = new List<BudgetPriority>();
+                    foreach (var levelPriorities in Simulation.AnalysisMethod.BudgetPriorities.GroupBy(priority => priority.PriorityLevel))
                     {
-                        if (spendingStrategyConductor.GoalsAreMet(targetConditionActuals, deficientConditionActuals))
+                        var priority = Option
+                            .Of(levelPriorities.Where(p => p.Year == currentYear).SingleOrDefault())
+                            .Coalesce(levelPriorities.Where(p => p.Year == null).SingleOrDefault);
+
+                        priority.Handle(applicablePriorities.Add, Static.DoNothing);
+                    }
+
+                    applicablePriorities.Sort(SelectionComparer<BudgetPriority>.Create(priority => priority.PriorityLevel));
+
+                    foreach (var priority in applicablePriorities)
+                    {
+                        var applicableOptions = treatmentOptions
+                            .Where(option => priority.Criterion.Evaluate(option.Context) ?? true)
+                            .ToArray();
+
+                        foreach (var option in applicableOptions)
                         {
-                            break;
+                            if (untreatedContexts.Contains(option.Context))
+                            {
+                                continue;
+                            }
+
+                            var remainingCost = (decimal)option.Context.GetCostOfTreatment(option.CandidateTreatment);
+
+                            var costAllocators = new List<Action>();
+                            foreach (var context in BudgetContexts)
+                            {
+                                if (!option.CandidateTreatment.Budgets.Contains(context.Budget))
+                                {
+                                    continue;
+                                }
+
+                                bool conditionMatchesAndIsSatisfied(BudgetCondition condition) =>
+                                    condition.Budget == context.Budget &&
+                                    (condition.Criterion.Evaluate(option.Context) ?? true);
+
+                                if (!Simulation.InvestmentPlan.BudgetConditions.Any(conditionMatchesAndIsSatisfied))
+                                {
+                                    continue;
+                                }
+
+                                // for non-fixed budget spending, create allocator against this budget and break loop.
+
+                                var budgetAmount = Simulation.InvestmentPlan.GetBudgetAmount(context, currentYear);
+                                var prioritizedFraction = priority.BudgetPercentages[context] / 100;
+                                var prioritizedBudgetAmount = budgetAmount * prioritizedFraction;
+
+                                // if the remaining cost is covered, break loop.
+
+                                if (Simulation.AnalysisMethod.UseExtraFundsAcrossBudgets)
+                                {
+                                    // create an extra allocator.
+                                    // decrease remaining cost.
+                                }
+                            }
+
+                            if (remainingCost > 0) // replace with flag set in budgeting loop
+                            {
+                                foreach (var costAllocator in costAllocators)
+                                {
+                                    costAllocator();
+                                }
+
+                                option.Context.ApplyTreatment(option.CandidateTreatment, currentYear);
+                                _ = untreatedContexts.Remove(option.Context);
+
+                                targetConditionActuals = GetTargetConditionActuals(currentYear);
+                                deficientConditionActuals = GetDeficientConditionActuals();
+
+                                if (spendingStrategy.GoalsAreMet(targetConditionActuals, deficientConditionActuals))
+                                {
+                                    goto goalsAreMet; // Convert to "return" when this is in its own function.
+                                }
+                            }
                         }
-
-                        if (untreatedContexts.Contains(summary.Context))
-                        {
-                            continue;
-                        }
-
-                        var cost = summary.Context.GetCostOfTreatment(summary.CandidateTreatment);
-                        // determine budget(s) to spend from.
-
-                        if (!spendingStrategyConductor.BudgetIsSufficient())
-                        {
-                            continue;
-                        }
-
-                        // allocate cost to the right budget(s).
-
-                        summary.Context.ApplyTreatment(summary.CandidateTreatment, currentYear);
-                        _ = untreatedContexts.Remove(summary.Context);
-
-                        targetConditionActuals = GetTargetConditionActuals(currentYear);
-                        deficientConditionActuals = GetDeficientConditionActuals();
                     }
                 }
 
-                foreach (var untreatedContext in untreatedContexts)
-                {
-                    var cost = untreatedContext.GetCostOfTreatment(Simulation.DesignatedPassiveTreatment);
-                    if (cost != 0)
-                    {
-                        throw new NotSupportedException("Cost of passive treatment is non-zero.");
-                    }
+            goalsAreMet:
 
-                    untreatedContext.ApplyTreatment(Simulation.DesignatedPassiveTreatment, currentYear);
-                }
+                ApplyPassiveTreatment(untreatedContexts, currentYear);
 
-                // "Calculate target condition goal statuses"
-
-                // report targets/deficient.
+                // TODO: create/finalize another SimulationYear output object.
             }
 
-            // create simulation table.
+            // TODO: return sequence of SimulationYear objects.
+        }
 
-            // "write simulation" for each section.
+        private void ApplyPassiveTreatment(IEnumerable<SectionContext> contexts, int year)
+        {
+            foreach (var context in contexts)
+            {
+                var cost = context.GetCostOfTreatment(Simulation.DesignatedPassiveTreatment);
+                if (cost != 0)
+                {
+                    throw new InvalidOperationException("Cost of passive treatment is non-zero.");
+                }
 
-            // database bulk load for each "simulation table".
-
-            // if multi-year, "solve". (?)
+                context.ApplyTreatment(Simulation.DesignatedPassiveTreatment, year);
+            }
         }
 
         internal ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; private set; }
@@ -139,6 +200,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         private ILookup<Section, CommittedProject> CommittedProjectsPerSection;
 
         private IReadOnlyCollection<SectionContext> SectionContexts;
+
+        private IReadOnlyCollection<BudgetContext> BudgetContexts;
 
         private void ApplyPerformanceCurves(IEnumerable<SectionContext> contexts)
         {
@@ -172,13 +235,13 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             return untreatedContexts;
         }
 
-        private ISet<SectionContext> ApplyTreatmentProgress(IEnumerable<SectionContext> contexts, int year)
+        private ISet<SectionContext> ApplyTreatmentActivities(IEnumerable<SectionContext> contexts, int year)
         {
             var idleContexts = contexts.ToHashSet();
 
             foreach (var context in contexts)
             {
-                if (context.ProjectSchedule.TryGetValue(year, out var project) && project.IsT2(out var progress))
+                if (context.ProjectSchedule.TryGetValue(year, out var project) && project.IsT2(out var activity))
                 {
                     _ = idleContexts.Remove(context);
 
@@ -232,9 +295,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             return results;
         }
 
-        private IReadOnlyCollection<TreatmentOutlookSummary> GetOptimizedOrderOfTreatments(IEnumerable<SectionContext> contexts, int year)
+        private IReadOnlyCollection<TreatmentOption> GetTreatmentOptionsInOptimalOrder(IEnumerable<SectionContext> contexts, int year)
         {
-            Func<TreatmentOutlookSummary, double> objectiveFunction;
+            Func<TreatmentOption, double> objectiveFunction;
             switch (Simulation.AnalysisMethod.OptimizationStrategy)
             {
             case OptimizationStrategy.Benefit:
@@ -259,8 +322,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 throw new InvalidOperationException("Invalid optimization strategy.");
             }
 
-            var outlookSummariesBag = new ConcurrentBag<TreatmentOutlookSummary>();
-            void addOutlookSummaries(SectionContext context)
+            var treatmentOptionsBag = new ConcurrentBag<TreatmentOption>();
+            void addTreatmentOptions(SectionContext context)
             {
                 var feasibleTreatments = ActiveTreatments.ToHashSet();
 
@@ -288,18 +351,18 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     foreach (var treatment in feasibleTreatments)
                     {
                         var outlook = new TreatmentOutlook(context, treatment, year, remainingLifeCalculatorFactories);
-                        var summary = outlook.GetSummaryRelativeToBaseline(baselineOutlook);
-                        outlookSummariesBag.Add(summary);
+                        var option = outlook.GetOptionRelativeToBaseline(baselineOutlook);
+                        treatmentOptionsBag.Add(option);
                     }
                 }
             }
 
             _ = Parallel.ForEach(
                 contexts.Where(context => !context.YearIsWithinShadowForAnyTreatment(year)),
-                addOutlookSummaries);
+                addTreatmentOptions);
 
-            var outlookSummaries = outlookSummariesBag.OrderByDescending(objectiveFunction).ToList();
-            return outlookSummaries;
+            var treatmentOptions = treatmentOptionsBag.OrderByDescending(objectiveFunction).ToArray();
+            return treatmentOptions;
         }
 
         private IReadOnlyCollection<ConditionActual> GetTargetConditionActuals(int year)

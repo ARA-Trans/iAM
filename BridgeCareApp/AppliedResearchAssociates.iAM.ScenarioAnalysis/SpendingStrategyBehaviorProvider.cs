@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
-    internal class SpendingStrategyConductor
+    internal class SpendingStrategyBehaviorProvider
     {
         public virtual bool SpendingIsAllowed => true;
 
-        public static SpendingStrategyConductor GetInstance(SpendingStrategy spendingStrategy)
+        public static SpendingStrategyBehaviorProvider GetInstance(SpendingStrategy spendingStrategy)
         {
             switch (spendingStrategy)
             {
@@ -39,43 +39,43 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public virtual bool GoalsAreMet(IEnumerable<ConditionActual> targetConditionActuals, IEnumerable<ConditionActual> deficientConditionActuals) => false;
 
-        private SpendingStrategyConductor()
+        private SpendingStrategyBehaviorProvider()
         {
         }
 
-        private static SpendingStrategyConductor Default { get; } = new SpendingStrategyConductor();
+        private static SpendingStrategyBehaviorProvider Default { get; } = new SpendingStrategyBehaviorProvider();
 
         private static bool GoalsAreMet(IEnumerable<ConditionActual> conditionActuals) => conditionActuals.All(actual => actual.GoalIsMet);
 
-        private sealed class AsBudgetPermits : SpendingStrategyConductor
+        private sealed class AsBudgetPermits : SpendingStrategyBehaviorProvider
         {
             public static AsBudgetPermits Instance { get; } = new AsBudgetPermits();
 
             public override bool BudgetIsSufficient() => throw new NotImplementedException();
         }
 
-        private sealed class NoSpending : SpendingStrategyConductor
+        private sealed class NoSpending : SpendingStrategyBehaviorProvider
         {
             public static NoSpending Instance { get; } = new NoSpending();
 
             public override bool SpendingIsAllowed => false;
         }
 
-        private sealed class UntilDeficientConditionGoalsMet : SpendingStrategyConductor
+        private sealed class UntilDeficientConditionGoalsMet : SpendingStrategyBehaviorProvider
         {
             public static UntilDeficientConditionGoalsMet Instance { get; } = new UntilDeficientConditionGoalsMet();
 
             public override bool GoalsAreMet(IEnumerable<ConditionActual> targetConditionActuals, IEnumerable<ConditionActual> deficientConditionActuals) => GoalsAreMet(deficientConditionActuals);
         }
 
-        private sealed class UntilTargetAndDeficientConditionGoalsMet : SpendingStrategyConductor
+        private sealed class UntilTargetAndDeficientConditionGoalsMet : SpendingStrategyBehaviorProvider
         {
             public static UntilTargetAndDeficientConditionGoalsMet Instance { get; } = new UntilTargetAndDeficientConditionGoalsMet();
 
             public override bool GoalsAreMet(IEnumerable<ConditionActual> targetConditionActuals, IEnumerable<ConditionActual> deficientConditionActuals) => GoalsAreMet(targetConditionActuals) && GoalsAreMet(deficientConditionActuals);
         }
 
-        private sealed class UntilTargetConditionGoalsMet : SpendingStrategyConductor
+        private sealed class UntilTargetConditionGoalsMet : SpendingStrategyBehaviorProvider
         {
             public static UntilTargetConditionGoalsMet Instance { get; } = new UntilTargetConditionGoalsMet();
 

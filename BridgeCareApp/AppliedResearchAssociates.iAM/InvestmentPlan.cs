@@ -6,11 +6,11 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class InvestmentPlan
     {
-        // TODO: Split treatment configurations... Need detailed description of what the UI elements mean from Gregg.
-
         public List<BudgetCondition> BudgetConditions { get; }
 
         public IReadOnlyList<Budget> Budgets => _Budgets;
+
+        public List<CashFlowRule> CashFlowRules { get; }
 
         public double DiscountRatePercentage { get; }
 
@@ -65,6 +65,8 @@ namespace AppliedResearchAssociates.iAM
             _Budgets[index - 1] = budget;
             _Budgets[index] = otherBudget;
         }
+
+        public double GetBudgetAmount(Budget budget, int year) => budget.YearlyAmounts[year - FirstYearOfAnalysisPeriod];
 
         public void IncrementBudgetIndex(Budget budget)
         {

@@ -47,7 +47,7 @@ namespace AppliedResearchAssociates.iAM
 
         public List<TargetConditionGoal> TargetConditionGoals { get; }
 
-        public UseOfExtraFunds UseOfExtraFunds { get; }
+        public bool UseExtraFundsAcrossBudgets { get; }
 
         public NumberAttribute Weighting { get; }
 
