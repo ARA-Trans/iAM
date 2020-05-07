@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class NumericAttribute : AttributeDatum<double>
     {
@@ -13,7 +9,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         }
 
         public double Maximum { get; }
-        public double Minimum { get; }
 
+        public double Minimum { get; }
     }
 }

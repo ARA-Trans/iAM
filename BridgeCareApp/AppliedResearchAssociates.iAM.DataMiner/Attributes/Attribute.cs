@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
@@ -14,7 +12,9 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         }
 
         public Guid Guid { get; }
+
         public string Name { get; }
+
         public AttributeConnection AttributeConnection { get; }
 
         public abstract void Persist();

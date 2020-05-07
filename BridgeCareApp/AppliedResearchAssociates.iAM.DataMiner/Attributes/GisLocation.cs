@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class GisLocation : Location
     {
@@ -13,6 +9,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         }
 
         public string UniqueIdentifier { get; }
+
         public string WellKnownTextString { get; }
     }
 }

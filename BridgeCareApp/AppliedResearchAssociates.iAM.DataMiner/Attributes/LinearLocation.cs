@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class LinearLocation : Location
     {
         public Route Route { get; }
+
         public double Start { get; }
 
         public double End { get; }
