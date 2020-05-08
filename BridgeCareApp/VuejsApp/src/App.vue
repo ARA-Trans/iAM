@@ -82,12 +82,11 @@
                         Security
                     </v-btn>
                 </v-toolbar-title>
-                <v-toolbar-title class="white--text" v-if="stateSelectedScenario.simulationId !== 0">
+                <v-toolbar-title class="white--text" v-if="hasSelectedScenario">
                     <span class="font-weight-light">Scenario: </span>
-                    <span>{{stateSelectedScenario.simulationName}}</span>
-                    <span v-if="rules['generalRules'].valueIsNotEmpty(stateSelectedScenario.status) === true">
-                        => status: {{stateSelectedScenario.status}}
-                    </span>
+                    <span>{{selectedScenario.simulationName}}</span>
+                    <span v-if="selectedScenarioHasStatus" class="font-weight-light"> => Status: </span>
+                    <span v-if="selectedScenarioHasStatus">{{selectedScenario.status}}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <!-- <v-toolbar-title  class="white--text">
@@ -143,7 +142,7 @@
     import Alert from '@/shared/modals/Alert.vue';
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import {clone} from 'ramda';
-    import {Scenario} from '@/shared/models/iAM/scenario';
+    import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
 
     @Component({
         components: {Alert, Spinner}
@@ -158,7 +157,6 @@
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
         @State(state => state.toastr.infoMessage) infoMessage: string;
-        @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
         @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
         @State(state => state.scenario.selectedScenario) stateSelectedScenario: Scenario;
 
@@ -176,10 +174,12 @@
         @Action('getUserCriteria') getUserCriteriaAction: any;
 
         drawer: boolean = false;
-        selectedScenarioName: string = '';
         alertDialogData: AlertData = clone(emptyAlertData);
         pushRouteUpdate: boolean = false;
         route: any = {};
+        selectedScenario: Scenario = clone(emptyScenario);
+        hasSelectedScenario: boolean = false;
+        selectedScenarioHasStatus: boolean = false;
 
         get container() {
             const container: any = {};
@@ -253,9 +253,11 @@
             }
         }
 
-        @Watch('stateSelectedScenarioName')
-        onStateSelectedScenarioNameChanged() {
-            this.selectedScenarioName = hasValue(this.stateSelectedScenarioName) ? this.stateSelectedScenarioName : '';
+        @Watch('stateSelectedScenario')
+        onStateSelectedScenarioChanged() {
+            this.selectedScenario = hasValue(this.stateSelectedScenario) ? clone(this.stateSelectedScenario) : clone(emptyScenario);
+            this.hasSelectedScenario = this.selectedScenario.simulationId !== 0;
+            this.selectedScenarioHasStatus = hasValue(this.selectedScenario.status);
         }
 
         @Watch('authenticatedWithRole')

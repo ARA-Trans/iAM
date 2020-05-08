@@ -250,7 +250,6 @@
     import {Simulation} from '@/shared/models/iAM/simulation';
     import {emptyRollup, Rollup} from '@/shared/models/iAM/rollup';
     import {getUserName} from '@/shared/utils/get-user-info';
-    import {findIndex, propEq, update} from 'ramda';
     import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     @Component({

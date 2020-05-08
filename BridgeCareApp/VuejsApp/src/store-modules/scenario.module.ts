@@ -13,7 +13,6 @@ import moment from 'moment';
 const state = {
     scenarios: [] as Scenario[],
     benefitAttributes: [] as string[],
-    selectedScenarioName: '',
     selectedScenario: clone(emptyScenario) as Scenario,
     analysis: clone(emptyAnalysis) as Analysis,
     missingSummaryReportAttributes: [] as string[]
@@ -40,13 +39,9 @@ const mutations = {
             state.scenarios = reject(propEq('simulationId', simulationId), state.scenarios);
         }
     },
-    selectedScenarioNameMutator(state: any, selectedScenarioName: string) {
-        state.selectedScenarioName = selectedScenarioName;
-    },
     selectedScenarioMutator(state: any, simulationId: number) {
         if (any((scenario: Scenario) => scenario.simulationId === simulationId), state.scenarios) {
-            state.selectedScenario = clone(state.scenarios
-                .find((scenario: Scenario) => scenario.simulationId === simulationId));
+            state.selectedScenario = find(propEq('simulationId', simulationId), state.scenarios) as Scenario;
         } else {
             state.selectedScenario = clone(emptyScenario);
         }
@@ -60,9 +55,6 @@ const mutations = {
 };
 
 const actions = {
-    setSelectedScenarioName({commit}: any, payload: any) {
-        commit('selectedScenarioNameMutator', payload.selectedScenarioName);
-    },
     selectScenario({commit}: any, payload: any) {
         commit('selectedScenarioMutator', payload.simulationId);
     },
