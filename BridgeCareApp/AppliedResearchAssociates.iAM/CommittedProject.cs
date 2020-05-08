@@ -48,6 +48,8 @@ namespace AppliedResearchAssociates.iAM
 
         public int Year { get; }
 
+        public override bool CanUseBudget(Budget budget) => budget == Budget;
+
         public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Consequences.Select(consequence => consequence.GetRecalculator(argument, ageAttribute)).ToArray();
 
         public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts) => Cost;

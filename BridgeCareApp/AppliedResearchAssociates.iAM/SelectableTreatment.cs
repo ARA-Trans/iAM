@@ -21,6 +21,8 @@ namespace AppliedResearchAssociates.iAM
 
         public List<TreatmentSupersession> Supersessions { get; }
 
+        public override bool CanUseBudget(Budget budget) => Budgets.Contains(budget);
+
         public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             Consequences.Channel(

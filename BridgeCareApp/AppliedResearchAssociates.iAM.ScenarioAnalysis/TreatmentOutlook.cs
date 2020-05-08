@@ -101,7 +101,9 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             foreach (var year in Enumerable.Range(InitialYear + 1, AccumulationContext.SimulationRunner.Simulation.NumberOfYearsOfTreatmentOutlook))
             {
-                if (AccumulationContext.ProjectSchedule.TryGetValue(year, out var project) && project.IsT2(out var activity))
+                var yearIsScheduled = AccumulationContext.ProjectSchedule.TryGetValue(year, out var scheduleEntry);
+
+                if (yearIsScheduled && scheduleEntry.IsT2(out var activity))
                 {
                     // TODO: apply progress (accumulating cost & applying consequences)
 
@@ -110,12 +112,11 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 AccumulationContext.ApplyPerformanceCurves();
 
-                if (AccumulationContext.ProjectSchedule.TryGetValue(year, out project) && project.IsT1(out var treatment))
+                if (yearIsScheduled && scheduleEntry.IsT1(out var treatment))
                 {
                     ApplyTreatment(treatment, year);
                 }
 
-                var previousCumulativeBenefit = CumulativeBenefit;
                 AccumulateBenefit();
 
                 updateRemainingLife();

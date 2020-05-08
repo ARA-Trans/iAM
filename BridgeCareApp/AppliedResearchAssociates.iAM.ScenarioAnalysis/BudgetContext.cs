@@ -10,9 +10,28 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public decimal CurrentAmount { get; private set; }
 
-        public void AllocateCost(decimal cost) => CurrentAmount -= cost;
+        public decimal? CurrentPrioritizedAmount { get; private set; }
 
-        public void MoveToNextYear() => CurrentAmount += Budget.YearlyAmounts[++CurrentYearIndex];
+        public BudgetPriority Priority
+        {
+            set
+            {
+                var prioritizedFraction = value?.BudgetPercentages[Budget] / 100;
+                CurrentPrioritizedAmount = CurrentAmount * (decimal?)prioritizedFraction;
+            }
+        }
+
+        public void AllocateCost(decimal cost)
+        {
+            CurrentAmount -= cost;
+            CurrentPrioritizedAmount -= cost;
+        }
+
+        public void MoveToNextYear()
+        {
+            CurrentAmount += Budget.YearlyAmounts[++CurrentYearIndex];
+            CurrentPrioritizedAmount = null;
+        }
 
         private int CurrentYearIndex = -1;
     }
