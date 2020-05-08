@@ -15,7 +15,7 @@ namespace AppliedResearchAssociates.iAM
 
         public abstract IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute);
 
-        public abstract double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute);
+        public abstract double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts);
 
         public virtual IEnumerable<TreatmentScheduling> GetSchedulings() => Enumerable.Empty<TreatmentScheduling>();
     }

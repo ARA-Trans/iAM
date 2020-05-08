@@ -7,7 +7,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class SelectableTreatment : Treatment
     {
-        public ISet<Budget> Budgets { get; }
+        public ICollection<Budget> Budgets { get; }
 
         public List<ConditionalTreatmentConsequence> Consequences { get; }
 
@@ -47,13 +47,12 @@ namespace AppliedResearchAssociates.iAM
             return consequenceActions;
         }
 
-        public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts)
         {
-            var cost = Costs
-                .Where(costEquation => costEquation.Criterion.Evaluate(argument) ?? true)
-                .Sum(costEquation => costEquation.Equation.Compute(argument, ageAttribute));
+            var feasibleCosts = Costs.Where(costEquation => costEquation.Criterion.Evaluate(argument) ?? true);
+            return shouldApplyMultipleFeasibleCosts ? feasibleCosts.Sum(getCost) : feasibleCosts.Max(getCost);
 
-            return cost;
+            double getCost(ConditionalEquation costEquation) => costEquation.Equation.Compute(argument, ageAttribute);
         }
 
         public override IEnumerable<TreatmentScheduling> GetSchedulings() => Schedulings;

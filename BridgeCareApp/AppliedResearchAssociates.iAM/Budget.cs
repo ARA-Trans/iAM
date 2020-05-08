@@ -6,12 +6,12 @@ namespace AppliedResearchAssociates.iAM
     {
         public string Name { get; set; }
 
-        public IReadOnlyList<double> YearlyAmounts => _YearlyAmounts;
+        public IReadOnlyList<decimal> YearlyAmounts => _YearlyAmounts;
 
-        public void SetYearlyAmount(int index, double amount) => _YearlyAmounts[index] = amount;
+        public void SetYearlyAmount(int index, decimal amount) => _YearlyAmounts[index] = amount;
 
         internal void SetNumberOfYears(int numberOfYears) => _YearlyAmounts.RemoveRange(numberOfYears, _YearlyAmounts.Count - numberOfYears);
 
-        private readonly List<double> _YearlyAmounts = new List<double>();
+        private readonly List<decimal> _YearlyAmounts = new List<decimal>();
     }
 }

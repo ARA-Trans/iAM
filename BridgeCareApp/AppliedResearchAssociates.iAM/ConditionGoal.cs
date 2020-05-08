@@ -2,7 +2,7 @@
 {
     public abstract class ConditionGoal
     {
-        public NumberAttribute Attribute { get; set; }
+        public virtual NumberAttribute Attribute { get; set; }
 
         public Criterion Criterion { get; }
 

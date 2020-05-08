@@ -66,8 +66,6 @@ namespace AppliedResearchAssociates.iAM
             _Budgets[index] = otherBudget;
         }
 
-        public double GetBudgetAmount(Budget budget, int year) => budget.YearlyAmounts[year - FirstYearOfAnalysisPeriod];
-
         public void IncrementBudgetIndex(Budget budget)
         {
             var index = _Budgets.IndexOf(budget);

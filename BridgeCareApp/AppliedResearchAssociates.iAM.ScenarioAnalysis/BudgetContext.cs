@@ -4,13 +4,16 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class BudgetContext
     {
-        public Budget Budget { get; }
-        public double CurrentAmount { get; private set; }
-
-        private int CurrentYearIndex = -1;
-
         public BudgetContext(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
 
+        public Budget Budget { get; }
+
+        public decimal CurrentAmount { get; private set; }
+
+        public void AllocateCost(decimal cost) => CurrentAmount -= cost;
+
         public void MoveToNextYear() => CurrentAmount += Budget.YearlyAmounts[++CurrentYearIndex];
+
+        private int CurrentYearIndex = -1;
     }
 }

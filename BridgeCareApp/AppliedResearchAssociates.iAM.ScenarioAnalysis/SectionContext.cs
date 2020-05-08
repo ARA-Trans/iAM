@@ -23,7 +23,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             NumberCache.CopyFrom(original.NumberCache);
         }
 
-        public IDictionary<int, Choice<Treatment, TreatmentActivity>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentActivity>>();
+        public IDictionary<int, Choice<Treatment, ProjectActivity>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, ProjectActivity>>();
 
         public Section Section { get; }
 
@@ -46,7 +46,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 if (operativeCurves.Count > 1)
                 {
-                    SimulationRunner.OnWarning(new WarningEventArgs("Two or more performance curves are simultaneously valid."));
+                    SimulationRunner.Warn("Two or more performance curves are simultaneously valid.");
                 }
 
                 double calculate(PerformanceCurve curve) => curve.Equation.Compute(this, AnalysisMethod.AgeAttribute);
@@ -102,7 +102,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             return weightedBenefit;
         }
 
-        public double GetCostOfTreatment(Treatment treatment) => treatment.GetCost(this, AnalysisMethod.AgeAttribute);
+        public double GetCostOfTreatment(Treatment treatment) => treatment.GetCost(this, AnalysisMethod.AgeAttribute, AnalysisMethod.ShouldApplyMultipleFeasibleCosts);
 
         public override double GetNumber(string key)
         {

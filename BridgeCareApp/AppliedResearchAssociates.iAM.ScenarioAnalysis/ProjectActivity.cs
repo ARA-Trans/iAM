@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
-    internal sealed class TreatmentActivity
+    internal sealed class ProjectActivity
     {
-        public TreatmentActivity(Treatment treatment, double cost)
+        public ProjectActivity(Treatment treatment, double cost)
         {
             Treatment = treatment ?? throw new ArgumentNullException(nameof(treatment));
             Cost = cost;

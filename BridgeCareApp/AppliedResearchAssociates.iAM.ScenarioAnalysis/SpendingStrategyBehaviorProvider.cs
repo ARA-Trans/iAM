@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal class SpendingStrategyBehaviorProvider
     {
-        public virtual bool SpendingIsAllowed => true;
+        public virtual AllowedSpending AllowedSpending => AllowedSpending.Unlimited;
 
         public static SpendingStrategyBehaviorProvider GetInstance(SpendingStrategy spendingStrategy)
         {
@@ -35,8 +35,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
         }
 
-        public virtual bool BudgetIsSufficient() => true;
-
         public virtual bool GoalsAreMet(IEnumerable<ConditionActual> targetConditionActuals, IEnumerable<ConditionActual> deficientConditionActuals) => false;
 
         private SpendingStrategyBehaviorProvider()
@@ -51,14 +49,14 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         {
             public static AsBudgetPermits Instance { get; } = new AsBudgetPermits();
 
-            public override bool BudgetIsSufficient() => throw new NotImplementedException();
+            public override AllowedSpending AllowedSpending => AllowedSpending.Budgeted;
         }
 
         private sealed class NoSpending : SpendingStrategyBehaviorProvider
         {
             public static NoSpending Instance { get; } = new NoSpending();
 
-            public override bool SpendingIsAllowed => false;
+            public override AllowedSpending AllowedSpending => AllowedSpending.None;
         }
 
         private sealed class UntilDeficientConditionGoalsMet : SpendingStrategyBehaviorProvider
