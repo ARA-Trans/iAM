@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AppliedResearchAssociates.iAM.Segmentation;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.NetworkDefinition
 {
@@ -13,10 +12,5 @@ namespace AppliedResearchAssociates.iAM.DataMiner.NetworkDefinition
         }
 
         public List<Location> Locations { get; }
-
-        public void Segment(Segmenter segmenter)
-        {
-
-        }
     }
 }
