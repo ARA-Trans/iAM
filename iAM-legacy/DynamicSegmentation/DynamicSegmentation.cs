@@ -233,7 +233,7 @@ namespace DynamicSegmentation
 							}
 							else
 							{
-								SegmentationMessaging.AddMessge("Error: Dynamic Segmentation encountered an error. " + strFamily[i] + " Aborting operation.");
+								SegmentationMessaging.AddMessage("Error: Dynamic Segmentation encountered an error. " + strFamily[i] + " Aborting operation.");
 								return;
 							}
                         }
@@ -254,7 +254,7 @@ namespace DynamicSegmentation
 							}
 							else
 							{
-								SegmentationMessaging.AddMessge("Error: Dynamic Segmentation encountered an error. " + strLogic + " Aborting operation.");
+								SegmentationMessaging.AddMessage("Error: Dynamic Segmentation encountered an error. " + strLogic + " Aborting operation.");
 								return;
 							}
 
@@ -497,7 +497,7 @@ namespace DynamicSegmentation
                         String strLogic = dsLogic.Tables[0].Rows[0].ItemArray[0].ToString();
 						if (m_hashLogic.Contains(strFamily))
 						{
-							SegmentationMessaging.AddMessge("Error: Cannot add duplicate family name to segmentation tree.");
+							SegmentationMessaging.AddMessage("Error: Cannot add duplicate family name to segmentation tree.");
 							return;
 						}
 						m_hashLogic.Add(strFamily, strLogic);
@@ -618,7 +618,7 @@ namespace DynamicSegmentation
 			}
 			catch (Exception exc)
 			{
-				SegmentationMessaging.AddMessge("Error: Could not parse family string. " + exc.Message);
+				SegmentationMessaging.AddMessage("Error: Could not parse family string. " + exc.Message);
 			}
 			return dr;
 		}
@@ -662,7 +662,7 @@ namespace DynamicSegmentation
 			}
 			catch (Exception exc)
 			{
-				SegmentationMessaging.AddMessge("Error: Could not parse family string. " + exc.Message);
+				SegmentationMessaging.AddMessage("Error: Could not parse family string. " + exc.Message);
 			}
 			return dr;
         }

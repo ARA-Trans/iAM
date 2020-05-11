@@ -39,7 +39,7 @@ namespace AssetRollup
 		public void DoAssetRollup()
 		{
 			// Loop through each asset and fill the ASSET_SECTION_<network_id> table according to the rollup logic.
-			AssetRollupMessaging.AddMessge("Begin asset rollup in network: " + m_networkID + " at " + DateTime.Now.ToString("HH:mm:ss"));
+			AssetRollupMessaging.AddMessage("Begin asset rollup in network: " + m_networkID + " at " + DateTime.Now.ToString("HH:mm:ss"));
 			String query = "";
 			StreamWriter tw = null;
 
@@ -57,7 +57,7 @@ namespace AssetRollup
 			}
 
 			// Creating the ASSET_SECTION_<networkID> table.
-			AssetRollupMessaging.AddMessge("Creating ASSET_SECTION table...");
+			AssetRollupMessaging.AddMessage("Creating ASSET_SECTION table...");
 			List<DatabaseManager.TableParameters> listColumn = new List<DatabaseManager.TableParameters>();
 			listColumn.Add(new DatabaseManager.TableParameters("GEO_ID", DataType.Int, false, false));
 			listColumn.Add(new DatabaseManager.TableParameters("SECTIONID", DataType.Int, false, false));
@@ -88,7 +88,7 @@ namespace AssetRollup
 			// LRS, Get the LRS data from each asset table...
 			foreach (String assetName in m_assetNames)
 			{
-				AssetRollupMessaging.AddMessge("Rolling up LRS based asset " + assetName + "...");
+				AssetRollupMessaging.AddMessage("Rolling up LRS based asset " + assetName + "...");
 				ConnectionParameters cp = DBMgr.GetAssetConnectionObject(assetName);
 				List<String> assetColumnNames = DBMgr.GetTableColumns(assetName, cp);
 				if (assetColumnNames.Contains("BEGIN_STATION"))
@@ -234,7 +234,7 @@ namespace AssetRollup
 					assetReader.Close();
 
 
-					AssetRollupMessaging.AddMessge("Bulk loading rolled up LRS asset data...");
+					AssetRollupMessaging.AddMessage("Bulk loading rolled up LRS asset data...");
 					// Now try to load all that beautifully segmented data into an Asset Rollup table. (tab delimited).
 					try
 					{
@@ -259,7 +259,7 @@ namespace AssetRollup
 				}
 			}
 
-			AssetRollupMessaging.AddMessge("Finished LRS asset data rollup...");
+			AssetRollupMessaging.AddMessage("Finished LRS asset data rollup...");
 
 			//foreach (String assetName in m_assetNames)
 			//{
@@ -395,7 +395,7 @@ namespace AssetRollup
 			//        }
 			//    }
 			//}
-			AssetRollupMessaging.AddMessge("Asset Rollup complete.");
+			AssetRollupMessaging.AddMessage("Asset Rollup complete.");
 		}
 
 		protected void AddAssetToRollupTable(DataPoint asset, DataPoint section, String assetName, TextWriter tw)
