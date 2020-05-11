@@ -47,7 +47,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private double CumulativeBenefit;
         private double CumulativeCostPerUnitArea;
-        private double? RemainingLife; // REVIEW: Should this default to zero so that per-context lack of valid RLLs doesn't crash the optimization ordering?
+        private double? RemainingLife;
 
         private void AccumulateBenefit()
         {
@@ -69,7 +69,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             ApplyTreatment(InitialTreatment, InitialYear);
             AccumulateBenefit();
 
-            Action updateRemainingLife = Static.DoNothing;
+            Action updateRemainingLife = Inaction.Delegate;
 
             if (RemainingLifeCalculators.Count > 0)
             {
@@ -90,7 +90,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     if (minimumFractionalRemainingLife.HasValue)
                     {
                         RemainingLife += minimumFractionalRemainingLife.Value;
-                        updateRemainingLife = Static.DoNothing;
+                        updateRemainingLife = Inaction.Delegate;
                     }
                     else
                     {
@@ -101,18 +101,16 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             foreach (var year in Enumerable.Range(InitialYear + 1, AccumulationContext.SimulationRunner.Simulation.NumberOfYearsOfTreatmentOutlook))
             {
-                var yearIsScheduled = AccumulationContext.ProjectSchedule.TryGetValue(year, out var scheduleEntry);
+                var yearIsScheduled = AccumulationContext.ProjectSchedule.TryGetValue(year, out var project);
 
-                if (yearIsScheduled && scheduleEntry.IsT2(out var activity))
+                if (yearIsScheduled && project.IsT2())
                 {
-                    // TODO: apply progress (accumulating cost & applying consequences)
-
-                    continue;
+                    throw SimulationErrors.OutlookShouldNeverConsumeProgress;
                 }
 
                 AccumulationContext.ApplyPerformanceCurves();
 
-                if (yearIsScheduled && scheduleEntry.IsT1(out var treatment))
+                if (yearIsScheduled && project.IsT1(out var treatment))
                 {
                     ApplyTreatment(treatment, year);
                 }

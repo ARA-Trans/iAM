@@ -17,9 +17,13 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Static.Channel.cs</LastGenOutput>
     </None>
-    <None Update="Static.DoNothing.tt">
+    <None Update="Inaction.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Static.DoNothing.cs</LastGenOutput>
+      <LastGenOutput>Inaction.cs</LastGenOutput>
+    </None>
+    <None Update="ValueGetter.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ValueGetter.cs</LastGenOutput>
     </None>
     <None Update="ValueTupleEqualityComparer.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -46,10 +50,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Static.Channel.tt</DependentUpon>
     </Compile>
-    <Compile Update="Static.DoNothing.cs">
+    <Compile Update="Inaction.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Static.DoNothing.tt</DependentUpon>
+      <DependentUpon>Inaction.tt</DependentUpon>
+    </Compile>
+    <Compile Update="ValueGetter.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ValueGetter.tt</DependentUpon>
     </Compile>
     <Compile Update="Zip.ToTuples.cs">
       <DesignTime>True</DesignTime>

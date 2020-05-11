@@ -10,9 +10,9 @@
 
 namespace AppliedResearchAssociates
 {
-    partial class Static
+    public static class Inaction
     {
-        public static void DoNothing()
+        public static void Delegate()
         {
         }
 <#
@@ -24,7 +24,7 @@ foreach (var arity in Enumerable.Range(1, MAXIMUM_ARITY))
     var seqParams = string.Join(", ", labelNumbers.Select(n => $"T{n} value{n}"));
 #>
 
-        public static void DoNothing<<#= typeParams #>>(<#= seqParams #>)
+        public static void Delegate<<#= typeParams #>>(<#= seqParams #>)
         {
         }
 <#

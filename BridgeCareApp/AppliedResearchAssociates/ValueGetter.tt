@@ -1,0 +1,39 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// WARNING: This file was automatically generated from a T4 text template at the
+// following moment in time: <#= DateTimeOffset.Now #>. Any changes you make to
+// this file will be lost when this file is regenerated from the template
+// source.
+
+namespace AppliedResearchAssociates
+{
+    public static class ValueGetter
+    {
+        public static ValueGetter<T> Of<T>(T value) => new ValueGetter<T>(value);
+    }
+
+    public class ValueGetter<T>
+    {
+        public T Value { get; }
+
+        public ValueGetter(T value) => Value = value;
+
+        public T Delegate() => Value;
+<#
+const int MAXIMUM_ARITY = 8;
+foreach (var arity in Enumerable.Range(1, MAXIMUM_ARITY))
+{
+    var labelNumbers = Enumerable.Range(1, arity).ToList();
+    var typeParams = string.Join(", ", labelNumbers.Select(n => $"T{n}"));
+    var seqParams = string.Join(", ", labelNumbers.Select(n => $"T{n} value{n}"));
+#>
+
+        public T Delegate<<#= typeParams #>>(<#= seqParams #>) => Value;
+<#
+}
+#>
+    }
+}

@@ -30,7 +30,7 @@ namespace AppliedResearchAssociates.iAM
         private void _Compile()
         {
             Compile();
-            _EnsureCompiled = Static.DoNothing;
+            _EnsureCompiled = Inaction.Delegate;
         }
     }
 }

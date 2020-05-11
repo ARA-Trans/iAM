@@ -23,7 +23,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             NumberCache.CopyFrom(original.NumberCache);
         }
 
-        public IDictionary<int, Choice<Treatment, ProjectActivity>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, ProjectActivity>>();
+        public IDictionary<int, Choice<Treatment, TreatmentProgress>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
 
         public Section Section { get; }
 
@@ -62,10 +62,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public void ApplyTreatment(Treatment treatment, int year)
         {
-            ProjectSchedule[year] = treatment;
-
-            // TODO: Handle cash-flow/split treatments.
-
             var consequenceActions = treatment.GetConsequenceActions(this, AnalysisMethod.AgeAttribute);
             foreach (var consequenceAction in consequenceActions)
             {
@@ -78,10 +74,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 if (ProjectSchedule.ContainsKey(schedulingYear))
                 {
-                    // [REVIEW] Unclear what is correct when two treatments write into the same
-                    // schedule slot. Or when one scheduled treatment is slotted to begin before the
-                    // end of another. According to legacy code, both are eliminated! wtf...
-                    throw new InvalidOperationException("Year is already scheduled for other activity.");
+                    throw SimulationErrors.YearIsAlreadyScheduled;
                 }
 
                 ProjectSchedule.Add(schedulingYear, scheduling.Treatment);

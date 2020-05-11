@@ -41,7 +41,7 @@ namespace AppliedResearchAssociates.iAM
                         Consequences.Add(consequence);
                     }
 
-                    templateConsequence.Recalculation.Handle(addConsequence, Static.DoNothing);
+                    templateConsequence.Recalculation.Handle(addConsequence, Inaction.Delegate);
                 }
             }
         }
