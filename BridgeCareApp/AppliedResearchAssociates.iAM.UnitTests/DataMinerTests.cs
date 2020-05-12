@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 using AppliedResearchAssociates.iAM.DataMiner.NetworkDefinition;
+using ExecutableForProtptype;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace AppliedResearchAssociates.iAM.UnitTests
 {
@@ -39,7 +42,13 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             new TextAttributeDatum(iAMConfiguration.B, "GEORGIA", new SectionLocation("B-4-5"))
         };
 
-        public Network NetworkDefinition { get; } = new Network();
+        public static SQLConnection SQLConnection = new SQLConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
+        public static SectionLocation SectionLocation = new SectionLocation("I dont know yet");
+
+        public static NumericAttributeDatum NumericAttributeDatum = new NumericAttributeDatum(
+            new NumericAttribute("INSPTYPE", new AttributeConnection(SQLConnection), 10, 100, 1), 5, SectionLocation);
+
+        //public Network NetworkDefinition { get; } = new Network();
 
         public DataMinerTests()
         {
@@ -48,7 +57,38 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         [TestMethod]
         public void CreateAttributes()
         {
-            
+            var rawAttributes = File.ReadAllText("config.json");
+            var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
+
+            foreach (var item in myJsonObject.AttributeConfigData)
+            {
+                if (item.DataType.ToLower().Equals("number"))
+                {
+                    if (item.Location.ToLower().Equals("section"))
+                    {
+                        var numericAttributeData = new ExecutableForProtptype.NumericAttributeData();
+                        var result = numericAttributeData.GetNumericAttributeDatum(item);
+
+                        Assert.AreEqual(result.Location.ToString(), NumericAttributeDatum.Location.ToString());
+                        Assert.AreEqual(result.Attribute.Name, NumericAttributeDatum.Attribute.Name);
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
+                {
+                    if (item.Location.ToLower().Equals("section"))
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
         }
     }
 }

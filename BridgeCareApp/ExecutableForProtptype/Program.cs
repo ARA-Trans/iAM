@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 
 namespace ExecutableForProtptype
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main()
         {
             var rawAttributes = File.ReadAllText("config.json");
             var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
@@ -23,14 +23,8 @@ namespace ExecutableForProtptype
                 {
                     if (item.Location.ToLower().Equals("section"))
                     {
-                        var sqlConnection = new SQLConnection(item.Connection.UserName, item.Connection.Password,
-                            item.Connection.Server, item.Connection.DataSource);
-
-                        var numericAttribute = new NumericAttribute(item.AttributeName, new AttributeConnection(sqlConnection),
-                                                                     Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
-
-                        var sectionLocation = new SectionLocation("I dont know yet");
-                        var numericAttributeDatum = new NumericAttributeDatum(numericAttribute, 5, sectionLocation);
+                        var numericAttributeData = new NumericAttributeData();
+                        var result = numericAttributeData.GetNumericAttributeDatum(item);
                     }
                     else
                     {
@@ -49,6 +43,23 @@ namespace ExecutableForProtptype
                     }
                 }
             }
+        }
+    }
+
+    public class NumericAttributeData
+    {
+        public NumericAttributeDatum GetNumericAttributeDatum(ConfigFileModel item)
+        {
+            var sqlConnection = new SQLConnection(item.Connection.UserName, item.Connection.Password,
+                            item.Connection.Server, item.Connection.DataSource);
+
+            var numericAttribute = new NumericAttribute(item.AttributeName, new AttributeConnection(sqlConnection),
+                                                         Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
+
+            var sectionLocation = new SectionLocation("I dont know yet");
+            var numericAttributeDatum = new NumericAttributeDatum(numericAttribute, 5, sectionLocation);
+
+            return numericAttributeDatum;
         }
     }
 }
