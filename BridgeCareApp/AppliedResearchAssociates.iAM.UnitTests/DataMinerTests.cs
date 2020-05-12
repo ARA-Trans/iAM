@@ -66,7 +66,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
                 {
                     if (item.Location.ToLower().Equals("section"))
                     {
-                        var numericAttributeData = new ExecutableForProtptype.NumericAttributeData();
+                        var numericAttributeData = new NumericAttributeDataCreator();
                         var result = numericAttributeData.GetNumericAttributeDatum(item);
 
                         Assert.AreEqual(result.Location.ToString(), NumericAttributeDatum.Location.ToString());

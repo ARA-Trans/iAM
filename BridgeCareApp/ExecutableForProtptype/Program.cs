@@ -23,7 +23,7 @@ namespace ExecutableForProtptype
                 {
                     if (item.Location.ToLower().Equals("section"))
                     {
-                        var numericAttributeData = new NumericAttributeData();
+                        var numericAttributeData = new NumericAttributeDataCreator();
                         var result = numericAttributeData.GetNumericAttributeDatum(item);
                     }
                     else
@@ -46,7 +46,7 @@ namespace ExecutableForProtptype
         }
     }
 
-    public class NumericAttributeData
+    public class NumericAttributeDataCreator
     {
         public NumericAttributeDatum GetNumericAttributeDatum(ConfigFileModel item)
         {
