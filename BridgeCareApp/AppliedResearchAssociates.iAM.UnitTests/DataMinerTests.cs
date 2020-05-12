@@ -39,7 +39,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             new TextAttributeDatum(iAMConfiguration.B, "GEORGIA", new SectionLocation("B-4-5"))
         };
 
-        public Network NetworkDefinition { get; } = new Network()
+        public Network NetworkDefinition { get; } = new Network();
 
         public DataMinerTests()
         {
