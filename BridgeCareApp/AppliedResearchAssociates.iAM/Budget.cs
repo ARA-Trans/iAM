@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AppliedResearchAssociates.iAM
 {
@@ -10,7 +11,20 @@ namespace AppliedResearchAssociates.iAM
 
         public void SetYearlyAmount(int index, decimal amount) => _YearlyAmounts[index] = amount;
 
-        internal void SetNumberOfYears(int numberOfYears) => _YearlyAmounts.RemoveRange(numberOfYears, _YearlyAmounts.Count - numberOfYears);
+        internal int NumberOfYears
+        {
+            set
+            {
+                if (value < _YearlyAmounts.Count)
+                {
+                    _YearlyAmounts.RemoveRange(value, _YearlyAmounts.Count - value);
+                }
+                else if (value > _YearlyAmounts.Count)
+                {
+                    _YearlyAmounts.AddRange(Enumerable.Repeat(0m, value - _YearlyAmounts.Count));
+                }
+            }
+        }
 
         private readonly List<decimal> _YearlyAmounts = new List<decimal>();
     }

@@ -73,7 +73,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             foreach (var year in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
                 MoveBudgetsToNextYear();
-
                 var unhandledContexts = ApplyRequiredEvents(year);
                 ConsiderSelectableTreatments(unhandledContexts, year);
                 ApplyPassiveTreatment(unhandledContexts, year);
@@ -108,6 +107,13 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         private IReadOnlyCollection<SectionContext> SectionContexts;
 
         private IReadOnlyCollection<ConditionActual> TargetConditionActuals;
+
+        private enum CostCoverage
+        {
+            None,
+            Full,
+            CashFlow,
+        }
 
         private enum Spending
         {
@@ -145,7 +151,14 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                 if (yearIsScheduled && project.IsT2(out var progress))
                 {
-                    if (!TryToPayForTreatment(context, progress.Treatment, budgetContext => budgetContext.CurrentAmount, progress.Cost))
+                    var costCoverage = TryToPayForTreatment(
+                        context,
+                        progress.Treatment,
+                        year,
+                        budgetContext => budgetContext.CurrentAmount,
+                        progress.Cost);
+
+                    if (costCoverage == CostCoverage.None)
                     {
                         throw SimulationErrors.CostOfScheduledEventCannotBeCovered;
                     }
@@ -161,12 +174,21 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                     if (yearIsScheduled && project.IsT1(out var treatment))
                     {
-                        if (!TryToPayForTreatment(context, treatment, budgetContext => budgetContext.CurrentAmount))
+                        var costCoverage = TryToPayForTreatment(
+                            context,
+                            treatment,
+                            year,
+                            budgetContext => budgetContext.CurrentAmount);
+
+                        if (costCoverage == CostCoverage.None)
                         {
                             throw SimulationErrors.CostOfScheduledEventCannotBeCovered;
                         }
 
-                        context.ApplyTreatment(treatment, year);
+                        if (costCoverage == CostCoverage.Full)
+                        {
+                            context.ApplyTreatment(treatment, year);
+                        }
                     }
                     else
                     {
@@ -176,11 +198,11 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
         }
 
-        private void ConsiderSelectableTreatments(ICollection<SectionContext> sectionContexts, int year)
+        private void ConsiderSelectableTreatments(ICollection<SectionContext> unhandledContexts, int year)
         {
             // TODO: Needs to return or otherwise produce output, e.g. a SimulationYear object.
 
-            var treatmentOptions = GetTreatmentOptionsInOptimalOrder(sectionContexts, year);
+            var treatmentOptions = GetTreatmentOptionsInOptimalOrder(unhandledContexts, year);
 
             UpdateConditionActuals(year);
 
@@ -207,23 +229,31 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                     foreach (var option in treatmentOptions)
                     {
-                        if (!sectionContexts.Contains(option.Context) || !(priority.Criterion.Evaluate(option.Context) ?? true))
+                        if (!unhandledContexts.Contains(option.Context) || !(priority.Criterion.Evaluate(option.Context) ?? true))
                         {
                             continue;
                         }
 
-                        if (TryToPayForTreatment(option.Context, option.CandidateTreatment, context => context.CurrentPrioritizedAmount.Value))
+                        var costCoverage = TryToPayForTreatment(
+                            option.Context,
+                            option.CandidateTreatment,
+                            year,
+                            context => context.CurrentPrioritizedAmount.Value);
+
+                        if (costCoverage != CostCoverage.None)
                         {
                             option.Context.ProjectSchedule[year] = option.CandidateTreatment;
-                            option.Context.ApplyTreatment(option.CandidateTreatment, year);
-                            _ = sectionContexts.Remove(option.Context);
-                        }
+                            _ = unhandledContexts.Remove(option.Context);
 
-                        UpdateConditionActuals(year);
-
-                        if (ConditionGoalsAreMet())
-                        {
-                            return;
+                            if (costCoverage == CostCoverage.Full)
+                            {
+                                option.Context.ApplyTreatment(option.CandidateTreatment, year);
+                                UpdateConditionActuals(year);
+                                if (ConditionGoalsAreMet())
+                                {
+                                    return;
+                                }
+                            }
                         }
                     }
                 }
@@ -375,20 +405,47 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private void OnWarning(WarningEventArgs e) => Warning?.Invoke(this, e);
 
-        private enum CostCoverage
+        private CostCoverage TryToPayForTreatment(SectionContext sectionContext, Treatment treatment, int year, Func<BudgetContext, decimal> getAvailableAmount, decimal? indivisibleCost = null)
         {
-            None,
-            Full,
-            CashFlow,
-        }
+            decimal remainingCost;
+            CashFlowRule cashFlowRule = null;
 
-        private CostCoverage TryToPayForTreatment(SectionContext sectionContext, Treatment treatment, Func<BudgetContext, decimal> getAvailableAmount, double? atomicCost = null)
-        {
-            // [TODO] if atomicCost is null && exactly one cashflow criterion is met, use
-            // distribution rule with correct cost ceiling. basically, set remaining cost to the
-            // first year's amount, then schedule other progress entries.
+            if (indivisibleCost.HasValue)
+            {
+                remainingCost = indivisibleCost.Value;
+            }
+            else
+            {
+                remainingCost = (decimal)sectionContext.GetCostOfTreatment(treatment);
 
-            var remainingCost = (decimal)(atomicCost ?? sectionContext.GetCostOfTreatment(treatment));
+                // TODO: SingleOrDefault? or FirstOrDefault?
+                cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.Evaluate(sectionContext) ?? true);
+                if (cashFlowRule != null)
+                {
+                    var distributionRule = cashFlowRule.DistributionRules
+                        .OrderBy(rule => rule.CostCeiling)
+                        .TakeWhile(rule => remainingCost <= rule.CostCeiling)
+                        .Last();
+
+                    var costPerYear = distributionRule.YearlyPercentages.Select(percentage => percentage / 100 * remainingCost).ToArray();
+                    remainingCost = costPerYear[0];
+
+                    var progression = costPerYear.Skip(1).Select(cost => new TreatmentProgress(treatment, cost)).ToArray();
+                    if (progression.Length == 0)
+                    {
+                        cashFlowRule = null;
+                    }
+                    else
+                    {
+                        progression[progression.Length - 1].IsComplete = true;
+                    }
+
+                    foreach (var (yearProgress, yearOffset) in Zip.Short(progression, Static.Count(1)))
+                    {
+                        sectionContext.ProjectSchedule[year + yearOffset] = yearProgress;
+                    }
+                }
+            }
 
             var costAllocators = new List<Action>();
             void addCostAllocator(decimal cost, BudgetContext context)
@@ -444,7 +501,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             if (remainingCost > 0)
             {
-                return false;
+                return CostCoverage.None;
             }
 
             foreach (var costAllocator in costAllocators)
@@ -452,7 +509,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 costAllocator();
             }
 
-            return true;
+            return cashFlowRule == null ? CostCoverage.Full : CostCoverage.CashFlow;
         }
 
         private void UpdateConditionActuals(int year)

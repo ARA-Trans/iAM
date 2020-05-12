@@ -45,19 +45,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public Evaluator GetEvaluator(string expression) => Compile<Evaluator>(expression);
 
-        private static readonly IEqualityComparer<IEnumerable<(int, string)>> CacheComparer = SequenceEqualityComparer.Create(ValueTupleEqualityComparer.Create<int, string>(t2: StringComparer.OrdinalIgnoreCase));
+        private static readonly IEqualityComparer<IEnumerable<(int, string)>> CacheComparer = SequenceEqualityComparer.Create(ValueTupleEqualityComparer.Create<int, string>(comparer2: StringComparer.OrdinalIgnoreCase));
 
         private readonly ConcurrentDictionary<(int, string)[], WeakReference<FinalActor<Delegate>>> Cache = new ConcurrentDictionary<(int, string)[], WeakReference<FinalActor<Delegate>>>(CacheComparer);
 
-        private readonly ConcurrentBag<(int, string)[]> InvalidatedCacheKeys = new ConcurrentBag<(int, string)[]>();
-
         private T Compile<T>(string expression) where T : Delegate
         {
-            while (InvalidatedCacheKeys.TryTake(out var invalidatedCacheKey))
-            {
-                _ = Cache.TryRemove(invalidatedCacheKey, out _);
-            }
-
             var input = new AntlrInputStream(expression);
             var lexer = new CalculateEvaluateBailingLexer(input);
 
@@ -107,7 +100,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             var lambdaExpression = (Expression<T>)visitor.Visit(tree);
             var lambda = lambdaExpression.Compile();
 
-            _ = Cache.TryAdd(cacheKey, ((Delegate)lambda).WithFinalAction(_ => InvalidatedCacheKeys.Add(cacheKey)).GetWeakReference());
+            _ = Cache.TryAdd(cacheKey, ((Delegate)lambda).WithFinalAction(actor => Cache.TryRemove(cacheKey, out _)).GetWeakReference());
 
             return lambda;
         }

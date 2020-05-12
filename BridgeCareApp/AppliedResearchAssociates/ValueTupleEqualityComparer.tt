@@ -21,8 +21,8 @@ foreach (var arity in Enumerable.Range(2, 7))
     var labelNumbers = Enumerable.Range(1, arity).ToList();
     var typeParams = string.Join(", ", labelNumbers.Select(n => $"T{n}"));
     var tupleType = $"({typeParams})";
-    var factoryParams = string.Join(", ", labelNumbers.Select(n => $"IEqualityComparer<T{n}> t{n} = null"));
-    var ctorArgs = string.Join(", ", labelNumbers.Select(n => $"t{n}"));
+    var factoryParams = string.Join(", ", labelNumbers.Select(n => $"IEqualityComparer<T{n}> comparer{n} = null"));
+    var ctorArgs = string.Join(", ", labelNumbers.Select(n => $"comparer{n}"));
     var ctorParams = string.Join(", ", labelNumbers.Select(n => $"IEqualityComparer<T{n}> comparer{n}"));
     var equalsBody = string.Join(" && ", labelNumbers.Select(n => $"Comparer{n}.Equals(x.Item{n}, y.Item{n})"));
     var hashArgs = string.Join(", ", labelNumbers.Select(n => $"Comparer{n}.GetHashCode(obj.Item{n})"));

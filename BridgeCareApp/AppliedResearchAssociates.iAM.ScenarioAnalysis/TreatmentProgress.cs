@@ -4,16 +4,15 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class TreatmentProgress
     {
-        public TreatmentProgress(Treatment treatment, double cost, bool isComplete)
+        public TreatmentProgress(Treatment treatment, decimal cost)
         {
             Treatment = treatment ?? throw new ArgumentNullException(nameof(treatment));
             Cost = cost;
-            IsComplete = isComplete;
         }
 
-        public double Cost { get; }
+        public decimal Cost { get; }
 
-        public bool IsComplete { get; }
+        public bool IsComplete { get; set; }
 
         public Treatment Treatment { get; }
     }
