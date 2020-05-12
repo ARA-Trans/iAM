@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 using Attribute = AppliedResearchAssociates.iAM.DataMiner.Attributes.Attribute;
@@ -11,12 +12,9 @@ namespace AppliedResearchAssociates.iAM.Segmentation
         {
         }
 
-        public override List<SegmentedLocation> SegmentLocations()
+        public override List<LinearLocation> SegmentLocations()
         {
-            foreach(var attribute in Attributes)
-            {
-                var currentAttributeValue = attribute
-            }
+            throw new NotImplementedException();
         }
     }
 }

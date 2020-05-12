@@ -1,4 +1,6 @@
-﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿using System;
+
+namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class AttributeDatum<T>
     {

@@ -50,7 +50,7 @@ namespace ExecutableForProtptype
     {
         public NumericAttributeDatum GetNumericAttributeDatum(ConfigFileModel item)
         {
-            var sqlConnection = new SQLConnection(item.Connection.UserName, item.Connection.Password,
+            var sqlConnection = new SqlConnection(item.Connection.UserName, item.Connection.Password,
                             item.Connection.Server, item.Connection.DataSource);
 
             var numericAttribute = new NumericAttribute(item.AttributeName, new AttributeConnection(sqlConnection),

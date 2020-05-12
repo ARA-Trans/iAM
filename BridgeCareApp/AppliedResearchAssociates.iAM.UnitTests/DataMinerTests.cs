@@ -42,7 +42,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             new TextAttributeDatum(iAMConfiguration.B, "GEORGIA", new SectionLocation("B-4-5"))
         };
 
-        public static SQLConnection SQLConnection = new SQLConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
+        public static SqlConnection SQLConnection = new SqlConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
         public static SectionLocation SectionLocation = new SectionLocation("I dont know yet");
 
         public static NumericAttributeDatum NumericAttributeDatum = new NumericAttributeDatum(

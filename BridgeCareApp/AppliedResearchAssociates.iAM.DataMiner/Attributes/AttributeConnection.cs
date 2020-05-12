@@ -4,14 +4,10 @@ using System.Text;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
-    public class AttributeConnection
+    public abstract class AttributeConnection
     {
-        public SQLConnection SQLConnection {get; set;}
+        public abstract void Connect();
 
-        public AttributeConnection() { }
-        public AttributeConnection(SQLConnection sQLConnection)
-        {
-            SQLConnection = sQLConnection;
-        }
+        public abstract (Location location, string value) GetNext();
     }
 }

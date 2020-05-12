@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using AppliedResearchAssociates.iAM.DataMiner;
-using Attribute = AppliedResearchAssociates.iAM.DataMiner.Attributes.Attribute;
+﻿using System.Collections.Generic;
+using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
