@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
-    public abstract class AttributeDatum<T>
+    public class AttributeDatum<T>
     {
         public Location Location { get; }
 

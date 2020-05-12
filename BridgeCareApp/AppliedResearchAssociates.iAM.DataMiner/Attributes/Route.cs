@@ -2,8 +2,8 @@
 {
     public abstract class Route
     {
-        public string UniqueIdentifier { get; }
+        public string Identifier { get; }
 
-        public Route(string uniqueIdentifier) => UniqueIdentifier = uniqueIdentifier;
+        public Route(string identifier) => Identifier = identifier;
     }
 }
