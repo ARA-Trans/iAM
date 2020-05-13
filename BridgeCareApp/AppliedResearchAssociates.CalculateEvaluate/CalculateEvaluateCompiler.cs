@@ -18,29 +18,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate
     {
         public Dictionary<string, ParameterType> ParameterTypes { get; } = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
 
-        public string AnnotateParameterReferenceTypes(string expression)
-        {
-            var input = new AntlrInputStream(expression);
-            var lexer = new CalculateEvaluateBailingLexer(input);
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new CalculateEvaluateBailingParser(tokens);
-
-            IParseTree tree;
-            try
-            {
-                tree = parser.root();
-            }
-            catch (ParseCanceledException e)
-            {
-                throw new CalculateEvaluateParsingException(null, e);
-            }
-
-            var listener = new ParameterReferenceTypeAnnotatorListener(ParameterTypes, tokens);
-            ParseTreeWalker.Default.Walk(listener, tree);
-            var annotatedExpression = listener.Rewriter.GetText();
-            return annotatedExpression;
-        }
-
         public Calculator GetCalculator(string expression) => Compile<Calculator>(expression);
 
         public Evaluator GetEvaluator(string expression) => Compile<Evaluator>(expression);

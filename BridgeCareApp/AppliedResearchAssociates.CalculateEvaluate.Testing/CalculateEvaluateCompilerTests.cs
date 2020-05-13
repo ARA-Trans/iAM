@@ -7,20 +7,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
     public class CalculateEvaluateCompilerTests
     {
         [Test]
-        public void AnnotateParameterReferenceTypes()
-        {
-            var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["param1"] = ParameterType.Number;
-            compiler.ParameterTypes["param2"] = ParameterType.Text;
-            compiler.ParameterTypes["param3"] = ParameterType.Timestamp;
-
-            var expression = "[$param2]='foo' or [$param1]=|1| and ([@param2]<>|| or [param3]<'2000-01-01')";
-            var annotatedExpression = compiler.AnnotateParameterReferenceTypes(expression);
-
-            Assert.That(annotatedExpression, Is.EqualTo("[@param2]='foo' or [param1]=|1| and ([@param2]<>|| or [$param3]<'2000-01-01')"));
-        }
-
-        [Test]
         public void BadLex() => Assert.Throws<CalculateEvaluateLexingException>(() => ParameterlessCalculation("2 # 2", 4));
 
         [Test]

@@ -8,7 +8,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         {
             _ = BenchmarkRunner.Run<CalculateEvaluateCompilerBenchmarks>();
             _ = BenchmarkRunner.Run<LegacyCalculateEvaluateBenchmarks>();
-            _ = BenchmarkRunner.Run<CalculateEvaluateAnnotatorBenchmarks>();
         }
     }
 }
