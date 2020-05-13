@@ -16,22 +16,24 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public Simulation Simulation { get; }
 
-        public void Run()
+        public IEnumerable<SimulationYear> Run()
         {
             ActiveTreatments = Simulation.GetActiveTreatments();
+            BudgetContexts = Simulation.InvestmentPlan.Budgets.Select(budget => new BudgetContext(budget)).ToArray();
             CommittedProjectsPerSection = Simulation.CommittedProjects.ToLookup(committedProject => committedProject.Section);
             CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
-            BudgetContexts = Simulation.InvestmentPlan.Budgets.Select(budget => new BudgetContext(budget)).ToArray();
 
             SectionContexts = Simulation.Network.Sections
                 .AsParallel()
-                .Select(CreateContext)
+                .Select(CreateSectionContext)
                 .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true)
                 .ToArray();
 
             _ = Parallel.ForEach(SectionContexts, context =>
             {
-                // TODO: fill in with ROLL-FORWARD data and committed projects.
+                // TODO: "Roll forward". Applying performance curves and passive treatment.
+                //- find earliest year with values. (if none, take all defaults and stop.) set all those values, use defaults for the rest.
+                //- starting from next year: apply PCs, set any existing year-values, apply passive treatment. stop before "first year of analysis period".
             });
 
             switch (Simulation.AnalysisMethod.SpendingStrategy)
@@ -79,9 +81,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 UpdateConditionActuals(year);
 
                 // TODO: create/finalize another SimulationYear output object.
+                yield return null;
             }
-
-            // TODO: return sequence of SimulationYear objects.
         }
 
         internal ILookup<NumberAttribute, PerformanceCurve> CurvesPerAttribute { get; private set; }
@@ -200,8 +201,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private void ConsiderSelectableTreatments(ICollection<SectionContext> unhandledContexts, int year)
         {
-            // TODO: Needs to return or otherwise produce output, e.g. a SimulationYear object.
-
             var treatmentOptions = GetTreatmentOptionsInOptimalOrder(unhandledContexts, year);
 
             UpdateConditionActuals(year);
@@ -229,29 +228,28 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                     foreach (var option in treatmentOptions)
                     {
-                        if (!unhandledContexts.Contains(option.Context) || !(priority.Criterion.Evaluate(option.Context) ?? true))
+                        if (unhandledContexts.Contains(option.Context) && (priority.Criterion.Evaluate(option.Context) ?? true))
                         {
-                            continue;
-                        }
+                            var costCoverage = TryToPayForTreatment(
+                                option.Context,
+                                option.CandidateTreatment,
+                                year,
+                                context => context.CurrentPrioritizedAmount.Value);
 
-                        var costCoverage = TryToPayForTreatment(
-                            option.Context,
-                            option.CandidateTreatment,
-                            year,
-                            context => context.CurrentPrioritizedAmount.Value);
-
-                        if (costCoverage != CostCoverage.None)
-                        {
-                            option.Context.ProjectSchedule[year] = option.CandidateTreatment;
-                            _ = unhandledContexts.Remove(option.Context);
-
-                            if (costCoverage == CostCoverage.Full)
+                            if (costCoverage != CostCoverage.None)
                             {
-                                option.Context.ApplyTreatment(option.CandidateTreatment, year);
-                                UpdateConditionActuals(year);
-                                if (ConditionGoalsAreMet())
+                                option.Context.ProjectSchedule[year] = option.CandidateTreatment;
+                                _ = unhandledContexts.Remove(option.Context);
+
+                                if (costCoverage == CostCoverage.Full)
                                 {
-                                    return;
+                                    option.Context.ApplyTreatment(option.CandidateTreatment, year);
+                                    UpdateConditionActuals(year);
+
+                                    if (ConditionGoalsAreMet())
+                                    {
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -260,11 +258,19 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             }
         }
 
-        private SectionContext CreateContext(Section section)
+        private SectionContext CreateSectionContext(SectionHistory sectionHistory)
         {
-            var context = new SectionContext(section, this);
+            var context = new SectionContext(sectionHistory.Section, this);
 
-            // TODO: fill in with NON-ROLL-FORWARD data (per Gregg's memo, to apply jurisdiction criterion).
+            foreach (var (attribute, history) in sectionHistory.HistoryPerNumberAttribute)
+            {
+                FillSectionContext(attribute, history, context.SetNumber);
+            }
+
+            foreach (var (attribute, history) in sectionHistory.HistoryPerTextAttribute)
+            {
+                FillSectionContext(attribute, history, context.SetText);
+            }
 
             foreach (var calculatedField in Simulation.Network.Explorer.CalculatedFields)
             {
@@ -272,12 +278,38 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 context.SetNumber(calculatedField.Name, calculate);
             }
 
-            foreach (var committedProject in CommittedProjectsPerSection[section])
+            foreach (var committedProject in CommittedProjectsPerSection[context.Section])
             {
                 context.ProjectSchedule[committedProject.Year] = committedProject;
             }
 
             return context;
+        }
+
+        private void FillSectionContext<T>(Attribute<T> attribute, IDictionary<int, T> history, Action<string, T> setValue)
+        {
+            var yearBeforeAnalysisPeriod = Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod - 1;
+
+            if (history.TryGetValue(yearBeforeAnalysisPeriod, out var value))
+            {
+                setValue(attribute.Name, value);
+            }
+            else
+            {
+                var mostRecentYear = history.Keys
+                    .Where(year => year < yearBeforeAnalysisPeriod)
+                    .Select(year => year.AsNullable())
+                    .Max();
+
+                if (mostRecentYear.HasValue)
+                {
+                    setValue(attribute.Name, history[mostRecentYear.Value]);
+                }
+                else
+                {
+                    setValue(attribute.Name, attribute.DefaultValue);
+                }
+            }
         }
 
         private IReadOnlyCollection<ConditionActual> GetDeficientConditionActuals()
@@ -418,7 +450,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             {
                 remainingCost = (decimal)sectionContext.GetCostOfTreatment(treatment);
 
-                // TODO: SingleOrDefault? or FirstOrDefault?
                 cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.Evaluate(sectionContext) ?? true);
                 if (cashFlowRule != null)
                 {

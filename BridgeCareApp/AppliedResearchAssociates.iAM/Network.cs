@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class Network
     {
-        //- Needs to have a representation of segmentation & roll-up. Is "roll-forward" the same thing as roll-up?
+        public Network(Explorer explorer) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
 
         public Explorer Explorer { get; }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public List<Section> Sections { get; }
+        public ICollection<SectionHistory> Sections { get; } = new List<SectionHistory>();
 
-        public List<Simulation> Simulations { get; }
+        public ICollection<Simulation> Simulations { get; } = new List<Simulation>();
     }
 }

@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace AppliedResearchAssociates
 {
@@ -140,48 +139,48 @@ foreach (var numChoices in Enumerable.Range(2, MAXIMUM_ARITY - 1))
 #>
         private sealed class <#= subtypes[c] #> : <#= type #>
         {
-            private readonly <#= typeParams[c] #> _value;
+            private readonly <#= typeParams[c] #> _Value;
 
-            public <#= subtypes[c] #>(<#= typeParams[c] #> value) => _value = value;
+            public <#= subtypes[c] #>(<#= typeParams[c] #> value) => _Value = value;
 
             public override bool Is<#= typeParams[c] #>(out <#= typeParams[c] #> value)
             {
-                value = _value;
+                value = _Value;
                 return true;
             }
 
-            public override object Value => _value;
+            public override object Value => _Value;
 
             public override void Handle(<#= handlerParamSeq #>)
             {
                 <#= handlerNullCheckBlock #>
 
-                <#= handlerParams[c] #>(_value);
+                <#= handlerParams[c] #>(_Value);
             }
 
             public override <#= mapType #> Map<#= mapTypeGenericParamSeq #>(<#= mapperParamSeq #>)
             {
                 <#= mapperNullCheckBlock #>
 
-                return <#= mapperParams[c] #>(_value);
+                return <#= mapperParams[c] #>(_Value);
             }
 
             public override U Reduce<U>(<#= reducerParamSeq #>)
             {
                 <#= reducerNullCheckBlock #>
 
-                return <#= reducerParams[c] #>(_value);
+                return <#= reducerParams[c] #>(_Value);
             }
 
-            private bool Equals(<#= subtypes[c] #> choice) => EqualityComparer<<#= typeParams[c] #>>.Default.Equals(_value, choice._value);
+            private bool Equals(<#= subtypes[c] #> choice) => EqualityComparer<<#= typeParams[c] #>>.Default.Equals(_Value, choice._Value);
 
             public override bool Equals(<#= type #> choice) => choice is <#= subtypes[c] #> c && Equals(c);
 
             public override bool Equals(object obj) => obj is <#= subtypes[c] #> c && Equals(c);
 
-            public override int GetHashCode() => _value.GetHashCode();
+            public override int GetHashCode() => _Value.GetHashCode();
 
-            public override string ToString() => _value.ToString();
+            public override string ToString() => _Value.ToString();
         }
 <#
         if (c != lastChoice)
