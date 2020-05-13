@@ -57,7 +57,7 @@ namespace ExecutableForProtptype
                                                          Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
 
             var sectionLocation = new SectionLocation("I dont know yet");
-            var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 5, sectionLocation);
+            var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 5, sectionLocation, DateTime.Now);
 
             return numericAttributeDatum;
         }
