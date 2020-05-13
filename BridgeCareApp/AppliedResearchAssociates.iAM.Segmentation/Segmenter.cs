@@ -6,17 +6,16 @@ namespace AppliedResearchAssociates.iAM.Segmentation
 {
     public abstract class Segmenter
     {
-        public Segmenter(List<Location> locations, List<Attribute> attributes, List<SegmentationRule> segmentationRules)
+        public Segmenter(List<Location> locations, List<SegmentationRule> segmentationRules)
         {
             Locations = locations;
-            Attributes = attributes;
             SegmentationRules = segmentationRules;
         }
 
-        public abstract List<Location> SegmentLocations();
+        public abstract List<SegmentedLocation> Segment<T>(IEnumerable<AttributeDatum<T>> attributeData);
 
         public List<Location> Locations { get; }
-        public List<Attribute> Attributes { get; }
+
         public List<SegmentationRule> SegmentationRules { get; }
     }
 }

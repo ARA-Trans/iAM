@@ -6,16 +6,15 @@ using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
-    public class SegmentedLocation<T>
+    public class SegmentedLocation
     {
         public Guid Guid { get; }
         public Location Location { get; }
-        public AttributeDatum<T> AttributeDatum { get; }
 
-        public SegmentedLocation(Location location, AttributeDatum<T> attributeDatum)
+
+        public SegmentedLocation(Location location)
         {
             Location = location;
-            AttributeDatum = attributeDatum;
         }
     }
 }

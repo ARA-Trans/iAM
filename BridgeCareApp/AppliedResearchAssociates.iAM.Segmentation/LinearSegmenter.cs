@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
-using Attribute = AppliedResearchAssociates.iAM.DataMiner.Attributes.Attribute;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
     public class LinearSegmenter : Segmenter
     {
-        public LinearSegmenter(List<Location> locations, List<Attribute> attributes, List<SegmentationRule> segmentationRules) : base(locations, attributes, segmentationRules)
+        public LinearSegmenter(List<Location> locations, List<SegmentationRule> segmentationRules) : base(locations, segmentationRules)
         {
         }
 
-        public override List<Location> SegmentLocations()
+        public override List<SegmentedLocation> Segment<T>(IEnumerable<AttributeDatum<T>> attributeData)
         {
+            
+            foreach(var attributeDatum in attributeData)
+            {
+
+            }
             throw new NotImplementedException();
         }
     }

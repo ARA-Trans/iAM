@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using AppliedResearchAssociates.iAM.DataMiner;
+using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 using Attribute = AppliedResearchAssociates.iAM.DataMiner.Attributes.Attribute;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
     public class GisSegmenter : Segmenter
     {
-        public GisSegmenter(List<Location> locations, List<Attribute> attributes, List<SegmentationRule> segmentationRules) : base(locations, attributes, segmentationRules)
+        public GisSegmenter(List<Location> locations, List<SegmentationRule> segmentationRules) : base(locations, segmentationRules)
         {
         }
 
-        public override List<Location> SegmentLocations()
+        public override List<Location> Segment<T>(IEnumerable<AttributeDatum<T>> attributeData)
         {
             throw new NotImplementedException();
         }
