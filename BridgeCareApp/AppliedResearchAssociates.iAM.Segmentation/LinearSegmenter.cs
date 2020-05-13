@@ -6,13 +6,13 @@ using Attribute = AppliedResearchAssociates.iAM.DataMiner.Attributes.Attribute;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
-    public class LinearSegmenter : Segmenter<LinearLocation>
+    public class LinearSegmenter : Segmenter
     {
-        public LinearSegmenter(List<LinearLocation> locations, List<Attribute> attributes, List<SegmentationRule> segmentationRules) : base(locations, attributes, segmentationRules)
+        public LinearSegmenter(List<Location> locations, List<Attribute> attributes, List<SegmentationRule> segmentationRules) : base(locations, attributes, segmentationRules)
         {
         }
 
-        public override List<LinearLocation> SegmentLocations()
+        public override List<Location> SegmentLocations()
         {
             throw new NotImplementedException();
         }
