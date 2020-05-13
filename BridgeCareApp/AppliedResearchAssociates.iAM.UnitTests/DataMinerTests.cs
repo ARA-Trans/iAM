@@ -5,12 +5,13 @@ using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 using AppliedResearchAssociates.iAM.DataMiner.NetworkDefinition;
 using ExecutableForProtptype;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
 namespace AppliedResearchAssociates.iAM.UnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class DataMinerTests
     {
         public List<AttributeDatum<double>> Attribute1 { get; } = new List<AttributeDatum<double>>()
@@ -55,10 +56,10 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         {
         }
 
-        [TestMethod]
+        [Test]
         public void CreateAttributes()
         {
-            var rawAttributes = File.ReadAllText("config.json");
+            var rawAttributes = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "\\config.json");
             var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
 
             foreach (var item in myJsonObject.AttributeConfigData)
@@ -67,10 +68,11 @@ namespace AppliedResearchAssociates.iAM.UnitTests
                 {
                     if (item.Location.ToLower().Equals("section"))
                     {
+                        // Arrange/ Act
                         var numericAttributeData = new NumericAttributeDataCreator();
                         var result = numericAttributeData.GetNumericAttributeDatum(item);
 
-                        Assert.AreEqual(result.Location.ToString(), NumericAttributeDatum.Location.ToString());
+                        Assert.That(result.Location.ToString(), Is.EqualTo(NumericAttributeDatum.Location.ToString()));
                         Assert.AreEqual(result.Attribute.Name, NumericAttributeDatum.Attribute.Name);
                     }
                     else

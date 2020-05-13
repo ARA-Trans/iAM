@@ -11,7 +11,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
             var attributeData = new List<AttributeDatum<T>>();
             foreach (var locationAndValue in locationsAndValues)
             {
-                attributeData.Add(new AttributeDatum<T>(attribute, locationAndValue.value, locationAndValue.location));
+                attributeData.Add(new AttributeDatum<T>(attribute, locationAndValue.value, locationAndValue.location, DateTime.Now));
             }
             return attributeData;
         }
