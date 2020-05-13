@@ -12,12 +12,21 @@
                         </v-tab>
                     </v-tabs>
                 </div>
-
                 <div>
-                    <v-btn @click="onShowCommittedProjectsFileUploader" class="ara-blue-bg white--text">
-                        Committed Projects
-                        <v-icon class="white--text" right>fas fa-cloud-upload-alt</v-icon>
-                    </v-btn>
+                    <v-layout>
+                        <div>
+                            <v-btn @click="onShowRunSimulationAlert" class="ara-blue-bg white--text">
+                                Run Scenario
+                                <v-icon class="white--text" right>fas fa-play</v-icon>
+                            </v-btn>
+                        </div>
+                        <div>
+                            <v-btn @click="onShowCommittedProjectsFileUploader" class="ara-blue-bg white--text">
+                                Committed Projects
+                                <v-icon class="white--text" right>fas fa-cloud-upload-alt</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-layout>
                 </div>
             </v-layout>
         </v-flex>
@@ -28,6 +37,8 @@
             </v-container>
         </v-flex>
 
+        <Alert :dialogData="alertData" @submit="onSubmitAlertResult"/>
+
         <CommittedProjectsFileUploaderDialog :showDialog="showFileUploader" @submit="onUploadCommittedProjectFiles"/>
     </v-layout>
 </template>
@@ -35,41 +46,43 @@
 <script lang="ts">
     import Vue from 'vue';
     import Component from 'vue-class-component';
+    import {Watch} from 'vue-property-decorator';
     import {Action, State} from 'vuex-class';
-    import {Scenario} from '@/shared/models/iAM/scenario';
+    import {emptyScenario, Scenario} from '@/shared/models/iAM/scenario';
     import CommittedProjectsFileUploaderDialog from '@/components/scenarios/scenarios-dialogs/CommittedProjectsFileUploaderDialog.vue';
-    import {any, isNil} from 'ramda';
+    import {any, isNil, clone, propEq} from 'ramda';
     import {AxiosResponse} from 'axios';
     import CommittedProjectsService from '@/services/committed-projects.service';
     import {Network} from '@/shared/models/iAM/network';
     import FileDownload from 'js-file-download';
     import {NavigationTab} from '@/shared/models/iAM/navigation-tab';
     import {CommittedProjectsDialogResult} from '@/shared/models/modals/committed-projects-dialog-result';
+    import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
+    import Alert from '@/shared/modals/Alert.vue';
 
     @Component({
-        components: {CommittedProjectsFileUploaderDialog}
+        components: {CommittedProjectsFileUploaderDialog, Alert}
     })
     export default class EditScenario extends Vue {
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
         @State(state => state.authentication.isAdmin) isAdmin: boolean;
+        @State(state => state.scenario.selectedScenario) stateSelectedScenario: Scenario;
+        @State(state => state.scenario.scenarios) stateScenarios: Scenario[];
+        @State(state => state.authentication.userId) userId: string;
 
+        @Action('getMongoScenarios') getMongoScenariosAction: any;
         @Action('setErrorMessage') setErrorMessageAction: any;
         @Action('setSuccessMessage') setSuccessMessageAction: any;
-        @Action('setSelectedScenarioName') setSelectedScenarioNameAction: any;
+        @Action('selectScenario') selectScenarioAction: any;
+        @Action('runSimulation') runSimulationAction: any;
 
         selectedScenarioId: number = 0;
         showFileUploader: boolean = false;
         networkId: number = 0;
-        selectedScenario: Scenario = {
-            id: 0,
-            simulationId: this.selectedScenarioId,
-            networkId: this.networkId,
-            simulationName: '',
-            networkName: '',
-            users: []
-        };
+        selectedScenario: Scenario = clone(emptyScenario);
         navigationTabs: NavigationTab[] = [];
+        alertData: AlertData = clone(emptyAlertData);
 
         beforeRouteEnter(to: any, from: any, next: any) {
             next((vm: any) => {
@@ -83,8 +96,8 @@
                     vm.setErrorMessageAction({message: 'Found no selected scenario for edit'});
                     vm.$router.push('/Scenarios/');
                 } else {
-                    vm.setSelectedScenarioNameAction({selectedScenarioName: to.query.simulationName});
-
+                    vm.getMongoScenariosAction({userId: vm.userId})
+                        .then(() => vm.selectScenarioAction({simulationId: parseInt(to.query.selectedScenarioId)}));
                     vm.navigationTabs = [
                         {
                             tabName: 'Analysis',
@@ -212,8 +225,26 @@
             });
         }
 
+        @Watch('stateSelectedScenario')
+        onStateSelectedScenarioChanged() {
+            this.selectedScenario = clone(this.stateSelectedScenario);
+        }
+
+        @Watch('stateScenarios')
+        onStateScenariosChanged() {
+            if (any(propEq('simulationId', this.selectedScenario.simulationId))) {
+                this.selectScenarioAction({simulationId: this.selectedScenario.simulationId});
+            }
+        }
+
+        mounted() {
+            if (this.selectedScenarioId !== 0) {
+                this.selectScenarioAction({simulationId: this.selectedScenarioId});
+            }
+        }
+
         beforeDestroy() {
-            this.setSelectedScenarioNameAction({selectedScenarioName: ''});
+            this.selectScenarioAction({simulationId: 0});
         }
 
         /**
@@ -250,6 +281,34 @@
 
         visibleNavigationTabs() {
             return this.navigationTabs.filter(navigationTab => navigationTab.visible === undefined || navigationTab.visible);
+        }
+
+        /**
+         * Shows the Alert
+         */
+        onShowRunSimulationAlert() {
+            this.alertData = {
+                showDialog: true,
+                heading: 'Warning',
+                choice: true,
+                message: 'Only one simulation can be run at a time. The model run you are about to queue will be ' +
+                    'executed in the order in which it was received.'
+            };
+        }
+
+        /**
+         * Takes in a boolean parameter from the AppPopupModal to determine if a scenario's simulation should be executed
+         * @param runScenarioSimulation Alert result
+         */
+        onSubmitAlertResult(runScenarioSimulation: boolean) {
+            this.alertData = clone(emptyAlertData);
+
+            if (runScenarioSimulation) {
+                this.runSimulationAction({
+                    selectedScenario: this.selectedScenario,
+                    userId: this.userId
+                });
+            }
         }
     }
 </script>
