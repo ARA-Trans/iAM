@@ -1,4 +1,7 @@
-﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿using System;
+using System.Collections.Generic;
+
+namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class SqlConnection : AttributeConnection
     {
@@ -20,9 +23,9 @@
             throw new System.NotImplementedException();
         }
 
-        public override (Location location, string value) GetNext()
+        public override IEnumerable<(Location location, T value)> GetData<T>()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

@@ -8,6 +8,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
     {
         public abstract void Connect();
 
-        public abstract (Location location, string value) GetNext();
+        public abstract IEnumerable<(Location location, T value)> GetData<T>();
     }
 }
