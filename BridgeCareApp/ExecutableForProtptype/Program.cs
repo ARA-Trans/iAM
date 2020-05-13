@@ -48,16 +48,16 @@ namespace ExecutableForProtptype
 
     public class NumericAttributeDataCreator
     {
-        public NumericAttributeDatum GetNumericAttributeDatum(ConfigFileModel item)
+        public AttributeDatum<double> GetNumericAttributeDatum(ConfigFileModel item)
         {
             var sqlConnection = new SqlConnection(item.Connection.UserName, item.Connection.Password,
                             item.Connection.Server, item.Connection.DataSource);
 
-            var numericAttribute = new NumericAttribute(item.AttributeName, new AttributeConnection(sqlConnection),
+            var numericAttribute = new NumericAttribute(item.AttributeName, sqlConnection,
                                                          Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
 
             var sectionLocation = new SectionLocation("I dont know yet");
-            var numericAttributeDatum = new NumericAttributeDatum(numericAttribute, 5, sectionLocation);
+            var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 5, sectionLocation);
 
             return numericAttributeDatum;
         }
