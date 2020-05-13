@@ -1,4 +1,4 @@
-﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿namespace AppliedResearchAssociates.iAM.DataMiner
 {
     public class SectionLocation : Location
     {
