@@ -13,7 +13,7 @@ namespace AppliedResearchAssociates.iAM.Segmentation
         {
         }
 
-        public override List<Location> Segment<T>(IEnumerable<AttributeDatum<T>> attributeData)
+        public override List<Location> CreateSegmentBreaks<T>(IEnumerable<AttributeDatum<T>> attributeData)
         {
             throw new NotImplementedException();
         }

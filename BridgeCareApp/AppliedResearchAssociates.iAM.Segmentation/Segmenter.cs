@@ -12,7 +12,8 @@ namespace AppliedResearchAssociates.iAM.Segmentation
             SegmentationRules = segmentationRules;
         }
 
-        public abstract List<SegmentedLocation> Segment<T>(IEnumerable<AttributeDatum<T>> attributeData);
+        // The result of calling this function is the creation of a new "network" of segmented assets.
+        public abstract List<SegmentBreak<T>> CreateSegmentBreaks<T>(IEnumerable<AttributeDatum<T>> attributeData);
 
         public List<Location> Locations { get; }
 

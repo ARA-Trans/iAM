@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
+using System.Linq;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
     public class LinearSegmenter : Segmenter
     {
-        public LinearSegmenter(List<Location> locations, List<SegmentationRule> segmentationRules) : base(locations, segmentationRules)
+        public LinearSegmenter(List<Location> networkDefinition, List<SegmentationRule> segmentationRules) : base(networkDefinition, segmentationRules)
         {
         }
 
-        public override List<SegmentedLocation> Segment<T>(IEnumerable<AttributeDatum<T>> attributeData)
+        // Assumes that an attribute is defined which contains the pavement management sections.
+        public override List<SegmentBreak<T>> CreateSegmentBreaks<T>(IEnumerable<AttributeDatum<T>> attributeData)
         {
-            
-            foreach(var attributeDatum in attributeData)
-            {
-
-            }
-            throw new NotImplementedException();
+            return (from attributeDatum in attributeData
+                    let segmentBreak = new SegmentBreak<T>(attributeDatum)
+                    select segmentBreak)
+                    .ToList();
         }
     }
 }
