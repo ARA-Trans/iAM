@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AppliedResearchAssociates.iAM.SimulationOutput;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     public sealed class SimulationRunner
     {
+        // [REVIEW] How are inflation rate and discount rate used in the analysis logic?
+
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
         public event EventHandler<InformationEventArgs> Information;
@@ -21,13 +24,14 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         {
             if (Interlocked.Exchange(ref StatusCode, STATUS_CODE_RUNNING) == STATUS_CODE_RUNNING)
             {
-                throw new InvalidOperationException("Runner is already running.");
+                throw new InvalidOperationException("Simulation is already running.");
             }
 
             ActiveTreatments = Simulation.GetActiveTreatments();
             BudgetContexts = Simulation.InvestmentPlan.Budgets.Select(budget => new BudgetContext(budget)).ToArray();
             CommittedProjectsPerSection = Simulation.CommittedProjects.ToLookup(committedProject => committedProject.Section);
             CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
+            NumberAttributeByName = Simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name, StringComparer.OrdinalIgnoreCase);
 
             SectionContexts = Simulation.Network.Sections
                 .AsParallel()
@@ -91,6 +95,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             return simulationYears;
         }
+
+        internal IReadOnlyDictionary<string, NumberAttribute> NumberAttributeByName { get; private set; }
 
         internal ILookup<Section, CommittedProject> CommittedProjectsPerSection { get; private set; }
 

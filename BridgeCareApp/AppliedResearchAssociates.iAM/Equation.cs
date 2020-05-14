@@ -42,10 +42,25 @@ namespace AppliedResearchAssociates.iAM
             var match = PiecewisePattern.Match(Expression);
             if (match.Success)
             {
-                double[] parseGroup(int index) => match.Groups[index].Captures.Cast<Capture>().Select(c => double.Parse(c.Value)).ToArray();
+                double parseValue(Capture capture)
+                {
+                    if (!double.TryParse(capture.Value, out var result))
+                    {
+                        throw ExpressionCouldNotBeCompiled();
+                    }
+
+                    return result;
+                }
+
+                double[] parseGroup(int index) => match.Groups[index].Captures.Cast<Capture>().Select(parseValue).ToArray();
 
                 var xValues = parseGroup(1);
                 var yValues = parseGroup(2);
+
+                if (xValues.Length < 2 || yValues.Length < 2)
+                {
+                    throw ExpressionCouldNotBeCompiled();
+                }
 
                 var spline = Interpolate.Linear(xValues, yValues);
 
@@ -53,7 +68,14 @@ namespace AppliedResearchAssociates.iAM
             }
             else
             {
-                Computer = Compiler.GetCalculator(Expression);
+                try
+                {
+                    Computer = Compiler.GetCalculator(Expression);
+                }
+                catch (CalculateEvaluateException e)
+                {
+                    throw ExpressionCouldNotBeCompiled(e);
+                }
             }
         }
 

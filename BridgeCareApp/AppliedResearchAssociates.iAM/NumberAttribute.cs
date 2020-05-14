@@ -6,6 +6,6 @@
 
         public double? Maximum { get; }
 
-        public double? Miniumum { get; }
+        public double? Minimum { get; }
     }
 }

@@ -115,6 +115,19 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             if (!NumberCache.TryGetValue(key, out var number))
             {
                 number = base.GetNumber(key);
+
+                var attribute = SimulationRunner.NumberAttributeByName[key];
+
+                if (attribute.Minimum.HasValue)
+                {
+                    number = Math.Max(number, attribute.Minimum.Value);
+                }
+
+                if (attribute.Maximum.HasValue)
+                {
+                    number = Math.Min(number, attribute.Maximum.Value);
+                }
+
                 NumberCache[key] = number;
             }
 

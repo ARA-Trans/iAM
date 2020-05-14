@@ -21,6 +21,8 @@ namespace AppliedResearchAssociates.iAM
 
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 
+        protected static Exception ExpressionCouldNotBeCompiled(Exception innerException = null) => new MalformedInputException("Expression could not be compiled.", innerException);
+
         protected abstract void Compile();
 
         private Action _EnsureCompiled;

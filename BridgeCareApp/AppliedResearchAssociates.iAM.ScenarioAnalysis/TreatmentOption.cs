@@ -1,4 +1,5 @@
 ﻿using System;
+using AppliedResearchAssociates.iAM.SimulationOutput;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
@@ -21,7 +22,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         public double CostPerUnitArea { get; }
 
-        public TreatmentOptionSummary Summary => new TreatmentOptionSummary(CostPerUnitArea, Benefit, RemainingLife);
+        public TreatmentOptionDetail Detail => new TreatmentOptionDetail(CandidateTreatment.Name, CostPerUnitArea, Benefit, RemainingLife);
 
         public double? RemainingLife { get; }
     }

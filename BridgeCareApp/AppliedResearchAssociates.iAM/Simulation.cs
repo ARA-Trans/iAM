@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AppliedResearchAssociates.iAM.SimulationOutput;
 
 namespace AppliedResearchAssociates.iAM
 {

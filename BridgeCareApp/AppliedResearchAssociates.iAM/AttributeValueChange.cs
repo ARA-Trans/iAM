@@ -28,14 +28,9 @@ namespace AppliedResearchAssociates.iAM
         {
             var match = NumberChangePattern.Match(Expression);
 
-            if (!match.Success)
+            if (!match.Success || !double.TryParse(match.Groups[2].Value, out var operand))
             {
-                throw new InputException("Expression does not match the number-change pattern: (+/-) N (%)");
-            }
-
-            if (!double.TryParse(match.Groups[2].Value, out var operand))
-            {
-                throw new InputException("Operand is not a correctly formatted number.");
+                throw ExpressionCouldNotBeCompiled();
             }
 
             Operand = operand;

@@ -37,7 +37,17 @@ namespace AppliedResearchAssociates.iAM
             return Evaluator(argument);
         }
 
-        protected override void Compile() => Evaluator = Compiler.GetEvaluator(Expression);
+        protected override void Compile()
+        {
+            try
+            {
+                Evaluator = Compiler.GetEvaluator(Expression);
+            }
+            catch (CalculateEvaluateException e)
+            {
+                throw ExpressionCouldNotBeCompiled(e);
+            }
+        }
 
         private static readonly ConcurrentDictionary<WeakReference<FinalActor<Criterion>>, object> AllInstances = new ConcurrentDictionary<WeakReference<FinalActor<Criterion>>, object>();
 
