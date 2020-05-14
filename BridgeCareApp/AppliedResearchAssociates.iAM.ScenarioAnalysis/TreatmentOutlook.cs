@@ -101,16 +101,16 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             foreach (var year in Enumerable.Range(InitialYear + 1, AccumulationContext.SimulationRunner.Simulation.NumberOfYearsOfTreatmentOutlook))
             {
-                var yearIsScheduled = AccumulationContext.ProjectSchedule.TryGetValue(year, out var project);
+                var yearIsScheduled = AccumulationContext.EventSchedule.TryGetValue(year, out var scheduledEvent);
 
-                if (yearIsScheduled && project.IsT2())
+                if (yearIsScheduled && scheduledEvent.IsT2())
                 {
                     throw SimulationErrors.OutlookShouldNeverConsumeProgress;
                 }
 
                 AccumulationContext.ApplyPerformanceCurves();
 
-                if (yearIsScheduled && project.IsT1(out var treatment))
+                if (yearIsScheduled && scheduledEvent.IsT1(out var treatment))
                 {
                     ApplyTreatment(treatment, year);
                 }

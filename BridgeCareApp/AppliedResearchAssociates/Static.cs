@@ -11,6 +11,8 @@ namespace AppliedResearchAssociates
 
         public static T? AsNullable<T>(this T value) where T : struct => value;
 
+        public static IEnumerable<T?> AsNullables<T>(this IEnumerable<T> values) where T : struct => values.Select(AsNullable);
+
         public static IEnumerable<int> BoundRange(int start, int end, int stride = 1)
         {
             switch (Math.Sign(stride))

@@ -7,29 +7,42 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
     internal sealed class SectionContext : CalculateEvaluateArgument
     {
-        public SectionContext(Section section, SimulationRunner simulationRunner)
+        public SectionContext(SectionHistory history, SimulationRunner simulationRunner)
         {
-            Section = section ?? throw new ArgumentNullException(nameof(section));
+            History = history ?? throw new ArgumentNullException(nameof(history));
             SimulationRunner = simulationRunner ?? throw new ArgumentNullException(nameof(simulationRunner));
+
+            Initialize();
         }
 
         public SectionContext(SectionContext original) : base(original)
         {
-            Section = original.Section;
+            History = original.History;
             SimulationRunner = original.SimulationRunner;
             LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
             LastYearOfShadowForSameTreatment.CopyFrom(original.LastYearOfShadowForSameTreatment);
-            ProjectSchedule.CopyFrom(original.ProjectSchedule);
+            EventSchedule.CopyFrom(original.EventSchedule);
             NumberCache.CopyFrom(original.NumberCache);
         }
 
-        public IDictionary<int, Choice<Treatment, TreatmentProgress>> ProjectSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
+        public IDictionary<int, Choice<Treatment, TreatmentProgress>> EventSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
 
-        public Section Section { get; }
+        public SectionHistory History { get; }
 
         public SimulationRunner SimulationRunner { get; }
 
         private AnalysisMethod AnalysisMethod => SimulationRunner.Simulation.AnalysisMethod;
+
+        public void ApplyPassiveTreatment(int year)
+        {
+            var cost = GetCostOfTreatment(SimulationRunner.Simulation.DesignatedPassiveTreatment);
+            if (cost != 0)
+            {
+                throw SimulationErrors.CostOfPassiveTreatmentIsNonZero;
+            }
+
+            ApplyTreatment(SimulationRunner.Simulation.DesignatedPassiveTreatment, year);
+        }
 
         public void ApplyPerformanceCurves()
         {
@@ -72,12 +85,12 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             {
                 var schedulingYear = year + scheduling.OffsetToFutureYear;
 
-                if (ProjectSchedule.ContainsKey(schedulingYear))
+                if (EventSchedule.ContainsKey(schedulingYear))
                 {
                     throw SimulationErrors.YearIsAlreadyScheduled;
                 }
 
-                ProjectSchedule.Add(schedulingYear, scheduling.Treatment);
+                EventSchedule.Add(schedulingYear, scheduling.Treatment);
             }
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
@@ -108,6 +121,34 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             return number;
         }
 
+        public void RollForward()
+        {
+            IEnumerable<int?> getMostRecentYearPerAttribute<T>(IEnumerable<Attribute<T>> attributes) =>
+                attributes.Select(attribute => History.GetAttributeHistory(attribute).Keys.AsNullables().Max());
+
+            var earliestYearOfMostRecentValue = Enumerable.Concat(
+                getMostRecentYearPerAttribute(SimulationRunner.Simulation.Network.Explorer.NumberAttributes),
+                getMostRecentYearPerAttribute(SimulationRunner.Simulation.Network.Explorer.TextAttributes)
+                ).Min();
+
+            if (earliestYearOfMostRecentValue.HasValue)
+            {
+                SetHistoricalValues(earliestYearOfMostRecentValue.Value, true, SimulationRunner.Simulation.Network.Explorer.NumberAttributes, SetNumber);
+                SetHistoricalValues(earliestYearOfMostRecentValue.Value, true, SimulationRunner.Simulation.Network.Explorer.TextAttributes, SetText);
+
+                var startYear = earliestYearOfMostRecentValue.Value + 1;
+                foreach (var year in Enumerable.Range(startYear, SimulationRunner.Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod - startYear))
+                {
+                    ApplyPerformanceCurves();
+
+                    SetHistoricalValues(year, false, SimulationRunner.Simulation.Network.Explorer.NumberAttributes, SetNumber);
+                    SetHistoricalValues(year, false, SimulationRunner.Simulation.Network.Explorer.TextAttributes, SetText);
+
+                    ApplyPassiveTreatment(year);
+                }
+            }
+        }
+
         public override void SetNumber(string key, double value)
         {
             NumberCache.Clear();
@@ -135,5 +176,48 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
         private int? LastYearOfShadowForAnyTreatment;
+
+        private void Initialize()
+        {
+            var yearBeforeAnalysisPeriod = SimulationRunner.Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod - 1;
+
+            SetHistoricalValues(yearBeforeAnalysisPeriod, true, SimulationRunner.Simulation.Network.Explorer.NumberAttributes, SetNumber);
+            SetHistoricalValues(yearBeforeAnalysisPeriod, true, SimulationRunner.Simulation.Network.Explorer.TextAttributes, SetText);
+
+            foreach (var calculatedField in SimulationRunner.Simulation.Network.Explorer.CalculatedFields)
+            {
+                double calculate() => calculatedField.Calculate(this, AnalysisMethod.AgeAttribute);
+                SetNumber(calculatedField.Name, calculate);
+            }
+
+            foreach (var committedProject in SimulationRunner.CommittedProjectsPerSection[History.Section])
+            {
+                EventSchedule.Add(committedProject.Year, committedProject);
+            }
+        }
+
+        private void SetHistoricalValues<T>(int referenceYear, bool useMostRecent, IEnumerable<Attribute<T>> attributes, Action<string, T> setValue)
+        {
+            foreach (var attribute in attributes)
+            {
+                var attributeHistory = History.GetAttributeHistory(attribute);
+                if (attributeHistory.TryGetValue(referenceYear, out var value))
+                {
+                    setValue(attribute.Name, value);
+                }
+                else if (useMostRecent)
+                {
+                    var mostRecentYear = attributeHistory.Keys.Where(year => year < referenceYear).AsNullables().Max();
+                    if (mostRecentYear.HasValue)
+                    {
+                        setValue(attribute.Name, attributeHistory[mostRecentYear.Value]);
+                    }
+                    else
+                    {
+                        setValue(attribute.Name, attribute.DefaultValue);
+                    }
+                }
+            }
+        }
     }
 }
