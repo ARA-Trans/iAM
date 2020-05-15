@@ -3,7 +3,7 @@
 namespace AppliedResearchAssociates.iAM.SimulationOutput
 {
     /// <summary>
-    ///     Serialization-friendly DTO for capturing simulation output data.
+    ///     Serialization-friendly aggregate of values for capturing simulation output data.
     /// </summary>
     public sealed class SimulationYearDetail
     {

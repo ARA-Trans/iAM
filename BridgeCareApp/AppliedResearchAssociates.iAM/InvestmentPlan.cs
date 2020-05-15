@@ -6,6 +6,8 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class InvestmentPlan
     {
+        public InvestmentPlan(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+
         public List<BudgetCondition> BudgetConditions { get; }
 
         public IReadOnlyList<Budget> Budgets => _Budgets;
@@ -34,16 +36,12 @@ namespace AppliedResearchAssociates.iAM
 
         public IEnumerable<int> YearsOfAnalysis => Enumerable.Range(FirstYearOfAnalysisPeriod, NumberOfYearsInAnalysisPeriod);
 
-        public Budget AddBudget(string budgetName)
+        public Budget AddBudget()
         {
-            if (_Budgets.Any(b => b.Name == budgetName))
-            {
-                throw new ArgumentException("Budget with this name is already present.", nameof(budgetName));
-            }
-
-            var budget = new Budget { Name = budgetName };
+            var budget = new Budget();
             budget.NumberOfYears = NumberOfYearsInAnalysisPeriod;
             _Budgets.Add(budget);
+            SynchronizeBudgetPriorities();
             return budget;
         }
 
@@ -91,10 +89,22 @@ namespace AppliedResearchAssociates.iAM
             {
                 throw new ArgumentException("Budget is not present.");
             }
+
+            SynchronizeBudgetPriorities();
         }
 
         private readonly List<Budget> _Budgets = new List<Budget>();
 
+        private readonly Simulation Simulation;
+
         private int _NumberOfYearsInAnalysisPeriod;
+
+        private void SynchronizeBudgetPriorities()
+        {
+            foreach (var budgetPriority in Simulation.AnalysisMethod.BudgetPriorities)
+            {
+                budgetPriority.SynchronizeWithBudgets(Budgets);
+            }
+        }
     }
 }

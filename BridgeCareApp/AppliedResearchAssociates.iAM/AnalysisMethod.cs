@@ -5,9 +5,11 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class AnalysisMethod
     {
-        public NumberAttribute AgeAttribute { get; }
+        public AnalysisMethod(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
-        public NumberAttribute AreaAttribute { get; }
+        public NumberAttribute AgeAttribute { get; set; }
+
+        public NumberAttribute AreaAttribute { get; set; }
 
         public NumberAttribute Benefit
         {
@@ -16,7 +18,7 @@ namespace AppliedResearchAssociates.iAM
             {
                 _Benefit = value;
 
-                if (_Benefit.IsDecreasingWithDeterioration)
+                if (Benefit.IsDecreasingWithDeterioration)
                 {
                     _LimitBenefit = LimitDecreasingBenefit;
                 }
@@ -27,33 +29,53 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public double BenefitLimit { get; }
+        public double BenefitLimit { get; set; }
 
-        public List<BudgetPriority> BudgetPriorities { get; }
+        public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
 
-        public List<DeficientConditionGoal> DeficientConditionGoals { get; }
+        public List<DeficientConditionGoal> DeficientConditionGoals { get; } = new List<DeficientConditionGoal>();
 
-        public string Description { get; }
+        public string Description { get; set; }
 
-        public Criterion JurisdictionCriterion { get; }
+        public Criterion JurisdictionCriterion { get; } = new Criterion();
 
-        public OptimizationStrategy OptimizationStrategy { get; }
+        public OptimizationStrategy OptimizationStrategy { get; set; }
 
-        public List<RemainingLifeLimit> RemainingLifeLimits { get; }
+        public List<RemainingLifeLimit> RemainingLifeLimits { get; } = new List<RemainingLifeLimit>();
 
-        public bool ShouldApplyMultipleFeasibleCosts { get; }
+        public bool ShouldApplyMultipleFeasibleCosts { get; set; }
 
-        public SpendingStrategy SpendingStrategy { get; }
+        public SpendingStrategy SpendingStrategy { get; set; }
 
-        public List<TargetConditionGoal> TargetConditionGoals { get; }
+        public List<TargetConditionGoal> TargetConditionGoals { get; } = new List<TargetConditionGoal>();
 
-        public bool UseExtraFundsAcrossBudgets { get; }
+        public bool UseExtraFundsAcrossBudgets { get; set; }
 
-        public NumberAttribute Weighting { get; }
+        public NumberAttribute Weighting { get; set; }
+
+        public BudgetPriority AddBudgetPriority()
+        {
+            var budgetPriority = new BudgetPriority();
+            budgetPriority.SynchronizeWithBudgets(Simulation.InvestmentPlan.Budgets);
+            _BudgetPriorities.Add(budgetPriority);
+            return budgetPriority;
+        }
 
         public double LimitBenefit(double benefit) => Math.Max(0, _LimitBenefit(benefit));
 
+        public void RemoveBudgetPriority(BudgetPriority budgetPriority)
+        {
+            if (!_BudgetPriorities.Remove(budgetPriority))
+            {
+                throw new ArgumentException("Budget priority is not present.");
+            }
+        }
+
+        private readonly Simulation Simulation;
+
         private NumberAttribute _Benefit;
+
+        private List<BudgetPriority> _BudgetPriorities = new List<BudgetPriority>();
 
         private Func<double, double> _LimitBenefit;
 

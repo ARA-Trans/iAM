@@ -2,8 +2,8 @@
 {
     public sealed class BudgetCondition
     {
-        public Budget Budget { get; }
+        public Budget Budget { get; set; }
 
-        public Criterion Criterion { get; }
+        public Criterion Criterion { get; } = new Criterion();
     }
 }

@@ -6,9 +6,9 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class CalculatedField
     {
-        public List<ConditionalEquation> Equations { get; }
+        public List<ConditionalEquation> Equations { get; } = new List<ConditionalEquation>();
 
-        public string Name { get; }
+        public string Name { get; set; }
 
         public double Calculate(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {

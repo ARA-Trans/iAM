@@ -2,8 +2,8 @@
 {
     public sealed class ConditionalEquation
     {
-        public Criterion Criterion { get; }
+        public Criterion Criterion { get; } = new Criterion();
 
-        public Equation Equation { get; }
+        public Equation Equation { get; } = new Equation();
     }
 }
