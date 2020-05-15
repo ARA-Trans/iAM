@@ -2,10 +2,11 @@
 {
     public enum BudgetReason
     {
-        CoversCostInFull,
-        CoversCostInPart,
-        DoesNotCoverCost,
-        DoesNotMeetCriterion,
-        IsNotNeeded,
+        CostCoveredInFull,
+        CostCoveredInPart,
+        CostNotCovered,
+        ConditionNotMet,
+        NotNeeded,
+        NotConsidered,
     }
 }

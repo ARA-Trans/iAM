@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.iAM.SimulationOutput;
 
 namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 {
@@ -24,6 +25,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             EventSchedule.CopyFrom(original.EventSchedule);
             NumberCache.CopyFrom(original.NumberCache);
         }
+
+        public SectionDetail Detail { get; private set; }
 
         public IDictionary<int, Choice<Treatment, TreatmentProgress>> EventSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
 
@@ -95,6 +98,21 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
             LastYearOfShadowForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
+
+            Detail.NameOfAppliedTreatment = treatment.Name;
+        }
+
+        public void CopyAttributeValuesToDetail()
+        {
+            foreach (var attribute in SimulationRunner.Simulation.Network.Explorer.NumberAttributes)
+            {
+                Detail.ValuePerNumberAttribute.Add(attribute.Name, GetNumber(attribute.Name));
+            }
+
+            foreach (var attribute in SimulationRunner.Simulation.Network.Explorer.TextAttributes)
+            {
+                Detail.ValuePerTextAttribute.Add(attribute.Name, GetText(attribute.Name));
+            }
         }
 
         public double GetAreaOfSection() => GetNumber(AnalysisMethod.AreaAttribute.Name);
@@ -116,16 +134,17 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             {
                 number = base.GetNumber(key);
 
-                var attribute = SimulationRunner.NumberAttributeByName[key];
-
-                if (attribute.Minimum.HasValue)
+                if (SimulationRunner.NumberAttributeByName.TryGetValue(key, out var attribute))
                 {
-                    number = Math.Max(number, attribute.Minimum.Value);
-                }
+                    if (attribute.Minimum.HasValue)
+                    {
+                        number = Math.Max(number, attribute.Minimum.Value);
+                    }
 
-                if (attribute.Maximum.HasValue)
-                {
-                    number = Math.Min(number, attribute.Maximum.Value);
+                    if (attribute.Maximum.HasValue)
+                    {
+                        number = Math.Min(number, attribute.Maximum.Value);
+                    }
                 }
 
                 NumberCache[key] = number;
@@ -133,6 +152,8 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             return number;
         }
+
+        public void ResetDetail() => Detail = new SectionDetail(History.Section.Name, History.Section.Facility.Name);
 
         public void RollForward()
         {
@@ -153,11 +174,10 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 foreach (var year in Enumerable.Range(startYear, SimulationRunner.Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod - startYear))
                 {
                     ApplyPerformanceCurves();
+                    ApplyPassiveTreatment(year);
 
                     SetHistoricalValues(year, false, SimulationRunner.Simulation.Network.Explorer.NumberAttributes, SetNumber);
                     SetHistoricalValues(year, false, SimulationRunner.Simulation.Network.Explorer.TextAttributes, SetText);
-
-                    ApplyPassiveTreatment(year);
                 }
             }
         }
