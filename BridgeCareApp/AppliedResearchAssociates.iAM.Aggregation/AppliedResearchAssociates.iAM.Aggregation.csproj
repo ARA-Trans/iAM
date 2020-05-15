@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AppliedResearchAssociates.iAM.Segmentation\AppliedResearchAssociates.iAM.Segmentation.csproj" />
+  </ItemGroup>
+
 </Project>
