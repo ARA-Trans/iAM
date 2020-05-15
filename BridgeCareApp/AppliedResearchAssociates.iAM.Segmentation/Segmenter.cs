@@ -1,22 +1,29 @@
 ﻿using System.Collections.Generic;
-using AppliedResearchAssociates.iAM.DataMiner;
+using System.Linq;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
-    public abstract class Segmenter
+    public static class Segmenter
     {
-        public Segmenter(List<Location> locations, List<SegmentationRule> segmentationRules)
+        /// <summary>
+        ///     Use of this function to create a segmented network assumes that
+        ///     the attribute data provided matches the desired pavement
+        ///     management sections.
+        ///
+        ///     The segments returned store a single attribute datum for
+        ///     management of "minimum" section sizes. Miminum section sizes are
+        ///     anticipated to be a future enhancement
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="attributeData"></param>
+        /// <returns></returns>
+        public static List<Segment<T>> CreateSegmentsFromAttributeDataRecords<T>(List<AttributeDatum<T>> attributeData)
         {
-            Locations = locations;
-            SegmentationRules = segmentationRules;
+            return (from attributeDatum in attributeData
+                    let segmentBreak = new Segment<T>(attributeDatum)
+                    select segmentBreak)
+                    .ToList();
         }
-
-        // The result of calling this function is the creation of a new "network" of segmented assets.
-        public abstract List<SegmentBreak<T>> CreateSegmentBreaks<T>(IEnumerable<AttributeDatum<T>> attributeData);
-
-        public List<Location> Locations { get; }
-
-        public List<SegmentationRule> SegmentationRules { get; }
     }
 }

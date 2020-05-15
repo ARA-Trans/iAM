@@ -5,9 +5,9 @@ using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
 {
-    public class SegmentBreak<T>
+    public class Segment<T>
     {
-        public SegmentBreak(AttributeDatum<T> attributeDatum) => AttributeDatum = attributeDatum;
+        public Segment(AttributeDatum<T> attributeDatum) => AttributeDatum = attributeDatum;
         public AttributeDatum<T> AttributeDatum { get; }
     }
 }
