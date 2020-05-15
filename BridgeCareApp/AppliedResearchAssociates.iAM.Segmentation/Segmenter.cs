@@ -18,11 +18,11 @@ namespace AppliedResearchAssociates.iAM.Segmentation
         /// <typeparam name="T"></typeparam>
         /// <param name="attributeData"></param>
         /// <returns></returns>
-        public static List<Segment<T>> CreateSegmentsFromAttributeDataRecords<T>(List<AttributeDatum<T>> attributeData)
+        public static List<Segment<T>> CreateSegmentsFromAttributeDataRecords<T>(IEnumerable<AttributeDatum<T>> attributeData)
         {
             return (from attributeDatum in attributeData
-                    let segmentBreak = new Segment<T>(attributeDatum)
-                    select segmentBreak)
+                    let segment = new Segment<T>(attributeDatum)
+                    select segment)
                     .ToList();
         }
     }
