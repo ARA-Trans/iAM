@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 using AppliedResearchAssociates.iAM.Segmentation;
 
@@ -6,18 +8,10 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 {
     public class AggregateDataSegment<T>
     {
-        public AggregateDataSegment(Segment<T> segment, IEnumerable<AttributeDatum<T>> attributeData)
-        {
-            Segment = segment;
-            AttributeData = attributeData;
-        }
-
+        private List<AttributeDatum<T>> AttributeData { get; } = new List<AttributeDatum<T>>();
+        public AggregateDataSegment(Segment<T> segment) => Segment = segment;
         public Segment<T> Segment { get; }
-        public IEnumerable<AttributeDatum<T>> AttributeData { get; }
-
-        public T ComputeAggregateValue(Criterion criterion)
-        {
-            return criterion.Apply(AttributeData);
-        }
+        public T ComputeAggregateValue(Criterion criterion) => criterion.Apply(AttributeData);
+        public void AddDatum(AttributeDatum<T> datum) => AttributeData.Add(datum);
     }
 }

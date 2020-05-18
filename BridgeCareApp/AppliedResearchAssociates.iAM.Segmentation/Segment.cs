@@ -1,4 +1,5 @@
-﻿using AppliedResearchAssociates.iAM.DataMiner;
+﻿using System;
+using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Segmentation
@@ -7,11 +8,11 @@ namespace AppliedResearchAssociates.iAM.Segmentation
     {
         public Segment(Location segmentLocation, AttributeDatum<T> attributeDatum)
         {
-            SegmentLocation = segmentLocation;
+            Location = segmentLocation;
             AttributeDatum = attributeDatum;
         }
 
-        public Location SegmentLocation { get; }
+        public Location Location { get; }
         public AttributeDatum<T> AttributeDatum { get; }
     }
 }

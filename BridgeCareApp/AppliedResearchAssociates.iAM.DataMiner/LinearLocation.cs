@@ -1,4 +1,5 @@
-﻿using AppliedResearchAssociates.iAM.DataMiner.Attributes;
+﻿using System.Collections.Generic;
+using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.DataMiner
 {
@@ -17,6 +18,15 @@ namespace AppliedResearchAssociates.iAM.DataMiner
             Route = route;
             Start = start;
             End = end;
+        }
+
+        public override bool MatchOn(Location location)
+        {
+            return location is LinearLocation linearLocation
+                ? linearLocation.Start >= Start
+                    && linearLocation.End < End
+                    && linearLocation.Route.Matches(Route)
+                : false;
         }
     }
 }

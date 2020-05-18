@@ -5,9 +5,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner
 {
     public abstract class Location
     {
-        public Location MatchLocation(IEnumerable<Location> enumerable)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool MatchOn(Location location);
     }
 }

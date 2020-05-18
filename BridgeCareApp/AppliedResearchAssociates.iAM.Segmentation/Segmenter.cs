@@ -21,7 +21,7 @@ namespace AppliedResearchAssociates.iAM.Segmentation
         public static List<Segment<T>> CreateSegmentsFromAttributeDataRecords<T>(IEnumerable<AttributeDatum<T>> attributeData)
         {
             return (from attributeDatum in attributeData
-                    let segment = new Segment<T>(attributeDatum)
+                    let segment = new Segment<T>(attributeDatum.Location, attributeDatum)
                     select segment)
                     .ToList();
         }
