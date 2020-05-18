@@ -65,7 +65,10 @@ namespace BridgeCare.Security
             if (TokenIsRevoked(idToken))
                 throw new UnauthorizedAccessException("Your ID Token has been revoked.");
             JwtSecurityToken decodedToken = DecodeToken(idToken);
-            string role = ParseLDAP(decodedToken.GetClaimValue("roles")).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
+            List<string> roleStrings = ParseLDAP(decodedToken.GetClaimValue("roles"));
+            if (roleStrings.Count == 0)
+                throw new UnauthorizedAccessException("User has no security roles assigned.");
+            string role = roleStrings.Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
             string name = ParseLDAP(decodedToken.GetClaimValue("sub"))[0];
             string email = decodedToken.GetClaimValue("email");
             return new Models.UserInformationModel(name, role, email);
@@ -146,7 +149,7 @@ namespace BridgeCare.Security
             List<string> commonNames = new List<string>();
             foreach (string segment in segments)
             {
-                string firstSubSegment = ldap.Split(',')[0];
+                string firstSubSegment = segment.Split(',')[0];
                 string commonName = firstSubSegment.Split('=')[1];
                 commonNames.Add(commonName);
             }
