@@ -145,6 +145,8 @@ namespace BridgeCare.Security
         /// <returns>Role</returns>
         private static List<string> ParseLDAP(string ldap)
         {
+            if (string.IsNullOrEmpty(ldap))
+                return new List<string>();
             string[] segments = ldap.Split('^');
             List<string> commonNames = new List<string>();
             foreach (string segment in segments)
