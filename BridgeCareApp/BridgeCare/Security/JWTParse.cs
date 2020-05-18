@@ -148,14 +148,10 @@ namespace BridgeCare.Security
             if (string.IsNullOrEmpty(ldap))
                 return new List<string>();
             string[] segments = ldap.Split('^');
-            List<string> commonNames = new List<string>();
-            foreach (string segment in segments)
-            {
-                string firstSubSegment = segment.Split(',')[0];
-                string commonName = firstSubSegment.Split('=')[1];
-                commonNames.Add(commonName);
-            }
-            return commonNames;
+            var commonNameSegments = segments.Select(segment => segment.Split(',')[0]);
+            var validCommonNameSegments = commonNameSegments.Where(segment => segment.Contains('='));
+            var commonNames = commonNameSegments.Select(segment => segment.Split('=')[1]);
+            return commonNames.ToList();
         }
     }
 }
