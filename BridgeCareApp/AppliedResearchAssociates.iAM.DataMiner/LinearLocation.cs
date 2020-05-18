@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.DataMiner
@@ -22,11 +23,17 @@ namespace AppliedResearchAssociates.iAM.DataMiner
 
         public override bool MatchOn(Location location)
         {
-            return location is LinearLocation linearLocation
-                ? linearLocation.Start >= Start
-                    && linearLocation.End < End
-                    && linearLocation.Route.Matches(Route)
-                : false;
+            if (location is LinearLocation linearLocation)
+            {
+                return
+                    linearLocation.Start >= Start &&
+                    linearLocation.End < End &&
+                    linearLocation.Route.Matches(Route);
+            }
+            else
+            {
+                throw new InvalidCastException("Location provided is not linear based location.");
+            }
         }
     }
 }

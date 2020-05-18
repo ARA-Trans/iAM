@@ -1,4 +1,6 @@
-﻿namespace AppliedResearchAssociates.iAM.DataMiner
+﻿using System;
+
+namespace AppliedResearchAssociates.iAM.DataMiner
 {
     public class SectionLocation : Location
     {
@@ -8,7 +10,15 @@
 
         public override bool MatchOn(Location location)
         {
-            throw new System.NotImplementedException();
+            if (location is SectionLocation sectionLocation)
+            {
+                return sectionLocation.UniqueIdentifier == UniqueIdentifier;
+            }
+            else
+            {
+                throw new InvalidCastException("Location provided is not a section based location.");
+            }
+
         }
     }
 }

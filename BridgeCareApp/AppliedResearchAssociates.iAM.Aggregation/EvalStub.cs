@@ -5,9 +5,9 @@ using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Aggregation
 {
-    public class Criterion
+    public class EvalStub
     {
-        internal T Apply<T>(List<AttributeDatum<T>> attributeData)
+        internal T Apply<T>(List<AttributeDatum<T>> attributeData, IEnumerable<AggregationRule<T>> aggregationRules)
         {
             throw new NotImplementedException();
         }

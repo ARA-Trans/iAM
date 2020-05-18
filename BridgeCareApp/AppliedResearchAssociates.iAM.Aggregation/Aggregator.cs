@@ -5,14 +5,9 @@ using AppliedResearchAssociates.iAM.Segmentation;
 
 namespace AppliedResearchAssociates.iAM.Aggregation
 {
-    // Inputs to aggregator are sections to aggregate data to and attribute data
-    // For each attribute, match on location data available, assign the
-    // attribute data to the section If multiple attribute data are assigned to
-    // a section for a given attribute, then use criteria specific rules for
-    // aggregating those data to a single attribute datum.
-    public class Aggregator
+    public static class Aggregator
     {
-        public List<AggregateDataSegment<T>> Aggregate<T, TLocation>(
+        public static List<AggregateDataSegment<T>> Aggregate<T>(
             List<AttributeDatum<T>> attributeData,
             IEnumerable<Segment<T>> networkSegments)
         {

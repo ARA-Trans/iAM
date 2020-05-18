@@ -11,7 +11,13 @@ namespace AppliedResearchAssociates.iAM.Aggregation
         private List<AttributeDatum<T>> AttributeData { get; } = new List<AttributeDatum<T>>();
         public AggregateDataSegment(Segment<T> segment) => Segment = segment;
         public Segment<T> Segment { get; }
-        public T ComputeAggregateValue(Criterion criterion) => criterion.Apply(AttributeData);
+
         public void AddDatum(AttributeDatum<T> datum) => AttributeData.Add(datum);
+        public T ApplyAggregationRule(Attribute attribute, AggregationRule<T> aggregationRule)
+        {
+            var specifiedData = AttributeData.Where(_ => _.Attribute.Guid == attribute.Guid);
+            return aggregationRule.Apply(specifiedData);
+        }
+
     }
 }
