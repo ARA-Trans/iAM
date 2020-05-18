@@ -4,13 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AppliedResearchAssociates.iAM.SimulationOutput;
 
-namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
+namespace AppliedResearchAssociates.iAM
 {
     public sealed class SimulationRunner
     {
         // [REVIEW] How are inflation rate and discount rate used in the analysis logic?
+
+        // [REVIEW] What is the "PerformanceCurve.Shift" bool supposed to do?
+
+        // [REVIEW] How should the change/equation pair on a consequence be handled?
+
+        // [REVIEW] What happens when one attribute has multiple consequences whose criteria are met?
+
+        // [REVIEW] What should happen when there are multiple applicable cash flow rules?
+
+        // [REVIEW] What should happen when a cash flow extends across or into another scheduled event?
 
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
@@ -74,7 +83,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 break;
 
             default:
-                throw SimulationErrors.InvalidSpendingStrategy;
+                throw new SimulationException(MessageStrings.InvalidSpendingStrategy);
             }
 
             var detailsOfSimulationYears = new List<SimulationYearDetail>();
@@ -181,7 +190,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                     if (costCoverage == CostCoverage.None)
                     {
-                        throw SimulationErrors.CostOfScheduledEventCannotBeCovered;
+                        throw new SimulationException(MessageStrings.CostOfScheduledEventCannotBeCovered);
                     }
 
                     if (progress.IsComplete)
@@ -203,7 +212,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
                         if (costCoverage == CostCoverage.None)
                         {
-                            throw SimulationErrors.CostOfScheduledEventCannotBeCovered;
+                            throw new SimulationException(MessageStrings.CostOfScheduledEventCannotBeCovered);
                         }
 
                         if (costCoverage == CostCoverage.Full)
@@ -343,7 +352,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 break;
 
             default:
-                throw SimulationErrors.InvalidOptimizationStrategy;
+                throw new SimulationException(MessageStrings.InvalidOptimizationStrategy);
             }
 
             var treatmentOptionsBag = new ConcurrentBag<TreatmentOption>();
@@ -449,8 +458,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             {
                 remainingCost = (decimal)sectionContext.GetCostOfTreatment(treatment);
 
-                // [REVIEW] What should happen when there are multiple applicable cash flow rules?
-
                 cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.Evaluate(sectionContext) ?? true);
                 if (cashFlowRule != null)
                 {
@@ -471,9 +478,6 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     {
                         progression[progression.Length - 1].IsComplete = true;
                     }
-
-                    // [REVIEW] What should happen when a cash flow extends across or into another
-                    // scheduled event?
 
                     foreach (var (yearProgress, yearOffset) in Zip.Short(progression, Static.Count(1)))
                     {
@@ -534,7 +538,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
             if (remainingCost < 0)
             {
-                throw SimulationErrors.RemainingCostIsNegative;
+                throw new SimulationException(MessageStrings.RemainingCostIsNegative);
             }
 
             if (remainingCost > 0)
@@ -560,7 +564,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
         {
             if (Simulation.AnalysisMethod.RemainingLifeLimits.Count == 0)
             {
-                throw SimulationErrors.RemainingLifeOptimizationHasNoLimits;
+                throw new SimulationException(MessageStrings.RemainingLifeOptimizationHasNoLimits);
             }
         }
     }

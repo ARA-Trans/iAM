@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
+namespace AppliedResearchAssociates.iAM
 {
     internal sealed class TreatmentOutlook
     {
@@ -66,10 +66,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
 
         private void Run()
         {
-            ApplyTreatment(InitialTreatment, InitialYear);
-            AccumulateBenefit();
-
-            Action updateRemainingLife = Inaction.Delegate;
+            Action updateRemainingLife = null;
 
             if (RemainingLifeCalculators.Count > 0)
             {
@@ -90,7 +87,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                     if (minimumFractionalRemainingLife.HasValue)
                     {
                         RemainingLife += minimumFractionalRemainingLife.Value;
-                        updateRemainingLife = Inaction.Delegate;
+                        updateRemainingLife = null;
                     }
                     else
                     {
@@ -99,13 +96,18 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 };
             }
 
+            ApplyTreatment(InitialTreatment, InitialYear);
+
+            AccumulateBenefit();
+            updateRemainingLife?.Invoke();
+
             foreach (var year in Enumerable.Range(InitialYear + 1, AccumulationContext.SimulationRunner.Simulation.NumberOfYearsOfTreatmentOutlook))
             {
                 var yearIsScheduled = AccumulationContext.EventSchedule.TryGetValue(year, out var scheduledEvent);
 
                 if (yearIsScheduled && scheduledEvent.IsT2())
                 {
-                    throw SimulationErrors.OutlookShouldNeverConsumeProgress;
+                    throw new SimulationException(MessageStrings.TreatmentOutlookIsConsumingAProgressEvent);
                 }
 
                 AccumulationContext.ApplyPerformanceCurves();
@@ -116,8 +118,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 }
 
                 AccumulateBenefit();
-
-                updateRemainingLife();
+                updateRemainingLife?.Invoke();
             }
         }
     }

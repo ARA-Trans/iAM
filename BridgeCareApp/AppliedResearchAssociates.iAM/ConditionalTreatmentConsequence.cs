@@ -1,25 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class ConditionalTreatmentConsequence : TreatmentConsequence
     {
-        public Criterion Criterion { get; }
+        public AttributeValueChange Change { get; } = new AttributeValueChange();
 
-        public Choice<AttributeValueChange, Equation> Recalculation { get; }
+        public Criterion Criterion { get; } = new Criterion();
+
+        public Equation Equation { get; } = new Equation();
+
+        public override ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = base.ValidationResults;
+
+                if (Change.ExpressionIsBlank == Equation.ExpressionIsBlank)
+                {
+                    results.Add(ValidationStatus.Error.Describe(MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset));
+                }
+
+                return results;
+            }
+        }
 
         public override Action GetRecalculator(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
-            Action getRecalculatorForEquation(Equation equation)
+            if (!Change.ExpressionIsBlank && Equation.ExpressionIsBlank)
             {
-                var newValue = equation.Compute(argument, ageAttribute);
+                return Change.GetApplicator(Attribute, argument);
+            }
+            else if (Change.ExpressionIsBlank && !Equation.ExpressionIsBlank)
+            {
+                var newValue = Equation.Compute(argument, ageAttribute);
                 return () => argument.SetNumber(Attribute.Name, newValue);
             }
-
-            return Recalculation.Reduce(
-                change => change.GetApplicator(Attribute, argument),
-                getRecalculatorForEquation);
+            else
+            {
+                throw new SimulationException(MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset);
+            }
         }
     }
 }

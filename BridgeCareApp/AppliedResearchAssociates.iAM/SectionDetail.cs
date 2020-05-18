@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AppliedResearchAssociates.iAM.SimulationOutput
+namespace AppliedResearchAssociates.iAM
 {
     public sealed class SectionDetail
     {

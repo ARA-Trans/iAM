@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
-using AppliedResearchAssociates.iAM.SimulationOutput;
 
-namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
+namespace AppliedResearchAssociates.iAM
 {
     internal sealed class SectionContext : CalculateEvaluateArgument
     {
@@ -41,7 +40,7 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
             var cost = GetCostOfTreatment(SimulationRunner.Simulation.DesignatedPassiveTreatment);
             if (cost != 0)
             {
-                throw SimulationErrors.CostOfPassiveTreatmentIsNonZero;
+                throw new SimulationException(MessageStrings.CostOfPassiveTreatmentIsNonZero);
             }
 
             ApplyTreatment(SimulationRunner.Simulation.DesignatedPassiveTreatment, year);
@@ -84,13 +83,13 @@ namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
                 consequenceAction();
             }
 
-            foreach (var scheduling in treatment.GetSchedulings())
+            foreach (var scheduling in treatment.Schedulings)
             {
                 var schedulingYear = year + scheduling.OffsetToFutureYear;
 
                 if (EventSchedule.ContainsKey(schedulingYear))
                 {
-                    throw SimulationErrors.YearIsAlreadyScheduled;
+                    throw new SimulationException(MessageStrings.YearIsAlreadyScheduled);
                 }
 
                 EventSchedule.Add(schedulingYear, scheduling.Treatment);

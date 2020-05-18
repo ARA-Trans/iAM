@@ -1,7 +1,6 @@
 ﻿using System;
-using AppliedResearchAssociates.iAM.SimulationOutput;
 
-namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
+namespace AppliedResearchAssociates.iAM
 {
     internal sealed class TreatmentOption
     {

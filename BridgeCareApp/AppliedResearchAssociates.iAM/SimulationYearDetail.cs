@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AppliedResearchAssociates.iAM.SimulationOutput
+namespace AppliedResearchAssociates.iAM
 {
     /// <summary>
     ///     Serialization-friendly aggregate of values for capturing simulation output data.

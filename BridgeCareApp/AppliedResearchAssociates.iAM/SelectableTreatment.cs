@@ -2,28 +2,49 @@
 using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class SelectableTreatment : Treatment
     {
-        public ICollection<Budget> Budgets { get; }
+        public ICollection<Budget> Budgets { get; } = new HashSet<Budget>();
 
-        public List<ConditionalTreatmentConsequence> Consequences { get; }
+        public ICollection<ConditionalTreatmentConsequence> Consequences { get; } = new List<ConditionalTreatmentConsequence>();
 
-        public List<ConditionalEquation> Costs { get; }
+        public ICollection<ConditionalEquation> Costs { get; } = new List<ConditionalEquation>();
 
-        public string Description { get; }
+        public string Description { get; set; }
 
-        public Criterion FeasibilityCriterion { get; }
+        public Criterion FeasibilityCriterion { get; } = new Criterion();
 
-        public List<TreatmentScheduling> Schedulings { get; }
+        public ICollection<TreatmentSupersession> Supersessions { get; } = new List<TreatmentSupersession>();
 
-        public List<TreatmentSupersession> Supersessions { get; }
+        public override ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = base.ValidationResults;
+
+                var consequencesWithBlankCriterion = Consequences.Where(consequence => consequence.Criterion.ExpressionIsBlank).ToArray();
+                if (consequencesWithBlankCriterion.Select(consequence => consequence.Attribute).Distinct().Count() < consequencesWithBlankCriterion.Length)
+                {
+                    results.Add(ValidationStatus.Error.Describe("At least one attribute is unconditionally acted on by more than one consequence."));
+                }
+
+                var supersessionsWithBlankCriterion = Supersessions.Where(supersession => supersession.Criterion.ExpressionIsBlank).ToArray();
+                if (supersessionsWithBlankCriterion.Select(supersession => supersession.Treatment).Distinct().Count() < supersessionsWithBlankCriterion.Length)
+                {
+                    results.Add(ValidationStatus.Warning.Describe("At least one treatment is unconditionally superseded more than once."));
+                }
+
+                return results;
+            }
+        }
 
         public override bool CanUseBudget(Budget budget) => Budgets.Contains(budget);
 
-        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public override ICollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             Consequences.Channel(
                 consequence => consequence.Criterion.Evaluate(argument),
@@ -36,10 +57,7 @@ namespace AppliedResearchAssociates.iAM
 
             operativeConsequences = operativeConsequences
                 .GroupBy(consequence => consequence.Attribute)
-                // It's (currently) an error when one attribute has multiple valid consequences. A
-                // semantic that might match more closely with legacy intent is to use 'First'
-                // instead of 'Single'.
-                .Select(group => group.Single())
+                .Select(GetSingleConsequence)
                 .ToArray();
 
             var consequenceActions = operativeConsequences
@@ -51,12 +69,25 @@ namespace AppliedResearchAssociates.iAM
 
         public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts)
         {
-            var feasibleCosts = Costs.Where(costEquation => costEquation.Criterion.Evaluate(argument) ?? true);
-            return shouldApplyMultipleFeasibleCosts ? feasibleCosts.Sum(getCost) : feasibleCosts.Max(getCost);
+            var feasibleCosts = Costs.Where(costEquation => costEquation.Criterion.Evaluate(argument) ?? true).ToArray();
+            if (feasibleCosts.Length == 0)
+            {
+                return 0;
+            }
 
             double getCost(ConditionalEquation costEquation) => costEquation.Equation.Compute(argument, ageAttribute);
+            return shouldApplyMultipleFeasibleCosts ? feasibleCosts.Sum(getCost) : feasibleCosts.Max(getCost);
         }
 
-        public override IEnumerable<TreatmentScheduling> GetSchedulings() => Schedulings;
+        private static ConditionalTreatmentConsequence GetSingleConsequence(IEnumerable<ConditionalTreatmentConsequence> group)
+        {
+            var consequences = group.ToArray();
+            if (consequences.Length > 1)
+            {
+                throw new SimulationException(MessageStrings.AttributeIsBeingActedOnByMoreThanOneConsequence);
+            }
+
+            return consequences[0];
+        }
     }
 }

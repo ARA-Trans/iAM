@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppliedResearchAssociates.iAM.SimulationOutput
+namespace AppliedResearchAssociates.iAM
 {
     public sealed class BudgetDetail
     {

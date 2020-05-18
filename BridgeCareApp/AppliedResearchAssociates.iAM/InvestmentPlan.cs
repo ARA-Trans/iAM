@@ -6,7 +6,12 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class InvestmentPlan
     {
-        public InvestmentPlan(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+        public InvestmentPlan(Simulation simulation)
+        {
+            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+
+            SynchronizeBudgetPriorities();
+        }
 
         public List<BudgetCondition> BudgetConditions { get; }
 

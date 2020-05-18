@@ -1,4 +1,4 @@
-﻿namespace AppliedResearchAssociates.iAM.SimulationOutput
+﻿namespace AppliedResearchAssociates.iAM
 {
     public enum BudgetReason
     {

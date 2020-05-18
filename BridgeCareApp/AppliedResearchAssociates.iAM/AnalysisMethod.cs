@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class AnalysisMethod
+    public sealed class AnalysisMethod : IValidator
     {
         public AnalysisMethod(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
@@ -33,7 +34,7 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
 
-        public List<DeficientConditionGoal> DeficientConditionGoals { get; } = new List<DeficientConditionGoal>();
+        public ICollection<DeficientConditionGoal> DeficientConditionGoals { get; } = new List<DeficientConditionGoal>();
 
         public string Description { get; set; }
 
@@ -41,17 +42,44 @@ namespace AppliedResearchAssociates.iAM
 
         public OptimizationStrategy OptimizationStrategy { get; set; }
 
-        public List<RemainingLifeLimit> RemainingLifeLimits { get; } = new List<RemainingLifeLimit>();
+        public ICollection<RemainingLifeLimit> RemainingLifeLimits { get; } = new List<RemainingLifeLimit>();
 
         public bool ShouldApplyMultipleFeasibleCosts { get; set; }
 
         public SpendingStrategy SpendingStrategy { get; set; }
 
-        public List<TargetConditionGoal> TargetConditionGoals { get; } = new List<TargetConditionGoal>();
+        public ICollection<TargetConditionGoal> TargetConditionGoals { get; } = new List<TargetConditionGoal>();
 
         public bool UseExtraFundsAcrossBudgets { get; set; }
 
         public NumberAttribute Weighting { get; set; }
+
+        public ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = new List<ValidationResult>();
+
+                if (AgeAttribute == null)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Age attribute is unset."));
+                }
+
+                if (AreaAttribute == null)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Area attribute is unset."));
+                }
+
+                if (Benefit == null)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Benefit is unset."));
+                }
+
+                // TODO: error when multiple priorities have same level and same year.
+
+                return results;
+            }
+        }
 
         public BudgetPriority AddBudgetPriority()
         {
@@ -71,11 +99,11 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
+        private readonly List<BudgetPriority> _BudgetPriorities = new List<BudgetPriority>();
+
         private readonly Simulation Simulation;
 
         private NumberAttribute _Benefit;
-
-        private List<BudgetPriority> _BudgetPriorities = new List<BudgetPriority>();
 
         private Func<double, double> _LimitBenefit;
 

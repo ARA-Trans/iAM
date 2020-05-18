@@ -82,8 +82,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetRollup", "..\iAM-legac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedResearchAssociates.PciDistress", "AppliedResearchAssociates.PciDistress\AppliedResearchAssociates.PciDistress.csproj", "{1A6E8F6E-1E99-40C8-8888-7005E7756CB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedResearchAssociates.iAM.ScenarioAnalysis", "AppliedResearchAssociates.iAM.ScenarioAnalysis\AppliedResearchAssociates.iAM.ScenarioAnalysis.csproj", "{5B62F345-C42E-4703-ADD7-FE0C39FF6207}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedResearchAssociates", "AppliedResearchAssociates\AppliedResearchAssociates.csproj", "{953F4390-E9C1-4938-8B8F-8E57C9B6BDF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedResearchAssociates.CalculateEvaluate", "AppliedResearchAssociates.CalculateEvaluate\AppliedResearchAssociates.CalculateEvaluate.csproj", "{512321B9-8492-4F41-833E-03AC46276D8B}"
@@ -104,7 +102,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedResearchAssociates.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationConsole", "SimulationConsole\SimulationConsole.csproj", "{38F14B0E-836B-48ED-8CA4-5F3F24095E2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppliedResearchAssociates.iAM", "AppliedResearchAssociates.iAM\AppliedResearchAssociates.iAM.csproj", "{F21F7AD7-CA1D-4DC5-BABF-57160413D659}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedResearchAssociates.iAM", "AppliedResearchAssociates.iAM\AppliedResearchAssociates.iAM.csproj", "{F21F7AD7-CA1D-4DC5-BABF-57160413D659}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1424,42 +1422,6 @@ Global
 		{1A6E8F6E-1E99-40C8-8888-7005E7756CB3}.Release|x64.Build.0 = Release|Any CPU
 		{1A6E8F6E-1E99-40C8-8888-7005E7756CB3}.Release|x86.ActiveCfg = Release|Any CPU
 		{1A6E8F6E-1E99-40C8-8888-7005E7756CB3}.Release|x86.Build.0 = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.AACOUNTY|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.AACOUNTY|Any CPU.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.AACOUNTY|x64.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.AACOUNTY|x64.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.AACOUNTY|x86.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.AACOUNTY|x86.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.DDOT|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.DDOT|Any CPU.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.DDOT|x64.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.DDOT|x64.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.DDOT|x86.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.DDOT|x86.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Debug|x64.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Debug|x86.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHADebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHADebug|Any CPU.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHADebug|x64.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHADebug|x64.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHADebug|x86.ActiveCfg = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHADebug|x86.Build.0 = Debug|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHARelease|Any CPU.ActiveCfg = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHARelease|Any CPU.Build.0 = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHARelease|x64.ActiveCfg = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHARelease|x64.Build.0 = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHARelease|x86.ActiveCfg = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.MDSHARelease|x86.Build.0 = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Release|x64.ActiveCfg = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Release|x64.Build.0 = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Release|x86.ActiveCfg = Release|Any CPU
-		{5B62F345-C42E-4703-ADD7-FE0C39FF6207}.Release|x86.Build.0 = Release|Any CPU
 		{953F4390-E9C1-4938-8B8F-8E57C9B6BDF0}.AACOUNTY|Any CPU.ActiveCfg = Debug|Any CPU
 		{953F4390-E9C1-4938-8B8F-8E57C9B6BDF0}.AACOUNTY|Any CPU.Build.0 = Debug|Any CPU
 		{953F4390-E9C1-4938-8B8F-8E57C9B6BDF0}.AACOUNTY|x64.ActiveCfg = Debug|Any CPU

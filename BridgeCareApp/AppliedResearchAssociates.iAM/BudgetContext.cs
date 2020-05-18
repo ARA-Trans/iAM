@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppliedResearchAssociates.iAM.ScenarioAnalysis
+namespace AppliedResearchAssociates.iAM
 {
     internal sealed class BudgetContext
     {

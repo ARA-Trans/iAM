@@ -1,15 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class BudgetPriority
+    public sealed class BudgetPriority : IValidator
     {
         public IReadOnlyCollection<BudgetPercentage> BudgetPercentages => _BudgetPercentages;
 
         public Criterion Criterion { get; } = new Criterion();
 
         public int PriorityLevel { get; set; }
+
+        public ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = new List<ValidationResult>();
+
+                if (BudgetPercentages.Sum(budgetPercentage => budgetPercentage.Percentage) > 100)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Percentage sum is greater than 100."));
+                }
+                else if (BudgetPercentages.All(budgetPercentage => budgetPercentage.Percentage == 0))
+                {
+                    results.Add(ValidationStatus.Warning.Describe("All percentages are zero."));
+                }
+
+                return results;
+            }
+        }
 
         public int? Year { get; set; }
 
@@ -23,6 +43,6 @@ namespace AppliedResearchAssociates.iAM
                 select new BudgetPercentage(budget));
         }
 
-        private List<BudgetPercentage> _BudgetPercentages = new List<BudgetPercentage>();
+        private readonly List<BudgetPercentage> _BudgetPercentages = new List<BudgetPercentage>();
     }
 }

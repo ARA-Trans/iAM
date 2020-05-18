@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public abstract class CompilableExpression
+    public abstract class CompilableExpression : IValidator
     {
         public string Expression
         {
             get => _Expression;
             set
             {
-                if (_Expression != value)
+                if (Expression != value)
                 {
                     _Expression = value;
                     _EnsureCompiled = _Compile;
@@ -17,13 +19,34 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public void EnsureCompiled() => _EnsureCompiled();
+        public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
+
+        public ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = new List<ValidationResult>();
+
+                try
+                {
+                    _Compile();
+                }
+                catch (MalformedInputException e)
+                {
+                    results.Add(ValidationStatus.Error.Describe(e.Message));
+                }
+
+                return results;
+            }
+        }
 
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 
         protected static Exception ExpressionCouldNotBeCompiled(Exception innerException = null) => new MalformedInputException("Expression could not be compiled.", innerException);
 
         protected abstract void Compile();
+
+        protected void EnsureCompiled() => _EnsureCompiled?.Invoke();
 
         private Action _EnsureCompiled;
 
@@ -32,7 +55,7 @@ namespace AppliedResearchAssociates.iAM
         private void _Compile()
         {
             Compile();
-            _EnsureCompiled = Inaction.Delegate;
+            _EnsureCompiled = null;
         }
     }
 }

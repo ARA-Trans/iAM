@@ -28,24 +28,26 @@ namespace AppliedResearchAssociates.iAM
 
         public bool? Evaluate(CalculateEvaluateArgument argument)
         {
-            if (string.IsNullOrWhiteSpace(Expression))
-            {
-                return null;
-            }
-
             EnsureCompiled();
-            return Evaluator(argument);
+            return Evaluator?.Invoke(argument);
         }
 
         protected override void Compile()
         {
-            try
+            if (ExpressionIsBlank)
             {
-                Evaluator = Compiler.GetEvaluator(Expression);
+                Evaluator = null;
             }
-            catch (CalculateEvaluateException e)
+            else
             {
-                throw ExpressionCouldNotBeCompiled(e);
+                try
+                {
+                    Evaluator = Compiler.GetEvaluator(Expression);
+                }
+                catch (CalculateEvaluateException e)
+                {
+                    throw ExpressionCouldNotBeCompiled(e);
+                }
             }
         }
 

@@ -4,6 +4,6 @@ namespace AppliedResearchAssociates.Validation
 {
     public interface IValidator
     {
-        IEnumerable<ValidationResult> ValidationResults { get; }
+        ICollection<ValidationResult> ValidationResults { get; }
     }
 }

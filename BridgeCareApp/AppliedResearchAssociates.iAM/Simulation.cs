@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using AppliedResearchAssociates.iAM.SimulationOutput;
+using System.Linq;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Simulation
+    public sealed class Simulation : IValidator
     {
         public Simulation(Network network)
         {
@@ -16,7 +17,7 @@ namespace AppliedResearchAssociates.iAM
 
         public AnalysisMethod AnalysisMethod { get; }
 
-        public List<CommittedProject> CommittedProjects { get; } = new List<CommittedProject>();
+        public ICollection<CommittedProject> CommittedProjects { get; } = new List<CommittedProject>();
 
         public SelectableTreatment DesignatedPassiveTreatment { get; set; }
 
@@ -28,11 +29,40 @@ namespace AppliedResearchAssociates.iAM
 
         public int NumberOfYearsOfTreatmentOutlook { get; set; } = 100;
 
-        public List<PerformanceCurve> PerformanceCurves { get; } = new List<PerformanceCurve>();
+        public ICollection<PerformanceCurve> PerformanceCurves { get; } = new List<PerformanceCurve>();
 
-        public List<SimulationYearDetail> Results { get; } = new List<SimulationYearDetail>();
+        public ICollection<SimulationYearDetail> Results { get; } = new List<SimulationYearDetail>();
 
-        public List<SelectableTreatment> Treatments { get; } = new List<SelectableTreatment>();
+        public ICollection<SelectableTreatment> Treatments { get; } = new List<SelectableTreatment>();
+
+        public ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = new List<ValidationResult>();
+
+                if (DesignatedPassiveTreatment == null)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Designated passive treatment is unset."));
+                }
+                else if (DesignatedPassiveTreatment.Costs.Count > 0)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Designated passive treatment has costs."));
+                }
+
+                if (string.IsNullOrWhiteSpace(Name))
+                {
+                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                }
+
+                if (NumberOfYearsOfTreatmentOutlook < 1)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Number of years of treatment outlook is less than one."));
+                }
+
+                return results;
+            }
+        }
 
         public IReadOnlyCollection<SelectableTreatment> GetActiveTreatments()
         {

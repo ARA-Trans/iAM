@@ -2,16 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class CommittedProject : Treatment
+    public sealed class CommittedProject : Treatment, IValidator
     {
-        public Budget Budget { get; }
+        public CommittedProject(Section section, int year)
+        {
+            Section = section ?? throw new ArgumentNullException(nameof(section));
+            Year = year;
+        }
 
-        public List<UnconditionalTreatmentConsequence> Consequences { get; }
+        public Budget Budget { get; set; }
 
-        public double Cost { get; }
+        public ICollection<UnconditionalTreatmentConsequence> Consequences { get; } = new List<UnconditionalTreatmentConsequence>();
+
+        public double Cost { get; set; }
 
         public Section Section { get; }
 
@@ -27,22 +34,25 @@ namespace AppliedResearchAssociates.iAM
                 Consequences.Clear();
                 foreach (var templateConsequence in TemplateTreatment.Consequences)
                 {
-                    void addConsequence(AttributeValueChange templateChange)
-                    {
-                        var change = new AttributeValueChange
-                        {
-                            Expression = templateChange.Expression
-                        };
-                        var consequence = new UnconditionalTreatmentConsequence
-                        {
-                            Attribute = templateConsequence.Attribute,
-                            Change = change,
-                        };
-                        Consequences.Add(consequence);
-                    }
-
-                    templateConsequence.Recalculation.Handle(addConsequence, Inaction.Delegate);
+                    var consequence = new UnconditionalTreatmentConsequence { Attribute = templateConsequence.Attribute };
+                    consequence.Change.Expression = templateConsequence.Change.Expression;
+                    Consequences.Add(consequence);
                 }
+            }
+        }
+
+        public override ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = base.ValidationResults;
+
+                if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
+                {
+                    results.Add(ValidationStatus.Error.Describe("At least one attribute is acted on by more than one consequence."));
+                }
+
+                return results;
             }
         }
 
@@ -50,7 +60,7 @@ namespace AppliedResearchAssociates.iAM
 
         public override bool CanUseBudget(Budget budget) => budget == Budget;
 
-        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Consequences.Select(consequence => consequence.GetRecalculator(argument, ageAttribute)).ToArray();
+        public override ICollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Consequences.Select(consequence => consequence.GetRecalculator(argument, ageAttribute)).ToArray();
 
         public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts) => Cost;
 
