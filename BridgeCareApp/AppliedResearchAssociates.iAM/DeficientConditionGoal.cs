@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class DeficientConditionGoal : ConditionGoal
     {
-        public double AllowedDeficientPercentage { get; }
+        public double AllowedDeficientPercentage { get; set; }
 
         public override NumberAttribute Attribute
         {
@@ -13,7 +15,11 @@ namespace AppliedResearchAssociates.iAM
             {
                 base.Attribute = value;
 
-                if (Attribute.IsDecreasingWithDeterioration)
+                if (Attribute == null)
+                {
+                    _LevelIsDeficient = null;
+                }
+                else if (Attribute.IsDecreasingWithDeterioration)
                 {
                     _LevelIsDeficient = LevelIsLessThanLimit;
                 }
@@ -24,7 +30,34 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public double DeficientLimit { get; }
+        public double DeficientLimit { get; set; }
+
+        public override ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = base.ValidationResults;
+
+                if (AllowedDeficientPercentage < 0)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Allowed deficient percentage is less than zero."));
+                }
+                else if (AllowedDeficientPercentage == 0)
+                {
+                    results.Add(ValidationStatus.Warning.Describe("Allowed deficient percentage is zero."));
+                }
+                else if (AllowedDeficientPercentage == 100)
+                {
+                    results.Add(ValidationStatus.Warning.Describe("Allowed deficient percentage is 100."));
+                }
+                else if (AllowedDeficientPercentage > 100)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Allowed deficient percentage is greater than 100."));
+                }
+
+                return results;
+            }
+        }
 
         public override bool IsMet(double actual) => actual <= AllowedDeficientPercentage;
 

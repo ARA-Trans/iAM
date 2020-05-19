@@ -120,9 +120,14 @@ namespace AppliedResearchAssociates.iAM
         {
             var rawBenefit = GetNumber(AnalysisMethod.Benefit.Name);
             var benefit = AnalysisMethod.LimitBenefit(rawBenefit);
-            var weight = GetNumber(AnalysisMethod.Weighting.Name);
-            var weightedBenefit = weight * benefit;
-            return weightedBenefit;
+
+            if (AnalysisMethod.Weighting != null)
+            {
+                var weight = GetNumber(AnalysisMethod.Weighting.Name);
+                benefit *= weight;
+            }
+
+            return benefit;
         }
 
         public double GetCostOfTreatment(Treatment treatment) => treatment.GetCost(this, AnalysisMethod.AgeAttribute, AnalysisMethod.ShouldApplyMultipleFeasibleCosts);

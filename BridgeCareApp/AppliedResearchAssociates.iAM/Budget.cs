@@ -19,6 +19,15 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error.Describe("Name is blank."));
                 }
 
+                if (YearlyAmounts.Count == 0)
+                {
+                    results.Add(ValidationStatus.Error.Describe("There are no yearly amounts."));
+                }
+                else if (YearlyAmounts.Any(amount => amount < 0))
+                {
+                    results.Add(ValidationStatus.Warning.Describe("At least one yearly amount is less than zero."));
+                }
+
                 return results;
             }
         }
@@ -27,19 +36,15 @@ namespace AppliedResearchAssociates.iAM
 
         public void SetYearlyAmount(int index, decimal amount) => _YearlyAmounts[index] = amount;
 
-        internal int NumberOfYears
+        internal void SetNumberOfYears(int numberOfYears)
         {
-            get => YearlyAmounts.Count;
-            set
+            if (numberOfYears < _YearlyAmounts.Count)
             {
-                if (value < _YearlyAmounts.Count)
-                {
-                    _YearlyAmounts.RemoveRange(value, _YearlyAmounts.Count - value);
-                }
-                else if (value > _YearlyAmounts.Count)
-                {
-                    _YearlyAmounts.AddRange(Enumerable.Repeat(0m, value - _YearlyAmounts.Count));
-                }
+                _YearlyAmounts.RemoveRange(numberOfYears, _YearlyAmounts.Count - numberOfYears);
+            }
+            else if (numberOfYears > _YearlyAmounts.Count)
+            {
+                _YearlyAmounts.AddRange(Enumerable.Repeat(0m, numberOfYears - _YearlyAmounts.Count));
             }
         }
 

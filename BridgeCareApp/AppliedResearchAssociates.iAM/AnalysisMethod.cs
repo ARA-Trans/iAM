@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
@@ -52,8 +53,6 @@ namespace AppliedResearchAssociates.iAM
 
         public bool UseExtraFundsAcrossBudgets { get; set; }
 
-        public NumberAttribute Weighting { get; set; }
-
         public ICollection<ValidationResult> ValidationResults
         {
             get
@@ -75,11 +74,44 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error.Describe("Benefit is unset."));
                 }
 
-                // TODO: error when multiple priorities have same level and same year.
+                if (BudgetPriorities.Select(priority => (priority.PriorityLevel, priority.Year)).Distinct().Count() < BudgetPriorities.Count)
+                {
+                    results.Add(ValidationStatus.Error.Describe("At least one priority level-year is represented more than once."));
+                }
+
+                var deficientConditionGoalNames = GetNames(DeficientConditionGoals);
+                if (deficientConditionGoalNames.Distinct().Count() < deficientConditionGoalNames.Count)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Multiple deficient condition goals have the same name."));
+                }
+
+                var targetConditionGoalNames = GetNames(TargetConditionGoals);
+                if (targetConditionGoalNames.Distinct().Count() < targetConditionGoalNames.Count)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Multiple target condition goals have the same name."));
+                }
+
+                if (!OptimizationStrategy.IsDefined())
+                {
+                    results.Add(ValidationStatus.Error.Describe("Invalid optimization strategy."));
+                }
+
+                if (!SpendingStrategy.IsDefined())
+                {
+                    results.Add(ValidationStatus.Error.Describe("Invalid spending strategy."));
+                }
+
+                var remainingLifeLimitsWithBlankCriterion = RemainingLifeLimits.Where(limit => limit.Criterion.ExpressionIsBlank).ToArray();
+                if (remainingLifeLimitsWithBlankCriterion.Select(limit => limit.Attribute).Distinct().Count() < remainingLifeLimitsWithBlankCriterion.Length)
+                {
+                    results.Add(ValidationStatus.Warning.Describe("At least one attribute has more than one remaining life limit with a blank criterion."));
+                }
 
                 return results;
             }
         }
+
+        public NumberAttribute Weighting { get; set; }
 
         public BudgetPriority AddBudgetPriority()
         {
@@ -106,6 +138,8 @@ namespace AppliedResearchAssociates.iAM
         private NumberAttribute _Benefit;
 
         private Func<double, double> _LimitBenefit;
+
+        private static ICollection<string> GetNames(IEnumerable<ConditionGoal> conditionGoals) => conditionGoals.Select(conditionGoal => conditionGoal.Name).Where(name => !string.IsNullOrWhiteSpace(name)).ToArray();
 
         private double LimitDecreasingBenefit(double benefit) => benefit - BenefitLimit;
 

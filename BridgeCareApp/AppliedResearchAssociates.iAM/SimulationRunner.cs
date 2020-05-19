@@ -21,6 +21,8 @@ namespace AppliedResearchAssociates.iAM
 
         // [REVIEW] What should happen when a cash flow extends across or into another scheduled event?
 
+        // [REVIEW] What happens when one calculated field has multiple equations whose criteria are met?
+
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
         public event EventHandler<InformationEventArgs> Information;
@@ -444,7 +446,7 @@ namespace AppliedResearchAssociates.iAM
 
             treatmentConsideration.BudgetDetails.AddRange(BudgetContexts.Select(budgetContext => new BudgetDetail(budgetContext.Budget.Name)
             {
-                BudgetReason = treatment.CanUseBudget(budgetContext.Budget) ? BudgetReason.NotNeeded : BudgetReason.NotConsidered
+                BudgetReason = treatment.CanUseBudget(budgetContext.Budget) ? BudgetReason.NotNeeded : BudgetReason.NotUsable
             }));
 
             decimal remainingCost;
@@ -461,11 +463,7 @@ namespace AppliedResearchAssociates.iAM
                 cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.Evaluate(sectionContext) ?? true);
                 if (cashFlowRule != null)
                 {
-                    var distributionRule = cashFlowRule.DistributionRules
-                        .OrderBy(rule => rule.CostCeiling)
-                        .TakeWhile(rule => remainingCost <= rule.CostCeiling)
-                        .Last();
-
+                    var distributionRule = cashFlowRule.DistributionRules.TakeWhile(rule => remainingCost <= (rule.CostCeiling ?? decimal.MaxValue)).Last();
                     var costPerYear = distributionRule.YearlyPercentages.Select(percentage => percentage / 100 * remainingCost).ToArray();
                     remainingCost = costPerYear[0];
 
@@ -500,7 +498,7 @@ namespace AppliedResearchAssociates.iAM
                     break;
                 }
 
-                if (budgetDetail.BudgetReason == BudgetReason.NotConsidered)
+                if (budgetDetail.BudgetReason == BudgetReason.NotUsable)
                 {
                     continue;
                 }

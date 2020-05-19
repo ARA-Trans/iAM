@@ -2,7 +2,11 @@
 {
     internal static class MessageStrings
     {
-        public static string AttributeIsBeingActedOnByMoreThanOneConsequence => "Attribute is being acted on by more than one consequence.";
+        public static string AttributeIsBeingActedOnByMultipleConsequences => "Attribute is being acted on by multiple consequences.";
+
+        public static string CalculatedFieldHasMultipleOperativeEquations => "Calculated field has multiple operative equations.";
+
+        public static string CalculatedFieldHasNoOperativeEquations => "Calculated field has no operative equations.";
 
         public static string ChangeAndEquationAreEitherBothSetOrBothUnset => "Change and equation are either both set or both unset.";
 

@@ -16,8 +16,8 @@ namespace AppliedResearchAssociates.iAM
         {
             set
             {
-                var prioritizedFraction = value?.BudgetPercentages[Budget] / 100;
-                CurrentPrioritizedAmount = CurrentAmount * (decimal?)prioritizedFraction;
+                var prioritizedFraction = value?.GetBudgetPercentage(Budget) / 100;
+                CurrentPrioritizedAmount = CurrentAmount * prioritizedFraction;
             }
         }
 

@@ -81,27 +81,8 @@ namespace AppliedResearchAssociates.iAM
 
         private static readonly ConcurrentDictionary<WeakReference<FinalActor<Equation>>, object> AllInstances = new ConcurrentDictionary<WeakReference<FinalActor<Equation>>, object>();
 
-        private static readonly Regex PiecewisePattern = new Regex($@"(?>\A\s*(?:\(\s*({Subpatterns.Number})\s*,\s*({Subpatterns.Number})\s*\)\s*)*\z)", RegexOptions.Compiled);
+        private static readonly Regex PiecewisePattern = new Regex($@"(?>\A\s*(?:\(\s*({PatternStrings.Number})\s*,\s*({PatternStrings.Number})\s*\)\s*)*\z)", RegexOptions.Compiled);
 
         private Choice<Calculator, Func<double, double>> Computer;
-
-        private static class Subpatterns
-        {
-            public static string DecimalPart => $@"(?:\.{NaturalNumber})";
-
-            public static string Exponent => $@"(?:[eE]{Sign}?{NaturalNumber})";
-
-            public static string Mantissa => $@"(?:{Mantissa1}|{Mantissa2})";
-
-            public static string Mantissa1 => $@"(?:{NaturalNumber}{DecimalPart}?)";
-
-            public static string Mantissa2 => $@"(?:{DecimalPart})";
-
-            public static string NaturalNumber => $@"(?:\d+)";
-
-            public static string Number => $@"(?:{Sign}?{Mantissa}{Exponent}?)";
-
-            public static string Sign => $@"(?:\+|-)";
-        }
     }
 }

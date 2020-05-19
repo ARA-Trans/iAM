@@ -11,7 +11,11 @@ namespace AppliedResearchAssociates.iAM
             {
                 base.Attribute = value;
 
-                if (Attribute.IsDecreasingWithDeterioration)
+                if (Attribute == null)
+                {
+                    _IsMet = null;
+                }
+                else if (Attribute.IsDecreasingWithDeterioration)
                 {
                     _IsMet = ActualIsGreaterThanOrEqualToTarget;
                 }
@@ -22,9 +26,9 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public double Target { get; }
+        public double Target { get; set; }
 
-        public int? Year { get; }
+        public int? Year { get; set; }
 
         public override bool IsMet(double actual) => _IsMet(actual);
 

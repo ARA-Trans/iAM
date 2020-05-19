@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public abstract class CompilableExpression : IValidator
     {
-        public string Expression
+        public virtual string Expression
         {
             get => _Expression;
             set
@@ -21,7 +21,7 @@ namespace AppliedResearchAssociates.iAM
 
         public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
 
-        public ICollection<ValidationResult> ValidationResults
+        public virtual ICollection<ValidationResult> ValidationResults
         {
             get
             {
@@ -29,7 +29,7 @@ namespace AppliedResearchAssociates.iAM
 
                 try
                 {
-                    _Compile();
+                    EnsureCompiled();
                 }
                 catch (MalformedInputException e)
                 {

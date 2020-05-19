@@ -84,7 +84,7 @@ namespace AppliedResearchAssociates.iAM
             var consequences = group.ToArray();
             if (consequences.Length > 1)
             {
-                throw new SimulationException(MessageStrings.AttributeIsBeingActedOnByMoreThanOneConsequence);
+                throw new SimulationException(MessageStrings.AttributeIsBeingActedOnByMultipleConsequences);
             }
 
             return consequences[0];

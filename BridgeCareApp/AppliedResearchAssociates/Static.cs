@@ -100,6 +100,8 @@ namespace AppliedResearchAssociates
 
         public static T Identity<T>(T value) => value;
 
+        public static bool IsDefined<T>(this T enumValue) where T : Enum => Enum.IsDefined(typeof(T), enumValue);
+
         public static IEnumerable<IEnumerable<T>> SequenceCast<T>(this IEnumerable<IEnumerable> sequences) => sequences.Select(sequence => sequence.Cast<T>());
 
         public static int SequenceCompare(IEnumerable sequence1, IEnumerable sequence2, IComparer comparer = null) => _SequenceCompare(sequence1?.Cast<object>(), sequence2?.Cast<object>(), (comparer ?? Comparer<object>.Default).Compare);

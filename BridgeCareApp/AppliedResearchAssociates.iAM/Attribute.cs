@@ -1,11 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public class Attribute
+    public class Attribute : IValidator
     {
         public string Name { get; set; }
+
+        public virtual ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = new List<ValidationResult>();
+
+                if (string.IsNullOrWhiteSpace(Name))
+                {
+                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                }
+
+                return results;
+            }
+        }
     }
 
     public class Attribute<T> : Attribute

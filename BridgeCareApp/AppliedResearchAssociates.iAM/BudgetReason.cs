@@ -7,6 +7,6 @@
         CostNotCovered,
         ConditionNotMet,
         NotNeeded,
-        NotConsidered,
+        NotUsable,
     }
 }

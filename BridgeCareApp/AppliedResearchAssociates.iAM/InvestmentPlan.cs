@@ -34,7 +34,7 @@ namespace AppliedResearchAssociates.iAM
 
                 foreach (var budget in Budgets)
                 {
-                    budget.NumberOfYears = NumberOfYearsInAnalysisPeriod;
+                    budget.SetNumberOfYears(NumberOfYearsInAnalysisPeriod);
                 }
             }
         }
@@ -44,7 +44,7 @@ namespace AppliedResearchAssociates.iAM
         public Budget AddBudget()
         {
             var budget = new Budget();
-            budget.NumberOfYears = NumberOfYearsInAnalysisPeriod;
+            budget.SetNumberOfYears(NumberOfYearsInAnalysisPeriod);
             _Budgets.Add(budget);
             SynchronizeBudgetPriorities();
             return budget;

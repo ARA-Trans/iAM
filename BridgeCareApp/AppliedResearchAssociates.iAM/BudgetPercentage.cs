@@ -8,7 +8,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public Budget Budget { get; }
 
-        public double Percentage { get; set; }
+        public decimal Percentage { get; set; }
 
         public ICollection<ValidationResult> ValidationResults
         {
