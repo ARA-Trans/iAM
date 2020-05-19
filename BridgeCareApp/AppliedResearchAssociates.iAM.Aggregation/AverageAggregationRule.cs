@@ -8,9 +8,14 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 {
     public class AverageAggregationRule : NumericAggregationRule
     {
-        public override double Apply(IEnumerable<AttributeDatum<double>> attributeData)
+        public override IEnumerable<(DateTime, double)> Apply(IEnumerable<AttributeDatum<double>> attributeData)
         {
-            return attributeData.Select(_ => _.Value).Average();
+            var distinctYears = attributeData.Select(_ => _.TimeStamp.Year).Distinct();
+            foreach(var distinctYear in distinctYears)
+            {
+                var currentYearAttributeData = attributeData.Where(_ => _.TimeStamp.Year == distinctYear);
+                yield return (currentYearAttributeData.First().TimeStamp, currentYearAttributeData.Select(_ => _.Value).Average());
+            }
         }
     }
 }

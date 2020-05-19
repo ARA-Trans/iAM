@@ -9,6 +9,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         public Route(string identifier) => Identifier = identifier;
 
         // Determines if two routes match in a comparison.
-        internal abstract bool Matches(Route route);
+        internal abstract bool MatchOn(Route route);
     }
 }

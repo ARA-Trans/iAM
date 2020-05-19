@@ -7,6 +7,6 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 {
     public abstract class TextAggregationRule : AggregationRule<string>
     {
-        public abstract override string Apply(IEnumerable<AttributeDatum<string>> attributeData);
+        public abstract override IEnumerable<(DateTime, string)> Apply(IEnumerable<AttributeDatum<string>> attributeData);
     }
 }

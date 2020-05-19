@@ -7,6 +7,6 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 {
     public abstract class NumericAggregationRule : AggregationRule<double>
     {
-        public abstract override double Apply(IEnumerable<AttributeDatum<double>> attributeData);
+        public abstract override IEnumerable<(DateTime, double)> Apply(IEnumerable<AttributeDatum<double>> attributeData);
     }
 }

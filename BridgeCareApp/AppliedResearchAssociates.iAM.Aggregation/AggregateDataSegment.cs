@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 using AppliedResearchAssociates.iAM.Segmentation;
+using Attribute = AppliedResearchAssociates.iAM.DataMiner.Attributes.Attribute;
 
 namespace AppliedResearchAssociates.iAM.Aggregation
 {
@@ -13,11 +15,10 @@ namespace AppliedResearchAssociates.iAM.Aggregation
         public Segment<T> Segment { get; }
 
         public void AddDatum(AttributeDatum<T> datum) => AttributeData.Add(datum);
-        public T ApplyAggregationRule(Attribute attribute, AggregationRule<T> aggregationRule)
+        public IEnumerable<(DateTime, T)> ApplyAggregationRule(Attribute attribute, AggregationRule<T> aggregationRule)
         {
             var specifiedData = AttributeData.Where(_ => _.Attribute.Guid == attribute.Guid);
             return aggregationRule.Apply(specifiedData);
         }
-
     }
 }

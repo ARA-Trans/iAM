@@ -6,7 +6,7 @@
 
         public SimpleRoute(string name) : base(name) => Name = name;
 
-        internal override bool Matches(Route route)
+        internal override bool MatchOn(Route route)
         {
             throw new System.NotImplementedException();
         }

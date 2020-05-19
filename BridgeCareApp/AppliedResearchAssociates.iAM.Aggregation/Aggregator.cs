@@ -21,8 +21,6 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 
             foreach (var datum in attributeData)
             {
-                // Find the AggregateDataSegment that matches the current
-                // attribute datum's location
                 AggregateDataSegment<T> matchingLocationSegment =
                     aggregateDataSegments.
                     FirstOrDefault(_ => datum.Location.MatchOn(_.Segment.Location));
@@ -32,6 +30,11 @@ namespace AppliedResearchAssociates.iAM.Aggregation
                     // Add the datum to the aggregation data segment
                     matchingLocationSegment.AddDatum(datum);
                 }
+                else
+                {
+                    // TODO: No matching segment for the current data. What do we do?
+                }
+
             }
             return aggregateDataSegments;
         }

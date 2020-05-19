@@ -26,9 +26,9 @@ namespace AppliedResearchAssociates.iAM.DataMiner
             if (location is LinearLocation linearLocation)
             {
                 return
-                    linearLocation.Start >= Start &&
-                    linearLocation.End < End &&
-                    linearLocation.Route.Matches(Route);
+                    linearLocation.Start <= Start &&
+                    linearLocation.End > End &&
+                    linearLocation.Route.MatchOn(Route);
             }
             else
             {
