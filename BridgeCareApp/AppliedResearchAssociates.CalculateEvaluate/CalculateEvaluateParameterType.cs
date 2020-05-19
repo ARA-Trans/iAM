@@ -1,6 +1,6 @@
 ﻿namespace AppliedResearchAssociates.CalculateEvaluate
 {
-    public enum ParameterType
+    public enum CalculateEvaluateParameterType
     {
         Number,
         Text,

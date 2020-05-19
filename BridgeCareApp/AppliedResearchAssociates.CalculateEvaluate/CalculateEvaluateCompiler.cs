@@ -16,7 +16,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
     public sealed class CalculateEvaluateCompiler
     {
-        public Dictionary<string, ParameterType> ParameterTypes { get; } = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase);
+        public static IEnumerable<string> MathConstantNames => CalculateEvaluateCompilerVisitor.MathConstants.Keys;
+
+        public static IEnumerable<(string name, int arity)> MathFunctionDescriptors => CalculateEvaluateCompilerVisitor.MathFunctions.Keys;
+
+        public Dictionary<string, CalculateEvaluateParameterType> ParameterTypes { get; } = new Dictionary<string, CalculateEvaluateParameterType>(StringComparer.OrdinalIgnoreCase);
 
         public Calculator GetCalculator(string expression) => Compile<Calculator>(expression);
 

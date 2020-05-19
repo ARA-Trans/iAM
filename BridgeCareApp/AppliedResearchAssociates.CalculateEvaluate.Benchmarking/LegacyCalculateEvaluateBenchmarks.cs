@@ -29,19 +29,19 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Benchmarking
         private const string FIXED_CALCULATION = "0*[DECK_AREA]";
         private const string FIXED_EVALUATION = "[DISTRICT]=|03| AND [FAMILY_ID]=|0|";
 
-        private static readonly IReadOnlyDictionary<ParameterType, string> AnnotationPerType = new Dictionary<ParameterType, string>
+        private static readonly IReadOnlyDictionary<CalculateEvaluateParameterType, string> AnnotationPerType = new Dictionary<CalculateEvaluateParameterType, string>
         {
-            [ParameterType.Number] = "",
-            [ParameterType.Text] = "@",
-            [ParameterType.Timestamp] = "$",
+            [CalculateEvaluateParameterType.Number] = "",
+            [CalculateEvaluateParameterType.Text] = "@",
+            [CalculateEvaluateParameterType.Timestamp] = "$",
         };
 
         private static readonly Regex ParameterReferencePattern = new Regex(@"\[([a-zA-Z_][a-zA-Z_0-9]*)]", RegexOptions.Compiled);
 
-        private static readonly IReadOnlyDictionary<string, ParameterType> TypePerParameter = new Dictionary<string, ParameterType>(StringComparer.OrdinalIgnoreCase)
+        private static readonly IReadOnlyDictionary<string, CalculateEvaluateParameterType> TypePerParameter = new Dictionary<string, CalculateEvaluateParameterType>(StringComparer.OrdinalIgnoreCase)
         {
-            ["district"] = ParameterType.Text,
-            ["family_id"] = ParameterType.Text,
+            ["district"] = CalculateEvaluateParameterType.Text,
+            ["family_id"] = CalculateEvaluateParameterType.Text,
         };
 
         private readonly LegacyCalculateEvaluate LegacyCompiler = new LegacyCalculateEvaluate();

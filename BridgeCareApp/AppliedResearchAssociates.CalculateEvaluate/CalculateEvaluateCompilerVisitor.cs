@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Antlr4.Runtime.Tree;
 
 namespace AppliedResearchAssociates.CalculateEvaluate
 {
     internal sealed class CalculateEvaluateCompilerVisitor : CalculateEvaluateParserBaseVisitor<Expression>
     {
-        public CalculateEvaluateCompilerVisitor(IReadOnlyDictionary<string, ParameterType> parameterTypes) => ParameterTypes = parameterTypes ?? throw new ArgumentNullException(nameof(parameterTypes));
+        public CalculateEvaluateCompilerVisitor(IReadOnlyDictionary<string, CalculateEvaluateParameterType> parameterTypes) => ParameterTypes = parameterTypes ?? throw new ArgumentNullException(nameof(parameterTypes));
 
         #region "Calculate"
+
+        public static IReadOnlyDictionary<string, double> MathConstants { get; } = GetMathConstants();
+
+        public static IReadOnlyDictionary<(string, int), MethodInfo> MathFunctions { get; } = GetMathFunctions();
 
         public override Expression VisitAdditionOrSubtraction(CalculateEvaluateParser.AdditionOrSubtractionContext context)
         {
@@ -52,7 +55,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         public override Expression VisitConstantReference(CalculateEvaluateParser.ConstantReferenceContext context)
         {
             var identifierText = context.IDENTIFIER().GetText();
-            var constant = MathConstants[identifierText];
+
+            if (!MathConstants.TryGetValue(identifierText, out var constant))
+            {
+                throw new CalculateEvaluateCompilationException("Invalid constant identifier.");
+            }
+
             var result = Expression.Constant(constant);
             return result;
         }
@@ -61,7 +69,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         {
             var identifierText = context.IDENTIFIER().GetText();
             var arguments = context.arguments().calculation();
-            var method = MathFunctions[(identifierText, arguments.Length)];
+
+            if (!MathFunctions.TryGetValue((identifierText, arguments.Length), out var method))
+            {
+                throw new CalculateEvaluateCompilationException("Invalid function identifier.");
+            }
+
             var result = Expression.Call(method, arguments.Select(Visit));
             return result;
         }
@@ -106,21 +119,21 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         public override Expression VisitNumberParameterReference(CalculateEvaluateParser.NumberParameterReferenceContext context)
         {
             var identifierText = context.calculationParameterReference().IDENTIFIER().GetText();
-            var parameterType = ParameterTypes[identifierText];
 
-            if (parameterType != ParameterType.Number)
+            if (!ParameterTypes.TryGetValue(identifierText, out var parameterType))
             {
-                throw new InvalidOperationException("Parameter is not a number.");
+                throw UnknownParameterException;
+            }
+
+            if (parameterType != CalculateEvaluateParameterType.Number)
+            {
+                throw new CalculateEvaluateCompilationException("Parameter is not a number.");
             }
 
             var identifierString = Expression.Constant(identifierText);
             var result = Expression.Call(ArgumentParameter, Number.GetterInfo, identifierString);
             return result;
         }
-
-        private static readonly IReadOnlyDictionary<string, double> MathConstants = GetMathConstants();
-
-        private static readonly IReadOnlyDictionary<(string, int), MethodInfo> MathFunctions = GetMathFunctions();
 
         private static IReadOnlyDictionary<string, double> GetMathConstants()
         {
@@ -210,16 +223,20 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         private Expression GetComparisonExpression(CalculateEvaluateParser.EvaluationParameterReferenceContext evaluationParameterReference, CalculateEvaluateParser.EvaluationLiteralContext evaluationLiteral, Func<MethodCallExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
         {
             var identifierText = evaluationParameterReference.IDENTIFIER().GetText();
-            var parameterType = ParameterTypes[identifierText];
+
+            if (!ParameterTypes.TryGetValue(identifierText, out var parameterType))
+            {
+                throw UnknownParameterException;
+            }
 
             ArgumentInfo argumentInfo;
             switch (parameterType)
             {
-            case ParameterType.Number:
+            case CalculateEvaluateParameterType.Number:
                 argumentInfo = Number;
                 break;
 
-            case ParameterType.Text:
+            case CalculateEvaluateParameterType.Text:
                 if (!allowStrings)
                 {
                     goto default;
@@ -227,7 +244,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
                 argumentInfo = Text;
                 break;
 
-            case ParameterType.Timestamp:
+            case CalculateEvaluateParameterType.Timestamp:
                 argumentInfo = Timestamp;
                 break;
 
@@ -249,26 +266,42 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         private static readonly ParameterExpression ArgumentParameter = Expression.Parameter(typeof(CalculateEvaluateArgument), "arg");
 
-        private static readonly ArgumentInfo Timestamp = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetTimestamp), Convert.ToDateTime);
-
         private static readonly ArgumentInfo Number = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetNumber), double.Parse);
 
         private static readonly ArgumentInfo Text = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetText), Static.Identity);
 
-        private readonly IReadOnlyDictionary<string, ParameterType> ParameterTypes;
+        private static readonly ArgumentInfo Timestamp = GetArgumentInfo(nameof(CalculateEvaluateArgument.GetTimestamp), Convert.ToDateTime);
+
+        private readonly IReadOnlyDictionary<string, CalculateEvaluateParameterType> ParameterTypes;
+
+        private static Exception UnknownParameterException => new CalculateEvaluateCompilationException("Unknown parameter.");
 
         private static ArgumentInfo GetArgumentInfo<T>(string argumentGetterName, Func<string, T> parse)
         {
             var getterInfo = typeof(CalculateEvaluateArgument).GetMethod(argumentGetterName);
-            return new ArgumentInfo(getterInfo, literal => Expression.Constant(parse(literal)));
+            return new ArgumentInfo(getterInfo, literal =>
+            {
+                T value;
+
+                try
+                {
+                    value = parse(literal);
+                }
+                catch (Exception e)
+                {
+                    throw new CalculateEvaluateCompilationException("Failed to parse literal.", e);
+                }
+
+                return Expression.Constant(value);
+            });
         }
 
         private class ArgumentInfo
         {
             public ArgumentInfo(MethodInfo getterInfo, Func<string, ConstantExpression> parseLiteral)
             {
-                GetterInfo = getterInfo;
-                ParseLiteral = parseLiteral;
+                GetterInfo = getterInfo ?? throw new ArgumentNullException(nameof(getterInfo));
+                ParseLiteral = parseLiteral ?? throw new ArgumentNullException(nameof(parseLiteral));
             }
 
             public MethodInfo GetterInfo { get; }

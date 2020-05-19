@@ -55,7 +55,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         public void NumberParameterReference()
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.Number;
+            compiler.ParameterTypes["PARAM"] = CalculateEvaluateParameterType.Number;
             var expression = "[param]";
             var calculator = compiler.GetCalculator(expression);
             var argument = new CalculateEvaluateArgument();
@@ -162,7 +162,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             var compiler = new CalculateEvaluateCompiler();
             foreach (var (_, i) in parameters)
             {
-                compiler.ParameterTypes["PARAM" + i] = ParameterType.Number;
+                compiler.ParameterTypes["PARAM" + i] = CalculateEvaluateParameterType.Number;
             }
             var evaluator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
@@ -180,7 +180,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
             var compiler = new CalculateEvaluateCompiler();
             foreach (var (_, i) in parameters)
             {
-                compiler.ParameterTypes["PARAM" + i] = ParameterType.Number;
+                compiler.ParameterTypes["PARAM" + i] = CalculateEvaluateParameterType.Number;
             }
             var calculator = compiler.GetCalculator(inputExpression);
             var argument = new CalculateEvaluateArgument();
@@ -203,7 +203,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         private void SingleNumberParameterEvaluation(string inputExpression, Action<bool> assert)
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.Number;
+            compiler.ParameterTypes["PARAM"] = CalculateEvaluateParameterType.Number;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
             argument.SetNumber("PaRaM", n0);
@@ -214,7 +214,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         private void SingleTextParameterEvaluation(string inputExpression, Action<bool> assert)
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.Text;
+            compiler.ParameterTypes["PARAM"] = CalculateEvaluateParameterType.Text;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
             argument.SetText("PaRaM", s0);
@@ -225,7 +225,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         private void SingleTimestampParameterEvaluation(string inputExpression, Action<bool> assert)
         {
             var compiler = new CalculateEvaluateCompiler();
-            compiler.ParameterTypes["PARAM"] = ParameterType.Timestamp;
+            compiler.ParameterTypes["PARAM"] = CalculateEvaluateParameterType.Timestamp;
             var calculator = compiler.GetEvaluator(inputExpression);
             var argument = new CalculateEvaluateArgument();
             argument.SetTimestamp("PaRaM", d0);
