@@ -296,7 +296,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             });
         }
 
-        private class ArgumentInfo
+        private sealed class ArgumentInfo
         {
             public ArgumentInfo(MethodInfo getterInfo, Func<string, ConstantExpression> parseLiteral)
             {

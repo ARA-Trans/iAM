@@ -9,14 +9,7 @@ namespace AppliedResearchAssociates.iAM
         public virtual string Expression
         {
             get => _Expression;
-            set
-            {
-                if (Expression != value)
-                {
-                    _Expression = value;
-                    _EnsureCompiled = _Compile;
-                }
-            }
+            set => _ = UpdateExpression(value);
         }
 
         public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
@@ -47,6 +40,18 @@ namespace AppliedResearchAssociates.iAM
         protected abstract void Compile();
 
         protected void EnsureCompiled() => _EnsureCompiled?.Invoke();
+
+        protected bool UpdateExpression(string value)
+        {
+            if (Expression == value)
+            {
+                return false;
+            }
+
+            _Expression = value;
+            _EnsureCompiled = _Compile;
+            return true;
+        }
 
         private Action _EnsureCompiled;
 

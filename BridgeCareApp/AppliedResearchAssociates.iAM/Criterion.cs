@@ -1,31 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using AppliedResearchAssociates.CalculateEvaluate;
+﻿using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Criterion : CompilableExpression
+    public sealed class Criterion : CalculateEvaluateExpression
     {
-        public Criterion()
-        {
-            WeakReference<FinalActor<Criterion>> key = null;
-            key = this.WithFinalAction(actor => AllInstances.TryRemove(key, out _)).GetWeakReference();
-            _ = AllInstances.TryAdd(key, null);
-        }
-
-        public CalculateEvaluateCompiler Compiler { get; set; }
-
-        public static void SetCompilerForAllInstances(CalculateEvaluateCompiler compiler)
-        {
-            foreach (var (key, _) in AllInstances)
-            {
-                if (key.TryGetTarget(out var target))
-                {
-                    target.Value.Compiler = compiler;
-                }
-            }
-        }
-
         public bool? Evaluate(CalculateEvaluateArgument argument)
         {
             EnsureCompiled();
@@ -42,7 +20,7 @@ namespace AppliedResearchAssociates.iAM
             {
                 try
                 {
-                    Evaluator = Compiler.GetEvaluator(Expression);
+                    Evaluator = Explorer.Compiler.GetEvaluator(Expression);
                 }
                 catch (CalculateEvaluateException e)
                 {
@@ -50,8 +28,6 @@ namespace AppliedResearchAssociates.iAM
                 }
             }
         }
-
-        private static readonly ConcurrentDictionary<WeakReference<FinalActor<Criterion>>, object> AllInstances = new ConcurrentDictionary<WeakReference<FinalActor<Criterion>>, object>();
 
         private Evaluator Evaluator;
     }

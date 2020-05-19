@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AppliedResearchAssociates.CalculateEvaluate;
@@ -7,28 +6,8 @@ using MathNet.Numerics;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Equation : CompilableExpression
+    public sealed class Equation : CalculateEvaluateExpression
     {
-        public Equation()
-        {
-            WeakReference<FinalActor<Equation>> key = null;
-            key = this.WithFinalAction(actor => AllInstances.TryRemove(key, out _)).GetWeakReference();
-            _ = AllInstances.TryAdd(key, null);
-        }
-
-        public CalculateEvaluateCompiler Compiler { get; set; }
-
-        public static void SetCompilerForAllInstances(CalculateEvaluateCompiler compiler)
-        {
-            foreach (var (key, _) in AllInstances)
-            {
-                if (key.TryGetTarget(out var target))
-                {
-                    target.Value.Compiler = compiler;
-                }
-            }
-        }
-
         public double Compute(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             EnsureCompiled();
@@ -70,7 +49,7 @@ namespace AppliedResearchAssociates.iAM
             {
                 try
                 {
-                    Computer = Compiler.GetCalculator(Expression);
+                    Computer = Explorer.Compiler.GetCalculator(Expression);
                 }
                 catch (CalculateEvaluateException e)
                 {
@@ -78,8 +57,6 @@ namespace AppliedResearchAssociates.iAM
                 }
             }
         }
-
-        private static readonly ConcurrentDictionary<WeakReference<FinalActor<Equation>>, object> AllInstances = new ConcurrentDictionary<WeakReference<FinalActor<Equation>>, object>();
 
         private static readonly Regex PiecewisePattern = new Regex($@"(?>\A\s*(?:\(\s*({PatternStrings.Number})\s*,\s*({PatternStrings.Number})\s*\)\s*)*\z)", RegexOptions.Compiled);
 
