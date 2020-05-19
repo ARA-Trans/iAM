@@ -50,52 +50,39 @@ namespace AppliedResearchAssociates.iAM
             return budget;
         }
 
-        public void DecrementBudgetIndex(Budget budget)
+        public bool DecrementBudgetIndex(Budget budget)
         {
             var index = _Budgets.IndexOf(budget);
-
-            if (index < 0)
+            if (index <= 0)
             {
-                throw new ArgumentException("Budget has not been added.", nameof(budget));
+                return false;
             }
 
-            if (index == 0)
-            {
-                throw new ArgumentException("Budget is already ordered first.", nameof(budget));
-            }
-
-            var otherBudget = _Budgets[index - 1];
-            _Budgets[index - 1] = budget;
-            _Budgets[index] = otherBudget;
+            _Budgets.Swap(index - 1, index);
+            return true;
         }
 
-        public void IncrementBudgetIndex(Budget budget)
+        public bool IncrementBudgetIndex(Budget budget)
         {
             var index = _Budgets.IndexOf(budget);
-
-            if (index < 0)
+            if (index < 0 || index == _Budgets.Count - 1)
             {
-                throw new ArgumentException("Budget has not been added.", nameof(budget));
+                return false;
             }
 
-            if (index == _Budgets.Count - 1)
-            {
-                throw new ArgumentException("Budget is already ordered last.", nameof(budget));
-            }
-
-            var otherBudget = _Budgets[index + 1];
-            _Budgets[index + 1] = budget;
-            _Budgets[index] = otherBudget;
+            _Budgets.Swap(index, index + 1);
+            return true;
         }
 
-        public void RemoveBudget(Budget budget)
+        public bool RemoveBudget(Budget budget)
         {
             if (!_Budgets.Remove(budget))
             {
-                throw new ArgumentException("Budget is not present.");
+                return false;
             }
 
             SynchronizeBudgetPriorities();
+            return true;
         }
 
         private readonly List<Budget> _Budgets = new List<Budget>();

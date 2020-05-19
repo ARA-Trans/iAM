@@ -112,6 +112,13 @@ namespace AppliedResearchAssociates
 
         public static bool SequenceEquals<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2, IEqualityComparer<T> comparer = null) => _SequenceEquals(sequence1, sequence2, (comparer ?? EqualityComparer<T>.Default).Equals);
 
+        public static void Swap<T>(this IList<T> list, int index1, int index2)
+        {
+            var item1 = list[index1];
+            list[index1] = list[index2];
+            list[index2] = item1;
+        }
+
         [Obsolete("Already present in netstandard2.1. Remove after upgrading.")]
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> equalityComparer = null) => new HashSet<T>(source, equalityComparer);
 
