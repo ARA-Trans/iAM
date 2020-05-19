@@ -16,7 +16,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner
             }
             else
             {
-                throw new InvalidCastException("Location provided is not a section based location.");
+                return false;
             }
 
         }

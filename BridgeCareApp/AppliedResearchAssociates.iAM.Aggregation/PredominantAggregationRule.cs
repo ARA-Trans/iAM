@@ -9,13 +9,14 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 {
     public class PredominantAggregationRule : TextAggregationRule
     {
-        public override IEnumerable<(DateTime, string)> Apply(IEnumerable<AttributeDatum<string>> attributeData)
+        public override IEnumerable<(int, string)> Apply(IEnumerable<AttributeDatum<string>> attributeData)
         {
             var distinctYears = attributeData.Select(_ => _.TimeStamp.Year).Distinct();
             foreach (var distinctYear in distinctYears)
             {
-                yield return (attributeData
-                    .First(_ => _.TimeStamp.Year == distinctYear).TimeStamp, attributeData
+                var currentYearAttributeData = attributeData.Where(_ => _.TimeStamp.Year == distinctYear);
+                yield return (currentYearAttributeData
+                    .First(_ => _.TimeStamp.Year == distinctYear).TimeStamp.Year, currentYearAttributeData
                     .GroupBy(_ => _.Value)
                     .OrderByDescending(group => group.Count())
                     .Select(group => group.Key)

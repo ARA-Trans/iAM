@@ -32,7 +32,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner
             }
             else
             {
-                throw new InvalidCastException("Location provided is not linear based location.");
+                return false;
             }
         }
     }
