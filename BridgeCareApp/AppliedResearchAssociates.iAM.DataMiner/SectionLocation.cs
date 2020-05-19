@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AppliedResearchAssociates.iAM.DataMiner
+﻿namespace AppliedResearchAssociates.iAM.DataMiner
 {
     public class SectionLocation : Location
     {
@@ -18,7 +16,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner
             {
                 return false;
             }
-
         }
     }
 }

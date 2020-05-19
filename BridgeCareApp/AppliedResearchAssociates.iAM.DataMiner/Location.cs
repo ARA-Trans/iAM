@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AppliedResearchAssociates.iAM.DataMiner
+﻿namespace AppliedResearchAssociates.iAM.DataMiner
 {
     public abstract class Location
     {

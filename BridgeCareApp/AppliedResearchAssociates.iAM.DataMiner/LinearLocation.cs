@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using AppliedResearchAssociates.iAM.DataMiner.Attributes;
+﻿using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.DataMiner
 {

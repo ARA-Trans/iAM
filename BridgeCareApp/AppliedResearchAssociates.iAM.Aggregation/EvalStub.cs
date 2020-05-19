@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
 
 namespace AppliedResearchAssociates.iAM.Aggregation

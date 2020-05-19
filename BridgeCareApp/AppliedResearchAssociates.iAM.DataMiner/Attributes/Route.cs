@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public abstract class Route
     {

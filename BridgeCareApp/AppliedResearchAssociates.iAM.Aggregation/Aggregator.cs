@@ -34,7 +34,6 @@ namespace AppliedResearchAssociates.iAM.Aggregation
                 {
                     // TODO: No matching segment for the current data. What do we do?
                 }
-
             }
             return aggregateDataSegments;
         }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
+﻿namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class NumericAttribute : Attribute
     {
@@ -18,7 +14,9 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         }
 
         public double DefaultValue { get; }
+
         public double Maximum { get; }
+
         public double Minimum { get; }
     }
 }
