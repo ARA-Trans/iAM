@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="DataMinerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestDataForAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using AppliedResearchAssociates.iAM.DataMiner;
 using AppliedResearchAssociates.iAM.DataMiner.Attributes;
-using AppliedResearchAssociates.iAM.DataMiner.NetworkDefinition;
 using ExecutableForProtptype;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -44,13 +44,14 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             new AttributeDatum<string>(iAMConfiguration.B, "GEORGIA", new SectionLocation("B-4-5"), DateTime.Now)
         };
 
-        public static SqlConnection SQLConnection = new SqlConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
+        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
         public static SectionLocation SectionLocation = new SectionLocation("I dont know yet");
 
         public static AttributeDatum<double> NumericAttributeDatum = new AttributeDatum<double>(
             new NumericAttribute("INSPTYPE", SQLConnection, 10, 100, 1), 5, SectionLocation, DateTime.Now);
 
-        //public Network NetworkDefinition { get; } = new Network();
+        //public List<(Location location, double value)> linearLocationList
+        //    = new List<(Location location, double value)> { (new LinearLocation(new SimpleRoute("Test route"), 0, 10), 100) };
 
         public DataMinerTests()
         {
@@ -91,6 +92,62 @@ namespace AppliedResearchAssociates.iAM.UnitTests
 
                     }
                 }
+            }
+        }
+
+        [Test]
+        // This test is meant to fail right now, because "GetData()" has not been implemented for "SqlAttributeConnection" class
+        public void GetNumericDataSqlConnection()
+        {
+            // Arrange
+            var sqlAttributeConnection = new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup");
+            // Act
+            var output = sqlAttributeConnection.GetData<double>();
+
+            // Assert
+            foreach (var item in output)
+            {
+                Assert.That(item.value, !Is.Null);
+                Assert.That(item.value, !Is.TypeOf<double>());
+            }
+        }
+
+        [Test]
+        public void GetTextDataSqlConnection()
+        {
+            // Arrange
+            var sqlAttributeConnection = new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup");
+            // Act
+            var output = sqlAttributeConnection.GetData<string>();
+
+            // Assert
+            foreach (var item in output)
+            {
+                Assert.That(item.value, Is.TypeOf<string>());
+            }
+        }
+
+        [Test]
+        public void CreateNumberAttributeForLinearLocation()
+        {
+            // Arrange / Act
+            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.linearLocationList);
+
+            foreach (var item in output)
+            {
+                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.NumericAttributeDatumSampleOutput.Value));
+            }
+        }
+
+        [Test]
+        public void CreateTextAttributeForSectionLocation()
+        {
+            // Arrange / Act
+            var output = AttributeDatumBuilder<string>.CreateAttributeData(iAMConfiguration.B, TestDataForAttribute.SectionLocationList);
+
+            foreach (var item in output)
+            {
+                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.TextAttributeDatum.Value));
             }
         }
     }
