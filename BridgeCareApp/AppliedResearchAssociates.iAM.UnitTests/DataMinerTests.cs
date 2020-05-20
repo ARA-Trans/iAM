@@ -50,9 +50,6 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         public static AttributeDatum<double> NumericAttributeDatum = new AttributeDatum<double>(
             new NumericAttribute("INSPTYPE", SQLConnection, 10, 100, 1), 5, SectionLocation, DateTime.Now);
 
-        //public List<(Location location, double value)> linearLocationList
-        //    = new List<(Location location, double value)> { (new LinearLocation(new SimpleRoute("Test route"), 0, 10), 100) };
-
         public DataMinerTests()
         {
         }
@@ -131,11 +128,12 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         public void CreateNumberAttributeForLinearLocation()
         {
             // Arrange / Act
-            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.linearLocationList);
+            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.LinearLocationForNumberAttribut);
 
             foreach (var item in output)
             {
-                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.NumericAttributeDatumSampleOutput.Value));
+                Assert.That(item.Value, Is.TypeOf<double>());
+                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.NumericAttributeDataLinearLocation.Value));
             }
         }
 
@@ -143,11 +141,38 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         public void CreateTextAttributeForSectionLocation()
         {
             // Arrange / Act
-            var output = AttributeDatumBuilder<string>.CreateAttributeData(iAMConfiguration.B, TestDataForAttribute.SectionLocationList);
+            var output = AttributeDatumBuilder<string>.CreateAttributeData(iAMConfiguration.B, TestDataForAttribute.SectionLocationForTextAttribute);
 
             foreach (var item in output)
             {
-                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.TextAttributeDatum.Value));
+                Assert.That(item.Value, Is.TypeOf<string>());
+                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.TextAttributeDataSectionLocOutput.Value));
+            }
+        }
+
+        [Test]
+        public void CreateTextAttributeForLinearLocation()
+        {
+            // Arrange / Act
+            var output = AttributeDatumBuilder<string>.CreateAttributeData(iAMConfiguration.B, TestDataForAttribute.LinearLocationForTextAttribute);
+
+            foreach (var item in output)
+            {
+                Assert.That(item.Value, Is.TypeOf<string>());
+                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.TextAttributeDataLinearLocOutput.Value));
+            }
+        }
+
+        [Test]
+        public void CreateNumberAttributeForSectionLocation()
+        {
+            // Arrange / Act
+            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.SectionLocationForNumberAttribute);
+
+            foreach (var item in output)
+            {
+                Assert.That(item.Value, Is.TypeOf<double>());
+                Assert.That(item.Value, Is.EqualTo(TestDataForAttribute.NumericAttributeSectionLocOutput.Value));
             }
         }
     }
