@@ -7,7 +7,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new SortedSet<CashFlowDistributionRule>(DistributionRuleComparer);
+        public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new CollectionWithoutNulls<CashFlowDistributionRule>();
 
         public string Name { get; set; }
 
@@ -22,10 +22,13 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error.Describe("Name is blank."));
                 }
 
+                if (DistributionRules.Count == 0)
+                {
+                    results.Add(ValidationStatus.Error.Describe("There are no distribution rules."));
+                }
+
                 return results;
             }
         }
-
-        private static readonly IComparer<CashFlowDistributionRule> DistributionRuleComparer = SelectionComparer<CashFlowDistributionRule>.Create(distributionRule => distributionRule.CostCeiling ?? decimal.MaxValue);
     }
 }

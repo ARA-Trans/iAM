@@ -6,7 +6,7 @@ using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class CommittedProject : Treatment, IValidator
+    public sealed class CommittedProject : Treatment
     {
         public CommittedProject(Section section, int year)
         {
@@ -46,6 +46,20 @@ namespace AppliedResearchAssociates.iAM
             get
             {
                 var results = base.ValidationResults;
+
+                if (Budget == null)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Budget is unset."));
+                }
+
+                if (Cost < 0)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Cost is less than zero."));
+                }
+                else if (Cost == 0)
+                {
+                    results.Add(ValidationStatus.Warning.Describe("Cost is zero."));
+                }
 
                 if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
                 {

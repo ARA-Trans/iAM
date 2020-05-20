@@ -5,17 +5,27 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class NumberAttribute : Attribute<double>
     {
-        public bool IsDecreasingWithDeterioration { get; }
+        public bool IsDecreasingWithDeterioration { get; set; }
 
-        public double? Maximum { get; }
+        public double? Maximum { get; set; }
 
-        public double? Minimum { get; }
+        public double? Minimum { get; set; }
 
         public override ICollection<ValidationResult> ValidationResults
         {
             get
             {
                 var results = base.ValidationResults;
+
+                if (Minimum.HasValue && double.IsNaN(Minimum.Value))
+                {
+                    results.Add(ValidationStatus.Error.Describe("Minimum is not a number."));
+                }
+
+                if (Maximum.HasValue && double.IsNaN(Maximum.Value))
+                {
+                    results.Add(ValidationStatus.Error.Describe("Maximum is not a number."));
+                }
 
                 if (Minimum is double minimum && Maximum is double maximum)
                 {
@@ -27,22 +37,14 @@ namespace AppliedResearchAssociates.iAM
                     {
                         results.Add(ValidationStatus.Error.Describe("Minimum is greater than maximum."));
                     }
-                    else
-                    {
-                        if (double.IsNaN(minimum))
-                        {
-                            results.Add(ValidationStatus.Error.Describe("Minimum is not a number."));
-                        }
-
-                        if (double.IsNaN(maximum))
-                        {
-                            results.Add(ValidationStatus.Error.Describe("Maximum is not a number."));
-                        }
-                    }
                 }
 
                 return results;
             }
+        }
+
+        internal NumberAttribute(Explorer explorer) : base(explorer)
+        {
         }
     }
 }

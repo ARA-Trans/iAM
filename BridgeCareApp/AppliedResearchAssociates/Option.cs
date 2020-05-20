@@ -68,6 +68,26 @@ namespace AppliedResearchAssociates
         }
 
         /// <summary>
+        ///     Handle the presence or absence of a value in this option.
+        /// </summary>
+        /// <param name="handleValue"></param>
+        /// <param name="handleNoValue"></param>
+        public U Handle<U>(Func<T, U> handleValue, Func<U> handleNoValue)
+        {
+            if (handleValue is null)
+            {
+                throw new ArgumentNullException(nameof(handleValue));
+            }
+
+            if (handleNoValue is null)
+            {
+                throw new ArgumentNullException(nameof(handleNoValue));
+            }
+
+            return HasValue ? handleValue(_Value) : handleNoValue();
+        }
+
+        /// <summary>
         ///     Transform the value of this option.
         /// </summary>
         /// <typeparam name="U"></typeparam>
@@ -282,5 +302,31 @@ namespace AppliedResearchAssociates
         /// <param name="nullable"></param>
         /// <returns>an optional value</returns>
         public static Option<T> Of<T>(T? nullable) where T : struct => nullable.HasValue ? new Option<T>(nullable.Value) : new Option<T>();
+
+        /// <summary>
+        ///     Create an option object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="_">never required; only declared to disambiguate overloads</param>
+        /// <returns>an optional reference</returns>
+        public static Option<T> ToOption<T>(this T value, RequireClass<T> _ = null) where T : class => value is null ? new Option<T>() : new Option<T>(value);
+
+        /// <summary>
+        ///     Create an option object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="_">never required; only declared to disambiguate overloads</param>
+        /// <returns>an optional value</returns>
+        public static Option<T> ToOption<T>(this T value, RequireStruct<T> _ = null) where T : struct => new Option<T>(value);
+
+        /// <summary>
+        ///     Create an option object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nullable"></param>
+        /// <returns>an optional value</returns>
+        public static Option<T> ToOption<T>(this T? nullable) where T : struct => nullable.HasValue ? new Option<T>(nullable.Value) : new Option<T>();
     }
 }

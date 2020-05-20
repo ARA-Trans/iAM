@@ -5,26 +5,31 @@ using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class CalculatedField : IValidator
+    public sealed class CalculatedField : Attribute
     {
-        public ICollection<ConditionalEquation> Equations { get; } = new List<ConditionalEquation>();
+        public ICollection<ConditionalEquation> Equations { get; } = new CollectionWithoutNulls<ConditionalEquation>();
 
-        public string Name { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public override ICollection<ValidationResult> ValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = base.ValidationResults;
 
-                if (Equations.Count(equation => equation.Criterion.ExpressionIsBlank) > 1)
+                if (Equations.Count == 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Multiple equations have a blank criterion."));
+                    results.Add(ValidationStatus.Error.Describe("There are no equations."));
                 }
-
-                if (string.IsNullOrWhiteSpace(Name))
+                else
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    var numberOfEquationsWithBlankCriterion = Equations.Count(equation => equation.Criterion.ExpressionIsBlank);
+                    if (numberOfEquationsWithBlankCriterion == 0)
+                    {
+                        results.Add(ValidationStatus.Warning.Describe("There are no equations with a blank criterion."));
+                    }
+                    else if (numberOfEquationsWithBlankCriterion > 1)
+                    {
+                        results.Add(ValidationStatus.Error.Describe("There are multiple equations with a blank criterion."));
+                    }
                 }
 
                 return results;
@@ -53,6 +58,10 @@ namespace AppliedResearchAssociates.iAM
             }
 
             return operativeEquations[0].Equation.Compute(argument, ageAttribute);
+        }
+
+        internal CalculatedField(Explorer explorer) : base(explorer)
+        {
         }
     }
 }

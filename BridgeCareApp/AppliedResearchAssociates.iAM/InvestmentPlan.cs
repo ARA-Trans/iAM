@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class InvestmentPlan
+    public sealed class InvestmentPlan : IValidator
     {
         public InvestmentPlan(Simulation simulation)
         {
@@ -13,11 +14,11 @@ namespace AppliedResearchAssociates.iAM
             SynchronizeBudgetPriorities();
         }
 
-        public List<BudgetCondition> BudgetConditions { get; }
+        public ICollection<BudgetCondition> BudgetConditions { get; } = new CollectionWithoutNulls<BudgetCondition>();
 
-        public IReadOnlyList<Budget> Budgets => _Budgets;
+        public IReadOnlyCollection<Budget> Budgets => _Budgets;
 
-        public List<CashFlowRule> CashFlowRules { get; }
+        public ICollection<CashFlowRule> CashFlowRules { get; } = new CollectionWithoutNulls<CashFlowRule>();
 
         public double DiscountRatePercentage { get; }
 

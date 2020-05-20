@@ -1,26 +1,110 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Explorer
+    public sealed class Explorer : IValidator
     {
-        public List<CalculatedField> CalculatedFields { get; }
+        public IReadOnlyCollection<CalculatedField> CalculatedFields => _CalculatedFields;
 
-        public List<Network> Networks { get; }
+        public IReadOnlyCollection<Network> Networks => _Networks;
 
         public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
 
         public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;
 
-        internal IReadOnlyDictionary<string, Attribute> AttributesByName => _AttributesByName;
+        public ICollection<ValidationResult> ValidationResults
+        {
+            get
+            {
+                var results = new List<ValidationResult>();
+
+                if (Networks.Select(network => network.Name).Distinct().Count() < Networks.Count)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Multiple networks have the same name."));
+                }
+
+                return results;
+            }
+        }
+
+        public bool AddAttribute(string name, out CalculatedField attribute)
+        {
+            attribute = new CalculatedField(this);
+            return AddAttribute(name, ref attribute, _CalculatedFields, CalculateEvaluateParameterType.Number);
+        }
+
+        public bool AddAttribute(string name, out NumberAttribute attribute)
+        {
+            attribute = new NumberAttribute(this);
+            return AddAttribute(name, ref attribute, _NumberAttributes, CalculateEvaluateParameterType.Number);
+        }
+
+        public bool AddAttribute(string name, out TextAttribute attribute)
+        {
+            attribute = new TextAttribute(this);
+            return AddAttribute(name, ref attribute, _TextAttributes, CalculateEvaluateParameterType.Text);
+        }
+
+        public Network AddNetwork()
+        {
+            var network = new Network(this);
+            _Networks.Add(network);
+            return network;
+        }
+
+        public bool RemoveAttribute(CalculatedField attribute) => RemoveAttribute(attribute, _CalculatedFields);
+
+        public bool RemoveAttribute(NumberAttribute attribute) => RemoveAttribute(attribute, _NumberAttributes);
+
+        public bool RemoveAttribute(TextAttribute attribute) => RemoveAttribute(attribute, _TextAttributes);
+
+        public bool RemoveNetwork(Network network) => _Networks.Remove(network);
+
+        internal IEnumerable<Attribute> AllAttributes => CalculatedFields.Concat<Attribute>(NumberAttributes).Concat(TextAttributes);
 
         internal CalculateEvaluateCompiler Compiler { get; } = new CalculateEvaluateCompiler();
 
-        private readonly Dictionary<string, Attribute> _AttributesByName = new Dictionary<string, Attribute>();
+        internal void RemoveParameterType(string parameterName)
+        {
+            if (!Compiler.ParameterTypes.Remove(parameterName))
+            {
+                throw new InvalidOperationException("Failed to update compiler's known parameters.");
+            }
+        }
+
+        private readonly List<CalculatedField> _CalculatedFields = new List<CalculatedField>();
+
+        private readonly List<Network> _Networks = new List<Network>();
 
         private readonly List<NumberAttribute> _NumberAttributes = new List<NumberAttribute>();
 
         private readonly List<TextAttribute> _TextAttributes = new List<TextAttribute>();
+
+        private bool AddAttribute<T>(string name, ref T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
+        {
+            if (!attribute.UpdateName(name))
+            {
+                attribute = default;
+                return false;
+            }
+
+            attributes.Add(attribute);
+            return true;
+        }
+
+        private bool RemoveAttribute<T>(T attribute, ICollection<T> attributes) where T : Attribute
+        {
+            if (!attributes.Remove(attribute))
+            {
+                return false;
+            }
+
+            RemoveParameterType(attribute.Name);
+            return true;
+        }
     }
 }

@@ -7,19 +7,22 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Simulation : IValidator
     {
-        public Simulation(Network network)
-        {
-            Network = network ?? throw new ArgumentNullException(nameof(network));
-
-            AnalysisMethod = new AnalysisMethod(this);
-            InvestmentPlan = new InvestmentPlan(this);
-        }
-
         public AnalysisMethod AnalysisMethod { get; }
 
-        public ICollection<CommittedProject> CommittedProjects { get; } = new List<CommittedProject>();
+        public ICollection<CommittedProject> CommittedProjects { get; } = new CollectionWithoutNulls<CommittedProject>();
 
-        public SelectableTreatment DesignatedPassiveTreatment { get; set; }
+        public SelectableTreatment DesignatedPassiveTreatment
+        {
+            get => _DesignatedPassiveTreatment;
+            set
+            {
+                _DesignatedPassiveTreatment = value;
+
+                Treatments.Add(DesignatedPassiveTreatment);
+            }
+        }
+
+        private SelectableTreatment _DesignatedPassiveTreatment;
 
         public InvestmentPlan InvestmentPlan { get; }
 
@@ -29,11 +32,11 @@ namespace AppliedResearchAssociates.iAM
 
         public int NumberOfYearsOfTreatmentOutlook { get; set; } = 100;
 
-        public ICollection<PerformanceCurve> PerformanceCurves { get; } = new List<PerformanceCurve>();
+        public ICollection<PerformanceCurve> PerformanceCurves { get; } = new CollectionWithoutNulls<PerformanceCurve>();
 
-        public ICollection<SimulationYearDetail> Results { get; } = new List<SimulationYearDetail>();
+        public ICollection<SimulationYearDetail> Results { get; } = new CollectionWithoutNulls<SimulationYearDetail>();
 
-        public ICollection<SelectableTreatment> Treatments { get; } = new List<SelectableTreatment>();
+        public ICollection<SelectableTreatment> Treatments { get; } = new CollectionWithoutNulls<SelectableTreatment>();
 
         public ICollection<ValidationResult> ValidationResults
         {
@@ -60,6 +63,11 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error.Describe("Number of years of treatment outlook is less than one."));
                 }
 
+                if (Treatments.Select(treatment => treatment.Name).Distinct().Count() < Treatments.Count)
+                {
+                    results.Add(ValidationStatus.Error.Describe("Multiple selectable treatments have the same name."));
+                }
+
                 return results;
             }
         }
@@ -69,6 +77,14 @@ namespace AppliedResearchAssociates.iAM
             var result = Treatments.ToHashSet();
             _ = result.Remove(DesignatedPassiveTreatment);
             return result;
+        }
+
+        internal Simulation(Network network)
+        {
+            Network = network ?? throw new ArgumentNullException(nameof(network));
+
+            AnalysisMethod = new AnalysisMethod(this);
+            InvestmentPlan = new InvestmentPlan(this);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Criterion : CalculateEvaluateExpression
+    public sealed class Criterion : AttributeExpression
     {
         public bool? Evaluate(CalculateEvaluateArgument argument)
         {

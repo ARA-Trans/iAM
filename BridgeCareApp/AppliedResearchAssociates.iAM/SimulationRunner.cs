@@ -23,6 +23,12 @@ namespace AppliedResearchAssociates.iAM
 
         // [REVIEW] What happens when one calculated field has multiple equations whose criteria are met?
 
+        // [REVIEW] When a single budget has multiple conditions, do all of them have to be
+        // satisfied? or just one?
+
+        // [REVIEW] When a given budget has no conditions, is there an implicit blank condition,
+        // i.e. the condition is always met? or does it mean the budget can never be used?
+
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
         public event EventHandler<InformationEventArgs> Information;
@@ -31,7 +37,7 @@ namespace AppliedResearchAssociates.iAM
 
         public Simulation Simulation { get; }
 
-        public ICollection<SimulationYearDetail> Run()
+        public void Run()
         {
             if (Interlocked.Exchange(ref StatusCode, STATUS_CODE_RUNNING) == STATUS_CODE_RUNNING)
             {
@@ -44,7 +50,7 @@ namespace AppliedResearchAssociates.iAM
             CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
             NumberAttributeByName = Simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name, StringComparer.OrdinalIgnoreCase);
 
-            SectionContexts = Simulation.Network.Sections
+            SectionContexts = Simulation.Network.SectionHistories
                 .AsParallel()
                 .Select(history => new SectionContext(history, this))
                 .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true)
@@ -88,12 +94,12 @@ namespace AppliedResearchAssociates.iAM
                 throw new SimulationException(MessageStrings.InvalidSpendingStrategy);
             }
 
-            var detailsOfSimulationYears = new List<SimulationYearDetail>();
+            Simulation.Results.Clear();
 
             foreach (var year in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
                 var detail = new SimulationYearDetail(year);
-                detailsOfSimulationYears.Add(detail);
+                Simulation.Results.Add(detail);
 
                 _ = Parallel.ForEach(SectionContexts, context => context.ResetDetail());
 
@@ -110,8 +116,6 @@ namespace AppliedResearchAssociates.iAM
             }
 
             StatusCode = STATUS_CODE_NOT_RUNNING;
-
-            return detailsOfSimulationYears;
         }
 
         internal ILookup<Section, CommittedProject> CommittedProjectsPerSection { get; private set; }
@@ -503,10 +507,8 @@ namespace AppliedResearchAssociates.iAM
                     continue;
                 }
 
-                var budgetConditionIsMet = Simulation.InvestmentPlan.BudgetConditions.Any(condition =>
-                    condition.Budget == budgetContext.Budget &&
-                    (condition.Criterion.Evaluate(sectionContext) ?? true));
-
+                var budgetConditions = Simulation.InvestmentPlan.BudgetConditions.Where(condition => condition.Budget == budgetContext.Budget).ToArray();
+                var budgetConditionIsMet = budgetConditions.Length == 0 || budgetConditions.Any(condition => condition.Criterion.Evaluate(sectionContext) ?? true);
                 if (!budgetConditionIsMet)
                 {
                     budgetDetail.BudgetReason = BudgetReason.ConditionNotMet;

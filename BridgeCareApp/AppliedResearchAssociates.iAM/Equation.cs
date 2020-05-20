@@ -6,7 +6,7 @@ using MathNet.Numerics;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Equation : CalculateEvaluateExpression
+    public sealed class Equation : AttributeExpression
     {
         public double Compute(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {

@@ -35,7 +35,7 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
 
-        public ICollection<DeficientConditionGoal> DeficientConditionGoals { get; } = new List<DeficientConditionGoal>();
+        public ICollection<DeficientConditionGoal> DeficientConditionGoals { get; } = new CollectionWithoutNulls<DeficientConditionGoal>();
 
         public string Description { get; set; }
 
@@ -43,13 +43,13 @@ namespace AppliedResearchAssociates.iAM
 
         public OptimizationStrategy OptimizationStrategy { get; set; }
 
-        public ICollection<RemainingLifeLimit> RemainingLifeLimits { get; } = new List<RemainingLifeLimit>();
+        public ICollection<RemainingLifeLimit> RemainingLifeLimits { get; } = new CollectionWithoutNulls<RemainingLifeLimit>();
 
         public bool ShouldApplyMultipleFeasibleCosts { get; set; }
 
         public SpendingStrategy SpendingStrategy { get; set; }
 
-        public ICollection<TargetConditionGoal> TargetConditionGoals { get; } = new List<TargetConditionGoal>();
+        public ICollection<TargetConditionGoal> TargetConditionGoals { get; } = new CollectionWithoutNulls<TargetConditionGoal>();
 
         public bool UseExtraFundsAcrossBudgets { get; set; }
 
@@ -123,13 +123,7 @@ namespace AppliedResearchAssociates.iAM
 
         public double LimitBenefit(double benefit) => Math.Max(0, _LimitBenefit(benefit));
 
-        public void RemoveBudgetPriority(BudgetPriority budgetPriority)
-        {
-            if (!_BudgetPriorities.Remove(budgetPriority))
-            {
-                throw new ArgumentException("Budget priority is not present.");
-            }
-        }
+        public bool RemoveBudgetPriority(BudgetPriority budgetPriority) => _BudgetPriorities.Remove(budgetPriority);
 
         private readonly List<BudgetPriority> _BudgetPriorities = new List<BudgetPriority>();
 
