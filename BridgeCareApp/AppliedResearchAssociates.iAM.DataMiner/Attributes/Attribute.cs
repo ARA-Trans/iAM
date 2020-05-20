@@ -15,6 +15,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 
         public string Name { get; }
 
-        public AttributeConnection AttributeConnection { get; }        
+        public AttributeConnection AttributeConnection { get; }
     }
 }

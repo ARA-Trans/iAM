@@ -2,5 +2,6 @@
 {
     public abstract class Location
     {
+        public abstract bool MatchOn(Location location);
     }
 }
