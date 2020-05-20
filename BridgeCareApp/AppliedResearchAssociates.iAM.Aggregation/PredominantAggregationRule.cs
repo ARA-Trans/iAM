@@ -12,12 +12,12 @@ namespace AppliedResearchAssociates.iAM.Aggregation
             foreach (var distinctYear in distinctYears)
             {
                 var currentYearAttributeData = attributeData.Where(_ => _.TimeStamp.Year == distinctYear);
-                yield return (currentYearAttributeData
-                    .First(_ => _.TimeStamp.Year == distinctYear).TimeStamp.Year, currentYearAttributeData
+                yield return (distinctYear, currentYearAttributeData
                     .GroupBy(_ => _.Value)
                     .OrderByDescending(group => group.Count())
                     .Select(group => group.Key)
                     .Where(_ => _ != null)
+                    .OrderBy(_ => _)
                     .First());
             }
         }
