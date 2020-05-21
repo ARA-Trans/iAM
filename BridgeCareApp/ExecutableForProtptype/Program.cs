@@ -57,7 +57,7 @@ namespace ExecutableForProtptype
             var numericAttribute = new NumericAttribute(item.AttributeName, sqlConnection,
                                                          Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
 
-            var linearLocation = new LinearLocation(new SimpleRoute("Test simple route"), 0, 10);
+            var linearLocation = new LinearLocation(new SimpleRoute("Test simple route"), uniqueIdentifier, 0, 10);
             var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 100, linearLocation, DateTime.Now);
 
             return numericAttributeDatum;

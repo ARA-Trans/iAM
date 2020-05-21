@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
@@ -26,6 +25,13 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        ///     Maps data from a data source to routeName, start, end,
+        ///     direction, and/or wellKnownText. The only required value from
+        ///     the data set is a uniqueIdentifier
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public override IEnumerable<(Location location, T value)> GetData<T>()
         {
             string routeName = null;
@@ -33,24 +39,21 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
             double? end = null;
             Direction? direction = null;
             string wellKnownText = null;
-            string uniqueIdentifier = null;
 
-
-            foreach(var datum in data)
+            foreach (var datum in data)
             {
+                string uniqueIdentifier = data.UniqueIdentifier;
                 yield return (LocationBuilder.CreateLocation
                     (
+                        uniqueIdentifier,
                         routeName,
                         start,
                         end,
                         direction,
-                        uniqueIdentifier,
                         wellKnownText
                     ),
                     datum.Value);
             }
-
-            
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class GisLocation : Location
     {
-        public GisLocation(string wellKnownTextString)
+        public GisLocation(string wellKnownTextString, string uniqueIdentifier) : base(uniqueIdentifier)
         {
             WellKnownTextString = wellKnownTextString;
         }
