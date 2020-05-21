@@ -52,6 +52,7 @@ namespace ExecutableForProtptype
         {
             var sqlConnection = new SqlAttributeConnection(item.Connection.UserName, item.Connection.Password,
                             item.Connection.Server, item.Connection.DataSource);
+            var data = sqlConnection.GetData<double>(item.AttributeName);
 
             var numericAttribute = new NumericAttribute(item.AttributeName, sqlConnection,
                                                          Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);

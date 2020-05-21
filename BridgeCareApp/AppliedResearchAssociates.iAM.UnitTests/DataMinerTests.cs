@@ -99,7 +99,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             // Arrange
             var sqlAttributeConnection = new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup");
             // Act
-            var output = sqlAttributeConnection.GetData<double>();
+            var output = sqlAttributeConnection.GetData<double>("ADT");
 
             // Assert
             foreach (var item in output)
@@ -115,7 +115,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             // Arrange
             var sqlAttributeConnection = new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup");
             // Act
-            var output = sqlAttributeConnection.GetData<string>();
+            var output = sqlAttributeConnection.GetData<string>("ADT");
 
             // Assert
             foreach (var item in output)
@@ -128,7 +128,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         public void CreateNumberAttributeForLinearLocation()
         {
             // Arrange / Act
-            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.LinearLocationForNumberAttribut);
+            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, 100, );
 
             foreach (var item in output)
             {
