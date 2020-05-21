@@ -45,10 +45,10 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         };
 
         public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
-        public static SectionLocation SectionLocation = new SectionLocation("I dont know yet");
+        public static LinearLocation LinearLocation = new LinearLocation(new SimpleRoute("Test simple route"), 0, 10);
 
         public static AttributeDatum<double> NumericAttributeDatum = new AttributeDatum<double>(
-            new NumericAttribute("INSPTYPE", SQLConnection, 10, 100, 1), 5, SectionLocation, DateTime.Now);
+            new NumericAttribute("ADT", SQLConnection, 10, 100, 1), 5, LinearLocation, DateTime.Now);
 
         public DataMinerTests()
         {
@@ -64,7 +64,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             {
                 if (item.DataType.ToLower().Equals("number"))
                 {
-                    if (item.Location.ToLower().Equals("section"))
+                    if (item.Location.ToLower().Equals("linear"))
                     {
                         // Arrange/ Act
                         var numericAttributeData = new NumericAttributeDataCreator();

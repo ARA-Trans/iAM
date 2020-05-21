@@ -21,7 +21,7 @@ namespace ExecutableForProtptype
             {
                 if (item.DataType.ToLower().Equals("number"))
                 {
-                    if (item.Location.ToLower().Equals("section"))
+                    if (item.Location.ToLower().Equals("linear"))
                     {
                         var numericAttributeData = new NumericAttributeDataCreator();
                         var result = numericAttributeData.GetNumericAttributeDatum(item);
@@ -56,8 +56,8 @@ namespace ExecutableForProtptype
             var numericAttribute = new NumericAttribute(item.AttributeName, sqlConnection,
                                                          Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
 
-            var sectionLocation = new SectionLocation("I dont know yet");
-            var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 5, sectionLocation, DateTime.Now);
+            var linearLocation = new LinearLocation(new SimpleRoute("Test simple route"), 0, 10);
+            var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 100, linearLocation, DateTime.Now);
 
             return numericAttributeDatum;
         }
