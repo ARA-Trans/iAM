@@ -6,6 +6,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
     {
         public abstract void Connect();
 
-        public abstract IEnumerable<(Location location, T value)> GetData<T>();
+        public abstract IEnumerable<(Location location, T value)> GetData<T>(string attributeName);
     }
 }

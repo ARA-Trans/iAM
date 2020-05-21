@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
@@ -23,12 +24,33 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 
         public override void Connect()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public override IEnumerable<(Location location, T value)> GetData<T>()
+        public override IEnumerable<(Location location, T value)> GetData<T>(string attributeName)
         {
-            throw new NotImplementedException();
+            var connectionString = $"data source={Server};initial catalog={DataSource};persist security info=True;" +
+                $"user id={UserName};password={Password};MultipleActiveResultSets=True";
+
+            IEnumerable<(Location location, T value)> data = new List<(Location location, T value)>();
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var query = $"Select * from {attributeName}";
+                var command = new SqlCommand(query, conn);
+                command.Connection.Open();
+                var dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    var route = dataReader.GetFieldValue<string>(1);
+                    var beginMilePost = dataReader.GetFieldValue<double>(2);
+                    var endMilePost = dataReader.GetFieldValue<double>(3);
+                    var direction = dataReader.GetFieldValue<string>(4);
+                    var value = dataReader.GetFieldValue<double>(5);
+                    var dataTime = dataReader.GetFieldValue<DateTime>(6);
+                }
+            }
+            return data;
         }
     }
 }
