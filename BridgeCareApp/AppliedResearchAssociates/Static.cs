@@ -7,6 +7,22 @@ namespace AppliedResearchAssociates
 {
     public static partial class Static
     {
+        public static void AddMany<T>(this ICollection<T> collection, IEnumerable<T> items)
+        {
+            if (collection is null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            if (items != null)
+            {
+                foreach (var item in items)
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
         public static IDisposable AsDisposable(this IEnumerable<IDisposable> source) => new AggregateDisposable(source);
 
         public static T? AsNullable<T>(this T value) where T : struct => value;
@@ -76,6 +92,7 @@ namespace AppliedResearchAssociates
             }
         }
 
+        [Obsolete(NET_STANDARD_2_1_AVAILABILITY)]
         public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> keyValue, out TKey key, out TValue value)
         {
             key = keyValue.Key;
@@ -119,10 +136,12 @@ namespace AppliedResearchAssociates
             list[index2] = item1;
         }
 
-        [Obsolete("Already present in netstandard2.1. Remove after upgrading.")]
+        [Obsolete(NET_STANDARD_2_1_AVAILABILITY)]
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> equalityComparer = null) => new HashSet<T>(source, equalityComparer);
 
         public static FinalActor<T> WithFinalAction<T>(this T value, Action<FinalActor<T>> finalAction) => new FinalActor<T>(value, finalAction ?? throw new ArgumentNullException(nameof(finalAction)));
+
+        private const string NET_STANDARD_2_1_AVAILABILITY = "Already present in netstandard2.1. Remove after upgrading.";
 
         private static int _SequenceCompare<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2, Func<T, T, int> compare)
         {

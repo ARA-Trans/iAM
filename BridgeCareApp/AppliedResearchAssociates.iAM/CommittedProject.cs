@@ -16,7 +16,7 @@ namespace AppliedResearchAssociates.iAM
 
         public Budget Budget { get; set; }
 
-        public ICollection<UnconditionalTreatmentConsequence> Consequences { get; } = new List<UnconditionalTreatmentConsequence>();
+        public ICollection<UnconditionalTreatmentConsequence> Consequences { get; } = new ListWithoutNulls<UnconditionalTreatmentConsequence>();
 
         public double Cost { get; set; }
 
@@ -41,29 +41,29 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public override ICollection<ValidationResult> ValidationResults
+        public override ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
-                var results = base.ValidationResults;
+                var results = base.DirectValidationResults;
 
                 if (Budget == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Budget is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Budget is unset."));
                 }
 
                 if (Cost < 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Cost is less than zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Cost is less than zero."));
                 }
                 else if (Cost == 0)
                 {
-                    results.Add(ValidationStatus.Warning.Describe("Cost is zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "Cost is zero."));
                 }
 
                 if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
                 {
-                    results.Add(ValidationStatus.Error.Describe("At least one attribute is acted on by more than one consequence."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one attribute is acted on by more than one consequence."));
                 }
 
                 return results;

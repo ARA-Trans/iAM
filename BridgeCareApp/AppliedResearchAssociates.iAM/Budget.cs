@@ -6,9 +6,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Budget : IValidator
     {
-        public string Name { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -16,25 +14,23 @@ namespace AppliedResearchAssociates.iAM
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
                 }
 
                 if (YearlyAmounts.Count == 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("There are no yearly amounts."));
-                }
-                else if (YearlyAmounts.Any(amount => amount < 0))
-                {
-                    results.Add(ValidationStatus.Warning.Describe("At least one yearly amount is less than zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, YearlyAmounts, "There are no yearly amounts."));
                 }
 
                 return results;
             }
         }
 
-        public IReadOnlyList<decimal> YearlyAmounts => _YearlyAmounts;
+        public Box<string> Name { get; } = new Box<string>();
 
-        public void SetYearlyAmount(int index, decimal amount) => _YearlyAmounts[index] = amount;
+        public ICollection<IValidator> Subvalidators => YearlyAmounts.ToList<IValidator>();
+
+        public IReadOnlyList<BudgetAmount> YearlyAmounts => _YearlyAmounts;
 
         internal void SetNumberOfYears(int numberOfYears)
         {
@@ -44,10 +40,10 @@ namespace AppliedResearchAssociates.iAM
             }
             else if (numberOfYears > _YearlyAmounts.Count)
             {
-                _YearlyAmounts.AddRange(Enumerable.Repeat(0m, numberOfYears - _YearlyAmounts.Count));
+                _YearlyAmounts.AddRange(Enumerable.Range(0, numberOfYears - _YearlyAmounts.Count).Select(_ => new BudgetAmount()));
             }
         }
 
-        private readonly List<decimal> _YearlyAmounts = new List<decimal>();
+        private readonly List<BudgetAmount> _YearlyAmounts = new List<BudgetAmount>();
     }
 }

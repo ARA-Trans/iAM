@@ -9,7 +9,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public Attribute Attribute { get; set; }
 
-        public virtual ICollection<ValidationResult> ValidationResults
+        public virtual ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -17,7 +17,7 @@ namespace AppliedResearchAssociates.iAM
 
                 if (Attribute == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Attribute is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Attribute is unset."));
                 }
 
                 return results;

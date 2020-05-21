@@ -5,25 +5,35 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class RemainingLifeLimit : IValidator
     {
-        public NumberAttribute Attribute { get; set; }
+        public Box<NumberAttribute> Attribute { get; } = new Box<NumberAttribute>();
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public double Value { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
                 var results = new List<ValidationResult>();
 
-                if (Attribute == null)
+                if (Attribute.Value == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Attribute is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Attribute, "Attribute is unset."));
                 }
 
                 return results;
             }
         }
+
+        public ICollection<IValidator> Subvalidators
+        {
+            get
+            {
+                var validators = new List<IValidator>();
+                validators.Add(Criterion);
+                return validators;
+            }
+        }
+
+        public double Value { get; set; }
     }
 }

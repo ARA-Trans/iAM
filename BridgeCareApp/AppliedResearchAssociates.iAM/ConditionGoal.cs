@@ -5,29 +5,39 @@ namespace AppliedResearchAssociates.iAM
 {
     public abstract class ConditionGoal : IValidator
     {
-        public virtual NumberAttribute Attribute { get; set; }
+        public virtual Box<NumberAttribute> Attribute { get; } = new Box<NumberAttribute>();
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public string Name { get; set; }
+        public Box<string> Name { get; } = new Box<string>();
 
-        public virtual ICollection<ValidationResult> ValidationResults
+        public virtual ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
                 var results = new List<ValidationResult>();
 
-                if (Attribute == null)
+                if (Attribute.Value == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Attribute is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Attribute, "Attribute is unset."));
                 }
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
                 }
 
                 return results;
+            }
+        }
+
+        public ICollection<IValidator> Subvalidators
+        {
+            get
+            {
+                var validators = new List<IValidator>();
+                validators.Add(Criterion);
+                return validators;
             }
         }
 

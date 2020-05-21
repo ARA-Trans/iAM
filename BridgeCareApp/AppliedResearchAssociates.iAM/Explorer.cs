@@ -10,13 +10,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public IReadOnlyCollection<CalculatedField> CalculatedFields => _CalculatedFields;
 
-        public IReadOnlyCollection<Network> Networks => _Networks;
-
-        public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
-
-        public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -24,12 +18,31 @@ namespace AppliedResearchAssociates.iAM
 
                 if (Networks.Select(network => network.Name).Distinct().Count() < Networks.Count)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Multiple networks have the same name."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Networks, "Multiple networks have the same name."));
                 }
 
                 return results;
             }
         }
+
+        public IReadOnlyCollection<Network> Networks => _Networks;
+
+        public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
+
+        public ICollection<IValidator> Subvalidators
+        {
+            get
+            {
+                var validators = new List<IValidator>();
+                validators.AddMany(CalculatedFields);
+                validators.AddMany(Networks);
+                validators.AddMany(NumberAttributes);
+                validators.AddMany(TextAttributes);
+                return validators;
+            }
+        }
+
+        public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;
 
         public bool AddAttribute(string name, out CalculatedField attribute)
         {
@@ -72,7 +85,7 @@ namespace AppliedResearchAssociates.iAM
         {
             if (!Compiler.ParameterTypes.Remove(parameterName))
             {
-                throw new InvalidOperationException("Failed to update compiler's known parameters.");
+                throw new InvalidOperationException("Failed to remove parameter from compiler.");
             }
         }
 
@@ -86,12 +99,13 @@ namespace AppliedResearchAssociates.iAM
 
         private bool AddAttribute<T>(string name, ref T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
         {
-            if (!attribute.UpdateName(name))
+            if (!attribute.Name.UpdateValue(name))
             {
                 attribute = default;
                 return false;
             }
 
+            Compiler.ParameterTypes.Add(attribute.Name.Value, parameterType);
             attributes.Add(attribute);
             return true;
         }
@@ -103,7 +117,7 @@ namespace AppliedResearchAssociates.iAM
                 return false;
             }
 
-            RemoveParameterType(attribute.Name);
+            RemoveParameterType(attribute.Name.Value);
             return true;
         }
     }

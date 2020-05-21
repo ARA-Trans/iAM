@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
@@ -7,11 +8,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new CollectionWithoutNulls<CashFlowDistributionRule>();
-
-        public string Name { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -19,15 +16,29 @@ namespace AppliedResearchAssociates.iAM
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
                 }
 
                 if (DistributionRules.Count == 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("There are no distribution rules."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, DistributionRules, "There are no distribution rules."));
                 }
 
                 return results;
+            }
+        }
+
+        public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new ListWithoutNulls<CashFlowDistributionRule>();
+
+        public Box<string> Name { get; } = new Box<string>();
+
+        public ICollection<IValidator> Subvalidators
+        {
+            get
+            {
+                var validators = DistributionRules.ToList<IValidator>();
+                validators.Add(Criterion);
+                return validators;
             }
         }
     }

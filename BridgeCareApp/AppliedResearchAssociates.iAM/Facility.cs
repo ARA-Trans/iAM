@@ -5,9 +5,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Facility : IValidator
     {
-        public string Name { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -15,11 +13,15 @@ namespace AppliedResearchAssociates.iAM
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
                 }
 
                 return results;
             }
         }
+
+        public Box<string> Name { get; } = new Box<string>();
+
+        public ICollection<IValidator> Subvalidators => new List<IValidator>();
     }
 }

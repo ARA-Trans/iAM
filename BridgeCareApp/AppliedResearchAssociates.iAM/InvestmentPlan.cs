@@ -14,17 +14,17 @@ namespace AppliedResearchAssociates.iAM
             SynchronizeBudgetPriorities();
         }
 
-        public ICollection<BudgetCondition> BudgetConditions { get; } = new CollectionWithoutNulls<BudgetCondition>();
+        public ICollection<BudgetCondition> BudgetConditions { get; } = new ListWithoutNulls<BudgetCondition>();
 
-        public IReadOnlyCollection<Budget> Budgets => _Budgets;
+        public IReadOnlyList<Budget> Budgets => _Budgets;
 
-        public ICollection<CashFlowRule> CashFlowRules { get; } = new CollectionWithoutNulls<CashFlowRule>();
+        public ICollection<CashFlowRule> CashFlowRules { get; } = new ListWithoutNulls<CashFlowRule>();
 
-        public double DiscountRatePercentage { get; }
+        public double DiscountRatePercentage { get; set; }
 
-        public int FirstYearOfAnalysisPeriod { get; }
+        public int FirstYearOfAnalysisPeriod { get; set; }
 
-        public double InflationRatePercentage { get; }
+        public double InflationRatePercentage { get; set; }
 
         public int NumberOfYearsInAnalysisPeriod
         {

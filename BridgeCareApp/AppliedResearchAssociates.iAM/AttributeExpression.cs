@@ -41,15 +41,15 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public override ICollection<ValidationResult> ValidationResults
+        public override ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
-                var results = base.ValidationResults;
+                var results = base.DirectValidationResults;
 
                 if (Explorer == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Explorer is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Explorer is unset."));
                 }
 
                 return results;

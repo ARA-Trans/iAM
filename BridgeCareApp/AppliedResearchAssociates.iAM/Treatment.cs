@@ -16,7 +16,7 @@ namespace AppliedResearchAssociates.iAM
 
         public int ShadowForSameTreatment { get; }
 
-        public virtual ICollection<ValidationResult> ValidationResults
+        public virtual ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -24,27 +24,27 @@ namespace AppliedResearchAssociates.iAM
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Name is blank."));
                 }
 
                 if (Schedulings.Select(scheduling => scheduling.OffsetToFutureYear).Distinct().Count() < Schedulings.Count)
                 {
-                    results.Add(ValidationStatus.Error.Describe("At least one future year has more than one scheduling."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one future year has more than one scheduling."));
                 }
 
                 if (ShadowForAnyTreatment < 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("\"Any\" shadow is less than zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "\"Any\" shadow is less than zero."));
                 }
 
                 if (ShadowForSameTreatment < 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("\"Same\" shadow is less than zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "\"Same\" shadow is less than zero."));
                 }
 
                 if (ShadowForSameTreatment <= ShadowForAnyTreatment)
                 {
-                    results.Add(ValidationStatus.Warning.Describe("\"Same\" shadow is less than or equal to \"any\" shadow."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "\"Same\" shadow is less than or equal to \"any\" shadow."));
                 }
 
                 return results;

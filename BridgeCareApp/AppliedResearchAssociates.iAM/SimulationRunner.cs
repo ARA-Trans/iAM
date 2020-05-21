@@ -26,8 +26,9 @@ namespace AppliedResearchAssociates.iAM
         // [REVIEW] When a single budget has multiple conditions, do all of them have to be
         // satisfied? or just one?
 
-        // [REVIEW] When a given budget has no conditions, is there an implicit blank condition,
-        // i.e. the condition is always met? or does it mean the budget can never be used?
+        // [REVIEW] When a given budget has no condition rows entered, is there effectively an
+        // implicit blank condition, i.e. the condition is always met? or does it mean the budget
+        // can never be used?
 
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
@@ -58,7 +59,7 @@ namespace AppliedResearchAssociates.iAM
 
             _ = Parallel.ForEach(SectionContexts, context => context.RollForward());
 
-            switch (Simulation.AnalysisMethod.SpendingStrategy)
+            switch (Simulation.AnalysisMethod.SpendingStrategy.Value)
             {
             case SpendingStrategy.NoSpending:
                 AllowedSpending = Spending.None;
@@ -337,7 +338,7 @@ namespace AppliedResearchAssociates.iAM
         private IReadOnlyCollection<TreatmentOption> GetTreatmentOptionsInOptimalOrder(IEnumerable<SectionContext> contexts, int year)
         {
             Func<TreatmentOption, double> objectiveFunction;
-            switch (Simulation.AnalysisMethod.OptimizationStrategy)
+            switch (Simulation.AnalysisMethod.OptimizationStrategy.Value)
             {
             case OptimizationStrategy.Benefit:
                 objectiveFunction = option => option.Benefit;

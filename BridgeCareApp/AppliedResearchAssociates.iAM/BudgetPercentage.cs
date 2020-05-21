@@ -8,9 +8,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public Budget Budget { get; }
 
-        public decimal Percentage { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -18,16 +16,20 @@ namespace AppliedResearchAssociates.iAM
 
                 if (Percentage < 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Percentage is less than zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Percentage, "Percentage is less than zero."));
                 }
                 else if (Percentage > 100)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Percentage is greater than 100."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Percentage, "Percentage is greater than 100."));
                 }
 
                 return results;
             }
         }
+
+        public Box<decimal> Percentage { get; } = new Box<decimal>();
+
+        public ICollection<IValidator> Subvalidators => throw new NotImplementedException();
 
         internal BudgetPercentage(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
     }

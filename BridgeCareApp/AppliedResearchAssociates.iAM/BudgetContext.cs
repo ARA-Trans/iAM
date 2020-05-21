@@ -29,7 +29,7 @@ namespace AppliedResearchAssociates.iAM
 
         public void MoveToNextYear()
         {
-            CurrentAmount += Budget.YearlyAmounts[++CurrentYearIndex];
+            CurrentAmount += Budget.YearlyAmounts[++CurrentYearIndex].Value;
             CurrentPrioritizedAmount = null;
         }
 

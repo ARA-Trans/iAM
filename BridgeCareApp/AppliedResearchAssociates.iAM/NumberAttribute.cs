@@ -5,43 +5,43 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class NumberAttribute : Attribute<double>
     {
-        public bool IsDecreasingWithDeterioration { get; set; }
-
-        public double? Maximum { get; set; }
-
-        public double? Minimum { get; set; }
-
-        public override ICollection<ValidationResult> ValidationResults
+        public override ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
-                var results = base.ValidationResults;
+                var results = base.DirectValidationResults;
 
-                if (Minimum.HasValue && double.IsNaN(Minimum.Value))
+                if (Minimum.Value.HasValue && double.IsNaN(Minimum.Value.Value))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Minimum is not a number."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Minimum, "Minimum is not a number."));
                 }
 
-                if (Maximum.HasValue && double.IsNaN(Maximum.Value))
+                if (Maximum.Value.HasValue && double.IsNaN(Maximum.Value.Value))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Maximum is not a number."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Minimum, "Maximum is not a number."));
                 }
 
-                if (Minimum is double minimum && Maximum is double maximum)
+                if (Minimum.Value is double minimum && Maximum.Value is double maximum)
                 {
                     if (minimum == maximum)
                     {
-                        results.Add(ValidationStatus.Warning.Describe("Minimum is equal to maximum."));
+                        results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "Minimum is equal to maximum."));
                     }
                     else if (minimum > maximum)
                     {
-                        results.Add(ValidationStatus.Error.Describe("Minimum is greater than maximum."));
+                        results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Minimum is greater than maximum."));
                     }
                 }
 
                 return results;
             }
         }
+
+        public bool IsDecreasingWithDeterioration { get; set; }
+
+        public Box<double?> Maximum { get; } = new Box<double?>();
+
+        public Box<double?> Minimum { get; } = new Box<double?>();
 
         internal NumberAttribute(Explorer explorer) : base(explorer)
         {

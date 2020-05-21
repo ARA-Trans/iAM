@@ -10,9 +10,7 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public int PriorityLevel { get; set; }
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -20,14 +18,27 @@ namespace AppliedResearchAssociates.iAM
 
                 if (BudgetPercentages.Sum(budgetPercentage => budgetPercentage.Percentage) > 100)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Sum of percentages is greater than 100."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Sum of percentages is greater than 100."));
                 }
                 else if (BudgetPercentages.All(budgetPercentage => budgetPercentage.Percentage == 0))
                 {
-                    results.Add(ValidationStatus.Warning.Describe("All percentages are zero."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "All percentages are zero."));
                 }
 
                 return results;
+            }
+        }
+
+        public int PriorityLevel { get; set; }
+
+        public ICollection<IValidator> Subvalidators
+        {
+            get
+            {
+                var validators = new List<IValidator>();
+                validators.AddRange(BudgetPercentages);
+                validators.Add(Criterion);
+                return validators;
             }
         }
 

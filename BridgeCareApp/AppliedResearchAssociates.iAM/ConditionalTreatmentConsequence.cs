@@ -13,15 +13,15 @@ namespace AppliedResearchAssociates.iAM
 
         public Equation Equation { get; } = new Equation();
 
-        public override ICollection<ValidationResult> ValidationResults
+        public override ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
-                var results = base.ValidationResults;
+                var results = base.DirectValidationResults;
 
                 if (Change.ExpressionIsBlank == Equation.ExpressionIsBlank)
                 {
-                    results.Add(ValidationStatus.Error.Describe(MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset));
                 }
 
                 return results;
@@ -41,7 +41,7 @@ namespace AppliedResearchAssociates.iAM
             }
             else
             {
-                throw new SimulationException(MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset);
+                throw new InvalidOperationException(MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset);
             }
         }
     }

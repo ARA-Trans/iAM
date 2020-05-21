@@ -9,20 +9,9 @@ namespace AppliedResearchAssociates.iAM
     {
         public AnalysisMethod AnalysisMethod { get; }
 
-        public ICollection<CommittedProject> CommittedProjects { get; } = new CollectionWithoutNulls<CommittedProject>();
+        public ICollection<CommittedProject> CommittedProjects { get; } = new ListWithoutNulls<CommittedProject>();
 
-        public SelectableTreatment DesignatedPassiveTreatment
-        {
-            get => _DesignatedPassiveTreatment;
-            set
-            {
-                _DesignatedPassiveTreatment = value;
-
-                Treatments.Add(DesignatedPassiveTreatment);
-            }
-        }
-
-        private SelectableTreatment _DesignatedPassiveTreatment;
+        public Box<SelectableTreatment> DesignatedPassiveTreatment { get; }
 
         public InvestmentPlan InvestmentPlan { get; }
 
@@ -32,13 +21,13 @@ namespace AppliedResearchAssociates.iAM
 
         public int NumberOfYearsOfTreatmentOutlook { get; set; } = 100;
 
-        public ICollection<PerformanceCurve> PerformanceCurves { get; } = new CollectionWithoutNulls<PerformanceCurve>();
+        public ICollection<PerformanceCurve> PerformanceCurves { get; } = new ListWithoutNulls<PerformanceCurve>();
 
-        public ICollection<SimulationYearDetail> Results { get; } = new CollectionWithoutNulls<SimulationYearDetail>();
+        public ICollection<SimulationYearDetail> Results { get; } = new ListWithoutNulls<SimulationYearDetail>();
 
-        public ICollection<SelectableTreatment> Treatments { get; } = new CollectionWithoutNulls<SelectableTreatment>();
+        public ICollection<SelectableTreatment> Treatments { get; } = new SetWithoutNulls<SelectableTreatment>();
 
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -46,26 +35,26 @@ namespace AppliedResearchAssociates.iAM
 
                 if (DesignatedPassiveTreatment == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Designated passive treatment is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, DesignatedPassiveTreatment, "Designated passive treatment is unset."));
                 }
-                else if (DesignatedPassiveTreatment.Costs.Count > 0)
+                else if (DesignatedPassiveTreatment.Value.Costs.Count > 0)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Designated passive treatment has costs."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, DesignatedPassiveTreatment, "Designated passive treatment has costs."));
                 }
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Name is blank."));
                 }
 
                 if (NumberOfYearsOfTreatmentOutlook < 1)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Number of years of treatment outlook is less than one."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Number of years of treatment outlook is less than one."));
                 }
 
                 if (Treatments.Select(treatment => treatment.Name).Distinct().Count() < Treatments.Count)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Multiple selectable treatments have the same name."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Multiple selectable treatments have the same name."));
                 }
 
                 return results;
@@ -85,6 +74,8 @@ namespace AppliedResearchAssociates.iAM
 
             AnalysisMethod = new AnalysisMethod(this);
             InvestmentPlan = new InvestmentPlan(this);
+
+            DesignatedPassiveTreatment = new Box<SelectableTreatment>(() => Treatments.Add(DesignatedPassiveTreatment));
         }
     }
 }

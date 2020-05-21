@@ -20,22 +20,22 @@ namespace AppliedResearchAssociates.iAM
 
         public ICollection<TreatmentSupersession> Supersessions { get; } = new List<TreatmentSupersession>();
 
-        public override ICollection<ValidationResult> ValidationResults
+        public override ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
-                var results = base.ValidationResults;
+                var results = base.DirectValidationResults;
 
                 var consequencesWithBlankCriterion = Consequences.Where(consequence => consequence.Criterion.ExpressionIsBlank).ToArray();
                 if (consequencesWithBlankCriterion.Select(consequence => consequence.Attribute).Distinct().Count() < consequencesWithBlankCriterion.Length)
                 {
-                    results.Add(ValidationStatus.Error.Describe("At least one attribute is unconditionally acted on by more than one consequence."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one attribute is unconditionally acted on by more than one consequence."));
                 }
 
                 var supersessionsWithBlankCriterion = Supersessions.Where(supersession => supersession.Criterion.ExpressionIsBlank).ToArray();
                 if (supersessionsWithBlankCriterion.Select(supersession => supersession.Treatment).Distinct().Count() < supersessionsWithBlankCriterion.Length)
                 {
-                    results.Add(ValidationStatus.Warning.Describe("At least one treatment is unconditionally superseded more than once."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "At least one treatment is unconditionally superseded more than once."));
                 }
 
                 return results;

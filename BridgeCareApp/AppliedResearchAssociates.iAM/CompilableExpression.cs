@@ -6,15 +6,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public abstract class CompilableExpression : IValidator
     {
-        public virtual string Expression
-        {
-            get => _Expression;
-            set => _ = UpdateExpression(value);
-        }
-
-        public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
-
-        public virtual ICollection<ValidationResult> ValidationResults
+        public virtual ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -26,12 +18,22 @@ namespace AppliedResearchAssociates.iAM
                 }
                 catch (MalformedInputException e)
                 {
-                    results.Add(ValidationStatus.Error.Describe(e.Message));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, e.Message));
                 }
 
                 return results;
             }
         }
+
+        public virtual string Expression
+        {
+            get => _Expression;
+            set => _ = UpdateExpression(value);
+        }
+
+        public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
+
+        public ICollection<IValidator> Subvalidators => new List<IValidator>();
 
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 

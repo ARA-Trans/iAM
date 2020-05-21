@@ -7,15 +7,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Network : IValidator
     {
-        public Explorer Explorer { get; }
-
-        public string Name { get; set; }
-
-        public ICollection<SectionHistory> SectionHistories { get; } = new CollectionWithoutNulls<SectionHistory>();
-
-        public IReadOnlyCollection<Simulation> Simulations => _Simulations;
-
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
@@ -23,15 +15,33 @@ namespace AppliedResearchAssociates.iAM
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationStatus.Error.Describe("Name is blank."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
                 }
 
                 if (Simulations.Select(simulation => simulation.Name).Distinct().Count() < Simulations.Count)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Multiple simulations have the same name."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Simulations, "Multiple simulations have the same name."));
                 }
 
                 return results;
+            }
+        }
+
+        public Explorer Explorer { get; }
+
+        public Box<string> Name { get; } = new Box<string>();
+
+        public ICollection<SectionHistory> SectionHistories { get; } = new ListWithoutNulls<SectionHistory>();
+
+        public IReadOnlyCollection<Simulation> Simulations => _Simulations;
+
+        public ICollection<IValidator> Subvalidators
+        {
+            get
+            {
+                var validators = new List<IValidator>();
+                validators.AddMany(Simulations);
+                return validators;
             }
         }
 

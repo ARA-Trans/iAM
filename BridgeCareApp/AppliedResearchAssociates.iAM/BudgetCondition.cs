@@ -5,23 +5,25 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class BudgetCondition : IValidator
     {
-        public Budget Budget { get; set; }
+        public Box<Budget> Budget { get; } = new Box<Budget>();
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<ValidationResult> ValidationResults
+        public ICollection<ValidationResult> DirectValidationResults
         {
             get
             {
                 var results = new List<ValidationResult>();
 
-                if (Budget == null)
+                if (Budget.Value == null)
                 {
-                    results.Add(ValidationStatus.Error.Describe("Budget is unset."));
+                    results.Add(ValidationResult.Create(ValidationStatus.Error, Budget, "Budget is unset."));
                 }
 
                 return results;
             }
         }
+
+        public ICollection<IValidator> Subvalidators => new List<IValidator>();
     }
 }
