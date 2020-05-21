@@ -28,7 +28,29 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 
         public override IEnumerable<(Location location, T value)> GetData<T>()
         {
-            throw new NotImplementedException();
+            string routeName = null;
+            double? start = null;
+            double? end = null;
+            Direction? direction = null;
+            string wellKnownText = null;
+            string uniqueIdentifier = null;
+
+
+            foreach(var datum in data)
+            {
+                yield return (LocationBuilder.CreateLocation
+                    (
+                        routeName,
+                        start,
+                        end,
+                        direction,
+                        uniqueIdentifier,
+                        wellKnownText
+                    ),
+                    datum.Value);
+            }
+
+            
         }
     }
 }
