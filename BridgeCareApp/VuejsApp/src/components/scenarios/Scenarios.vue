@@ -28,7 +28,7 @@
                                 </template>
                             </v-data-table>
                         </div>
-                        <div class="pad-button">
+                        <div class="pad-button" v-if="isAdmin">
                             <v-btn @click="onLoadNetworks()" color="green darken-2 white--text" round>Load networks
                             </v-btn>
                         </div>
@@ -50,7 +50,7 @@
                                       v-model="searchMine">
                         </v-text-field>
                     </v-flex>
-                    <v-flex xs2>
+                    <v-flex xs2 v-if="isAdmin">
                         <v-btn @click="onUpdateScenarioList()" class="ara-blue-bg white--text" round>
                             Load legacy scenarios
                         </v-btn>
