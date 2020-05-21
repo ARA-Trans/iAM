@@ -11,5 +11,13 @@
             Name = name;
             Direction = direction;
         }
+
+        internal override bool MatchOn(Route route)
+        {
+            var directionalRoute = (DirectionalRoute)route;
+            return ((Name == directionalRoute.Name &&
+                Direction == directionalRoute.Direction) ||
+                Identifier == directionalRoute.Identifier);
+        }
     }
 }

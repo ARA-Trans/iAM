@@ -18,5 +18,20 @@ namespace AppliedResearchAssociates.iAM.DataMiner
             Start = start;
             End = end;
         }
+
+        public override bool MatchOn(Location location)
+        {
+            if (location is LinearLocation linearLocation)
+            {
+                return
+                    linearLocation.Start <= Start &&
+                    linearLocation.End > End &&
+                    linearLocation.Route.MatchOn(Route);
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
