@@ -1,4 +1,4 @@
-﻿namespace AppliedResearchAssociates.iAM
+﻿namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class DeficientConditionGoalDetail : ConditionGoalDetail
     {

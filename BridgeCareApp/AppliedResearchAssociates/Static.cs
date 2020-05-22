@@ -7,6 +7,22 @@ namespace AppliedResearchAssociates
 {
     public static partial class Static
     {
+        public static void AddMany<T>(this ICollection<T> collection, IEnumerable<T> items)
+        {
+            if (collection is null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            if (items != null)
+            {
+                foreach (var item in items)
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
         public static IDisposable AsDisposable(this IEnumerable<IDisposable> source) => new AggregateDisposable(source);
 
         public static T? AsNullable<T>(this T value) where T : struct => value;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AppliedResearchAssociates.iAM
+namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class SectionDetail
     {

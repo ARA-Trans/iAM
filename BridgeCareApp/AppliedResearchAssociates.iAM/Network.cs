@@ -7,6 +7,8 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Network : IValidator
     {
+        public Network(Explorer explorer) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
+
         public ValidationResultBag DirectValidationResults
         {
             get
@@ -23,20 +25,32 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, "Multiple simulations have the same name.", this, nameof(Simulations));
                 }
 
+                var facilities = Facilities.ToArray();
+                if (facilities.Select(facility => facility.Name).Distinct().Count() < facilities.Length)
+                {
+                    results.Add(ValidationStatus.Error, "Multiple facilities have the same name.", this, nameof(Facilities));
+                }
+
+                if (Sections.Select(section => (section.Facility, section.Name)).Distinct().Count() < Sections.Count)
+                {
+                    results.Add(ValidationStatus.Error, "At least one facility has multiple sections that have the same name.", this, nameof(Sections));
+                }
+
                 return results;
             }
         }
 
         public Explorer Explorer { get; }
 
+        public IEnumerable<Facility> Facilities => Sections.Select(section => section.Facility).Distinct();
+
         public string Name { get; set; }
 
-        // [TODO] This member is basically the "hook" for integration with whatever code is handling segmentation-aggregation.
-        public ICollection<SectionHistory> SectionHistories { get; } = new SetWithoutNulls<SectionHistory>();
+        public ICollection<Section> Sections { get; } = new SetWithoutNulls<Section>();
 
         public IReadOnlyCollection<Simulation> Simulations => _Simulations;
 
-        public ValidatorBag Subvalidators => new ValidatorBag { Simulations };
+        public ValidatorBag Subvalidators => new ValidatorBag { Sections, Simulations };
 
         public Simulation AddSimulation()
         {
@@ -46,8 +60,6 @@ namespace AppliedResearchAssociates.iAM
         }
 
         public bool RemoveSimulation(Simulation simulation) => _Simulations.Remove(simulation);
-
-        internal Network(Explorer explorer) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
 
         private readonly List<Simulation> _Simulations = new List<Simulation>();
     }

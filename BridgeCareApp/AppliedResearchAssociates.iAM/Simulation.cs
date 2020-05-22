@@ -1,12 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AppliedResearchAssociates.iAM.Analysis;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class Simulation : IValidator
     {
+        public Simulation(Network network)
+        {
+            Network = network ?? throw new ArgumentNullException(nameof(network));
+
+            AnalysisMethod = new AnalysisMethod(this);
+            InvestmentPlan = new InvestmentPlan(this);
+        }
+
         public AnalysisMethod AnalysisMethod { get; }
 
         public ICollection<CommittedProject> CommittedProjects { get; } = new SetWithoutNulls<CommittedProject>();
@@ -82,14 +91,6 @@ namespace AppliedResearchAssociates.iAM
             var result = Treatments.ToHashSet();
             _ = result.Remove(DesignatedPassiveTreatment);
             return result;
-        }
-
-        internal Simulation(Network network)
-        {
-            Network = network ?? throw new ArgumentNullException(nameof(network));
-
-            AnalysisMethod = new AnalysisMethod(this);
-            InvestmentPlan = new InvestmentPlan(this);
         }
 
         private SelectableTreatment _DesignatedPassiveTreatment;

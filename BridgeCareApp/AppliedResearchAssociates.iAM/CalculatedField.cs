@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.iAM.Analysis;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class CalculatedField : Attribute
     {
-        public ICollection<ConditionalEquation> Equations { get; } = new SetWithoutNulls<ConditionalEquation>();
+        public CalculatedField(Explorer explorer) : base(explorer)
+        {
+        }
 
         public override ValidationResultBag DirectValidationResults
         {
@@ -36,6 +39,10 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
+        public ICollection<ConditionalEquation> Equations { get; } = new SetWithoutNulls<ConditionalEquation>();
+
+        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Equations);
+
         public double Calculate(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             Equations.Channel(
@@ -58,10 +65,6 @@ namespace AppliedResearchAssociates.iAM
             }
 
             return operativeEquations[0].Equation.Compute(argument, ageAttribute);
-        }
-
-        internal CalculatedField(Explorer explorer) : base(explorer)
-        {
         }
     }
 }

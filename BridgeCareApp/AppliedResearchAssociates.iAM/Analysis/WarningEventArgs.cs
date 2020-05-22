@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppliedResearchAssociates.iAM
+namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class WarningEventArgs : EventArgs
     {

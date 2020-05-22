@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace AppliedResearchAssociates.iAM
+namespace AppliedResearchAssociates.iAM.Analysis
 {
     public class SimulationException : Exception
     {

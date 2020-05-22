@@ -51,20 +51,18 @@ namespace AppliedResearchAssociates.iAM
 
         protected override void Compile()
         {
-            var match = YearlyFractionsPattern.Match(Expression);
+            var match = YearlyPercentagesPattern.Match(Expression);
             if (!match.Success)
             {
                 throw ExpressionCouldNotBeCompiled();
             }
 
-            var yearlyPercentages = new List<decimal> { ParsePercentage(match.Groups[1]) };
-            yearlyPercentages.AddRange(match.Groups[2].Captures.Cast<Capture>().Select(ParsePercentage));
-
             _YearlyPercentages.Clear();
-            _YearlyPercentages.AddRange(yearlyPercentages);
+            _YearlyPercentages.Add(ParsePercentage(match.Groups[1]));
+            _YearlyPercentages.AddRange(match.Groups[2].Captures.Cast<Capture>().Select(ParsePercentage));
         }
 
-        private static readonly Regex YearlyFractionsPattern = new Regex($@"(?>\A\s*({PatternStrings.Number})(?:\s*/\s*({PatternStrings.Number}))*\s*\z)", RegexOptions.Compiled);
+        private static readonly Regex YearlyPercentagesPattern = new Regex($@"(?>\A\s*({PatternStrings.Number})(?:\s*/\s*({PatternStrings.Number}))*\s*\z)", RegexOptions.Compiled);
 
         private readonly List<decimal> _YearlyPercentages = new List<decimal>();
 

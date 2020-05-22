@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
 
-namespace AppliedResearchAssociates.iAM
+namespace AppliedResearchAssociates.iAM.Analysis
 {
     internal sealed class SectionContext : CalculateEvaluateArgument
     {
-        public SectionContext(SectionHistory history, SimulationRunner simulationRunner)
+        public SectionContext(Section section, SimulationRunner simulationRunner)
         {
-            History = history ?? throw new ArgumentNullException(nameof(history));
+            Section = section ?? throw new ArgumentNullException(nameof(section));
             SimulationRunner = simulationRunner ?? throw new ArgumentNullException(nameof(simulationRunner));
 
             Initialize();
@@ -17,7 +17,7 @@ namespace AppliedResearchAssociates.iAM
 
         public SectionContext(SectionContext original) : base(original)
         {
-            History = original.History;
+            Section = original.Section;
             SimulationRunner = original.SimulationRunner;
             LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
             LastYearOfShadowForSameTreatment.CopyFrom(original.LastYearOfShadowForSameTreatment);
@@ -29,7 +29,7 @@ namespace AppliedResearchAssociates.iAM
 
         public IDictionary<int, Choice<Treatment, TreatmentProgress>> EventSchedule { get; } = new Dictionary<int, Choice<Treatment, TreatmentProgress>>();
 
-        public SectionHistory History { get; }
+        public Section Section { get; }
 
         public SimulationRunner SimulationRunner { get; }
 
@@ -157,12 +157,12 @@ namespace AppliedResearchAssociates.iAM
             return number;
         }
 
-        public void ResetDetail() => Detail = new SectionDetail(History.Section.Name, History.Section.Facility.Name);
+        public void ResetDetail() => Detail = new SectionDetail(Section.Name, Section.Facility.Name);
 
         public void RollForward()
         {
             IEnumerable<int?> getMostRecentYearPerAttribute<T>(IEnumerable<Attribute<T>> attributes) =>
-                attributes.Select(attribute => History.GetAttributeHistory(attribute).Keys.AsNullables().Max());
+                attributes.Select(attribute => Section.GetAttributeHistory(attribute).Keys.AsNullables().Max());
 
             var earliestYearOfMostRecentValue = Enumerable.Concat(
                 getMostRecentYearPerAttribute(SimulationRunner.Simulation.Network.Explorer.NumberAttributes),
@@ -227,7 +227,7 @@ namespace AppliedResearchAssociates.iAM
                 SetNumber(calculatedField.Name, calculate);
             }
 
-            foreach (var committedProject in SimulationRunner.CommittedProjectsPerSection[History.Section])
+            foreach (var committedProject in SimulationRunner.CommittedProjectsPerSection[Section])
             {
                 EventSchedule.Add(committedProject.Year, committedProject);
             }
@@ -237,7 +237,7 @@ namespace AppliedResearchAssociates.iAM
         {
             foreach (var attribute in attributes)
             {
-                var attributeHistory = History.GetAttributeHistory(attribute);
+                var attributeHistory = Section.GetAttributeHistory(attribute);
                 if (attributeHistory.TryGetValue(referenceYear, out var value))
                 {
                     setValue(attribute.Name, value);

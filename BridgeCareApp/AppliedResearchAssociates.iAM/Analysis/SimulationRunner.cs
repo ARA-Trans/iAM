@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AppliedResearchAssociates.iAM
+namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class SimulationRunner
     {
@@ -51,9 +51,9 @@ namespace AppliedResearchAssociates.iAM
             CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
             NumberAttributeByName = Simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name, StringComparer.OrdinalIgnoreCase);
 
-            SectionContexts = Simulation.Network.SectionHistories
+            SectionContexts = Simulation.Network.Sections
                 .AsParallel()
-                .Select(history => new SectionContext(history, this))
+                .Select(section => new SectionContext(section, this))
                 .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true)
                 .ToArray();
 

@@ -4,6 +4,10 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class NumberAttribute : Attribute<double>
     {
+        public NumberAttribute(Explorer explorer) : base(explorer)
+        {
+        }
+
         public override ValidationResultBag DirectValidationResults
         {
             get
@@ -41,9 +45,5 @@ namespace AppliedResearchAssociates.iAM
         public double? Maximum { get; set; }
 
         public double? Minimum { get; set; }
-
-        internal NumberAttribute(Explorer explorer) : base(explorer)
-        {
-        }
     }
 }

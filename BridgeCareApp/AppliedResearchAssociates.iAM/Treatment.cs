@@ -55,7 +55,7 @@ namespace AppliedResearchAssociates.iAM
 
         public abstract bool CanUseBudget(Budget budget);
 
-        public abstract ICollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute);
+        public abstract IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute);
 
         public abstract double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts);
     }

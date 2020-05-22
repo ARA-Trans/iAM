@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
+using AppliedResearchAssociates.iAM.Analysis;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
@@ -46,7 +47,7 @@ namespace AppliedResearchAssociates.iAM
 
         public override bool CanUseBudget(Budget budget) => Budgets.Contains(budget);
 
-        public override ICollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             Consequences.Channel(
                 consequence => consequence.Criterion.Evaluate(argument),

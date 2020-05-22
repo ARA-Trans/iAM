@@ -5,6 +5,8 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class BudgetPercentage : IValidator
     {
+        public BudgetPercentage(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
+
         public Budget Budget { get; }
 
         public ValidationResultBag DirectValidationResults
@@ -29,7 +31,5 @@ namespace AppliedResearchAssociates.iAM
         public decimal Percentage { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag();
-
-        internal BudgetPercentage(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
     }
 }
