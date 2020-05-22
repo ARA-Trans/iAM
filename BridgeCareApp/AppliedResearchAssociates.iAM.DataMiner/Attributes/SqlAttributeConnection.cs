@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
@@ -12,12 +14,11 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 
         public string DataSource { get; set; }
 
-        public SqlAttributeConnection(string userName, string password, string server, string dataSource)
+        public string ConnectionString { get; set; }
+
+        public SqlAttributeConnection(string connectionString)
         {
-            UserName = userName;
-            Password = password;
-            Server = server;
-            DataSource = dataSource;
+            ConnectionString = connectionString;
         }
 
         public override void Connect()
@@ -32,28 +33,54 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public override IEnumerable<(Location location, T value)> GetData<T>()
+        public override IEnumerable<(Location location, T value)> GetData<T>(string attributeName)
         {
             string routeName = null;
             double? start = null;
             double? end = null;
             Direction? direction = null;
             string wellKnownText = null;
+            string uniqueIdentifeir = "";
 
-            foreach (var datum in data)
+            using (var conn = new SqlConnection(ConnectionString))
             {
-                string uniqueIdentifier = data.UniqueIdentifier;
-                yield return (LocationBuilder.CreateLocation
-                    (
-                        uniqueIdentifier,
-                        routeName,
-                        start,
-                        end,
-                        direction,
-                        wellKnownText
-                    ),
-                    datum.Value);
+                var query = $"Select * from {attributeName}";
+                var command = new SqlCommand(query, conn);
+                command.Connection.Open();
+                var dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    routeName = dataReader.GetFieldValue<string>(1);
+                    start = dataReader.GetFieldValue<double>(2);
+                    end = dataReader.GetFieldValue<double>(3);
+                    var rawDirection = dataReader.GetFieldValue<string>(4);
+                    if(rawDirection == "North")
+                    {
+                        direction = 0;
+                    }
+                    var value = dataReader.GetFieldValue<T>(5);
+                    var dataTime = dataReader.GetFieldValue<DateTime>(6);
+
+                    yield return (LocationBuilder.CreateLocation(
+                        uniqueIdentifeir, routeName, start, end, direction, wellKnownText)
+                        , value);
+                }
             }
+
+            //foreach (var datum in data)
+            //{
+            //    string uniqueIdentifier = data.UniqueIdentifier;
+            //    yield return (LocationBuilder.CreateLocation
+            //        (
+            //            uniqueIdentifier,
+            //            routeName,
+            //            start,
+            //            end,
+            //            direction,
+            //            wellKnownText
+            //        ),
+            //        datum.Value);
+            //}
         }
     }
 }

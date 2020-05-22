@@ -4,8 +4,9 @@ namespace AppliedResearchAssociates.iAM.DataMiner
 {
     public static class iAMConfiguration
     {
-        public static TextAttribute B { get; } = new TextAttribute("B", new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup") , "DEFAULT");
-        public static NumericAttribute C { get; } = new NumericAttribute("C", new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup"), 1, 100, 0);
-        public static NumericAttribute D { get; } = new NumericAttribute("D", new SqlAttributeConnection("sa", "20Pikachu", "52.177.117.86,1433", "DbBackup"), 1, 100, 0);
+        private static string ConnectionString = "data source=52.177.117.86,56242\\SQL2014;initial catalog=DbBackup;persist security info=True;user id=sa;password=20Pikachu^;MultipleActiveResultSets=True";
+        public static TextAttribute B { get; } = new TextAttribute("B", new SqlAttributeConnection(ConnectionString) , "DEFAULT");
+        public static NumericAttribute C { get; } = new NumericAttribute("C", new SqlAttributeConnection(ConnectionString), 1, 100, 0);
+        public static NumericAttribute D { get; } = new NumericAttribute("D", new SqlAttributeConnection(ConnectionString), 1, 100, 0);
     }
 }

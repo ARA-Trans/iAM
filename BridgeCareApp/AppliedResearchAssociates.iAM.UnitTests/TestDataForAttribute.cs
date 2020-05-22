@@ -10,25 +10,26 @@ namespace AppliedResearchAssociates.iAM.UnitTests
 {
     public static class TestDataForAttribute
     {
+        public static string Connectionstring = "data source=52.177.117.86,56242\\SQL2014;initial catalog=DbBackup;persist security info=True;user id=sa;password=20Pikachu^;MultipleActiveResultSets=True";
         // Linear location data sample
         public static List<(Location location, double value)> LinearLocationForNumberAttribut
-            = new List<(Location location, double value)> { (new LinearLocation(new SimpleRoute("Test route"), 0, 10), 100) };
+            = new List<(Location location, double value)> { (new LinearLocation(new SimpleRoute("Test route"), "unique identifier", 0, 10), 100) };
 
         public static List<(Location location, string value)> LinearLocationForTextAttribute
-            = new List<(Location location, string value)> { (new LinearLocation(new SimpleRoute("Test simple route"), 0, 10), "Test linear location text attribute") };
+            = new List<(Location location, string value)> { (new LinearLocation(new SimpleRoute("Test simple route"), "unique identifier", 0, 10), "Test linear location text attribute") };
 
         // Section location sample
         public static List<(Location Location, string value)> SectionLocationForTextAttribute
              = new List<(Location Location, string value)> { (new SectionLocation("B-0-1"), "TestValue") };
 
         public static List<(Location Location, double value)> SectionLocationForNumberAttribute
-            = new List<(Location Location, double value)> { (new LinearLocation(new SimpleRoute("Test simple route"), 0, 10), 100) };
+            = new List<(Location Location, double value)> { (new LinearLocation(new SimpleRoute("Test simple route"), "unique identifier", 0, 10), 100) };
 
         // SQL connection sample
-        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection("sa", "20Pikachu", "40.121.5.125,1433", "DbBackup");
+        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection(Connectionstring);
 
         //Linear location sample
-        public static LinearLocation LinearLocation = new LinearLocation(new SimpleRoute("Test route"), 0, 10);
+        public static LinearLocation LinearLocation = new LinearLocation(new SimpleRoute("Test route"), "unique identifier", 0, 10);
 
         // Section Location sample
         public static SectionLocation SectionLocation = new SectionLocation("B-0-1");

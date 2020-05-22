@@ -20,6 +20,8 @@ namespace ExecutableForProtptype
         public double Maximum { get; set; }
         public string Location { get; set; }
         public string DataType { get; set; }
+        public string ConnectionString { get; set; }
+
         [JsonProperty("connection")]
         public Connection Connection { get; set; }
     }

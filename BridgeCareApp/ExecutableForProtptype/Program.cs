@@ -48,17 +48,19 @@ namespace ExecutableForProtptype
 
     public class NumericAttributeDataCreator
     {
-        public AttributeDatum<double> GetNumericAttributeDatum(ConfigFileModel item)
+        public List<AttributeDatum<double>> GetNumericAttributeDatum(ConfigFileModel item)
         {
-            var sqlConnection = new SqlAttributeConnection(item.Connection.UserName, item.Connection.Password,
-                            item.Connection.Server, item.Connection.DataSource);
-            var data = sqlConnection.GetData<double>(item.AttributeName);
+            var sqlConnection = new SqlAttributeConnection(item.ConnectionString);
+            var attributeData = sqlConnection.GetData<double>(item.AttributeName);
 
             var numericAttribute = new NumericAttribute(item.AttributeName, sqlConnection,
                                                          Convert.ToDouble(item.DefaultValue), item.Maximum, item.Minimum);
-
-            var linearLocation = new LinearLocation(new SimpleRoute("Test simple route"), uniqueIdentifier, 0, 10);
-            var numericAttributeDatum = new AttributeDatum<double>(numericAttribute, 100, linearLocation, DateTime.Now);
+            var numericAttributeDatum = new List<AttributeDatum<double>>();
+            //var linearLocation = new LinearLocation(new SimpleRoute("Test simple route"), uniqueIdentifier, 0, 10);
+            foreach (var result in attributeData)
+            {
+                numericAttributeDatum.Add(new AttributeDatum<double>(numericAttribute, result.value, result.location, DateTime.Now));
+            }
 
             return numericAttributeDatum;
         }
