@@ -1,30 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.Validation
 {
-    public class ValidationResult
+    public sealed class ValidationResult
     {
-        public object Context { get; }
+        public ValidationResult(ValidationTarget target, ValidationStatus status, string message)
+        {
+            Target = target ?? throw new ArgumentNullException(nameof(target));
+            Status = status.Defined();
 
-        public string Description { get; }
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentException("Description is blank.", nameof(message));
+            }
+
+            Message = message;
+        }
+
+        public string Message { get; }
 
         public ValidationStatus Status { get; }
 
-        public static ValidationResult Create<T>(ValidationStatus status, T context, string description) where T : class => new ValidationResult(status, context, description);
+        public ValidationTarget Target { get; }
 
-        public override string ToString() => $"[{Status}] {Description}";
+        public override bool Equals(object obj) => obj is ValidationResult result && EqualityComparer<ValidationTarget>.Default.Equals(Target, result.Target) && Status == result.Status && Message == result.Message;
 
-        private ValidationResult(ValidationStatus status, object context, string description)
-        {
-            Status = status;
-            Context = context ?? throw new ArgumentNullException(nameof(context));
-
-            if (string.IsNullOrWhiteSpace(description))
-            {
-                throw new ArgumentException("Description is blank.", nameof(description));
-            }
-
-            Description = description;
-        }
+        public override int GetHashCode() => HashCode.Combine(Target, Status, Message);
     }
 }

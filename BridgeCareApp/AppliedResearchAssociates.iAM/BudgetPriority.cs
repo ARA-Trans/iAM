@@ -10,19 +10,19 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (BudgetPercentages.Sum(budgetPercentage => budgetPercentage.Percentage) > 100)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Sum of percentages is greater than 100."));
+                    results.Add(ValidationStatus.Error, "Sum of percentages is greater than 100.", this, nameof(BudgetPercentages));
                 }
                 else if (BudgetPercentages.All(budgetPercentage => budgetPercentage.Percentage == 0))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "All percentages are zero."));
+                    results.Add(ValidationStatus.Warning, "All percentages are zero.", this, nameof(BudgetPercentages));
                 }
 
                 return results;
@@ -31,16 +31,7 @@ namespace AppliedResearchAssociates.iAM
 
         public int PriorityLevel { get; set; }
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = new List<IValidator>();
-                validators.AddRange(BudgetPercentages);
-                validators.Add(Criterion);
-                return validators;
-            }
-        }
+        public ValidatorBag Subvalidators => new ValidatorBag { BudgetPercentages, Criterion };
 
         public int? Year { get; set; }
 

@@ -1,29 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 using AppliedResearchAssociates.CalculateEvaluate;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public abstract class TreatmentConsequence : IValidator
+    public class TreatmentConsequence : IValidator
     {
         public Attribute Attribute { get; set; }
 
-        public virtual ICollection<ValidationResult> DirectValidationResults
+        public AttributeValueChange Change { get; } = new AttributeValueChange();
+
+        public virtual ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (Attribute == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Attribute is unset."));
+                    results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
                 }
 
                 return results;
             }
         }
 
-        public abstract Action GetRecalculator(CalculateEvaluateArgument argument, NumberAttribute ageAttribute);
+        public virtual ValidatorBag Subvalidators => new ValidatorBag { Change };
+
+        public virtual Action GetRecalculator(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Change.GetApplicator(Attribute, argument);
     }
 }

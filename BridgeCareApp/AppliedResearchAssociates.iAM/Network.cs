@@ -7,20 +7,20 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Network : IValidator
     {
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
+                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
                 if (Simulations.Select(simulation => simulation.Name).Distinct().Count() < Simulations.Count)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Simulations, "Multiple simulations have the same name."));
+                    results.Add(ValidationStatus.Error, "Multiple simulations have the same name.", this, nameof(Simulations));
                 }
 
                 return results;
@@ -29,21 +29,14 @@ namespace AppliedResearchAssociates.iAM
 
         public Explorer Explorer { get; }
 
-        public Box<string> Name { get; } = new Box<string>();
+        public string Name { get; set; }
 
-        public ICollection<SectionHistory> SectionHistories { get; } = new ListWithoutNulls<SectionHistory>();
+        // [TODO] This member is basically the "hook" for integration with whatever code is handling segmentation-aggregation.
+        public ICollection<SectionHistory> SectionHistories { get; } = new SetWithoutNulls<SectionHistory>();
 
         public IReadOnlyCollection<Simulation> Simulations => _Simulations;
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = new List<IValidator>();
-                validators.AddMany(Simulations);
-                return validators;
-            }
-        }
+        public ValidatorBag Subvalidators => new ValidatorBag { Simulations };
 
         public Simulation AddSimulation()
         {

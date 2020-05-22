@@ -16,9 +16,38 @@ namespace AppliedResearchAssociates.iAM
 
         public Budget Budget { get; set; }
 
-        public ICollection<UnconditionalTreatmentConsequence> Consequences { get; } = new ListWithoutNulls<UnconditionalTreatmentConsequence>();
+        public ICollection<TreatmentConsequence> Consequences { get; } = new SetWithoutNulls<TreatmentConsequence>();
 
         public double Cost { get; set; }
+
+        public override ValidationResultBag DirectValidationResults
+        {
+            get
+            {
+                var results = base.DirectValidationResults;
+
+                if (Budget == null)
+                {
+                    results.Add(ValidationStatus.Error, "Budget is unset.", this, nameof(Budget));
+                }
+
+                if (Cost < 0)
+                {
+                    results.Add(ValidationStatus.Error, "Cost is less than zero.", this, nameof(Cost));
+                }
+                else if (Cost == 0)
+                {
+                    results.Add(ValidationStatus.Warning, "Cost is zero.", this, nameof(Cost));
+                }
+
+                if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
+                {
+                    results.Add(ValidationStatus.Error, "At least one attribute is acted on by more than one consequence.", this, nameof(Consequences));
+                }
+
+                return results;
+            }
+        }
 
         public Section Section { get; }
 
@@ -34,39 +63,10 @@ namespace AppliedResearchAssociates.iAM
                 Consequences.Clear();
                 foreach (var templateConsequence in TemplateTreatment.Consequences)
                 {
-                    var consequence = new UnconditionalTreatmentConsequence { Attribute = templateConsequence.Attribute };
+                    var consequence = new TreatmentConsequence { Attribute = templateConsequence.Attribute };
                     consequence.Change.Expression = templateConsequence.Change.Expression;
                     Consequences.Add(consequence);
                 }
-            }
-        }
-
-        public override ICollection<ValidationResult> DirectValidationResults
-        {
-            get
-            {
-                var results = base.DirectValidationResults;
-
-                if (Budget == null)
-                {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Budget is unset."));
-                }
-
-                if (Cost < 0)
-                {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Cost is less than zero."));
-                }
-                else if (Cost == 0)
-                {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "Cost is zero."));
-                }
-
-                if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
-                {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one attribute is acted on by more than one consequence."));
-                }
-
-                return results;
             }
         }
 

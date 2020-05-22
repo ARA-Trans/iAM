@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace AppliedResearchAssociates
 {
-    public sealed class SetWithoutNulls<T> : ISet<T> where T : class
+    public sealed class SetWithoutNulls<T> : ISet<T>, IReadOnlyCollection<T> where T : class
     {
-        public SetWithoutNulls(ISet<T> items = null) => Items = items ?? new HashSet<T>();
+        public SetWithoutNulls(IEqualityComparer<T> equalityComparer = null) => Items = new HashSet<T>(equalityComparer);
 
         public int Count => Items.Count;
 

@@ -4,9 +4,27 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class TargetConditionGoal : ConditionGoal
     {
-        public TargetConditionGoal() => Attribute = new Box<NumberAttribute>(OnSetAttribute);
+        public override NumberAttribute Attribute
+        {
+            get => base.Attribute;
+            set
+            {
+                base.Attribute = value;
 
-        public override Box<NumberAttribute> Attribute { get; }
+                if (Attribute == null)
+                {
+                    _IsMet = null;
+                }
+                else if (Attribute.IsDecreasingWithDeterioration)
+                {
+                    _IsMet = ActualIsGreaterThanOrEqualToTarget;
+                }
+                else
+                {
+                    _IsMet = ActualIsLessThanOrEqualToTarget;
+                }
+            }
+        }
 
         public double Target { get; set; }
 
@@ -19,21 +37,5 @@ namespace AppliedResearchAssociates.iAM
         private bool ActualIsGreaterThanOrEqualToTarget(double actual) => actual >= Target;
 
         private bool ActualIsLessThanOrEqualToTarget(double actual) => actual <= Target;
-
-        private void OnSetAttribute()
-        {
-            if (Attribute.Value == null)
-            {
-                _IsMet = null;
-            }
-            else if (Attribute.Value.IsDecreasingWithDeterioration)
-            {
-                _IsMet = ActualIsGreaterThanOrEqualToTarget;
-            }
-            else
-            {
-                _IsMet = ActualIsLessThanOrEqualToTarget;
-            }
-        }
     }
 }

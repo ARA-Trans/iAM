@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
@@ -8,38 +7,30 @@ namespace AppliedResearchAssociates.iAM
     {
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
+                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
                 if (DistributionRules.Count == 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, DistributionRules, "There are no distribution rules."));
+                    results.Add(ValidationStatus.Error, "There are no distribution rules.", this, nameof(DistributionRules));
                 }
 
                 return results;
             }
         }
 
-        public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new ListWithoutNulls<CashFlowDistributionRule>();
+        public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new SetWithoutNulls<CashFlowDistributionRule>();
 
-        public Box<string> Name { get; } = new Box<string>();
+        public string Name { get; set; }
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = DistributionRules.ToList<IValidator>();
-                validators.Add(Criterion);
-                return validators;
-            }
-        }
+        public ValidatorBag Subvalidators => new ValidatorBag { Criterion, DistributionRules };
     }
 }

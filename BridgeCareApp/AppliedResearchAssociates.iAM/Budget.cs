@@ -6,35 +6,39 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Budget : IValidator
     {
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
+                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
                 if (YearlyAmounts.Count == 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, YearlyAmounts, "There are no yearly amounts."));
+                    results.Add(ValidationStatus.Error, "There are no yearly amounts.", this, nameof(YearlyAmounts));
                 }
 
                 return results;
             }
         }
 
-        public Box<string> Name { get; } = new Box<string>();
+        public string Name { get; set; }
 
-        public ICollection<IValidator> Subvalidators => YearlyAmounts.ToList<IValidator>();
+        public ValidatorBag Subvalidators => new ValidatorBag { YearlyAmounts };
 
         public IReadOnlyList<BudgetAmount> YearlyAmounts => _YearlyAmounts;
 
         internal void SetNumberOfYears(int numberOfYears)
         {
-            if (numberOfYears < _YearlyAmounts.Count)
+            if (numberOfYears < 0)
+            {
+                _YearlyAmounts.Clear();
+            }
+            else if (numberOfYears < _YearlyAmounts.Count)
             {
                 _YearlyAmounts.RemoveRange(numberOfYears, _YearlyAmounts.Count - numberOfYears);
             }

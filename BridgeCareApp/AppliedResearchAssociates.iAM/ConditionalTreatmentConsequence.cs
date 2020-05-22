@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using AppliedResearchAssociates.CalculateEvaluate;
 using AppliedResearchAssociates.Validation;
 
@@ -7,13 +6,9 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class ConditionalTreatmentConsequence : TreatmentConsequence
     {
-        public AttributeValueChange Change { get; } = new AttributeValueChange();
-
         public Criterion Criterion { get; } = new Criterion();
 
-        public Equation Equation { get; } = new Equation();
-
-        public override ICollection<ValidationResult> DirectValidationResults
+        public override ValidationResultBag DirectValidationResults
         {
             get
             {
@@ -21,18 +16,22 @@ namespace AppliedResearchAssociates.iAM
 
                 if (Change.ExpressionIsBlank == Equation.ExpressionIsBlank)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset));
+                    results.Add(ValidationStatus.Error, MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset, this);
                 }
 
                 return results;
             }
         }
 
+        public Equation Equation { get; } = new Equation();
+
+        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Equation).Add(Criterion);
+
         public override Action GetRecalculator(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
         {
             if (!Change.ExpressionIsBlank && Equation.ExpressionIsBlank)
             {
-                return Change.GetApplicator(Attribute, argument);
+                return base.GetRecalculator(argument, ageAttribute);
             }
             else if (Change.ExpressionIsBlank && !Equation.ExpressionIsBlank)
             {

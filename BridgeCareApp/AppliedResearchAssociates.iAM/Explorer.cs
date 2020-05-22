@@ -10,15 +10,15 @@ namespace AppliedResearchAssociates.iAM
     {
         public IReadOnlyCollection<CalculatedField> CalculatedFields => _CalculatedFields;
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (Networks.Select(network => network.Name).Distinct().Count() < Networks.Count)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Networks, "Multiple networks have the same name."));
+                    results.Add(ValidationStatus.Error, "Multiple networks have the same name.", this, nameof(Networks));
                 }
 
                 return results;
@@ -29,18 +29,7 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = new List<IValidator>();
-                validators.AddMany(CalculatedFields);
-                validators.AddMany(Networks);
-                validators.AddMany(NumberAttributes);
-                validators.AddMany(TextAttributes);
-                return validators;
-            }
-        }
+        public ValidatorBag Subvalidators => new ValidatorBag { CalculatedFields, Networks, NumberAttributes, TextAttributes };
 
         public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;
 
@@ -99,13 +88,13 @@ namespace AppliedResearchAssociates.iAM
 
         private bool AddAttribute<T>(string name, ref T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
         {
-            if (!attribute.Name.UpdateValue(name))
+            if (!attribute.UpdateName(name))
             {
                 attribute = default;
                 return false;
             }
 
-            Compiler.ParameterTypes.Add(attribute.Name.Value, parameterType);
+            Compiler.ParameterTypes.Add(attribute.Name, parameterType);
             attributes.Add(attribute);
             return true;
         }
@@ -117,7 +106,7 @@ namespace AppliedResearchAssociates.iAM
                 return false;
             }
 
-            RemoveParameterType(attribute.Name.Value);
+            RemoveParameterType(attribute.Name);
             return true;
         }
     }

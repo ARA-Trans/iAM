@@ -9,19 +9,21 @@ namespace AppliedResearchAssociates.iAM
 
         public SelectableTreatment Treatment { get; set; }
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (Treatment == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Treatment is unset."));
+                    results.Add(ValidationStatus.Error, "Treatment is unset.", this, nameof(Treatment));
                 }
 
                 return results;
             }
         }
+
+        public ValidatorBag Subvalidators => new ValidatorBag { Criterion };
     }
 }

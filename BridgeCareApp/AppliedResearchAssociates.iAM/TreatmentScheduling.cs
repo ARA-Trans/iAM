@@ -1,9 +1,33 @@
-﻿namespace AppliedResearchAssociates.iAM
-{
-    public sealed class TreatmentScheduling
-    {
-        public int OffsetToFutureYear { get; }
+﻿using AppliedResearchAssociates.Validation;
 
-        public SelectableTreatment Treatment { get; }
+namespace AppliedResearchAssociates.iAM
+{
+    public sealed class TreatmentScheduling : IValidator
+    {
+        public ValidationResultBag DirectValidationResults
+        {
+            get
+            {
+                var results = new ValidationResultBag();
+
+                if (OffsetToFutureYear < 1)
+                {
+                    results.Add(ValidationStatus.Error, "Offset to future year is less than one.", this, nameof(OffsetToFutureYear));
+                }
+
+                if (Treatment == null)
+                {
+                    results.Add(ValidationStatus.Error, "Treatment is unset.", this, nameof(Treatment));
+                }
+
+                return results;
+            }
+        }
+
+        public int OffsetToFutureYear { get; set; }
+
+        public ValidatorBag Subvalidators => new ValidatorBag();
+
+        public SelectableTreatment Treatment { get; set; }
     }
 }

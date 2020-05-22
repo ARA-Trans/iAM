@@ -10,7 +10,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public decimal? CostCeiling { get; set; }
 
-        public override ICollection<ValidationResult> DirectValidationResults
+        public override ValidationResultBag DirectValidationResults
         {
             get
             {
@@ -18,22 +18,22 @@ namespace AppliedResearchAssociates.iAM
 
                 if (CostCeiling <= 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Cost ceiling is less than or equal to zero."));
+                    results.Add(ValidationStatus.Error, "Cost ceiling is less than or equal to zero.", this, nameof(CostCeiling));
                 }
 
                 if (YearlyPercentages.Any(percentage => percentage < 0))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one yearly percentage is less than zero."));
+                    results.Add(ValidationStatus.Error, "At least one yearly percentage is less than zero.", this, nameof(YearlyPercentages));
                 }
 
                 if (YearlyPercentages.Any(percentage => percentage > 100))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one yearly percentage is greater than 100."));
+                    results.Add(ValidationStatus.Error, "At least one yearly percentage is greater than 100.", this, nameof(YearlyPercentages));
                 }
 
                 if (YearlyPercentages.Sum() != 100)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Yearly percentages do not sum to 100."));
+                    results.Add(ValidationStatus.Error, "Yearly percentages do not sum to 100.", this, nameof(YearlyPercentages));
                 }
 
                 return results;

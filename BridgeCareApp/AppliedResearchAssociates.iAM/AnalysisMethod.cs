@@ -9,65 +9,65 @@ namespace AppliedResearchAssociates.iAM
     {
         public AnalysisMethod(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
-        public Box<NumberAttribute> AgeAttribute { get; } = new Box<NumberAttribute>();
+        public NumberAttribute AgeAttribute { get; set; }
 
-        public Box<NumberAttribute> AreaAttribute { get; } = new Box<NumberAttribute>();
+        public NumberAttribute AreaAttribute { get; set; }
 
         public Benefit Benefit { get; } = new Benefit();
 
         public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
 
-        public ICollection<DeficientConditionGoal> DeficientConditionGoals { get; } = new ListWithoutNulls<DeficientConditionGoal>();
+        public ICollection<DeficientConditionGoal> DeficientConditionGoals { get; } = new SetWithoutNulls<DeficientConditionGoal>();
 
         public string Description { get; set; }
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
-                if (AgeAttribute.Value == null)
+                if (AgeAttribute == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, AgeAttribute, "Age attribute is unset."));
+                    results.Add(ValidationStatus.Error, "Age attribute is unset.", this, nameof(AgeAttribute));
                 }
 
-                if (AreaAttribute.Value == null)
+                if (AreaAttribute == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, AreaAttribute, "Area attribute is unset."));
+                    results.Add(ValidationStatus.Error, "Area attribute is unset.", this, nameof(AreaAttribute));
                 }
 
-                if (!OptimizationStrategy.Value.IsDefined())
+                if (!OptimizationStrategy.IsDefined())
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, OptimizationStrategy, "Invalid optimization strategy."));
+                    results.Add(ValidationStatus.Error, "Invalid optimization strategy.", this, nameof(OptimizationStrategy));
                 }
 
-                if (!SpendingStrategy.Value.IsDefined())
+                if (!SpendingStrategy.IsDefined())
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, SpendingStrategy, "Invalid spending strategy."));
+                    results.Add(ValidationStatus.Error, "Invalid spending strategy.", this, nameof(SpendingStrategy));
                 }
 
                 if (BudgetPriorities.Select(priority => (priority.PriorityLevel, priority.Year)).Distinct().Count() < BudgetPriorities.Count)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, BudgetPriorities, "At least one priority level-year is represented more than once."));
+                    results.Add(ValidationStatus.Error, "At least one priority level-year is represented more than once.", this, nameof(BudgetPriorities));
                 }
 
                 var deficientConditionGoalNames = GetNames(DeficientConditionGoals);
                 if (deficientConditionGoalNames.Distinct().Count() < deficientConditionGoalNames.Count)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, DeficientConditionGoals, "Multiple deficient condition goals have the same name."));
+                    results.Add(ValidationStatus.Error, "Multiple deficient condition goals have the same name.", this, nameof(DeficientConditionGoals));
                 }
 
                 var targetConditionGoalNames = GetNames(TargetConditionGoals);
                 if (targetConditionGoalNames.Distinct().Count() < targetConditionGoalNames.Count)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, TargetConditionGoals, "Multiple target condition goals have the same name."));
+                    results.Add(ValidationStatus.Error, "Multiple target condition goals have the same name.", this, nameof(TargetConditionGoals));
                 }
 
                 var remainingLifeLimitsWithBlankCriterion = RemainingLifeLimits.Where(limit => limit.Criterion.ExpressionIsBlank).ToArray();
                 if (remainingLifeLimitsWithBlankCriterion.Select(limit => limit.Attribute).Distinct().Count() < remainingLifeLimitsWithBlankCriterion.Length)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, RemainingLifeLimits, "At least one attribute has more than one remaining life limit with a blank criterion."));
+                    results.Add(ValidationStatus.Warning, "At least one attribute has more than one remaining life limit with a blank criterion.", this, nameof(RemainingLifeLimits));
                 }
 
                 return results;
@@ -76,30 +76,17 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion JurisdictionCriterion { get; } = new Criterion();
 
-        public Box<OptimizationStrategy> OptimizationStrategy { get; } = new Box<OptimizationStrategy>();
+        public OptimizationStrategy OptimizationStrategy { get; set; }
 
-        public ICollection<RemainingLifeLimit> RemainingLifeLimits { get; } = new ListWithoutNulls<RemainingLifeLimit>();
+        public ICollection<RemainingLifeLimit> RemainingLifeLimits { get; } = new SetWithoutNulls<RemainingLifeLimit>();
 
         public bool ShouldApplyMultipleFeasibleCosts { get; set; }
 
-        public Box<SpendingStrategy> SpendingStrategy { get; } = new Box<SpendingStrategy>();
+        public SpendingStrategy SpendingStrategy { get; set; }
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = new List<IValidator>();
-                validators.Add(Benefit);
-                validators.AddMany(BudgetPriorities);
-                validators.AddMany(DeficientConditionGoals);
-                validators.Add(JurisdictionCriterion);
-                validators.AddMany(RemainingLifeLimits);
-                validators.AddMany(TargetConditionGoals);
-                return validators;
-            }
-        }
+        public ValidatorBag Subvalidators => new ValidatorBag { Benefit, BudgetPriorities, DeficientConditionGoals, JurisdictionCriterion, RemainingLifeLimits, TargetConditionGoals };
 
-        public ICollection<TargetConditionGoal> TargetConditionGoals { get; } = new ListWithoutNulls<TargetConditionGoal>();
+        public ICollection<TargetConditionGoal> TargetConditionGoals { get; } = new SetWithoutNulls<TargetConditionGoal>();
 
         public bool UseExtraFundsAcrossBudgets { get; set; }
 
@@ -119,6 +106,6 @@ namespace AppliedResearchAssociates.iAM
 
         private readonly Simulation Simulation;
 
-        private static ICollection<string> GetNames(IEnumerable<ConditionGoal> conditionGoals) => conditionGoals.Select(conditionGoal => conditionGoal.Name.Value).Where(name => !string.IsNullOrWhiteSpace(name)).ToArray();
+        private static IReadOnlyCollection<string> GetNames(IEnumerable<ConditionGoal> conditionGoals) => conditionGoals.Select(conditionGoal => conditionGoal.Name).Where(name => !string.IsNullOrWhiteSpace(name)).ToArray();
     }
 }

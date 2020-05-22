@@ -8,19 +8,19 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class SelectableTreatment : Treatment
     {
-        public ICollection<Budget> Budgets { get; } = new HashSet<Budget>();
+        public ICollection<Budget> Budgets { get; } = new SetWithoutNulls<Budget>();
 
-        public ICollection<ConditionalTreatmentConsequence> Consequences { get; } = new List<ConditionalTreatmentConsequence>();
+        public ICollection<ConditionalTreatmentConsequence> Consequences { get; } = new SetWithoutNulls<ConditionalTreatmentConsequence>();
 
-        public ICollection<ConditionalEquation> Costs { get; } = new List<ConditionalEquation>();
+        public ICollection<ConditionalEquation> Costs { get; } = new SetWithoutNulls<ConditionalEquation>();
 
         public string Description { get; set; }
 
         public Criterion FeasibilityCriterion { get; } = new Criterion();
 
-        public ICollection<TreatmentSupersession> Supersessions { get; } = new List<TreatmentSupersession>();
+        public ICollection<TreatmentSupersession> Supersessions { get; } = new SetWithoutNulls<TreatmentSupersession>();
 
-        public override ICollection<ValidationResult> DirectValidationResults
+        public override ValidationResultBag DirectValidationResults
         {
             get
             {
@@ -29,18 +29,20 @@ namespace AppliedResearchAssociates.iAM
                 var consequencesWithBlankCriterion = Consequences.Where(consequence => consequence.Criterion.ExpressionIsBlank).ToArray();
                 if (consequencesWithBlankCriterion.Select(consequence => consequence.Attribute).Distinct().Count() < consequencesWithBlankCriterion.Length)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one attribute is unconditionally acted on by more than one consequence."));
+                    results.Add(ValidationStatus.Error, "At least one attribute is unconditionally acted on by more than one consequence.", this, nameof(Consequences));
                 }
 
                 var supersessionsWithBlankCriterion = Supersessions.Where(supersession => supersession.Criterion.ExpressionIsBlank).ToArray();
                 if (supersessionsWithBlankCriterion.Select(supersession => supersession.Treatment).Distinct().Count() < supersessionsWithBlankCriterion.Length)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "At least one treatment is unconditionally superseded more than once."));
+                    results.Add(ValidationStatus.Warning, "At least one treatment is unconditionally superseded more than once.", this, nameof(Supersessions));
                 }
 
                 return results;
             }
         }
+
+        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Consequences).Add(Costs).Add(FeasibilityCriterion).Add(Supersessions);
 
         public override bool CanUseBudget(Budget budget) => Budgets.Contains(budget);
 

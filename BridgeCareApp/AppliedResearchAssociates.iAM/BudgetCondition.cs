@@ -1,29 +1,28 @@
-﻿using System.Collections.Generic;
-using AppliedResearchAssociates.Validation;
+﻿using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class BudgetCondition : IValidator
     {
-        public Box<Budget> Budget { get; } = new Box<Budget>();
+        public Budget Budget { get; set; }
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
-                if (Budget.Value == null)
+                if (Budget == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Budget, "Budget is unset."));
+                    results.Add(ValidationStatus.Error, "Budget is unset.", this, nameof(Budget));
                 }
 
                 return results;
             }
         }
 
-        public ICollection<IValidator> Subvalidators => new List<IValidator>();
+        public ValidatorBag Subvalidators => new ValidatorBag { Criterion };
     }
 }

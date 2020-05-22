@@ -1,35 +1,34 @@
-﻿using System.Collections.Generic;
-using AppliedResearchAssociates.Validation;
+﻿using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class NumberAttribute : Attribute<double>
     {
-        public override ICollection<ValidationResult> DirectValidationResults
+        public override ValidationResultBag DirectValidationResults
         {
             get
             {
                 var results = base.DirectValidationResults;
 
-                if (Minimum.Value.HasValue && double.IsNaN(Minimum.Value.Value))
+                if (Minimum.HasValue && double.IsNaN(Minimum.Value))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Minimum, "Minimum is not a number."));
+                    results.Add(ValidationStatus.Error, "Minimum is not a number.", this, nameof(Minimum));
                 }
 
-                if (Maximum.Value.HasValue && double.IsNaN(Maximum.Value.Value))
+                if (Maximum.HasValue && double.IsNaN(Maximum.Value))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Minimum, "Maximum is not a number."));
+                    results.Add(ValidationStatus.Error, "Maximum is not a number.", this, nameof(Minimum));
                 }
 
                 if (Minimum.Value is double minimum && Maximum.Value is double maximum)
                 {
                     if (minimum == maximum)
                     {
-                        results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "Minimum is equal to maximum."));
+                        results.Add(ValidationStatus.Warning, "Minimum is equal to maximum.", this);
                     }
                     else if (minimum > maximum)
                     {
-                        results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Minimum is greater than maximum."));
+                        results.Add(ValidationStatus.Error, "Minimum is greater than maximum.", this);
                     }
                 }
 
@@ -39,9 +38,9 @@ namespace AppliedResearchAssociates.iAM
 
         public bool IsDecreasingWithDeterioration { get; set; }
 
-        public Box<double?> Maximum { get; } = new Box<double?>();
+        public double? Maximum { get; set; }
 
-        public Box<double?> Minimum { get; } = new Box<double?>();
+        public double? Minimum { get; set; }
 
         internal NumberAttribute(Explorer explorer) : base(explorer)
         {

@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public abstract class CompilableExpression : IValidator
     {
-        public virtual ICollection<ValidationResult> DirectValidationResults
+        public virtual ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 try
                 {
@@ -18,7 +17,7 @@ namespace AppliedResearchAssociates.iAM
                 }
                 catch (MalformedInputException e)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, e.Message));
+                    results.Add(ValidationStatus.Error, e.Message, this, nameof(Expression));
                 }
 
                 return results;
@@ -33,7 +32,7 @@ namespace AppliedResearchAssociates.iAM
 
         public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
 
-        public ICollection<IValidator> Subvalidators => new List<IValidator>();
+        public virtual ValidatorBag Subvalidators => new ValidatorBag();
 
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 

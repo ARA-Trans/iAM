@@ -1,45 +1,36 @@
-﻿using System.Collections.Generic;
-using AppliedResearchAssociates.Validation;
+﻿using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public abstract class ConditionGoal : IValidator
     {
-        public virtual Box<NumberAttribute> Attribute { get; } = new Box<NumberAttribute>();
+        public virtual NumberAttribute Attribute { get; set; }
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public Box<string> Name { get; } = new Box<string>();
-
-        public virtual ICollection<ValidationResult> DirectValidationResults
+        public virtual ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
-                if (Attribute.Value == null)
+                if (Attribute == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Attribute, "Attribute is unset."));
+                    results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
                 }
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
+                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
                 return results;
             }
         }
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = new List<IValidator>();
-                validators.Add(Criterion);
-                return validators;
-            }
-        }
+        public string Name { get; set; }
+
+        public virtual ValidatorBag Subvalidators => new ValidatorBag { Criterion };
 
         public abstract bool IsMet(double actual);
     }

@@ -1,27 +1,26 @@
-﻿using System.Collections.Generic;
-using AppliedResearchAssociates.Validation;
+﻿using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class Facility : IValidator
     {
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Name, "Name is blank."));
+                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
                 return results;
             }
         }
 
-        public Box<string> Name { get; } = new Box<string>();
+        public string Name { get; set; }
 
-        public ICollection<IValidator> Subvalidators => new List<IValidator>();
+        public ValidatorBag Subvalidators => new ValidatorBag();
     }
 }

@@ -59,7 +59,7 @@ namespace AppliedResearchAssociates.iAM
 
             _ = Parallel.ForEach(SectionContexts, context => context.RollForward());
 
-            switch (Simulation.AnalysisMethod.SpendingStrategy.Value)
+            switch (Simulation.AnalysisMethod.SpendingStrategy)
             {
             case SpendingStrategy.NoSpending:
                 AllowedSpending = Spending.None;
@@ -338,7 +338,7 @@ namespace AppliedResearchAssociates.iAM
         private IReadOnlyCollection<TreatmentOption> GetTreatmentOptionsInOptimalOrder(IEnumerable<SectionContext> contexts, int year)
         {
             Func<TreatmentOption, double> objectiveFunction;
-            switch (Simulation.AnalysisMethod.OptimizationStrategy.Value)
+            switch (Simulation.AnalysisMethod.OptimizationStrategy)
             {
             case OptimizationStrategy.Benefit:
                 objectiveFunction = option => option.Benefit;

@@ -1,38 +1,29 @@
-﻿using System.Collections.Generic;
-using AppliedResearchAssociates.Validation;
+﻿using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class RemainingLifeLimit : IValidator
     {
-        public Box<NumberAttribute> Attribute { get; } = new Box<NumberAttribute>();
+        public NumberAttribute Attribute { get; set; }
 
         public Criterion Criterion { get; } = new Criterion();
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
-                if (Attribute.Value == null)
+                if (Attribute == null)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Attribute, "Attribute is unset."));
+                    results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
                 }
 
                 return results;
             }
         }
 
-        public ICollection<IValidator> Subvalidators
-        {
-            get
-            {
-                var validators = new List<IValidator>();
-                validators.Add(Criterion);
-                return validators;
-            }
-        }
+        public ValidatorBag Subvalidators => new ValidatorBag { Criterion };
 
         public double Value { get; set; }
     }

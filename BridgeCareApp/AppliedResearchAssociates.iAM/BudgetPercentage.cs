@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
@@ -8,28 +7,28 @@ namespace AppliedResearchAssociates.iAM
     {
         public Budget Budget { get; }
 
-        public ICollection<ValidationResult> DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (Percentage < 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Percentage, "Percentage is less than zero."));
+                    results.Add(ValidationStatus.Error, "Percentage is less than zero.", this, nameof(Percentage));
                 }
                 else if (Percentage > 100)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, Percentage, "Percentage is greater than 100."));
+                    results.Add(ValidationStatus.Error, "Percentage is greater than 100.", this, nameof(Percentage));
                 }
 
                 return results;
             }
         }
 
-        public Box<decimal> Percentage { get; } = new Box<decimal>();
+        public decimal Percentage { get; set; }
 
-        public ICollection<IValidator> Subvalidators => throw new NotImplementedException();
+        public ValidatorBag Subvalidators => new ValidatorBag();
 
         internal BudgetPercentage(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
     }

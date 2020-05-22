@@ -7,9 +7,9 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class CalculatedField : Attribute
     {
-        public ICollection<ConditionalEquation> Equations { get; } = new ListWithoutNulls<ConditionalEquation>();
+        public ICollection<ConditionalEquation> Equations { get; } = new SetWithoutNulls<ConditionalEquation>();
 
-        public override ICollection<ValidationResult> DirectValidationResults
+        public override ValidationResultBag DirectValidationResults
         {
             get
             {
@@ -17,18 +17,18 @@ namespace AppliedResearchAssociates.iAM
 
                 if (Equations.Count == 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "There are no equations."));
+                    results.Add(ValidationStatus.Error, "There are no equations.", this, nameof(Equations));
                 }
                 else
                 {
                     var numberOfEquationsWithBlankCriterion = Equations.Count(equation => equation.Criterion.ExpressionIsBlank);
                     if (numberOfEquationsWithBlankCriterion == 0)
                     {
-                        results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "There are no equations with a blank criterion."));
+                        results.Add(ValidationStatus.Warning, "There are no equations with a blank criterion.", this, nameof(Equations));
                     }
                     else if (numberOfEquationsWithBlankCriterion > 1)
                     {
-                        results.Add(ValidationResult.Create(ValidationStatus.Error, this, "There are multiple equations with a blank criterion."));
+                        results.Add(ValidationStatus.Error, "There are multiple equations with a blank criterion.", this, nameof(Equations));
                     }
                 }
 

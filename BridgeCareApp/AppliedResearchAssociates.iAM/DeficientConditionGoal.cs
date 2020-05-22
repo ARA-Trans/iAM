@@ -1,20 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class DeficientConditionGoal : ConditionGoal
     {
-        public DeficientConditionGoal() => Attribute = new Box<NumberAttribute>(OnSetAttribute);
+        public double AllowedDeficientPercentage { get; set; }
 
-        public Box<double> AllowedDeficientPercentage { get; } = new Box<double>();
+        public override NumberAttribute Attribute
+        {
+            get => base.Attribute;
+            set
+            {
+                base.Attribute = value;
 
-        public override Box<NumberAttribute> Attribute { get; }
+                if (Attribute == null)
+                {
+                    _LevelIsDeficient = null;
+                }
+                else if (Attribute.IsDecreasingWithDeterioration)
+                {
+                    _LevelIsDeficient = LevelIsLessThanLimit;
+                }
+                else
+                {
+                    _LevelIsDeficient = LevelIsGreaterThanLimit;
+                }
+            }
+        }
 
         public double DeficientLimit { get; set; }
 
-        public override ICollection<ValidationResult> DirectValidationResults
+        public override ValidationResultBag DirectValidationResults
         {
             get
             {
@@ -22,19 +39,19 @@ namespace AppliedResearchAssociates.iAM
 
                 if (AllowedDeficientPercentage < 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, AllowedDeficientPercentage, "Allowed deficient percentage is less than zero."));
+                    results.Add(ValidationStatus.Error, "Allowed deficient percentage is less than zero.", this, nameof(AllowedDeficientPercentage));
                 }
                 else if (AllowedDeficientPercentage == 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, AllowedDeficientPercentage, "Allowed deficient percentage is zero."));
+                    results.Add(ValidationStatus.Warning, "Allowed deficient percentage is zero.", this, nameof(AllowedDeficientPercentage));
                 }
                 else if (AllowedDeficientPercentage == 100)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, AllowedDeficientPercentage, "Allowed deficient percentage is 100."));
+                    results.Add(ValidationStatus.Warning, "Allowed deficient percentage is 100.", this, nameof(AllowedDeficientPercentage));
                 }
                 else if (AllowedDeficientPercentage > 100)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, AllowedDeficientPercentage, "Allowed deficient percentage is greater than 100."));
+                    results.Add(ValidationStatus.Error, "Allowed deficient percentage is greater than 100.", this, nameof(AllowedDeficientPercentage));
                 }
 
                 return results;
@@ -50,21 +67,5 @@ namespace AppliedResearchAssociates.iAM
         private bool LevelIsGreaterThanLimit(double level) => level > DeficientLimit;
 
         private bool LevelIsLessThanLimit(double level) => level < DeficientLimit;
-
-        private void OnSetAttribute()
-        {
-            if (Attribute.Value == null)
-            {
-                _LevelIsDeficient = null;
-            }
-            else if (Attribute.Value.IsDecreasingWithDeterioration)
-            {
-                _LevelIsDeficient = LevelIsLessThanLimit;
-            }
-            else
-            {
-                _LevelIsDeficient = LevelIsGreaterThanLimit;
-            }
-        }
     }
 }

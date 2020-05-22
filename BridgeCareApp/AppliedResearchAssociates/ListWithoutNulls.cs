@@ -5,8 +5,6 @@ namespace AppliedResearchAssociates
 {
     public sealed class ListWithoutNulls<T> : IList<T>, IReadOnlyList<T> where T : class
     {
-        public ListWithoutNulls(IList<T> items = null) => Items = items ?? new List<T>();
-
         public int Count => Items.Count;
 
         public bool IsReadOnly => Items.IsReadOnly;
@@ -55,6 +53,6 @@ namespace AppliedResearchAssociates
 
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Items).GetEnumerator();
 
-        private readonly IList<T> Items;
+        private readonly IList<T> Items = new List<T>();
     }
 }

@@ -14,11 +14,26 @@ namespace AppliedResearchAssociates.iAM
             SynchronizeBudgetPriorities();
         }
 
-        public ICollection<BudgetCondition> BudgetConditions { get; } = new ListWithoutNulls<BudgetCondition>();
+        public ICollection<BudgetCondition> BudgetConditions { get; } = new SetWithoutNulls<BudgetCondition>();
 
         public IReadOnlyList<Budget> Budgets => _Budgets;
 
-        public ICollection<CashFlowRule> CashFlowRules { get; } = new ListWithoutNulls<CashFlowRule>();
+        public ICollection<CashFlowRule> CashFlowRules { get; } = new SetWithoutNulls<CashFlowRule>();
+
+        public ValidationResultBag DirectValidationResults
+        {
+            get
+            {
+                var results = new ValidationResultBag();
+
+                if (NumberOfYearsInAnalysisPeriod < 1)
+                {
+                    results.Add(ValidationStatus.Error, "Number of years in analysis period is less than one.", this, nameof(NumberOfYearsInAnalysisPeriod));
+                }
+
+                return results;
+            }
+        }
 
         public double DiscountRatePercentage { get; set; }
 
@@ -39,6 +54,8 @@ namespace AppliedResearchAssociates.iAM
                 }
             }
         }
+
+        public ValidatorBag Subvalidators => new ValidatorBag { BudgetConditions, Budgets, CashFlowRules };
 
         public IEnumerable<int> YearsOfAnalysis => Enumerable.Range(FirstYearOfAnalysisPeriod, NumberOfYearsInAnalysisPeriod);
 

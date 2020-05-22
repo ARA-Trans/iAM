@@ -10,46 +10,48 @@ namespace AppliedResearchAssociates.iAM
     {
         public string Name { get; set; }
 
-        public ICollection<TreatmentScheduling> Schedulings { get; } = new List<TreatmentScheduling>();
+        public ICollection<TreatmentScheduling> Schedulings { get; } = new SetWithoutNulls<TreatmentScheduling>();
 
-        public int ShadowForAnyTreatment { get; }
+        public int ShadowForAnyTreatment { get; set; }
 
-        public int ShadowForSameTreatment { get; }
+        public int ShadowForSameTreatment { get; set; }
 
-        public virtual ICollection<ValidationResult> DirectValidationResults
+        public virtual ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = new List<ValidationResult>();
+                var results = new ValidationResultBag();
 
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "Name is blank."));
+                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
                 if (Schedulings.Select(scheduling => scheduling.OffsetToFutureYear).Distinct().Count() < Schedulings.Count)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "At least one future year has more than one scheduling."));
+                    results.Add(ValidationStatus.Error, "At least one future year has more than one scheduling.", this, nameof(Schedulings));
                 }
 
                 if (ShadowForAnyTreatment < 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "\"Any\" shadow is less than zero."));
+                    results.Add(ValidationStatus.Error, "\"Any\" shadow is less than zero.", this, nameof(ShadowForAnyTreatment));
                 }
 
                 if (ShadowForSameTreatment < 0)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Error, this, "\"Same\" shadow is less than zero."));
+                    results.Add(ValidationStatus.Error, "\"Same\" shadow is less than zero.", this, nameof(ShadowForSameTreatment));
                 }
 
                 if (ShadowForSameTreatment <= ShadowForAnyTreatment)
                 {
-                    results.Add(ValidationResult.Create(ValidationStatus.Warning, this, "\"Same\" shadow is less than or equal to \"any\" shadow."));
+                    results.Add(ValidationStatus.Warning, "\"Same\" shadow is less than or equal to \"any\" shadow.", this);
                 }
 
                 return results;
             }
         }
+
+        public virtual ValidatorBag Subvalidators => new ValidatorBag { Schedulings };
 
         public abstract bool CanUseBudget(Budget budget);
 
