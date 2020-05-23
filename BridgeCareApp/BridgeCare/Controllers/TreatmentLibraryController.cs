@@ -76,7 +76,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult GetSimulationTreatmentLibrary(int id)
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(TreatmentLibraryGetMethods[userInformation.Role](id, userInformation));
         }
 
@@ -90,7 +90,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationTreatmentLibrary([FromBody]TreatmentLibraryModel model)
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(TreatmentLibrarySaveMethods[userInformation.Role](model, userInformation));
         }
     }

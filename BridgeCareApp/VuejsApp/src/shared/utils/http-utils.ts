@@ -42,7 +42,7 @@ export const setContentTypeCharset = (headers: any) => {
 export const setAuthHeader = (headers: any) => {
     if (headers && localStorage.getItem('UserTokens')) {
         const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-        headers['Authorization'] = `Bearer ${userTokens.id_token}`;
+        headers['Authorization'] = `Bearer ${userTokens.access_token}`;
     }
 
     return headers;

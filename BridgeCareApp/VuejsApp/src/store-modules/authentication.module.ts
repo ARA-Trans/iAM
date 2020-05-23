@@ -114,11 +114,7 @@ const actions = {
         } else {
             localStorage.removeItem('UserInfo');
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-            // ID token is too long to pass as part of the URL, but it will be passed as the parameter
-            // of the Authorization header.
-            AuthenticationService.revokeToken('', 'Id').then(() =>
-                localStorage.removeItem('UserTokens')
-            );
+            localStorage.removeItem('UserTokens');
             localStorage.removeItem('TokenExpiration');
             AuthenticationService.revokeToken(userTokens.access_token, 'Access');
             AuthenticationService.revokeToken(userTokens.refresh_token, 'Refresh');

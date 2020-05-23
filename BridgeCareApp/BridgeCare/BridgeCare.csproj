@@ -293,7 +293,7 @@
     <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryByBudgetModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
-    <Compile Include="Security\JWTParse.cs" />
+    <Compile Include="Security\ESECSecurity.cs" />
     <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\ModelValidationAttribute.cs" />

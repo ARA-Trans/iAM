@@ -29,7 +29,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult GetInventory()
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(repo.GetInventorySelectionModels(db, userInformation));
         }
 
