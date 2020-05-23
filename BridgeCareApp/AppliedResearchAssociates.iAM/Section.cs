@@ -28,9 +28,13 @@ namespace AppliedResearchAssociates.iAM
 
         public Facility Facility { get; set; }
 
+        public IEnumerable<Attribute> HistoricalAttributes => HistoryPerAttribute.Keys;
+
         public string Name { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Facility };
+
+        public void ClearHistory() => HistoryPerAttribute.Clear();
 
         public IDictionary<int, T> GetAttributeHistory<T>(Attribute<T> attribute)
         {
@@ -42,6 +46,8 @@ namespace AppliedResearchAssociates.iAM
 
             return (Dictionary<int, T>)history;
         }
+
+        public bool RemoveAttributeHistory(Attribute attribute) => HistoryPerAttribute.Remove(attribute);
 
         private readonly Dictionary<Attribute, IDictionary> HistoryPerAttribute = new Dictionary<Attribute, IDictionary>();
     }
