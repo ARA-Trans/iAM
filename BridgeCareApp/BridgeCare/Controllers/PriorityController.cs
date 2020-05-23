@@ -78,7 +78,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult GetSimulationPriorityLibrary(int id)
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(PriorityLibraryGetMethods[userInformation.Role](id, userInformation));
         }
 
@@ -93,7 +93,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess(Role.ADMINISTRATOR, Role.DISTRICT_ENGINEER)]
         public IHttpActionResult SaveSimulationPriorityLibrary([FromBody]PriorityLibraryModel model)
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(PriorityLibrarySaveMethods[userInformation.Role](model, userInformation));
         }
     }

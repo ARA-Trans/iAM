@@ -9,12 +9,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Script.Serialization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BridgeCare.Security
 {
-    public static class JWTParse
+    public static class ESECSecurity
     {
         private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
         /// <summary>
@@ -72,6 +73,26 @@ namespace BridgeCare.Security
             string name = ParseLDAP(decodedToken.GetClaimValue("sub"))[0];
             string email = decodedToken.GetClaimValue("email");
             return new Models.UserInformationModel(name, role, email);
+        }
+
+        /// <summary>
+        /// Given a dictionary version of the LDAP-formatted JSON from ESEC, produces a UserInformationModel object
+        /// containing only the user's name, email, and relevant role
+        /// </summary>
+        /// <param name="idToken">JWT id_token from Authorization Header</param>
+        /// <returns></returns>
+        public static Models.UserInformationModel GetUserInformation(Dictionary<string, string> userInformationDictionary)
+        {
+            string role = ParseLDAP(userInformationDictionary["roles"]).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
+            string name = ParseLDAP(userInformationDictionary["sub"])[0];
+            string email = userInformationDictionary["email"];
+            return new Models.UserInformationModel(name, role, email);
+        }
+
+        public static Models.UserInformationModel GetUserInformation(HttpRequestMessage request)
+        {
+            Func<string, string> getValue = key => request.Headers.GetValues(key).First();
+            return new Models.UserInformationModel(getValue("Name"), getValue("Role"), getValue("Email"));
         }
 
         /// <summary>
@@ -143,7 +164,7 @@ namespace BridgeCare.Security
         /// </summary>
         /// <param name="roleResponse">LDAP-formatted response</param>
         /// <returns>Role</returns>
-        private static List<string> ParseLDAP(string ldap)
+        public static List<string> ParseLDAP(string ldap)
         {
             if (string.IsNullOrEmpty(ldap))
                 return new List<string>();

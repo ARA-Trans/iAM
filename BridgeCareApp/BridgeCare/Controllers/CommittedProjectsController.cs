@@ -34,7 +34,7 @@ namespace BridgeCare.Controllers
             if (!Request.Content.IsMimeMultipartContent())
                 throw new ConstraintException("The data provided is not a valid MIME type.");
 
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             repo.SaveCommittedProjectsFiles(HttpContext.Current.Request, db, userInformation);
             return Ok();
         }
@@ -51,7 +51,7 @@ namespace BridgeCare.Controllers
         public HttpResponseMessage ExportCommittedProjects([FromBody]SimulationModel model)
         {
             var response = Request.CreateResponse();
-            var userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            var userInformation = ESECSecurity.GetUserInformation(Request);
             byte[] byteArray = repo.ExportCommittedProjects(model.simulationId, model.networkId, db, userInformation);
             response.Content = new ByteArrayContent(byteArray);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");

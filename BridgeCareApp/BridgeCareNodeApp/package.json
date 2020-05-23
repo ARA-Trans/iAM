@@ -7,13 +7,14 @@
     "name": ""
   },
   "scripts": {
-    "start": "set DEBUG=app,app:* & nodemon --exec babel-node app.js",
+    "start": "set DEBUG=app,app:* & nodemon --exec babel-node --max-http-header-size=80000 app.js",
     "test": "mocha tests/**/*Tests.js",
     "prod": "set NODE_ENV=production && nodemon app.js",
     "lint": "eslint app.js"
   },
   "dependencies": {
     "app-root-path": "^3.0.0",
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",

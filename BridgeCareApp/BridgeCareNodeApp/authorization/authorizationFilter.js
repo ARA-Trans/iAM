@@ -1,53 +1,39 @@
-const passport = require('passport');
-const jwkToPem = require('jwk-to-pem');
-const passportJwt = require('passport-jwt');
-const jwtStrategy = passportJwt.Strategy;
-const extractJwt = passportJwt.ExtractJwt;
 const authorizationConfig = require('./authorizationConfig');
 const logger = require('../config/winston');
+const axios = require('axios');
+const https = require('https');
 
 function authorizationFilter(permittedRoles) {
-    const jwtStrategyOptions = {
-        jwtFromRequest: extractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: jwkToPem(authorizationConfig.esecPublicKey),
-        issuer: authorizationConfig.issuer,
-        audience: authorizationConfig.clientId
-    };
+    return async function authenticationHandler(request, response, next) {
+        accessToken = request.headers.authorization.split(' ')[1];
 
-    function verify(jwtPayload, done) {
-        roles = jwtPayload.roles.split('^').map(segment => segment.split(',')[0].split('=')[1]);
-        username = jwtPayload.sub.split(',')[0].split('=')[1];
+        requestPath = `${authorizationConfig.issuer}/userinfo?access_token=${accessToken}`;
+
+        userInfoResponse = await axios.get(requestPath, { httpsAgent: new https.Agent({rejectUnauthorized: false})}).then(esecResponse => {
+            return esecResponse.data;
+        }).catch(error => {
+            return {error: response.status(401).json({message: error.response.data.error_description || 'Authentication Failed'})};
+        });
+
+        if (userInfoResponse.error !== undefined) {
+            return userInfoResponse.error;
+        }
+
+        console.log(userInfoResponse);
+        
+        roles = userInfoResponse.roles.split('^').map(segment => segment.split(',')[0].split('=')[1]);
+        username = userInfoResponse.sub.split(',')[0].split('=')[1];
         if (!Array.isArray(permittedRoles) || permittedRoles.length === 0) {
-            return done(null, { username, roles });
+            request.user = { username, roles };
+            return next();
         }
         if (permittedRoles.some(permittedRole => roles.some(role => permittedRole === role))){
-            return done(null, { username, roles });
+            request.user = { username, roles };
+            return next();
         }
-        logger.error('User unauthorized');
-        return done(null, false, {message: 'You are not authorized to perform that action'});
-    }
-
-    const strategy = new jwtStrategy(jwtStrategyOptions, verify);
-
-    const strategyName = permittedRoles === undefined ? 'all' : permittedRoles.join(',');
-    
-    passport.use(strategyName, strategy);
-
-    const authenticationHandler = (request, response, next) => {
-        passport.authenticate(strategyName, {session: false}, 
-            (error, user, info) => {
-                if (error) {
-                    return next(error);
-                }
-                if (!user) {
-                    return response.status(401).json({message: info.message || 'Authentication failed'});
-                }
-                request.user = user;
-                return next(null, request, response);
-            })(request, response, next);
+        
+        return response.status(401).json({message: 'User is not authorized for this action.'});
     };
-
-    return authenticationHandler;
 }
 
 module.exports = authorizationFilter;
