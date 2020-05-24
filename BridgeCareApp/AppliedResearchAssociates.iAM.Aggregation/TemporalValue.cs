@@ -26,13 +26,32 @@ namespace AppliedResearchAssociates.iAM.Aggregation
         /// </summary>
         private AggregationRule<T> aggregationRule;
 
+        public TemporalValue(TimeInterval interval, AggregationRule<T> rule)
+        {
+            dataValues = new Dictionary<DateTime, T>();
+            timeInterval = interval;
+            aggregationRule = rule;
+        }
+
+        public TemporalValue(TimeInterval interval) : this(interval, new LastAggregationRule<T>()) { }
+
+        public TemporalValue() : this(new TimeIntervalYear(new DateTime(0,1,1)), new LastAggregationRule<T>()) { }
+
         /// <summary>
         /// Gets the most recent value prior to a date
         /// </summary>
         public virtual T GetData(DateTime timeStamp)
         {
-            // TODO: Determine data value if it exists.
-            return default(T);
+            var requestedDateKey = dataValues.Keys
+                .Where(_ => _ <= timeStamp)
+                .OrderByDescending(_ => _)
+                .FirstOrDefault();
+
+            // If no date was found, return the default for T
+            if (requestedDateKey == default) return default;
+
+            // A value was found, return it.
+            return dataValues[requestedDateKey];
         }
 
         /// <summary>
@@ -54,7 +73,14 @@ namespace AppliedResearchAssociates.iAM.Aggregation
         /// <returns>True if both objects have values for the same dates</returns>
         protected bool IsConsistentDate(TemporalValue<T> comparisonValue)
         {
-            throw new NotImplementedException();
+            // If this statement returns a list, this check has failed as thre are dates
+            // in this value that do not exist in the comparison value
+            var exceptionList = (GetDates()).Except(comparisonValue.GetDates());
+            if (exceptionList.Count() > 0) return false;
+
+            // It has to be done in reverse as well
+            exceptionList = (comparisonValue.GetDates()).Except(GetDates());
+            return exceptionList.Count() > 0;
         }
 
         /// <summary>
@@ -64,7 +90,14 @@ namespace AppliedResearchAssociates.iAM.Aggregation
         /// <returns>True if both objects have values for the same intervals</returns>
         protected bool IsConsistentInterval(TemporalValue<T> comparisonValue)
         {
-            throw new NotImplementedException();
+            // If this statement returns a list, this check has failed as thre are dates
+            // in this value that do not exist in the comparison value
+            var exceptionList = (GetIntervals()).Except(comparisonValue.GetIntervals());
+            if (exceptionList.Count() > 0) return false;
+
+            // It has to be done in reverse as well
+            exceptionList = (comparisonValue.GetIntervals()).Except(GetIntervals());
+            return exceptionList.Count() > 0;
         }
 
         /// <summary>
@@ -78,7 +111,7 @@ namespace AppliedResearchAssociates.iAM.Aggregation
             {
                 keyList.Add(item.Key);
             }
-            return keyList;
+            return keyList.OrderBy(_ => _);
         }
 
         /// <summary>
@@ -87,7 +120,13 @@ namespace AppliedResearchAssociates.iAM.Aggregation
         /// <returns>List of intervals</returns>
         protected IEnumerable<int> GetIntervals()
         {
-            throw new NotImplementedException();
+            List<int> keyList = new List<int>();
+            foreach (var item in dataValues)
+            {
+                keyList.Add(timeInterval.CalculateInterval(item.Key));
+            }
+            return keyList.Distinct().OrderBy(_ => _);
         }
+    }
     }
 }
