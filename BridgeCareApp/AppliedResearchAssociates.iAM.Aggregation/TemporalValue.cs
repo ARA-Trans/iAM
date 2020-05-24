@@ -128,5 +128,4 @@ namespace AppliedResearchAssociates.iAM.Aggregation
             return keyList.Distinct().OrderBy(_ => _);
         }
     }
-    }
 }
