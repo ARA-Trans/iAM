@@ -19,7 +19,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         public AttributeConnection AttributeConnection { get; }
 
         /// <summary>
-        /// The asset type that this attribute represents
+        /// The asset that this attribute is a member of.
         /// </summary>
         public Asset Asset { get; }
     }
