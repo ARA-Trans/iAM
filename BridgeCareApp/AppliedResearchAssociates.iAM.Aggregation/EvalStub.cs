@@ -6,7 +6,7 @@ namespace AppliedResearchAssociates.iAM.Aggregation
 {
     public class EvalStub
     {
-        internal T Apply<T>(List<AttributeDatum<T>> attributeData, IEnumerable<AggregationRule<T>> aggregationRules)
+        internal TemporalValue<T> Apply<T>(List<AttributeDatum<T>> attributeData, IEnumerable<AggregationRule<T>> aggregationRules)
         {
             throw new NotImplementedException();
         }
