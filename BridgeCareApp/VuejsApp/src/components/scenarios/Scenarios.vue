@@ -39,7 +39,7 @@
             <v-flex x12>
             <v-card elevation=5 color="blue lighten-5">
                 <v-card-title>
-                    <v-flex xs4>
+                    <v-flex xs2>
                         <v-chip color="ara-blue-bg" text-color="white">
                             My Scenarios
                             <v-icon right>star</v-icon>
@@ -50,9 +50,12 @@
                                       v-model="searchMine">
                         </v-text-field>
                     </v-flex>
-                    <v-flex xs2 v-if="isAdmin">
+                    <v-flex xs4 v-if="isAdmin">
                         <v-btn @click="onUpdateScenarioList()" class="ara-blue-bg white--text" round>
                             Load legacy scenarios
+                        </v-btn>
+                        <v-btn @click="onDeleteScenarioList()" class="ara-orange-bg white--text" round>
+                            Delete duplicate scenarios
                         </v-btn>
                     </v-flex>
                 </v-card-title>
@@ -281,6 +284,7 @@
         @Action('rollupNetwork') rollupNetworkAction: any;
         @Action('getLegacyNetworks') getLegacyNetworksAction: any;
         @Action('cloneScenario') cloneScenarioAction: any;
+        @Action('deleteDuplicateMongoScenario') deleteDuplicateMongoScenarioAction: any;
 
         alertData: AlertData = clone(emptyAlertData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
@@ -367,6 +371,10 @@
 
         onUpdateScenarioList() {
             this.getLegacyScenariosAction();
+        }
+
+        onDeleteScenarioList(){
+            this.deleteDuplicateMongoScenarioAction({scenarios: this.scenarios});
         }
 
         onLoadNetworks() {

@@ -117,6 +117,14 @@ const actions = {
                 }
             });
     },
+    async deleteDuplicateMongoScenario({dispatch, state, commit}: any, payload: any){
+        return await ScenarioService.deleteDuplicateMongoScenario(payload.scenarios)
+        .then((response: AxiosResponse) => {
+            if (hasValue(response, 'data')) {
+                commit('scenariosMutator', response.data.map((data: any) => convertFromMongoToVue(data)));
+            }
+        });
+    },
     async getScenarioAnalysis({commit}: any, payload: any) {
         await AnalysisEditorService.getScenarioAnalysisData(payload.selectedScenarioId)
             .then((response: AxiosResponse) => {

@@ -1,12 +1,12 @@
-import {AxiosPromise, AxiosResponse} from 'axios';
-import {Scenario, ScenarioUser} from '@/shared/models/iAM/scenario';
-import {axiosInstance, nodejsAxiosInstance} from '@/shared/utils/axios-instance';
-import {ScenarioCreationData} from '@/shared/models/modals/scenario-creation-data';
-import {hasValue} from '@/shared/utils/has-value-util';
-import {Simulation} from '@/shared/models/iAM/simulation';
-import {any, propEq} from 'ramda';
-import {http2XX} from '@/shared/utils/http-utils';
-import {convertFromVueToMongo} from '@/shared/utils/mongo-model-conversion-utils';
+import { AxiosPromise, AxiosResponse } from 'axios';
+import { Scenario, ScenarioUser } from '@/shared/models/iAM/scenario';
+import { axiosInstance, nodejsAxiosInstance } from '@/shared/utils/axios-instance';
+import { ScenarioCreationData } from '@/shared/models/modals/scenario-creation-data';
+import { hasValue } from '@/shared/utils/has-value-util';
+import { Simulation } from '@/shared/models/iAM/simulation';
+import { any, propEq } from 'ramda';
+import { http2XX } from '@/shared/utils/http-utils';
+import { convertFromVueToMongo } from '@/shared/utils/mongo-model-conversion-utils';
 
 export default class ScenarioService {
     static getMongoScenarios(): AxiosPromise {
@@ -36,13 +36,6 @@ export default class ScenarioService {
                                 if (hasValue(responseMongo)) {
                                     var scenariosToAdd = this.getMissingScenarios(responseLegacy.data, responseMongo.data);
                                     var scenariosToRemove = this.getMissingScenarios(responseMongo.data, responseLegacy.data);
-                                    var removeDuplicateMongoScenarios = this.getDuplicateScenarios(responseMongo.data);
-                                    var combinedListOfScenariosToRemove: Scenario[] = [];
-                                    if(removeDuplicateMongoScenarios.length > 0){
-                                        combinedListOfScenariosToRemove = scenariosToRemove.concat(removeDuplicateMongoScenarios);
-                                    } else{
-                                        combinedListOfScenariosToRemove = scenariosToRemove;
-                                    }
                                     if (scenariosToAdd.length > 0) {
                                         nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd)
                                             .then((res: AxiosResponse<Scenario[]>) => {
@@ -52,8 +45,8 @@ export default class ScenarioService {
                                             })
                                             .catch((error: any) => resolve(error.response));
                                     }
-                                    if (combinedListOfScenariosToRemove.length > 0) {
-                                        this.removeMongoScenarios(combinedListOfScenariosToRemove).then((res: AxiosResponse) => {
+                                    if (scenariosToRemove.length > 0) {
+                                        this.removeMongoScenarios(scenariosToRemove).then((res: AxiosResponse) => {
                                             if (hasValue(res)) {
                                                 return resolve(res);
                                             }
@@ -135,7 +128,7 @@ export default class ScenarioService {
             axiosInstance.post(`/api/SetScenarioUsers/${scenario.simulationId}`, scenario.users)
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
-                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenario.id}`, convertFromVueToMongo({users: response.data}));
+                        nodejsAxiosInstance.put(`api/UpdateMongoScenario/${scenario.id}`, convertFromVueToMongo({ users: response.data }));
                     }
                 });
         });
@@ -143,7 +136,7 @@ export default class ScenarioService {
 
     static updateScenarioStatus(scenarioStatus: String, scenarioId: number): AxiosPromise {
         return new Promise<AxiosResponse<Scenario>>((resolve) => {
-            nodejsAxiosInstance.put(`api/UpdateMongoScenarioStatus/${scenarioId}`, {status: scenarioStatus})
+            nodejsAxiosInstance.put(`api/UpdateMongoScenarioStatus/${scenarioId}`, { status: scenarioStatus })
                 .then((response: AxiosResponse<Scenario>) => {
                     if (hasValue(response)) {
                         return resolve(response);
@@ -204,6 +197,28 @@ export default class ScenarioService {
         });
     }
 
+    static deleteDuplicateMongoScenario(scenarios: Scenario[]): AxiosPromise {
+        return new Promise<AxiosResponse<Scenario[]>>((resolve) => {
+            var removeDuplicateMongoScenarios = this.getDuplicateScenarios(scenarios);
+            var convertedForMongoDB: Scenario[] = []; 
+            removeDuplicateMongoScenarios.forEach(item => {
+                var convertedData = convertFromVueToMongo(item);
+                convertedForMongoDB.push(convertedData);
+            });
+            if (removeDuplicateMongoScenarios.length > 0) {
+                this.removeMongoScenarios(convertedForMongoDB)
+                    .then((res: AxiosResponse) => {
+                        this.getMongoScenarios()
+                            .then((responseMongo: AxiosResponse<Scenario[]>) => {
+                                if (hasValue(responseMongo)) {
+                                    return resolve(responseMongo);
+                                }
+                            });
+                    }).catch((error: any) => resolve(error.response));
+            }
+        });
+    }
+
     /**
      * Runs a simulation for a specific scenario
      * @param selectedScenario The scenario to run the simulation on
@@ -233,12 +248,12 @@ export default class ScenarioService {
         return missingScenarios;
     }
 
-    private static getDuplicateScenarios(mongoScenarios: Scenario[]): Scenario[]{
+    private static getDuplicateScenarios(mongoScenarios: Scenario[]): Scenario[] {
         var duplicateScenarios: Scenario[] = [];
         // This will sort the array in ascending order of their simulation Ids
         let sortedScenarios = mongoScenarios.slice().sort((a, b) => a.simulationId - b.simulationId);
-        for(var i = 0; i < sortedScenarios.length - 1; i++){
-            if(sortedScenarios[i+1].simulationId == sortedScenarios[i].simulationId){
+        for (var i = 0; i < sortedScenarios.length - 1; i++) {
+            if (sortedScenarios[i + 1].simulationId == sortedScenarios[i].simulationId) {
                 duplicateScenarios.push(sortedScenarios[i]);
             }
         }
