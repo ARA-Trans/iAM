@@ -50,7 +50,7 @@ namespace ExecutableForProtptype
     {
         public List<AttributeDatum<double>> GetNumericAttributeDatum(ConfigFileModel item)
         {
-            var sqlConnection = new SqlAttributeConnection(item.ConnectionString);
+            var sqlConnection = new SqlAttributeConnection(item.ConnectionString, item.DataRetrievalCommand);
             var attributeData = sqlConnection.GetData<double>(item.AttributeName);
 
             var numericAttribute = new NumericAttribute(item.AttributeName, sqlConnection,

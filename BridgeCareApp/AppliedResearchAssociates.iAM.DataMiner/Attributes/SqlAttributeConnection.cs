@@ -6,33 +6,15 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
     public class SqlAttributeConnection : AttributeConnection
     {
-        public string UserName { get; set; }
+        public override string ConnectionInformation { get; }
 
-        public string Password { get; set; }
+        public override string DataRetrievalCommand { get; }
 
-        public string Server { get; set; }
-
-        public string DataSource { get; set; }
-
-        public string ConnectionString { get; set; }
-
-        public SqlAttributeConnection(string connectionString)
+        public SqlAttributeConnection(string connectionInformation, string dataRetrievalCommand)
         {
-            ConnectionString = connectionString;
+            ConnectionInformation = connectionInformation;
         }
-
-        public override void Connect()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Maps data from a data source to routeName, start, end,
-        ///     direction, and/or wellKnownText. The only required value from
-        ///     the data set is a uniqueIdentifier
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+                
         public override IEnumerable<(Location location, T value)> GetData<T>(string attributeName)
         {
             string routeName = null;
@@ -42,10 +24,9 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
             string wellKnownText = null;
             string uniqueIdentifeir = "";
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var conn = new SqlConnection(ConnectionInformation))
             {
-                var query = $"Select * from {attributeName}";
-                var command = new SqlCommand(query, conn);
+                var command = new SqlCommand(DataRetrievalCommand, conn);
                 command.Connection.Open();
                 var dataReader = command.ExecuteReader();
                 while (dataReader.Read())
@@ -66,21 +47,6 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
                         , value);
                 }
             }
-
-            //foreach (var datum in data)
-            //{
-            //    string uniqueIdentifier = data.UniqueIdentifier;
-            //    yield return (LocationBuilder.CreateLocation
-            //        (
-            //            uniqueIdentifier,
-            //            routeName,
-            //            start,
-            //            end,
-            //            direction,
-            //            wellKnownText
-            //        ),
-            //        datum.Value);
-            //}
         }
     }
 }

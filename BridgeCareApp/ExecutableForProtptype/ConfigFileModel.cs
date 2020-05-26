@@ -21,6 +21,7 @@ namespace ExecutableForProtptype
         public string Location { get; set; }
         public string DataType { get; set; }
         public string ConnectionString { get; set; }
+        public string DataRetrievalCommand { get; set; }
 
         [JsonProperty("connection")]
         public Connection Connection { get; set; }
