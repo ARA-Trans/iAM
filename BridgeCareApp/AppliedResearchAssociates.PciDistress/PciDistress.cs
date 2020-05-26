@@ -79,7 +79,7 @@ namespace AppliedResearchAssociates.PciDistress
             return dPCIDeduct;
         }
 
-        #endregion Transliteration of public members (IPciDistress)
+        #endregion Transliteration of public members
 
         #region Transliteration of private members
 
