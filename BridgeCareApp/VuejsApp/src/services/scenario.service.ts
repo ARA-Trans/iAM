@@ -234,15 +234,15 @@ export default class ScenarioService {
     }
 
     private static getDuplicateScenarios(mongoScenarios: Scenario[]): Scenario[]{
-        var dupliucateScenarios: Scenario[] = [];
+        var duplicateScenarios: Scenario[] = [];
         // This will sort the array in ascending order of their simulation Ids
         let sortedScenarios = mongoScenarios.slice().sort((a, b) => a.simulationId - b.simulationId);
         for(var i = 0; i < sortedScenarios.length - 1; i++){
             if(sortedScenarios[i+1].simulationId == sortedScenarios[i].simulationId){
-                dupliucateScenarios.push(sortedScenarios[i]);
+                duplicateScenarios.push(sortedScenarios[i]);
             }
         }
-        return dupliucateScenarios;
+        return duplicateScenarios;
     }
 
     /**
