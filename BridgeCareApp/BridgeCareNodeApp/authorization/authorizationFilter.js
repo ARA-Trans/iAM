@@ -18,8 +18,6 @@ function authorizationFilter(permittedRoles) {
         if (userInfoResponse.error !== undefined) {
             return userInfoResponse.error;
         }
-
-        console.log(userInfoResponse);
         
         roles = userInfoResponse.roles.split('^').map(segment => segment.split(',')[0].split('=')[1]);
         username = userInfoResponse.sub.split(',')[0].split('=')[1];
