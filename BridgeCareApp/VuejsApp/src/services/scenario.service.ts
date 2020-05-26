@@ -36,6 +36,13 @@ export default class ScenarioService {
                                 if (hasValue(responseMongo)) {
                                     var scenariosToAdd = this.getMissingScenarios(responseLegacy.data, responseMongo.data);
                                     var scenariosToRemove = this.getMissingScenarios(responseMongo.data, responseLegacy.data);
+                                    var removeDuplicateMongoScenarios = this.getDuplicateScenarios(responseMongo.data);
+                                    var combinedListOfScenariosToRemove: Scenario[] = [];
+                                    if(removeDuplicateMongoScenarios.length > 0){
+                                        combinedListOfScenariosToRemove = scenariosToRemove.concat(removeDuplicateMongoScenarios);
+                                    } else{
+                                        combinedListOfScenariosToRemove = scenariosToRemove;
+                                    }
                                     if (scenariosToAdd.length > 0) {
                                         nodejsAxiosInstance.post('api/AddMultipleScenarios', scenariosToAdd)
                                             .then((res: AxiosResponse<Scenario[]>) => {
@@ -45,8 +52,8 @@ export default class ScenarioService {
                                             })
                                             .catch((error: any) => resolve(error.response));
                                     }
-                                    if (scenariosToRemove.length > 0) {
-                                        this.removeMongoScenarios(scenariosToRemove).then((res: AxiosResponse) => {
+                                    if (combinedListOfScenariosToRemove.length > 0) {
+                                        this.removeMongoScenarios(combinedListOfScenariosToRemove).then((res: AxiosResponse) => {
                                             if (hasValue(res)) {
                                                 return resolve(res);
                                             }
@@ -224,6 +231,18 @@ export default class ScenarioService {
             }
         });
         return missingScenarios;
+    }
+
+    private static getDuplicateScenarios(mongoScenarios: Scenario[]): Scenario[]{
+        var dupliucateScenarios: Scenario[] = [];
+        // This will sort the array in ascending order of their simulation Ids
+        let sortedScenarios = mongoScenarios.slice().sort((a, b) => a.simulationId - b.simulationId);
+        for(var i = 0; i < sortedScenarios.length - 1; i++){
+            if(sortedScenarios[i+1].simulationId == sortedScenarios[i].simulationId){
+                dupliucateScenarios.push(sortedScenarios[i]);
+            }
+        }
+        return dupliucateScenarios;
     }
 
     /**
