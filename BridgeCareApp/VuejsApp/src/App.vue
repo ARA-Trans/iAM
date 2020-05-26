@@ -156,12 +156,12 @@
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
         @State(state => state.authentication.isAdmin) isAdmin: boolean;
+        @State(state => state.authentication.refreshing) refreshing: boolean;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
-        @State(state => state.authentication.refreshing) refreshing: boolean;
         @State(state => state.scenario.selectedScenario) stateSelectedScenario: Scenario;
         @State(state => state.announcement.packageVersion) packageVersion: string;
 
