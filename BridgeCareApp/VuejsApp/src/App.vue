@@ -156,6 +156,7 @@
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
         @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
+        @State(state => state.authentication.refreshing) refreshing: boolean;
 
         @Action('refreshTokens') refreshTokensAction: any;
         @Action('checkBrowserTokens') checkBrowserTokensAction: any;
@@ -264,19 +265,22 @@
 
         created() {
             // create a request handler
-            const requestHandler = (request: AxiosRequestConfig) => {
+            async function requestHandler(app: AppComponent, request: AxiosRequestConfig) {
                 request.headers = setContentTypeCharset(request.headers);
+                if (app.refreshing) {
+                    await new Promise(_ => setTimeout(_, 5000));
+                }
                 request.headers = setAuthHeader(request.headers);
-                this.setIsBusyAction({isBusy: true});
+                app.setIsBusyAction({isBusy: true});
                 return request;
-            };
+            }
             // set axios request interceptor to use request handler
             axiosInstance.interceptors.request.use(
-                (request: any) => requestHandler(request)
+                (request: any) => requestHandler(this, request)
             );
             // set nodejs axios request interceptor to use request handler
             nodejsAxiosInstance.interceptors.request.use(
-                (request: any) => requestHandler(request)
+                (request: any) => requestHandler(this, request)
             );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {
