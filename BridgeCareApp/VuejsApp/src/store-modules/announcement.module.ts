@@ -6,7 +6,8 @@ import {hasValue} from '@/shared/utils/has-value-util';
 import {convertFromMongoToVue} from '@/shared/utils/mongo-model-conversion-utils';
 
 const state = {
-    announcements: [] as Announcement[]
+    announcements: [] as Announcement[],
+    packageVersion: process.env.PACKAGE_VERSION || '0'
 };
 
 const mutations = {
