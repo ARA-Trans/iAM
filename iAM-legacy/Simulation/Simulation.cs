@@ -216,6 +216,7 @@ namespace Simulation
             public DateTime? Created { get; set; }
 
             public DateTime? LastRun { get; set; }
+            public string runTime { get; set; }
         }
 
         public object APICall;
@@ -325,6 +326,9 @@ namespace Simulation
 
             if (isAPICall.Equals(true))
             {
+                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                updateStatus = Builders<SimulationModel>.Update
+                    .Set(r => r.runTime, spanTotal.ToString(@"hh\:mm\:ss"));
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
             }
 
