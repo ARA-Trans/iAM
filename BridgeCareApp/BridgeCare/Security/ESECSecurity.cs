@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -85,7 +86,7 @@ namespace BridgeCare.Security
         {
             string role = ParseLDAP(userInformationDictionary["roles"]).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
             string name = ParseLDAP(userInformationDictionary["sub"])[0];
-            string email = userInformationDictionary["email"];
+            string email = userInformationDictionary.ContainsKey("email") ? userInformationDictionary["email"] : null;
             return new Models.UserInformationModel(name, role, email);
         }
 

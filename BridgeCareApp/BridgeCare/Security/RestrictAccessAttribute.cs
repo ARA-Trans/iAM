@@ -53,7 +53,7 @@ namespace BridgeCare.Security
 
             httpContext.Request.Headers.Add("Role", userInformation.Role);
             httpContext.Request.Headers.Add("Name", userInformation.Name);
-            httpContext.Request.Headers.Add("Email", userInformation.Name);
+            httpContext.Request.Headers.Add("Email", userInformation.Email);
 
             return ValidateRole(userInformation.Role);
         }
