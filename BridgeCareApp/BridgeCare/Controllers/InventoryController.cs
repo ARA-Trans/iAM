@@ -60,11 +60,11 @@ namespace BridgeCare.Controllers
         [Route("api/GetInventoryItemDetailByBrKey")]
         [ModelValidation("The BR key is not valid.")]
         [RestrictAccess]
-        public IHttpActionResult GetInventoryItemDetailByBrKey(int brKey)
+        public IHttpActionResult GetInventoryItemDetailByBrKey(string brKey)
         {
             var inventoryItemDetailModel = modelGenerator
                 .MakeInventoryItemDetailModel(repo.GetInventoryByBRKey(brKey, db));
-            inventoryItemDetailModel.BRKey = brKey;
+            inventoryItemDetailModel.BRKey = Convert.ToInt32(brKey);
 
             return Ok(inventoryItemDetailModel);
         }

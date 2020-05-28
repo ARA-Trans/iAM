@@ -1,6 +1,6 @@
 export interface InventoryItem {
     bmsId: string;
-    brKey: number;
+    brKey: string;
 }
 
 export interface LabelValue {
@@ -35,8 +35,8 @@ export interface NbiLoadRating {
 }
 
 export interface InventoryItemDetail {
-    bmsId: number;
-    brKey: number;
+    bmsId: string;
+    brKey: string;
     name: string;
     label: string;
     location: LabelValue[];
