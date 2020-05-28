@@ -1,6 +1,6 @@
 export interface InventoryItem {
     bmsId: string;
-    brKey: number;
+    brKey: string;
 }
 
 export interface LabelValue {
@@ -35,8 +35,8 @@ export interface NbiLoadRating {
 }
 
 export interface InventoryItemDetail {
-    bmsId: number;
-    brKey: number;
+    bmsId: string;
+    brKey: string;
     name: string;
     label: string;
     location: LabelValue[];
@@ -59,8 +59,8 @@ export const emptyRiskScores: RiskScores = {
 };
 
 export const emptyInventoryItemDetail: InventoryItemDetail = {
-    bmsId: 0,
-    brKey: 0,
+    bmsId: '0',
+    brKey: '0',
     label: '',
     name: '',
     location: [],

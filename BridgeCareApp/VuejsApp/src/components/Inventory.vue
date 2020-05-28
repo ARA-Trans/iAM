@@ -337,7 +337,7 @@
         // brKeys: any[] = [];
         lastFiveBrKeySearches: any[] = [];
         brKeysSelectList: any[] = [];
-        selectedBrKey: number = 0;
+        selectedBrKey: string = '0';
         conditionTableHeaders: DataTableHeader[] = [
             {text: '', value: '', align: 'center', sortable: false, class: '', width: ''},
             {text: 'Condition', value: '', align: 'center', sortable: false, class: '', width: ''},
@@ -582,7 +582,7 @@
         /**
          * BR key has been selected
          */
-        onSelectInventoryItemsByBRKey(brKey: number) {
+        onSelectInventoryItemsByBRKey(brKey: string) {
             this.getInventoryItemDetailByBRKeyAction({brKey: brKey})
                 .then(() => setTimeout(() => {
                     this.selectedBrKey = brKey;

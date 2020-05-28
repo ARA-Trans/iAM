@@ -13,7 +13,7 @@ export default class InventoryService {
      * Gets an inventory item's detail by bms id
      * @param bmsId number
      */
-    static getInventoryItemDetailByBMSId(bmsId: number): AxiosPromise {
+    static getInventoryItemDetailByBMSId(bmsId: string): AxiosPromise {
         return axiosInstance.get('/api/GetInventoryItemDetailByBmsId', {params: {'bmsId': bmsId}});
     }
 
@@ -21,7 +21,7 @@ export default class InventoryService {
      * Gets an inventory item's detail by br key
      * @param brKey number
      */
-    static getInventoryItemDetailByBRKey(brKey: number): AxiosPromise {
+    static getInventoryItemDetailByBRKey(brKey: string): AxiosPromise {
         return axiosInstance.get('/api/GetInventoryItemDetailByBrKey', {params: {'brKey': brKey}});
     }
 }
