@@ -343,18 +343,6 @@ namespace Simulation
             SimulationMessaging.AddMessage(new SimulationMessage("Time spent reading and compiling from database = " + _spanRead.ToString()));
             SimulationMessaging.AddMessage(new SimulationMessage("Time spent performing optimization = " + _spanAnalysis.ToString()));
             SimulationMessaging.AddMessage(new SimulationMessage("Time spent bulk loading = " + _spanReport.ToString()));
-            TimeSpan spanTotal = _spanRead + _spanAnalysis + _spanReport;
-
-            //Save the amount of time it took to run the simualtion to the database.
-            SaveSimulationRunTime(spanTotal);
-
-            if (isAPICall.Equals(true))
-            {
-                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-                updateStatus = Builders<SimulationModel>.Update
-                    .Set(r => r.runTime, spanTotal.ToString(@"hh\:mm\:ss"));
-                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-            }
 
             return;
         }
