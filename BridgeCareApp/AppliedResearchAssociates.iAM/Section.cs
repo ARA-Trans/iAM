@@ -6,11 +6,34 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Section : IValidator
     {
+        public static string AreaIdentifier => "AREA";
+
+        public double Area { get; set; }
+
+        public string AreaUnit
+        {
+            get => _AreaUnit;
+            set => _AreaUnit = value?.Trim() ?? "";
+        }
+
         public ValidationResultBag DirectValidationResults
         {
             get
             {
                 var results = new ValidationResultBag();
+
+                if (double.IsNaN(Area))
+                {
+                    results.Add(ValidationStatus.Error, "Area is not a number.", this, nameof(Area));
+                }
+                else if (double.IsInfinity(Area))
+                {
+                    results.Add(ValidationStatus.Error, "Area is infinite.", this, nameof(Area));
+                }
+                else if (Area <= 0)
+                {
+                    results.Add(ValidationStatus.Error, "Area is less than or equal to zero.", this, nameof(Area));
+                }
 
                 if (Facility == null)
                 {
@@ -50,5 +73,7 @@ namespace AppliedResearchAssociates.iAM
         public bool RemoveAttributeHistory(Attribute attribute) => HistoryPerAttribute.Remove(attribute);
 
         private readonly Dictionary<Attribute, IDictionary> HistoryPerAttribute = new Dictionary<Attribute, IDictionary>();
+
+        private string _AreaUnit = "";
     }
 }

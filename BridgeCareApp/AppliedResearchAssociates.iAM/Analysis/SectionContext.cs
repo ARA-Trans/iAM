@@ -114,7 +114,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
             }
         }
 
-        public double GetAreaOfSection() => GetNumber(AnalysisMethod.AreaAttribute.Name);
+        public double GetAreaOfSection() => GetNumber(Section.AreaIdentifier);
 
         public double GetBenefit()
         {
@@ -216,6 +216,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
         private void Initialize()
         {
+            SetNumber(Section.AreaIdentifier, Section.Area);
+
             var yearBeforeAnalysisPeriod = SimulationRunner.Simulation.InvestmentPlan.FirstYearOfAnalysisPeriod - 1;
 
             SetHistoricalValues(yearBeforeAnalysisPeriod, true, SimulationRunner.Simulation.Network.Explorer.NumberAttributes, SetNumber);

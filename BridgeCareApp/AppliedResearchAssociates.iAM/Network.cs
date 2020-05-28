@@ -31,7 +31,11 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, "Multiple facilities have the same name.", this, nameof(Facilities));
                 }
 
-                if (Sections.Select(section => (section.Facility, section.Name)).Distinct().Count() < Sections.Count)
+                if (Sections.Count == 0)
+                {
+                    results.Add(ValidationStatus.Error, "There are no sections.", this, nameof(Sections));
+                }
+                else if (Sections.Select(section => (section.Facility, section.Name)).Distinct().Count() < Sections.Count)
                 {
                     results.Add(ValidationStatus.Error, "At least one facility has multiple sections that have the same name.", this, nameof(Sections));
                 }

@@ -11,8 +11,6 @@ namespace AppliedResearchAssociates.iAM
 
         public NumberAttribute AgeAttribute { get; set; }
 
-        public NumberAttribute AreaAttribute { get; set; }
-
         public Benefit Benefit { get; } = new Benefit();
 
         public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
@@ -32,19 +30,14 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, "Age attribute is unset.", this, nameof(AgeAttribute));
                 }
 
-                if (AreaAttribute == null)
-                {
-                    results.Add(ValidationStatus.Error, "Area attribute is unset.", this, nameof(AreaAttribute));
-                }
-
                 if (!OptimizationStrategy.IsDefined())
                 {
-                    results.Add(ValidationStatus.Error, "Invalid optimization strategy.", this, nameof(OptimizationStrategy));
+                    results.Add(ValidationStatus.Error, MessageStrings.InvalidOptimizationStrategy, this, nameof(OptimizationStrategy));
                 }
 
                 if (!SpendingStrategy.IsDefined())
                 {
-                    results.Add(ValidationStatus.Error, "Invalid spending strategy.", this, nameof(SpendingStrategy));
+                    results.Add(ValidationStatus.Error, MessageStrings.InvalidSpendingStrategy, this, nameof(SpendingStrategy));
                 }
 
                 if (BudgetPriorities.Select(priority => (priority.PriorityLevel, priority.Year)).Distinct().Count() < BudgetPriorities.Count)

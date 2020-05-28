@@ -57,6 +57,16 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true)
                 .ToArray();
 
+            if (SectionContexts.Count == 0)
+            {
+                throw new SimulationException("There are no sections in the specified jurisdiction.");
+            }
+
+            if (SectionContexts.Select(context => context.Section.AreaUnit).Distinct().Count() > 1)
+            {
+                throw new SimulationException("Sections have multiple distinct area units.");
+            }
+
             _ = Parallel.ForEach(SectionContexts, context => context.RollForward());
 
             switch (Simulation.AnalysisMethod.SpendingStrategy)
