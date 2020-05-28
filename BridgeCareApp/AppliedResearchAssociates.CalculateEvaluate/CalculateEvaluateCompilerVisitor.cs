@@ -12,9 +12,17 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         #region "Calculate"
 
-        public static IReadOnlyDictionary<string, double> MathConstants { get; } = GetMathConstants();
+        static CalculateEvaluateCompilerVisitor()
+        {
+            var mathMethods = typeof(Math).GetMethods(BindingFlags.Public | BindingFlags.Static);
+            var numberMethods = mathMethods.Where(method => method.ReturnType == typeof(double) && method.GetParameters().All(parameter => parameter.ParameterType == typeof(double))).ToArray();
+            NumberFunctions = numberMethods.Select(method => new NumberFunctionDescription(method.Name, method.GetParameters().Select(parameter => parameter.Name))).ToArray();
+            MethodPerSignature = numberMethods.ToDictionary(method => (method.Name, method.GetParameters().Length), ValueTupleEqualityComparer.Create<string, int>(StringComparer.OrdinalIgnoreCase));
+        }
 
-        public static IReadOnlyDictionary<(string, int), MethodInfo> MathFunctions { get; } = GetMathFunctions();
+        public static IReadOnlyDictionary<string, double> NumberConstants { get; } = GetNumberConstants();
+
+        public static IReadOnlyCollection<NumberFunctionDescription> NumberFunctions { get; }
 
         public override Expression VisitAdditionOrSubtraction(CalculateEvaluateParser.AdditionOrSubtractionContext context)
         {
@@ -56,7 +64,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         {
             var identifierText = context.IDENTIFIER().GetText();
 
-            if (!MathConstants.TryGetValue(identifierText, out var constant))
+            if (!NumberConstants.TryGetValue(identifierText, out var constant))
             {
                 throw new CalculateEvaluateCompilationException("Invalid constant identifier.");
             }
@@ -70,9 +78,9 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             var identifierText = context.IDENTIFIER().GetText();
             var arguments = context.arguments().calculation();
 
-            if (!MathFunctions.TryGetValue((identifierText, arguments.Length), out var method))
+            if (!MethodPerSignature.TryGetValue((identifierText, arguments.Length), out var method))
             {
-                throw new CalculateEvaluateCompilationException("Invalid function identifier.");
+                throw new CalculateEvaluateCompilationException("Invalid function identifier or invalid number of arguments.");
             }
 
             var result = Expression.Call(method, arguments.Select(Visit));
@@ -135,19 +143,13 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
-        private static IReadOnlyDictionary<string, double> GetMathConstants()
-        {
-            var fields = typeof(Math).GetFields(BindingFlags.Public | BindingFlags.Static);
-            var numberFields = fields.Where(field => field.FieldType == typeof(double));
-            var result = numberFields.ToDictionary(field => field.Name, field => (double)field.GetValue(null), StringComparer.OrdinalIgnoreCase);
-            return result;
-        }
+        private static readonly IReadOnlyDictionary<(string, int), MethodInfo> MethodPerSignature;
 
-        private static IReadOnlyDictionary<(string, int), MethodInfo> GetMathFunctions()
+        private static IReadOnlyDictionary<string, double> GetNumberConstants()
         {
-            var methods = typeof(Math).GetMethods(BindingFlags.Public | BindingFlags.Static);
-            var numberMethods = methods.Where(method => method.ReturnType == typeof(double) && method.GetParameters().All(parameter => parameter.ParameterType == typeof(double)));
-            var result = numberMethods.ToDictionary(method => (method.Name, method.GetParameters().Length), ValueTupleEqualityComparer.Create<string, int>(StringComparer.OrdinalIgnoreCase));
+            var mathFields = typeof(Math).GetFields(BindingFlags.Public | BindingFlags.Static);
+            var numberFields = mathFields.Where(field => field.FieldType == typeof(double));
+            var result = numberFields.ToDictionary(field => field.Name, field => (double)field.GetValue(null), StringComparer.OrdinalIgnoreCase);
             return result;
         }
 
