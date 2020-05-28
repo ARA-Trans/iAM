@@ -2,12 +2,12 @@ export interface InvestmentLibraryBudgetYear {
     id: string;
     year: number;
     budgetName: string;
-    budgetAmount: number;
+    budgetAmount: number | null;
+    criteriaDrivenBudgetId: string;
 }
 
-export interface CriteriaDrivenBudgets {
-    scenarioId: number;
-    _id: number | string;
+export interface CriteriaDrivenBudget {
+    id: string;
     budgetName: string;
     criteria: string;
 }
@@ -21,13 +21,12 @@ export interface InvestmentLibrary {
     description: string;
     budgetOrder: string[];
     budgetYears: InvestmentLibraryBudgetYear[];
-    budgetCriteria: CriteriaDrivenBudgets[];
+    criteriaDrivenBudgets: CriteriaDrivenBudget[];
 }
 
 export interface BudgetYearsGridData {
     year: number;
-
-    [budgetName: string]: number;
+    [budgetName: string]: number | null;
 }
 
 export const emptyInvestmentLibrary: InvestmentLibrary = {
@@ -37,5 +36,11 @@ export const emptyInvestmentLibrary: InvestmentLibrary = {
     description: '',
     budgetOrder: [],
     budgetYears: [],
-    budgetCriteria: []
+    criteriaDrivenBudgets: []
+};
+
+export const emptyCriteriaDrivenBudget: CriteriaDrivenBudget = {
+    id: '0',
+    budgetName: '',
+    criteria: ''
 };

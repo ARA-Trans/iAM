@@ -279,6 +279,7 @@
     <Compile Include="EntityClasses\UserCriteriaEntity.cs" />
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
     <Compile Include="Interfaces\IUserCriteria.cs" />
+    <Compile Include="Models\AttributeSelectValuesResult.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\CriteriaValidationResult.cs" />
     <Compile Include="Models\EquationValidationResult.cs" />
@@ -352,7 +353,7 @@
     <Compile Include="EntityClasses\CommittedEntity.cs" />
     <Compile Include="EntityClasses\ConsequencesEntity.cs" />
     <Compile Include="EntityClasses\CostsEntity.cs" />
-    <Compile Include="EntityClasses\CriteriaDrivenBudgets\CriteriaDrivenBudgetsEntity.cs" />
+    <Compile Include="EntityClasses\CriteriaDrivenBudgets\CriteriaDrivenBudgetEntity.cs" />
     <Compile Include="EntityClasses\DeficientsEntity.cs" />
     <Compile Include="EntityClasses\FeasibilityEntity.cs" />
     <Compile Include="EntityClasses\InvestmentsEntity.cs" />
@@ -414,7 +415,7 @@
     <Compile Include="Models\CostModel.cs" />
     <Compile Include="Models\CreateSimulationDataModel.cs" />
     <Compile Include="Models\DeficientLibraryModel.cs" />
-    <Compile Include="Models\CriteriaDrivenBudgets\CriteriaDrivenBudgetsModel.cs" />
+    <Compile Include="Models\CriteriaDrivenBudgetModel.cs" />
     <Compile Include="Models\ParameterizedCriteriaData.cs" />
     <Compile Include="Models\CrudModel.cs" />
     <Compile Include="Models\DeficientModel.cs" />
@@ -429,7 +430,6 @@
     <Compile Include="Models\Inventory\OperatingRatingInventoryRatingGrouping.cs" />
     <Compile Include="Models\Inventory\OperatingRatingInventoryRatingRow.cs" />
     <Compile Include="Models\Inventory\RiskScores.cs" />
-    <Compile Include="Models\InvestmentLibraryBudgetModel.cs" />
     <Compile Include="Models\InvestmentLibraryBudgetYearModel.cs" />
     <Compile Include="Models\InvestmentLibraryModel.cs" />
     <Compile Include="Models\Inventory\LabelValue.cs" />

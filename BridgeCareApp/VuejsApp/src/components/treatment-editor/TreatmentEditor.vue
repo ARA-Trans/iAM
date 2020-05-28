@@ -9,10 +9,11 @@
                     </v-btn>
                     <v-select :items="treatmentLibrariesSelectListItems"
                               class="treatment-library-select" label="Select a Treatment Library"
-                              outline v-if="!hasSelectedTreatmentLibrary || selectedScenarioId !== '0'" v-model="treatmentLibrarySelectItemValue">
+                              outline v-if="!hasSelectedTreatmentLibrary || selectedScenarioId !== '0'"
+                              v-model="treatmentLibrarySelectItemValue">
                     </v-select>
-                    <v-text-field label="Treatment Name"
-                                  v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" v-model="selectedTreatmentLibrary.name">
+                    <v-text-field v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" label="Treatment Name"
+                                  v-model="selectedTreatmentLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="treatmentLibrarySelectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -23,7 +24,8 @@
                         Owner: {{selectedTreatmentLibrary.owner ? selectedTreatmentLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'" v-model="selectedTreatmentLibrary.shared"/>
+                                v-if="hasSelectedTreatmentLibrary && selectedScenarioId === '0'"
+                                v-model="selectedTreatmentLibrary.shared"/>
                 </v-flex>
             </v-layout>
         </v-flex>
@@ -35,9 +37,17 @@
                         <v-btn @click="showCreateTreatmentDialog = true" class="ara-blue-bg white--text">
                             Add Treatment
                         </v-btn>
-                        <v-select :items="treatmentsSelectListItems" clearable label="Select a Treatment"
-                                  outline v-model="treatmentSelectItemValue">
+                        <v-select :items="treatmentsSelectListItems" label="Select a Treatment"
+                                  outline v-model="treatmentSelectItemValue" v-if="!hasSelectedTreatment">
                         </v-select>
+                        <v-text-field v-if="hasSelectedTreatment" label="Treatment Name"
+                                      v-model="selectedTreatment.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
+                            <template slot="append">
+                                <v-btn @click="treatmentSelectItemValue = null" class="ara-orange" icon>
+                                    <v-icon>fas fa-caret-left</v-icon>
+                                </v-btn>
+                            </template>
+                        </v-text-field>
                     </v-flex>
                     <v-flex xs9>
                         <div v-show="selectedTreatment.id !== '0'">
@@ -50,7 +60,7 @@
                                     <v-tab-item>
                                         <v-card>
                                             <v-card-text class="card-tab-content">
-                                                <FeasibilityTab :feasibilityTabData="tabData"
+                                                <FeasibilityTab :feasibilityTabData="tabData" :rules="rules"
                                                                 @submit="updateSelectedTreatmentLibrary"/>
                                             </v-card-text>
                                         </v-card>
@@ -66,7 +76,7 @@
                                     <v-tab-item>
                                         <v-card>
                                             <v-card-text class="card-tab-content">
-                                                <ConsequencesTab :consequencesTabData="tabData"
+                                                <ConsequencesTab :consequencesTabData="tabData" :rules="rules"
                                                                  @submit="updateSelectedTreatmentLibrary"/>
                                             </v-card-text>
                                         </v-card>
@@ -92,24 +102,25 @@
             <v-layout justify-center>
                 <v-flex xs6>
                     <v-textarea label="Description" no-resize outline rows="4"
-                                v-model="selectedTreatmentLibrary.description">
-                    </v-textarea>
+                                v-model="selectedTreatmentLibrary.description"/>
                 </v-flex>
             </v-layout>
         </v-flex>
         <v-flex xs12>
             <v-layout justify-end row v-show="hasSelectedTreatmentLibrary">
-                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text" v-show="selectedScenarioId !== '0'">
+                <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text" v-show="selectedScenarioId !== '0'"
+                       :disabled="disableSubmitAction()">
                     Save
                 </v-btn>
-                <v-btn @click="onUpdateLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === '0'">
+                <v-btn @click="onUpdateLibrary" class="ara-blue-bg white--text" v-show="selectedScenarioId === '0'"
+                       :disabled="disableSubmitAction()">
                     Update Library
                 </v-btn>
-                <v-btn @click="onCreateAsNewLibrary" class="ara-blue-bg white--text">
+                <v-btn @click="onCreateAsNewLibrary" class="ara-blue-bg white--text":disabled="disableSubmitAction()">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeleteTreatmentLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedTreatmentLibrary">
                     Delete Library
                 </v-btn>
                 <v-btn @click="onDiscardChanges" class="ara-orange-bg white--text" v-show="selectedScenarioId !== '0'">
@@ -138,7 +149,13 @@
         CreateTreatmentLibraryDialogData,
         emptyCreateTreatmentLibraryDialogData
     } from '@/shared/models/modals/create-treatment-library-dialog-data';
-    import {emptyTreatment, emptyTreatmentLibrary, Treatment, TreatmentLibrary} from '@/shared/models/iAM/treatment';
+    import {
+        Consequence,
+        emptyTreatment,
+        emptyTreatmentLibrary,
+        Treatment,
+        TreatmentLibrary
+    } from '@/shared/models/iAM/treatment';
     import {hasValue} from '@/shared/utils/has-value-util';
     import CreateTreatmentDialog from '@/components/treatment-editor/treatment-editor-dialogs/CreateTreatmentDialog.vue';
     import {any, append, clone, find, isNil, propEq} from 'ramda';
@@ -151,6 +168,7 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -191,6 +209,8 @@
         tabData: TabData = clone(emptyTabData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        hasSelectedTreatment: boolean = false;
+        rules: InputValidationRules = {...rules};
 
         /**
          * Sets component ui properties that triggers cascading ui updates
@@ -298,7 +318,8 @@
 
         @Watch('selectedTreatment')
         onSelectedTreatmentChanged() {
-            if (this.selectedTreatment.id !== '0') {
+            this.hasSelectedTreatment = this.selectedTreatment.id !== '0';
+            if (this.hasSelectedTreatment) {
                 this.tabData = {
                     tabTreatmentLibraries: clone(this.stateTreatmentLibraries),
                     tabSelectedTreatmentLibrary: clone(this.selectedTreatmentLibrary),
@@ -353,7 +374,7 @@
                     treatments: append(createdTreatment, this.selectedTreatmentLibrary.treatments)
                 };
 
-                this.treatmentSelectItemValue = createdTreatment.id;
+                setTimeout(() => this.treatmentSelectItemValue = createdTreatment.id);
             }
         }
 
@@ -404,6 +425,29 @@
                 this.treatmentLibrarySelectItemValue = null;
                 this.deleteTreatmentLibraryAction({treatmentLibrary: this.selectedTreatmentLibrary});
             }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedTreatmentLibrary) {
+                const allDataIsValid: boolean = this.selectedTreatmentLibrary.treatments.every((t: Treatment) => {
+                    const allSubDataIsValid: boolean = t.consequences.every((c: Consequence) => {
+                        return this.rules['generalRules'].valueIsNotEmpty(c.attribute) === true &&
+                                this.rules['generalRules'].valueIsNotEmpty(c.change) === true;
+                    });
+                    return allSubDataIsValid && this.rules['generalRules'].valueIsNotEmpty(t.name) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(t.feasibility.yearsBeforeAny) === true &&
+                            this.rules['generalRules'].valueIsNotEmpty(t.feasibility.yearsBeforeSame) === true;
+                });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedTreatmentLibrary.name) &&
+                        allDataIsValid);
+                }
+            }
+
+            return true;
         }
     }
 </script>

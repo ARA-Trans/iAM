@@ -20,15 +20,11 @@
                     <v-layout justify-space-between row>
                         <v-flex xs5>
                             <v-text-field :mask="'####'" @change="onChangeYears" label="Years Before Any"
-                                          outline
-                                          v-model="feasibility.yearsBeforeAny">
-                            </v-text-field>
+                                          outline v-model="feasibility.yearsBeforeAny" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                         </v-flex>
                         <v-flex xs5>
                             <v-text-field :mask="'####'" @change="onChangeYears" label="Years Before Same"
-                                          outline
-                                          v-model="feasibility.yearsBeforeSame">
-                            </v-text-field>
+                                          outline v-model="feasibility.yearsBeforeSame" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                         </v-flex>
                     </v-layout>
                     <v-spacer></v-spacer>
@@ -60,6 +56,7 @@
     import {clone, findIndex, isNil, propEq, update} from 'ramda';
     import {TabData} from '@/shared/models/child-components/tab-data';
     import {hasValue} from '@/shared/utils/has-value-util';
+    import {InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     const ObjectID = require('bson-objectid');
 
@@ -68,6 +65,7 @@
     })
     export default class FeasibilityTab extends Vue {
         @Prop() feasibilityTabData: TabData;
+        @Prop() rules: InputValidationRules;
 
         feasibilityTabTreatmentLibraries: TreatmentLibrary[] = [];
         feasibilityTabSelectedTreatmentLibrary: TreatmentLibrary = clone(emptyTreatmentLibrary);
@@ -91,7 +89,7 @@
          * Sets the component's grid data
          */
         setFeasibility() {
-            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility) && this.feasibilityTabSelectedTreatment.feasibility.id !== '0'
+            this.feasibility = hasValue(this.feasibilityTabSelectedTreatment.feasibility)
                 ? this.feasibility = clone(this.feasibilityTabSelectedTreatment.feasibility)
                 : {...emptyFeasibility, id: ObjectID.generate()};
         }

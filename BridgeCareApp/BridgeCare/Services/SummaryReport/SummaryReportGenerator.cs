@@ -74,7 +74,7 @@ namespace BridgeCare.Services.SummaryReport
         {
             // Get data
             var simulationId = simulationModel.simulationId;
-            var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData((int)simulationId);
+            var simulationYearsModel = commonSummaryReportData.GetSimulationYearsData(simulationId);
             var simulationYears = simulationYearsModel.Years;
             simulationYears.Sort();
             var simulationYearsCount = simulationYears.Count;            

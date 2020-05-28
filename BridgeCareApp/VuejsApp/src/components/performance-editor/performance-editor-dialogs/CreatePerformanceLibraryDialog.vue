@@ -8,10 +8,9 @@
             </v-card-title>
             <v-card-text>
                 <v-layout column>
-                    <v-text-field label="Name" outline v-model="newPerformanceLibrary.name"></v-text-field>
+                    <v-text-field label="Name" outline v-model="newPerformanceLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                     <v-textarea label="Description" no-resize outline rows="3"
-                                v-model="newPerformanceLibrary.description">
-                    </v-textarea>
+                                v-model="newPerformanceLibrary.description"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
@@ -37,6 +36,8 @@
     } from '@/shared/models/iAM/performance';
     import {CreatePerformanceLibraryDialogData} from '@/shared/models/modals/create-performance-library-dialog-data';
     import {getUserName} from '@/shared/utils/get-user-info';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
+    import {clone} from 'ramda';
 
     const ObjectID = require('bson-objectid');
 
@@ -45,6 +46,7 @@
         @Prop() dialogData: CreatePerformanceLibraryDialogData;
 
         newPerformanceLibrary: PerformanceLibrary = {...emptyPerformanceLibrary, id: ObjectID.generate()};
+        rules: InputValidationRules = clone(rules);
 
         /**
          * Sets the newPerformanceLibrary's description & equation data properties using the dialogData object

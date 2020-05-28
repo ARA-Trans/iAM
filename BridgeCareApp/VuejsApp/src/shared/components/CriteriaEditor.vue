@@ -128,18 +128,20 @@
     import VueQueryBuilder from 'vue-query-builder/src/VueQueryBuilder.vue';
     import {
         Criteria,
-        CriteriaEditorData,
+        CriteriaEditorData, CriteriaRule,
         CriteriaType,
         CriteriaValidationResult,
         emptyCriteria
     } from '../models/iAM/criteria';
     import {parseCriteriaJson, parseCriteriaString, parseCriteriaTypeJson} from '../utils/criteria-editor-parsers';
     import {hasValue} from '../utils/has-value-util';
-    import {clone, equals, findIndex, isEmpty, isNil, remove, update} from 'ramda';
-    import {Attribute} from '@/shared/models/iAM/attribute';
+    import {clone, equals, findIndex, isEmpty, isNil, remove, update, propEq, append, any} from 'ramda';
+    import {Attribute, AttributeSelectValues} from '@/shared/models/iAM/attribute';
     import CriteriaEditorService from '@/services/criteria-editor.service';
     import {AxiosResponse} from 'axios';
     import {SelectItem} from '@/shared/models/vue/select-item';
+    import {getPropertyValues} from '@/shared/utils/getter-utils';
+    import {Network} from '@/shared/models/iAM/network';
 
     @Component({
         components: {VueQueryBuilder}
@@ -148,8 +150,11 @@
         @Prop() criteriaEditorData: CriteriaEditorData;
 
         @State(state => state.attribute.attributes) stateAttributes: Attribute[];
+        @State(state => state.attribute.attributesSelectValues) stateAttributesSelectValues: AttributeSelectValues[];
+        @State(state => state.network.networks) stateNetworks: Network[];
 
         @Action('getAttributes') getAttributesAction: any;
+        @Action('getAttributeSelectValues') getAttributeSelectValuesAction: any;
 
         queryBuilderRules: any[] = [];
         queryBuilderLabels: object = {
@@ -235,6 +240,25 @@
         @Watch('selectedSubCriteriaClause')
         onSelectedClauseChanged() {
             this.resetSubCriteriaValidationMessageProperties();
+
+            if (hasValue(this.selectedSubCriteriaClause) && hasValue(this.selectedSubCriteriaClause!.children)) {
+                let missingAttribute: string = '';
+
+                for (let index = 0; index < this.selectedSubCriteriaClause!.children!.length; index++) {
+                    missingAttribute = this.getMissingAttribute(this.selectedSubCriteriaClause!.children![index].query);
+                    if (hasValue(missingAttribute)) {
+                        break;
+                    }
+                }
+
+                if (hasValue(missingAttribute)) {
+                    this.getAttributeSelectValuesAction({networkAttribute: {
+                            networkId: this.stateNetworks[0].networkId,
+                            attribute: missingAttribute
+                        }
+                    });
+                }
+            }
         }
 
         /**
@@ -243,6 +267,29 @@
         @Watch('selectedRawSubCriteriaClause')
         onSelectedClauseRawChanged() {
             this.resetSubCriteriaValidationMessageProperties();
+        }
+
+        @Watch('stateAttributesSelectValues')
+        onStateAttributesSelectValuesChanged() {
+            if (hasValue(this.queryBuilderRules) && hasValue(this.stateAttributesSelectValues)) {
+                const filteredAttributesSelectValues: AttributeSelectValues[] = this.stateAttributesSelectValues
+                    .filter((asv: AttributeSelectValues) => hasValue(asv.values));
+                if (hasValue(filteredAttributesSelectValues)) {
+                    filteredAttributesSelectValues.forEach((asv: AttributeSelectValues) => {
+                        this.queryBuilderRules = update(
+                            findIndex(propEq('id', asv.attribute), this.queryBuilderRules),
+                            {
+                                type: 'select',
+                                id: asv.attribute,
+                                label: asv.attribute,
+                                operators: ['=', '<>', '<', '<=', '>', '>='],
+                                choices: asv.values.map((value: string) => ({label: value, value: value}))
+                            },
+                            this.queryBuilderRules
+                        );
+                    });
+                }
+            }
         }
 
         /**
@@ -604,6 +651,30 @@
             }
 
             return clone(emptyCriteria);
+        }
+
+        getMissingAttribute(query: any) {
+            let missingAttribute: string = '';
+
+            if (query.hasOwnProperty('children')) {
+                const criteria: Criteria = query as Criteria;
+                if (hasValue(criteria.children)) {
+                    while (!hasValue(missingAttribute)) {
+                        criteria.children!.forEach((child: CriteriaType) => {
+                            missingAttribute = this.getMissingAttribute(child.query);
+                        });
+                    }
+
+                    return missingAttribute;
+                }
+            } else {
+                const criteriaRule: CriteriaRule = query as CriteriaRule;
+                if (!any(propEq('attribute', criteriaRule.rule), this.stateAttributesSelectValues)) {
+                    return criteriaRule.rule;
+                }
+            }
+
+            return missingAttribute;
         }
     }
 </script>

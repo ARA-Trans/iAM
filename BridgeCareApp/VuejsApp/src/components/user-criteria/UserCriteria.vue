@@ -50,9 +50,8 @@
                                     <v-menu bottom
                                             min-height="500px" min-width="500px" v-if="props.item.hasCriteria">
                                         <template slot="activator">
-                                            <input :value="props.item.criteria" class="output" readonly
-                                                   style="width: 25em"
-                                                   type="text"/>
+                                            <v-text-field class="sm-txt" :value="props.item.criteria" readonly
+                                                   style="width: 25em" type="text"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>

@@ -48,7 +48,7 @@ namespace RollupSegmentation
             return m_bCancel;
         }
 
-        static public void AddMessge(String strMessage)
+        static public void AddMessage(String strMessage)
         {
             lock (m_strListProgress)
             {

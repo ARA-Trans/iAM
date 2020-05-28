@@ -33,13 +33,13 @@ namespace BridgeCare.Services
         /// <param name="simulationYears"></param>
         /// <param name="simulationDataModels"></param>
         public void FillCostBudgetWorkSummarySections(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears,
-            List<SimulationDataModel> simulationDataModels, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels, List<string> treatments,
+            List<SimulationDataModel> simulationDataModels, Dictionary<int, List<double>> yearlyBudgetAmounts, List<string> treatments,
             List<WorkSummaryByBudgetModel> comittedProjectsData)
         {
             var committedTotalRow = FillCostOfCommittedWorkSection(worksheet, currentCell, simulationYears, comittedProjectsData);
             var culvertTotalRow = FillCostOfCulvertWorkSection(worksheet, currentCell, simulationYears, simulationDataModels, treatments);
             var bridgeTotalRow = FillCostOfBridgeWorkSection(worksheet, currentCell, simulationYears, simulationDataModels, treatments);            
-            var budgetTotalRow = FillTotalBudgetSection(worksheet, currentCell, simulationYears, yearlyBudgetModels);
+            var budgetTotalRow = FillTotalBudgetSection(worksheet, currentCell, simulationYears, yearlyBudgetAmounts);
             FillRemainingBudgetSection(worksheet, simulationYears, currentCell, committedTotalRow, culvertTotalRow, bridgeTotalRow, budgetTotalRow);
         }
 
@@ -65,13 +65,13 @@ namespace BridgeCare.Services
             return bridgeTotalRow;
         }
 
-        private int FillTotalBudgetSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels)
+        private int FillTotalBudgetSection(ExcelWorksheet worksheet, CurrentCell currentCell, List<int> simulationYears, Dictionary<int, List<double>> yearlyBudgetAmounts)
         {
             bridgeWorkSummaryCommon.AddHeaders(worksheet, currentCell, simulationYears, "Total Budget", "Totals");
             worksheet.Cells[currentCell.Row, simulationYears.Count + 3].Value = "Total Analysis Budget (all year)";
             excelHelper.ApplyStyle(worksheet.Cells[currentCell.Row, simulationYears.Count + 3]);
             excelHelper.ApplyBorder(worksheet.Cells[currentCell.Row, simulationYears.Count + 3]);
-            var budgetTotalRow = AddDetailsForTotalBudget(worksheet, simulationYears, currentCell, yearlyBudgetModels);
+            var budgetTotalRow = AddDetailsForTotalBudget(worksheet, simulationYears, currentCell, yearlyBudgetAmounts);
             return budgetTotalRow;
         }
 
@@ -184,7 +184,7 @@ namespace BridgeCare.Services
             return culvertTotalRow;
         }              
 
-        private int AddDetailsForTotalBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, List<InvestmentLibraryBudgetYearModel> yearlyBudgetModels)
+        private int AddDetailsForTotalBudget(ExcelWorksheet worksheet, List<int> simulationYears, CurrentCell currentCell, Dictionary<int, List<double>> yearlyBudgetAmounts)
         {
             int startRow, startColumn, row, column;
             bridgeWorkSummaryCommon.SetRowColumns(currentCell, out startRow, out startColumn, out row, out column);
@@ -199,7 +199,7 @@ namespace BridgeCare.Services
                 column = ++column;
 
                 worksheet.Cells[row++, column].Value = TotalCulvertSpent[year] + TotalBridgeSpent[year] + TotalCommittedSpent[year];
-                worksheet.Cells[row, column].Value = yearlyBudgetModels.Find(b => b.Year == year).Budget.Sum(m => m.budgetAmount ?? 0);
+                worksheet.Cells[row, column].Value = yearlyBudgetAmounts.ContainsKey(year) ? yearlyBudgetAmounts[year].Sum() : 0;
                 budgetTotalRow = row;
             }
             worksheet.Cells[row, column + 1].Formula = "SUM(" + worksheet.Cells[row, fromColumn, row, column] + ")";

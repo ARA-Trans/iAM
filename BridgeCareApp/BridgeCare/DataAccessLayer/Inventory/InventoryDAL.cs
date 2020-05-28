@@ -31,11 +31,11 @@ namespace BridgeCare.DataAccessLayer.Inventory
         /// <param name="brKey"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public InventoryModel GetInventoryByBRKey(int brKey, BridgeCareContext db)
+        public InventoryModel GetInventoryByBRKey(string brKey, BridgeCareContext db)
         {
             var selectStatement = $"{GetSelectColumnsForPennDotCrosswalk(PennDotCrosswalkDAL.InventoryItems)} FROM PennDot_Report_A WHERE BRKEY = @value";
            
-            return GetInventoryModelData(db, selectStatement, brKey);
+            return GetInventoryModelData(db, selectStatement, Convert.ToInt32(brKey));
         }
 
 
@@ -54,7 +54,7 @@ namespace BridgeCare.DataAccessLayer.Inventory
                 throw new UnauthorizedAccessException($"User {userInformation.Name} has no inventory access.");
             }
 
-            string query = "SELECT BRKEY as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A";
+            string query = "SELECT CAST(BRKEY AS VARCHAR) as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A ORDER BY BRKey ASC";
 
             if (userCriteria.HasCriteria)
             {
@@ -80,15 +80,16 @@ namespace BridgeCare.DataAccessLayer.Inventory
             var innerJoinConditionList = innerJoinColumns.Select(column => $"PennDot_Report_A.{column} = SEGMENT_{networkIDString}_NS0.{column}").ToList();
             var innerJoinConditions = string.Join(" and ", innerJoinConditionList);
 
-            var selectClause = "SELECT PennDot_Report_A.BRKEY as BRKey, PennDot_Report_A.BRIDGE_ID as BMSId";
+            var selectClause = "SELECT CAST(PennDot_Report_A.BRKEY AS VARCHAR) as BRKey, PennDot_Report_A.BRIDGE_ID as BMSId";
             // SEGMENT_#_NS0 contains the bridge data to be checked by the criteria string
             var fromClause = $"FROM SEGMENT_{networkIDString}_NS0";
             // PennDot_Report_A contains keys and IDs of bridges.
             var joinClause = $"INNER JOIN PennDot_Report_A on {innerJoinConditions}";
             var whereClause = $"WHERE ({userCriteriaString})";
             whereClause = whereClause.Replace("[", $"SEGMENT_{networkIDString}_NS0.[");
+            var orderByClause = "ORDER BY BRKey ASC";
 
-            return string.Join(" ", selectClause, fromClause, joinClause, whereClause);
+            return string.Join(" ", selectClause, fromClause, joinClause, whereClause, orderByClause);
         }
 
         /// <summary>

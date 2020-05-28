@@ -10,8 +10,8 @@ using System.Web.Http.Filters;
 
 namespace BridgeCare.Controllers
 {
-    using CriteriaDrivenBudgetsGetMethod = Func<int, UserInformationModel, List<CriteriaDrivenBudgetsModel>>;
-    using CriteriaDrivenBudgetsSaveMethod = Func<int, List<CriteriaDrivenBudgetsModel>, UserInformationModel, Task<string>>;
+    using CriteriaDrivenBudgetsGetMethod = Func<int, UserInformationModel, List<CriteriaDrivenBudgetModel>>;
+    using CriteriaDrivenBudgetsSaveMethod = Func<int, List<CriteriaDrivenBudgetModel>, UserInformationModel, Task<string>>;
 
     public class CriteriaDrivenBudgetsController : ApiController
     {
@@ -37,9 +37,9 @@ namespace BridgeCare.Controllers
         /// </summary>
         private Dictionary<string, CriteriaDrivenBudgetsGetMethod> CreateGetMethods()
         {
-            List<CriteriaDrivenBudgetsModel> GetAnyBudgets(int id, UserInformationModel userInformation) =>
+            List<CriteriaDrivenBudgetModel> GetAnyBudgets(int id, UserInformationModel userInformation) =>
                 repo.GetAnyCriteriaDrivenBudgets(id, db);
-            List<CriteriaDrivenBudgetsModel> GetPermittedBudgets(int id, UserInformationModel userInformation) =>
+            List<CriteriaDrivenBudgetModel> GetPermittedBudgets(int id, UserInformationModel userInformation) =>
                 repo.GetPermittedCriteriaDrivenBudgets(id, db, userInformation.Name);
 
             return new Dictionary<string, CriteriaDrivenBudgetsGetMethod>
@@ -56,9 +56,9 @@ namespace BridgeCare.Controllers
         /// </summary>
         private Dictionary<string, CriteriaDrivenBudgetsSaveMethod> CreateSaveMethods()
         {
-            Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
+            Task<string> SaveAnyBudgets(int id, List<CriteriaDrivenBudgetModel> models, UserInformationModel userInformation) =>
                 repo.SaveAnyCriteriaDrivenBudgets(id, models, db);
-            Task<string> SavePermittedBudgets(int id, List<CriteriaDrivenBudgetsModel> models, UserInformationModel userInformation) =>
+            Task<string> SavePermittedBudgets(int id, List<CriteriaDrivenBudgetModel> models, UserInformationModel userInformation) =>
                 repo.SavePermittedCriteriaDrivenBudgets(id, models, db, userInformation.Name);
 
             return new Dictionary<string, CriteriaDrivenBudgetsSaveMethod>
@@ -89,13 +89,13 @@ namespace BridgeCare.Controllers
         /// API endpoint for saving criteria driven budgets data
         /// </summary>
         /// <param name="id">Simulation identifier</param>
-        /// <param name="models">CriteriaDrivenBudgetsModel list</param>
+        /// <param name="models">CriteriaDrivenBudgetModel list</param>
         /// <returns>IHttpActionResult</returns>
         [HttpPost]
         [Route("api/SaveCriteriaDrivenBudgets/{id}")]
         [ModelValidation("The criteria driven budgets data is invalid.")]
         [RestrictAccess]
-        public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetsModel> models)
+        public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetModel> models)
         {
             UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             var result = CriteriaDrivenBudgetsSaveMethods[userInformation.Role](id, models, userInformation);

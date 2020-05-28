@@ -19,17 +19,17 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         /// </summary>
         /// <param name="id">Simulation identifier</param>
         /// <param name="db">BridgeCareContext</param>
-        /// <returns>CriteriaDrivenBudgetsModel list</returns>
-        private List<CriteriaDrivenBudgetsModel> GetCriteriaDrivenBudgets(int id, BridgeCareContext db)
+        /// <returns>CriteriaDrivenBudgetModel list</returns>
+        private List<CriteriaDrivenBudgetModel> GetCriteriaDrivenBudgets(int id, BridgeCareContext db)
         {
             if (db.CriteriaDrivenBudgets.Any(cdb => cdb.SIMULATIONID == id))
                 return db.CriteriaDrivenBudgets.AsNoTracking()
                     .Where(cbd => cbd.SIMULATIONID == id)
                     .ToList()
-                    .Select(cbd => new CriteriaDrivenBudgetsModel(cbd))
+                    .Select(cbd => new CriteriaDrivenBudgetModel(cbd))
                     .ToList();
 
-            return new List<CriteriaDrivenBudgetsModel>();
+            return new List<CriteriaDrivenBudgetModel>();
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         /// <param name="id">Simulation id</param>
         /// <param name="db">BridgeCareContext</param>
         /// <param name="username">Username</param>
-        /// <returns>CriteriaDrivenBudgetsModel list</returns>
-        public List<CriteriaDrivenBudgetsModel> GetPermittedCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
+        /// <returns>CriteriaDrivenBudgetModel list</returns>
+        public List<CriteriaDrivenBudgetModel> GetPermittedCriteriaDrivenBudgets(int id, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with id {id}.");
@@ -55,8 +55,8 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         /// </summary>
         /// <param name="id">Simulation id</param>
         /// <param name="db">BridgeCareContext</param>
-        /// <returns>CriteriaDrivenBudgetsModel list</returns>
-        public List<CriteriaDrivenBudgetsModel> GetAnyCriteriaDrivenBudgets(int id, BridgeCareContext db)
+        /// <returns>CriteriaDrivenBudgetModel list</returns>
+        public List<CriteriaDrivenBudgetModel> GetAnyCriteriaDrivenBudgets(int id, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with {id}");
@@ -67,10 +67,10 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
         /// Executes an insert/delete operation on the criteria driven budgets table
         /// </summary>
         /// <param name="id">Simulation identifier</param>
-        /// <param name="models">CriteriaDrivenBudgetsModel list</param>
+        /// <param name="models">CriteriaDrivenBudgetModel list</param>
         /// <param name="db">BridgeCareContext</param>
         /// <returns>string Task</returns>
-        private Task<string> SaveCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db)
+        private Task<string> SaveCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetModel> models, BridgeCareContext db)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
 
                 db.CriteriaDrivenBudgets
                     .AddRange(models
-                        .Select(criteriaModel => new CriteriaDrivenBudgetsEntity(id, criteriaModel))
+                        .Select(criteriaModel => new CriteriaDrivenBudgetEntity(id, criteriaModel))
                         .ToList()
                     );
 
@@ -98,7 +98,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             }
         }
 
-        public Task<string> SavePermittedCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db, string username)
+        public Task<string> SavePermittedCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetModel> models, BridgeCareContext db, string username)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with {id}");
@@ -107,7 +107,7 @@ namespace BridgeCare.DataAccessLayer.CriteriaDrivenBudgets
             return SaveCriteriaDrivenBudgets(id, models, db);
         }
 
-        public Task<string> SaveAnyCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetsModel> models, BridgeCareContext db)
+        public Task<string> SaveAnyCriteriaDrivenBudgets(int id, List<CriteriaDrivenBudgetModel> models, BridgeCareContext db)
         {
             if (!db.Simulations.Any(s => s.SIMULATIONID == id))
                 throw new RowNotInTableException($"No scenario found with {id}");

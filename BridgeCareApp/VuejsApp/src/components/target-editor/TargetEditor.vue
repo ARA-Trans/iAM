@@ -9,10 +9,11 @@
                     </v-btn>
                     <v-select :items="targetLibrariesSelectListItems"
                               label="Select a Target Library"
-                              outline v-if="!hasSelectedTargetLibrary || selectedScenarioId !== '0'" v-model="selectItemValue">
+                              outline v-if="!hasSelectedTargetLibrary || selectedScenarioId !== '0'"
+                              v-model="selectItemValue">
                     </v-select>
                     <v-text-field label="Library Name" v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'"
-                                  v-model="selectedTargetLibrary.name">
+                                  v-model="selectedTargetLibrary.name" :rules="[rules['generalRules'].valueIsNotEmpty]">
                         <template slot="append">
                             <v-btn @click="selectItemValue = null" class="ara-orange" icon>
                                 <v-icon>fas fa-caret-left</v-icon>
@@ -23,7 +24,8 @@
                         Owner: {{selectedTargetLibrary.owner ? selectedTargetLibrary.owner : "[ No Owner ]"}}
                     </div>
                     <v-checkbox class="sharing" label="Shared"
-                                v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'" v-model="selectedTargetLibrary.shared"/>
+                                v-if="hasSelectedTargetLibrary && selectedScenarioId === '0'"
+                                v-model="selectedTargetLibrary.shared"/>
                 </v-flex>
             </v-layout>
             <v-flex v-show="hasSelectedTargetLibrary" xs3>
@@ -36,7 +38,8 @@
         </v-flex>
         <v-flex v-show="hasSelectedTargetLibrary" xs12>
             <div class="targets-data-table">
-                <v-data-table :headers="targetDataTableHeaders" :items="targets" class="elevation-1 fixed-header v-table__overflow" item-key="id"
+                <v-data-table :headers="targetDataTableHeaders" :items="targets"
+                              class="elevation-1 fixed-header v-table__overflow" item-key="id"
                               select-all v-model="selectedTargetRows">
                     <template slot="items" slot-scope="props">
                         <td>
@@ -46,23 +49,33 @@
                             <div v-if="header.value === 'attribute'">
                                 <v-edit-dialog
                                         :return-value.sync="props.item.attribute"
-                                        @save="onEditTargetProperty(props.item, 'attribute', props.item.attribute)" large lazy persistent>
-                                    <input :value="props.item.attribute" class="output" readonly type="text"/>
+                                        @save="onEditTargetProperty(props.item, 'attribute', props.item.attribute)"
+                                        large lazy persistent>
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item.attribute"
+                                           :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
                                         <v-select :items="numericAttributes" label="Select an Attribute"
-                                                  v-model="props.item.attribute">
-                                        </v-select>
+                                                  v-model="props.item.attribute"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
                             <div v-if="header.value !== 'attribute' && header.value !== 'criteria'">
                                 <v-edit-dialog
                                         :return-value.sync="props.item[header.value]"
-                                        @save="onEditTargetProperty(props.item, header.value, props.item[header.value])" large lazy persistent>
-                                    <input :value="props.item[header.value]" class="output" readonly type="text"/>
+                                        @save="onEditTargetProperty(props.item, header.value, props.item[header.value])"
+                                        large lazy persistent>
+                                    <v-text-field readonly single-line class="sm-txt" :value="props.item[header.value]"
+                                           :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     <template slot="input">
-                                        <v-text-field label="Edit" single-line v-model="props.item[header.value]">
-                                        </v-text-field>
+                                        <v-text-field v-if="header.value === 'year'" label="Edit" single-line
+                                                      :mask="'####'" v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        <v-text-field v-else-if="header.value === 'targetMean'" label="Edit" single-line
+                                                      :mask="'##########'" v-model.number="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                        <v-text-field v-else label="Edit" single-line v-model="props.item[header.value]"
+                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
@@ -70,14 +83,14 @@
                                 <v-layout align-center row style="flex-wrap:nowrap">
                                     <v-menu bottom min-height="500px" min-width="500px">
                                         <template slot="activator">
-                                            <input :value="props.item.criteria" class="output target-criteria-output"
-                                                   readonly type="text"/>
+                                            <v-text-field readonly single-line class="sm-txt"
+                                                          :value="props.item.criteria"/>
                                         </template>
                                         <v-card>
                                             <v-card-text>
-                                                <v-textarea :value="props.item.criteria" full-width no-resize outline readonly
-                                                            rows="5">
-                                                </v-textarea>
+                                                <v-textarea :value="props.item.criteria" full-width no-resize outline
+                                                            readonly
+                                                            rows="5"/>
                                             </v-card-text>
                                         </v-card>
                                     </v-menu>
@@ -103,19 +116,19 @@
         <v-flex v-show="hasSelectedTargetLibrary" xs12>
             <v-layout justify-end row>
                 <v-btn @click="onApplyToScenario" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId !== '0'">
+                       v-show="selectedScenarioId !== '0'" :disabled="disableSubmitAction()">
                     Save
                 </v-btn>
                 <v-btn @click="onUpdateTargetLibrary" class="ara-blue-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="disableSubmitAction()">
                     Update Library
                 </v-btn>
-                <v-btn :disabled="!hasSelectedTargetLibrary" @click="onAddAsNewTargetLibrary"
-                       class="ara-blue-bg white--text">
+                <v-btn @click="onAddAsNewTargetLibrary" class="ara-blue-bg white--text"
+                       :disabled="disableSubmitAction()">
                     Create as New Library
                 </v-btn>
                 <v-btn @click="onDeleteTargetLibrary" class="ara-orange-bg white--text"
-                       v-show="selectedScenarioId === '0'">
+                       v-show="selectedScenarioId === '0'" :disabled="!hasSelectedTargetLibrary">
                     Delete Library
                 </v-btn>
                 <v-btn @click="onDiscardTargetLibraryChanges" class="ara-orange-bg white--text"
@@ -163,6 +176,7 @@
     import {AlertData, emptyAlertData} from '@/shared/models/modals/alert-data';
     import Alert from '@/shared/modals/Alert.vue';
     import {hasUnsavedChanges} from '@/shared/utils/has-unsaved-changes-helper';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     @Component({
         components: {CreateTargetLibraryDialog, CreateTargetDialog, TargetCriteriaEditor: CriteriaEditorDialog, Alert}
@@ -208,6 +222,7 @@
         createTargetLibraryDialogData: CreateTargetLibraryDialogData = clone(emptyCreateTargetLibraryDialogData);
         alertBeforeDelete: AlertData = clone(emptyAlertData);
         objectIdMOngoDBForScenario: string = '';
+        rules: InputValidationRules = {...rules};
 
         /**
          * Sets onload component UI properties
@@ -455,6 +470,24 @@
                 this.selectItemValue = null;
                 this.deleteTargetLibraryAction({targetLibrary: this.selectedTargetLibrary});
             }
+        }
+
+        disableSubmitAction() {
+            if (this.hasSelectedTargetLibrary) {
+                const allDataIsValid = this.selectedTargetLibrary.targets.every((t: Target) => {
+                    return this.rules['generalRules'].valueIsNotEmpty(t.attribute) === true && this.rules['generalRules'].valueIsNotEmpty(t.name) === true &&
+                        this.rules['generalRules'].valueIsNotEmpty(t.year) === true && this.rules['generalRules'].valueIsNotEmpty(t.targetMean) === true;
+                });
+
+                if (this.selectedScenarioId !== '0') {
+                    return !allDataIsValid;
+                } else {
+                    return !(this.rules['generalRules'].valueIsNotEmpty(this.selectedTargetLibrary.name) === true &&
+                        allDataIsValid);
+                }
+            }
+
+            return false;
         }
     }
 </script>

@@ -62,14 +62,12 @@
                 <v-data-table :headers="scenarioGridHeaders" :items="userScenarios" :search="searchMine">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
-                                           persistent>
+                            <v-edit-dialog large lazy persistent :return-value.sync="props.item.simulationName"
+                                            @save="onEditScenarioName(props.item)">
                                 {{props.item.simulationName}}
                                 <template slot="input">
-                                    <v-text-field label="Edit"
-                                                  single-line
-                                                  v-model="props.item.simulationName"></v-text-field>
+                                    <v-text-field label="Edit" single-line v-model="props.item.simulationName"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -96,8 +94,7 @@
                                 </v-flex>
                                 <v-flex>
                                     <v-btn @click="onEditScenario(props.item.simulationId, props.item.simulationName, props.item.id)" class="edit-icon"
-                                           icon
-                                           title="Settings">
+                                           icon title="Settings">
                                         <v-icon>fas fa-edit</v-icon>
                                     </v-btn>
                                 </v-flex>
@@ -155,14 +152,12 @@
                 <v-data-table :headers="scenarioGridHeaders" :items="sharedScenarios" :search="searchShared">
                     <template slot="items" slot-scope="props">
                         <td>
-                            <v-edit-dialog :return-value.sync="props.item.simulationName"
-                                           @save="onEditScenarioName(props.item.simulationName, props.item.id, props.item.simulationId)" large lazy
-                                           persistent>
+                            <v-edit-dialog large lazy persistent :return-value.sync="props.item.simulationName"
+                                           @save="onEditScenarioName(props.item)">
                                 {{props.item.simulationName}}
                                 <template slot="input">
-                                    <v-text-field label="Edit"
-                                                  single-line
-                                                  v-model="props.item.simulationName"></v-text-field>
+                                    <v-text-field label="Edit" single-line v-model="props.item.simulationName"
+                                                  :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>
@@ -234,7 +229,7 @@
         <ReportsDownloaderDialog :dialogData="reportsDownloaderDialogData"/>
 
         <ShareScenarioDialog :scenario="sharingScenario" :showDialog="showShareScenarioDialog"
-                             @submit="onSubmitShareScenario"/>
+                             @submit="onSubmitSharedScenario"/>
     </v-layout>
 </template>
 
@@ -260,12 +255,13 @@
     import {Simulation} from '@/shared/models/iAM/simulation';
     import {emptyRollup, Rollup} from '@/shared/models/iAM/rollup';
     import {getUserName} from '@/shared/utils/get-user-info';
+    import {rules, InputValidationRules} from '@/shared/utils/input-validation-rules';
 
     @Component({
         components: {Alert, ReportsDownloaderDialog, CreateScenarioDialog, ShareScenarioDialog}
     })
     export default class Scenarios extends Vue {
-        @State(state => state.scenario.scenarios) scenarios: Scenario[];
+        @State(state => state.scenario.scenarios) stateScenarios: Scenario[];
         @State(state => state.authentication.userId) userId: string;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.network.networks) networks: Network[];
@@ -312,6 +308,7 @@
             {text: 'Status', sortable: false, value: 'rollupStatus'},
             {text: '', sortable: false, value: 'actions'}
         ];
+        scenarios: Scenario[] = [];
         userScenarios: Scenario[] = [];
         adminRollup: any[] = [];
         sharedScenarios: Scenario[] = [];
@@ -325,6 +322,12 @@
         currentScenario: Scenario = clone(emptyScenario);
         currentRollup: Rollup = clone(emptyRollup);
         sharingScenario: Scenario = clone(emptyScenario);
+        rules: InputValidationRules = {...rules};
+
+        @Watch('stateScenarios')
+        onStateScenariosChanged() {
+            this.scenarios = clone(this.stateScenarios);
+        }
 
         @Watch('scenarios')
         onScenariosChanged() {
@@ -541,17 +544,23 @@
             this.sharingScenario = scenario;
         }
 
-        onEditScenarioName(scenarioName: string, id: string, simulationId: any) {
-            var scenarioData: Simulation = {
-                simulationId: simulationId,
-                simulationName: scenarioName,
-                networkId: this.networks[0].networkId,
-                networkName: this.networks[0].networkName
-            };
-            this.updateScenarioAction({
-                updateScenarioData: scenarioData,
-                scenarioId: id
-            });
+        onEditScenarioName(scenario: Scenario) {
+            if (hasValue(scenario.simulationName)) {
+                const scenarioData: Simulation = {
+                    simulationId: scenario.simulationId,
+                    simulationName: scenario.simulationName,
+                    networkId: this.networks[0].networkId,
+                    networkName: this.networks[0].networkName
+                };
+
+                this.updateScenarioAction({
+                    updateScenarioData: scenarioData,
+                    scenarioId: scenario.id
+                });
+            } else {
+                this.scenarios = [];
+                setTimeout(() => this.scenarios = clone(this.stateScenarios));
+            }
         }
 
         onSubmitNewScenario(createScenarioData: ScenarioCreationData) {
@@ -565,10 +574,10 @@
             }
         }
 
-        onSubmitShareScenario(scenarioUsers: ScenarioUser[]) {
+        onSubmitSharedScenario(scenarioUsers: ScenarioUser[]) {
             this.showShareScenarioDialog = false;
 
-            if (scenarioUsers !== null) {
+            if (hasValue(scenarioUsers)) {
                 this.sharingScenario.users = scenarioUsers;
 
                 this.updateScenarioUsersAction({

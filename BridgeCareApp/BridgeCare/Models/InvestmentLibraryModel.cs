@@ -20,7 +20,7 @@ namespace BridgeCare.Models
         public string Description { get; set; }
         public List<string> BudgetOrder { get; set; }
         public List<InvestmentLibraryBudgetYearModel> BudgetYears { get; set; }
-        public List<CriteriaDrivenBudgetsModel> BudgetCriteria { get; set; }
+        public List<CriteriaDrivenBudgetModel> CriteriaDrivenBudgets { get; set; }
 
         public InvestmentLibraryModel()
         {
@@ -36,7 +36,16 @@ namespace BridgeCare.Models
             BudgetOrder = entity.INVESTMENTS?.BUDGETORDER?.Split(',').ToList();
             BudgetYears = entity.YEARLYINVESTMENTS
                 .Select(yi => new InvestmentLibraryBudgetYearModel(yi)).ToList();
-            BudgetCriteria = entity.CriteriaDrivenBudgets.Select(budget => new CriteriaDrivenBudgetsModel(budget)).ToList();
+            CriteriaDrivenBudgets = entity.CriteriaDrivenBudgets.Select(budget => new CriteriaDrivenBudgetModel(budget)).ToList();
+
+            if (CriteriaDrivenBudgets.Any() && BudgetYears.Any())
+            {
+                CriteriaDrivenBudgets.ForEach(cdb =>
+                {
+                    BudgetYears.Where(by => by.BudgetName == cdb.BudgetName)
+                        .ToList().ForEach(by => by.CriteriaDrivenBudgetId = cdb.Id);
+                });
+            }
         }
 
         public void UpdateInvestment(InvestmentsEntity entity)
