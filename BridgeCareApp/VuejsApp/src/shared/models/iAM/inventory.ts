@@ -59,8 +59,8 @@ export const emptyRiskScores: RiskScores = {
 };
 
 export const emptyInventoryItemDetail: InventoryItemDetail = {
-    bmsId: 0,
-    brKey: 0,
+    bmsId: '0',
+    brKey: '0',
     label: '',
     name: '',
     location: [],
