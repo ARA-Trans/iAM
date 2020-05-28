@@ -92,7 +92,6 @@ function scenarioController(Scenario) {
 
     function deleteScenario(req, res) {
         Scenario.deleteOne({_id: req.params.scenarioId}, (err, result) => {
-            console.log("code entered");
             if (err) {
                 return res.status(500).json(err);
             }
