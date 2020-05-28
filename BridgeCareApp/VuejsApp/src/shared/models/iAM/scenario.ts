@@ -44,6 +44,7 @@ export interface Scenario {
     creator?: string;
     id: number | string;
     users: ScenarioUser[];
+    runTime?: string;
 }
 
 export const emptyScenario: Scenario = {
@@ -56,5 +57,6 @@ export const emptyScenario: Scenario = {
     status: '',
     shared: false,
     id: 0,
-    users: []
+    users: [],
+    runTime: ''
 };

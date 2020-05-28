@@ -216,6 +216,7 @@ namespace Simulation
             public DateTime? Created { get; set; }
 
             public DateTime? LastRun { get; set; }
+            public string runTime { get; set; }
         }
 
         public object APICall;
@@ -291,21 +292,46 @@ namespace Simulation
                 updateStatus = Builders<SimulationModel>.Update
                     .Set(s => s.status, "Beginning run simulation");
                 Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-
-                updateStatus = Builders<SimulationModel>.Update
-                    .Set(s => s.status, "Success");
             }
 
             try
             {
                 RunSimulation();
+
+                _spanAnalysis += DateTime.Now - _dateTimeLast;
+                var spanTotal = _spanRead + _spanAnalysis + _spanReport;
+
+                //Save the amount of time it took to run the simualtion to the database.
+                SaveSimulationRunTime(spanTotal);
+
+                if (isAPICall.Equals(true))
+                {
+                    updateStatus = Builders<SimulationModel>.Update
+                        .Set(s => s.status, "Success");
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+
+                    updateStatus = Builders<SimulationModel>.Update
+                        .Set(r => r.runTime, spanTotal.ToString(@"hh\:mm\:ss"));
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+                }
             }
             catch (Exception ex)
             {
+                _spanAnalysis += DateTime.Now - _dateTimeLast;
+                var spanTotal = _spanRead + _spanAnalysis + _spanReport;
+
+                //Save the amount of time it took to run the simualtion to the database.
+                SaveSimulationRunTime(spanTotal);
+
                 if (isAPICall.Equals(true))
                 {
                     updateStatus = Builders<SimulationModel>.Update
                         .Set(s => s.status, "Simulation failed");
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
+
+                    updateStatus = Builders<SimulationModel>.Update
+                        .Set(r => r.runTime, spanTotal.ToString(@"hh\:mm\:ss"));
+                    Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
 
                     log.Error($"An exception occurred during RunSimulation() for simulation {m_strSimulationID}:", ex);
                 }
@@ -313,20 +339,10 @@ namespace Simulation
                 SimulationMessaging.AddMessage(new SimulationMessage("ERROR: [" + ex.Message + "]"));
                 SimulationMessaging.AddMessage(new SimulationMessage("Aborting simulation."));
             }
-            _spanAnalysis += DateTime.Now - _dateTimeLast;
 
             SimulationMessaging.AddMessage(new SimulationMessage("Time spent reading and compiling from database = " + _spanRead.ToString()));
             SimulationMessaging.AddMessage(new SimulationMessage("Time spent performing optimization = " + _spanAnalysis.ToString()));
             SimulationMessaging.AddMessage(new SimulationMessage("Time spent bulk loading = " + _spanReport.ToString()));
-            TimeSpan spanTotal = _spanRead + _spanAnalysis + _spanReport;
-
-            //Save the amount of time it took to run the simualtion to the database.
-            SaveSimulationRunTime(spanTotal);
-
-            if (isAPICall.Equals(true))
-            {
-                Simulations.UpdateOne(s => s.simulationId == Convert.ToInt32(m_strSimulationID), updateStatus);
-            }
 
             return;
         }

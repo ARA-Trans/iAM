@@ -79,6 +79,7 @@
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{formatDate(props.item.lastRun)}}</td>
                         <td>{{props.item.status}}</td>
+                        <td>{{props.item.runTime}}</td>
                         <td>
                             <v-layout nowrap row>
                                 <v-flex>
@@ -171,6 +172,7 @@
                         <td>{{formatDate(props.item.lastModifiedDate)}}</td>
                         <td>{{formatDate(props.item.lastRun)}}</td>
                         <td>{{props.item.status}}</td>
+                        <td>{{props.item.runTime}}</td>
                         <td>
                             <v-layout nowrap row>
                                 <v-flex>
@@ -300,6 +302,7 @@
             {text: 'Date Last Modified', sortable: true, value: 'lastModifiedDate'},
             {text: 'Date Last Run', sortable: true, value: 'lastRun'},
             {text: 'Status', sortable: false, value: 'status'},
+            {text: 'Run Time', sortable: false, value: 'runTime'},
             {text: '', sortable: false, value: 'actions'}
         ];
         rollupGridHeader: object[] = [

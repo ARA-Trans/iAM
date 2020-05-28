@@ -117,6 +117,9 @@
                     <span class="font-weight-light">iAM </span>
                     <span>BridgeCare &copy; 2019</span>
                 </v-flex>
+                <v-flex xs1>
+                    <span>{{packageVersion}}</span>
+                </v-flex>
                 <v-spacer></v-spacer>
             </v-footer>
             <Spinner/>
@@ -157,6 +160,7 @@
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.scenario.selectedScenarioName) stateSelectedScenarioName: string;
         @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
+        @State(state => state.announcement.packageVersion) packageVersion: string;
 
         @Action('refreshTokens') refreshTokensAction: any;
         @Action('checkBrowserTokens') checkBrowserTokensAction: any;
