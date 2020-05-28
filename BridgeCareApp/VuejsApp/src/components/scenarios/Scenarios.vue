@@ -398,7 +398,7 @@
          */
         onEditScenario(id: number, simulationName: string, objectIdMongodb: string) {
             this.$router.push({
-                path: '/EditScenario/',
+                path: '/EditAnalysis/',
                 query: {
                     selectedScenarioId: id.toString(),
                     simulationName: simulationName,
