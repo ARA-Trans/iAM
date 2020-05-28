@@ -54,7 +54,7 @@ namespace BridgeCare.DataAccessLayer.Inventory
                 throw new UnauthorizedAccessException($"User {userInformation.Name} has no inventory access.");
             }
 
-            string query = "SELECT CAST(BRKEY AS VARCHAR) as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A ORDER BY BRKey ASC";
+            string query = "SELECT CAST(BRKEY AS VARCHAR) as BRKey, BRIDGE_ID as BMSId FROM PennDot_Report_A ORDER BY CONVERT(INT, BRKey) ASC";
 
             if (userCriteria.HasCriteria)
             {
@@ -87,7 +87,7 @@ namespace BridgeCare.DataAccessLayer.Inventory
             var joinClause = $"INNER JOIN PennDot_Report_A on {innerJoinConditions}";
             var whereClause = $"WHERE ({userCriteriaString})";
             whereClause = whereClause.Replace("[", $"SEGMENT_{networkIDString}_NS0.[");
-            var orderByClause = "ORDER BY BRKey ASC";
+            var orderByClause = "ORDER BY CONVERT(INT, BRKey) ASC";
 
             return string.Join(" ", selectClause, fromClause, joinClause, whereClause, orderByClause);
         }
