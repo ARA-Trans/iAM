@@ -42,7 +42,7 @@ export const setContentTypeCharset = (headers: any) => {
 export const setAuthHeader = (headers: any) => {
     if (headers && localStorage.getItem('UserTokens')) {
         const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-        headers['Authorization'] = `Bearer ${userTokens.id_token}`;
+        headers['Authorization'] = `Bearer ${userTokens.access_token}`;
     }
 
     return headers;
@@ -52,6 +52,10 @@ export const getErrorMessage = (error: AxiosError) => {
     if (hasValue(error)) {
         if (hasValue(prop('response', error))) {
             const response: AxiosResponse = prop('response', error) as AxiosResponse;
+
+            if (hasValue(prop('statusText', response))) {
+                return prop('statusText', response) as string;
+            }
 
             if (hasValue(prop('data', response))) {
                 const responseData: any = prop('data', response);

@@ -200,7 +200,7 @@ namespace BridgeCare.Controllers
         {
             // A JWT is too large to store in the URL, so it is passed in the authorization header.
             string idToken = Request.Headers.Authorization.Parameter;
-            JWTParse.RevokeToken(idToken);
+            ESECSecurity.RevokeToken(idToken);
             return Ok();
         }
 

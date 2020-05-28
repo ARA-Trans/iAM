@@ -10,7 +10,8 @@ const state = {
     checkedForRole: false,
     isAdmin: false,
     isCWOPA: false,
-    username: ''
+    username: '',
+    refreshing: false
 };
 
 const mutations = {
@@ -31,6 +32,9 @@ const mutations = {
     },
     usernameMutator(state: any, username: string) {
         state.username = username;
+    },
+    refreshingMutator(state: any, refreshing: boolean) {
+        state.refreshing = refreshing;
     }
 };
 
@@ -56,7 +60,14 @@ const actions = {
             if (state.authenticated) {
                 return;
             }
-            dispatch('refreshTokens').then(() => dispatch('getUserInfo'));
+            
+            // Only refresh the token when it has a minute or less before expiration
+            if (storedTokenExpiration - Date.now() < 60000) {
+                dispatch('refreshTokens').then(() => dispatch('getUserInfo'));
+            } else {
+                dispatch('getUserInfo');
+            }
+            
             commit('authenticatedMutator', true);
         } else if (state.authenticated) {
             dispatch('logOut');
@@ -67,6 +78,7 @@ const actions = {
         if (!localStorage.getItem('UserTokens')) {
             dispatch('logOut');
         } else {
+            commit('refreshingMutator', true);
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
             await AuthenticationService.refreshTokens(userTokens.refresh_token)
                 .then((response: AxiosResponse<string>) => {
@@ -79,6 +91,7 @@ const actions = {
                         localStorage.setItem('TokenExpiration', expiration.getTime().toString());
                     }
                 });
+            commit('refreshingMutator', false);
         }
     },
 
@@ -114,11 +127,7 @@ const actions = {
         } else {
             localStorage.removeItem('UserInfo');
             const userTokens: UserTokens = JSON.parse(localStorage.getItem('UserTokens') as string) as UserTokens;
-            // ID token is too long to pass as part of the URL, but it will be passed as the parameter
-            // of the Authorization header.
-            AuthenticationService.revokeToken('', 'Id').then(() =>
-                localStorage.removeItem('UserTokens')
-            );
+            localStorage.removeItem('UserTokens');
             localStorage.removeItem('TokenExpiration');
             AuthenticationService.revokeToken(userTokens.access_token, 'Access');
             AuthenticationService.revokeToken(userTokens.refresh_token, 'Refresh');

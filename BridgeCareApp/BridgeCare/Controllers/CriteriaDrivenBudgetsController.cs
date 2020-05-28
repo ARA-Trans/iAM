@@ -81,7 +81,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult GetCriteriaDrivenBudgets(int id) 
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(CriteriaDrivenBudgetsGetMethods[userInformation.Role](id, userInformation));
         }
 
@@ -97,7 +97,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult SaveCriteriaDrivenBudgets(int id, [FromBody]List<CriteriaDrivenBudgetModel> models)
         {
-            UserInformationModel userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
             var result = CriteriaDrivenBudgetsSaveMethods[userInformation.Role](id, models, userInformation);
             if(result.IsCompleted)
                 return Ok();

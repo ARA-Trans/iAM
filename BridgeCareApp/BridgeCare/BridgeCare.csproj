@@ -279,6 +279,7 @@
     <Compile Include="EntityClasses\UserCriteriaEntity.cs" />
     <Compile Include="Interfaces\ICashFlowLibrary.cs" />
     <Compile Include="Interfaces\IUserCriteria.cs" />
+    <Compile Include="Models\AttributeSelectValuesResult.cs" />
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\CriteriaValidationResult.cs" />
     <Compile Include="Models\EquationValidationResult.cs" />
@@ -293,7 +294,7 @@
     <Compile Include="Models\SummaryReport\BudgetsPerBRKey.cs" />
     <Compile Include="Models\SummaryReport\WorkSummaryByBudgetModel.cs" />
     <Compile Include="Security\RestrictAccessAttribute.cs" />
-    <Compile Include="Security\JWTParse.cs" />
+    <Compile Include="Security\ESECSecurity.cs" />
     <Compile Include="ExceptionHandling\UnhandledExceptionFilterAttribute.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\ModelValidationAttribute.cs" />

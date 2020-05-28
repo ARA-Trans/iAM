@@ -119,6 +119,9 @@
                     <span class="font-weight-light">iAM </span>
                     <span>BridgeCare &copy; 2019</span>
                 </v-flex>
+                <v-flex xs1>
+                    <span>{{packageVersion}}</span>
+                </v-flex>
                 <v-spacer></v-spacer>
             </v-footer>
             <Spinner/>
@@ -153,12 +156,14 @@
         @State(state => state.authentication.hasRole) hasRole: boolean;
         @State(state => state.authentication.username) username: string;
         @State(state => state.authentication.isAdmin) isAdmin: boolean;
+        @State(state => state.authentication.refreshing) refreshing: boolean;
         @State(state => state.breadcrumb.navigation) navigation: any[];
         @State(state => state.toastr.successMessage) successMessage: string;
         @State(state => state.toastr.errorMessage) errorMessage: string;
         @State(state => state.toastr.infoMessage) infoMessage: string;
         @State(state => state.unsavedChangesFlag.hasUnsavedChanges) hasUnsavedChanges: boolean;
         @State(state => state.scenario.selectedScenario) stateSelectedScenario: Scenario;
+        @State(state => state.announcement.packageVersion) packageVersion: string;
 
         @Action('refreshTokens') refreshTokensAction: any;
         @Action('checkBrowserTokens') checkBrowserTokensAction: any;
@@ -271,19 +276,22 @@
 
         created() {
             // create a request handler
-            const requestHandler = (request: AxiosRequestConfig) => {
+            async function requestHandler(app: AppComponent, request: AxiosRequestConfig) {
                 request.headers = setContentTypeCharset(request.headers);
+                if (app.refreshing) {
+                    await new Promise(_ => setTimeout(_, 5000));
+                }
                 request.headers = setAuthHeader(request.headers);
-                this.setIsBusyAction({isBusy: true});
+                app.setIsBusyAction({isBusy: true});
                 return request;
-            };
+            }
             // set axios request interceptor to use request handler
             axiosInstance.interceptors.request.use(
-                (request: any) => requestHandler(request)
+                (request: any) => requestHandler(this, request)
             );
             // set nodejs axios request interceptor to use request handler
             nodejsAxiosInstance.interceptors.request.use(
-                (request: any) => requestHandler(request)
+                (request: any) => requestHandler(this, request)
             );
             // create a success & error handler
             const successHandler = (response: AxiosResponse) => {

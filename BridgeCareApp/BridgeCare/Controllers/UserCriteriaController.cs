@@ -2,6 +2,7 @@
 using BridgeCare.Models;
 using BridgeCare.Security;
 using System;
+using System.Linq;
 using System.Web.Http;
 
 namespace BridgeCare.Controllers
@@ -27,7 +28,7 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult GetUserCriteria()
         {
-            var userInformation = JWTParse.GetUserInformation(Request.Headers.Authorization.Parameter);
+            var userInformation = ESECSecurity.GetUserInformation(Request);
             return Ok(repo.GetOwnUserCriteria(db, userInformation));
         }
 

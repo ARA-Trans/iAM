@@ -5,16 +5,18 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Script.Serialization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BridgeCare.Security
 {
-    public static class JWTParse
+    public static class ESECSecurity
     {
         private static readonly RsaSecurityKey ESECPublicKey = GetPublicKey();
         /// <summary>
@@ -65,10 +67,33 @@ namespace BridgeCare.Security
             if (TokenIsRevoked(idToken))
                 throw new UnauthorizedAccessException("Your ID Token has been revoked.");
             JwtSecurityToken decodedToken = DecodeToken(idToken);
-            string role = ParseLDAP(decodedToken.GetClaimValue("roles")).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
+            List<string> roleStrings = ParseLDAP(decodedToken.GetClaimValue("roles"));
+            if (roleStrings.Count == 0)
+                throw new UnauthorizedAccessException("User has no security roles assigned.");
+            string role = roleStrings.Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
             string name = ParseLDAP(decodedToken.GetClaimValue("sub"))[0];
             string email = decodedToken.GetClaimValue("email");
             return new Models.UserInformationModel(name, role, email);
+        }
+
+        /// <summary>
+        /// Given a dictionary version of the LDAP-formatted JSON from ESEC, produces a UserInformationModel object
+        /// containing only the user's name, email, and relevant role
+        /// </summary>
+        /// <param name="idToken">JWT id_token from Authorization Header</param>
+        /// <returns></returns>
+        public static Models.UserInformationModel GetUserInformation(Dictionary<string, string> userInformationDictionary)
+        {
+            string role = ParseLDAP(userInformationDictionary["roles"]).Where(roleString => Role.AllValidRoles.Contains(roleString)).First();
+            string name = ParseLDAP(userInformationDictionary["sub"])[0];
+            string email = userInformationDictionary.ContainsKey("email") ? userInformationDictionary["email"] : null;
+            return new Models.UserInformationModel(name, role, email);
+        }
+
+        public static Models.UserInformationModel GetUserInformation(HttpRequestMessage request)
+        {
+            Func<string, string> getValue = key => request.Headers.GetValues(key).First();
+            return new Models.UserInformationModel(getValue("Name"), getValue("Role"), getValue("Email"));
         }
 
         /// <summary>
@@ -140,17 +165,15 @@ namespace BridgeCare.Security
         /// </summary>
         /// <param name="roleResponse">LDAP-formatted response</param>
         /// <returns>Role</returns>
-        private static List<string> ParseLDAP(string ldap)
+        public static List<string> ParseLDAP(string ldap)
         {
+            if (string.IsNullOrEmpty(ldap))
+                return new List<string>();
             string[] segments = ldap.Split('^');
-            List<string> commonNames = new List<string>();
-            foreach (string segment in segments)
-            {
-                string firstSubSegment = ldap.Split(',')[0];
-                string commonName = firstSubSegment.Split('=')[1];
-                commonNames.Add(commonName);
-            }
-            return commonNames;
+            var commonNameSegments = segments.Select(segment => segment.Split(',')[0]);
+            var validCommonNameSegments = commonNameSegments.Where(segment => segment.Contains('='));
+            var commonNames = commonNameSegments.Select(segment => segment.Split('=')[1]);
+            return commonNames.ToList();
         }
     }
 }

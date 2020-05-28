@@ -24,5 +24,10 @@ namespace BridgeCare.Controllers
         [Route("api/GetAttributes")]
         [RestrictAccess]
         public IHttpActionResult GetAttributes() => Ok(repo.GetAttributes(db));
+
+        [HttpGet]
+        [Route("api/GetAttributeSelectValues")]
+        [RestrictAccess]
+        public IHttpActionResult GetAttributeSelectValues([FromUri] int networkId, [FromUri] string attribute) => Ok(repo.GetAttributeSelectValues(networkId, attribute, db));
     }
 }
