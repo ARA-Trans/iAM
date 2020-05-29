@@ -4,6 +4,10 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class TargetConditionGoal : ConditionGoal
     {
+        public TargetConditionGoal(Explorer explorer) : base(explorer)
+        {
+        }
+
         public override NumberAttribute Attribute
         {
             get => base.Attribute;

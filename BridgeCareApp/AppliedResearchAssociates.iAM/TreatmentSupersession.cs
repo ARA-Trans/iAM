@@ -1,12 +1,13 @@
-﻿using AppliedResearchAssociates.Validation;
+﻿using System;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class TreatmentSupersession : IValidator
     {
-        public Criterion Criterion { get; } = new Criterion();
+        public TreatmentSupersession(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
 
-        public SelectableTreatment Treatment { get; set; }
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults
         {
@@ -24,5 +25,7 @@ namespace AppliedResearchAssociates.iAM
         }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Criterion };
+
+        public SelectableTreatment Treatment { get; set; }
     }
 }

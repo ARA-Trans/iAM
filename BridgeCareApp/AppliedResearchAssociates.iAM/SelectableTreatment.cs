@@ -9,6 +9,8 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class SelectableTreatment : Treatment
     {
+        public SelectableTreatment(Explorer explorer) => FeasibilityCriterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
+
         public ICollection<Budget> Budgets { get; } = new SetWithoutNulls<Budget>();
 
         public ICollection<ConditionalTreatmentConsequence> Consequences { get; } = new SetWithoutNulls<ConditionalTreatmentConsequence>();
@@ -16,10 +18,6 @@ namespace AppliedResearchAssociates.iAM
         public ICollection<ConditionalEquation> Costs { get; } = new SetWithoutNulls<ConditionalEquation>();
 
         public string Description { get; set; }
-
-        public Criterion FeasibilityCriterion { get; } = new Criterion();
-
-        public ICollection<TreatmentSupersession> Supersessions { get; } = new SetWithoutNulls<TreatmentSupersession>();
 
         public override ValidationResultBag DirectValidationResults
         {
@@ -42,6 +40,10 @@ namespace AppliedResearchAssociates.iAM
                 return results;
             }
         }
+
+        public Criterion FeasibilityCriterion { get; }
+
+        public ICollection<TreatmentSupersession> Supersessions { get; } = new SetWithoutNulls<TreatmentSupersession>();
 
         public override ValidatorBag Subvalidators => base.Subvalidators.Add(Consequences).Add(Costs).Add(FeasibilityCriterion).Add(Supersessions);
 

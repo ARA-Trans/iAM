@@ -1,12 +1,15 @@
-﻿using AppliedResearchAssociates.Validation;
+﻿using System;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class RemainingLifeLimit : IValidator
     {
+        public RemainingLifeLimit(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
+
         public NumberAttribute Attribute { get; set; }
 
-        public Criterion Criterion { get; } = new Criterion();
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults
         {

@@ -1,12 +1,24 @@
-﻿using AppliedResearchAssociates.Validation;
+﻿using System;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class PerformanceCurve : IValidator
     {
+        public PerformanceCurve(Explorer explorer)
+        {
+            if (explorer is null)
+            {
+                throw new ArgumentNullException(nameof(explorer));
+            }
+
+            Criterion = new Criterion(explorer);
+            Equation = new Equation(explorer);
+        }
+
         public NumberAttribute Attribute { get; set; }
 
-        public Criterion Criterion { get; } = new Criterion();
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults
         {
@@ -28,7 +40,7 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public Equation Equation { get; } = new Equation();
+        public Equation Equation { get; }
 
         public string Name { get; set; }
 

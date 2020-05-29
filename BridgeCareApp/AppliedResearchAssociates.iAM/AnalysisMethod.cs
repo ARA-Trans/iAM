@@ -7,13 +7,18 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class AnalysisMethod : IValidator
     {
-        public AnalysisMethod(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+        public AnalysisMethod(Simulation simulation)
+        {
+            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+
+            JurisdictionCriterion = new Criterion(Simulation.Network.Explorer);
+        }
 
         public Benefit Benefit { get; } = new Benefit();
 
         public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
 
-        public ICollection<DeficientConditionGoal> DeficientConditionGoals { get; } = new SetWithoutNulls<DeficientConditionGoal>();
+        public IReadOnlyCollection<DeficientConditionGoal> DeficientConditionGoals => _DeficientConditionGoals;
 
         public string Description { get; set; }
 
@@ -60,11 +65,11 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public Criterion JurisdictionCriterion { get; } = new Criterion();
+        public Criterion JurisdictionCriterion { get; }
 
         public OptimizationStrategy OptimizationStrategy { get; set; }
 
-        public ICollection<RemainingLifeLimit> RemainingLifeLimits { get; } = new SetWithoutNulls<RemainingLifeLimit>();
+        public IReadOnlyCollection<RemainingLifeLimit> RemainingLifeLimits => _RemainingLifeLimits;
 
         public bool ShouldApplyMultipleFeasibleCosts { get; set; }
 
@@ -72,7 +77,7 @@ namespace AppliedResearchAssociates.iAM
 
         public ValidatorBag Subvalidators => new ValidatorBag { Benefit, BudgetPriorities, DeficientConditionGoals, JurisdictionCriterion, RemainingLifeLimits, TargetConditionGoals };
 
-        public ICollection<TargetConditionGoal> TargetConditionGoals { get; } = new SetWithoutNulls<TargetConditionGoal>();
+        public IReadOnlyCollection<TargetConditionGoal> TargetConditionGoals => _TargetConditionGoals;
 
         public bool UseExtraFundsAcrossBudgets { get; set; }
 
@@ -80,15 +85,33 @@ namespace AppliedResearchAssociates.iAM
 
         public BudgetPriority AddBudgetPriority()
         {
-            var budgetPriority = new BudgetPriority();
+            var budgetPriority = new BudgetPriority(Simulation.Network.Explorer);
             budgetPriority.SynchronizeWithBudgets(Simulation.InvestmentPlan.Budgets);
             _BudgetPriorities.Add(budgetPriority);
             return budgetPriority;
         }
 
-        public bool RemoveBudgetPriority(BudgetPriority budgetPriority) => _BudgetPriorities.Remove(budgetPriority);
+        public DeficientConditionGoal AddDeficientConditionGoal() => _DeficientConditionGoals.GetAdd(new DeficientConditionGoal(Simulation.Network.Explorer));
+
+        public RemainingLifeLimit AddRemainingLifeLimit() => _RemainingLifeLimits.GetAdd(new RemainingLifeLimit(Simulation.Network.Explorer));
+
+        public TargetConditionGoal AddTargetConditionGoal() => _TargetConditionGoals.GetAdd(new TargetConditionGoal(Simulation.Network.Explorer));
+
+        public void Remove(TargetConditionGoal targetConditionGoal) => _TargetConditionGoals.Remove(targetConditionGoal);
+
+        public void Remove(DeficientConditionGoal deficientConditionGoal) => _DeficientConditionGoals.Remove(deficientConditionGoal);
+
+        public bool Remove(BudgetPriority budgetPriority) => _BudgetPriorities.Remove(budgetPriority);
+
+        public void Remove(RemainingLifeLimit remainingLifeLimit) => _RemainingLifeLimits.Remove(remainingLifeLimit);
 
         private readonly List<BudgetPriority> _BudgetPriorities = new List<BudgetPriority>();
+
+        private readonly List<DeficientConditionGoal> _DeficientConditionGoals = new List<DeficientConditionGoal>();
+
+        private readonly List<RemainingLifeLimit> _RemainingLifeLimits = new List<RemainingLifeLimit>();
+
+        private readonly List<TargetConditionGoal> _TargetConditionGoals = new List<TargetConditionGoal>();
 
         private readonly Simulation Simulation;
 

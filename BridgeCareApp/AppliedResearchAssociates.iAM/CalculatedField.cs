@@ -73,7 +73,7 @@ namespace AppliedResearchAssociates.iAM
             return operativeEquations[0].Equation.Compute(argument);
         }
 
-        public bool RemoveEquation(ConditionalEquation equation) => _Equations.Remove(equation);
+        public void RemoveEquation(ConditionalEquation equation) => _Equations.Remove(equation);
 
         private readonly List<ConditionalEquation> _Equations = new List<ConditionalEquation>();
 

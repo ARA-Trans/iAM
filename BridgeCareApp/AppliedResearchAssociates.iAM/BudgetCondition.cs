@@ -1,12 +1,15 @@
-﻿using AppliedResearchAssociates.Validation;
+﻿using System;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class BudgetCondition : IValidator
     {
+        public BudgetCondition(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
+
         public Budget Budget { get; set; }
 
-        public Criterion Criterion { get; } = new Criterion();
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults
         {

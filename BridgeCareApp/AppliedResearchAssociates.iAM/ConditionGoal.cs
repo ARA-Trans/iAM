@@ -1,4 +1,5 @@
-﻿using AppliedResearchAssociates.Validation;
+﻿using System;
+using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
@@ -6,7 +7,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public virtual NumberAttribute Attribute { get; set; }
 
-        public Criterion Criterion { get; } = new Criterion();
+        public Criterion Criterion { get; }
 
         public virtual ValidationResultBag DirectValidationResults
         {
@@ -33,5 +34,7 @@ namespace AppliedResearchAssociates.iAM
         public virtual ValidatorBag Subvalidators => new ValidatorBag { Criterion };
 
         public abstract bool IsMet(double actual);
+
+        protected ConditionGoal(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
     }
 }

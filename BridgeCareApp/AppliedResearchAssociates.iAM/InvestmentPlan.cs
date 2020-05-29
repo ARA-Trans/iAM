@@ -14,11 +14,11 @@ namespace AppliedResearchAssociates.iAM
             SynchronizeBudgetPriorities();
         }
 
-        public ICollection<BudgetCondition> BudgetConditions { get; } = new SetWithoutNulls<BudgetCondition>();
+        public IReadOnlyCollection<BudgetCondition> BudgetConditions => _BudgetConditions;
 
         public IReadOnlyList<Budget> Budgets => _Budgets;
 
-        public ICollection<CashFlowRule> CashFlowRules { get; } = new SetWithoutNulls<CashFlowRule>();
+        public IReadOnlyCollection<CashFlowRule> CashFlowRules => _CashFlowRules;
 
         public ValidationResultBag DirectValidationResults
         {
@@ -68,6 +68,10 @@ namespace AppliedResearchAssociates.iAM
             return budget;
         }
 
+        public BudgetCondition AddBudgetCondition() => _BudgetConditions.GetAdd(new BudgetCondition(Simulation.Network.Explorer));
+
+        public CashFlowRule AddCashFlowRule() => _CashFlowRules.GetAdd(new CashFlowRule(Simulation.Network.Explorer));
+
         public bool DecrementBudgetIndex(Budget budget)
         {
             var index = _Budgets.IndexOf(budget);
@@ -103,7 +107,15 @@ namespace AppliedResearchAssociates.iAM
             return true;
         }
 
+        public void RemoveBudgetCondition(BudgetCondition budgetCondition) => _BudgetConditions.Remove(budgetCondition);
+
+        public void RemoveCashFlowRule(CashFlowRule cashFlowRule) => _CashFlowRules.Remove(cashFlowRule);
+
+        private readonly List<BudgetCondition> _BudgetConditions = new List<BudgetCondition>();
+
         private readonly List<Budget> _Budgets = new List<Budget>();
+
+        private readonly List<CashFlowRule> _CashFlowRules = new List<CashFlowRule>();
 
         private readonly Simulation Simulation;
 

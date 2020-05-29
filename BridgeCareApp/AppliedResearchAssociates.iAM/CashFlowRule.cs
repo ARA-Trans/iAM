@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
     public sealed class CashFlowRule : IValidator
     {
-        public Criterion Criterion { get; } = new Criterion();
+        public CashFlowRule(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
+
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults
         {

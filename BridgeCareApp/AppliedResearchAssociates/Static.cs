@@ -105,6 +105,12 @@ namespace AppliedResearchAssociates
 
         public static IEnumerable<T> Distinct<T>(IEqualityComparer<T> equalityComparer, params T[] values) => values.Distinct(equalityComparer);
 
+        public static T GetAdd<T>(this ICollection<T> collection, T value)
+        {
+            collection.Add(value);
+            return value;
+        }
+
         public static IEqualityComparer<KeyValuePair<TKey, TValue>> GetEqualityComparer<TKey, TValue>(this KeyValuePair<TKey, TValue> _, IEqualityComparer<TKey> keyEqualityComparer = null, IEqualityComparer<TValue> valueEqualityComparer = null) => new KeyValuePairEqualityComparer<TKey, TValue>(keyEqualityComparer, valueEqualityComparer);
 
         public static IEqualityComparer<T> GetEqualityComparerDefault<T>(this T _) => EqualityComparer<T>.Default;

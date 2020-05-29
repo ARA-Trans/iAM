@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.Validation;
 
@@ -6,9 +7,11 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class BudgetPriority : IValidator
     {
+        public BudgetPriority(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
+
         public IReadOnlyCollection<BudgetPercentage> BudgetPercentages => _BudgetPercentages;
 
-        public Criterion Criterion { get; } = new Criterion();
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults
         {

@@ -5,6 +5,10 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class DeficientConditionGoal : ConditionGoal
     {
+        public DeficientConditionGoal(Explorer explorer) : base(explorer)
+        {
+        }
+
         public double AllowedDeficientPercentage { get; set; }
 
         public override NumberAttribute Attribute

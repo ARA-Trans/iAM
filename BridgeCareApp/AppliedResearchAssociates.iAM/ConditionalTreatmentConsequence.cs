@@ -6,7 +6,18 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class ConditionalTreatmentConsequence : TreatmentConsequence
     {
-        public Criterion Criterion { get; } = new Criterion();
+        public ConditionalTreatmentConsequence(Explorer explorer)
+        {
+            if (explorer == null)
+            {
+                throw new ArgumentNullException(nameof(explorer));
+            }
+
+            Criterion = new Criterion(explorer);
+            Equation = new Equation(explorer);
+        }
+
+        public Criterion Criterion { get; }
 
         public override ValidationResultBag DirectValidationResults
         {
@@ -23,7 +34,7 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public Equation Equation { get; } = new Equation();
+        public Equation Equation { get; }
 
         public override ValidatorBag Subvalidators => base.Subvalidators.Add(Equation).Add(Criterion);
 
