@@ -4,11 +4,17 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class ConditionalEquation : IValidator
     {
-        public Criterion Criterion { get; } = new Criterion();
+        public ConditionalEquation(Explorer explorer)
+        {
+            Criterion = new Criterion(explorer);
+            Equation = new Equation(explorer);
+        }
+
+        public Criterion Criterion { get; }
 
         public ValidationResultBag DirectValidationResults => new ValidationResultBag();
 
-        public Equation Equation { get; } = new Equation();
+        public Equation Equation { get; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Criterion, Equation };
     }

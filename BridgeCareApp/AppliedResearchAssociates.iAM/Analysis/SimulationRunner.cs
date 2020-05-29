@@ -30,6 +30,9 @@ namespace AppliedResearchAssociates.iAM.Analysis
         // implicit blank condition, i.e. the condition is always met? or does it mean the budget
         // can never be used?
 
+        // [REVIEW] What is the relationship between the two "Route/Section Definition" sub-nodes
+        // and the set of all networks?
+
         public SimulationRunner(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
         public event EventHandler<InformationEventArgs> Information;

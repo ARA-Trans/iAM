@@ -2,17 +2,17 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class NumberAttribute : Attribute<double>
+    public sealed class NumberAttribute : Attribute<double>, IValidator
     {
-        public NumberAttribute(Explorer explorer) : base(explorer)
+        public NumberAttribute(string name) : base(name)
         {
         }
 
-        public override ValidationResultBag DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = base.DirectValidationResults;
+                var results = new ValidationResultBag();
 
                 if (Minimum.HasValue && double.IsNaN(Minimum.Value))
                 {
@@ -24,7 +24,7 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, "Maximum is not a number.", this, nameof(Minimum));
                 }
 
-                if (Minimum.Value is double minimum && Maximum.Value is double maximum)
+                if (Minimum is double minimum && Maximum is double maximum)
                 {
                     if (minimum == maximum)
                     {
@@ -45,5 +45,7 @@ namespace AppliedResearchAssociates.iAM
         public double? Maximum { get; set; }
 
         public double? Minimum { get; set; }
+
+        public ValidatorBag Subvalidators => new ValidatorBag();
     }
 }

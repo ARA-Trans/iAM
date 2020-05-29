@@ -27,6 +27,6 @@ namespace AppliedResearchAssociates.iAM
 
         public virtual ValidatorBag Subvalidators => new ValidatorBag { Change };
 
-        public virtual Action GetRecalculator(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Change.GetApplicator(Attribute, argument);
+        public virtual Action GetRecalculator(CalculateEvaluateArgument argument) => Change.GetApplicator(Attribute, argument);
     }
 }

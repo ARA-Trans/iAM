@@ -6,14 +6,16 @@ using MathNet.Numerics;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Equation : AttributeExpression
+    public sealed class Equation : CompilableExpression
     {
-        public double Compute(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public Equation(Explorer explorer) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
+
+        public double Compute(CalculateEvaluateArgument argument)
         {
             EnsureCompiled();
             return Computer.Reduce(
                 calculator => calculator(argument),
-                interpolator => interpolator(argument.GetNumber(ageAttribute.Name)));
+                interpolator => interpolator(argument.GetNumber(Explorer.AgeAttribute.Name)));
         }
 
         protected override void Compile()
@@ -59,6 +61,8 @@ namespace AppliedResearchAssociates.iAM
         }
 
         private static readonly Regex PiecewisePattern = new Regex($@"(?>\A\s*(?:\(\s*({PatternStrings.Number})\s*,\s*({PatternStrings.Number})\s*\)\s*)*\z)", RegexOptions.Compiled);
+
+        private readonly Explorer Explorer;
 
         private Choice<Calculator, Func<double, double>> Computer;
     }

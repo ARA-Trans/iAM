@@ -1,9 +1,12 @@
-﻿using AppliedResearchAssociates.CalculateEvaluate;
+﻿using System;
+using AppliedResearchAssociates.CalculateEvaluate;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class Criterion : AttributeExpression
+    public sealed class Criterion : CompilableExpression
     {
+        public Criterion(Explorer explorer) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
+
         public bool? Evaluate(CalculateEvaluateArgument argument)
         {
             EnsureCompiled();
@@ -28,6 +31,8 @@ namespace AppliedResearchAssociates.iAM
                 }
             }
         }
+
+        private readonly Explorer Explorer;
 
         private Evaluator Evaluator;
     }

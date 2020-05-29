@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace AppliedResearchAssociates.Validation
 {
@@ -7,18 +6,18 @@ namespace AppliedResearchAssociates.Validation
     {
         public ValidationTarget(object targetObject, string targetKey)
         {
-            TargetObject = targetObject ?? throw new ArgumentNullException(nameof(targetObject));
-            TargetKey = targetKey?.Trim() ?? "";
+            Object = targetObject ?? throw new ArgumentNullException(nameof(targetObject));
+            Key = targetKey?.Trim() ?? "";
         }
 
-        public string TargetKey { get; }
+        public string Key { get; }
 
-        public object TargetObject { get; }
+        public object Object { get; }
 
         public ValidationResult CreateResult(ValidationStatus status, string message) => new ValidationResult(this, status, message);
 
-        public override bool Equals(object obj) => obj is ValidationTarget target && TargetObject == target.TargetObject && TargetKey == target.TargetKey;
+        public override bool Equals(object obj) => obj is ValidationTarget target && Object == target.Object && Key == target.Key;
 
-        public override int GetHashCode() => HashCode.Combine(TargetObject, TargetKey);
+        public override int GetHashCode() => HashCode.Combine(Object, Key);
     }
 }

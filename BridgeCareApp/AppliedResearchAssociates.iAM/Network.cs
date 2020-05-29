@@ -20,24 +20,18 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
                 }
 
-                if (Simulations.Select(simulation => simulation.Name).Distinct().Count() < Simulations.Count)
+                if (Facilities.Count == 0)
                 {
-                    results.Add(ValidationStatus.Error, "Multiple simulations have the same name.", this, nameof(Simulations));
+                    results.Add(ValidationStatus.Error, "There are no facilities.", this, nameof(Facilities));
                 }
-
-                var facilities = Facilities.ToArray();
-                if (facilities.Select(facility => facility.Name).Distinct().Count() < facilities.Length)
+                else if (Facilities.Select(facility => facility.Name).Distinct().Count() < Facilities.Count)
                 {
                     results.Add(ValidationStatus.Error, "Multiple facilities have the same name.", this, nameof(Facilities));
                 }
 
-                if (Sections.Count == 0)
+                if (Simulations.Select(simulation => simulation.Name).Distinct().Count() < Simulations.Count)
                 {
-                    results.Add(ValidationStatus.Error, "There are no sections.", this, nameof(Sections));
-                }
-                else if (Sections.Select(section => (section.Facility, section.Name)).Distinct().Count() < Sections.Count)
-                {
-                    results.Add(ValidationStatus.Error, "At least one facility has multiple sections that have the same name.", this, nameof(Sections));
+                    results.Add(ValidationStatus.Error, "Multiple simulations have the same name.", this, nameof(Simulations));
                 }
 
                 return results;
@@ -46,15 +40,22 @@ namespace AppliedResearchAssociates.iAM
 
         public Explorer Explorer { get; }
 
-        public IEnumerable<Facility> Facilities => Sections.Select(section => section.Facility).Distinct();
+        public IReadOnlyCollection<Facility> Facilities => _Facilities;
 
         public string Name { get; set; }
 
-        public ICollection<Section> Sections { get; } = new SetWithoutNulls<Section>();
-
         public IReadOnlyCollection<Simulation> Simulations => _Simulations;
 
-        public ValidatorBag Subvalidators => new ValidatorBag { Sections, Simulations };
+        public ValidatorBag Subvalidators => new ValidatorBag { Facilities, Simulations };
+
+        public IEnumerable<Section> Sections => Facilities.SelectMany(facility => facility.Sections);
+
+        public Facility AddFacility()
+        {
+            var facility = new Facility(this);
+            _Facilities.Add(facility);
+            return facility;
+        }
 
         public Simulation AddSimulation()
         {
@@ -63,7 +64,11 @@ namespace AppliedResearchAssociates.iAM
             return simulation;
         }
 
+        public void ClearFacilities() => _Facilities.Clear();
+
         public bool RemoveSimulation(Simulation simulation) => _Simulations.Remove(simulation);
+
+        private readonly List<Facility> _Facilities = new List<Facility>();
 
         private readonly List<Simulation> _Simulations = new List<Simulation>();
     }

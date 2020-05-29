@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using AppliedResearchAssociates.Validation;
 
@@ -6,6 +7,8 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Section : IValidator
     {
+        public Section(Facility facility) => Facility = facility ?? throw new ArgumentNullException(nameof(facility));
+
         public static string AreaIdentifier => "AREA";
 
         public double Area { get; set; }
@@ -35,11 +38,6 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, "Area is less than or equal to zero.", this, nameof(Area));
                 }
 
-                if (Facility == null)
-                {
-                    results.Add(ValidationStatus.Warning, "Facility is unset.", this, nameof(Facility));
-                }
-
                 if (string.IsNullOrWhiteSpace(Name))
                 {
                     results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
@@ -49,13 +47,13 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public Facility Facility { get; set; }
+        public Facility Facility { get; }
 
         public IEnumerable<Attribute> HistoricalAttributes => HistoryPerAttribute.Keys;
 
         public string Name { get; set; }
 
-        public ValidatorBag Subvalidators => new ValidatorBag { Facility };
+        public ValidatorBag Subvalidators => new ValidatorBag();
 
         public void ClearHistory() => HistoryPerAttribute.Clear();
 

@@ -2,7 +2,7 @@
 {
     public sealed class TextAttribute : Attribute<string>
     {
-        public TextAttribute(Explorer explorer) : base(explorer)
+        public TextAttribute(string name) : base(name)
         {
         }
     }

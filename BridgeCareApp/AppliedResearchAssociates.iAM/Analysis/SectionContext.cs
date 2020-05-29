@@ -64,7 +64,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                     SimulationRunner.Warn("Two or more performance curves are simultaneously valid.");
                 }
 
-                double calculate(PerformanceCurve curve) => curve.Equation.Compute(this, AnalysisMethod.AgeAttribute);
+                double calculate(PerformanceCurve curve) => curve.Equation.Compute(this);
 
                 return curves.Key.IsDecreasingWithDeterioration ? operativeCurves.Min(calculate) : operativeCurves.Max(calculate);
             });
@@ -77,7 +77,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
         public void ApplyTreatment(Treatment treatment, int year)
         {
-            var consequenceActions = treatment.GetConsequenceActions(this, AnalysisMethod.AgeAttribute);
+            var consequenceActions = treatment.GetConsequenceActions(this);
             foreach (var consequenceAction in consequenceActions)
             {
                 consequenceAction();
@@ -130,7 +130,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
             return benefit;
         }
 
-        public double GetCostOfTreatment(Treatment treatment) => treatment.GetCost(this, AnalysisMethod.AgeAttribute, AnalysisMethod.ShouldApplyMultipleFeasibleCosts);
+        public double GetCostOfTreatment(Treatment treatment) => treatment.GetCost(this, AnalysisMethod.ShouldApplyMultipleFeasibleCosts);
 
         public override double GetNumber(string key)
         {
@@ -225,7 +225,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
             foreach (var calculatedField in SimulationRunner.Simulation.Network.Explorer.CalculatedFields)
             {
-                double calculate() => calculatedField.Calculate(this, AnalysisMethod.AgeAttribute);
+                double calculate() => calculatedField.Calculate(this);
                 SetNumber(calculatedField.Name, calculate);
             }
 

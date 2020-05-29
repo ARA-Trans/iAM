@@ -9,8 +9,6 @@ namespace AppliedResearchAssociates.iAM
     {
         public AnalysisMethod(Simulation simulation) => Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
 
-        public NumberAttribute AgeAttribute { get; set; }
-
         public Benefit Benefit { get; } = new Benefit();
 
         public IReadOnlyCollection<BudgetPriority> BudgetPriorities => _BudgetPriorities;
@@ -24,11 +22,6 @@ namespace AppliedResearchAssociates.iAM
             get
             {
                 var results = new ValidationResultBag();
-
-                if (AgeAttribute == null)
-                {
-                    results.Add(ValidationStatus.Error, "Age attribute is unset.", this, nameof(AgeAttribute));
-                }
 
                 if (!OptimizationStrategy.IsDefined())
                 {

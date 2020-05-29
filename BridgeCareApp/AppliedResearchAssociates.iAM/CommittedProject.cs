@@ -74,9 +74,9 @@ namespace AppliedResearchAssociates.iAM
 
         public override bool CanUseBudget(Budget budget) => budget == Budget;
 
-        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute) => Consequences.Select(consequence => consequence.GetRecalculator(argument, ageAttribute)).ToArray();
+        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument) => Consequences.Select(consequence => consequence.GetRecalculator(argument)).ToArray();
 
-        public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts) => Cost;
+        public override double GetCost(CalculateEvaluateArgument argument, bool shouldApplyMultipleFeasibleCosts) => Cost;
 
         private SelectableTreatment _TemplateTreatment;
     }

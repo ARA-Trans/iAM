@@ -27,15 +27,15 @@ namespace AppliedResearchAssociates.iAM
 
         public override ValidatorBag Subvalidators => base.Subvalidators.Add(Equation).Add(Criterion);
 
-        public override Action GetRecalculator(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public override Action GetRecalculator(CalculateEvaluateArgument argument)
         {
             if (!Change.ExpressionIsBlank && Equation.ExpressionIsBlank)
             {
-                return base.GetRecalculator(argument, ageAttribute);
+                return base.GetRecalculator(argument);
             }
             else if (Change.ExpressionIsBlank && !Equation.ExpressionIsBlank)
             {
-                var newValue = Equation.Compute(argument, ageAttribute);
+                var newValue = Equation.Compute(argument);
                 return () => argument.SetNumber(Attribute.Name, newValue);
             }
             else

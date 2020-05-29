@@ -47,7 +47,7 @@ namespace AppliedResearchAssociates.iAM
 
         public override bool CanUseBudget(Budget budget) => Budgets.Contains(budget);
 
-        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument)
         {
             Consequences.Channel(
                 consequence => consequence.Criterion.Evaluate(argument),
@@ -64,13 +64,13 @@ namespace AppliedResearchAssociates.iAM
                 .ToArray();
 
             var consequenceActions = operativeConsequences
-                .Select(consequence => consequence.GetRecalculator(argument, ageAttribute))
+                .Select(consequence => consequence.GetRecalculator(argument))
                 .ToArray();
 
             return consequenceActions;
         }
 
-        public override double GetCost(CalculateEvaluateArgument argument, NumberAttribute ageAttribute, bool shouldApplyMultipleFeasibleCosts)
+        public override double GetCost(CalculateEvaluateArgument argument, bool shouldApplyMultipleFeasibleCosts)
         {
             var feasibleCosts = Costs.Where(costEquation => costEquation.Criterion.Evaluate(argument) ?? true).ToArray();
             if (feasibleCosts.Length == 0)
@@ -78,7 +78,7 @@ namespace AppliedResearchAssociates.iAM
                 return 0;
             }
 
-            double getCost(ConditionalEquation costEquation) => costEquation.Equation.Compute(argument, ageAttribute);
+            double getCost(ConditionalEquation costEquation) => costEquation.Equation.Compute(argument);
             return shouldApplyMultipleFeasibleCosts ? feasibleCosts.Sum(getCost) : feasibleCosts.Max(getCost);
         }
 

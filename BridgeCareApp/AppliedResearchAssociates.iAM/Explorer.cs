@@ -8,6 +8,12 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Explorer : IValidator
     {
+        public Explorer() => AgeAttribute = AddNumberAttribute("AGE");
+
+        public NumberAttribute AgeAttribute { get; }
+
+        public IEnumerable<Attribute> AllAttributes => CalculatedFields.Concat<Attribute>(NumberAttributes).Concat(TextAttributes).Prepend(AgeAttribute);
+
         public IReadOnlyCollection<CalculatedField> CalculatedFields => _CalculatedFields;
 
         public ValidationResultBag DirectValidationResults
@@ -29,27 +35,11 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
 
-        public ValidatorBag Subvalidators => new ValidatorBag { CalculatedFields, Networks, NumberAttributes, TextAttributes };
+        public ValidatorBag Subvalidators => new ValidatorBag { AgeAttribute, CalculatedFields, Networks, NumberAttributes };
 
         public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;
 
-        public bool AddAttribute(string name, out CalculatedField attribute)
-        {
-            attribute = new CalculatedField(this);
-            return AddAttribute(name, ref attribute, _CalculatedFields, CalculateEvaluateParameterType.Number);
-        }
-
-        public bool AddAttribute(string name, out NumberAttribute attribute)
-        {
-            attribute = new NumberAttribute(this);
-            return AddAttribute(name, ref attribute, _NumberAttributes, CalculateEvaluateParameterType.Number);
-        }
-
-        public bool AddAttribute(string name, out TextAttribute attribute)
-        {
-            attribute = new TextAttribute(this);
-            return AddAttribute(name, ref attribute, _TextAttributes, CalculateEvaluateParameterType.Text);
-        }
+        public CalculatedField AddCalculatedField(string name) => AddAttribute(name, new CalculatedField(name, this), _CalculatedFields, CalculateEvaluateParameterType.Number);
 
         public Network AddNetwork()
         {
@@ -58,25 +48,19 @@ namespace AppliedResearchAssociates.iAM
             return network;
         }
 
-        public bool RemoveAttribute(CalculatedField attribute) => RemoveAttribute(attribute, _CalculatedFields);
+        public NumberAttribute AddNumberAttribute(string name) => AddAttribute(name, new NumberAttribute(name), _NumberAttributes, CalculateEvaluateParameterType.Number);
 
-        public bool RemoveAttribute(NumberAttribute attribute) => RemoveAttribute(attribute, _NumberAttributes);
+        public TextAttribute AddTextAttribute(string name) => AddAttribute(name, new TextAttribute(name), _TextAttributes, CalculateEvaluateParameterType.Text);
 
-        public bool RemoveAttribute(TextAttribute attribute) => RemoveAttribute(attribute, _TextAttributes);
+        public void RemoveAttribute(CalculatedField attribute) => RemoveAttribute(attribute, _CalculatedFields);
 
-        public bool RemoveNetwork(Network network) => _Networks.Remove(network);
+        public void RemoveAttribute(NumberAttribute attribute) => RemoveAttribute(attribute, _NumberAttributes);
 
-        internal IEnumerable<Attribute> AllAttributes => CalculatedFields.Concat<Attribute>(NumberAttributes).Concat(TextAttributes);
+        public void RemoveAttribute(TextAttribute attribute) => RemoveAttribute(attribute, _TextAttributes);
+
+        public void RemoveNetwork(Network network) => _ = _Networks.Remove(network);
 
         internal CalculateEvaluateCompiler Compiler { get; } = new CalculateEvaluateCompiler();
-
-        internal void RemoveParameterType(string parameterName)
-        {
-            if (!Compiler.ParameterTypes.Remove(parameterName))
-            {
-                throw new InvalidOperationException("Failed to remove parameter from compiler.");
-            }
-        }
 
         private readonly List<CalculatedField> _CalculatedFields = new List<CalculatedField>();
 
@@ -86,28 +70,26 @@ namespace AppliedResearchAssociates.iAM
 
         private readonly List<TextAttribute> _TextAttributes = new List<TextAttribute>();
 
-        private bool AddAttribute<T>(string name, ref T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
+        private T AddAttribute<T>(string name, T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
         {
-            if (!attribute.UpdateName(name))
+            if (AllAttributes.Any(a => a.Name == name))
             {
-                attribute = default;
-                return false;
+                throw new ArgumentException("Name is already taken by another attribute.", nameof(name));
             }
 
             Compiler.ParameterTypes.Add(attribute.Name, parameterType);
             attributes.Add(attribute);
-            return true;
+            return attribute;
         }
 
-        private bool RemoveAttribute<T>(T attribute, ICollection<T> attributes) where T : Attribute
+        private void RemoveAttribute<T>(T attribute, ICollection<T> attributes) where T : Attribute
         {
-            if (!attributes.Remove(attribute))
+            if (!Compiler.ParameterTypes.Remove(attribute.Name))
             {
-                return false;
+                throw new InvalidOperationException("Failed to remove parameter from compiler.");
             }
 
-            RemoveParameterType(attribute.Name);
-            return true;
+            _ = attributes.Remove(attribute);
         }
     }
 }

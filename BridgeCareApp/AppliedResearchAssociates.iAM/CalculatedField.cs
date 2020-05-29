@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AppliedResearchAssociates.CalculateEvaluate;
 using AppliedResearchAssociates.iAM.Analysis;
@@ -6,17 +7,15 @@ using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class CalculatedField : Attribute
+    public sealed class CalculatedField : Attribute, IValidator
     {
-        public CalculatedField(Explorer explorer) : base(explorer)
-        {
-        }
+        public CalculatedField(string name, Explorer explorer) : base(name) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
 
-        public override ValidationResultBag DirectValidationResults
+        public ValidationResultBag DirectValidationResults
         {
             get
             {
-                var results = base.DirectValidationResults;
+                var results = new ValidationResultBag();
 
                 if (Equations.Count == 0)
                 {
@@ -39,11 +38,18 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public ICollection<ConditionalEquation> Equations { get; } = new SetWithoutNulls<ConditionalEquation>();
+        public IReadOnlyCollection<ConditionalEquation> Equations => _Equations;
 
-        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Equations);
+        public ValidatorBag Subvalidators => new ValidatorBag { Equations };
 
-        public double Calculate(CalculateEvaluateArgument argument, NumberAttribute ageAttribute)
+        public ConditionalEquation AddEquation()
+        {
+            var equation = new ConditionalEquation(Explorer);
+            _Equations.Add(equation);
+            return equation;
+        }
+
+        public double Calculate(CalculateEvaluateArgument argument)
         {
             Equations.Channel(
                 equation => equation.Criterion.Evaluate(argument),
@@ -64,7 +70,13 @@ namespace AppliedResearchAssociates.iAM
                 throw new SimulationException(MessageStrings.CalculatedFieldHasMultipleOperativeEquations);
             }
 
-            return operativeEquations[0].Equation.Compute(argument, ageAttribute);
+            return operativeEquations[0].Equation.Compute(argument);
         }
+
+        public bool RemoveEquation(ConditionalEquation equation) => _Equations.Remove(equation);
+
+        private readonly List<ConditionalEquation> _Equations = new List<ConditionalEquation>();
+
+        private readonly Explorer Explorer;
     }
 }
