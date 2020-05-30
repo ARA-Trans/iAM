@@ -34,7 +34,7 @@ namespace AppliedResearchAssociates.iAM
 
         internal void SetNumberOfYears(int numberOfYears)
         {
-            if (numberOfYears < 0)
+            if (numberOfYears <= 0)
             {
                 _YearlyAmounts.Clear();
             }

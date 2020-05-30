@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using AppliedResearchAssociates.Validation;
 using Microsoft.Data.SqlClient;
@@ -8,11 +9,18 @@ namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
 {
     internal class Program
     {
-        private static void Main(string[] args)
-        {
-            using var connection = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=iAMBridgeCare;Integrated Security=True");
-            connection.Open();
+        private const string COMMAND_TEXT = @"
+select type_, attribute_, default_value, ascending, minimum_, maximum from attributes_ where calculated is null
+;
+select attribute_, equation, criteria from attributes_calculated
+;
+select facility, section, area, units from section_13
+";
 
+        private static readonly string CommandText = COMMAND_TEXT.Replace(Environment.NewLine, " ");
+
+        private static void Main()
+        {
             var timer = Stopwatch.StartNew();
             void time(Action action)
             {
@@ -21,10 +29,19 @@ namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
                 Console.WriteLine(timer.Elapsed);
             }
 
+            using var connection = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=iAMBridgeCare;Integrated Security=True");
+            using var command = new SqlCommand(CommandText, connection);
+            connection.Open();
+            using var reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
             var simulation = new Explorer().AddNetwork().AddSimulation();
+
             time(createRawAttributes);
+            _ = reader.NextResult();
             time(createCalculatedFields);
+            _ = reader.NextResult();
             time(createSections);
+            _ = reader.NextResult();
             time(fillSectionHistories);
 
             foreach (var result in simulation.Network.Explorer.GetAllValidationResults())
@@ -32,56 +49,13 @@ namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
                 Console.WriteLine($"[{result.Status}] {result.Message} :: {result.Target.Object}, {result.Target.Key}");
             }
 
-            void createSections()
-            {
-                var facilityByName = new Dictionary<string, Facility>();
-
-                using var command = new SqlCommand("select facility, section, area, units from section_13", connection);
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var facilityName = reader.GetString(0);
-                    if (!facilityByName.TryGetValue(facilityName, out var facility))
-                    {
-                        facility = simulation.Network.AddFacility();
-                        facility.Name = facilityName;
-                        facilityByName.Add(facilityName, facility);
-                    }
-                    var section = facility.AddSection();
-                    section.Name = reader.GetString(1);
-                    section.Area = reader.GetDouble(2);
-                    section.AreaUnit = reader.GetString(3);
-                }
-            }
-
-            void createCalculatedFields()
-            {
-                var calculatedFieldByName = new Dictionary<string, CalculatedField>(StringComparer.OrdinalIgnoreCase);
-
-                using var command = new SqlCommand("select attribute_, equation, criteria from attributes_calculated", connection);
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var name = reader.GetString(0);
-                    if (!calculatedFieldByName.TryGetValue(name, out var calculatedField))
-                    {
-                        calculatedField = simulation.Network.Explorer.AddCalculatedField(name);
-                        calculatedFieldByName.Add(name, calculatedField);
-                    }
-                    var conditionalEquation = new ConditionalEquation();
-                    conditionalEquation.Equation.Expression = reader.GetString(1);
-                    conditionalEquation.Criterion.Expression = reader.GetNullableString(2);
-                    calculatedField.Equations.Add(conditionalEquation);
-                }
-            }
+            //---
 
             void createRawAttributes()
             {
                 const string TYPE_NUMBER = "NUMBER";
                 const string TYPE_STRING = "STRING";
 
-                using var command = new SqlCommand("select type_, attribute_, default_value, ascending, minimum_, maximum from attributes_ where calculated is null", connection);
-                using var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     var type = reader.GetString(0);
@@ -118,9 +92,46 @@ namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
                 }
             }
 
+            void createCalculatedFields()
+            {
+                var calculatedFieldByName = new Dictionary<string, CalculatedField>(StringComparer.OrdinalIgnoreCase);
+
+                while (reader.Read())
+                {
+                    var name = reader.GetString(0);
+                    if (!calculatedFieldByName.TryGetValue(name, out var calculatedField))
+                    {
+                        calculatedField = simulation.Network.Explorer.AddCalculatedField(name);
+                        calculatedFieldByName.Add(name, calculatedField);
+                    }
+                    var source = calculatedField.AddValueSource();
+                    source.Equation.Expression = reader.GetString(1);
+                    source.Criterion.Expression = reader.GetNullableString(2);
+                }
+            }
+
+            void createSections()
+            {
+                var facilityByName = new Dictionary<string, Facility>();
+
+                while (reader.Read())
+                {
+                    var facilityName = reader.GetString(0);
+                    if (!facilityByName.TryGetValue(facilityName, out var facility))
+                    {
+                        facility = simulation.Network.AddFacility();
+                        facility.Name = facilityName;
+                        facilityByName.Add(facilityName, facility);
+                    }
+                    var section = facility.AddSection();
+                    section.Name = reader.GetString(1);
+                    section.Area = reader.GetDouble(2);
+                    section.AreaUnit = reader.GetString(3);
+                }
+            }
+
             void fillSectionHistories()
             {
-                using var command = new SqlCommand("select * from ", connection);
             }
         }
     }

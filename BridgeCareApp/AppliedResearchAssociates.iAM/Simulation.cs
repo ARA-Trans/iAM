@@ -20,16 +20,7 @@ namespace AppliedResearchAssociates.iAM
 
         public ICollection<CommittedProject> CommittedProjects { get; } = new SetWithoutNulls<CommittedProject>();
 
-        public SelectableTreatment DesignatedPassiveTreatment
-        {
-            get => _DesignatedPassiveTreatment;
-            set
-            {
-                _DesignatedPassiveTreatment = value;
-
-                Treatments.Add(DesignatedPassiveTreatment);
-            }
-        }
+        public SelectableTreatment DesignatedPassiveTreatment { get; internal set; }
 
         public ValidationResultBag DirectValidationResults
         {
@@ -78,13 +69,17 @@ namespace AppliedResearchAssociates.iAM
 
         public int NumberOfYearsOfTreatmentOutlook { get; set; } = 100;
 
-        public ICollection<PerformanceCurve> PerformanceCurves { get; } = new SetWithoutNulls<PerformanceCurve>();
+        public IReadOnlyCollection<PerformanceCurve> PerformanceCurves => _PerformanceCurves;
 
         public ICollection<SimulationYearDetail> Results { get; } = new SetWithoutNulls<SimulationYearDetail>();
 
         public ValidatorBag Subvalidators => new ValidatorBag { AnalysisMethod, CommittedProjects, InvestmentPlan, PerformanceCurves, Treatments };
 
-        public ICollection<SelectableTreatment> Treatments { get; } = new SetWithoutNulls<SelectableTreatment>();
+        public IReadOnlyCollection<SelectableTreatment> Treatments => _Treatments;
+
+        public PerformanceCurve AddPerformanceCurve() => _PerformanceCurves.GetAdd(new PerformanceCurve(Network.Explorer));
+
+        public SelectableTreatment AddTreatment() => _Treatments.GetAdd(new SelectableTreatment(this));
 
         public IReadOnlyCollection<SelectableTreatment> GetActiveTreatments()
         {
@@ -93,6 +88,12 @@ namespace AppliedResearchAssociates.iAM
             return result;
         }
 
-        private SelectableTreatment _DesignatedPassiveTreatment;
+        public void Remove(SelectableTreatment treatment) => _Treatments.Remove(treatment);
+
+        public void Remove(PerformanceCurve performanceCurve) => _PerformanceCurves.Remove(performanceCurve);
+
+        private readonly List<PerformanceCurve> _PerformanceCurves = new List<PerformanceCurve>();
+
+        private readonly List<SelectableTreatment> _Treatments = new List<SelectableTreatment>();
     }
 }

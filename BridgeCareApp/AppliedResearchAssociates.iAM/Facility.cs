@@ -41,12 +41,7 @@ namespace AppliedResearchAssociates.iAM
 
         public ValidatorBag Subvalidators => new ValidatorBag { Sections };
 
-        public Section AddSection()
-        {
-            var section = new Section(this);
-            _Sections.Add(section);
-            return section;
-        }
+        public Section AddSection() => _Sections.GetAdd(new Section(this));
 
         public void ClearSections() => _Sections.Clear();
 

@@ -72,44 +72,35 @@ namespace AppliedResearchAssociates.iAM
 
         public CashFlowRule AddCashFlowRule() => _CashFlowRules.GetAdd(new CashFlowRule(Simulation.Network.Explorer));
 
-        public bool DecrementBudgetIndex(Budget budget)
+        public void DecrementBudgetIndex(Budget budget)
         {
             var index = _Budgets.IndexOf(budget);
-            if (index <= 0)
+            if (index > 0)
             {
-                return false;
+                _Budgets.Swap(index - 1, index);
             }
-
-            _Budgets.Swap(index - 1, index);
-            return true;
         }
 
-        public bool IncrementBudgetIndex(Budget budget)
+        public void IncrementBudgetIndex(Budget budget)
         {
             var index = _Budgets.IndexOf(budget);
-            if (index < 0 || index == _Budgets.Count - 1)
+            if (index >= 0 && index < _Budgets.Count - 1)
             {
-                return false;
+                _Budgets.Swap(index, index + 1);
             }
-
-            _Budgets.Swap(index, index + 1);
-            return true;
         }
 
-        public bool RemoveBudget(Budget budget)
+        public void Remove(Budget budget)
         {
-            if (!_Budgets.Remove(budget))
+            if (_Budgets.Remove(budget))
             {
-                return false;
+                SynchronizeBudgetPriorities();
             }
-
-            SynchronizeBudgetPriorities();
-            return true;
         }
 
-        public void RemoveBudgetCondition(BudgetCondition budgetCondition) => _BudgetConditions.Remove(budgetCondition);
+        public void Remove(BudgetCondition budgetCondition) => _BudgetConditions.Remove(budgetCondition);
 
-        public void RemoveCashFlowRule(CashFlowRule cashFlowRule) => _CashFlowRules.Remove(cashFlowRule);
+        public void Remove(CashFlowRule cashFlowRule) => _CashFlowRules.Remove(cashFlowRule);
 
         private readonly List<BudgetCondition> _BudgetConditions = new List<BudgetCondition>();
 

@@ -12,7 +12,20 @@ namespace AppliedResearchAssociates.iAM
 
         public NumberAttribute AgeAttribute { get; }
 
-        public IEnumerable<Attribute> AllAttributes => CalculatedFields.Concat<Attribute>(NumberAttributes).Concat(TextAttributes).Prepend(AgeAttribute);
+        public IEnumerable<Attribute> AllAttributes
+        {
+            get
+            {
+                var result = CalculatedFields.Concat<Attribute>(NumberAttributes).Concat(TextAttributes);
+
+                if (AgeAttribute != null)
+                {
+                    result = result.Prepend(AgeAttribute);
+                }
+
+                return result;
+            }
+        }
 
         public IReadOnlyCollection<CalculatedField> CalculatedFields => _CalculatedFields;
 
@@ -39,26 +52,21 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;
 
-        public CalculatedField AddCalculatedField(string name) => AddAttribute(name, new CalculatedField(name, this), _CalculatedFields, CalculateEvaluateParameterType.Number);
+        public CalculatedField AddCalculatedField(string name) => Add(name, new CalculatedField(name, this), _CalculatedFields, CalculateEvaluateParameterType.Number);
 
-        public Network AddNetwork()
-        {
-            var network = new Network(this);
-            _Networks.Add(network);
-            return network;
-        }
+        public Network AddNetwork() => _Networks.GetAdd(new Network(this));
 
-        public NumberAttribute AddNumberAttribute(string name) => AddAttribute(name, new NumberAttribute(name), _NumberAttributes, CalculateEvaluateParameterType.Number);
+        public NumberAttribute AddNumberAttribute(string name) => Add(name, new NumberAttribute(name), _NumberAttributes, CalculateEvaluateParameterType.Number);
 
-        public TextAttribute AddTextAttribute(string name) => AddAttribute(name, new TextAttribute(name), _TextAttributes, CalculateEvaluateParameterType.Text);
+        public TextAttribute AddTextAttribute(string name) => Add(name, new TextAttribute(name), _TextAttributes, CalculateEvaluateParameterType.Text);
 
-        public void RemoveAttribute(CalculatedField attribute) => RemoveAttribute(attribute, _CalculatedFields);
+        public void Remove(CalculatedField attribute) => Remove(attribute, _CalculatedFields);
 
-        public void RemoveAttribute(NumberAttribute attribute) => RemoveAttribute(attribute, _NumberAttributes);
+        public void Remove(Network network) => _ = _Networks.Remove(network);
 
-        public void RemoveAttribute(TextAttribute attribute) => RemoveAttribute(attribute, _TextAttributes);
+        public void Remove(NumberAttribute attribute) => Remove(attribute, _NumberAttributes);
 
-        public void RemoveNetwork(Network network) => _ = _Networks.Remove(network);
+        public void Remove(TextAttribute attribute) => Remove(attribute, _TextAttributes);
 
         internal CalculateEvaluateCompiler Compiler { get; } = new CalculateEvaluateCompiler();
 
@@ -70,7 +78,7 @@ namespace AppliedResearchAssociates.iAM
 
         private readonly List<TextAttribute> _TextAttributes = new List<TextAttribute>();
 
-        private T AddAttribute<T>(string name, T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
+        private T Add<T>(string name, T attribute, ICollection<T> attributes, CalculateEvaluateParameterType parameterType) where T : Attribute
         {
             if (AllAttributes.Any(a => a.Name == name))
             {
@@ -82,7 +90,7 @@ namespace AppliedResearchAssociates.iAM
             return attribute;
         }
 
-        private void RemoveAttribute<T>(T attribute, ICollection<T> attributes) where T : Attribute
+        private void Remove<T>(T attribute, ICollection<T> attributes) where T : Attribute
         {
             if (!Compiler.ParameterTypes.Remove(attribute.Name))
             {

@@ -2,9 +2,9 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class ConditionalEquation : IValidator
+    public class CriterionEquationPair : IValidator
     {
-        public ConditionalEquation(Explorer explorer)
+        public CriterionEquationPair(Explorer explorer)
         {
             Criterion = new Criterion(explorer);
             Equation = new Equation(explorer);

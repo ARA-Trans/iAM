@@ -8,7 +8,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public Attribute(string name)
         {
-            if (Name == null || !NamePattern.IsMatch(Name))
+            if (name == null || !NamePattern.IsMatch(name))
             {
                 throw new MalformedInputException($"Invalid name. The valid pattern is \"{PatternStrings.Identifier}\".");
             }

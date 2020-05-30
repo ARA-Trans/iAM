@@ -101,7 +101,7 @@ namespace AppliedResearchAssociates.iAM
 
         public void Remove(DeficientConditionGoal deficientConditionGoal) => _DeficientConditionGoals.Remove(deficientConditionGoal);
 
-        public bool Remove(BudgetPriority budgetPriority) => _BudgetPriorities.Remove(budgetPriority);
+        public void Remove(BudgetPriority budgetPriority) => _BudgetPriorities.Remove(budgetPriority);
 
         public void Remove(RemainingLifeLimit remainingLifeLimit) => _RemainingLifeLimits.Remove(remainingLifeLimit);
 

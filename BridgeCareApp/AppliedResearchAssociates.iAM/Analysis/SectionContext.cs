@@ -162,7 +162,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
         public void RollForward()
         {
             IEnumerable<int?> getMostRecentYearPerAttribute<T>(IEnumerable<Attribute<T>> attributes) =>
-                attributes.Select(attribute => Section.GetAttributeHistory(attribute).Keys.AsNullables().Max());
+                attributes.Select(attribute => Section.GetHistory(attribute).Keys.AsNullables().Max());
 
             var earliestYearOfMostRecentValue = Enumerable.Concat(
                 getMostRecentYearPerAttribute(SimulationRunner.Simulation.Network.Explorer.NumberAttributes),
@@ -239,7 +239,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
         {
             foreach (var attribute in attributes)
             {
-                var attributeHistory = Section.GetAttributeHistory(attribute);
+                var attributeHistory = Section.GetHistory(attribute);
                 if (attributeHistory.TryGetValue(referenceYear, out var value))
                 {
                     setValue(attribute.Name, value);

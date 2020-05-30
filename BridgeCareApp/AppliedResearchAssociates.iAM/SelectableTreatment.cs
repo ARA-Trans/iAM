@@ -9,13 +9,11 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class SelectableTreatment : Treatment
     {
-        public SelectableTreatment(Explorer explorer) => FeasibilityCriterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
-
         public ICollection<Budget> Budgets { get; } = new SetWithoutNulls<Budget>();
 
-        public ICollection<ConditionalTreatmentConsequence> Consequences { get; } = new SetWithoutNulls<ConditionalTreatmentConsequence>();
+        public IReadOnlyCollection<ConditionalTreatmentConsequence> Consequences => _Consequences;
 
-        public ICollection<ConditionalEquation> Costs { get; } = new SetWithoutNulls<ConditionalEquation>();
+        public IReadOnlyCollection<TreatmentCost> Costs => _Costs;
 
         public string Description { get; set; }
 
@@ -43,11 +41,27 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion FeasibilityCriterion { get; }
 
-        public ICollection<TreatmentSupersession> Supersessions { get; } = new SetWithoutNulls<TreatmentSupersession>();
+        public IReadOnlyCollection<TreatmentSupersession> Supersessions => _Supersessions;
 
         public override ValidatorBag Subvalidators => base.Subvalidators.Add(Consequences).Add(Costs).Add(FeasibilityCriterion).Add(Supersessions);
 
+        public ConditionalTreatmentConsequence AddConsequence() => _Consequences.GetAdd(new ConditionalTreatmentConsequence(Simulation.Network.Explorer));
+
+        public TreatmentCost AddCost() => _Costs.GetAdd(new TreatmentCost(Simulation.Network.Explorer));
+
+        public TreatmentSupersession AddSupersession() => _Supersessions.GetAdd(new TreatmentSupersession(Simulation.Network.Explorer));
+
         public override bool CanUseBudget(Budget budget) => Budgets.Contains(budget);
+
+        public void DesignateAsPassiveForSimulation()
+        {
+            if (!Simulation.Treatments.Contains(this))
+            {
+                throw new InvalidOperationException("Simulation does not contain this treatment.");
+            }
+
+            Simulation.DesignatedPassiveTreatment = this;
+        }
 
         public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument)
         {
@@ -74,15 +88,36 @@ namespace AppliedResearchAssociates.iAM
 
         public override double GetCost(CalculateEvaluateArgument argument, bool shouldApplyMultipleFeasibleCosts)
         {
-            var feasibleCosts = Costs.Where(costEquation => costEquation.Criterion.Evaluate(argument) ?? true).ToArray();
+            var feasibleCosts = Costs.Where(cost => cost.Criterion.Evaluate(argument) ?? true).ToArray();
             if (feasibleCosts.Length == 0)
             {
                 return 0;
             }
 
-            double getCost(ConditionalEquation costEquation) => costEquation.Equation.Compute(argument);
+            double getCost(TreatmentCost cost) => cost.Equation.Compute(argument);
             return shouldApplyMultipleFeasibleCosts ? feasibleCosts.Sum(getCost) : feasibleCosts.Max(getCost);
         }
+
+        public void Remove(TreatmentSupersession supersession) => _Supersessions.Remove(supersession);
+
+        public void Remove(ConditionalTreatmentConsequence consequence) => _Consequences.Remove(consequence);
+
+        public void Remove(TreatmentCost cost) => _Costs.Remove(cost);
+
+        internal SelectableTreatment(Simulation simulation)
+        {
+            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+
+            FeasibilityCriterion = new Criterion(Simulation.Network.Explorer);
+        }
+
+        private readonly List<ConditionalTreatmentConsequence> _Consequences = new List<ConditionalTreatmentConsequence>();
+
+        private readonly List<TreatmentCost> _Costs = new List<TreatmentCost>();
+
+        private readonly List<TreatmentSupersession> _Supersessions = new List<TreatmentSupersession>();
+
+        private readonly Simulation Simulation;
 
         private static ConditionalTreatmentConsequence GetSingleConsequence(IEnumerable<ConditionalTreatmentConsequence> group)
         {

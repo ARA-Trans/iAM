@@ -57,7 +57,7 @@ namespace AppliedResearchAssociates.iAM
 
         public void ClearHistory() => HistoryPerAttribute.Clear();
 
-        public IDictionary<int, T> GetAttributeHistory<T>(Attribute<T> attribute)
+        public IDictionary<int, T> GetHistory<T>(Attribute<T> attribute)
         {
             if (!HistoryPerAttribute.TryGetValue(attribute, out var history))
             {
@@ -68,7 +68,7 @@ namespace AppliedResearchAssociates.iAM
             return (Dictionary<int, T>)history;
         }
 
-        public bool RemoveAttributeHistory(Attribute attribute) => HistoryPerAttribute.Remove(attribute);
+        public bool Remove(Attribute attribute) => HistoryPerAttribute.Remove(attribute);
 
         private readonly Dictionary<Attribute, IDictionary> HistoryPerAttribute = new Dictionary<Attribute, IDictionary>();
 

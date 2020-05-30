@@ -50,23 +50,13 @@ namespace AppliedResearchAssociates.iAM
 
         public IEnumerable<Section> Sections => Facilities.SelectMany(facility => facility.Sections);
 
-        public Facility AddFacility()
-        {
-            var facility = new Facility(this);
-            _Facilities.Add(facility);
-            return facility;
-        }
+        public Facility AddFacility() => _Facilities.GetAdd(new Facility(this));
 
-        public Simulation AddSimulation()
-        {
-            var simulation = new Simulation(this);
-            _Simulations.Add(simulation);
-            return simulation;
-        }
+        public Simulation AddSimulation() => _Simulations.GetAdd(new Simulation(this));
 
         public void ClearFacilities() => _Facilities.Clear();
 
-        public bool RemoveSimulation(Simulation simulation) => _Simulations.Remove(simulation);
+        public void Remove(Simulation simulation) => _Simulations.Remove(simulation);
 
         private readonly List<Facility> _Facilities = new List<Facility>();
 

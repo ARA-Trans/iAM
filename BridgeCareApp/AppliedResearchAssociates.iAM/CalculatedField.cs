@@ -17,20 +17,20 @@ namespace AppliedResearchAssociates.iAM
             {
                 var results = new ValidationResultBag();
 
-                if (Equations.Count == 0)
+                if (ValueSources.Count == 0)
                 {
-                    results.Add(ValidationStatus.Error, "There are no equations.", this, nameof(Equations));
+                    results.Add(ValidationStatus.Error, "There are no value sources.", this, nameof(ValueSources));
                 }
                 else
                 {
-                    var numberOfEquationsWithBlankCriterion = Equations.Count(equation => equation.Criterion.ExpressionIsBlank);
+                    var numberOfEquationsWithBlankCriterion = ValueSources.Count(equation => equation.Criterion.ExpressionIsBlank);
                     if (numberOfEquationsWithBlankCriterion == 0)
                     {
-                        results.Add(ValidationStatus.Warning, "There are no equations with a blank criterion.", this, nameof(Equations));
+                        results.Add(ValidationStatus.Warning, "There are no value sources with a blank criterion.", this, nameof(ValueSources));
                     }
                     else if (numberOfEquationsWithBlankCriterion > 1)
                     {
-                        results.Add(ValidationStatus.Error, "There are multiple equations with a blank criterion.", this, nameof(Equations));
+                        results.Add(ValidationStatus.Error, "There are multiple value sources with a blank criterion.", this, nameof(ValueSources));
                     }
                 }
 
@@ -38,44 +38,39 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public IReadOnlyCollection<ConditionalEquation> Equations => _Equations;
+        public IReadOnlyCollection<CalculatedFieldValueSource> ValueSources => _ValueSources;
 
-        public ValidatorBag Subvalidators => new ValidatorBag { Equations };
+        public ValidatorBag Subvalidators => new ValidatorBag { ValueSources };
 
-        public ConditionalEquation AddEquation()
-        {
-            var equation = new ConditionalEquation(Explorer);
-            _Equations.Add(equation);
-            return equation;
-        }
+        public CalculatedFieldValueSource AddValueSource() => _ValueSources.GetAdd(new CalculatedFieldValueSource(Explorer));
 
         public double Calculate(CalculateEvaluateArgument argument)
         {
-            Equations.Channel(
-                equation => equation.Criterion.Evaluate(argument),
+            ValueSources.Channel(
+                source => source.Criterion.Evaluate(argument),
                 result => result ?? false,
                 result => !result.HasValue,
-                out var applicableEquations,
-                out var defaultEquations);
+                out var applicableSources,
+                out var defaultSources);
 
-            var operativeEquations = applicableEquations.Count > 0 ? applicableEquations : defaultEquations;
+            var operativeSources = applicableSources.Count > 0 ? applicableSources : defaultSources;
 
-            if (operativeEquations.Count == 0)
+            if (operativeSources.Count == 0)
             {
                 throw new SimulationException(MessageStrings.CalculatedFieldHasNoOperativeEquations);
             }
 
-            if (operativeEquations.Count > 1)
+            if (operativeSources.Count > 1)
             {
                 throw new SimulationException(MessageStrings.CalculatedFieldHasMultipleOperativeEquations);
             }
 
-            return operativeEquations[0].Equation.Compute(argument);
+            return operativeSources[0].Equation.Compute(argument);
         }
 
-        public void RemoveEquation(ConditionalEquation equation) => _Equations.Remove(equation);
+        public void Remove(CalculatedFieldValueSource source) => _ValueSources.Remove(source);
 
-        private readonly List<ConditionalEquation> _Equations = new List<ConditionalEquation>();
+        private readonly List<CalculatedFieldValueSource> _ValueSources = new List<CalculatedFieldValueSource>();
 
         private readonly Explorer Explorer;
     }
