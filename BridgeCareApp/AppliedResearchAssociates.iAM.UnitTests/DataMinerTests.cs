@@ -44,7 +44,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             new AttributeDatum<string>(iAMConfiguration.B, "GEORGIA", new SectionLocation("B-4-5"), DateTime.Now)
         };
 
-        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection(TestDataForAttribute.Connectionstring);
+        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection(TestDataForAttribute.Connectionstring, "select * from ADT");
         public static LinearLocation LinearLocation = new LinearLocation(new SimpleRoute("Test simple route"), "unique identifier", 0, 10);
 
         public static AttributeDatum<double> NumericAttributeDatum = new AttributeDatum<double>(
@@ -57,7 +57,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         [Test]
         public void CreateAttributes()
         {
-            var rawAttributes = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "\\config.json");
+            var rawAttributes = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "\\metaData.json");
             var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
 
             foreach (var item in myJsonObject.AttributeConfigData)
@@ -99,7 +99,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         public void GetNumericDataSqlConnection()
         {
             // Arrange
-            var sqlAttributeConnection = new SqlAttributeConnection(TestDataForAttribute.Connectionstring);
+            var sqlAttributeConnection = new SqlAttributeConnection(TestDataForAttribute.Connectionstring, "select * from ADT");
             // Act
             var output = sqlAttributeConnection.GetData<double>("ADT");
 

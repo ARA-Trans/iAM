@@ -13,6 +13,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
         public SqlAttributeConnection(string connectionInformation, string dataRetrievalCommand)
         {
             ConnectionInformation = connectionInformation;
+            DataRetrievalCommand = dataRetrievalCommand;
         }
                 
         public override IEnumerable<(Location location, T value)> GetData<T>(string attributeName)

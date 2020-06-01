@@ -26,7 +26,8 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             = new List<(Location Location, double value)> { (new LinearLocation(new SimpleRoute("Test simple route"), "unique identifier", 0, 10), 100) };
 
         // SQL connection sample
-        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection(Connectionstring);
+        // we ll have different SQL object for each attribute
+        public static SqlAttributeConnection SQLConnection = new SqlAttributeConnection(Connectionstring, "select * from ADT");
 
         //Linear location sample
         public static LinearLocation LinearLocation = new LinearLocation(new SimpleRoute("Test route"), "unique identifier", 0, 10);
