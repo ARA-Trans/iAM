@@ -14,7 +14,7 @@ namespace ExecutableForProtptype
     {
         public static void Main()
         {
-            var rawAttributes = File.ReadAllText("config.json");
+            var rawAttributes = File.ReadAllText("metaData.json");
             var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
 
             foreach (var item in myJsonObject.AttributeConfigData)
