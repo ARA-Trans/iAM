@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using AppliedResearchAssociates.Validation;
 using Microsoft.Data.SqlClient;
 
@@ -9,19 +13,21 @@ namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
 {
     internal class Program
     {
-        private const string COMMAND_TEXT = @"
+        private static readonly string FormattedCommandText = @"
 select type_, attribute_, default_value, ascending, minimum_, maximum from attributes_ where calculated is null
 ;
 select attribute_, equation, criteria from attributes_calculated
 ;
-select facility, section, area, units from section_13
+select facility, section, area, units, sectionid from section_13
+;
+select * from segment_13_ns0
 ";
 
-        private static readonly string CommandText = COMMAND_TEXT.Replace(Environment.NewLine, " ");
+        private static string CommandText => FormattedCommandText.Replace(Environment.NewLine, " ");
 
         private static void Main()
         {
-            var timer = Stopwatch.StartNew();
+            var timer = new Stopwatch();
             void time(Action action)
             {
                 timer.Restart();
@@ -35,6 +41,7 @@ select facility, section, area, units from section_13
             using var reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 
             var simulation = new Explorer().AddNetwork().AddSimulation();
+            var sectionById = new Dictionary<int, Section>();
 
             time(createRawAttributes);
             _ = reader.NextResult();
@@ -104,6 +111,7 @@ select facility, section, area, units from section_13
                         calculatedField = simulation.Network.Explorer.AddCalculatedField(name);
                         calculatedFieldByName.Add(name, calculatedField);
                     }
+
                     var source = calculatedField.AddValueSource();
                     source.Equation.Expression = reader.GetString(1);
                     source.Criterion.Expression = reader.GetNullableString(2);
@@ -123,15 +131,57 @@ select facility, section, area, units from section_13
                         facility.Name = facilityName;
                         facilityByName.Add(facilityName, facility);
                     }
+
                     var section = facility.AddSection();
                     section.Name = reader.GetString(1);
                     section.Area = reader.GetDouble(2);
                     section.AreaUnit = reader.GetString(3);
+
+                    var sectionId = reader.GetInt32(4);
+                    sectionById.Add(sectionId, section);
                 }
             }
 
             void fillSectionHistories()
             {
+                var attributeNames = simulation.Network.Explorer.AllAttributes.Select(attribute => attribute.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                var columnData = reader.GetColumnSchema()
+                    .Where(column => !string.Equals(column.ColumnName, "sectionid", StringComparison.OrdinalIgnoreCase) && !attributeNames.Contains(column.ColumnName))
+                    .Select(column =>
+                    {
+                        var columnOrdinal = column.ColumnOrdinal.Value;
+                        var yearSeparatorIndex = column.ColumnName.LastIndexOf('_');
+                        var yearString = column.ColumnName.Substring(yearSeparatorIndex + 1);
+                        var year = int.Parse(yearString);
+                        var attributeName = column.ColumnName.Substring(0, yearSeparatorIndex);
+                        return (columnOrdinal, year, attributeName);
+                    })
+                    .ToLookup(columnDatum => columnDatum.attributeName);
+
+                while (reader.Read())
+                {
+                    var sectionId = reader.GetInt32("sectionid");
+                    var section = sectionById[sectionId];
+
+                    fillAttributeHistories(simulation.Network.Explorer.NumberAttributes, reader.GetDouble);
+                    fillAttributeHistories(simulation.Network.Explorer.TextAttributes, reader.GetString);
+
+                    void fillAttributeHistories<T>(IEnumerable<Attribute<T>> attributes, Func<int, T> getValue)
+                    {
+                        foreach (var attribute in attributes)
+                        {
+                            var history = section.GetHistory(attribute);
+                            foreach (var (columnOrdinal, year, _) in columnData[attribute.Name])
+                            {
+                                if (!reader.IsDBNull(columnOrdinal))
+                                {
+                                    var value = getValue(columnOrdinal);
+                                    history.Add(year, value);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

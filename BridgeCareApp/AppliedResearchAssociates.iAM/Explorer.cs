@@ -92,12 +92,15 @@ namespace AppliedResearchAssociates.iAM
 
         private void Remove<T>(T attribute, ICollection<T> attributes) where T : Attribute
         {
-            if (!Compiler.ParameterTypes.Remove(attribute.Name))
+            if (attribute != AgeAttribute)
             {
-                throw new InvalidOperationException("Failed to remove parameter from compiler.");
-            }
+                if (!Compiler.ParameterTypes.Remove(attribute.Name))
+                {
+                    throw new InvalidOperationException("Failed to remove parameter from compiler.");
+                }
 
-            _ = attributes.Remove(attribute);
+                _ = attributes.Remove(attribute);
+            }
         }
     }
 }
