@@ -63,7 +63,9 @@
   <ItemGroup>
     <Compile Include="DataMinerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SegmentationTests.cs" />
     <Compile Include="TestDataForAttribute.cs" />
+    <Compile Include="TestDataForSegmentation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -72,6 +74,10 @@
     <ProjectReference Include="..\AppliedResearchAssociates.iAM.DataMiner\AppliedResearchAssociates.iAM.DataMiner.csproj">
       <Project>{b2769386-5922-49ed-8a95-32bcb912955d}</Project>
       <Name>AppliedResearchAssociates.iAM.DataMiner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AppliedResearchAssociates.iAM.Segmentation\AppliedResearchAssociates.iAM.Segmentation.csproj">
+      <Project>{db1d42ac-d45b-4256-9a3a-29156c74c2b5}</Project>
+      <Name>AppliedResearchAssociates.iAM.Segmentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\ExecutableForProtptype\ExecutableForProtptype.csproj">
       <Project>{d4b4b820-82af-443f-acab-fe48831a687e}</Project>
