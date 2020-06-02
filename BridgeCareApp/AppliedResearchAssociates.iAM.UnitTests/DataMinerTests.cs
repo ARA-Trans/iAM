@@ -101,7 +101,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             // Arrange
             var sqlAttributeConnection = new SqlAttributeConnection(TestDataForAttribute.Connectionstring, "select * from ADT");
             // Act
-            var output = sqlAttributeConnection.GetData<double>("ADT");
+            var output = sqlAttributeConnection.GetData<double>();
 
             // Assert
             foreach (var item in output)

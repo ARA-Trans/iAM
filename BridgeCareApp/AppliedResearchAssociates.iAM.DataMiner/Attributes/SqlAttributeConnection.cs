@@ -16,7 +16,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
             DataRetrievalCommand = dataRetrievalCommand;
         }
                 
-        public override IEnumerable<(Location location, T value)> GetData<T>(string attributeName)
+        public override IEnumerable<(Location location, T value)> GetData<T>()
         {
             string routeName = null;
             double? start = null;
