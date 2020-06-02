@@ -1,26 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
 using AppliedResearchAssociates.Validation;
 using Microsoft.Data.SqlClient;
 
 namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
 {
-    internal class Program
+    internal static class Program
     {
-        private static readonly string FormattedCommandText = @"
-select type_, attribute_, default_value, ascending, minimum_, maximum from attributes_ where calculated is null
+        private static int NetworkId = 13;
+
+        private static int SimulationId = 91;
+
+        private static string FormattedCommandText => $@"
+select type_, attribute_, calculated, ascending, default_value, minimum_, maximum from attributes_
 ;
 select attribute_, equation, criteria from attributes_calculated
 ;
-select facility, section, area, units, sectionid from section_13
+select network_name from networks where networkid = {NetworkId}
 ;
-select * from segment_13_ns0
+select facility, section, area, units, sectionid from section_{NetworkId}
+;
+select * from segment_{NetworkId}_ns0
+;
+select simulation, jurisdiction, analysis, budget_constraint, weighting, benefit_variable, benefit_limit, committed_start, committed_period, use_cumulative_cost, use_across_budget from simulations where networkid = {NetworkId} and simulationid = {SimulationId}
 ";
 
         private static string CommandText => FormattedCommandText.Replace(Environment.NewLine, " ");
@@ -35,30 +40,34 @@ select * from segment_13_ns0
                 Console.WriteLine(timer.Elapsed);
             }
 
+            var simulation = new Explorer().AddNetwork().AddSimulation();
+            var sectionById = new Dictionary<int, Section>();
+
             using var connection = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=iAMBridgeCare;Integrated Security=True");
             using var command = new SqlCommand(CommandText, connection);
             connection.Open();
             using var reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 
-            var simulation = new Explorer().AddNetwork().AddSimulation();
-            var sectionById = new Dictionary<int, Section>();
-
-            time(createRawAttributes);
+            time(createAttributes);
             _ = reader.NextResult();
-            time(createCalculatedFields);
+            time(fillCalculatedFields);
+            _ = reader.NextResult();
+            time(fillNetwork);
             _ = reader.NextResult();
             time(createSections);
             _ = reader.NextResult();
             time(fillSectionHistories);
+            _ = reader.NextResult();
+            time(fillFromSimulationsTable);
 
             foreach (var result in simulation.Network.Explorer.GetAllValidationResults())
             {
-                Console.WriteLine($"[{result.Status}] {result.Message} :: {result.Target.Object}, {result.Target.Key}");
+                Console.WriteLine($"[{result.Status}] {result.Message} --- {result.Target.Object}::{result.Target.Key}");
             }
 
             //---
 
-            void createRawAttributes()
+            void createAttributes()
             {
                 const string TYPE_NUMBER = "NUMBER";
                 const string TYPE_STRING = "STRING";
@@ -81,16 +90,25 @@ select * from segment_13_ns0
                     switch (type)
                     {
                     case TYPE_NUMBER:
-                        var numberAttribute = simulation.Network.Explorer.AddNumberAttribute(name);
-                        numberAttribute.DefaultValue = double.Parse(reader.GetString(2));
-                        numberAttribute.IsDecreasingWithDeterioration = reader.GetBoolean(3);
-                        numberAttribute.Minimum = reader.GetNullableDouble(4);
-                        numberAttribute.Maximum = reader.GetNullableDouble(5);
+                        var isCalculated = reader.GetNullableBoolean(2) ?? false;
+                        if (isCalculated)
+                        {
+                            var calculatedField = simulation.Network.Explorer.AddCalculatedField(name);
+                            calculatedField.IsDecreasingWithDeterioration = reader.GetBoolean(3);
+                        }
+                        else
+                        {
+                            var numberAttribute = simulation.Network.Explorer.AddNumberAttribute(name);
+                            numberAttribute.IsDecreasingWithDeterioration = reader.GetBoolean(3);
+                            numberAttribute.DefaultValue = double.Parse(reader.GetString(4));
+                            numberAttribute.Minimum = reader.GetNullableDouble(5);
+                            numberAttribute.Maximum = reader.GetNullableDouble(6);
+                        }
                         break;
 
                     case TYPE_STRING:
                         var textAttribute = simulation.Network.Explorer.AddTextAttribute(name);
-                        textAttribute.DefaultValue = reader.GetNullableString(2);
+                        textAttribute.DefaultValue = reader.GetNullableString(4);
                         break;
 
                     default:
@@ -99,23 +117,32 @@ select * from segment_13_ns0
                 }
             }
 
-            void createCalculatedFields()
+            void fillCalculatedFields()
             {
-                var calculatedFieldByName = new Dictionary<string, CalculatedField>(StringComparer.OrdinalIgnoreCase);
+                var calculatedFieldByName = simulation.Network.Explorer.CalculatedFields.ToDictionary(field => field.Name, StringComparer.OrdinalIgnoreCase);
 
                 while (reader.Read())
                 {
                     var name = reader.GetString(0);
                     if (!calculatedFieldByName.TryGetValue(name, out var calculatedField))
                     {
-                        calculatedField = simulation.Network.Explorer.AddCalculatedField(name);
-                        calculatedFieldByName.Add(name, calculatedField);
+                        throw new InvalidOperationException("Unknown calculated field.");
                     }
 
                     var source = calculatedField.AddValueSource();
                     source.Equation.Expression = reader.GetString(1);
                     source.Criterion.Expression = reader.GetNullableString(2);
                 }
+            }
+
+            void fillNetwork()
+            {
+                if (!reader.Read())
+                {
+                    throw new InvalidOperationException("Invalid network ID.");
+                }
+
+                simulation.Network.Name = reader.GetString(0);
             }
 
             void createSections()
@@ -144,9 +171,11 @@ select * from segment_13_ns0
 
             void fillSectionHistories()
             {
+                const string SECTIONID = "sectionid";
+
                 var attributeNames = simulation.Network.Explorer.AllAttributes.Select(attribute => attribute.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
                 var columnData = reader.GetColumnSchema()
-                    .Where(column => !string.Equals(column.ColumnName, "sectionid", StringComparison.OrdinalIgnoreCase) && !attributeNames.Contains(column.ColumnName))
+                    .Where(column => !string.Equals(column.ColumnName, SECTIONID, StringComparison.OrdinalIgnoreCase) && !attributeNames.Contains(column.ColumnName))
                     .Select(column =>
                     {
                         var columnOrdinal = column.ColumnOrdinal.Value;
@@ -160,28 +189,69 @@ select * from segment_13_ns0
 
                 while (reader.Read())
                 {
-                    var sectionId = reader.GetInt32("sectionid");
+                    var sectionId = reader.GetInt32(SECTIONID);
                     var section = sectionById[sectionId];
 
-                    fillAttributeHistories(simulation.Network.Explorer.NumberAttributes, reader.GetDouble);
-                    fillAttributeHistories(simulation.Network.Explorer.TextAttributes, reader.GetString);
+                    fillHistories(simulation.Network.Explorer.NumberAttributes, reader.GetDouble);
+                    fillHistories(simulation.Network.Explorer.TextAttributes, reader.GetString);
 
-                    void fillAttributeHistories<T>(IEnumerable<Attribute<T>> attributes, Func<int, T> getValue)
+                    void fillHistories<T>(IEnumerable<Attribute<T>> attributes, Func<int, T> getValue)
                     {
                         foreach (var attribute in attributes)
                         {
-                            var history = section.GetHistory(attribute);
                             foreach (var (columnOrdinal, year, _) in columnData[attribute.Name])
                             {
                                 if (!reader.IsDBNull(columnOrdinal))
                                 {
                                     var value = getValue(columnOrdinal);
-                                    history.Add(year, value);
+                                    section.GetHistory(attribute).Add(year, value);
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            void fillFromSimulationsTable()
+            {
+                if (!reader.Read())
+                {
+                    throw new InvalidOperationException("Invalid simulation ID.");
+                }
+
+                var attributeByName = simulation.Network.Explorer.NumericAttributes.ToDictionary(attribute => attribute.Name, StringComparer.OrdinalIgnoreCase);
+
+                simulation.Name = reader.GetString(0);
+                simulation.AnalysisMethod.JurisdictionCriterion.Expression = reader.GetNullableString(1);
+
+                var optimizationStrategyLabel = reader.GetString(2);
+                simulation.AnalysisMethod.OptimizationStrategy = OptimizationStrategyLookup.Instance[optimizationStrategyLabel];
+
+                var spendingStrategyLabel = reader.GetString(3);
+                simulation.AnalysisMethod.SpendingStrategy = SpendingStrategyLookup.Instance[spendingStrategyLabel];
+
+                var weightingName = reader.GetString(4);
+                if (attributeByName.TryGetValue(weightingName, out var weighting))
+                {
+                    simulation.AnalysisMethod.Weighting = weighting;
+                }
+
+                var benefitName = reader.GetNullableString(5);
+                if (attributeByName.TryGetValue(benefitName, out var benefit))
+                {
+                    simulation.AnalysisMethod.Benefit.Attribute = benefit;
+                }
+
+                simulation.AnalysisMethod.Benefit.Limit = reader.GetDouble(6);
+                simulation.InvestmentPlan.FirstYearOfAnalysisPeriod = reader.GetInt32(7);
+                simulation.InvestmentPlan.NumberOfYearsInAnalysisPeriod = reader.GetInt32(8);
+                simulation.AnalysisMethod.ShouldApplyMultipleFeasibleCosts = reader.GetNullableBoolean(9) ?? false;
+                simulation.AnalysisMethod.ShouldUseExtraFundsAcrossBudgets = reader.GetNullableBoolean(10) ?? false;
+            }
+
+            void fillFromInvestmentsTable()
+            {
+
             }
         }
     }
