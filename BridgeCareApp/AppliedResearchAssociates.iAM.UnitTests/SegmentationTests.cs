@@ -23,7 +23,8 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             //Assert
             foreach (var item in segmentedData)
             {
-                Assert.That(item.SegmentationAttributeDatum, Is.EqualTo(TestDataForSegmentation.NumericSegmentLinearLocation.SegmentationAttributeDatum));
+                Assert.That(item.SegmentationAttributeDatum.Value, !Is.Null);
+                Assert.That(item.SegmentationAttributeDatum.Value, Is.TypeOf<double>());
             }
         }
     }
