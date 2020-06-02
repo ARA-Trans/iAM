@@ -5,25 +5,27 @@ namespace AppliedResearchAssociates.iAM
 {
     public sealed class Benefit : IValidator
     {
-        public NumberAttribute Attribute
+        public INumericAttribute Attribute
         {
             get => _Attribute;
             set
             {
                 _Attribute = value;
 
-                if (Attribute.IsDecreasingWithDeterioration)
+                if (Attribute == null)
                 {
-                    _LimitBenefit = LimitDecreasingBenefit;
+                    _LimitValue = null;
+                }
+                else if (Attribute.IsDecreasingWithDeterioration)
+                {
+                    _LimitValue = LimitDecreasingValue;
                 }
                 else
                 {
-                    _LimitBenefit = LimitIncreasingBenefit;
+                    _LimitValue = LimitIncreasingValue;
                 }
             }
         }
-
-        public double BenefitLimit { get; set; }
 
         public ValidationResultBag DirectValidationResults
         {
@@ -40,16 +42,18 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
+        public double Limit { get; set; }
+
         public ValidatorBag Subvalidators => new ValidatorBag();
 
-        public double LimitBenefit(double benefit) => Math.Max(0, _LimitBenefit(benefit));
+        public double LimitValue(double benefit) => Math.Max(0, _LimitValue(benefit));
 
-        private NumberAttribute _Attribute;
+        private INumericAttribute _Attribute;
 
-        private Func<double, double> _LimitBenefit;
+        private Func<double, double> _LimitValue;
 
-        private double LimitDecreasingBenefit(double benefit) => benefit - BenefitLimit;
+        private double LimitDecreasingValue(double value) => value - Limit;
 
-        private double LimitIncreasingBenefit(double benefit) => BenefitLimit - benefit;
+        private double LimitIncreasingValue(double value) => Limit - value;
     }
 }

@@ -538,7 +538,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                     break;
                 }
 
-                if (Simulation.AnalysisMethod.UseExtraFundsAcrossBudgets)
+                if (Simulation.AnalysisMethod.ShouldUseExtraFundsAcrossBudgets)
                 {
                     addCostAllocator(availableAmount, budgetContext);
                     budgetDetail.BudgetReason = BudgetReason.CostCoveredInPart;

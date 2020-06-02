@@ -8,7 +8,7 @@ namespace AppliedResearchAssociates.iAM
         {
         }
 
-        public override NumberAttribute Attribute
+        public override INumericAttribute Attribute
         {
             get => base.Attribute;
             set

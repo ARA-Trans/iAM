@@ -2,7 +2,7 @@
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class NumberAttribute : Attribute<double>, IValidator
+    public sealed class NumberAttribute : Attribute<double>, INumericAttribute, IValidator
     {
         public NumberAttribute(string name) : base(name)
         {

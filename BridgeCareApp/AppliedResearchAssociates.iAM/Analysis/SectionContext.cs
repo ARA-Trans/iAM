@@ -119,7 +119,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
         public double GetBenefit()
         {
             var rawBenefit = GetNumber(AnalysisMethod.Benefit.Attribute.Name);
-            var benefit = AnalysisMethod.Benefit.LimitBenefit(rawBenefit);
+            var benefit = AnalysisMethod.Benefit.LimitValue(rawBenefit);
 
             if (AnalysisMethod.Weighting != null)
             {

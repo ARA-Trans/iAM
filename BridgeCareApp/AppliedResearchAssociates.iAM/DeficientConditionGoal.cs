@@ -11,7 +11,7 @@ namespace AppliedResearchAssociates.iAM
 
         public double AllowedDeficientPercentage { get; set; }
 
-        public override NumberAttribute Attribute
+        public override INumericAttribute Attribute
         {
             get => base.Attribute;
             set

@@ -7,7 +7,7 @@ using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class CalculatedField : Attribute, IValidator
+    public sealed class CalculatedField : Attribute, INumericAttribute, IValidator
     {
         public CalculatedField(string name, Explorer explorer) : base(name) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
 
@@ -38,9 +38,11 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public IReadOnlyCollection<CalculatedFieldValueSource> ValueSources => _ValueSources;
+        public bool IsDecreasingWithDeterioration { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { ValueSources };
+
+        public IReadOnlyCollection<CalculatedFieldValueSource> ValueSources => _ValueSources;
 
         public CalculatedFieldValueSource AddValueSource() => _ValueSources.GetAdd(new CalculatedFieldValueSource(Explorer));
 

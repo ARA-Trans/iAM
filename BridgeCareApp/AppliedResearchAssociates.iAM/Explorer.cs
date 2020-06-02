@@ -48,6 +48,8 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
 
+        public IEnumerable<INumericAttribute> NumericAttributes => CalculatedFields.Concat<INumericAttribute>(NumberAttributes);
+
         public ValidatorBag Subvalidators => new ValidatorBag { AgeAttribute, CalculatedFields, Networks, NumberAttributes };
 
         public IReadOnlyCollection<TextAttribute> TextAttributes => _TextAttributes;

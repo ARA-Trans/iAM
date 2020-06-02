@@ -73,15 +73,15 @@ namespace AppliedResearchAssociates.iAM
 
         public bool ShouldApplyMultipleFeasibleCosts { get; set; }
 
+        public bool ShouldUseExtraFundsAcrossBudgets { get; set; }
+
         public SpendingStrategy SpendingStrategy { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Benefit, BudgetPriorities, DeficientConditionGoals, JurisdictionCriterion, RemainingLifeLimits, TargetConditionGoals };
 
         public IReadOnlyCollection<TargetConditionGoal> TargetConditionGoals => _TargetConditionGoals;
 
-        public bool UseExtraFundsAcrossBudgets { get; set; }
-
-        public NumberAttribute Weighting { get; set; }
+        public INumericAttribute Weighting { get; set; }
 
         public BudgetPriority AddBudgetPriority()
         {

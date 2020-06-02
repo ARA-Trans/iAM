@@ -5,7 +5,7 @@ namespace AppliedResearchAssociates.iAM
 {
     public abstract class ConditionGoal : IValidator
     {
-        public virtual NumberAttribute Attribute { get; set; }
+        public virtual INumericAttribute Attribute { get; set; }
 
         public Criterion Criterion { get; }
 

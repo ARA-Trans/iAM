@@ -7,7 +7,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public RemainingLifeLimit(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
 
-        public NumberAttribute Attribute { get; set; }
+        public INumericAttribute Attribute { get; set; }
 
         public Criterion Criterion { get; }
 
