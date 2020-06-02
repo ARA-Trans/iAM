@@ -80,18 +80,6 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitNegation([NotNull] CalculateEvaluateParser.NegationContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>constantReference</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>constantReference</c>
-	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitConstantReference([NotNull] CalculateEvaluateParser.ConstantReferenceContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>multiplicationOrDivision</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
 	/// </summary>
@@ -127,6 +115,18 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCalculationGrouping([NotNull] CalculateEvaluateParser.CalculationGroupingContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>numberReference</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterNumberReference([NotNull] CalculateEvaluateParser.NumberReferenceContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>numberReference</c>
+	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitNumberReference([NotNull] CalculateEvaluateParser.NumberReferenceContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>numberParameterReference</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.calculation"/>.
@@ -270,34 +270,24 @@ public interface ICalculateEvaluateParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.calculationParameterReference"/>.
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterCalculationParameterReference([NotNull] CalculateEvaluateParser.CalculationParameterReferenceContext context);
+	void EnterParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.calculationParameterReference"/>.
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitCalculationParameterReference([NotNull] CalculateEvaluateParser.CalculationParameterReferenceContext context);
+	void ExitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationParameterReference"/>.
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context);
+	void EnterLiteral([NotNull] CalculateEvaluateParser.LiteralContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationParameterReference"/>.
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEvaluationParameterReference([NotNull] CalculateEvaluateParser.EvaluationParameterReferenceContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.evaluationLiteral"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitEvaluationLiteral([NotNull] CalculateEvaluateParser.EvaluationLiteralContext context);
+	void ExitLiteral([NotNull] CalculateEvaluateParser.LiteralContext context);
 }
 } // namespace AppliedResearchAssociates.CalculateEvaluate

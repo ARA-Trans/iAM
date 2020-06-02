@@ -60,19 +60,6 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return lambda;
         }
 
-        public override Expression VisitConstantReference(CalculateEvaluateParser.ConstantReferenceContext context)
-        {
-            var identifierText = context.IDENTIFIER().GetText();
-
-            if (!NumberConstants.TryGetValue(identifierText, out var constant))
-            {
-                throw new CalculateEvaluateCompilationException("Invalid constant identifier.");
-            }
-
-            var result = Expression.Constant(constant);
-            return result;
-        }
-
         public override Expression VisitInvocation(CalculateEvaluateParser.InvocationContext context)
         {
             var identifierText = context.IDENTIFIER().GetText();
@@ -80,7 +67,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
             if (!MethodPerSignature.TryGetValue((identifierText, arguments.Length), out var method))
             {
-                throw new CalculateEvaluateCompilationException("Invalid function identifier or invalid number of arguments.");
+                throw new CalculateEvaluateCompilationException("Unknown function identifier or invalid number of arguments.");
             }
 
             var result = Expression.Call(method, arguments.Select(Visit));
@@ -126,20 +113,32 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNumberParameterReference(CalculateEvaluateParser.NumberParameterReferenceContext context)
         {
-            var identifierText = context.calculationParameterReference().IDENTIFIER().GetText();
-
-            if (!ParameterTypes.TryGetValue(identifierText, out var parameterType))
+            var identifierText = context.IDENTIFIER().GetText();
+            if (!TryVisitNumberParameterReference(identifierText, out var result))
             {
-                throw UnknownParameterException;
+                throw UnknownReferenceException;
             }
 
-            if (parameterType != CalculateEvaluateParameterType.Number)
+            return result;
+        }
+
+        public override Expression VisitNumberReference(CalculateEvaluateParser.NumberReferenceContext context)
+        {
+            var identifierText = context.IDENTIFIER().GetText();
+
+            if (TryVisitNumberParameterReference(identifierText, out var result))
             {
-                throw new CalculateEvaluateCompilationException("Parameter is not a number.");
+                // No more work to do. The identifier was a parameter.
+            }
+            else if (NumberConstants.TryGetValue(identifierText, out var constant))
+            {
+                result = Expression.Constant(constant);
+            }
+            else
+            {
+                throw UnknownReferenceException;
             }
 
-            var identifierString = Expression.Constant(identifierText);
-            var result = Expression.Call(ArgumentParameter, Number.GetterInfo, identifierString);
             return result;
         }
 
@@ -153,13 +152,31 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             return result;
         }
 
+        private bool TryVisitNumberParameterReference(string identifierText, out Expression result)
+        {
+            if (!ParameterTypes.TryGetValue(identifierText, out var parameterType))
+            {
+                result = default;
+                return false;
+            }
+
+            if (parameterType != CalculateEvaluateParameterType.Number)
+            {
+                throw new CalculateEvaluateCompilationException("Parameter is not a number.");
+            }
+
+            var identifierString = Expression.Constant(identifierText);
+            result = Expression.Call(ArgumentParameter, Number.GetterInfo, identifierString);
+            return true;
+        }
+
         #endregion "Calculate"
 
         #region "Evaluate"
 
         public override Expression VisitEqual(CalculateEvaluateParser.EqualContext context)
         {
-            var result = GetComparisonExpression(context.evaluationParameterReference(), context.evaluationLiteral(), Expression.Equal, true);
+            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.Equal, true);
             return result;
         }
 
@@ -178,25 +195,25 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitGreaterThan(CalculateEvaluateParser.GreaterThanContext context)
         {
-            var result = GetComparisonExpression(context.evaluationParameterReference(), context.evaluationLiteral(), Expression.GreaterThan, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.GreaterThan, false);
             return result;
         }
 
         public override Expression VisitGreaterThanOrEqual(CalculateEvaluateParser.GreaterThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.evaluationParameterReference(), context.evaluationLiteral(), Expression.GreaterThanOrEqual, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.GreaterThanOrEqual, false);
             return result;
         }
 
         public override Expression VisitLessThan(CalculateEvaluateParser.LessThanContext context)
         {
-            var result = GetComparisonExpression(context.evaluationParameterReference(), context.evaluationLiteral(), Expression.LessThan, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.LessThan, false);
             return result;
         }
 
         public override Expression VisitLessThanOrEqual(CalculateEvaluateParser.LessThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.evaluationParameterReference(), context.evaluationLiteral(), Expression.LessThanOrEqual, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.LessThanOrEqual, false);
             return result;
         }
 
@@ -218,17 +235,17 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNotEqual(CalculateEvaluateParser.NotEqualContext context)
         {
-            var result = GetComparisonExpression(context.evaluationParameterReference(), context.evaluationLiteral(), Expression.NotEqual, true);
+            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.NotEqual, true);
             return result;
         }
 
-        private Expression GetComparisonExpression(CalculateEvaluateParser.EvaluationParameterReferenceContext evaluationParameterReference, CalculateEvaluateParser.EvaluationLiteralContext evaluationLiteral, Func<MethodCallExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
+        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, CalculateEvaluateParser.LiteralContext evaluationLiteral, Func<MethodCallExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
         {
-            var identifierText = evaluationParameterReference.IDENTIFIER().GetText();
+            var identifierText = parameterReference.IDENTIFIER().GetText();
 
             if (!ParameterTypes.TryGetValue(identifierText, out var parameterType))
             {
-                throw UnknownParameterException;
+                throw UnknownReferenceException;
             }
 
             ArgumentInfo argumentInfo;
@@ -241,7 +258,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
             case CalculateEvaluateParameterType.Text:
                 if (!allowStrings)
                 {
-                    goto default;
+                    throw new CalculateEvaluateCompilationException("Ordering comparisons do not support text parameters.");
                 }
                 argumentInfo = Text;
                 break;
@@ -276,7 +293,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         private readonly IReadOnlyDictionary<string, CalculateEvaluateParameterType> ParameterTypes;
 
-        private static Exception UnknownParameterException => new CalculateEvaluateCompilationException("Unknown parameter.");
+        private static Exception UnknownReferenceException => new CalculateEvaluateCompilationException("Unknown reference.");
 
         private static ArgumentInfo GetArgumentInfo<T>(string argumentGetterName, Func<string, T> parse)
         {

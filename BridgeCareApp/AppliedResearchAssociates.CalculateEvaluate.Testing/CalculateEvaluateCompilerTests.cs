@@ -56,12 +56,12 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
         {
             var compiler = new CalculateEvaluateCompiler();
             compiler.ParameterTypes["PARAM"] = CalculateEvaluateParameterType.Number;
-            var expression = "[param]";
+            var expression = "[param] * param";
             var calculator = compiler.GetCalculator(expression);
             var argument = new CalculateEvaluateArgument();
             argument.SetNumber("PaRaM", n0);
             var result = calculator(argument);
-            Assert.That(result, Is.EqualTo(argument.GetNumber("pArAm")));
+            Assert.That(result, Is.EqualTo(n0 * n0));
         }
 
         [Test]
@@ -74,19 +74,19 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void EvaluationAssociativity() => MultipleNumberParameterEvaluation($"[param0]='{n0}' or [param0]='{n1}' and [param1]='{n0}'", Assert.IsTrue, n0, n1);
+        public void EvaluationAssociativity() => MultipleNumberParameterEvaluation($"param0='{n0}' or [param0]='{n1}' and [param1]='{n0}'", Assert.IsTrue, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void EvaluationGrouping() => MultipleNumberParameterEvaluation($"([param0]='{n0}' or [param0]='{n1}') and [param1]='{n0}'", Assert.IsFalse, n0, n1);
+        public void EvaluationGrouping() => MultipleNumberParameterEvaluation($"(param0='{n0}' or [param0]='{n1}') and [param1]='{n0}'", Assert.IsFalse, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void LogicalConjunction() => MultipleNumberParameterEvaluation($"[param0]='{n0}' and [param1]='{n0}'", Assert.IsFalse, n0, n1);
+        public void LogicalConjunction() => MultipleNumberParameterEvaluation($"[param0]='{n0}' and param1='{n0}'", Assert.IsFalse, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
-        public void LogicalDisjunction() => MultipleNumberParameterEvaluation($"[param0]='{n0}' or [param1]='{n0}'", Assert.IsTrue, n0, n1);
+        public void LogicalDisjunction() => MultipleNumberParameterEvaluation($"[param0]='{n0}' or param1='{n0}'", Assert.IsTrue, n0, n1);
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
