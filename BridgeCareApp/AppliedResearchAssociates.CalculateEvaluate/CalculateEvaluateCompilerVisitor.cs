@@ -67,7 +67,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
             if (!MethodPerSignature.TryGetValue((identifierText, arguments.Length), out var method))
             {
-                throw new CalculateEvaluateCompilationException("Unknown function identifier or invalid number of arguments.");
+                throw new CalculateEvaluateCompilationException("Unknown function or invalid number of arguments.");
             }
 
             var result = Expression.Call(method, arguments.Select(Visit));
@@ -114,9 +114,10 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         public override Expression VisitNumberParameterReference(CalculateEvaluateParser.NumberParameterReferenceContext context)
         {
             var identifierText = context.IDENTIFIER().GetText();
+
             if (!TryVisitNumberParameterReference(identifierText, out var result))
             {
-                throw UnknownReferenceException;
+                throw UnknownReference;
             }
 
             return result;
@@ -126,17 +127,14 @@ namespace AppliedResearchAssociates.CalculateEvaluate
         {
             var identifierText = context.IDENTIFIER().GetText();
 
-            if (TryVisitNumberParameterReference(identifierText, out var result))
-            {
-                // No more work to do. The identifier was a parameter.
-            }
-            else if (NumberConstants.TryGetValue(identifierText, out var constant))
+            Expression result;
+            if (NumberConstants.TryGetValue(identifierText, out var constant))
             {
                 result = Expression.Constant(constant);
             }
-            else
+            else if (!TryVisitNumberParameterReference(identifierText, out result))
             {
-                throw UnknownReferenceException;
+                throw UnknownReference;
             }
 
             return result;
@@ -245,7 +243,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
             if (!ParameterTypes.TryGetValue(identifierText, out var parameterType))
             {
-                throw UnknownReferenceException;
+                throw UnknownReference;
             }
 
             ArgumentInfo argumentInfo;
@@ -293,7 +291,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         private readonly IReadOnlyDictionary<string, CalculateEvaluateParameterType> ParameterTypes;
 
-        private static Exception UnknownReferenceException => new CalculateEvaluateCompilationException("Unknown reference.");
+        private static CalculateEvaluateCompilationException UnknownReference => new CalculateEvaluateCompilationException("Unknown reference.");
 
         private static ArgumentInfo GetArgumentInfo<T>(string argumentGetterName, Func<string, T> parse)
         {
