@@ -9,6 +9,9 @@ namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class SimulationRunner
     {
+        // [REVIEW] Is a treatment feasible only when *all* of its feasibility criteria are met? or
+        // when *any* are met?
+
         // [REVIEW] How are inflation rate and discount rate used in the analysis logic?
 
         // [REVIEW] What is the "PerformanceCurve.Shift" bool supposed to do?
@@ -57,7 +60,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
             SectionContexts = Simulation.Network.Sections
                 .AsParallel()
                 .Select(section => new SectionContext(section, this))
-                .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.Evaluate(context) ?? true)
+                .Where(context => Simulation.AnalysisMethod.JurisdictionCriterion.EvaluateOrDefault(context))
                 .ToArray();
 
             if (SectionContexts.Count == 0)
@@ -277,7 +280,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
                     foreach (var option in treatmentOptions)
                     {
-                        if (unhandledContexts.Contains(option.Context) && (priority.Criterion.Evaluate(option.Context) ?? true))
+                        if (unhandledContexts.Contains(option.Context) && (priority.Criterion.EvaluateOrDefault(option.Context)))
                         {
                             var costCoverage = TryToPayForTreatment(
                                 option.Context,
@@ -313,7 +316,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
             foreach (var goal in Simulation.AnalysisMethod.DeficientConditionGoals)
             {
-                var goalContexts = SectionContexts.AsParallel().Where(context => goal.Criterion.Evaluate(context) ?? true).ToArray();
+                var goalContexts = SectionContexts.AsParallel().Where(context => goal.Criterion.EvaluateOrDefault(context)).ToArray();
                 var goalArea = goalContexts.Sum(context => context.GetAreaOfSection());
                 var deficientContexts = goalContexts.Where(context => goal.LevelIsDeficient(context.GetNumber(goal.Attribute.Name)));
                 var deficientArea = deficientContexts.Sum(context => context.GetAreaOfSection());
@@ -336,7 +339,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                     continue;
                 }
 
-                var goalContexts = SectionContexts.AsParallel().Where(context => goal.Criterion.Evaluate(context) ?? true).ToArray();
+                var goalContexts = SectionContexts.AsParallel().Where(context => goal.Criterion.EvaluateOrDefault(context)).ToArray();
                 var goalAreaValues = goalContexts.Select(context => context.GetAreaOfSection()).ToArray();
                 var averageArea = goalAreaValues.Average();
                 var goalAreaWeights = goalAreaValues.Select(area => area / averageArea);
@@ -386,12 +389,12 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 var feasibleTreatments = ActiveTreatments.ToHashSet();
 
                 _ = feasibleTreatments.RemoveWhere(treatment => context.YearIsWithinShadowForSameTreatment(year, treatment));
-                _ = feasibleTreatments.RemoveWhere(treatment => treatment.FeasibilityCriterion.Evaluate(context) ?? false);
+                _ = feasibleTreatments.RemoveWhere(treatment => !treatment.IsFeasible(context));
 
                 var supersededTreatments = Enumerable.ToArray(
                     from treatment in feasibleTreatments
                     from supersession in treatment.Supersessions
-                    where supersession.Criterion.Evaluate(context) ?? true
+                    where supersession.Criterion.EvaluateOrDefault(context)
                     select supersession.Treatment);
 
                 feasibleTreatments.ExceptWith(supersededTreatments);
@@ -400,7 +403,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 {
                     var remainingLifeCalculatorFactories = Enumerable.ToArray(
                         from limit in Simulation.AnalysisMethod.RemainingLifeLimits
-                        where limit.Criterion.Evaluate(context) ?? true
+                        where limit.Criterion.EvaluateOrDefault(context)
                         group limit.Value by limit.Attribute into attributeLimitValues
                         select new RemainingLifeCalculator.Factory(attributeLimitValues));
 
@@ -478,7 +481,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
             {
                 remainingCost = (decimal)sectionContext.GetCostOfTreatment(treatment);
 
-                cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.Evaluate(sectionContext) ?? true);
+                cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.EvaluateOrDefault(sectionContext));
                 if (cashFlowRule != null)
                 {
                     var distributionRule = cashFlowRule.DistributionRules.TakeWhile(rule => remainingCost <= (rule.CostCeiling ?? decimal.MaxValue)).Last();
@@ -522,7 +525,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 }
 
                 var budgetConditions = Simulation.InvestmentPlan.BudgetConditions.Where(condition => condition.Budget == budgetContext.Budget).ToArray();
-                var budgetConditionIsMet = budgetConditions.Length == 0 || budgetConditions.Any(condition => condition.Criterion.Evaluate(sectionContext) ?? true);
+                var budgetConditionIsMet = budgetConditions.Length == 0 || budgetConditions.Any(condition => condition.Criterion.EvaluateOrDefault(sectionContext));
                 if (!budgetConditionIsMet)
                 {
                     budgetDetail.BudgetReason = BudgetReason.ConditionNotMet;

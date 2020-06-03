@@ -13,6 +13,8 @@ namespace AppliedResearchAssociates.iAM
             return Evaluator?.Invoke(argument);
         }
 
+        public bool EvaluateOrDefault(CalculateEvaluateArgument argument) => Evaluate(argument) ?? true;
+
         protected override void Compile()
         {
             if (ExpressionIsBlank)
