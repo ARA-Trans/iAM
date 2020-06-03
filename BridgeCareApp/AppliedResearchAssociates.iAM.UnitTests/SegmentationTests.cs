@@ -19,6 +19,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             var attributeTestData = new List<AttributeDatum<double>>();
             // Act
             attributeTestData.Add(TestDataForAttribute.NumericAttributeDataLinearLocation);
+            attributeTestData.Add(TestDataForAttribute.NumericAttributeDataLinearLocation);
             var segmentedData = Segmenter.CreateSegmentsFromAttributeDataRecords(attributeTestData);
             //Assert
             foreach (var item in segmentedData)
