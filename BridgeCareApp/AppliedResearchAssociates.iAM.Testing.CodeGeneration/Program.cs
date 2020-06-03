@@ -25,21 +25,21 @@ select facility, section, area, units, sectionid from section_{NetworkId}
 ;
 select * from segment_{NetworkId}_ns0
 ;
-select simulation, jurisdiction, analysis, budget_constraint, weighting, benefit_variable, benefit_limit, committed_start, committed_period, use_cumulative_cost, use_across_budget from simulations where networkid = {NetworkId} and simulationid = {SimulationId}
+select simulation, jurisdiction, analysis, budget_constraint, weighting, benefit_variable, benefit_limit, use_cumulative_cost, use_across_budget from simulations where networkid = {NetworkId} and simulationid = {SimulationId}
+;
+select firstyear, numberyears, inflationrate, discountrate, budgetorder from investments where simulationid = {SimulationId}
+;
+select attribute_, equationname, criteria, equation, shift from performance where simulationid = {SimulationId}
+;
+select c.commitid, sectionid, years, treatmentname, yearsame, yearany, budget, cost_, attribute_, change_ from committed_ c join commit_consequences cc on c.commitid = cc.commitid where simulationid = {SimulationId}
+;
+select t.treatmentid, treatment, beforeany, beforesame, budget, description, attribute_, change_, criteria, equation from treatments t join consequences c on t.treatmentid = c.treatmentid where simulationid = {SimulationId}
 ";
 
         private static string CommandText => FormattedCommandText.Replace(Environment.NewLine, " ");
 
         private static void Main()
         {
-            var timer = new Stopwatch();
-            void time(Action action)
-            {
-                timer.Restart();
-                action();
-                Console.WriteLine(timer.Elapsed);
-            }
-
             var simulation = new Explorer().AddNetwork().AddSimulation();
             var sectionById = new Dictionary<int, Section>();
 
@@ -48,17 +48,25 @@ select simulation, jurisdiction, analysis, budget_constraint, weighting, benefit
             connection.Open();
             using var reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 
-            time(createAttributes);
-            _ = reader.NextResult();
-            time(fillCalculatedFields);
-            _ = reader.NextResult();
-            time(fillNetwork);
-            _ = reader.NextResult();
-            time(createSections);
-            _ = reader.NextResult();
-            time(fillSectionHistories);
-            _ = reader.NextResult();
-            time(fillFromSimulationsTable);
+            var timer = new Stopwatch();
+            void time(Action action, string label)
+            {
+                timer.Restart();
+                action();
+                var elapsed = timer.Elapsed;
+                Console.WriteLine($"{elapsed} --- {label}");
+                _ = reader.NextResult();
+            }
+
+            time(createAttributes, nameof(createAttributes));
+            time(fillCalculatedFields, nameof(fillCalculatedFields));
+            time(fillNetwork, nameof(fillNetwork));
+            time(createSections, nameof(createSections));
+            time(fillSectionHistories, nameof(fillSectionHistories));
+            time(fillAnalysisMethod, nameof(fillAnalysisMethod));
+            time(fillInvestmentPlan, nameof(fillInvestmentPlan));
+            time(createPerformanceCurves, nameof(createPerformanceCurves));
+            time(createCommittedProjects, nameof(createCommittedProjects));
 
             foreach (var result in simulation.Network.Explorer.GetAllValidationResults())
             {
@@ -212,7 +220,7 @@ select simulation, jurisdiction, analysis, budget_constraint, weighting, benefit
                 }
             }
 
-            void fillFromSimulationsTable()
+            void fillAnalysisMethod()
             {
                 if (!reader.Read())
                 {
@@ -243,15 +251,98 @@ select simulation, jurisdiction, analysis, budget_constraint, weighting, benefit
                 }
 
                 simulation.AnalysisMethod.Benefit.Limit = reader.GetDouble(6);
-                simulation.InvestmentPlan.FirstYearOfAnalysisPeriod = reader.GetInt32(7);
-                simulation.InvestmentPlan.NumberOfYearsInAnalysisPeriod = reader.GetInt32(8);
-                simulation.AnalysisMethod.ShouldApplyMultipleFeasibleCosts = reader.GetNullableBoolean(9) ?? false;
-                simulation.AnalysisMethod.ShouldUseExtraFundsAcrossBudgets = reader.GetNullableBoolean(10) ?? false;
+                simulation.AnalysisMethod.ShouldApplyMultipleFeasibleCosts = reader.GetNullableBoolean(7) ?? false;
+                simulation.AnalysisMethod.ShouldUseExtraFundsAcrossBudgets = reader.GetNullableBoolean(8) ?? false;
             }
 
-            void fillFromInvestmentsTable()
+            void fillInvestmentPlan()
             {
+                if (!reader.Read())
+                {
+                    throw new InvalidOperationException("Invalid simulation ID.");
+                }
 
+                simulation.InvestmentPlan.FirstYearOfAnalysisPeriod = reader.GetInt32(0);
+                simulation.InvestmentPlan.NumberOfYearsInAnalysisPeriod = reader.GetInt32(1);
+                simulation.InvestmentPlan.InflationRatePercentage = reader.GetDouble(2);
+                simulation.InvestmentPlan.DiscountRatePercentage = reader.GetDouble(3);
+
+                var budgetOrder = reader.GetString(4);
+                var budgetNamesInOrder = budgetOrder.Split(',');
+                foreach (var budgetName in budgetNamesInOrder)
+                {
+                    var budget = simulation.InvestmentPlan.AddBudget();
+                    budget.Name = budgetName;
+                }
+            }
+
+            void createPerformanceCurves()
+            {
+                var attributeByName = simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name);
+
+                while (reader.Read())
+                {
+                    var curve = simulation.AddPerformanceCurve();
+                    var attributeName = reader.GetString(0);
+                    curve.Attribute = attributeByName[attributeName];
+                    curve.Name = reader.GetString(1);
+                    curve.Criterion.Expression = reader.GetString(2);
+                    curve.Equation.Expression = reader.GetString(3);
+                    curve.Shift = reader.GetBoolean(4);
+                }
+            }
+
+            void createCommittedProjects()
+            {
+                var attributeByName = simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name);
+                var budgetByName = simulation.InvestmentPlan.Budgets.ToDictionary(budget => budget.Name);
+                var projectById = new Dictionary<int, CommittedProject>();
+
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    if (!projectById.TryGetValue(id, out var project))
+                    {
+                        var sectionId = reader.GetInt32(1);
+                        var section = sectionById[sectionId];
+                        var year = reader.GetInt32(2);
+                        project = simulation.CommittedProjects.GetAdd(new CommittedProject(section, year));
+                        project.Name = reader.GetString(3);
+                        project.ShadowForSameTreatment = reader.GetInt32(4);
+                        project.ShadowForAnyTreatment = reader.GetInt32(5);
+                        var budgetName = reader.GetString(6);
+                        project.Budget = budgetByName[budgetName];
+                        project.Cost = reader.GetDouble(7);
+
+                        projectById.Add(id, project);
+                    }
+
+                    var consequence = project.Consequences.GetAdd(new TreatmentConsequence());
+                    var attributeName = reader.GetString(8);
+                    consequence.Attribute = attributeByName[attributeName];
+                    consequence.Change.Expression = reader.GetString(9);
+                }
+            }
+
+            void createTreatments()
+            {
+                var budgetByName = simulation.InvestmentPlan.Budgets.ToDictionary(budget => budget.Name);
+                var treatmentById = new Dictionary<int, SelectableTreatment>();
+
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    if (!treatmentById.TryGetValue(id, out var treatment))
+                    {
+                        treatment = simulation.AddTreatment();
+                        treatment.Name = reader.GetString(1);
+                        treatment.ShadowForAnyTreatment = reader.GetInt32(2);
+                        treatment.ShadowForSameTreatment = reader.GetInt32(3);
+                        var budgetName = reader.GetString(4);
+                        var budget = budgetByName[budgetName];
+                        treatment.Budgets.Add(budget);
+                    }
+                }
             }
         }
     }

@@ -6,20 +6,26 @@ namespace AppliedResearchAssociates.iAM.Testing.CodeGeneration
     {
         public static bool? GetNullableBoolean(this SqlDataReader reader, int i)
         {
-            var sqlBoolean = reader.GetSqlBoolean(i);
-            return sqlBoolean.IsNull ? null : sqlBoolean.Value.AsNullable();
+            var sqlValue = reader.GetSqlBoolean(i);
+            return sqlValue.IsNull ? null : sqlValue.Value.AsNullable();
         }
 
         public static double? GetNullableDouble(this SqlDataReader reader, int i)
         {
-            var sqlDouble = reader.GetSqlDouble(i);
-            return sqlDouble.IsNull ? null : sqlDouble.Value.AsNullable();
+            var sqlValue = reader.GetSqlDouble(i);
+            return sqlValue.IsNull ? null : sqlValue.Value.AsNullable();
+        }
+
+        public static int? GetNullableInt32(this SqlDataReader reader, int i)
+        {
+            var sqlValue = reader.GetSqlInt32(i);
+            return sqlValue.IsNull ? null : sqlValue.Value.AsNullable();
         }
 
         public static string GetNullableString(this SqlDataReader reader, int i)
         {
-            var sqlString = reader.GetSqlString(i);
-            return sqlString.IsNull ? null : sqlString.Value;
+            var sqlValue = reader.GetSqlString(i);
+            return sqlValue.IsNull ? null : sqlValue.Value;
         }
     }
 }
