@@ -33,7 +33,9 @@ select attribute_, equationname, criteria, equation, shift from performance wher
 ;
 select c.commitid, sectionid, years, treatmentname, yearsame, yearany, budget, cost_, attribute_, change_ from committed_ c join commit_consequences cc on c.commitid = cc.commitid where simulationid = {SimulationId}
 ;
-select t.treatmentid, treatment, beforeany, beforesame, budget, description, attribute_, change_, criteria, equation from treatments t join consequences c on t.treatmentid = c.treatmentid where simulationid = {SimulationId}
+select t.treatmentid, treatment, beforeany, beforesame, budget, description, attribute_, change_, equation, criteria from treatments t join consequences c on t.treatmentid = c.treatmentid where simulationid = {SimulationId}
+;
+select t.treatmentid, cost_, criteria from treatments t join costs c on t.treatmentid = c.treatmentid where simulationid = {SimulationId}
 ";
 
         private static string CommandText => FormattedCommandText.Replace(Environment.NewLine, " ");
@@ -42,6 +44,7 @@ select t.treatmentid, treatment, beforeany, beforesame, budget, description, att
         {
             var simulation = new Explorer().AddNetwork().AddSimulation();
             var sectionById = new Dictionary<int, Section>();
+            var treatmentById = new Dictionary<int, SelectableTreatment>();
 
             using var connection = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=iAMBridgeCare;Integrated Security=True");
             using var command = new SqlCommand(CommandText, connection);
@@ -67,6 +70,8 @@ select t.treatmentid, treatment, beforeany, beforesame, budget, description, att
             time(fillInvestmentPlan, nameof(fillInvestmentPlan));
             time(createPerformanceCurves, nameof(createPerformanceCurves));
             time(createCommittedProjects, nameof(createCommittedProjects));
+            time(createTreatmentsWithConsequences, nameof(createTreatmentsWithConsequences));
+            //time(fillTreatmentCosts, nameof(fillTreatmentCosts));
 
             foreach (var result in simulation.Network.Explorer.GetAllValidationResults())
             {
@@ -324,10 +329,10 @@ select t.treatmentid, treatment, beforeany, beforesame, budget, description, att
                 }
             }
 
-            void createTreatments()
+            void createTreatmentsWithConsequences()
             {
-                var budgetByName = simulation.InvestmentPlan.Budgets.ToDictionary(budget => budget.Name);
-                var treatmentById = new Dictionary<int, SelectableTreatment>();
+                var attributeByName = simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name);
+                var budgetByName = simulation.InvestmentPlan.Budgets.ToDictionary(budget => budget.Name, SelectionEqualityComparer<string>.Create(name => name.Trim()));
 
                 while (reader.Read())
                 {
@@ -338,10 +343,40 @@ select t.treatmentid, treatment, beforeany, beforesame, budget, description, att
                         treatment.Name = reader.GetString(1);
                         treatment.ShadowForAnyTreatment = reader.GetInt32(2);
                         treatment.ShadowForSameTreatment = reader.GetInt32(3);
-                        var budgetName = reader.GetString(4);
-                        var budget = budgetByName[budgetName];
-                        treatment.Budgets.Add(budget);
+
+                        var budgetField = reader.GetString(4);
+                        var budgetNames = budgetField.Split(',');
+                        foreach (var budgetName in budgetNames)
+                        {
+                            if (budgetByName.TryGetValue(budgetName, out var budget))
+                            {
+                                treatment.Budgets.Add(budget);
+                            }
+                        }
+
+                        treatment.Description = reader.GetString(5);
+
+                        treatmentById.Add(id, treatment);
                     }
+
+                    var consequence = treatment.AddConsequence();
+                    var attributeName = reader.GetString(6);
+                    consequence.Attribute = attributeByName[attributeName];
+                    consequence.Change.Expression = reader.GetNullableString(7);
+                    consequence.Equation.Expression = reader.GetNullableString(8);
+                    consequence.Criterion.Expression = reader.GetNullableString(9);
+                }
+            }
+
+            void fillTreatmentCosts()
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var treatment = treatmentById[id];
+                    var cost = treatment.AddCost();
+                    cost.Equation.Expression = reader.GetString(1);
+                    cost.Criterion.Expression = reader.GetString(2);
                 }
             }
         }

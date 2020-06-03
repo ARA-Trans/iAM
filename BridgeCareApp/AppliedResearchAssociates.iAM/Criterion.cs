@@ -20,17 +20,16 @@ namespace AppliedResearchAssociates.iAM
             if (ExpressionIsBlank)
             {
                 Evaluator = null;
+                return;
             }
-            else
+
+            try
             {
-                try
-                {
-                    Evaluator = Explorer.Compiler.GetEvaluator(Expression);
-                }
-                catch (CalculateEvaluateException e)
-                {
-                    throw ExpressionCouldNotBeCompiled(e);
-                }
+                Evaluator = Explorer.Compiler.GetEvaluator(Expression);
+            }
+            catch (CalculateEvaluateException e)
+            {
+                throw ExpressionCouldNotBeCompiled(e);
             }
         }
 

@@ -9,6 +9,9 @@ namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class SimulationRunner
     {
+        // [REVIEW] What is the "Actual_Spent" budget? It is not present in the budget order, yet it
+        // appears in the treatment table.
+
         // [REVIEW] Is a treatment feasible only when *all* of its feasibility criteria are met? or
         // when *any* are met?
 

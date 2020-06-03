@@ -19,40 +19,31 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; }
 
-        public override ValidationResultBag DirectValidationResults
+        public Equation Equation { get; }
+
+        public override ValidatorBag Subvalidators
         {
             get
             {
-                var results = base.DirectValidationResults;
-
-                if (Change.ExpressionIsBlank == Equation.ExpressionIsBlank)
+                var validators = base.Subvalidators.Add(Criterion);
+                if (!Equation.ExpressionIsBlank)
                 {
-                    results.Add(ValidationStatus.Error, MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset, this);
+                    _ = validators.Remove(Change).Add(Equation);
                 }
 
-                return results;
+                return validators;
             }
         }
 
-        public Equation Equation { get; }
-
-        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Equation).Add(Criterion);
-
         public override Action GetRecalculator(CalculateEvaluateArgument argument)
         {
-            if (!Change.ExpressionIsBlank && Equation.ExpressionIsBlank)
-            {
-                return base.GetRecalculator(argument);
-            }
-            else if (Change.ExpressionIsBlank && !Equation.ExpressionIsBlank)
+            if (!Equation.ExpressionIsBlank)
             {
                 var newValue = Equation.Compute(argument);
                 return () => argument.SetNumber(Attribute.Name, newValue);
             }
-            else
-            {
-                throw new InvalidOperationException(MessageStrings.ChangeAndEquationAreEitherBothSetOrBothUnset);
-            }
+
+            return base.GetRecalculator(argument);
         }
     }
 }

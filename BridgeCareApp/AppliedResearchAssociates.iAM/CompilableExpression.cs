@@ -27,7 +27,14 @@ namespace AppliedResearchAssociates.iAM
         public virtual string Expression
         {
             get => _Expression;
-            set => _ = UpdateExpression(value);
+            set
+            {
+                if (Expression != value)
+                {
+                    _Expression = value;
+                    _EnsureCompiled = _Compile;
+                }
+            }
         }
 
         public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
@@ -36,23 +43,11 @@ namespace AppliedResearchAssociates.iAM
 
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 
-        protected static Exception ExpressionCouldNotBeCompiled(Exception innerException = null) => new MalformedInputException("Expression could not be compiled.", innerException);
+        protected static MalformedInputException ExpressionCouldNotBeCompiled(Exception innerException = null) => new MalformedInputException("Expression could not be compiled.", innerException);
 
         protected abstract void Compile();
 
         protected void EnsureCompiled() => _EnsureCompiled?.Invoke();
-
-        protected bool UpdateExpression(string value)
-        {
-            if (Expression == value)
-            {
-                return false;
-            }
-
-            _Expression = value;
-            _EnsureCompiled = _Compile;
-            return true;
-        }
 
         private Action _EnsureCompiled;
 

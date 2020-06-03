@@ -51,6 +51,11 @@ namespace AppliedResearchAssociates.iAM
 
         protected override void Compile()
         {
+            if (ExpressionIsBlank)
+            {
+                throw ExpressionCouldNotBeCompiled();
+            }
+
             var match = YearlyPercentagesPattern.Match(Expression);
             if (!match.Success)
             {

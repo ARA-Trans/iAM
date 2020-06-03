@@ -32,6 +32,12 @@ namespace AppliedResearchAssociates.Validation
 
         public IEnumerator<IValidator> GetEnumerator() => ((IEnumerable<IValidator>)Validators).GetEnumerator();
 
+        public ValidatorBag Remove(IValidator validator)
+        {
+            _ = Validators.Remove(validator);
+            return this;
+        }
+
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Validators).GetEnumerator();
 
         private readonly HashSet<IValidator> Validators = new HashSet<IValidator>();

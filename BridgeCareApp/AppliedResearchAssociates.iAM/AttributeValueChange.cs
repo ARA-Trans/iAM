@@ -26,8 +26,13 @@ namespace AppliedResearchAssociates.iAM
 
         protected override void Compile()
         {
-            var match = NumberChangePattern.Match(Expression);
+            if (ExpressionIsBlank)
+            {
+                NumberChanger = null;
+                return;
+            }
 
+            var match = NumberChangePattern.Match(Expression);
             if (!match.Success || !double.TryParse(match.Groups[2].Value, out var operand))
             {
                 throw ExpressionCouldNotBeCompiled();
@@ -94,7 +99,7 @@ namespace AppliedResearchAssociates.iAM
         private double ChangeNumber(double value)
         {
             EnsureCompiled();
-            var newValue = NumberChanger(value);
+            var newValue = NumberChanger?.Invoke(value) ?? value;
             return newValue;
         }
 
