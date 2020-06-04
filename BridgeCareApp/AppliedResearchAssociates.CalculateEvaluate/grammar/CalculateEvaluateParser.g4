@@ -22,25 +22,31 @@ calculation
    | LEFT_PAREN calculation RIGHT_PAREN                                      # calculationGrouping
    ;
 
-evaluation
-   : left = evaluation AND right = evaluation         # logicalConjunction
-   | left = evaluation OR right = evaluation          # logicalDisjunction
-   | parameterReference EQUAL literal                 # equal
-   | parameterReference NOT_EQUAL literal             # notEqual
-   | parameterReference LESS_THAN literal             # lessThan
-   | parameterReference LESS_THAN_OR_EQUAL literal    # lessThanOrEqual
-   | parameterReference GREATER_THAN_OR_EQUAL literal # greaterThanOrEqual
-   | parameterReference GREATER_THAN literal          # greaterThan
-   | LEFT_PAREN evaluation RIGHT_PAREN                # evaluationGrouping
-   ;
-
 arguments
    : calculation (COMMA calculation)*
+   ;
+
+evaluation
+   : left = evaluation AND right = evaluation                   # logicalConjunction
+   | left = evaluation OR right = evaluation                    # logicalDisjunction
+   | parameterReference EQUAL comparisonOperand                 # equal
+   | parameterReference NOT_EQUAL comparisonOperand             # notEqual
+   | parameterReference LESS_THAN comparisonOperand             # lessThan
+   | parameterReference LESS_THAN_OR_EQUAL comparisonOperand    # lessThanOrEqual
+   | parameterReference GREATER_THAN_OR_EQUAL comparisonOperand # greaterThanOrEqual
+   | parameterReference GREATER_THAN comparisonOperand          # greaterThan
+   | LEFT_PAREN evaluation RIGHT_PAREN                          # evaluationGrouping
    ;
 
 parameterReference
    : IDENTIFIER
    | LEFT_BRACKET IDENTIFIER RIGHT_BRACKET
+   ;
+
+comparisonOperand
+   : parameterReference
+   | literal
+   | NUMBER
    ;
 
 literal

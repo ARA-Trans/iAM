@@ -145,6 +145,16 @@ public partial class CalculateEvaluateParserBaseVisitor<Result> : AbstractParseT
 	/// <return>The visitor result.</return>
 	public virtual Result VisitNumberLiteral([NotNull] CalculateEvaluateParser.NumberLiteralContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// <para>
@@ -244,16 +254,6 @@ public partial class CalculateEvaluateParserBaseVisitor<Result> : AbstractParseT
 	/// <return>The visitor result.</return>
 	public virtual Result VisitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { return VisitChildren(context); }
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -263,6 +263,16 @@ public partial class CalculateEvaluateParserBaseVisitor<Result> : AbstractParseT
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.comparisonOperand"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitComparisonOperand([NotNull] CalculateEvaluateParser.ComparisonOperandContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
 	/// <para>

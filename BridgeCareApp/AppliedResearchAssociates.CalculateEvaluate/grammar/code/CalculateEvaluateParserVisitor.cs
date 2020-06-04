@@ -103,6 +103,12 @@ public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Res
 	/// <return>The visitor result.</return>
 	Result VisitNumberLiteral([NotNull] CalculateEvaluateParser.NumberLiteralContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// </summary>
@@ -166,17 +172,17 @@ public interface ICalculateEvaluateParserVisitor<Result> : IParseTreeVisitor<Res
 	/// <return>The visitor result.</return>
 	Result VisitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.comparisonOperand"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitComparisonOperand([NotNull] CalculateEvaluateParser.ComparisonOperandContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
 	/// </summary>

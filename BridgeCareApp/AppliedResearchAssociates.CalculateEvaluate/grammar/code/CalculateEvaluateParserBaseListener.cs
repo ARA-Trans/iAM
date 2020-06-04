@@ -176,6 +176,18 @@ public partial class CalculateEvaluateParserBaseListener : ICalculateEvaluatePar
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitNumberLiteral([NotNull] CalculateEvaluateParser.NumberLiteralContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>equal</c>
 	/// labeled alternative in <see cref="CalculateEvaluateParser.evaluation"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -302,18 +314,6 @@ public partial class CalculateEvaluateParserBaseListener : ICalculateEvaluatePar
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGreaterThan([NotNull] CalculateEvaluateParser.GreaterThanContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.arguments"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArguments([NotNull] CalculateEvaluateParser.ArgumentsContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.parameterReference"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -325,6 +325,18 @@ public partial class CalculateEvaluateParserBaseListener : ICalculateEvaluatePar
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitParameterReference([NotNull] CalculateEvaluateParser.ParameterReferenceContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.comparisonOperand"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterComparisonOperand([NotNull] CalculateEvaluateParser.ComparisonOperandContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CalculateEvaluateParser.comparisonOperand"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitComparisonOperand([NotNull] CalculateEvaluateParser.ComparisonOperandContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="CalculateEvaluateParser.literal"/>.
 	/// <para>The default implementation does nothing.</para>

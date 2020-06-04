@@ -74,6 +74,14 @@ namespace AppliedResearchAssociates.CalculateEvaluate.Testing
 
         [Test]
         [Category(CATEGORY_EVALUATE)]
+        public void CompareWithNumberOperand() => SingleNumberParameterEvaluation($"[param]={n1}", Assert.IsFalse);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
+        public void CompareWithReferenceOperand() => MultipleNumberParameterEvaluation($"[param0]=param1", Assert.IsFalse, n0, n1);
+
+        [Test]
+        [Category(CATEGORY_EVALUATE)]
         public void EvaluationAssociativity() => MultipleNumberParameterEvaluation($"param0='{n0}' or [param0]='{n1}' and [param1]='{n0}'", Assert.IsTrue, n0, n1);
 
         [Test]

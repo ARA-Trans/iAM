@@ -174,7 +174,7 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitEqual(CalculateEvaluateParser.EqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.Equal, true);
+            var result = GetComparisonExpression(context.parameterReference(), context.comparisonOperand(), Expression.Equal, true);
             return result;
         }
 
@@ -193,25 +193,25 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitGreaterThan(CalculateEvaluateParser.GreaterThanContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.GreaterThan, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.comparisonOperand(), Expression.GreaterThan, false);
             return result;
         }
 
         public override Expression VisitGreaterThanOrEqual(CalculateEvaluateParser.GreaterThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.GreaterThanOrEqual, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.comparisonOperand(), Expression.GreaterThanOrEqual, false);
             return result;
         }
 
         public override Expression VisitLessThan(CalculateEvaluateParser.LessThanContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.LessThan, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.comparisonOperand(), Expression.LessThan, false);
             return result;
         }
 
         public override Expression VisitLessThanOrEqual(CalculateEvaluateParser.LessThanOrEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.LessThanOrEqual, false);
+            var result = GetComparisonExpression(context.parameterReference(), context.comparisonOperand(), Expression.LessThanOrEqual, false);
             return result;
         }
 
@@ -233,11 +233,11 @@ namespace AppliedResearchAssociates.CalculateEvaluate
 
         public override Expression VisitNotEqual(CalculateEvaluateParser.NotEqualContext context)
         {
-            var result = GetComparisonExpression(context.parameterReference(), context.literal(), Expression.NotEqual, true);
+            var result = GetComparisonExpression(context.parameterReference(), context.comparisonOperand(), Expression.NotEqual, true);
             return result;
         }
 
-        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, CalculateEvaluateParser.LiteralContext evaluationLiteral, Func<MethodCallExpression, ConstantExpression, BinaryExpression> getComparison, bool allowStrings)
+        private Expression GetComparisonExpression(CalculateEvaluateParser.ParameterReferenceContext parameterReference, CalculateEvaluateParser.ComparisonOperandContext comparisonOperand, Func<MethodCallExpression, Expression, BinaryExpression> getComparison, bool allowStrings)
         {
             var identifierText = parameterReference.IDENTIFIER().GetText();
 
@@ -269,13 +269,52 @@ namespace AppliedResearchAssociates.CalculateEvaluate
                 throw new InvalidOperationException("Invalid parameter type.");
             }
 
-            var identifierString = Expression.Constant(identifierText);
-            var reference = Expression.Call(ArgumentParameter, argumentInfo.GetterInfo, identifierString);
+            var identifier = Expression.Constant(identifierText);
+            var reference = Expression.Call(ArgumentParameter, argumentInfo.GetterInfo, identifier);
 
-            var literalContent = evaluationLiteral.content?.Text ?? "";
-            var literal = argumentInfo.ParseLiteral(literalContent);
+            var referenceOperand = comparisonOperand.parameterReference();
+            var literalOperand = comparisonOperand.literal();
+            var numberOperand = comparisonOperand.NUMBER();
+            Expression operand;
 
-            var result = getComparison(reference, literal);
+            if (referenceOperand != null && literalOperand == null && numberOperand == null)
+            {
+                var operandIdentifierText = referenceOperand.IDENTIFIER().GetText();
+
+                if (!ParameterTypes.TryGetValue(operandIdentifierText, out var operandType))
+                {
+                    throw UnknownReference;
+                }
+
+                if (operandType != parameterType)
+                {
+                    throw new CalculateEvaluateCompilationException("Comparison types do not match.");
+                }
+
+                var operandIdentifier = Expression.Constant(operandIdentifierText);
+                operand = Expression.Call(ArgumentParameter, argumentInfo.GetterInfo, operandIdentifier);
+            }
+            else if (referenceOperand == null && literalOperand != null && numberOperand == null)
+            {
+                var literalContent = literalOperand.content?.Text ?? "";
+                operand = argumentInfo.ParseLiteral(literalContent);
+            }
+            else if (referenceOperand == null && literalOperand == null && numberOperand != null)
+            {
+                if (parameterType != CalculateEvaluateParameterType.Number)
+                {
+                    throw new CalculateEvaluateCompilationException("Non-number comparison operand is a number.");
+                }
+
+                var numberText = numberOperand.GetText();
+                operand = argumentInfo.ParseLiteral(numberText);
+            }
+            else
+            {
+                throw new InvalidOperationException("Comparison operand context does not have exactly one sub-context.");
+            }
+
+            var result = getComparison(reference, operand);
             return result;
         }
 
