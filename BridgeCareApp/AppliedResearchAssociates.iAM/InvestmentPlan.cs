@@ -20,21 +20,6 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<CashFlowRule> CashFlowRules => _CashFlowRules;
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (NumberOfYearsInAnalysisPeriod < 1)
-                {
-                    results.Add(ValidationStatus.Error, "Number of years in analysis period is less than one.", this, nameof(NumberOfYearsInAnalysisPeriod));
-                }
-
-                return results;
-            }
-        }
-
         public double DiscountRatePercentage { get; set; }
 
         public int FirstYearOfAnalysisPeriod { get; set; }
@@ -79,6 +64,18 @@ namespace AppliedResearchAssociates.iAM
             {
                 _Budgets.Swap(index - 1, index);
             }
+        }
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (NumberOfYearsInAnalysisPeriod < 1)
+            {
+                results.Add(ValidationStatus.Error, "Number of years in analysis period is less than one.", this, nameof(NumberOfYearsInAnalysisPeriod));
+            }
+
+            return results;
         }
 
         public void IncrementBudgetIndex(Budget budget)

@@ -20,35 +20,6 @@ namespace AppliedResearchAssociates.iAM
 
         public double Cost { get; set; }
 
-        public override ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = base.DirectValidationResults;
-
-                if (Budget == null)
-                {
-                    results.Add(ValidationStatus.Error, "Budget is unset.", this, nameof(Budget));
-                }
-
-                if (Cost < 0)
-                {
-                    results.Add(ValidationStatus.Error, "Cost is less than zero.", this, nameof(Cost));
-                }
-                else if (Cost == 0)
-                {
-                    results.Add(ValidationStatus.Warning, "Cost is zero.", this, nameof(Cost));
-                }
-
-                if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
-                {
-                    results.Add(ValidationStatus.Error, "At least one attribute is acted on by more than one consequence.", this, nameof(Consequences));
-                }
-
-                return results;
-            }
-        }
-
         public Section Section { get; }
 
         public SelectableTreatment TemplateTreatment
@@ -77,6 +48,32 @@ namespace AppliedResearchAssociates.iAM
         public override IReadOnlyCollection<Action> GetConsequenceActions(CalculateEvaluateArgument argument) => Consequences.Select(consequence => consequence.GetRecalculator(argument)).ToArray();
 
         public override double GetCost(CalculateEvaluateArgument argument, bool shouldApplyMultipleFeasibleCosts) => Cost;
+
+        public override ValidationResultBag GetDirectValidationResults()
+        {
+            var results = base.GetDirectValidationResults();
+
+            if (Budget == null)
+            {
+                results.Add(ValidationStatus.Error, "Budget is unset.", this, nameof(Budget));
+            }
+
+            if (Cost < 0)
+            {
+                results.Add(ValidationStatus.Error, "Cost is less than zero.", this, nameof(Cost));
+            }
+            else if (Cost == 0)
+            {
+                results.Add(ValidationStatus.Warning, "Cost is zero.", this, nameof(Cost));
+            }
+
+            if (Consequences.Select(consequence => consequence.Attribute).Distinct().Count() < Consequences.Count)
+            {
+                results.Add(ValidationStatus.Error, "At least one attribute is acted on by more than one consequence.", this, nameof(Consequences));
+            }
+
+            return results;
+        }
 
         public override IEnumerable<TreatmentScheduling> GetSchedulings() => Enumerable.Empty<TreatmentScheduling>();
 

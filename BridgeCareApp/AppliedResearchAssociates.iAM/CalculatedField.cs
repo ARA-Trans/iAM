@@ -11,33 +11,6 @@ namespace AppliedResearchAssociates.iAM
     {
         public CalculatedField(string name, Explorer explorer) : base(name) => Explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (ValueSources.Count == 0)
-                {
-                    results.Add(ValidationStatus.Error, "There are no value sources.", this, nameof(ValueSources));
-                }
-                else
-                {
-                    var numberOfEquationsWithBlankCriterion = ValueSources.Count(equation => equation.Criterion.ExpressionIsBlank);
-                    if (numberOfEquationsWithBlankCriterion == 0)
-                    {
-                        results.Add(ValidationStatus.Warning, "There are no value sources with a blank criterion.", this, nameof(ValueSources));
-                    }
-                    else if (numberOfEquationsWithBlankCriterion > 1)
-                    {
-                        results.Add(ValidationStatus.Error, "There are multiple value sources with a blank criterion.", this, nameof(ValueSources));
-                    }
-                }
-
-                return results;
-            }
-        }
-
         public bool IsDecreasingWithDeterioration { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { ValueSources };
@@ -68,6 +41,30 @@ namespace AppliedResearchAssociates.iAM
             }
 
             return operativeSources[0].Equation.Compute(argument);
+        }
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (ValueSources.Count == 0)
+            {
+                results.Add(ValidationStatus.Error, "There are no value sources.", this, nameof(ValueSources));
+            }
+            else
+            {
+                var numberOfEquationsWithBlankCriterion = ValueSources.Count(equation => equation.Criterion.ExpressionIsBlank);
+                if (numberOfEquationsWithBlankCriterion == 0)
+                {
+                    results.Add(ValidationStatus.Warning, "There are no value sources with a blank criterion.", this, nameof(ValueSources));
+                }
+                else if (numberOfEquationsWithBlankCriterion > 1)
+                {
+                    results.Add(ValidationStatus.Error, "There are multiple value sources with a blank criterion.", this, nameof(ValueSources));
+                }
+            }
+
+            return results;
         }
 
         public void Remove(CalculatedFieldValueSource source) => _ValueSources.Remove(source);

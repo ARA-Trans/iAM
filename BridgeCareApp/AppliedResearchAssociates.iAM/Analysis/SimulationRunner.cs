@@ -59,6 +59,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 throw new InvalidOperationException("Runner is already running.");
             }
 
+            Inform("Simulation initializing ...");
+
             ActiveTreatments = Simulation.GetActiveTreatments();
             BudgetContexts = Simulation.InvestmentPlan.Budgets.Select(budget => new BudgetContext(budget)).ToArray();
             CommittedProjectsPerSection = Simulation.CommittedProjects.ToLookup(committedProject => committedProject.Section);
@@ -123,6 +125,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
             foreach (var year in Simulation.InvestmentPlan.YearsOfAnalysis)
             {
+                Inform($"Simulating {year} ...");
+
                 var detail = new SimulationYearDetail(year);
                 Simulation.Results.Add(detail);
 
@@ -139,6 +143,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
                 detail.SectionDetails.AddRange(SectionContexts.Select(context => context.Detail));
             }
+
+            Inform("Simulation complete.");
 
             StatusCode = STATUS_CODE_NOT_RUNNING;
         }
@@ -492,7 +498,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 cashFlowRule = Simulation.InvestmentPlan.CashFlowRules.SingleOrDefault(rule => rule.Criterion.EvaluateOrDefault(sectionContext));
                 if (cashFlowRule != null)
                 {
-                    var distributionRule = cashFlowRule.DistributionRules.TakeWhile(rule => remainingCost <= (rule.CostCeiling ?? decimal.MaxValue)).Last();
+                    var distributionRule = cashFlowRule.DistributionRules.First(rule => remainingCost <= (rule.CostCeiling ?? decimal.MaxValue));
                     var costPerYear = distributionRule.YearlyPercentages.Select(percentage => percentage / 100 * remainingCost).ToArray();
                     remainingCost = costPerYear[0];
 

@@ -26,11 +26,6 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 throw new ArgumentException("Template context does not match.", nameof(baseline));
             }
 
-            if (InitialTreatment != baseline.InitialTreatment)
-            {
-                throw new ArgumentException("Initial treatment does not match.", nameof(baseline));
-            }
-
             return new TreatmentOption(
                 TemplateContext,
                 InitialTreatment,

@@ -98,7 +98,10 @@ namespace AppliedResearchAssociates.iAM.Analysis
             FirstUnshadowedYearForAnyTreatment = year + treatment.ShadowForAnyTreatment;
             FirstUnshadowedYearForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
 
-            Detail.NameOfAppliedTreatment = treatment.Name;
+            if (Detail != null)
+            {
+                Detail.NameOfAppliedTreatment = treatment.Name;
+            }
         }
 
         public void CopyAttributeValuesToDetail()

@@ -29,21 +29,6 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<CalculatedField> CalculatedFields => _CalculatedFields;
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (Networks.Select(network => network.Name).Distinct().Count() < Networks.Count)
-                {
-                    results.Add(ValidationStatus.Error, "Multiple networks have the same name.", this, nameof(Networks));
-                }
-
-                return results;
-            }
-        }
-
         public IReadOnlyCollection<Network> Networks => _Networks;
 
         public IReadOnlyCollection<NumberAttribute> NumberAttributes => _NumberAttributes;
@@ -61,6 +46,18 @@ namespace AppliedResearchAssociates.iAM
         public NumberAttribute AddNumberAttribute(string name) => Add(name, new NumberAttribute(name), _NumberAttributes, CalculateEvaluateParameterType.Number);
 
         public TextAttribute AddTextAttribute(string name) => Add(name, new TextAttribute(name), _TextAttributes, CalculateEvaluateParameterType.Text);
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (Networks.Select(network => network.Name).Distinct().Count() < Networks.Count)
+            {
+                results.Add(ValidationStatus.Error, "Multiple networks have the same name.", this, nameof(Networks));
+            }
+
+            return results;
+        }
 
         public void Remove(CalculatedField attribute) => Remove(attribute, _CalculatedFields);
 

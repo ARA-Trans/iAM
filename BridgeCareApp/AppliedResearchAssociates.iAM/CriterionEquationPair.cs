@@ -12,10 +12,10 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; }
 
-        public ValidationResultBag DirectValidationResults => new ValidationResultBag();
-
         public Equation Equation { get; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Criterion, Equation };
+
+        public ValidationResultBag GetDirectValidationResults() => new ValidationResultBag();
     }
 }

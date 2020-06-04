@@ -2,8 +2,8 @@
 {
     public interface IValidator
     {
-        ValidationResultBag DirectValidationResults { get; }
-
         ValidatorBag Subvalidators { get; }
+
+        ValidationResultBag GetDirectValidationResults();
     }
 }

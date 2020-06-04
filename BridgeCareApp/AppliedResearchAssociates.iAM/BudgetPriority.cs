@@ -13,21 +13,6 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (BudgetPercentagePairs.All(budgetPercentage => budgetPercentage.Percentage == 0))
-                {
-                    results.Add(ValidationStatus.Warning, "All percentages are zero.", this, nameof(BudgetPercentagePairs));
-                }
-
-                return results;
-            }
-        }
-
         public int PriorityLevel { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { BudgetPercentagePairs, Criterion };
@@ -35,6 +20,18 @@ namespace AppliedResearchAssociates.iAM
         public int? Year { get; set; }
 
         public BudgetPercentagePair GetBudgetPercentagePair(Budget budget) => PairByBudget[budget];
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (BudgetPercentagePairs.All(budgetPercentage => budgetPercentage.Percentage == 0))
+            {
+                results.Add(ValidationStatus.Warning, "All percentages are zero.", this, nameof(BudgetPercentagePairs));
+            }
+
+            return results;
+        }
 
         internal void SynchronizeWithBudgets(IEnumerable<Budget> budgets)
         {

@@ -11,23 +11,20 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (Attribute == null)
-                {
-                    results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
-                }
-
-                return results;
-            }
-        }
-
         public ValidatorBag Subvalidators => new ValidatorBag { Criterion };
 
         public double Value { get; set; }
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (Attribute == null)
+            {
+                results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
+            }
+
+            return results;
+        }
     }
 }

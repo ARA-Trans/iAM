@@ -22,50 +22,6 @@ namespace AppliedResearchAssociates.iAM
 
         public string Description { get; set; }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (!OptimizationStrategy.IsDefined())
-                {
-                    results.Add(ValidationStatus.Error, MessageStrings.InvalidOptimizationStrategy, this, nameof(OptimizationStrategy));
-                }
-
-                if (!SpendingStrategy.IsDefined())
-                {
-                    results.Add(ValidationStatus.Error, MessageStrings.InvalidSpendingStrategy, this, nameof(SpendingStrategy));
-                }
-
-                var prioritiesByLevelYear = BudgetPriorities.ToLookup(priority => (priority.PriorityLevel, priority.Year));
-                if (prioritiesByLevelYear.Any(group => group.Count() > 1 && group.Any(priority => priority.Criterion.ExpressionIsBlank)))
-                {
-                    results.Add(ValidationStatus.Error, "At least one priority level-year has multiple criteria where at least one criterion is blank.", this, nameof(BudgetPriorities));
-                }
-
-                var deficientConditionGoalNames = GetNames(DeficientConditionGoals);
-                if (deficientConditionGoalNames.Distinct().Count() < deficientConditionGoalNames.Count)
-                {
-                    results.Add(ValidationStatus.Error, "Multiple deficient condition goals have the same name.", this, nameof(DeficientConditionGoals));
-                }
-
-                var targetConditionGoalNames = GetNames(TargetConditionGoals);
-                if (targetConditionGoalNames.Distinct().Count() < targetConditionGoalNames.Count)
-                {
-                    results.Add(ValidationStatus.Error, "Multiple target condition goals have the same name.", this, nameof(TargetConditionGoals));
-                }
-
-                var remainingLifeLimitsWithBlankCriterion = RemainingLifeLimits.Where(limit => limit.Criterion.ExpressionIsBlank).ToArray();
-                if (remainingLifeLimitsWithBlankCriterion.Select(limit => limit.Attribute).Distinct().Count() < remainingLifeLimitsWithBlankCriterion.Length)
-                {
-                    results.Add(ValidationStatus.Warning, "At least one attribute has more than one remaining life limit with a blank criterion.", this, nameof(RemainingLifeLimits));
-                }
-
-                return results;
-            }
-        }
-
         public Criterion JurisdictionCriterion { get; }
 
         public OptimizationStrategy OptimizationStrategy { get; set; }
@@ -97,6 +53,47 @@ namespace AppliedResearchAssociates.iAM
         public RemainingLifeLimit AddRemainingLifeLimit() => _RemainingLifeLimits.GetAdd(new RemainingLifeLimit(Simulation.Network.Explorer));
 
         public TargetConditionGoal AddTargetConditionGoal() => _TargetConditionGoals.GetAdd(new TargetConditionGoal(Simulation.Network.Explorer));
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (!OptimizationStrategy.IsDefined())
+            {
+                results.Add(ValidationStatus.Error, MessageStrings.InvalidOptimizationStrategy, this, nameof(OptimizationStrategy));
+            }
+
+            if (!SpendingStrategy.IsDefined())
+            {
+                results.Add(ValidationStatus.Error, MessageStrings.InvalidSpendingStrategy, this, nameof(SpendingStrategy));
+            }
+
+            var prioritiesByLevelYear = BudgetPriorities.ToLookup(priority => (priority.PriorityLevel, priority.Year));
+            if (prioritiesByLevelYear.Any(group => group.Count() > 1 && group.Any(priority => priority.Criterion.ExpressionIsBlank)))
+            {
+                results.Add(ValidationStatus.Error, "At least one priority level-year has multiple criteria where at least one criterion is blank.", this, nameof(BudgetPriorities));
+            }
+
+            var deficientConditionGoalNames = GetNames(DeficientConditionGoals);
+            if (deficientConditionGoalNames.Distinct().Count() < deficientConditionGoalNames.Count)
+            {
+                results.Add(ValidationStatus.Error, "Multiple deficient condition goals have the same name.", this, nameof(DeficientConditionGoals));
+            }
+
+            var targetConditionGoalNames = GetNames(TargetConditionGoals);
+            if (targetConditionGoalNames.Distinct().Count() < targetConditionGoalNames.Count)
+            {
+                results.Add(ValidationStatus.Error, "Multiple target condition goals have the same name.", this, nameof(TargetConditionGoals));
+            }
+
+            var remainingLifeLimitsWithBlankCriterion = RemainingLifeLimits.Where(limit => limit.Criterion.ExpressionIsBlank).ToArray();
+            if (remainingLifeLimitsWithBlankCriterion.Select(limit => limit.Attribute).Distinct().Count() < remainingLifeLimitsWithBlankCriterion.Length)
+            {
+                results.Add(ValidationStatus.Warning, "At least one attribute has more than one remaining life limit with a blank criterion.", this, nameof(RemainingLifeLimits));
+            }
+
+            return results;
+        }
 
         public void Remove(TargetConditionGoal targetConditionGoal) => _TargetConditionGoals.Remove(targetConditionGoal);
 

@@ -19,34 +19,6 @@ namespace AppliedResearchAssociates.iAM
             set => _AreaUnit = value?.Trim() ?? "";
         }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (double.IsNaN(Area))
-                {
-                    results.Add(ValidationStatus.Error, "Area is not a number.", this, nameof(Area));
-                }
-                else if (double.IsInfinity(Area))
-                {
-                    results.Add(ValidationStatus.Error, "Area is infinite.", this, nameof(Area));
-                }
-                else if (Area <= 0)
-                {
-                    results.Add(ValidationStatus.Error, "Area is less than or equal to zero.", this, nameof(Area));
-                }
-
-                if (string.IsNullOrWhiteSpace(Name))
-                {
-                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
-                }
-
-                return results;
-            }
-        }
-
         public Facility Facility { get; }
 
         public IEnumerable<Attribute> HistoricalAttributes => HistoryPerAttribute.Keys;
@@ -56,6 +28,31 @@ namespace AppliedResearchAssociates.iAM
         public ValidatorBag Subvalidators => new ValidatorBag();
 
         public void ClearHistory() => HistoryPerAttribute.Clear();
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (double.IsNaN(Area))
+            {
+                results.Add(ValidationStatus.Error, "Area is not a number.", this, nameof(Area));
+            }
+            else if (double.IsInfinity(Area))
+            {
+                results.Add(ValidationStatus.Error, "Area is infinite.", this, nameof(Area));
+            }
+            else if (Area <= 0)
+            {
+                results.Add(ValidationStatus.Error, "Area is less than or equal to zero.", this, nameof(Area));
+            }
+
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
+            }
+
+            return results;
+        }
 
         public IDictionary<int, T> GetHistory<T>(Attribute<T> attribute)
         {

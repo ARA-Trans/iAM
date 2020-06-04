@@ -10,30 +10,27 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (string.IsNullOrWhiteSpace(Name))
-                {
-                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
-                }
-
-                if (DistributionRules.Count == 0)
-                {
-                    results.Add(ValidationStatus.Error, "There are no distribution rules.", this, nameof(DistributionRules));
-                }
-
-                return results;
-            }
-        }
-
         public ICollection<CashFlowDistributionRule> DistributionRules { get; } = new SetWithoutNulls<CashFlowDistributionRule>();
 
         public string Name { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Criterion, DistributionRules };
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
+            }
+
+            if (DistributionRules.Count == 0)
+            {
+                results.Add(ValidationStatus.Error, "There are no distribution rules.", this, nameof(DistributionRules));
+            }
+
+            return results;
+        }
     }
 }

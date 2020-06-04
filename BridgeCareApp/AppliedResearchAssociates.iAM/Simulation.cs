@@ -22,45 +22,6 @@ namespace AppliedResearchAssociates.iAM
 
         public SelectableTreatment DesignatedPassiveTreatment { get; internal set; }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (DesignatedPassiveTreatment == null)
-                {
-                    results.Add(ValidationStatus.Error, "Designated passive treatment is unset.", this, nameof(DesignatedPassiveTreatment));
-                }
-                else if (DesignatedPassiveTreatment.Costs.Count > 0)
-                {
-                    results.Add(ValidationStatus.Error, "Designated passive treatment has costs.", this, nameof(DesignatedPassiveTreatment));
-                }
-
-                if (string.IsNullOrWhiteSpace(Name))
-                {
-                    results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
-                }
-
-                if (NumberOfYearsOfTreatmentOutlook < 1)
-                {
-                    results.Add(ValidationStatus.Error, "Number of years of treatment outlook is less than one.", this, nameof(NumberOfYearsOfTreatmentOutlook));
-                }
-
-                if (Treatments.Select(treatment => treatment.Name).Distinct().Count() < Treatments.Count)
-                {
-                    results.Add(ValidationStatus.Error, "Multiple selectable treatments have the same name.", this, nameof(Treatments));
-                }
-
-                if (CommittedProjects.Select(project => (project.Section, project.Year)).Distinct().Count() < CommittedProjects.Count)
-                {
-                    results.Add(ValidationStatus.Error, "Multiple projects are committed to the same section in the same year.", this, nameof(CommittedProjects));
-                }
-
-                return results;
-            }
-        }
-
         public InvestmentPlan InvestmentPlan { get; }
 
         public string Name { get; set; }
@@ -86,6 +47,42 @@ namespace AppliedResearchAssociates.iAM
             var result = Treatments.ToHashSet();
             _ = result.Remove(DesignatedPassiveTreatment);
             return result;
+        }
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (DesignatedPassiveTreatment == null)
+            {
+                results.Add(ValidationStatus.Error, "Designated passive treatment is unset.", this, nameof(DesignatedPassiveTreatment));
+            }
+            else if (DesignatedPassiveTreatment.Costs.Count > 0)
+            {
+                results.Add(ValidationStatus.Error, "Designated passive treatment has costs.", this, nameof(DesignatedPassiveTreatment));
+            }
+
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                results.Add(ValidationStatus.Error, "Name is blank.", this, nameof(Name));
+            }
+
+            if (NumberOfYearsOfTreatmentOutlook < 1)
+            {
+                results.Add(ValidationStatus.Error, "Number of years of treatment outlook is less than one.", this, nameof(NumberOfYearsOfTreatmentOutlook));
+            }
+
+            if (Treatments.Select(treatment => treatment.Name).Distinct().Count() < Treatments.Count)
+            {
+                results.Add(ValidationStatus.Error, "Multiple selectable treatments have the same name.", this, nameof(Treatments));
+            }
+
+            if (CommittedProjects.Select(project => (project.Section, project.Year)).Distinct().Count() < CommittedProjects.Count)
+            {
+                results.Add(ValidationStatus.Error, "Multiple projects are committed to the same section in the same year.", this, nameof(CommittedProjects));
+            }
+
+            return results;
         }
 
         public void Remove(SelectableTreatment treatment) => _Treatments.Remove(treatment);

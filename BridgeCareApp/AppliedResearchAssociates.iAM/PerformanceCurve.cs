@@ -20,26 +20,6 @@ namespace AppliedResearchAssociates.iAM
 
         public Criterion Criterion { get; }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (Attribute == null)
-                {
-                    results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
-                }
-
-                if (string.IsNullOrWhiteSpace(Name))
-                {
-                    results.Add(ValidationStatus.Warning, "Name is blank.", this, nameof(Name));
-                }
-
-                return results;
-            }
-        }
-
         public Equation Equation { get; }
 
         public string Name { get; set; }
@@ -47,5 +27,22 @@ namespace AppliedResearchAssociates.iAM
         public bool Shift { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag { Criterion, Equation };
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (Attribute == null)
+            {
+                results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
+            }
+
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                results.Add(ValidationStatus.Warning, "Name is blank.", this, nameof(Name));
+            }
+
+            return results;
+        }
     }
 }

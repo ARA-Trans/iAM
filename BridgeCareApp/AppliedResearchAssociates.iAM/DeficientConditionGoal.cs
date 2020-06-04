@@ -35,31 +35,28 @@ namespace AppliedResearchAssociates.iAM
 
         public double DeficientLimit { get; set; }
 
-        public override ValidationResultBag DirectValidationResults
+        public override ValidationResultBag GetDirectValidationResults()
         {
-            get
+            var results = base.GetDirectValidationResults();
+
+            if (AllowedDeficientPercentage < 0)
             {
-                var results = base.DirectValidationResults;
-
-                if (AllowedDeficientPercentage < 0)
-                {
-                    results.Add(ValidationStatus.Error, "Allowed deficient percentage is less than zero.", this, nameof(AllowedDeficientPercentage));
-                }
-                else if (AllowedDeficientPercentage == 0)
-                {
-                    results.Add(ValidationStatus.Warning, "Allowed deficient percentage is zero.", this, nameof(AllowedDeficientPercentage));
-                }
-                else if (AllowedDeficientPercentage == 100)
-                {
-                    results.Add(ValidationStatus.Warning, "Allowed deficient percentage is 100.", this, nameof(AllowedDeficientPercentage));
-                }
-                else if (AllowedDeficientPercentage > 100)
-                {
-                    results.Add(ValidationStatus.Error, "Allowed deficient percentage is greater than 100.", this, nameof(AllowedDeficientPercentage));
-                }
-
-                return results;
+                results.Add(ValidationStatus.Error, "Allowed deficient percentage is less than zero.", this, nameof(AllowedDeficientPercentage));
             }
+            else if (AllowedDeficientPercentage == 0)
+            {
+                results.Add(ValidationStatus.Warning, "Allowed deficient percentage is zero.", this, nameof(AllowedDeficientPercentage));
+            }
+            else if (AllowedDeficientPercentage == 100)
+            {
+                results.Add(ValidationStatus.Warning, "Allowed deficient percentage is 100.", this, nameof(AllowedDeficientPercentage));
+            }
+            else if (AllowedDeficientPercentage > 100)
+            {
+                results.Add(ValidationStatus.Error, "Allowed deficient percentage is greater than 100.", this, nameof(AllowedDeficientPercentage));
+            }
+
+            return results;
         }
 
         public override bool IsMet(double actual) => actual <= AllowedDeficientPercentage;

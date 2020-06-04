@@ -16,7 +16,7 @@ namespace AppliedResearchAssociates.Validation
                 validator = queue.Dequeue();
                 if (validator != null && visited.Add(validator))
                 {
-                    results.Add(validator.DirectValidationResults);
+                    results.Add(validator.GetDirectValidationResults());
                     foreach (var subvalidator in validator.Subvalidators)
                     {
                         queue.Enqueue(subvalidator);

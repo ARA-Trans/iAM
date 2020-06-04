@@ -27,24 +27,21 @@ namespace AppliedResearchAssociates.iAM
             }
         }
 
-        public ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                if (Attribute == null)
-                {
-                    results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
-                }
-
-                return results;
-            }
-        }
-
         public double Limit { get; set; }
 
         public ValidatorBag Subvalidators => new ValidatorBag();
+
+        public ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            if (Attribute == null)
+            {
+                results.Add(ValidationStatus.Error, "Attribute is unset.", this, nameof(Attribute));
+            }
+
+            return results;
+        }
 
         public double LimitValue(double benefit) => Math.Max(0, _LimitValue(benefit));
 

@@ -5,25 +5,6 @@ namespace AppliedResearchAssociates.iAM
 {
     public abstract class CompilableExpression : IValidator
     {
-        public virtual ValidationResultBag DirectValidationResults
-        {
-            get
-            {
-                var results = new ValidationResultBag();
-
-                try
-                {
-                    EnsureCompiled();
-                }
-                catch (MalformedInputException e)
-                {
-                    results.Add(ValidationStatus.Error, e.Message, this, nameof(Expression));
-                }
-
-                return results;
-            }
-        }
-
         public virtual string Expression
         {
             get => _Expression;
@@ -40,6 +21,22 @@ namespace AppliedResearchAssociates.iAM
         public bool ExpressionIsBlank => string.IsNullOrWhiteSpace(Expression);
 
         public virtual ValidatorBag Subvalidators => new ValidatorBag();
+
+        public virtual ValidationResultBag GetDirectValidationResults()
+        {
+            var results = new ValidationResultBag();
+
+            try
+            {
+                EnsureCompiled();
+            }
+            catch (MalformedInputException e)
+            {
+                results.Add(ValidationStatus.Error, e.Message, this, nameof(Expression));
+            }
+
+            return results;
+        }
 
         protected CompilableExpression() => _EnsureCompiled = _Compile;
 
