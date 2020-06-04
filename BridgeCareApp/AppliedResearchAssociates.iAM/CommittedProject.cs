@@ -78,6 +78,8 @@ namespace AppliedResearchAssociates.iAM
 
         public override double GetCost(CalculateEvaluateArgument argument, bool shouldApplyMultipleFeasibleCosts) => Cost;
 
+        public override IEnumerable<TreatmentScheduling> GetSchedulings() => Enumerable.Empty<TreatmentScheduling>();
+
         private SelectableTreatment _TemplateTreatment;
     }
 }

@@ -19,8 +19,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
         {
             Section = original.Section;
             SimulationRunner = original.SimulationRunner;
-            LastYearOfShadowForAnyTreatment = original.LastYearOfShadowForAnyTreatment;
-            LastYearOfShadowForSameTreatment.CopyFrom(original.LastYearOfShadowForSameTreatment);
+            FirstUnshadowedYearForAnyTreatment = original.FirstUnshadowedYearForAnyTreatment;
+            FirstUnshadowedYearForSameTreatment.CopyFrom(original.FirstUnshadowedYearForSameTreatment);
             EventSchedule.CopyFrom(original.EventSchedule);
             NumberCache.CopyFrom(original.NumberCache);
         }
@@ -61,7 +61,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
                 if (operativeCurves.Count > 1)
                 {
-                    SimulationRunner.Warn("Two or more performance curves are simultaneously valid.");
+                    SimulationRunner.Warn("Two or more performance curves are simultaneously operative.");
                 }
 
                 double calculate(PerformanceCurve curve) => curve.Equation.Compute(this);
@@ -83,7 +83,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 consequenceAction();
             }
 
-            foreach (var scheduling in treatment.Schedulings)
+            foreach (var scheduling in treatment.GetSchedulings())
             {
                 var schedulingYear = year + scheduling.OffsetToFutureYear;
 
@@ -95,8 +95,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
                 EventSchedule.Add(schedulingYear, scheduling.Treatment);
             }
 
-            LastYearOfShadowForAnyTreatment = year + treatment.ShadowForAnyTreatment;
-            LastYearOfShadowForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
+            FirstUnshadowedYearForAnyTreatment = year + treatment.ShadowForAnyTreatment;
+            FirstUnshadowedYearForSameTreatment[treatment.Name] = year + treatment.ShadowForSameTreatment;
 
             Detail.NameOfAppliedTreatment = treatment.Name;
         }
@@ -204,15 +204,15 @@ namespace AppliedResearchAssociates.iAM.Analysis
             base.SetText(key, value);
         }
 
-        public bool YearIsWithinShadowForAnyTreatment(int year) => year <= LastYearOfShadowForAnyTreatment;
+        public bool YearIsWithinShadowForAnyTreatment(int year) => year < FirstUnshadowedYearForAnyTreatment;
 
-        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => LastYearOfShadowForSameTreatment.TryGetValue(treatment.Name, out var lastYearOfShadow) ? year <= lastYearOfShadow : false;
+        public bool YearIsWithinShadowForSameTreatment(int year, Treatment treatment) => FirstUnshadowedYearForSameTreatment.TryGetValue(treatment.Name, out var firstUnshadowedYear) && year < firstUnshadowedYear;
 
-        private readonly IDictionary<string, int> LastYearOfShadowForSameTreatment = new Dictionary<string, int>();
+        private readonly IDictionary<string, int> FirstUnshadowedYearForSameTreatment = new Dictionary<string, int>();
 
         private readonly IDictionary<string, double> NumberCache = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
-        private int? LastYearOfShadowForAnyTreatment;
+        private int? FirstUnshadowedYearForAnyTreatment;
 
         private void Initialize()
         {

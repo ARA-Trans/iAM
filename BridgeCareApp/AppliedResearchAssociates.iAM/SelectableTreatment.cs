@@ -23,6 +23,11 @@ namespace AppliedResearchAssociates.iAM
             {
                 var results = base.DirectValidationResults;
 
+                if (Schedulings.Select(scheduling => scheduling.OffsetToFutureYear).Distinct().Count() < Schedulings.Count)
+                {
+                    results.Add(ValidationStatus.Error, "At least one future year has more than one scheduling.", this, nameof(Schedulings));
+                }
+
                 var consequencesWithBlankCriterion = Consequences.Where(consequence => consequence.Criterion.ExpressionIsBlank).ToArray();
                 if (consequencesWithBlankCriterion.Select(consequence => consequence.Attribute).Distinct().Count() < consequencesWithBlankCriterion.Length)
                 {
@@ -41,9 +46,11 @@ namespace AppliedResearchAssociates.iAM
 
         public IReadOnlyCollection<Criterion> FeasibilityCriteria => _FeasibilityCriteria;
 
+        public ICollection<TreatmentScheduling> Schedulings { get; } = new SetWithoutNulls<TreatmentScheduling>();
+
         public IReadOnlyCollection<TreatmentSupersession> Supersessions => _Supersessions;
 
-        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Consequences).Add(Costs).Add(FeasibilityCriteria).Add(Supersessions);
+        public override ValidatorBag Subvalidators => base.Subvalidators.Add(Consequences).Add(Costs).Add(FeasibilityCriteria).Add(Schedulings).Add(Supersessions);
 
         public ConditionalTreatmentConsequence AddConsequence() => _Consequences.GetAdd(new ConditionalTreatmentConsequence(Simulation.Network.Explorer));
 
@@ -99,6 +106,8 @@ namespace AppliedResearchAssociates.iAM
             double getCost(TreatmentCost cost) => cost.Equation.Compute(argument);
             return shouldApplyMultipleFeasibleCosts ? feasibleCosts.Sum(getCost) : feasibleCosts.Max(getCost);
         }
+
+        public override IEnumerable<TreatmentScheduling> GetSchedulings() => Schedulings;
 
         public bool IsFeasible(CalculateEvaluateArgument argument) => FeasibilityCriteria.Any(feasibility => feasibility.EvaluateOrDefault(argument));
 

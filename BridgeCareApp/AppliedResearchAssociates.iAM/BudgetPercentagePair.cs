@@ -3,9 +3,9 @@ using AppliedResearchAssociates.Validation;
 
 namespace AppliedResearchAssociates.iAM
 {
-    public sealed class BudgetPercentage : IValidator
+    public sealed class BudgetPercentagePair : IValidator
     {
-        public BudgetPercentage(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
+        public BudgetPercentagePair(Budget budget) => Budget = budget ?? throw new ArgumentNullException(nameof(budget));
 
         public Budget Budget { get; }
 

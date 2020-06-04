@@ -9,7 +9,7 @@ namespace AppliedResearchAssociates.iAM
     {
         public BudgetPriority(Explorer explorer) => Criterion = new Criterion(explorer ?? throw new ArgumentNullException(nameof(explorer)));
 
-        public IReadOnlyCollection<BudgetPercentage> BudgetPercentages => _BudgetPercentages;
+        public IReadOnlyCollection<BudgetPercentagePair> BudgetPercentagePairs => _BudgetPercentagePairs;
 
         public Criterion Criterion { get; }
 
@@ -19,13 +19,9 @@ namespace AppliedResearchAssociates.iAM
             {
                 var results = new ValidationResultBag();
 
-                if (BudgetPercentages.Sum(budgetPercentage => budgetPercentage.Percentage) > 100)
+                if (BudgetPercentagePairs.All(budgetPercentage => budgetPercentage.Percentage == 0))
                 {
-                    results.Add(ValidationStatus.Error, "Sum of percentages is greater than 100.", this, nameof(BudgetPercentages));
-                }
-                else if (BudgetPercentages.All(budgetPercentage => budgetPercentage.Percentage == 0))
-                {
-                    results.Add(ValidationStatus.Warning, "All percentages are zero.", this, nameof(BudgetPercentages));
+                    results.Add(ValidationStatus.Warning, "All percentages are zero.", this, nameof(BudgetPercentagePairs));
                 }
 
                 return results;
@@ -34,30 +30,30 @@ namespace AppliedResearchAssociates.iAM
 
         public int PriorityLevel { get; set; }
 
-        public ValidatorBag Subvalidators => new ValidatorBag { BudgetPercentages, Criterion };
+        public ValidatorBag Subvalidators => new ValidatorBag { BudgetPercentagePairs, Criterion };
 
         public int? Year { get; set; }
 
-        public decimal GetBudgetPercentage(Budget budget) => PercentagePerBudget[budget].Percentage;
+        public BudgetPercentagePair GetBudgetPercentagePair(Budget budget) => PairByBudget[budget];
 
         internal void SynchronizeWithBudgets(IEnumerable<Budget> budgets)
         {
-            _ = _BudgetPercentages.RemoveAll(budgetPercentage => !budgets.Contains(budgetPercentage.Budget));
+            _ = _BudgetPercentagePairs.RemoveAll(budgetPercentage => !budgets.Contains(budgetPercentage.Budget));
 
-            _BudgetPercentages.AddRange(
+            _BudgetPercentagePairs.AddRange(
                 from budget in budgets
-                where !BudgetPercentages.Any(budgetPercentage => budgetPercentage.Budget == budget)
-                select new BudgetPercentage(budget));
+                where !BudgetPercentagePairs.Any(budgetPercentage => budgetPercentage.Budget == budget)
+                select new BudgetPercentagePair(budget));
 
-            PercentagePerBudget.Clear();
-            foreach (var budgetPercentage in BudgetPercentages)
+            PairByBudget.Clear();
+            foreach (var pair in BudgetPercentagePairs)
             {
-                PercentagePerBudget.Add(budgetPercentage.Budget, budgetPercentage);
+                PairByBudget.Add(pair.Budget, pair);
             }
         }
 
-        private readonly List<BudgetPercentage> _BudgetPercentages = new List<BudgetPercentage>();
+        private readonly List<BudgetPercentagePair> _BudgetPercentagePairs = new List<BudgetPercentagePair>();
 
-        private readonly Dictionary<Budget, BudgetPercentage> PercentagePerBudget = new Dictionary<Budget, BudgetPercentage>();
+        private readonly Dictionary<Budget, BudgetPercentagePair> PairByBudget = new Dictionary<Budget, BudgetPercentagePair>();
     }
 }

@@ -9,8 +9,13 @@ namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class SimulationRunner
     {
+        // [REVIEW] A treatment's "any" shadow applies to *all* treatments, including that same
+        // treatment, right?
+
         // [REVIEW] What is the "Actual_Spent" budget? It is not present in the budget order, yet it
         // appears in the treatment table.
+
+        // [REVIEW] What is the "No_Funds" budget?
 
         // [REVIEW] Is a treatment feasible only when *all* of its feasibility criteria are met? or
         // when *any* are met?
@@ -283,7 +288,7 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
                     foreach (var option in treatmentOptions)
                     {
-                        if (unhandledContexts.Contains(option.Context) && (priority.Criterion.EvaluateOrDefault(option.Context)))
+                        if (unhandledContexts.Contains(option.Context) && priority.Criterion.EvaluateOrDefault(option.Context))
                         {
                             var costCoverage = TryToPayForTreatment(
                                 option.Context,

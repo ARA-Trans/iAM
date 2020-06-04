@@ -36,6 +36,17 @@ select c.commitid, sectionid, years, treatmentname, yearsame, yearany, budget, c
 select t.treatmentid, treatment, beforeany, beforesame, budget, description, attribute_, change_, equation, criteria from treatments t join consequences c on t.treatmentid = c.treatmentid where simulationid = {SimulationId}
 ;
 select t.treatmentid, cost_, criteria from treatments t join costs c on t.treatmentid = c.treatmentid where simulationid = {SimulationId}
+;
+select t.treatmentid, criteria from treatments t join feasibility f on t.treatmentid = f.treatmentid where simulationid = {SimulationId}
+;
+select t.treatmentid, scheduledyear, scheduledtreatmentid from treatments t join scheduled s on t.treatmentid = s.treatmentid where simulationid = {SimulationId}
+;
+select t.treatmentid, supersede_treatment_id, criteria from treatments t join supersedes s on t.treatmentid = s.treatment_id where simulationid = {SimulationId}
+;
+select p.priorityid, prioritylevel, criteria, years, budget, funding from priority p join priorityfund pf on p.priorityid = pf.priorityid where simulationid = {SimulationId}
+--targets
+--deficient
+--remaining_life_limits
 ";
 
         private static string CommandText => FormattedCommandText.Replace(Environment.NewLine, " ");
@@ -71,7 +82,11 @@ select t.treatmentid, cost_, criteria from treatments t join costs c on t.treatm
             time(createPerformanceCurves, nameof(createPerformanceCurves));
             time(createCommittedProjects, nameof(createCommittedProjects));
             time(createTreatmentsWithConsequences, nameof(createTreatmentsWithConsequences));
-            //time(fillTreatmentCosts, nameof(fillTreatmentCosts));
+            time(fillTreatmentCosts, nameof(fillTreatmentCosts));
+            time(fillTreatmentFeasibilities, nameof(fillTreatmentFeasibilities));
+            time(fillTreatmentSchedulings, nameof(fillTreatmentSchedulings));
+            time(fillTreatmentSupersessions, nameof(fillTreatmentSupersessions));
+            time(createBudgetPriorities, nameof(createBudgetPriorities));
 
             foreach (var result in simulation.Network.Explorer.GetAllValidationResults())
             {
@@ -348,7 +363,7 @@ select t.treatmentid, cost_, criteria from treatments t join costs c on t.treatm
                         var budgetNames = budgetField.Split(',');
                         foreach (var budgetName in budgetNames)
                         {
-                            if (budgetByName.TryGetValue(budgetName, out var budget))
+                            if (budgetByName.TryGetValue(budgetName, out var budget)) // [REVIEW] "Actual_Spent", "No_Funds"?
                             {
                                 treatment.Budgets.Add(budget);
                             }
@@ -377,6 +392,75 @@ select t.treatmentid, cost_, criteria from treatments t join costs c on t.treatm
                     var cost = treatment.AddCost();
                     cost.Equation.Expression = reader.GetString(1);
                     cost.Criterion.Expression = reader.GetString(2);
+                }
+            }
+
+            void fillTreatmentFeasibilities()
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var treatment = treatmentById[id];
+                    var feasibility = treatment.AddFeasibilityCriterion();
+                    feasibility.Expression = reader.GetString(1);
+                }
+            }
+
+            void fillTreatmentSchedulings()
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var treatment = treatmentById[id];
+                    var scheduling = treatment.Schedulings.GetAdd(new TreatmentScheduling());
+                    scheduling.OffsetToFutureYear = reader.GetInt32(1);
+                    var scheduledId = reader.GetInt32(2);
+                    scheduling.Treatment = treatmentById[scheduledId];
+                }
+            }
+
+            void fillTreatmentSupersessions()
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var treatment = treatmentById[id];
+                    var supersession = treatment.AddSupersession();
+                    var supersededId = reader.GetInt32(1);
+                    supersession.Treatment = treatmentById[supersededId];
+                    supersession.Criterion.Expression = reader.GetString(2);
+                }
+            }
+
+            void createBudgetPriorities()
+            {
+                var budgetByName = simulation.InvestmentPlan.Budgets.ToDictionary(budget => budget.Name);
+                var priorityById = new Dictionary<int, BudgetPriority>();
+
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    if (!priorityById.TryGetValue(id, out var priority))
+                    {
+                        priority = simulation.AnalysisMethod.AddBudgetPriority();
+                        priority.PriorityLevel = reader.GetInt32(1);
+                        priority.Criterion.Expression = reader.GetString(2);
+                        priority.Year = reader.GetNullableInt32(3);
+
+                        if (priority.Year == 0)
+                        {
+                            priority.Year = null;
+                        }
+
+                        priorityById.Add(id, priority);
+                    }
+
+                    var budgetName = reader.GetString(4);
+                    if (budgetByName.TryGetValue(budgetName, out var budget)) // [REVIEW] "Actual_Spent", "No_Funds"?
+                    {
+                        var pair = priority.GetBudgetPercentagePair(budget);
+                        pair.Percentage = (decimal)reader.GetDouble(5);
+                    }
                 }
             }
         }

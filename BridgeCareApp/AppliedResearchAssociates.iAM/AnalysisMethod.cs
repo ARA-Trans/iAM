@@ -38,9 +38,10 @@ namespace AppliedResearchAssociates.iAM
                     results.Add(ValidationStatus.Error, MessageStrings.InvalidSpendingStrategy, this, nameof(SpendingStrategy));
                 }
 
-                if (BudgetPriorities.Select(priority => (priority.PriorityLevel, priority.Year)).Distinct().Count() < BudgetPriorities.Count)
+                var prioritiesByLevelYear = BudgetPriorities.ToLookup(priority => (priority.PriorityLevel, priority.Year));
+                if (prioritiesByLevelYear.Any(group => group.Count() > 1 && group.Any(priority => priority.Criterion.ExpressionIsBlank)))
                 {
-                    results.Add(ValidationStatus.Error, "At least one priority level-year is represented more than once.", this, nameof(BudgetPriorities));
+                    results.Add(ValidationStatus.Error, "At least one priority level-year has multiple criteria where at least one criterion is blank.", this, nameof(BudgetPriorities));
                 }
 
                 var deficientConditionGoalNames = GetNames(DeficientConditionGoals);
