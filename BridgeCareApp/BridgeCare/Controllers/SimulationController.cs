@@ -226,6 +226,7 @@ namespace BridgeCare.Controllers
 
         [HttpPost]
         [Route("api/SetScenarioUsers/{id}")]
+        [RestrictAccess]
         public IHttpActionResult SetSimulationUsers(int id, [FromBody]SimulationUserModel[] simulationUsers)
         {
             UserInformationModel userInformation = ESECSecurity.GetUserInformation(Request);
