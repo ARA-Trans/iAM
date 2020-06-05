@@ -577,7 +577,9 @@
         onSubmitSharedScenario(scenarioUsers: ScenarioUser[]) {
             this.showShareScenarioDialog = false;
 
-            if (hasValue(scenarioUsers)) {
+            // hasValue(scenarioUsers) will return false for an empty list,
+            // even though an empty list is a valid state
+            if (scenarioUsers !== null && scenarioUsers !== undefined) {
                 this.sharingScenario.users = scenarioUsers;
 
                 this.updateScenarioUsersAction({
