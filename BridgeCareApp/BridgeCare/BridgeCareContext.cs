@@ -54,10 +54,6 @@ namespace BridgeCare
                 .Property(e => e.SIMULATION)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<YearlyInvestmentEntity>()
-                .Property(e => e.BUDGETNAME)
-                .IsUnicode(false);
-
             modelBuilder.Entity<InvestmentsEntity>()
                 .Property(e => e.BUDGETORDER)
                 .IsUnicode(false);

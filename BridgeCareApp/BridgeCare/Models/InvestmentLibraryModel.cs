@@ -36,16 +36,17 @@ namespace BridgeCare.Models
             BudgetOrder = entity.INVESTMENTS?.BUDGETORDER?.Split(',').ToList();
             BudgetYears = entity.YEARLYINVESTMENTS
                 .Select(yi => new InvestmentLibraryBudgetYearModel(yi)).ToList();
-            CriteriaDrivenBudgets = entity.CriteriaDrivenBudgets.Select(budget => new CriteriaDrivenBudgetModel(budget)).ToList();
-
-            if (CriteriaDrivenBudgets.Any() && BudgetYears.Any())
+            CriteriaDrivenBudgets = entity.CriteriaDrivenBudgets.Select(bc => new CriteriaDrivenBudgetModel(bc)).ToList();
+            BudgetYears = new List<InvestmentLibraryBudgetYearModel>();
+            entity.CriteriaDrivenBudgets.ToList().ForEach(bc =>
             {
-                CriteriaDrivenBudgets.ForEach(cdb =>
-                {
-                    BudgetYears.Where(by => by.BudgetName == cdb.BudgetName)
-                        .ToList().ForEach(by => by.CriteriaDrivenBudgetId = cdb.Id);
-                });
-            }
+                BudgetYears.AddRange(bc.YEARLYINVESTMENTS
+                    .Select(yi => new InvestmentLibraryBudgetYearModel(yi) {
+                        CriteriaDrivenBudgetId = bc.BUDGET_CRITERIA_ID.ToString()
+                    })
+                    .OrderBy(yi => yi.Year)
+                );
+            });
         }
 
         public void UpdateInvestment(InvestmentsEntity entity)

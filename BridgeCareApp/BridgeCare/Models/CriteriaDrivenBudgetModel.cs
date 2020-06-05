@@ -8,7 +8,6 @@ namespace BridgeCare.Models.CriteriaDrivenBudgets
 {
     public class CriteriaDrivenBudgetModel : CrudModel
     {
-        public int ScenarioId { get; set; }
         public string Id { get; set; }
         public string BudgetName { get; set; }
         public string Criteria { get; set; }
