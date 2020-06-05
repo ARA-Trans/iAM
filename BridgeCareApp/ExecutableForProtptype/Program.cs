@@ -15,9 +15,9 @@ namespace ExecutableForProtptype
         public static void Main()
         {
             var rawAttributes = File.ReadAllText("metaData.json");
-            var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
+            var attributeMetaData = JsonConvert.DeserializeAnonymousType(rawAttributes, new { AttributeMetaData = default(List<AttributeMetaDatum>)}).AttributeMetaData;
 
-            foreach (var item in myJsonObject.AttributeConfigData)
+            foreach (var item in attributeMetaData)
             {
                 if (item.DataType.ToLower().Equals("number"))
                 {
@@ -48,7 +48,7 @@ namespace ExecutableForProtptype
 
     public class NumericAttributeDataCreator
     {
-        public List<AttributeDatum<double>> GetNumericAttributeDatum(ConfigFileModel item)
+        public List<AttributeDatum<double>> GetNumericAttributeDatum(AttributeMetaDatum item)
         {
             var sqlConnection = new SqlAttributeConnection(item.ConnectionString, item.DataRetrievalCommand);
             var attributeData = sqlConnection.GetData<double>();

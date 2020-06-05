@@ -58,10 +58,12 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         public void CreateAttributes()
         {
             var rawAttributes = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "\\metaData.json");
-            var myJsonObject = JsonConvert.DeserializeObject<AttributeList>(rawAttributes);
+            var attributeMetaData = JsonConvert.DeserializeAnonymousType(rawAttributes, new { AttributeMetaData = default(List<AttributeMetaDatum>) }).AttributeMetaData;
 
-            foreach (var item in myJsonObject.AttributeConfigData)
+            foreach (var item in attributeMetaData)
             {
+                Assert.That(item.DataRetrievalCommand, Is.Not.Null);
+                Assert.That(item.DataType, Is.Not.Null);
                 if (item.DataType.ToLower().Equals("number"))
                 {
                     if (item.Location.ToLower().Equals("linear"))
@@ -70,9 +72,10 @@ namespace AppliedResearchAssociates.iAM.UnitTests
                         var numericAttributeData = new NumericAttributeDataCreator();
                         var result = numericAttributeData.GetNumericAttributeDatum(item);
                         foreach (var data in result)
-                        {
-                            Assert.That(data.Location.ToString(), Is.EqualTo(NumericAttributeDatum.Location.ToString()));
+                        { // make sure that the properties are not null. We should not have any currupt data
+                            Assert.That(data.Location, Is.Not.Null);
                             Assert.AreEqual(data.Attribute.Name, NumericAttributeDatum.Attribute.Name);
+                            Assert.That(data.Attribute.Name, Is.Not.Null);
                         }
                     }
                     else
@@ -95,7 +98,6 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         }
 
         [Test]
-        // This test is meant to fail right now, because "GetData()" has not been implemented for "SqlAttributeConnection" class
         public void GetNumericDataSqlConnection()
         {
             // Arrange
@@ -106,7 +108,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
             // Assert
             foreach (var item in output)
             {
-                Assert.That(item.value, !Is.Null);
+                Assert.That(item.value, Is.Not.Null); //convert to double shouldn't throw error
                 Assert.That(item.value, Is.TypeOf<double>());
             }
         }
@@ -127,10 +129,10 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         }
 
         [Test]
-        public void CreateNumberAttributeForLinearLocation()
+        public void CreateNumericAttributeForLinearLocation()
         {
             // Arrange / Act
-            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.LinearLocationForNumberAttribut);
+            var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.LinearLocationForNumberAttribute);
 
             foreach (var item in output)
             {
@@ -166,7 +168,7 @@ namespace AppliedResearchAssociates.iAM.UnitTests
         }
 
         [Test]
-        public void CreateNumberAttributeForSectionLocation()
+        public void CreateNumericAttributeForSectionLocation()
         {
             // Arrange / Act
             var output = AttributeDatumBuilder<double>.CreateAttributeData(iAMConfiguration.C, TestDataForAttribute.SectionLocationForNumberAttribute);

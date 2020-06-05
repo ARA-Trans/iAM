@@ -11,5 +11,8 @@ namespace AppliedResearchAssociates.iAM.UnitTests
     {
         public static Segment<double> NumericSegmentLinearLocation = new Segment<double>
             (TestDataForAttribute.NumericAttributeDataLinearLocation.Location, TestDataForAttribute.NumericAttributeDataLinearLocation);
+
+        public static Segment<string> TextSegmentLinearLocation = new Segment<string>
+            (TestDataForAttribute.TextAttributeDataLinearLocOutput.Location, TestDataForAttribute.TextAttributeDataLinearLocOutput);
     }
 }
