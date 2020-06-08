@@ -157,6 +157,7 @@ namespace BridgeCare.DataAccessLayer
                         var newBC = new CriteriaDrivenBudgetEntity(id, bcModel);
                         db.CriteriaDrivenBudgets.Add(newBC);
                         db.SaveChanges();
+
                         if (model.BudgetYears.Any(yiModel => yiModel.CriteriaDrivenBudgetId == bcModel.Id))
                         {
                             model.BudgetYears.Where(yiModel => yiModel.CriteriaDrivenBudgetId == bcModel.Id).ToList()
@@ -168,8 +169,6 @@ namespace BridgeCare.DataAccessLayer
                                     });
                                 });
                         }
-
-                        db.CriteriaDrivenBudgets.Add(newBC);
                     });
             }
 
