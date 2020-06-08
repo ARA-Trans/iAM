@@ -89,6 +89,10 @@ select budgetname, year_, amount
 from yearlyinvestment
 where simulationid = {SimulationId}
 
+select budget_name, criteria
+from budget_criteria
+where simulationid = {SimulationId}
+
 select st.split_treatment_id, description, criteria, amount, percentage
 from split_treatment st join split_treatment_limit stl on st.split_treatment_id = stl.split_treatment_id
 where simulationid = {SimulationId}
@@ -138,6 +142,7 @@ where simulationid = {SimulationId}
             time(createDeficientConditionGoals, nameof(createDeficientConditionGoals));
             time(createRemainingLifeLimits, nameof(createRemainingLifeLimits));
             time(fillBudgetAmounts, nameof(fillBudgetAmounts));
+            time(createBudgetConditions, nameof(createBudgetConditions));
             time(createCashFlowRules, nameof(createCashFlowRules));
 
             foreach (var rule in simulation.InvestmentPlan.CashFlowRules)
@@ -599,6 +604,21 @@ where simulationid = {SimulationId}
                     var year = reader.GetInt32(1);
                     var yearOffset = year - simulation.InvestmentPlan.FirstYearOfAnalysisPeriod;
                     budget.YearlyAmounts[yearOffset].Value = (decimal)reader.GetDouble(2);
+                }
+            }
+
+            void createBudgetConditions()
+            {
+                var budgetByName = simulation.InvestmentPlan.Budgets.ToDictionary(budget => budget.Name);
+
+                while (reader.Read())
+                {
+                    var budgetName = reader.GetNullableString(0);
+                    var budget = budgetByName[budgetName];
+                    var criterion = reader.GetNullableString(1);
+                    var budgetCondition = simulation.InvestmentPlan.AddBudgetCondition();
+                    budgetCondition.Budget = budget;
+                    budgetCondition.Criterion.Expression = criterion;
                 }
             }
 
