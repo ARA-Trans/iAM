@@ -9,6 +9,9 @@ namespace AppliedResearchAssociates.iAM.Analysis
 {
     public sealed class SimulationRunner
     {
+        // [REVIEW] Are cash flow rules only considered when the non-cash-flow payment logic isn't
+        // sufficient to cover the treatment cost? Or are they always used if their criteria are met?
+
         // [REVIEW] A treatment's "any" shadow applies to *all* treatments, including that same
         // treatment, right?
 
@@ -61,9 +64,12 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
             Inform("Simulation initializing ...");
 
+            // [REVIEW] Ensure these pre-computed data structures are as exhaustive as possible.
+
             ActiveTreatments = Simulation.GetActiveTreatments();
             BudgetContexts = Simulation.InvestmentPlan.Budgets.Select(budget => new BudgetContext(budget)).ToArray();
             CommittedProjectsPerSection = Simulation.CommittedProjects.ToLookup(committedProject => committedProject.Section);
+            ConditionsPerBudget = Simulation.InvestmentPlan.BudgetConditions.ToLookup(budgetCondition => budgetCondition.Budget);
             CurvesPerAttribute = Simulation.PerformanceCurves.ToLookup(curve => curve.Attribute);
             NumberAttributeByName = Simulation.Network.Explorer.NumberAttributes.ToDictionary(attribute => attribute.Name, StringComparer.OrdinalIgnoreCase);
 
@@ -172,6 +178,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
         private IReadOnlyCollection<BudgetContext> BudgetContexts;
 
         private Func<bool> ConditionGoalsAreMet;
+
+        private ILookup<Budget, BudgetCondition> ConditionsPerBudget;
 
         private IReadOnlyCollection<ConditionActual> DeficientConditionActuals;
 
@@ -514,6 +522,9 @@ namespace AppliedResearchAssociates.iAM.Analysis
 
                     foreach (var (yearProgress, yearOffset) in Zip.Short(progression, Static.Count(1)))
                     {
+                        // [FIXME] As of 2020-06-08, when using the current testing program, there's
+                        // a crash here when, for a certain section, the year is already scheduled
+                        // (i.e. the key is already present).
                         sectionContext.EventSchedule.Add(year + yearOffset, yearProgress);
                     }
                 }
@@ -538,8 +549,8 @@ namespace AppliedResearchAssociates.iAM.Analysis
                     continue;
                 }
 
-                var budgetConditions = Simulation.InvestmentPlan.BudgetConditions.Where(condition => condition.Budget == budgetContext.Budget).ToArray();
-                var budgetConditionIsMet = budgetConditions.Length == 0 || budgetConditions.Any(condition => condition.Criterion.EvaluateOrDefault(sectionContext));
+                var budgetConditions = ConditionsPerBudget[budgetContext.Budget];
+                var budgetConditionIsMet = budgetConditions.Count() == 0 || budgetConditions.Any(condition => condition.Criterion.EvaluateOrDefault(sectionContext));
                 if (!budgetConditionIsMet)
                 {
                     budgetDetail.BudgetReason = BudgetReason.ConditionNotMet;
