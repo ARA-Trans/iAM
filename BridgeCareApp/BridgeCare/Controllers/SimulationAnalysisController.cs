@@ -35,7 +35,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = GetAnySimulationAnalysis,
                 [Role.DISTRICT_ENGINEER] = GetPermittedSimulationAnalysis,
                 [Role.CWOPA] = GetPermittedSimulationAnalysis,
-                [Role.PLANNING_PARTNER] = GetPermittedSimulationAnalysis
+                [Role.GENERAL_USERS] = GetPermittedSimulationAnalysis
             };
         }
 
@@ -56,7 +56,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = UpdateSimulationAnalysis,
                 [Role.DISTRICT_ENGINEER] = PartialUpdatePermittedSimulationAnalysis,
                 [Role.CWOPA] = PartialUpdatePermittedSimulationAnalysisWithoutWeights,
-                [Role.PLANNING_PARTNER] = PartialUpdatePermittedSimulationAnalysis
+                [Role.GENERAL_USERS] = PartialUpdatePermittedSimulationAnalysis
             };
         }
 

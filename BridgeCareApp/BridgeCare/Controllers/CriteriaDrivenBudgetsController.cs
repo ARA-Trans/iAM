@@ -47,7 +47,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = GetAnyBudgets,
                 [Role.DISTRICT_ENGINEER] = GetPermittedBudgets,
                 [Role.CWOPA] = GetAnyBudgets,
-                [Role.PLANNING_PARTNER] = GetPermittedBudgets
+                [Role.GENERAL_USERS] = GetPermittedBudgets
             };
         }
 
@@ -66,7 +66,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = SaveAnyBudgets,
                 [Role.DISTRICT_ENGINEER] = SavePermittedBudgets,
                 [Role.CWOPA] = SavePermittedBudgets,
-                [Role.PLANNING_PARTNER] = SavePermittedBudgets
+                [Role.GENERAL_USERS] = SavePermittedBudgets
             };
         }
 

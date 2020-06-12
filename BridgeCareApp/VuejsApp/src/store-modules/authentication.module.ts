@@ -106,7 +106,7 @@ const actions = {
                         localStorage.setItem('UserInfo', response.data);
                         const userInfo: UserInfo = JSON.parse(response.data) as UserInfo;
                         const username: string = parseLDAP(userInfo.sub)[0];
-                        commit('hasRoleMutator', regexCheckLDAP(userInfo.roles, /PD-BAMS-(Administrator|CWOPA|PlanningPartner|DBEngineer)/));
+                        commit('hasRoleMutator', regexCheckLDAP(userInfo.roles, /PD-BAMS(-(Administrator|CWOPA|DBEngineer)|USERS)/));
                         if (state.hasRole) {
                             commit('isAdminMutator', checkLDAP(userInfo.roles, 'PD-BAMS-Administrator'));
                             commit('isCWOPAMutator', checkLDAP(userInfo.roles, 'PD-BAMS-CWOPA'));

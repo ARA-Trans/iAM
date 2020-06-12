@@ -44,7 +44,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = GetAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = GetPermittedLibrary,
                 [Role.CWOPA] = GetAnyLibrary,
-                [Role.PLANNING_PARTNER] = GetPermittedLibrary
+                [Role.GENERAL_USERS] = GetPermittedLibrary
             };
         }
 
@@ -63,7 +63,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = SaveAnyLibrary,
                 [Role.DISTRICT_ENGINEER] = SavePermittedLibrary,
                 [Role.CWOPA] = SavePermittedLibrary,
-                [Role.PLANNING_PARTNER] = SavePermittedLibrary
+                [Role.GENERAL_USERS] = SavePermittedLibrary
             };
         }
 

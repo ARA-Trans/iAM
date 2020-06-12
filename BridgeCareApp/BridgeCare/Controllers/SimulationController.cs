@@ -60,7 +60,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = GetAllSimulations,
                 [Role.DISTRICT_ENGINEER] = GetAllSimulations,
                 [Role.CWOPA] = GetAllSimulations,
-                [Role.PLANNING_PARTNER] = GetAllSimulations
+                [Role.GENERAL_USERS] = GetAllSimulations
             };
         }
 
@@ -80,7 +80,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = UpdateAnySimulation,
                 [Role.DISTRICT_ENGINEER] = UpdatePermittedSimulation,
                 [Role.CWOPA] = UpdatePermittedSimulation,
-                [Role.PLANNING_PARTNER] = UpdatePermittedSimulation
+                [Role.GENERAL_USERS] = UpdatePermittedSimulation
             };
         }
 
@@ -96,7 +96,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = RunAnySimulation,
                 [Role.DISTRICT_ENGINEER] = RunPermittedSimulation,
                 [Role.CWOPA] = RunPermittedSimulation,
-                [Role.PLANNING_PARTNER] = RunPermittedSimulation
+                [Role.GENERAL_USERS] = RunPermittedSimulation
             };
         }
 
@@ -116,7 +116,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = DeleteAnySimulation,
                 [Role.DISTRICT_ENGINEER] = DeletePermittedSimulation,
                 [Role.CWOPA] = DeletePermittedSimulation,
-                [Role.PLANNING_PARTNER] = DeletePermittedSimulation
+                [Role.GENERAL_USERS] = DeletePermittedSimulation
             };
         }
 
@@ -132,7 +132,7 @@ namespace BridgeCare.Controllers
                 [Role.ADMINISTRATOR] = SetAnySimulationUsers,
                 [Role.DISTRICT_ENGINEER] = SetPermittedSimulationUsers,
                 [Role.CWOPA] = SetPermittedSimulationUsers,
-                [Role.PLANNING_PARTNER] = SetPermittedSimulationUsers
+                [Role.GENERAL_USERS] = SetPermittedSimulationUsers
             };
         }
 

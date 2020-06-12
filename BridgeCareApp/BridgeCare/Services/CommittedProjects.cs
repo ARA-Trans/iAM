@@ -52,14 +52,14 @@ namespace BridgeCare.Services
                 [Role.ADMINISTRATOR] = GetAnyProjects,
                 [Role.DISTRICT_ENGINEER] = GetPermittedProjects,
                 [Role.CWOPA] = GetPermittedProjects,
-                [Role.PLANNING_PARTNER] = GetPermittedProjects
+                [Role.GENERAL_USERS] = GetPermittedProjects
             };
             CommittedProjectsSaveMethods = new Dictionary<string, CommittedProjectsSaveMethod>
             {
                 [Role.ADMINISTRATOR] = SaveAnyProjects,
                 [Role.DISTRICT_ENGINEER] = SavePermittedProjects,
                 [Role.CWOPA] = SavePermittedProjects,
-                [Role.PLANNING_PARTNER] = SavePermittedProjects
+                [Role.GENERAL_USERS] = SavePermittedProjects
             };
         }
 
