@@ -1,6 +1,6 @@
 import {AxiosPromise} from 'axios';
 import {axiosInstance} from '@/shared/utils/axios-instance';
-import {NetworkAttribute} from '@/shared/models/iAM/attribute';
+import {NetworkAttributes} from '@/shared/models/iAM/attribute';
 
 export default class AttributeService {
     /**
@@ -10,7 +10,7 @@ export default class AttributeService {
         return axiosInstance.get('/api/GetAttributes');
     }
 
-    static getAttributeSelectValues(networkAttribute: NetworkAttribute): AxiosPromise {
-        return axiosInstance.get('/api/GetAttributeSelectValues', {params: networkAttribute});
+    static getAttributeSelectValues(networkAttributes: NetworkAttributes): AxiosPromise {
+        return axiosInstance.post('/api/GetAttributesSelectValues', networkAttributes);
     }
 }

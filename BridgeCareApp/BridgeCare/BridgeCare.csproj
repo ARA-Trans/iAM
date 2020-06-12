@@ -283,6 +283,7 @@
     <Compile Include="Models\CashFlowLibraryModel.cs" />
     <Compile Include="Models\CriteriaValidationResult.cs" />
     <Compile Include="Models\EquationValidationResult.cs" />
+    <Compile Include="Models\NetworkAttributes.cs" />
     <Compile Include="Models\SimulationUserModel.cs" />
     <Compile Include="Models\SplitTreatmentLimitModel.cs" />
     <Compile Include="Models\SplitTreatmentModel.cs" />
