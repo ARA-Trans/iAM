@@ -3,9 +3,9 @@ export interface Attribute {
     type: string;
 }
 
-export interface NetworkAttribute {
+export interface NetworkAttributes {
     networkId: number;
-    attribute: string;
+    attributes: string[];
 }
 
 export interface AttributeSelectValues {
@@ -14,6 +14,7 @@ export interface AttributeSelectValues {
 }
 
 export interface AttributeSelectValuesResult {
+    attribute: string;
     values: string[];
     resultMessage: string;
 }

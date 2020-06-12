@@ -242,19 +242,16 @@
             this.resetSubCriteriaValidationMessageProperties();
 
             if (hasValue(this.selectedSubCriteriaClause) && hasValue(this.selectedSubCriteriaClause!.children)) {
-                let missingAttribute: string = '';
+                let missingAttributes: string[] = [];
 
                 for (let index = 0; index < this.selectedSubCriteriaClause!.children!.length; index++) {
-                    missingAttribute = this.getMissingAttribute(this.selectedSubCriteriaClause!.children![index].query);
-                    if (hasValue(missingAttribute)) {
-                        break;
-                    }
+                    missingAttributes = this.getMissingAttribute(this.selectedSubCriteriaClause!.children![index].query, missingAttributes);
                 }
 
-                if (hasValue(missingAttribute)) {
+                if (hasValue(missingAttributes)) {
                     this.getAttributeSelectValuesAction({networkAttribute: {
                             networkId: this.stateNetworks[0].networkId,
-                            attribute: missingAttribute
+                            attributes: missingAttributes
                         }
                     });
                 }
@@ -653,28 +650,23 @@
             return clone(emptyCriteria);
         }
 
-        getMissingAttribute(query: any) {
-            let missingAttribute: string = '';
-
+        getMissingAttribute(query: any, missingAttributes: string[]) {
             if (query.hasOwnProperty('children')) {
                 const criteria: Criteria = query as Criteria;
                 if (hasValue(criteria.children)) {
-                    while (!hasValue(missingAttribute)) {
-                        criteria.children!.forEach((child: CriteriaType) => {
-                            missingAttribute = this.getMissingAttribute(child.query);
-                        });
-                    }
-
-                    return missingAttribute;
+                    criteria.children!.forEach((child: CriteriaType) => {
+                        missingAttributes = this.getMissingAttribute(child.query, missingAttributes);
+                    });
                 }
             } else {
                 const criteriaRule: CriteriaRule = query as CriteriaRule;
-                if (!any(propEq('attribute', criteriaRule.rule), this.stateAttributesSelectValues)) {
-                    return criteriaRule.rule;
+                if (!any(propEq('attribute', criteriaRule.rule), this.stateAttributesSelectValues) &&
+                    missingAttributes.indexOf(criteriaRule.rule) === -1) {
+                    missingAttributes.push(criteriaRule.rule);
                 }
             }
 
-            return missingAttribute;
+            return missingAttributes;
         }
     }
 </script>
