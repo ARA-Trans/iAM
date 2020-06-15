@@ -50,17 +50,18 @@
                                         :return-value.sync="props.item[header.value]"
                                         @save="onEditPriorityProperty(props.item, header.value, props.item[header.value])"
                                         large lazy persistent>
-                                    <v-text-field readonly single-line class="sm-txt"
+                                    <v-text-field v-if="header.value === 'priorityLevel'" readonly single-line class="sm-txt"
                                                   :value="props.item[header.value]"
                                                   :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                    <v-text-field v-else readonly single-line class="sm-txt"
+                                                  :value="props.item[header.value]"/>
                                     <template slot="input">
                                         <v-text-field v-if="header.value === 'priorityLevel'" label="Edit" single-line
                                                       v-model.number="props.item[header.value]"
                                                       :mask="'##########'"
                                                       :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                                         <v-text-field v-else label="Edit" single-line :mask="'####'"
-                                                      v-model.number="props.item[header.value]"
-                                                      :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                                      v-model.number="props.item[header.value]"/>
                                     </template>
                                 </v-edit-dialog>
                             </div>
@@ -109,7 +110,7 @@
                 </v-data-table>
             </div>
         </v-flex>
-        <v-flex v-show="hasSelectedPriorityLibrary && selectedPriorityLibrary.id !== stateScenarioPriorityLibrary.id"
+        <v-flex v-show="hasSelectedPriorityLibrary && selectedScenarioId === '0'"
                 xs12>
             <v-layout justify-center>
                 <v-flex xs6>
@@ -226,7 +227,7 @@
         prioritiesDataTableRows: PrioritiesDataTableRow[] = [];
         priorityDataTableHeaders: DataTableHeader[] = [
             {text: 'Priority', value: 'priorityLevel', align: 'left', sortable: false, class: '', width: ''},
-            {text: 'Year', value: 'year', align: 'left', sortable: false, class: '', width: ''},
+            {text: 'Year', value: 'year', align: 'left', sortable: false, class: '', width: '7%'},
             {text: 'Criteria', value: 'criteria', align: 'left', sortable: false, class: '', width: ''}
         ];
         selectedPriorityRows: PrioritiesDataTableRow[] = [];
@@ -626,8 +627,7 @@
                                 this.rules['generalRules'].valueIsWithinRange(pf.funding, [0, 100]);
                     });
 
-                    return this.rules['generalRules'].valueIsNotEmpty(p.priorityLevel) === true &&
-                            this.rules['generalRules'].valueIsNotEmpty(p.year) === true && allSubDataIsValid;
+                    return this.rules['generalRules'].valueIsNotEmpty(p.priorityLevel) === true && allSubDataIsValid;
                 });
 
                 if (this.selectedScenarioId !== '0') {
