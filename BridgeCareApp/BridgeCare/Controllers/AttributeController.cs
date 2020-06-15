@@ -2,6 +2,7 @@
 using BridgeCare.Security;
 using System;
 using System.Web.Http;
+using BridgeCare.Models;
 
 namespace BridgeCare.Controllers
 {
@@ -25,9 +26,9 @@ namespace BridgeCare.Controllers
         [RestrictAccess]
         public IHttpActionResult GetAttributes() => Ok(repo.GetAttributes(db));
 
-        [HttpGet]
-        [Route("api/GetAttributeSelectValues")]
+        [HttpPost]
+        [Route("api/GetAttributesSelectValues")]
         [RestrictAccess]
-        public IHttpActionResult GetAttributeSelectValues([FromUri] int networkId, [FromUri] string attribute) => Ok(repo.GetAttributeSelectValues(networkId, attribute, db));
+        public IHttpActionResult GetAttributeSelectValues([FromBody] NetworkAttributes model) => Ok(repo.GetAttributeSelectValues(model, db));
     }
 }

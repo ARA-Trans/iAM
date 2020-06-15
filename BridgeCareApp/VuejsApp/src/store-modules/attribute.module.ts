@@ -21,16 +21,8 @@ const mutations = {
     numericAttributesMutator(state: any, numericAttributes: string[]) {
         state.numericAttributes = clone(numericAttributes);
     },
-    attributesSelectValuesMutator(state: any, attributeSelectValues: AttributeSelectValues) {
-        if (any(propEq('attribute', attributeSelectValues.attribute), state.attributesSelectValues)) {
-            state.attributesSelectValues = update(
-                findIndex(propEq('attribute', attributeSelectValues.attribute), state.attributesSelectValues),
-                attributeSelectValues,
-                state.attributesSelectValues
-            );
-        } else {
-            state.attributesSelectValues = append(attributeSelectValues, state.attributesSelectValues);
-        }
+    attributesSelectValuesMutator(state: any, attributesSelectValues: AttributeSelectValues[]) {
+        state.attributesSelectValues = [...state.attributesSelectValues, ...attributesSelectValues];
     }
 };
 
@@ -51,10 +43,22 @@ const actions = {
         await AttributeService.getAttributeSelectValues(payload.networkAttribute)
             .then((response: AxiosResponse) => {
                 if (hasValue(response, 'data')) {
-                    const result: AttributeSelectValuesResult = response.data as AttributeSelectValuesResult;
-                    commit('attributesSelectValuesMutator', {attribute: payload.networkAttribute.attribute, values: result.values});
-                    if (result.resultMessage.toLowerCase() !== 'success') {
-                        dispatch('setErrorMessage', {message: result.resultMessage});
+                    const results: AttributeSelectValuesResult[] = response.data as AttributeSelectValuesResult[];
+                    const attributesSelectValues: AttributeSelectValues[] = [];
+                    const errorMessages: string[] = [];
+
+                    results.forEach((result: AttributeSelectValuesResult) => {
+                        attributesSelectValues.push({attribute: result.attribute, values: result.values});
+
+                        if (result.resultMessage.toLowerCase() !== 'success') {
+                            errorMessages.push(result.resultMessage);
+                        }
+                    });
+
+                    commit('attributesSelectValuesMutator', attributesSelectValues);
+
+                    if (hasValue(errorMessages)) {
+                        dispatch('setErrorMessage', {message: errorMessages.length === 1 ? errorMessages[0] : errorMessages.join('<br>')});
                     }
                 }
             });
