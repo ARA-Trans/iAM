@@ -25,9 +25,11 @@
                             <v-edit-dialog :return-value.sync="props.item.change"
                                            @save="onEditConsequenceProperty(props.item, 'change', props.item.change)"
                                            large lazy persistent>
-                                <v-text-field readonly single-line class="sm-txt" :value="props.item.change" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                <v-text-field readonly single-line class="sm-txt" :value="props.item.change"
+                                              :rules="[rules['treatmentRules'].changeHasEquation(props.item.change, props.item.equation)]"/>
                                 <template slot="input">
-                                    <v-text-field label="Edit" v-model="props.item.change" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                    <v-text-field label="Edit" v-model="props.item.change"
+                                                  :rules="[rules['treatmentRules'].changeHasEquation(props.item.change, props.item.equation)]"/>
                                 </template>
                             </v-edit-dialog>
                         </td>

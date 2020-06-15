@@ -69,9 +69,19 @@ const investmentRules = {
         return !contains(budget.budgetName, otherBudgetNames) || 'Budget name must be unique';
     }
 };
+/***********************************************TREATMENT RULES********************************************************/
+const treatmentRules = {
+    'changeHasEquation': (change: string, equation: string) => {
+        if (!hasValue(change)) {
+            return hasValue(equation) || 'Must have an equation to be blank';
+        }
+        return true;
+    }
+};
 /**************************************************ALL RULES***********************************************************/
 export const rules: InputValidationRules = {
     'generalRules': generalRules,
     'cashFlowRules': cashFlowRules,
-    'investmentRules': investmentRules
+    'investmentRules': investmentRules,
+    'treatmentRules': treatmentRules
 };

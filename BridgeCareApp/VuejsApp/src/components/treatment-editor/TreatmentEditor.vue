@@ -432,7 +432,7 @@
                 const allDataIsValid: boolean = this.selectedTreatmentLibrary.treatments.every((t: Treatment) => {
                     const allSubDataIsValid: boolean = t.consequences.every((c: Consequence) => {
                         return this.rules['generalRules'].valueIsNotEmpty(c.attribute) === true &&
-                                this.rules['generalRules'].valueIsNotEmpty(c.change) === true;
+                                this.rules['treatmentRules'].changeHasEquation(c.change, c.equation) === true;
                     });
                     return allSubDataIsValid && this.rules['generalRules'].valueIsNotEmpty(t.name) === true &&
                             this.rules['generalRules'].valueIsNotEmpty(t.feasibility.yearsBeforeAny) === true &&
