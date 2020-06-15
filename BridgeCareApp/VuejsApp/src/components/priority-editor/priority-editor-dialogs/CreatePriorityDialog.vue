@@ -11,7 +11,7 @@
                     <v-text-field label="Priority" outline v-model.number="newPriority.priorityLevel"
                                   :mask="'##########'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
                     <v-text-field label="Year" outline v-model.number="newPriority.year"
-                                    :mask="'####'" :rules="[rules['generalRules'].valueIsNotEmpty]"/>
+                                    :mask="'####'"/>
                 </v-layout>
             </v-card-text>
             <v-card-actions>
