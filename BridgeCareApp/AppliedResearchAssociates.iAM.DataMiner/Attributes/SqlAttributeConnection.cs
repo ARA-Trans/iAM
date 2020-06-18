@@ -1,34 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace AppliedResearchAssociates.iAM.DataMiner.Attributes
 {
-    public class SqlConnection : AttributeConnection
+    public class SqlAttributeConnection : AttributeConnection
     {
-        public string UserName { get; set; }
+        public override string ConnectionInformation { get; }
 
-        public string Password { get; set; }
+        public override string DataRetrievalCommand { get; }
 
-        public string Server { get; set; }
-
-        public string DataSource { get; set; }
-
-        public SqlConnection(string userName, string password, string server, string dataSource)
+        public SqlAttributeConnection(string connectionInformation, string dataRetrievalCommand)
         {
-            UserName = userName;
-            Password = password;
-            Server = server;
-            DataSource = dataSource;
+            ConnectionInformation = connectionInformation;
+            DataRetrievalCommand = dataRetrievalCommand;
         }
-
-        public override void Connect()
-        {
-            throw new System.NotImplementedException();
-        }
-
+                
         public override IEnumerable<(Location location, T value)> GetData<T>()
         {
-            throw new NotImplementedException();
+            string routeName = null;
+            double? start = null;
+            double? end = null;
+            Direction? direction = null;
+            string wellKnownText = null;
+            string uniqueIdentifeir = "";
+
+            using (var conn = new SqlConnection(ConnectionInformation))
+            {
+                var command = new SqlCommand(DataRetrievalCommand, conn);
+                command.Connection.Open();
+                var dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    routeName = dataReader.GetFieldValue<string>(1);
+                    start = dataReader.GetFieldValue<double>(2);
+                    end = dataReader.GetFieldValue<double>(3);
+                    var rawDirection = dataReader.GetFieldValue<string>(4);
+                    if(rawDirection == "North")
+                    {
+                        direction = 0;
+                    }
+                    var value = dataReader.GetFieldValue<T>(5);
+                    var dataTime = dataReader.GetFieldValue<DateTime>(6);
+
+                    yield return (LocationBuilder.CreateLocation(
+                        uniqueIdentifeir, routeName, start, end, direction, wellKnownText)
+                        , value);
+                }
+            }
         }
     }
 }
