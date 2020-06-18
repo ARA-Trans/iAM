@@ -17,18 +17,27 @@ namespace BridgeCare.EntityClasses.CriteriaDrivenBudgets
         public int SIMULATIONID { get; set; }
         public string BUDGET_NAME { get; set; }
         public string CRITERIA { get; set; }
+        public virtual ICollection<YearlyInvestmentEntity> YEARLYINVESTMENTS { get; set; }
 
         public CriteriaDrivenBudgetEntity() { }
 
-        public CriteriaDrivenBudgetEntity(int simulationId, CriteriaDrivenBudgetModel criteriaModel)
+        public CriteriaDrivenBudgetEntity(int simulationId, CriteriaDrivenBudgetModel model)
         {
             SIMULATIONID = simulationId;
-            BUDGET_NAME = criteriaModel.BudgetName;
-            CRITERIA = criteriaModel.Criteria;
+            BUDGET_NAME = model.BudgetName;
+            CRITERIA = model.Criteria;
         }
 
         public static void DeleteEntry(CriteriaDrivenBudgetEntity entity, BridgeCareContext db)
         {
+            if (entity.YEARLYINVESTMENTS.Any())
+            {
+                entity.YEARLYINVESTMENTS.ToList().ForEach(yi =>
+                {
+                    YearlyInvestmentEntity.DeleteEntry(yi, db);
+                });
+            }
+
             db.Entry(entity).State = EntityState.Deleted;
         }
     }
