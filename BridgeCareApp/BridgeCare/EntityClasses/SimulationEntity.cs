@@ -90,6 +90,7 @@ namespace BridgeCare.EntityClasses
             WEIGHTING = "none";
             COMMITTED_START = DateTime.Now.Year;
             COMMITTED_PERIOD = 1;
+
             PRIORITIES = new List<PriorityEntity>
             {
                 new PriorityEntity
@@ -105,26 +106,12 @@ namespace BridgeCare.EntityClasses
                     }
                 }
             };
-            YEARLYINVESTMENTS = new List<YearlyInvestmentEntity>
+
+            CriteriaDrivenBudgets = new List<CriteriaDrivenBudgetEntity>
             {
-                new YearlyInvestmentEntity
-                {
-                    YEAR_ = DateTime.Now.Year,
-                    BUDGETNAME = "Rehabilitation",
-                    AMOUNT = 5000000
-                },
-                new YearlyInvestmentEntity
-                {
-                    YEAR_ = DateTime.Now.Year,
-                    BUDGETNAME = "Maintenance",
-                    AMOUNT = 5000000
-                },
-                new YearlyInvestmentEntity
-                {
-                    YEAR_ = DateTime.Now.Year,
-                    BUDGETNAME = "Construction",
-                    AMOUNT = 5000000
-                }
+                new CriteriaDrivenBudgetEntity {BUDGET_NAME = "Rehabilitation"},
+                new CriteriaDrivenBudgetEntity {BUDGET_NAME = "Maintenance"},
+                new CriteriaDrivenBudgetEntity {BUDGET_NAME = "Construction"}
             };
 
             TREATMENTS = new List<TreatmentsEntity>

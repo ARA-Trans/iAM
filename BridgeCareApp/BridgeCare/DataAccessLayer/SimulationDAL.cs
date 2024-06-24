@@ -146,12 +146,31 @@ namespace BridgeCare.DataAccessLayer
         public SimulationModel CreateSimulation(CreateSimulationDataModel model, BridgeCareContext db)
         {
             var simulation = new SimulationEntity(model);
+
             db.Simulations.Add(simulation);
 
             db.SaveChanges();
 
-            simulation = db.Simulations.Include(s => s.NETWORK)
+            simulation = db.Simulations
+                .Include(s => s.NETWORK)
+                .Include(s => s.CriteriaDrivenBudgets)
                 .Single(s => s.SIMULATIONID == simulation.SIMULATIONID);
+
+            if (simulation.CriteriaDrivenBudgets.Any())
+            {
+                simulation.CriteriaDrivenBudgets.ToList().ForEach(bc =>
+                {
+                    db.YearlyInvestments.Add(new YearlyInvestmentEntity
+                    {
+                        SIMULATIONID = simulation.SIMULATIONID,
+                        BUDGET_CRITERIA_ID = bc.BUDGET_CRITERIA_ID,
+                        YEAR_ = DateTime.Now.Year,
+                        AMOUNT = 5000000
+                    });
+                });
+            }
+
+            db.SaveChanges();
 
             return new SimulationModel(simulation);
         }
@@ -171,10 +190,10 @@ namespace BridgeCare.DataAccessLayer
                 .Include(s => s.REMAINING_LIFE_LIMITS)
                 .Include(s => s.SPLIT_TREATMENTS.Select(st => st.SPLIT_TREATMENT_LIMITS))
                 .Include(s => s.COMMITTEDPROJECTS.Select(c => c.COMMIT_CONSEQUENCES))
-                .Include(s => s.YEARLYINVESTMENTS)
                 .Include(s => s.PRIORITIZEDNEEDS)
                 .Include(s => s.TARGET_DEFICIENTS)
                 .Include(s => s.CriteriaDrivenBudgets)
+                .Include(s => s.CriteriaDrivenBudgets.Select(bc => bc.YEARLYINVESTMENTS))
                 .First(entity => entity.SIMULATIONID == simulationId);
             simulation.OWNER = username;
             db.Simulations.Add(simulation); // Primary key will automatically be changed

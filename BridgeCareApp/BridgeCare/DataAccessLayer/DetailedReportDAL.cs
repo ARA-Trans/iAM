@@ -40,13 +40,13 @@ namespace BridgeCare.DataAccessLayer
             try
             {
                 yearsForBudget = db.YearlyInvestments.AsNoTracking().Where(_ => _.SIMULATIONID == data.simulationId)
-                                                              .OrderBy(year => year.YEAR_)
-                                                              .Select(p => new YearlyDataModel
-                                                              {
-                                                                  Year = p.YEAR_,
-                                                                  Amount = p.AMOUNT,
-                                                                  BudgetName = p.BUDGETNAME
-                                                              }).ToList();
+                    .OrderBy(year => year.YEAR_)
+                    .Select(yi => new YearlyDataModel
+                    {
+                        Year = yi.YEAR_,
+                        Amount = yi.AMOUNT,
+                        BudgetName = yi.BUDGET_CRITERIA.BUDGET_NAME
+                    }).ToList();
             }
             catch (SqlException ex)
             {

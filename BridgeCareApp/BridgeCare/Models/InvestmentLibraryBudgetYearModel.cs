@@ -18,15 +18,14 @@ namespace BridgeCare.Models
         {
             Id = entity.YEARID.ToString();
             Year = entity.YEAR_;
-            BudgetName = entity.BUDGETNAME;
+            BudgetName = entity.BUDGET_CRITERIA.BUDGET_NAME;
+            CriteriaDrivenBudgetId = entity.BUDGET_CRITERIA_ID.ToString();
             BudgetAmount = entity.AMOUNT;
         }
 
         public void UpdateYearlyInvestment(YearlyInvestmentEntity entity)
         {
-            entity.YEAR_ = Year;
             entity.AMOUNT = BudgetAmount;
-            entity.BUDGETNAME = BudgetName;
         }
     }
 }

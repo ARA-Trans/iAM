@@ -23,8 +23,8 @@ namespace BridgeCare.DataAccessLayer
         {
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
-                .Include(s => s.YEARLYINVESTMENTS)
                 .Include(s => s.CriteriaDrivenBudgets)
+                .Include(s => s.CriteriaDrivenBudgets.Select(bc => bc.YEARLYINVESTMENTS))
                 .Single(s => s.SIMULATIONID == id);
             return new InvestmentLibraryModel(simulation);
         }
@@ -73,10 +73,13 @@ namespace BridgeCare.DataAccessLayer
 
             var simulation = db.Simulations
                 .Include(s => s.INVESTMENTS)
-                .Include(s => s.YEARLYINVESTMENTS)
                 .Include(s => s.CriteriaDrivenBudgets)
+                .Include(s => s.CriteriaDrivenBudgets.Select(bc => bc.YEARLYINVESTMENTS))
                 .Include(s => s.PRIORITIES).Include(s => s.PRIORITIES.Select(p => p.PRIORITYFUNDS))
                 .Single(s => s.SIMULATIONID == id);
+
+            if (simulation.INVESTMENTS != null)
+                model.UpdateInvestment(simulation.INVESTMENTS);
 
             if (simulation.CriteriaDrivenBudgets.Any())
             {
@@ -92,29 +95,30 @@ namespace BridgeCare.DataAccessLayer
                     {
                         criteriaDrivenBudgetModel.matched = true;
                         criteriaDrivenBudgetModel.UpdateCriteriaDrivenBudget(criteriaDrivenBudget);
+
+                        if (criteriaDrivenBudget.YEARLYINVESTMENTS.Any())
+                        {
+                            criteriaDrivenBudget.YEARLYINVESTMENTS.ToList().ForEach(yearlyInvestment =>
+                            {
+                                var yearlyInvestmentModel =
+                                    model.BudgetYears.SingleOrDefault(m => m.Id == yearlyInvestment.YEARID.ToString());
+
+                                if (yearlyInvestmentModel == null)
+                                    YearlyInvestmentEntity.DeleteEntry(yearlyInvestment, db);
+                                else
+                                {
+                                    yearlyInvestmentModel.matched = true;
+                                    yearlyInvestmentModel.UpdateYearlyInvestment(yearlyInvestment);
+                                }
+                            });
+                        }
+
+                        if (model.BudgetYears.Any(m =>
+                            !m.matched && m.CriteriaDrivenBudgetId == criteriaDrivenBudgetModel.Id))
+                            model.BudgetYears.Where(m => !m.matched && m.CriteriaDrivenBudgetId == criteriaDrivenBudgetModel.Id)
+                                .ToList().ForEach(m => criteriaDrivenBudget.YEARLYINVESTMENTS.Add(new YearlyInvestmentEntity(id, m)));
                     }
                 });
-            }
-
-            if (simulation.INVESTMENTS != null)
-                model.UpdateInvestment(simulation.INVESTMENTS);
-
-            if (simulation.YEARLYINVESTMENTS.Any())
-            {
-                simulation.YEARLYINVESTMENTS.ToList().ForEach(yearlyInvestment =>
-                {
-                    var yearlyInvestmentModel =
-                        model.BudgetYears.SingleOrDefault(m => m.Id == yearlyInvestment.YEARID.ToString());
-
-                    if (yearlyInvestmentModel == null)
-                        YearlyInvestmentEntity.DeleteEntry(yearlyInvestment, db);
-                    else
-                    {
-                        yearlyInvestmentModel.matched = true;
-                        yearlyInvestmentModel.UpdateYearlyInvestment(yearlyInvestment);
-                    }
-                });
-                
             }
 
             simulation.PRIORITIES.ToList().ForEach(priorityEntity =>
@@ -145,19 +149,28 @@ namespace BridgeCare.DataAccessLayer
             if (simulation.INVESTMENTS == null)
                 db.Investments.Add(new InvestmentsEntity(model));
 
-            if (model.BudgetYears.Any(m => !m.matched))
-                db.YearlyInvestments.AddRange(model.BudgetYears
-                    .Where(yearlyInvestmentModel => !yearlyInvestmentModel.matched)
-                    .Select(yearlyInvestmentModel => new YearlyInvestmentEntity(id, yearlyInvestmentModel))
-                    .ToList()
-                );
-
             if (model.CriteriaDrivenBudgets.Any(m => !m.matched))
-                db.CriteriaDrivenBudgets.AddRange(model.CriteriaDrivenBudgets
-                    .Where(criteriaDrivenBudgetModel => !criteriaDrivenBudgetModel.matched)
-                    .Select(criteriaDrivenBudgetModel => new CriteriaDrivenBudgetEntity(id, criteriaDrivenBudgetModel))
-                    .ToList()
-                );
+            {
+                model.CriteriaDrivenBudgets.Where(m => !m.matched)
+                    .ToList().ForEach(bcModel =>
+                    {
+                        var newBC = new CriteriaDrivenBudgetEntity(id, bcModel);
+                        db.CriteriaDrivenBudgets.Add(newBC);
+                        db.SaveChanges();
+
+                        if (model.BudgetYears.Any(yiModel => yiModel.CriteriaDrivenBudgetId == bcModel.Id))
+                        {
+                            model.BudgetYears.Where(yiModel => yiModel.CriteriaDrivenBudgetId == bcModel.Id).ToList()
+                                .ForEach(yiModel =>
+                                {
+                                    db.YearlyInvestments.Add(new YearlyInvestmentEntity(id, yiModel)
+                                    {
+                                        BUDGET_CRITERIA_ID = newBC.BUDGET_CRITERIA_ID
+                                    });
+                                });
+                        }
+                    });
+            }
 
             db.SaveChanges();
 
