@@ -2,13 +2,10 @@
 {
     public class DirectionalRoute : Route
     {
-        public string Name { get; }
-
         public Direction Direction { get; }
 
-        public DirectionalRoute(string name, Direction direction, string uniqueIdentifier) : base(uniqueIdentifier)
+        public DirectionalRoute(string name, Direction direction) : base(name)
         {
-            Name = name;
             Direction = direction;
         }
 
@@ -17,7 +14,7 @@
             var directionalRoute = (DirectionalRoute)route;
             return ((Name == directionalRoute.Name &&
                 Direction == directionalRoute.Direction) ||
-                Identifier == directionalRoute.Identifier);
+                Name == directionalRoute.Name);
         }
     }
 }

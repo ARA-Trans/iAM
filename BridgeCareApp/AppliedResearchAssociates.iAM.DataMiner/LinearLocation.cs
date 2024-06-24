@@ -12,7 +12,7 @@ namespace AppliedResearchAssociates.iAM.DataMiner
 
         // The uniqueIdentifier can really be any uniquely identifiable string
         // of characters. (ROUTE-BMP-EMP-DIR for example).
-        public LinearLocation(Route route, double start, double end)
+        public LinearLocation(Route route, string uniqueIdentifier, double start, double end) :base(uniqueIdentifier)
         {
             Route = route;
             Start = start;

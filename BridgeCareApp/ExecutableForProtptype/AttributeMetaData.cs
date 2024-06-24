@@ -7,12 +7,7 @@ using Newtonsoft.Json;
 
 namespace ExecutableForProtptype
 {
-    public class AttributeList
-    {
-        [JsonProperty("AttributeList")]
-        public List<ConfigFileModel> AttributeConfigData { get; set; }
-    }
-    public class ConfigFileModel
+    public class AttributeMetaDatum
     {
         public string AttributeName { get; set; }
         public string DefaultValue { get; set; }
@@ -20,14 +15,7 @@ namespace ExecutableForProtptype
         public double Maximum { get; set; }
         public string Location { get; set; }
         public string DataType { get; set; }
-        public Connection Connection { get; set; }
-    }
-
-    public class Connection
-    {
-        public string Server { get; set; }
-        public string DataSource { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public string ConnectionString { get; set; }
+        public string DataRetrievalCommand { get; set; }
     }
 }
